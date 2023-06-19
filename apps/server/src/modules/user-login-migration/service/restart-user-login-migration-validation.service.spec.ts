@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SchoolDO, UserLoginMigrationDO } from '@shared/domain';
 import { schoolDOFactory, userDoFactory } from '@shared/testing';
+import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration-do.factory';
 import { RestartUserLoginMigrationError } from '../error';
 import { RestartUserLoginMigrationValidationService } from './restart-user-login-migration-validation.service';
 import { CommonUserLoginMigrationService } from './common-user-login-migration.service';
@@ -40,7 +41,7 @@ describe('RestartUserLoginMigrationValidationService', () => {
 			const setup = () => {
 				const user = userDoFactory.buildWithId();
 
-				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date('2022-12-17T03:24:00'),
@@ -103,10 +104,12 @@ describe('RestartUserLoginMigrationValidationService', () => {
 			const setup = () => {
 				const user = userDoFactory.buildWithId({ id: 'userId' });
 				const school: SchoolDO = schoolDOFactory.buildWithId();
-				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: school.id ?? '',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date('2022-12-17T03:24:00'),
+					closedAt: undefined,
+					finishedAt: undefined,
 				});
 
 				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
@@ -133,7 +136,7 @@ describe('RestartUserLoginMigrationValidationService', () => {
 			const setup = () => {
 				const user = userDoFactory.buildWithId();
 				const school: SchoolDO = schoolDOFactory.buildWithId();
-				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: school.id ?? '',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date('2022-12-17T03:24:00'),
