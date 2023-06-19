@@ -10,7 +10,6 @@ import {
 } from '@src/modules/authorization';
 import { ContextExternalToolQuery } from '../uc/dto';
 import { ContextTypeMapper } from './mapper';
-import { ContextExternalToolQuery } from '../uc/dto';
 
 @Injectable()
 export class ContextExternalToolService implements AuthorizationLoaderService {
