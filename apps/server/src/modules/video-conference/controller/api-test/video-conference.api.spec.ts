@@ -1,22 +1,23 @@
-import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/mongodb';
 import MockAdapter from 'axios-mock-adapter';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Request } from 'express';
 import axios from 'axios';
 import {
+	accountFactory,
 	cleanupCollections,
 	courseFactory,
-	mapUserToCurrentUser,
 	roleFactory,
 	schoolFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server';
 import { ICurrentUser } from '@src/modules/authentication';
-import request, { Response } from 'supertest';
+import { Response } from 'supertest';
 import {
+	Account,
 	Course,
 	Permission,
 	Role,
@@ -34,39 +35,28 @@ import { VideoConferenceCreateParams, VideoConferenceJoinResponse } from '../dto
 describe('VideoConferenceController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser | undefined;
 	let axiosMock: MockAdapter;
-	const BASE_URL = '/videoconference2';
+	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
-			.compile();
+		}).compile();
 
 		app = moduleRef.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
+		axiosMock = new MockAdapter(axios);
+		testApiClient = new TestApiClient(app, 'videoconference2');
 	});
 
 	afterAll(async () => {
 		await app.close();
 	});
 
-	beforeEach(() => {
-		axiosMock = new MockAdapter(axios);
-	});
-
 	afterEach(async () => {
 		await cleanupCollections(em);
+		axiosMock = new MockAdapter(axios);
 	});
 
 	const mockBbbMeetingInfoFailed = () => {
@@ -163,14 +153,8 @@ describe('VideoConferenceController (API)', () => {
 
 	describe('[PUT] /videoconference2/:scope/:scopeId/start', () => {
 		describe('when user is unauthorized', () => {
-			const setup = () => {
-				currentUser = undefined;
-			};
-
 			it('should return unauthorized', async () => {
-				setup();
-
-				const response: Response = await request(app.getHttpServer()).put(`${BASE_URL}/anyScope/anyId/start`);
+				const response: Response = await testApiClient.put('/anyScope/anyId/start');
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -181,16 +165,14 @@ describe('VideoConferenceController (API)', () => {
 				const setup = async () => {
 					const school: School = schoolFactory.buildWithId({ features: [] });
 
-					const teacherRole: Role = roleFactory.buildWithId({
-						name: RoleName.STUDENT,
-						permissions: [Permission.START_MEETING, Permission.JOIN_MEETING],
-					});
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
+						Permission.START_MEETING,
+						Permission.JOIN_MEETING,
+					]);
 
-					const teacher: User = userFactory.buildWithId({ school, roles: [teacherRole] });
+					const course: Course = courseFactory.buildWithId({ school, teachers: [teacherUser] });
 
-					const course: Course = courseFactory.buildWithId({ school, teachers: [teacher] });
-
-					await em.persistAndFlush([school, teacherRole, teacher, course]);
+					await em.persistAndFlush([school, teacherAccount, teacherUser, course]);
 					em.clear();
 
 					const params: VideoConferenceCreateParams = {
@@ -202,18 +184,17 @@ describe('VideoConferenceController (API)', () => {
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
 					const scopeId: string = course.id;
 
-					currentUser = mapUserToCurrentUser(teacher);
+					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
 					mockBbbMeetingInfoFailed();
 
-					return { scope, scopeId, params };
+					return { loggedInClient, scope, scopeId, params };
 				};
 
 				it('should return forbidden', async () => {
-					const { params, scope, scopeId } = await setup();
+					const { loggedInClient, params, scope, scopeId } = await setup();
 
-					const response: Response = await request(app.getHttpServer())
-						.put(`${BASE_URL}/${scope}/${scopeId}/start`)
-						.send(params);
+					const response: Response = await loggedInClient.put(`${scope}/${scopeId}/start`, params);
 
 					expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 				});
@@ -227,11 +208,13 @@ describe('VideoConferenceController (API)', () => {
 						permissions: [Permission.JOIN_MEETING],
 					});
 
-					const student: User = userFactory.buildWithId({ school, roles: [studentRole] });
+					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school }, [
+						Permission.JOIN_MEETING,
+					]);
 
-					const course: Course = courseFactory.buildWithId({ school, students: [student] });
+					const course: Course = courseFactory.buildWithId({ school, students: [studentUser] });
 
-					await em.persistAndFlush([school, studentRole, student, course]);
+					await em.persistAndFlush([school, studentRole, studentAccount, studentUser, course]);
 					em.clear();
 
 					const params: VideoConferenceCreateParams = {
@@ -243,18 +226,17 @@ describe('VideoConferenceController (API)', () => {
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
 					const scopeId: string = course.id;
 
-					currentUser = mapUserToCurrentUser(student);
+					const loggedInClient: TestApiClient = await testApiClient.login(studentAccount);
+
 					mockBbbMeetingInfoFailed();
 
-					return { scope, scopeId, params };
+					return { loggedInClient, scope, scopeId, params };
 				};
 
 				it('should return forbidden', async () => {
-					const { params, scope, scopeId } = await setup();
+					const { loggedInClient, params, scope, scopeId } = await setup();
 
-					const response: Response = await request(app.getHttpServer())
-						.put(`${BASE_URL}/${scope}/${scopeId}/start`)
-						.send(params);
+					const response: Response = await loggedInClient.put(`${scope}/${scopeId}/start`, params);
 
 					expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 				});
@@ -264,16 +246,14 @@ describe('VideoConferenceController (API)', () => {
 				const setup = async () => {
 					const school: School = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
 
-					const teacherRole: Role = roleFactory.buildWithId({
-						name: RoleName.STUDENT,
-						permissions: [Permission.START_MEETING, Permission.JOIN_MEETING],
-					});
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
+						Permission.START_MEETING,
+						Permission.JOIN_MEETING,
+					]);
 
-					const teacher: User = userFactory.buildWithId({ school, roles: [teacherRole] });
+					const course: Course = courseFactory.buildWithId({ school, teachers: [teacherUser] });
 
-					const course: Course = courseFactory.buildWithId({ school, teachers: [teacher] });
-
-					await em.persistAndFlush([school, teacherRole, teacher, course]);
+					await em.persistAndFlush([school, teacherAccount, teacherUser, course]);
 					em.clear();
 
 					const params: VideoConferenceCreateParams = {
@@ -285,19 +265,17 @@ describe('VideoConferenceController (API)', () => {
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
 					const scopeId: string = course.id;
 
-					currentUser = mapUserToCurrentUser(teacher);
+					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 					mockBbbMeetingInfoFailed();
 					mockBbbCreateSuccess();
 
-					return { scope, scopeId, params };
+					return { loggedInClient, scope, scopeId, params };
 				};
 
 				it('should create the conference successfully and return with ok', async () => {
-					const { params, scope, scopeId } = await setup();
+					const { loggedInClient, params, scope, scopeId } = await setup();
 
-					const response: Response = await request(app.getHttpServer())
-						.put(`${BASE_URL}/${scope}/${scopeId}/start`)
-						.send(params);
+					const response: Response = await loggedInClient.put(`${scope}/${scopeId}/start`, params);
 
 					expect(response.status).toEqual(HttpStatus.OK);
 				});
@@ -307,16 +285,14 @@ describe('VideoConferenceController (API)', () => {
 				const setup = async () => {
 					const school: School = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
 
-					const teacherRole: Role = roleFactory.buildWithId({
-						name: RoleName.STUDENT,
-						permissions: [Permission.START_MEETING, Permission.JOIN_MEETING],
-					});
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
+						Permission.START_MEETING,
+						Permission.JOIN_MEETING,
+					]);
 
-					const teacher: User = userFactory.buildWithId({ school, roles: [teacherRole] });
+					const course: Course = courseFactory.buildWithId({ school, teachers: [teacherUser] });
 
-					const course: Course = courseFactory.buildWithId({ school, teachers: [teacher] });
-
-					await em.persistAndFlush([school, teacherRole, teacher, course]);
+					await em.persistAndFlush([school, teacherAccount, teacherUser, course]);
 					em.clear();
 
 					const params: VideoConferenceCreateParams = {
@@ -328,18 +304,16 @@ describe('VideoConferenceController (API)', () => {
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
 					const scopeId: string = course.id;
 
-					currentUser = mapUserToCurrentUser(teacher);
+					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 					mockBbbMeetingInfoSuccess();
 
-					return { scope, scopeId, params };
+					return { loggedInClient, scope, scopeId, params };
 				};
 
 				it('should return ok', async () => {
-					const { params, scope, scopeId } = await setup();
+					const { loggedInClient, params, scope, scopeId } = await setup();
 
-					const response: Response = await request(app.getHttpServer())
-						.put(`${BASE_URL}/${scope}/${scopeId}/start`)
-						.send(params);
+					const response: Response = await loggedInClient.put(`${scope}/${scopeId}/start`, params);
 
 					expect(response.status).toEqual(HttpStatus.OK);
 				});
@@ -349,14 +323,8 @@ describe('VideoConferenceController (API)', () => {
 
 	describe('[GET] /videoconference2/:scope/:scopeId/join', () => {
 		describe('when user is unauthorized', () => {
-			const setup = () => {
-				currentUser = undefined;
-			};
-
 			it('should return unauthorized', async () => {
-				setup();
-
-				const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/anyScope/anyId/join`);
+				const response: Response = await testApiClient.get('/anyScope/anyId/join');
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -366,35 +334,34 @@ describe('VideoConferenceController (API)', () => {
 			describe('when school has not enabled the school feature videoconference', () => {
 				const setup = async () => {
 					const school: School = schoolFactory.buildWithId({ features: [] });
-					const teacherRole: Role = roleFactory.buildWithId({
-						name: RoleName.STUDENT,
-						permissions: [Permission.START_MEETING, Permission.JOIN_MEETING],
-					});
 
-					const teacher: User = userFactory.buildWithId({ school, roles: [teacherRole] });
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
+						Permission.START_MEETING,
+						Permission.JOIN_MEETING,
+					]);
 
-					const course: Course = courseFactory.buildWithId({ school, teachers: [teacher] });
+					const course: Course = courseFactory.buildWithId({ school, teachers: [teacherUser] });
 					const videoConference: VideoConference = videoConferenceFactory.buildWithId({
 						targetModel: TargetModels.COURSES,
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherRole, teacher, course, videoConference]);
+					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
 					const scopeId: string = course.id;
 
-					currentUser = mapUserToCurrentUser(teacher);
+					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 					mockBbbMeetingInfoFailed();
 
-					return { scope, scopeId };
+					return { loggedInClient, scope, scopeId };
 				};
 
 				it('should return forbidden', async () => {
-					const { scope, scopeId } = await setup();
+					const { loggedInClient, scope, scopeId } = await setup();
 
-					const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/${scope}/${scopeId}/join`);
+					const response: Response = await loggedInClient.get(`${scope}/${scopeId}/join`);
 
 					expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 				});
@@ -404,35 +371,34 @@ describe('VideoConferenceController (API)', () => {
 				const setup = async () => {
 					const school: School = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
 
-					const teacherRole: Role = roleFactory.buildWithId({
-						name: RoleName.STUDENT,
-						permissions: [Permission.START_MEETING, Permission.JOIN_MEETING],
-					});
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
+						Permission.START_MEETING,
+						Permission.JOIN_MEETING,
+					]);
 
-					const teacher: User = userFactory.buildWithId({ school, roles: [teacherRole] });
-
-					const course: Course = courseFactory.buildWithId({ school, teachers: [teacher] });
+					const course: Course = courseFactory.buildWithId({ school, teachers: [teacherUser] });
 					const videoConference: VideoConference = videoConferenceFactory.buildWithId({
 						targetModel: TargetModels.COURSES,
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherRole, teacher, course, videoConference]);
+					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
 					const scopeId: string = course.id;
 
-					currentUser = mapUserToCurrentUser(teacher);
+					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
 					mockBbbMeetingInfoSuccess();
 
-					return { scope, scopeId };
+					return { loggedInClient, scope, scopeId };
 				};
 
 				it('should return the conference', async () => {
-					const { scope, scopeId } = await setup();
+					const { loggedInClient, scope, scopeId } = await setup();
 
-					const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/${scope}/${scopeId}/join`);
+					const response: Response = await loggedInClient.get(`${scope}/${scopeId}/join`);
 
 					expect(response.status).toEqual(HttpStatus.OK);
 					expect(response.body).toEqual<VideoConferenceJoinResponse>({
@@ -445,35 +411,34 @@ describe('VideoConferenceController (API)', () => {
 				const setup = async () => {
 					const school: School = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
 
-					const teacherRole: Role = roleFactory.buildWithId({
-						name: RoleName.STUDENT,
-						permissions: [Permission.START_MEETING, Permission.JOIN_MEETING],
-					});
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
+						Permission.START_MEETING,
+						Permission.JOIN_MEETING,
+					]);
 
-					const teacher: User = userFactory.buildWithId({ school, roles: [teacherRole] });
-
-					const course: Course = courseFactory.buildWithId({ school, teachers: [teacher] });
+					const course: Course = courseFactory.buildWithId({ school, teachers: [teacherUser] });
 					const videoConference: VideoConference = videoConferenceFactory.buildWithId({
 						targetModel: TargetModels.COURSES,
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherRole, teacher, course, videoConference]);
+					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
 					const scopeId: string = course.id;
 
-					currentUser = mapUserToCurrentUser(teacher);
+					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
 					mockBbbMeetingInfoFailed();
 
-					return { scope, scopeId };
+					return { loggedInClient, scope, scopeId };
 				};
 
 				it('should return internal server error', async () => {
-					const { scope, scopeId } = await setup();
+					const { loggedInClient, scope, scopeId } = await setup();
 
-					const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/${scope}/${scopeId}/join`);
+					const response: Response = await loggedInClient.get(`${scope}/${scopeId}/join`);
 
 					expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
 				});
@@ -483,14 +448,8 @@ describe('VideoConferenceController (API)', () => {
 
 	describe('[GET] /videoconference2/:scope/:scopeId/info', () => {
 		describe('when user is unauthorized', () => {
-			const setup = () => {
-				currentUser = undefined;
-			};
-
 			it('should return unauthorized', async () => {
-				setup();
-
-				const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/anyScope/anyId/info`);
+				const response: Response = await testApiClient.get('/anyScope/anyId/info');
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -501,35 +460,33 @@ describe('VideoConferenceController (API)', () => {
 				const setup = async () => {
 					const school: School = schoolFactory.buildWithId({ features: [] });
 
-					const teacherRole: Role = roleFactory.buildWithId({
-						name: RoleName.STUDENT,
-						permissions: [Permission.START_MEETING, Permission.JOIN_MEETING],
-					});
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
+						Permission.START_MEETING,
+						Permission.JOIN_MEETING,
+					]);
 
-					const teacher: User = userFactory.buildWithId({ school, roles: [teacherRole] });
-
-					const course: Course = courseFactory.buildWithId({ school, teachers: [teacher] });
+					const course: Course = courseFactory.buildWithId({ school, teachers: [teacherUser] });
 					const videoConference: VideoConference = videoConferenceFactory.buildWithId({
 						targetModel: TargetModels.COURSES,
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherRole, teacher, course, videoConference]);
+					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
 					const scopeId: string = course.id;
 
-					currentUser = mapUserToCurrentUser(teacher);
+					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 					mockBbbMeetingInfoFailed();
 
-					return { scope, scopeId };
+					return { loggedInClient, scope, scopeId };
 				};
 
 				it('should return forbidden', async () => {
-					const { scope, scopeId } = await setup();
+					const { loggedInClient, scope, scopeId } = await setup();
 
-					const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/${scope}/${scopeId}/info`);
+					const response: Response = await loggedInClient.get(`${scope}/${scopeId}/info`);
 
 					expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 				});
@@ -538,35 +495,35 @@ describe('VideoConferenceController (API)', () => {
 			describe('when user has the required permission', () => {
 				const setup = async () => {
 					const school: School = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
-					const teacherRole: Role = roleFactory.buildWithId({
-						name: RoleName.STUDENT,
-						permissions: [Permission.START_MEETING, Permission.JOIN_MEETING],
-					});
 
-					const teacher: User = userFactory.buildWithId({ school, roles: [teacherRole] });
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
+						Permission.START_MEETING,
+						Permission.JOIN_MEETING,
+					]);
 
-					const course: Course = courseFactory.buildWithId({ school, teachers: [teacher] });
+					const course: Course = courseFactory.buildWithId({ school, teachers: [teacherUser] });
 					const videoConference: VideoConference = videoConferenceFactory.buildWithId({
 						targetModel: TargetModels.COURSES,
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherRole, teacher, course, videoConference]);
+					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
 					const scopeId: string = course.id;
 
-					currentUser = mapUserToCurrentUser(teacher);
+					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
 					mockBbbMeetingInfoSuccess();
 
-					return { scope, scopeId };
+					return { loggedInClient, scope, scopeId };
 				};
 
 				it('should return ok', async () => {
-					const { scope, scopeId } = await setup();
+					const { loggedInClient, scope, scopeId } = await setup();
 
-					const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/${scope}/${scopeId}/info`);
+					const response: Response = await loggedInClient.get(`${scope}/${scopeId}/info`);
 
 					expect(response.status).toEqual(HttpStatus.OK);
 				});
@@ -575,36 +532,39 @@ describe('VideoConferenceController (API)', () => {
 			describe('when guest want meeting info of conference without waiting room', () => {
 				const setup = async () => {
 					const school: School = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
+
 					const expertRole: Role = roleFactory.buildWithId({
 						name: RoleName.EXPERT,
 						permissions: [Permission.JOIN_MEETING],
 					});
 
-					const expert: User = userFactory.buildWithId({ school, roles: [expertRole] });
+					const expertUser: User = userFactory.buildWithId({ school, roles: [expertRole] });
+					const expertAccount: Account = accountFactory.buildWithId({ userId: expertUser.id });
 
-					const course: Course = courseFactory.buildWithId({ school, students: [expert] });
+					const course: Course = courseFactory.buildWithId({ school, students: [expertUser] });
 					const videoConference: VideoConference = videoConferenceFactory.buildWithId({
 						targetModel: TargetModels.COURSES,
 						target: course.id,
 						options: { moderatorMustApproveJoinRequests: false },
 					});
 
-					await em.persistAndFlush([school, expertRole, expert, course, videoConference]);
+					await em.persistAndFlush([school, expertRole, expertAccount, expertUser, course, videoConference]);
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
 					const scopeId: string = course.id;
 
-					currentUser = mapUserToCurrentUser(expert);
+					const loggedInClient: TestApiClient = await testApiClient.login(expertAccount);
+
 					mockBbbMeetingInfoSuccess();
 
-					return { scope, scopeId };
+					return { loggedInClient, scope, scopeId };
 				};
 
 				it('should return forbidden', async () => {
-					const { scope, scopeId } = await setup();
+					const { loggedInClient, scope, scopeId } = await setup();
 
-					const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/${scope}/${scopeId}/info`);
+					const response: Response = await loggedInClient.get(`${scope}/${scopeId}/info`);
 
 					expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 				});
@@ -614,35 +574,34 @@ describe('VideoConferenceController (API)', () => {
 				const setup = async () => {
 					const school: School = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
 
-					const teacherRole: Role = roleFactory.buildWithId({
-						name: RoleName.STUDENT,
-						permissions: [Permission.START_MEETING, Permission.JOIN_MEETING],
-					});
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
+						Permission.START_MEETING,
+						Permission.JOIN_MEETING,
+					]);
 
-					const teacher: User = userFactory.buildWithId({ school, roles: [teacherRole] });
-
-					const course: Course = courseFactory.buildWithId({ school, teachers: [teacher] });
+					const course: Course = courseFactory.buildWithId({ school, teachers: [teacherUser] });
 					const videoConference: VideoConference = videoConferenceFactory.buildWithId({
 						targetModel: TargetModels.COURSES,
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherRole, teacher, course, videoConference]);
+					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
 					const scopeId: string = course.id;
 
-					currentUser = mapUserToCurrentUser(teacher);
+					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
 					mockBbbMeetingInfoFailed();
 
-					return { scope, scopeId };
+					return { loggedInClient, scope, scopeId };
 				};
 
 				it('should return ok', async () => {
-					const { scope, scopeId } = await setup();
+					const { loggedInClient, scope, scopeId } = await setup();
 
-					const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/${scope}/${scopeId}/info`);
+					const response: Response = await loggedInClient.get(`${scope}/${scopeId}/info`);
 
 					expect(response.status).toEqual(HttpStatus.OK);
 				});
@@ -652,14 +611,8 @@ describe('VideoConferenceController (API)', () => {
 
 	describe('[PUT] /videoconference2/:scope/:scopeId/end', () => {
 		describe('when user is unauthorized', () => {
-			const setup = () => {
-				currentUser = undefined;
-			};
-
 			it('should return unauthorized', async () => {
-				setup();
-
-				const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/anyScope/anyId/end`);
+				const response: Response = await testApiClient.get('/anyScope/anyId/end');
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -669,34 +622,35 @@ describe('VideoConferenceController (API)', () => {
 			describe('when school has not enabled the school feature videoconference', () => {
 				const setup = async () => {
 					const school: School = schoolFactory.buildWithId({ features: [] });
-					const teacherRole: Role = roleFactory.buildWithId({
-						name: RoleName.STUDENT,
-						permissions: [Permission.START_MEETING, Permission.JOIN_MEETING],
-					});
 
-					const teacher: User = userFactory.buildWithId({ school, roles: [teacherRole] });
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
+						Permission.START_MEETING,
+						Permission.JOIN_MEETING,
+					]);
 
-					const course: Course = courseFactory.buildWithId({ school, teachers: [teacher] });
+					const course: Course = courseFactory.buildWithId({ school, teachers: [teacherUser] });
 					const videoConference: VideoConference = videoConferenceFactory.buildWithId({
 						targetModel: TargetModels.COURSES,
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherRole, teacher, course, videoConference]);
+					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
 					const scopeId: string = course.id;
 
-					currentUser = mapUserToCurrentUser(teacher);
+					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
 					mockBbbMeetingInfoFailed();
 
-					return { scope, scopeId };
+					return { loggedInClient, scope, scopeId };
 				};
 
 				it('should return forbidden', async () => {
-					const { scope, scopeId } = await setup();
-					const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/${scope}/${scopeId}/end`);
+					const { loggedInClient, scope, scopeId } = await setup();
+
+					const response: Response = await loggedInClient.get(`${scope}/${scopeId}/end`);
 
 					expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 				});
@@ -705,34 +659,32 @@ describe('VideoConferenceController (API)', () => {
 			describe('when a user without required permission wants to end a conference', () => {
 				const setup = async () => {
 					const school: School = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
-					const studentRole: Role = roleFactory.buildWithId({
-						name: RoleName.STUDENT,
-						permissions: [Permission.JOIN_MEETING],
-					});
 
-					const student: User = userFactory.buildWithId({ school, roles: [studentRole] });
+					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school }, [
+						Permission.JOIN_MEETING,
+					]);
 
-					const course: Course = courseFactory.buildWithId({ school, students: [student] });
+					const course: Course = courseFactory.buildWithId({ school, students: [studentUser] });
 					const videoConference: VideoConference = videoConferenceFactory.buildWithId({
 						targetModel: TargetModels.COURSES,
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, studentRole, student, course, videoConference]);
+					await em.persistAndFlush([school, studentAccount, studentUser, course, videoConference]);
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
 					const scopeId: string = course.id;
 
-					currentUser = mapUserToCurrentUser(student);
+					const loggedInClient: TestApiClient = await testApiClient.login(studentAccount);
 
-					return { scope, scopeId };
+					return { loggedInClient, scope, scopeId };
 				};
 
 				it('should return forbidden', async () => {
-					const { scope, scopeId } = await setup();
+					const { loggedInClient, scope, scopeId } = await setup();
 
-					const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/${scope}/${scopeId}/end`);
+					const response: Response = await loggedInClient.get(`${scope}/${scopeId}/end`);
 
 					expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 				});
@@ -742,35 +694,34 @@ describe('VideoConferenceController (API)', () => {
 				const setup = async () => {
 					const school: School = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
 
-					const teacherRole: Role = roleFactory.buildWithId({
-						name: RoleName.STUDENT,
-						permissions: [Permission.START_MEETING, Permission.JOIN_MEETING],
-					});
+					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
+						Permission.START_MEETING,
+						Permission.JOIN_MEETING,
+					]);
 
-					const teacher: User = userFactory.buildWithId({ school, roles: [teacherRole] });
-
-					const course: Course = courseFactory.buildWithId({ school, teachers: [teacher] });
+					const course: Course = courseFactory.buildWithId({ school, teachers: [teacherUser] });
 					const videoConference: VideoConference = videoConferenceFactory.buildWithId({
 						targetModel: TargetModels.COURSES,
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherRole, teacher, course, videoConference]);
+					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
 					const scopeId: string = course.id;
 
-					currentUser = mapUserToCurrentUser(teacher);
+					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
 					mockBbbEndSuccess();
 
-					return { scope, scopeId };
+					return { loggedInClient, scope, scopeId };
 				};
 
 				it('should return ok', async () => {
-					const { scope, scopeId } = await setup();
+					const { loggedInClient, scope, scopeId } = await setup();
 
-					const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/${scope}/${scopeId}/end`);
+					const response: Response = await loggedInClient.get(`${scope}/${scopeId}/end`);
 
 					expect(response.status).toEqual(HttpStatus.OK);
 				});
