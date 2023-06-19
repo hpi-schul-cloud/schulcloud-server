@@ -10,17 +10,29 @@ import {
 	SchoolMigrationService,
 	UserLoginMigrationService,
 	UserMigrationService,
+	StartUserLoginMigrationCheckService,
+	UserLoginMigrationRevertService,
 } from './service';
+import { AuthorizationModule } from '../authorization';
 
 @Module({
-	imports: [UserModule, SchoolModule, LoggerModule, AccountModule, SystemModule],
+	imports: [UserModule, SchoolModule, LoggerModule, AccountModule, SystemModule, AuthorizationModule],
 	providers: [
 		UserMigrationService,
 		SchoolMigrationService,
 		MigrationCheckService,
 		UserLoginMigrationService,
 		UserLoginMigrationRepo,
+		StartUserLoginMigrationCheckService,
+		UserLoginMigrationRevertService,
 	],
-	exports: [UserMigrationService, SchoolMigrationService, MigrationCheckService, UserLoginMigrationService],
+	exports: [
+		UserMigrationService,
+		SchoolMigrationService,
+		MigrationCheckService,
+		UserLoginMigrationService,
+		StartUserLoginMigrationCheckService,
+		UserLoginMigrationRevertService,
+	],
 })
 export class UserLoginMigrationModule {}

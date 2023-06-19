@@ -2,14 +2,15 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName, SchoolFeatures } from '@shared/domain';
-import { RoleReference } from '@shared/domain/domainobject';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { federalStateFactory, schoolDOFactory, userDoFactory } from '@shared/testing';
+import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { SchoolService } from '@src/modules/school';
+import { FederalStateService, SchoolService, SchoolYearService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import CryptoJS from 'crypto-js';
 import { ExternalSchoolDto, ExternalUserDto } from '../../../dto';
@@ -25,6 +26,8 @@ describe('OidcProvisioningService', () => {
 	let schoolService: DeepMocked<SchoolService>;
 	let roleService: DeepMocked<RoleService>;
 	let accountService: DeepMocked<AccountService>;
+	let schoolYearService: DeepMocked<SchoolYearService>;
+	let federalStateService: DeepMocked<FederalStateService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -46,6 +49,14 @@ describe('OidcProvisioningService', () => {
 					provide: AccountService,
 					useValue: createMock<AccountService>(),
 				},
+				{
+					provide: SchoolYearService,
+					useValue: createMock<SchoolYearService>(),
+				},
+				{
+					provide: FederalStateService,
+					useValue: createMock<FederalStateService>(),
+				},
 			],
 		}).compile();
 
@@ -54,6 +65,8 @@ describe('OidcProvisioningService', () => {
 		schoolService = module.get(SchoolService);
 		roleService = module.get(RoleService);
 		accountService = module.get(AccountService);
+		schoolYearService = module.get(SchoolYearService);
+		federalStateService = module.get(FederalStateService);
 	});
 
 	afterAll(async () => {
@@ -61,49 +74,50 @@ describe('OidcProvisioningService', () => {
 	});
 
 	afterEach(() => {
-		jest.clearAllMocks();
+		jest.resetAllMocks();
 	});
 
-	const setupData = () => {
-		const systemId = 'systemId';
-		const externalSchoolDto: ExternalSchoolDto = new ExternalSchoolDto({
-			externalId: 'externalId',
-			name: 'name',
-			officialSchoolNumber: 'officialSchoolNumber',
-		});
-		const savedSchoolDO = new SchoolDO({
-			id: 'schoolId',
-			externalId: 'externalId',
-			name: 'name',
-			officialSchoolNumber: 'officialSchoolNumber',
-			systems: [systemId],
-			features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
-		});
-		const existingSchoolDO = new SchoolDO({
-			id: 'schoolId',
-			externalId: 'externalId',
-			name: 'existingName',
-			officialSchoolNumber: 'existingOfficialSchoolNumber',
-			systems: [systemId],
-			features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
-		});
-
-		schoolService.createOrUpdateSchool.mockResolvedValue(savedSchoolDO);
-
-		return {
-			systemId,
-			externalSchoolDto,
-			savedSchoolDO,
-			existingSchoolDO,
-		};
-	};
-
 	describe('provisionExternalSchool is called', () => {
+		const setup = () => {
+			const systemId = 'systemId';
+			const externalSchoolDto: ExternalSchoolDto = new ExternalSchoolDto({
+				externalId: 'externalId',
+				name: 'name',
+				officialSchoolNumber: 'officialSchoolNumber',
+			});
+			const savedSchoolDO = schoolDOFactory.build({
+				id: 'schoolId',
+				externalId: 'externalId',
+				name: 'name',
+				officialSchoolNumber: 'officialSchoolNumber',
+				systems: [systemId],
+				features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+			});
+			const existingSchoolDO = schoolDOFactory.build({
+				id: 'schoolId',
+				externalId: 'externalId',
+				name: 'existingName',
+				officialSchoolNumber: 'existingOfficialSchoolNumber',
+				systems: [systemId],
+				features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+			});
+
+			schoolService.createOrUpdateSchool.mockResolvedValue(savedSchoolDO);
+			schoolService.getSchoolByExternalId.mockResolvedValue(null);
+			schoolYearService.getCurrentSchoolYear.mockResolvedValue(schoolYearFactory.build());
+			federalStateService.findFederalStateByName.mockResolvedValue(federalStateFactory.build());
+
+			return {
+				systemId,
+				externalSchoolDto,
+				savedSchoolDO,
+				existingSchoolDO,
+			};
+		};
+
 		describe('when systemId is given and external school does not exist', () => {
 			it('should save the new school', async () => {
-				const { systemId, externalSchoolDto, savedSchoolDO } = setupData();
-
-				schoolService.getSchoolByExternalId.mockResolvedValue(null);
+				const { systemId, externalSchoolDto, savedSchoolDO } = setup();
 
 				const result: SchoolDO = await service.provisionExternalSchool(externalSchoolDto, systemId);
 
@@ -113,7 +127,7 @@ describe('OidcProvisioningService', () => {
 
 		describe('when external school already exist', () => {
 			it('should update the existing school', async () => {
-				const { systemId, externalSchoolDto, existingSchoolDO, savedSchoolDO } = setupData();
+				const { systemId, externalSchoolDto, existingSchoolDO, savedSchoolDO } = setup();
 
 				schoolService.getSchoolByExternalId.mockResolvedValue(existingSchoolDO);
 
@@ -123,7 +137,7 @@ describe('OidcProvisioningService', () => {
 			});
 
 			it('should append the new system', async () => {
-				const { systemId, externalSchoolDto, existingSchoolDO, savedSchoolDO } = setupData();
+				const { systemId, externalSchoolDto, existingSchoolDO, savedSchoolDO } = setup();
 				const otherSystemId = 'otherSystemId';
 				existingSchoolDO.systems = [otherSystemId];
 
@@ -138,7 +152,7 @@ describe('OidcProvisioningService', () => {
 			});
 
 			it('should create a new system list', async () => {
-				const { systemId, externalSchoolDto, existingSchoolDO, savedSchoolDO } = setupData();
+				const { systemId, externalSchoolDto, existingSchoolDO, savedSchoolDO } = setup();
 				existingSchoolDO.systems = undefined;
 
 				schoolService.getSchoolByExternalId.mockResolvedValue(existingSchoolDO);
@@ -154,24 +168,26 @@ describe('OidcProvisioningService', () => {
 		const setupUser = () => {
 			const systemId = 'systemId';
 			const schoolId = 'schoolId';
-			const existingUser: UserDO = new UserDO({
-				id: 'userId',
-				firstName: 'existingFirstName',
-				lastName: 'existingLastName',
-				email: 'existingEmail',
-				schoolId: 'existingSchoolId',
-				roles: [new RoleReference({ id: 'existingRoleId', name: RoleName.USER })],
-				externalId: 'externalUserId',
-			});
-			const savedUser: UserDO = new UserDO({
-				id: 'userId',
-				firstName: 'firstName',
-				lastName: 'lastName',
-				email: 'email',
-				schoolId,
-				roles: [new RoleReference({ id: 'roleId', name: RoleName.USER })],
-				externalId: 'externalUserId',
-			});
+			const existingUser: UserDO = userDoFactory.withRoles([{ id: 'existingRoleId', name: RoleName.USER }]).buildWithId(
+				{
+					firstName: 'existingFirstName',
+					lastName: 'existingLastName',
+					email: 'existingEmail',
+					schoolId: 'existingSchoolId',
+					externalId: 'externalUserId',
+				},
+				'userId'
+			);
+			const savedUser: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId(
+				{
+					firstName: 'firstName',
+					lastName: 'lastName',
+					email: 'email',
+					schoolId,
+					externalId: 'externalUserId',
+				},
+				'userId'
+			);
 			const externalUser: ExternalUserDto = new ExternalUserDto({
 				externalId: 'externalUserId',
 				firstName: 'firstName',

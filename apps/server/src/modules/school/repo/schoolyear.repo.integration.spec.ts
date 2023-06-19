@@ -44,4 +44,50 @@ describe('schoolyear repo', () => {
 		expect(storedSchoolYear.startDate).toBeDefined();
 		expect(storedSchoolYear.endDate).toBeDefined();
 	});
+
+	describe('findCurrentYear', () => {
+		describe('when date is between schoolyears start and end date', () => {
+			const setup = async () => {
+				const schoolYear: SchoolYear = schoolYearFactory.build({
+					startDate: new Date('2020-08-01'),
+					endDate: new Date('9999-07-31'),
+				});
+
+				await em.persistAndFlush(schoolYear);
+				em.clear();
+
+				return { schoolYear };
+			};
+
+			it('should return the current schoolyear', async () => {
+				const { schoolYear } = await setup();
+
+				const currentYear = await repo.findCurrentYear();
+
+				expect(currentYear).toEqual(schoolYear);
+			});
+		});
+
+		describe('when date is not between schoolyears start and end date', () => {
+			const setup = async () => {
+				const schoolYear: SchoolYear = schoolYearFactory.build({
+					startDate: new Date('2020-08-01'),
+					endDate: new Date('2021-07-31'),
+				});
+
+				await em.persistAndFlush(schoolYear);
+				em.clear();
+
+				return { schoolYear };
+			};
+
+			it('should return the current schoolyear', async () => {
+				await setup();
+
+				const func = () => repo.findCurrentYear();
+
+				await expect(func).rejects.toThrow();
+			});
+		});
+	});
 });

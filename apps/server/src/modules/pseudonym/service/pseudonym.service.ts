@@ -8,9 +8,9 @@ export class PseudonymService {
 	constructor(private readonly pseudonymRepo: PseudonymsRepo) {}
 
 	public async findByUserIdAndToolId(userId: EntityId, toolId: EntityId): Promise<PseudonymDO> {
-		const pseudonym: Promise<PseudonymDO> = this.pseudonymRepo.findByUserIdAndToolIdOrFail(userId, toolId);
+		const pseudonymPromise: Promise<PseudonymDO> = this.pseudonymRepo.findByUserIdAndToolIdOrFail(userId, toolId);
 
-		return pseudonym;
+		return pseudonymPromise;
 	}
 
 	public async requestPseudonym(userId: EntityId, toolId: EntityId): Promise<PseudonymDO> {

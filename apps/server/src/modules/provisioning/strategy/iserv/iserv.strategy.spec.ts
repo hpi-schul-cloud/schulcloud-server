@@ -2,7 +2,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName, User } from '@shared/domain';
-import { RoleReference } from '@shared/domain/domainobject';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
@@ -90,9 +89,8 @@ describe('IservProvisioningStrategy', () => {
 		describe('when the operation succeeds', () => {
 			it('should return the user data', async () => {
 				const { input, userUUID, email } = setup();
-				const user: UserDO = userDoFactory.buildWithId({
+				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.STUDENT }]).buildWithId({
 					externalId: userUUID,
-					roles: [new RoleReference({ id: 'roleId', name: RoleName.STUDENT })],
 				});
 				const school: SchoolDO = schoolDOFactory.buildWithId({ externalId: 'schoolExternalId' });
 				const roleDto: RoleDto = new RoleDto({

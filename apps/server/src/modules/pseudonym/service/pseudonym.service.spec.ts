@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PseudonymDO } from '@shared/domain';
 import { PseudonymsRepo } from '@shared/repo';
@@ -30,7 +31,7 @@ describe('PseudonymService', () => {
 		await module.close();
 	});
 
-	describe('findByUserIdAndToolId', () => {
+	describe('findByUserIdAndToolIdOrFail', () => {
 		describe('when searching by userId and toolId', () => {
 			const setup = () => {
 				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId();
@@ -56,6 +57,20 @@ describe('PseudonymService', () => {
 				const result: PseudonymDO = await service.findByUserIdAndToolId('userId', 'toolId');
 
 				expect(result).toEqual(pseudonym);
+			});
+		});
+
+		describe('when the repo throws an error', () => {
+			const setup = () => {
+				pseudonymRepo.findByUserIdAndToolId.mockRejectedValue(new NotFoundException());
+			};
+
+			it('should pass the error without catching', async () => {
+				setup();
+
+				const func = async () => service.findByUserIdAndToolId('userId', 'toolId');
+
+				await expect(func).rejects.toThrow(NotFoundException);
 			});
 		});
 	});
