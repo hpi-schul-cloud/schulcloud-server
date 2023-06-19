@@ -284,7 +284,7 @@ describe(BoardUc.name, () => {
 
 				await uc.createCard(user.id, column.id, requiredEmptyElements);
 
-				expect(cardService.create).toHaveBeenCalledWith(column, createCardBodyParams);
+				expect(cardService.create).toHaveBeenCalledWith(column, requiredEmptyElements);
 			});
 
 			it('should return the card object', async () => {
