@@ -110,25 +110,24 @@ const renderer = (model: IEditorModel): string => `<html style="margin: auto;">
                     (event) => {
                         switch (event.data) {
                             case "validate-params": {
-                                const params = h5peditor.getParams();
-
-                                if (params.params !== undefined) {
-                                    // Get content from editor (also validates the entered data 
-                                    // and metadata and upgrades the parameters as side effects)
-                                    h5peditor.getContent(function (content) {
-                                        const response = new CustomEvent("validated-params", {
-                                            detail: {
-                                                library: content.library, 
-                                                params: JSON.parse(content.params) 
-                                            }
-                                        });
-    
-                                        // Dispatch event on the iframe containing this document
-                                        frameElement.dispatchEvent(response);
+                                h5peditor.getContent(function valid(content) {
+                                    const response = new CustomEvent("valid-params", {
+                                        detail: {
+                                            library: content.library, 
+                                            params: JSON.parse(content.params) 
+                                        }
                                     });
-        
-                                    return event.preventDefault();
-                                }
+
+                                    // Dispatch event on the iframe containing this document
+                                    frameElement.dispatchEvent(response);
+                                }, function error(err) {
+                                    const response = new CustomEvent("invalid-params", {
+                                        detail: err
+                                    });
+
+                                    // Dispatch event on the iframe containing this document
+                                    frameElement.dispatchEvent(response);
+                                });
 
                                 break;
                             }
