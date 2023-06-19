@@ -280,8 +280,9 @@ describe(BoardUc.name, () => {
 		describe('when creating a card', () => {
 			it('should call the service to create the card', async () => {
 				const { user, column, createCardBodyParams } = setup();
+				const { requiredEmptyElements } = createCardBodyParams;
 
-				await uc.createCard(user.id, column.id, createCardBodyParams);
+				await uc.createCard(user.id, column.id, requiredEmptyElements);
 
 				expect(cardService.create).toHaveBeenCalledWith(column, createCardBodyParams);
 			});

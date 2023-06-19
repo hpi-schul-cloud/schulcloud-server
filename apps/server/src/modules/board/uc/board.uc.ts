@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { AnyBoardDo, Card, Column, ColumnBoard, EntityId } from '@shared/domain';
+import { AnyBoardDo, Card, Column, ColumnBoard, ContentElementType, EntityId } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { Action } from '@src/modules/authorization/types/action.enum';
-import { CreateCardBodyParams } from '../controller/dto/card/create-card.body.params';
 import { CardService, ColumnBoardService, ColumnService } from '../service';
 import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
 
@@ -92,12 +91,11 @@ export class BoardUc {
 		await this.columnService.updateTitle(column, title);
 	}
 
-	async createCard(userId: EntityId, columnId: EntityId, createCardBodyParams?: CreateCardBodyParams): Promise<Card> {
+	async createCard(userId: EntityId, columnId: EntityId, requiredEmptyElements?: ContentElementType[]): Promise<Card> {
 		this.logger.debug({ action: 'createCard', userId, columnId });
 
 		const column = await this.columnService.findById(columnId);
 		await this.checkPermission(userId, column, Action.read);
-		const { requiredEmptyElements } = createCardBodyParams || {};
 
 		const card = await this.cardService.create(column, requiredEmptyElements);
 
