@@ -7,6 +7,8 @@ import {
 	Permission,
 	RoleName,
 	SchoolFeatures,
+	TeamUser,
+	User,
 	UserDO,
 	VideoConferenceDO,
 	VideoConferenceScope,
@@ -20,11 +22,12 @@ import {
 } from '@src/modules/authorization';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
-import { courseFactory, roleFactory, setupEntities, userDoFactory } from '@shared/testing';
+import { courseFactory, roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
 import { ObjectId } from 'bson';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
+import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
 import { VideoConferenceService } from './video-conference.service';
 import { ErrorStatus } from '../error/error-status.enum';
 import { BBBRole } from '../bbb';
@@ -222,6 +225,48 @@ describe('VideoConferenceService', () => {
 				const func = async () => service.hasExpertRole(userId, 'invalid-scope' as VideoConferenceScope, scopeId);
 
 				await expect(func()).rejects.toThrow(new BadRequestException('Unknown scope name.'));
+			});
+		});
+
+		describe('when user has EXPERT role for a event conference', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory
+					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXPERT }])
+					.build({ id: new ObjectId().toHexString() });
+				const userId = user.id as EntityId;
+				const scopeId = new ObjectId().toHexString();
+
+				const teamUser: TeamUser = teamUserFactory.withRoleAndUserId(roleFactory.buildWithId(), userId).build();
+				const team = teamFactory
+					.withTeamUser(teamUser)
+					.withRoleAndUserId(roleFactory.buildWithId({ name: RoleName.TEAMEXPERT }), userId)
+					.build();
+				teamsRepo.findById.mockResolvedValue(team);
+
+				userService.findById.mockResolvedValue(user);
+
+				return {
+					user,
+					userId,
+					conferenceScope: VideoConferenceScope.EVENT,
+					scopeId,
+				};
+			};
+
+			it('should return true', async () => {
+				const { conferenceScope, userId, scopeId } = setup();
+
+				const result = await service.hasExpertRole(userId, conferenceScope, scopeId);
+
+				expect(result).toBe(true);
+			});
+
+			it('should call teamsRepo.findById', async () => {
+				const { conferenceScope, userId, scopeId } = setup();
+
+				await service.hasExpertRole(userId, conferenceScope, scopeId);
+
+				expect(teamsRepo.findById).toHaveBeenCalledWith(scopeId);
 			});
 		});
 

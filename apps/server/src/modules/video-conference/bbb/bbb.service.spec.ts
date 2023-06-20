@@ -76,9 +76,8 @@ const createBBBJoinConfig = (): BBBJoinConfig => {
 	};
 };
 
-const createAxiosResponse = (
-	data: BBBResponse<BBBCreateResponse | BBBMeetingInfoResponse | BBBBaseResponse>
-): AxiosResponse<BBBResponse<BBBCreateResponse | BBBMeetingInfoResponse | BBBBaseResponse>> => {
+type BBBResponseType = BBBCreateResponse | BBBMeetingInfoResponse | BBBBaseResponse;
+const createAxiosResponse = (data: BBBResponse<BBBResponseType>): AxiosResponse<BBBResponse<BBBResponseType>> => {
 	return {
 		data: data ?? {},
 		status: 0,
@@ -148,7 +147,7 @@ describe('BBB Service', () => {
 	});
 
 	describe('create', () => {
-		let bbbCreateResponse: AxiosResponse<BBBResponse<BBBCreateResponse | BBBMeetingInfoResponse | BBBBaseResponse>>;
+		let bbbCreateResponse: AxiosResponse<BBBResponse<BBBResponseType>>;
 		beforeEach(() => {
 			bbbCreateResponse = createAxiosResponse(createBBBCreateResponse());
 		});
@@ -233,9 +232,7 @@ describe('BBB Service', () => {
 	});
 
 	describe('getMeetingInfo', () => {
-		let bbbMeetingInfoResponse: AxiosResponse<
-			BBBResponse<BBBCreateResponse | BBBMeetingInfoResponse | BBBBaseResponse>
-		>;
+		let bbbMeetingInfoResponse: AxiosResponse<BBBResponse<BBBResponseType>>;
 		let bbbBaseMeetingConfig: BBBBaseMeetingConfig;
 		beforeEach(() => {
 			bbbMeetingInfoResponse = createAxiosResponse(createBBBMeetingInfoResponse());
@@ -272,9 +269,7 @@ describe('BBB Service', () => {
 	});
 
 	describe('join', () => {
-		let bbbMeetingInfoResponse: AxiosResponse<
-			BBBResponse<BBBCreateResponse | BBBMeetingInfoResponse | BBBBaseResponse>
-		>;
+		let bbbMeetingInfoResponse: AxiosResponse<BBBResponse<BBBResponseType>>;
 		let bbbJoinConfig: BBBJoinConfig;
 		beforeEach(() => {
 			bbbMeetingInfoResponse = createAxiosResponse(createBBBMeetingInfoResponse());
