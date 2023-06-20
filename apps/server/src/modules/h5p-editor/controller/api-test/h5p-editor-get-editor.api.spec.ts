@@ -17,7 +17,7 @@ class API {
 	}
 
 	async editH5pContent(contentId: string) {
-		return request(this.app.getHttpServer()).get(`/h5p-editor/${contentId}`);
+		return request(this.app.getHttpServer()).get(`/h5p-editor/edit/${contentId}`);
 	}
 }
 

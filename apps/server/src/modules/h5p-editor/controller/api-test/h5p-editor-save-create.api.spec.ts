@@ -45,7 +45,7 @@ class API {
 			metadata: {},
 			library: {},
 		};
-		return request(this.app.getHttpServer()).post(`/h5p-editor/${contentId}`).send(body);
+		return request(this.app.getHttpServer()).post(`/h5p-editor/edit/${contentId}`).send(body);
 	}
 }
 
