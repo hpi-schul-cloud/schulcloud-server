@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tldraw-svc
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: tldraw
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '3333'
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ PORT_TLDRAW }}
+      targetPort: 3333
+      protocol: TCP
+      name: api-h5p
+  selector:
+    app: tldraw
