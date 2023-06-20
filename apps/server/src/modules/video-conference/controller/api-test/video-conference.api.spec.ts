@@ -58,6 +58,98 @@ describe('VideoConferenceController (API)', () => {
 		axiosMock = new MockAdapter(axios);
 	});
 
+	const mockBbbMeetingInfoFailed = (meetingId: string) => {
+		axiosMock
+			.onGet(new RegExp(`.*/bigbluebutton/api/getMeetingInfo?.*meetingID=${meetingId}.*`))
+			.reply<string>(
+				HttpStatus.INTERNAL_SERVER_ERROR,
+				'<?xml version="1.0" encoding="UTF-8" ?>\n' +
+					'<response>\n' +
+					'  <returncode>FAILED</returncode>\n' +
+					'  <messageKey>notFound</messageKey>\n' +
+					'  <message>We could not find a meeting with that meeting ID - perhaps the meeting is not yet running?</message>\n' +
+					'</response>'
+			);
+	};
+
+	const mockBbbMeetingInfoSuccess = (meetingId: string) => {
+		axiosMock
+			.onGet(new RegExp(`.*/bigbluebutton/api/getMeetingInfo?.*meetingID=${meetingId}.*`))
+			.reply<string>(
+				HttpStatus.OK,
+				'<?xml version="1.0"?>\n' +
+					'<response>\n' +
+					'<returncode>SUCCESS</returncode>\n' +
+					'<meetingName>Mathe</meetingName>\n' +
+					`<meetingID>${meetingId}</meetingID>\n` +
+					'<internalMeetingID>c7ae0ac13ace99c8b2239ce3919c28e47d5bbd2a-1686648423698</internalMeetingID>\n' +
+					'<createTime>1686648423698</createTime>\n' +
+					'<createDate>Tue Jun 13 11:27:03 CEST 2023</createDate>\n' +
+					'<voiceBridge>17878</voiceBridge>\n' +
+					'<dialNumber>613-555-1234</dialNumber>\n' +
+					'<attendeePW>VIEWER</attendeePW>\n' +
+					'<moderatorPW>MODERATOR</moderatorPW>\n' +
+					'<running>false</running>\n' +
+					'<duration>0</duration>\n' +
+					'<hasUserJoined>false</hasUserJoined>\n' +
+					'<recording>false</recording>\n' +
+					'<hasBeenForciblyEnded>false</hasBeenForciblyEnded>\n' +
+					'<startTime>1686648423709</startTime>\n' +
+					'<endTime>0</endTime>\n' +
+					'<participantCount>0</participantCount>\n' +
+					'<listenerCount>0</listenerCount>\n' +
+					'<voiceParticipantCount>0</voiceParticipantCount>\n' +
+					'<videoCount>0</videoCount>\n' +
+					'<maxUsers>0</maxUsers>\n' +
+					'<moderatorCount>0</moderatorCount>\n' +
+					'<attendees>\n' +
+					'</attendees>\n' +
+					'<metadata>\n' +
+					'<bbb-origin-server-name>localhost</bbb-origin-server-name>\n' +
+					'</metadata>\n' +
+					'<isBreakout>false</isBreakout>\n' +
+					'</response>\n'
+			);
+	};
+
+	const mockBbbCreateSuccess = (meetingId: string) => {
+		axiosMock
+			.onPost(new RegExp(`.*/bigbluebutton/api/create?.*meetingID=${meetingId}.*`))
+			.reply<string>(
+				HttpStatus.OK,
+				'<?xml version="1.0" encoding="UTF-8" ?>\n' +
+					'<response>\n' +
+					'  <returncode>SUCCESS</returncode>\n' +
+					`  <meetingID>${meetingId}</meetingID>\n` +
+					'  <internalMeetingID>c7ae0ac13ace99c8b2239ce3919c28e47d5bbd2a-1686646947283</internalMeetingID>\n' +
+					'  <parentMeetingID>bbb-none</parentMeetingID>\n' +
+					'  <createTime>1686646947283</createTime>\n' +
+					'  <voiceBridge>37466</voiceBridge>\n' +
+					'  <dialNumber>613-555-1234</dialNumber>\n' +
+					'  <createDate>Tue Jun 13 11:02:27 CEST 2023</createDate>\n' +
+					'  <hasUserJoined>false</hasUserJoined>\n' +
+					'  <duration>0</duration>\n' +
+					'  <hasBeenForciblyEnded>false</hasBeenForciblyEnded>\n' +
+					'  <messageKey>messageKey</messageKey>\n' +
+					'  <message>message</message>\n' +
+					'</response>'
+			);
+	};
+
+	const mockBbbEndSuccess = (meetingId: string) => {
+		axiosMock
+			.onGet(new RegExp(`.*/bigbluebutton/api/end?.*meetingID=${meetingId}.*`))
+			.reply<string>(
+				HttpStatus.OK,
+				'<?xml version="1.0"?>\n' +
+					'<response>\n' +
+					'<returncode>SUCCESS</returncode>\n' +
+					'<messageKey>sentEndMeetingRequest</messageKey>\n' +
+					'<message>A request to end the meeting was sent. Please wait a few seconds, and then use the getMeetingInfo or isMeetingRunning API calls to verify that it was ended.</message>\n' +
+					'</response>\n'
+			);
+	};
+
 	describe('[PUT] /videoconference2/:scope/:scopeId/start', () => {
 		describe('when user is unauthorized', () => {
 			it('should return unauthorized', async () => {
@@ -93,17 +185,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 
-					axiosMock
-						.onGet(new RegExp(`.*/bigbluebutton/api/getMeetingInfo?.*meetingID=${scopeId}.*`))
-						.replyOnce<string>(
-							HttpStatus.INTERNAL_SERVER_ERROR,
-							'<?xml version="1.0" encoding="UTF-8" ?>\n' +
-								'<response>\n' +
-								'  <returncode>FAILED</returncode>\n' +
-								'  <messageKey>notFound</messageKey>\n' +
-								'  <message>We could not find a meeting with that meeting ID - perhaps the meeting is not yet running?</message>\n' +
-								'</response>'
-						);
+					mockBbbMeetingInfoFailed(scopeId);
 
 					return { loggedInClient, scope, scopeId, params };
 				};
@@ -145,17 +227,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const loggedInClient: TestApiClient = await testApiClient.login(studentAccount);
 
-					axiosMock
-						.onGet(new RegExp(`.*/bigbluebutton/api/getMeetingInfo?.*meetingID=${scopeId}.*`))
-						.replyOnce<string>(
-							HttpStatus.INTERNAL_SERVER_ERROR,
-							'<?xml version="1.0" encoding="UTF-8" ?>\n' +
-								'<response>\n' +
-								'  <returncode>FAILED</returncode>\n' +
-								'  <messageKey>notFound</messageKey>\n' +
-								'  <message>We could not find a meeting with that meeting ID - perhaps the meeting is not yet running?</message>\n' +
-								'</response>'
-						);
+					mockBbbMeetingInfoFailed(scopeId);
 
 					return { loggedInClient, scope, scopeId, params };
 				};
@@ -193,39 +265,8 @@ describe('VideoConferenceController (API)', () => {
 					const scopeId: string = course.id;
 
 					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
-					axiosMock
-						.onGet(new RegExp(`.*/bigbluebutton/api/getMeetingInfo?.*meetingID=${scopeId}.*`))
-						.replyOnce<string>(
-							HttpStatus.INTERNAL_SERVER_ERROR,
-							'<?xml version="1.0" encoding="UTF-8" ?>\n' +
-								'<response>\n' +
-								'  <returncode>FAILED</returncode>\n' +
-								'  <messageKey>notFound</messageKey>\n' +
-								'  <message>We could not find a meeting with that meeting ID - perhaps the meeting is not yet running?</message>\n' +
-								'</response>'
-						);
-
-					axiosMock
-						.onPost(new RegExp(`.*/bigbluebutton/api/create?.*meetingID=${scopeId}.*`))
-						.replyOnce<string>(
-							HttpStatus.OK,
-							'<?xml version="1.0" encoding="UTF-8" ?>\n' +
-								'<response>\n' +
-								'  <returncode>SUCCESS</returncode>\n' +
-								`  <meetingID>${scopeId}</meetingID>\n` +
-								'  <internalMeetingID>c7ae0ac13ace99c8b2239ce3919c28e47d5bbd2a-1686646947283</internalMeetingID>\n' +
-								'  <parentMeetingID>bbb-none</parentMeetingID>\n' +
-								'  <createTime>1686646947283</createTime>\n' +
-								'  <voiceBridge>37466</voiceBridge>\n' +
-								'  <dialNumber>613-555-1234</dialNumber>\n' +
-								'  <createDate>Tue Jun 13 11:02:27 CEST 2023</createDate>\n' +
-								'  <hasUserJoined>false</hasUserJoined>\n' +
-								'  <duration>0</duration>\n' +
-								'  <hasBeenForciblyEnded>false</hasBeenForciblyEnded>\n' +
-								'  <messageKey>messageKey</messageKey>\n' +
-								'  <message>message</message>\n' +
-								'</response>'
-						);
+					mockBbbMeetingInfoFailed(scopeId);
+					mockBbbCreateSuccess(scopeId);
 
 					return { loggedInClient, scope, scopeId, params };
 				};
@@ -264,20 +305,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 
-					axiosMock
-						.onGet(new RegExp(`.*/bigbluebutton/api/getMeetingInfo?.*meetingID=${scopeId}.*`))
-						.replyOnce<string>(
-							HttpStatus.OK,
-							'<?xml version="1.0"?>\n' +
-								'<response>\n' +
-								'<returncode>SUCCESS</returncode>\n' +
-								'<meetingName>Mathe</meetingName>\n' +
-								`<meetingID>${scopeId}</meetingID>\n` +
-								'<internalMeetingID>c7ae0ac13ace99c8b2239ce3919c28e47d5bbd2a-1686648423698</internalMeetingID>\n' +
-								'<createTime>1686648423698</createTime>\n' +
-								'<createDate>Tue Jun 13 11:27:03 CEST 2023</createDate>\n' +
-								'</response>\n'
-						);
+					mockBbbMeetingInfoSuccess(scopeId);
 
 					return { loggedInClient, scope, scopeId, params };
 				};
@@ -326,17 +354,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 
-					axiosMock
-						.onGet(new RegExp(`.*/bigbluebutton/api/getMeetingInfo?.*meetingID=${scopeId}.*`))
-						.replyOnce<string>(
-							HttpStatus.INTERNAL_SERVER_ERROR,
-							'<?xml version="1.0" encoding="UTF-8" ?>\n' +
-								'<response>\n' +
-								'  <returncode>FAILED</returncode>\n' +
-								'  <messageKey>notFound</messageKey>\n' +
-								'  <message>We could not find a meeting with that meeting ID - perhaps the meeting is not yet running?</message>\n' +
-								'</response>'
-						);
+					mockBbbMeetingInfoFailed(scopeId);
 
 					return { loggedInClient, scope, scopeId };
 				};
@@ -373,20 +391,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 
-					axiosMock
-						.onGet(new RegExp(`.*/bigbluebutton/api/getMeetingInfo?.*meetingID=${scopeId}.*`))
-						.replyOnce<string>(
-							HttpStatus.OK,
-							'<?xml version="1.0"?>\n' +
-								'<response>\n' +
-								'<returncode>SUCCESS</returncode>\n' +
-								'<meetingName>Mathe</meetingName>\n' +
-								`<meetingID>${scopeId}</meetingID>\n` +
-								'<internalMeetingID>c7ae0ac13ace99c8b2239ce3919c28e47d5bbd2a-1686648423698</internalMeetingID>\n' +
-								'<createTime>1686648423698</createTime>\n' +
-								'<createDate>Tue Jun 13 11:27:03 CEST 2023</createDate>\n' +
-								'</response>\n'
-						);
+					mockBbbMeetingInfoSuccess(scopeId);
 
 					return { loggedInClient, scope, scopeId };
 				};
@@ -426,17 +431,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 
-					axiosMock
-						.onGet(new RegExp(`.*/bigbluebutton/api/getMeetingInfo?.*meetingID=${scopeId}.*`))
-						.replyOnce<string>(
-							HttpStatus.INTERNAL_SERVER_ERROR,
-							'<?xml version="1.0" encoding="UTF-8" ?>\n' +
-								'<response>\n' +
-								'  <returncode>FAILED</returncode>\n' +
-								'  <messageKey>notFound</messageKey>\n' +
-								'  <message>We could not find a meeting with that meeting ID - perhaps the meeting is not yet running?</message>\n' +
-								'</response>'
-						);
+					mockBbbMeetingInfoFailed(scopeId);
 
 					return { loggedInClient, scope, scopeId };
 				};
@@ -484,17 +479,7 @@ describe('VideoConferenceController (API)', () => {
 					const scopeId: string = course.id;
 
 					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
-					axiosMock
-						.onGet(new RegExp(`.*/bigbluebutton/api/getMeetingInfo?.*meetingID=${scopeId}.*`))
-						.replyOnce<string>(
-							HttpStatus.INTERNAL_SERVER_ERROR,
-							'<?xml version="1.0" encoding="UTF-8" ?>\n' +
-								'<response>\n' +
-								'  <returncode>FAILED</returncode>\n' +
-								'  <messageKey>notFound</messageKey>\n' +
-								'  <message>We could not find a meeting with that meeting ID - perhaps the meeting is not yet running?</message>\n' +
-								'</response>'
-						);
+					mockBbbMeetingInfoFailed(scopeId);
 
 					return { loggedInClient, scope, scopeId };
 				};
@@ -531,20 +516,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 
-					axiosMock
-						.onGet(new RegExp(`.*/bigbluebutton/api/getMeetingInfo?.*meetingID=${scopeId}.*`))
-						.replyOnce<string>(
-							HttpStatus.OK,
-							'<?xml version="1.0"?>\n' +
-								'<response>\n' +
-								'<returncode>SUCCESS</returncode>\n' +
-								'<meetingName>Mathe</meetingName>\n' +
-								`<meetingID>${scopeId}</meetingID>\n` +
-								'<internalMeetingID>c7ae0ac13ace99c8b2239ce3919c28e47d5bbd2a-1686648423698</internalMeetingID>\n' +
-								'<createTime>1686648423698</createTime>\n' +
-								'<createDate>Tue Jun 13 11:27:03 CEST 2023</createDate>\n' +
-								'</response>\n'
-						);
+					mockBbbMeetingInfoSuccess(scopeId);
 
 					return { loggedInClient, scope, scopeId };
 				};
@@ -585,20 +557,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const loggedInClient: TestApiClient = await testApiClient.login(expertAccount);
 
-					axiosMock
-						.onGet(new RegExp(`.*/bigbluebutton/api/getMeetingInfo?.*meetingID=${scopeId}.*`))
-						.replyOnce<string>(
-							HttpStatus.OK,
-							'<?xml version="1.0"?>\n' +
-								'<response>\n' +
-								'<returncode>SUCCESS</returncode>\n' +
-								'<meetingName>Mathe</meetingName>\n' +
-								`<meetingID>${scopeId}</meetingID>\n` +
-								'<internalMeetingID>c7ae0ac13ace99c8b2239ce3919c28e47d5bbd2a-1686648423698</internalMeetingID>\n' +
-								'<createTime>1686648423698</createTime>\n' +
-								'<createDate>Tue Jun 13 11:27:03 CEST 2023</createDate>\n' +
-								'</response>\n'
-						);
+					mockBbbMeetingInfoSuccess(scopeId);
 
 					return { loggedInClient, scope, scopeId };
 				};
@@ -635,17 +594,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 
-					axiosMock
-						.onGet(new RegExp(`.*/bigbluebutton/api/getMeetingInfo?.*meetingID=${scopeId}.*`))
-						.replyOnce<string>(
-							HttpStatus.INTERNAL_SERVER_ERROR,
-							'<?xml version="1.0" encoding="UTF-8" ?>\n' +
-								'<response>\n' +
-								'  <returncode>FAILED</returncode>\n' +
-								'  <messageKey>notFound</messageKey>\n' +
-								'  <message>We could not find a meeting with that meeting ID - perhaps the meeting is not yet running?</message>\n' +
-								'</response>'
-						);
+					mockBbbMeetingInfoFailed(scopeId);
 
 					return { loggedInClient, scope, scopeId };
 				};
@@ -694,17 +643,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 
-					axiosMock
-						.onGet(new RegExp(`.*/bigbluebutton/api/getMeetingInfo?.*meetingID=${scopeId}.*`))
-						.replyOnce<string>(
-							HttpStatus.INTERNAL_SERVER_ERROR,
-							'<?xml version="1.0" encoding="UTF-8" ?>\n' +
-								'<response>\n' +
-								'  <returncode>FAILED</returncode>\n' +
-								'  <messageKey>notFound</messageKey>\n' +
-								'  <message>We could not find a meeting with that meeting ID - perhaps the meeting is not yet running?</message>\n' +
-								'</response>'
-						);
+					mockBbbMeetingInfoFailed(scopeId);
 
 					return { loggedInClient, scope, scopeId };
 				};
@@ -775,17 +714,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 
-					axiosMock
-						.onGet(new RegExp(`.*/bigbluebutton/api/end?.*meetingID=${scopeId}.*`))
-						.replyOnce<string>(
-							HttpStatus.OK,
-							'<?xml version="1.0"?>\n' +
-								'<response>\n' +
-								'<returncode>SUCCESS</returncode>\n' +
-								'<messageKey>sentEndMeetingRequest</messageKey>\n' +
-								'<message>A request to end the meeting was sent. Please wait a few seconds, and then use the getMeetingInfo or isMeetingRunning API calls to verify that it was ended.</message>\n' +
-								'</response>\n'
-						);
+					mockBbbEndSuccess(scopeId);
 
 					return { loggedInClient, scope, scopeId };
 				};
