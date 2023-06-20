@@ -1,15 +1,19 @@
+import { S3Client } from '@aws-sdk/client-s3';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { File, StorageProvider } from '@shared/domain/entity';
-import { FileStorageAdapter } from '@shared/infra/filestorage';
 import { FilesRepo } from '@shared/repo';
+import { StorageProviderRepo } from '@shared/repo/storageprovider/storageprovider.repo';
+import { storageProviderFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
+import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { DeleteFilesUc } from './delete-files.uc';
 
 describe('DeleteFileUC', () => {
 	let service: DeleteFilesUc;
 	let filesRepo: DeepMocked<FilesRepo>;
-	let fileStorageAdapter: DeepMocked<FileStorageAdapter>;
+	let storageProviderRepo: DeepMocked<StorageProviderRepo>;
+	let s3Mock: AwsClientStub<S3Client>;
 	let logger: DeepMocked<LegacyLogger>;
 
 	const exampleStorageProvider = new StorageProvider({
@@ -45,8 +49,8 @@ describe('DeleteFileUC', () => {
 					useValue: createMock<FilesRepo>(),
 				},
 				{
-					provide: FileStorageAdapter,
-					useValue: createMock<FileStorageAdapter>(),
+					provide: StorageProviderRepo,
+					useValue: createMock<StorageProviderRepo>(),
 				},
 				{
 					provide: LegacyLogger,
@@ -57,8 +61,12 @@ describe('DeleteFileUC', () => {
 
 		service = module.get(DeleteFilesUc);
 		filesRepo = module.get(FilesRepo);
-		fileStorageAdapter = module.get(FileStorageAdapter);
+		storageProviderRepo = module.get(StorageProviderRepo);
 		logger = module.get(LegacyLogger);
+	});
+
+	beforeEach(() => {
+		s3Mock = mockClient(S3Client);
 	});
 
 	afterEach(() => {
@@ -77,6 +85,9 @@ describe('DeleteFileUC', () => {
 				filesRepo.findFilesForCleanup.mockResolvedValueOnce(exampleFiles);
 				filesRepo.findFilesForCleanup.mockResolvedValueOnce([]);
 
+				const storageProvider = storageProviderFactory.build();
+				storageProviderRepo.findAll.mockResolvedValueOnce([storageProvider]);
+
 				return { thresholdDate, batchSize };
 			};
 
@@ -85,9 +96,7 @@ describe('DeleteFileUC', () => {
 
 				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
-				for (const file of exampleFiles) {
-					expect(fileStorageAdapter.deleteFile).toHaveBeenCalledWith(file);
-				}
+				expect(s3Mock.send.callCount).toEqual(2);
 			});
 
 			it('should delete all marked files in database', async () => {
@@ -101,7 +110,7 @@ describe('DeleteFileUC', () => {
 			});
 		});
 
-		describe('when storage adapter throws an error', () => {
+		describe('when deletion in storage throws an error', () => {
 			const setup = () => {
 				const thresholdDate = new Date();
 				const batchSize = 3;
@@ -109,9 +118,14 @@ describe('DeleteFileUC', () => {
 
 				filesRepo.findFilesForCleanup.mockResolvedValueOnce(exampleFiles);
 				filesRepo.findFilesForCleanup.mockResolvedValueOnce([]);
-				fileStorageAdapter.deleteFile.mockRejectedValueOnce(error);
 
-				return { thresholdDate, batchSize, error };
+				const storageProvider = storageProviderFactory.build();
+				storageProviderRepo.findAll.mockResolvedValueOnce([storageProvider]);
+
+				const spy = jest.spyOn(DeleteFilesUc.prototype as any, 'deleteFileInStorage');
+				spy.mockRejectedValueOnce(error);
+
+				return { thresholdDate, batchSize, error, spy };
 			};
 
 			it('should log the error', async () => {
@@ -131,11 +145,11 @@ describe('DeleteFileUC', () => {
 			});
 
 			it('should continue with other files', async () => {
-				const { thresholdDate, batchSize } = setup();
+				const { thresholdDate, batchSize, spy } = setup();
 
 				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
-				expect(fileStorageAdapter.deleteFile).toBeCalledTimes(exampleFiles.length);
+				expect(spy).toBeCalledTimes(exampleFiles.length);
 			});
 		});
 	});
