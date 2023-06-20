@@ -8,7 +8,6 @@ import {
 	RoleName,
 	SchoolFeatures,
 	TeamUser,
-	User,
 	UserDO,
 	VideoConferenceDO,
 	VideoConferenceScope,
@@ -22,7 +21,7 @@ import {
 } from '@src/modules/authorization';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
-import { courseFactory, roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
+import { courseFactory, roleFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
 import { ObjectId } from 'bson';
 import { teamFactory } from '@shared/testing/factory/team.factory';
