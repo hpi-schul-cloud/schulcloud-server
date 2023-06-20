@@ -20,6 +20,7 @@ import { LibraryStorage } from './libraryStorage/libraryStorage';
 import { H5PAjaxEndpointService, H5PEditorService, H5PPlayerService } from './service';
 import { TemporaryFileStorage } from './temporary-file-storage/temporary-file-storage';
 import { H5PEditorUc } from './uc/h5p.uc';
+import { S3ClientAdapter } from '../files-storage/client/s3-client.adapter';
 
 const storages = [
 	ContentStorage,
@@ -39,7 +40,14 @@ const imports = [
 	RabbitMQWrapperTestModule,
 ];
 const controllers = [H5PEditorController];
-const providers = [H5PEditorUc, H5PPlayerService, H5PEditorService, H5PAjaxEndpointService, ...storages];
+const providers = [
+	H5PEditorUc,
+	H5PPlayerService,
+	H5PEditorService,
+	H5PAjaxEndpointService,
+	S3ClientAdapter,
+	...storages,
+];
 
 @Module({
 	imports,
