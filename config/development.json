@@ -66,5 +66,8 @@
 	"NEST_LOG_LEVEL": "debug",
 	"SESSION_SECRET": "dev-session-secret",
 	"FEATURE_COURSE_SHARE": true,
-	"FEATURE_COLUMN_BOARD_ENABLED": true
+	"FEATURE_COLUMN_BOARD_ENABLED": true,
+	"FEATURE_VIDEOCONFERENCE_ENABLED": true,
+	"VIDEOCONFERENCE_HOST": "https://bigbluebutton.schul-cloud.org/bigbluebutton",
+	"VIDEOCONFERENCE_SALT": "WxgU0IURVDCAO24T4rvFR60fUVZh3SB76jsKVwPtBgbac3O4N7lLzpJOVlUyz3Ia"
 }
