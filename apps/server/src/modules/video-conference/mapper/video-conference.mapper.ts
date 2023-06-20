@@ -9,6 +9,7 @@ import {
 import { VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
 import { BBBRole } from '../bbb';
 import { VideoConferenceOptions } from '../interface';
+import { VideoConferenceOptionsResponse } from '../controller/dto/response/video-conference-options.response';
 
 export const PermissionMapping = {
 	[BBBRole.MODERATOR]: Permission.START_MEETING,
@@ -30,7 +31,7 @@ export class VideoConferenceMapper {
 	static toVideoConferenceInfoResponse(videoConferenceInfo: VideoConferenceInfo): VideoConferenceInfoResponse {
 		return new VideoConferenceInfoResponse({
 			state: this.toVideoConferenceStateResponse(videoConferenceInfo.state),
-			options: videoConferenceInfo.options,
+			options: new VideoConferenceOptionsResponse(videoConferenceInfo.options),
 		});
 	}
 
