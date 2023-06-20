@@ -7,21 +7,29 @@ import {
 	NotFoundException,
 	Param,
 	Patch,
+	Post,
 	Put,
 } from '@nestjs/common';
-import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { CardUc } from '../uc';
 import { ElementUc } from '../uc/element.uc';
-import { ContentElementUrlParams, MoveContentElementBody } from './dto';
+import {
+	AnySubElementResponse,
+	ContentElementUrlParams,
+	CreateSubElementBody,
+	MoveContentElementBody,
+	SubmissionSubElementResponse,
+} from './dto';
 import {
 	ElementContentUpdateBodyParams,
 	FileElementContentBody,
 	RichTextElementContentBody,
 	TaskElementContentBody,
 } from './dto/element/element-content-update.body.params';
+import { SubmissionSubElementResponseMapper } from './mapper/submission-subelement-response.mapper';
 
 @ApiTags('Board Element')
 @Authenticate('jwt')
@@ -77,5 +85,31 @@ export class ElementController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.cardUc.deleteElement(currentUser.userId, urlParams.contentElementId);
+	}
+
+	@ApiOperation({ summary: 'Create a new subelement on an element.' })
+	@ApiExtraModels(SubmissionSubElementResponse)
+	@ApiResponse({
+		status: 201,
+		schema: {
+			oneOf: [{ $ref: getSchemaPath(SubmissionSubElementResponse) }],
+		},
+	})
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Post(':contentElementId/subelements')
+	async createSubmissionElement(
+		@Param() urlParams: ContentElementUrlParams,
+		@Body() bodyParams: CreateSubElementBody,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<AnySubElementResponse> {
+		const { type } = bodyParams;
+		// TODO current user as userId
+		const subElement = await this.elementUc.createSubElement(currentUser.userId, urlParams.contentElementId, type);
+		const mapper = SubmissionSubElementResponseMapper.getInstance();
+		const response = mapper.mapToResponse(subElement);
+
+		return response;
 	}
 }

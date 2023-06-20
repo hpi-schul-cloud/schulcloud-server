@@ -8,6 +8,7 @@ import type {
 	FileElementNode,
 	RichTextElementNode,
 	TaskElementNode,
+	SubmissionSubElementNode,
 } from '@shared/domain';
 import {
 	AnyBoardDo,
@@ -18,6 +19,7 @@ import {
 	FileElement,
 	RichTextElement,
 	TaskElement,
+	SubmissionSubElement,
 } from '@shared/domain';
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
@@ -114,11 +116,27 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 	}
 
 	public buildTaskElement(boardNode: TaskElementNode): TaskElement {
-		this.ensureLeafNode(boardNode);
+		this.ensureBoardNodeType(this.getChildren(boardNode), [BoardNodeType.SUBMISSION_SUBELEMENT]);
+
+		const elements = this.buildChildren<SubmissionSubElement>(boardNode);
 
 		const element = new TaskElement({
 			id: boardNode.id,
 			dueDate: boardNode.dueDate,
+			children: elements,
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+		});
+		return element;
+	}
+
+	public buildSubmissionSubElement(boardNode: SubmissionSubElementNode): SubmissionSubElement {
+		this.ensureLeafNode(boardNode);
+
+		const element = new SubmissionSubElement({
+			id: boardNode.id,
+			completed: boardNode.completed,
+			userId: boardNode.userId,
 			children: [],
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,

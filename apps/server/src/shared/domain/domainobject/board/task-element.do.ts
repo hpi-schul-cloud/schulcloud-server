@@ -1,5 +1,6 @@
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
-import type { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
+import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
+import { SubmissionSubElement } from './submission-subelment.do';
 
 export class TaskElement extends BoardComposite<TaskElementProps> {
 	get dueDate(): Date {
@@ -10,8 +11,9 @@ export class TaskElement extends BoardComposite<TaskElementProps> {
 		this.props.dueDate = value;
 	}
 
-	isAllowedAsChild(): boolean {
-		return false;
+	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
+		const allowed = domainObject instanceof SubmissionSubElement;
+		return allowed;
 	}
 
 	accept(visitor: BoardCompositeVisitor): void {

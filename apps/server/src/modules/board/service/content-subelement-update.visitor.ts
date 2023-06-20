@@ -1,4 +1,3 @@
-import { sanitizeRichText } from '@shared/controller';
 import {
 	AnyBoardDo,
 	BoardCompositeVisitor,
@@ -10,11 +9,11 @@ import {
 	TaskElement,
 	SubmissionSubElement,
 } from '@shared/domain';
-import { FileContentBody, RichTextContentBody, TaskContentBody } from '../controller/dto';
+import { SubmissionContentBody } from '../controller/dto';
 
-type ContentType = FileContentBody | RichTextContentBody | TaskContentBody;
+type ContentType = SubmissionContentBody;
 
-export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
+export class ContentSubElementUpdateVisitor implements BoardCompositeVisitor {
 	private readonly content: ContentType;
 
 	constructor(content: ContentType) {
@@ -34,32 +33,24 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 	}
 
 	visitFileElement(fileElement: FileElement): void {
-		if (this.content instanceof FileContentBody) {
-			fileElement.caption = this.content.caption;
-		} else {
-			this.throwNotHandled(fileElement);
-		}
+		this.throwNotHandled(fileElement);
 	}
 
 	visitRichTextElement(richTextElement: RichTextElement): void {
-		if (this.content instanceof RichTextContentBody) {
-			richTextElement.text = sanitizeRichText(this.content.text, this.content.inputFormat);
-			richTextElement.inputFormat = this.content.inputFormat;
-		} else {
-			this.throwNotHandled(richTextElement);
-		}
+		this.throwNotHandled(richTextElement);
 	}
 
 	visitTaskElement(taskElement: TaskElement): void {
-		if (this.content instanceof TaskContentBody) {
-			taskElement.dueDate = this.content.dueDate;
-		} else {
-			this.throwNotHandled(taskElement);
-		}
+		this.throwNotHandled(taskElement);
 	}
 
 	visitSubmissionSubElement(submissionSubElement: SubmissionSubElement): void {
-		this.throwNotHandled(submissionSubElement);
+		if (this.content instanceof SubmissionContentBody) {
+			submissionSubElement.completed = this.content.completed;
+			submissionSubElement.userId = this.content.userId;
+		} else {
+			this.throwNotHandled(submissionSubElement);
+		}
 	}
 
 	private throwNotHandled(component: AnyBoardDo) {

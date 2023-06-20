@@ -1,10 +1,11 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { AnyBoardDo, EntityId } from '@shared/domain';
+import { AnyBoardDo, ContentSubElementType, EntityId, SubmissionSubElement } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Action } from '@src/modules/authorization/types/action.enum';
 import { FileContentBody, RichTextContentBody, TaskContentBody } from '../controller/dto';
-import { BoardDoAuthorizableService, ContentElementService } from '../service';
+import { BoardDoAuthorizableService, ContentElementService, ContentSubElementService } from '../service';
+// import { SubmissionSubElementContentBody } from './';
 
 @Injectable()
 export class ElementUc {
@@ -13,6 +14,7 @@ export class ElementUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly elementService: ContentElementService,
+		private readonly subElementService: ContentSubElementService,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(ElementUc.name);
@@ -36,5 +38,32 @@ export class ElementUc {
 		const context = { action, requiredPermissions: [] };
 
 		return this.authorizationService.checkPermission(user, boardDoAuthorizable, context);
+	}
+
+	async createSubElement(
+		userId: EntityId,
+		contentElementId: EntityId,
+		type: ContentSubElementType
+	): Promise<SubmissionSubElement> {
+		const element = await this.elementService.findById(contentElementId);
+
+		// TODO
+		await this.checkPermission(userId, element, Action.read);
+
+		// TODO pass in value directly on create - no create empty stuff?
+		const subElement = await this.subElementService.create(userId, element, type);
+
+		return subElement;
+	}
+
+	async deleteSubElement(userId: EntityId, elementId: EntityId): Promise<void> {
+		// this.logger.debug({ action: 'deleteSubElement', userId, elementId });
+
+		const subElement = await this.subElementService.findById(elementId);
+
+		// TODO
+		await this.checkPermission(userId, subElement, Action.read);
+
+		await this.subElementService.delete(subElement);
 	}
 }

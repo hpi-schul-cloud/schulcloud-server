@@ -62,8 +62,6 @@ export class TaskElementContentBody extends ElementContentBody {
 	content!: TaskContentBody;
 }
 
-export type AnyElementContentBody = RichTextElementContentBody | FileContentBody;
-
 export class ElementContentUpdateBodyParams {
 	@ValidateNested()
 	@Type(() => ElementContentBody, {

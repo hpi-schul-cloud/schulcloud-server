@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ContentElementFactory } from '@shared/domain';
+import { ContentElementFactory, ContentSubElementFactory } from '@shared/domain';
 import { ConsoleWriterModule } from '@shared/infra/console';
 import { CourseRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
@@ -13,6 +13,7 @@ import {
 	ColumnBoardService,
 	ColumnService,
 	ContentElementService,
+	ContentSubElementService,
 } from './service';
 
 @Module({
@@ -25,11 +26,20 @@ import {
 		ColumnBoardService,
 		ColumnService,
 		ContentElementService,
+		ContentSubElementService,
 		RecursiveDeleteVisitor,
 		ContentElementFactory,
+		ContentSubElementFactory,
 		BoardDoAuthorizableService,
 		CourseRepo, // TODO: import learnroom module instead. This is currently not possible due to dependency cycle with authorisation service
 	],
-	exports: [ColumnBoardService, ColumnService, CardService, ContentElementService, BoardDoAuthorizableService],
+	exports: [
+		ColumnBoardService,
+		ColumnService,
+		CardService,
+		ContentElementService,
+		ContentSubElementService,
+		BoardDoAuthorizableService,
+	],
 })
 export class BoardModule {}

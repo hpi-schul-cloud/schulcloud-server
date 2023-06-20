@@ -26,9 +26,10 @@ import {
 	FileElementResponse,
 	MoveCardBodyParams,
 	RenameBodyParams,
+	RichTextElementResponse,
+	TaskElementResponse,
 } from './dto';
 import { SetHeightBodyParams } from './dto/board/set-height.body.params';
-import { RichTextElementResponse } from './dto/element/rich-text-element.response';
 import { CardResponseMapper, ContentElementResponseFactory } from './mapper';
 
 @ApiTags('Board Card')
@@ -113,11 +114,15 @@ export class CardController {
 	}
 
 	@ApiOperation({ summary: 'Create a new element on a card.' })
-	@ApiExtraModels(RichTextElementResponse, FileElementResponse)
+	@ApiExtraModels(FileElementResponse, RichTextElementResponse, TaskElementResponse)
 	@ApiResponse({
 		status: 201,
 		schema: {
-			oneOf: [{ $ref: getSchemaPath(RichTextElementResponse) }, { $ref: getSchemaPath(FileElementResponse) }],
+			oneOf: [
+				{ $ref: getSchemaPath(FileElementResponse) },
+				{ $ref: getSchemaPath(RichTextElementResponse) },
+				{ $ref: getSchemaPath(TaskElementResponse) },
+			],
 		},
 	})
 	@ApiResponse({ status: 400, type: ApiValidationError })

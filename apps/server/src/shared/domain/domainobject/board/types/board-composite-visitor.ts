@@ -4,6 +4,7 @@ import type { Column } from '../column.do';
 import type { FileElement } from '../file-element.do';
 import { RichTextElement } from '../rich-text-element.do';
 import { TaskElement } from '../task-element.do';
+import { SubmissionSubElement } from '../submission-subelment.do';
 
 export interface BoardCompositeVisitor {
 	visitColumnBoard(columnBoard: ColumnBoard): void;
@@ -12,6 +13,7 @@ export interface BoardCompositeVisitor {
 	visitFileElement(fileElement: FileElement): void;
 	visitRichTextElement(richTextElement: RichTextElement): void;
 	visitTaskElement(taskElement: TaskElement): void;
+	visitSubmissionSubElement(submissionSubElement: SubmissionSubElement): void;
 }
 
 export interface BoardCompositeVisitorAsync {
@@ -21,4 +23,5 @@ export interface BoardCompositeVisitorAsync {
 	visitFileElementAsync(fileElement: FileElement): Promise<void>;
 	visitRichTextElementAsync(richTextElement: RichTextElement): Promise<void>;
 	visitTaskElementAsync(taskElement: TaskElement): Promise<void>;
+	visitSubmissionSubElementAsync(SubmissionSubElement: SubmissionSubElement): Promise<void>;
 }

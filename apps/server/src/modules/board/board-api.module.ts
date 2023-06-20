@@ -2,13 +2,18 @@ import { forwardRef, Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { BoardModule } from './board.module';
-import { BoardController, CardController, ColumnController, ElementController } from './controller';
-import { BoardUc, CardUc } from './uc';
-import { ElementUc } from './uc/element.uc';
+import {
+	BoardController,
+	CardController,
+	ColumnController,
+	ElementController,
+	SubElementController,
+} from './controller';
+import { BoardUc, CardUc, ElementUc, SubElementUc } from './uc';
 
 @Module({
 	imports: [BoardModule, LoggerModule, forwardRef(() => AuthorizationModule)],
-	controllers: [BoardController, ColumnController, CardController, ElementController],
-	providers: [BoardUc, CardUc, ElementUc],
+	controllers: [BoardController, ColumnController, CardController, ElementController, SubElementController],
+	providers: [BoardUc, CardUc, ElementUc, SubElementUc],
 })
 export class BoardApiModule {}
