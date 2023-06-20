@@ -61,7 +61,7 @@ describe('VideoConferenceController (API)', () => {
 	const mockBbbMeetingInfoFailed = (meetingId: string) => {
 		axiosMock
 			.onGet(new RegExp(`.*/bigbluebutton/api/getMeetingInfo?.*meetingID=${meetingId}.*`))
-			.reply<string>(
+			.replyOnce<string>(
 				HttpStatus.INTERNAL_SERVER_ERROR,
 				'<?xml version="1.0" encoding="UTF-8" ?>\n' +
 					'<response>\n' +
@@ -75,7 +75,7 @@ describe('VideoConferenceController (API)', () => {
 	const mockBbbMeetingInfoSuccess = (meetingId: string) => {
 		axiosMock
 			.onGet(new RegExp(`.*/bigbluebutton/api/getMeetingInfo?.*meetingID=${meetingId}.*`))
-			.reply<string>(
+			.replyOnce<string>(
 				HttpStatus.OK,
 				'<?xml version="1.0"?>\n' +
 					'<response>\n' +
@@ -115,7 +115,7 @@ describe('VideoConferenceController (API)', () => {
 	const mockBbbCreateSuccess = (meetingId: string) => {
 		axiosMock
 			.onPost(new RegExp(`.*/bigbluebutton/api/create?.*meetingID=${meetingId}.*`))
-			.reply<string>(
+			.replyOnce<string>(
 				HttpStatus.OK,
 				'<?xml version="1.0" encoding="UTF-8" ?>\n' +
 					'<response>\n' +
@@ -139,7 +139,7 @@ describe('VideoConferenceController (API)', () => {
 	const mockBbbEndSuccess = (meetingId: string) => {
 		axiosMock
 			.onGet(new RegExp(`.*/bigbluebutton/api/end?.*meetingID=${meetingId}.*`))
-			.reply<string>(
+			.replyOnce<string>(
 				HttpStatus.OK,
 				'<?xml version="1.0"?>\n' +
 					'<response>\n' +
