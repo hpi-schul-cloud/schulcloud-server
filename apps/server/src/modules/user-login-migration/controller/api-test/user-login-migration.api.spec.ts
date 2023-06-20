@@ -2,13 +2,14 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, School, System, User } from '@shared/domain';
+import { Account, Permission, RoleName, School, System, User } from '@shared/domain';
 import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
 	accountFactory,
 	cleanupCollections,
 	mapUserToCurrentUser,
+	roleFactory,
 	schoolFactory,
 	systemFactory,
 	userFactory,
@@ -147,6 +148,186 @@ describe('UserLoginMigrationController (API)', () => {
 					.query({ userId: new ObjectId().toHexString() });
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+	});
+
+	describe('[POST] /start', () => {
+		describe('when current User start the migration successfully', () => {
+			const setup = async () => {
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
+
+				const adminRole = roleFactory.buildWithId({
+					name: RoleName.ADMINISTRATOR,
+					permissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
+				});
+
+				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, user]);
+
+				currentUser = mapUserToCurrentUser(user);
+
+				return {
+					user,
+				};
+			};
+
+			it('should return the Status CREATED ', async () => {
+				const { user } = await setup();
+
+				const response: Response = await request(app.getHttpServer())
+					.post(`/user-login-migrations/start`)
+					.query({ userId: user.id });
+
+				expect(response.status).toEqual(HttpStatus.CREATED);
+			});
+		});
+
+		describe('when current User start the migration and is not authorized', () => {
+			const setup = () => {
+				currentUser = undefined;
+			};
+
+			it('should return Unauthorized', async () => {
+				setup();
+
+				const response: Response = await request(app.getHttpServer())
+					.post(`/user-login-migrations/start`)
+					.query({ userId: new ObjectId().toHexString() });
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when migration already started', () => {
+			const setup = async () => {
+				const date: Date = new Date(2023, 5, 4);
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
+
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: date,
+					mandatorySince: date,
+				});
+
+				const adminRole = roleFactory.buildWithId({
+					name: RoleName.ADMINISTRATOR,
+					permissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
+				});
+
+				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, user, userLoginMigration]);
+
+				currentUser = mapUserToCurrentUser(user);
+
+				return {
+					user,
+				};
+			};
+
+			it('should return bad request ', async () => {
+				const { user } = await setup();
+
+				const response: Response = await request(app.getHttpServer())
+					.post(`/user-login-migrations/start`)
+					.query({ userId: user.id });
+
+				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+			});
+		});
+
+		describe('when migration already finished', () => {
+			const setup = async () => {
+				const date: Date = new Date(2023, 5, 4);
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
+
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: date,
+					mandatorySince: date,
+					finishedAt: date,
+				});
+
+				const adminRole = roleFactory.buildWithId({
+					name: RoleName.ADMINISTRATOR,
+					permissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
+				});
+
+				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, user, userLoginMigration]);
+
+				currentUser = mapUserToCurrentUser(user);
+
+				return {
+					user,
+				};
+			};
+
+			it('should return bad request ', async () => {
+				const { user } = await setup();
+
+				const response: Response = await request(app.getHttpServer())
+					.post(`/user-login-migrations/start`)
+					.query({ userId: user.id });
+
+				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+			});
+		});
+
+		describe('when official school number is not set', () => {
+			const setup = async () => {
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+				});
+
+				const adminRole = roleFactory.buildWithId({
+					name: RoleName.ADMINISTRATOR,
+					permissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
+				});
+
+				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, user]);
+
+				currentUser = mapUserToCurrentUser(user);
+
+				return {
+					user,
+				};
+			};
+
+			it('should return a bad request ', async () => {
+				const { user } = await setup();
+
+				const response: Response = await request(app.getHttpServer())
+					.post(`/user-login-migrations/start`)
+					.query({ userId: user.id });
+
+				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 			});
 		});
 	});

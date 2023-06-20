@@ -80,7 +80,7 @@ describe('ToolLaunchUc', () => {
 
 			await uc.getToolLaunchRequest(userId, contextExternalToolId);
 
-			expect(toolLaunchService.getLaunchData).toHaveBeenCalledWith(contextExternalToolDO);
+			expect(toolLaunchService.getLaunchData).toHaveBeenCalledWith(userId, contextExternalToolDO);
 		});
 
 		it('should call service to generate launch request', async () => {

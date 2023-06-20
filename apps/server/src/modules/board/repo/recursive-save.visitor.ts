@@ -20,6 +20,7 @@ import {
 	SubmissionSubElement,
 	SubmissionSubElementNode,
 } from '@shared/domain';
+import { BoardNodeRepo } from './board-node.repo';
 
 type ParentData = {
 	boardNode: BoardNode;
@@ -29,13 +30,13 @@ type ParentData = {
 export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 	private parentsMap: Map<EntityId, ParentData> = new Map();
 
-	constructor(private readonly em: EntityManager) {}
+	constructor(private readonly em: EntityManager, private readonly boardNodeRepo: BoardNodeRepo) {}
 
 	async save(domainObject: AnyBoardDo | AnyBoardDo[], parent?: AnyBoardDo): Promise<void> {
 		const domainObjects = Utils.asArray(domainObject);
 
 		if (parent) {
-			const parentNode = await this.em.findOneOrFail(BoardNode, parent.id);
+			const parentNode = await this.boardNodeRepo.findById(parent.id);
 
 			domainObjects.forEach((child) => {
 				this.registerParentData(parent, child, parentNode);

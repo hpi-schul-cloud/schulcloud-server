@@ -1,8 +1,10 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable } from '@nestjs/common';
 import {
 	Board,
 	BoardExternalReference,
 	BoardExternalReferenceType,
+	ColumnBoardTarget,
 	ContentElementType,
 	EntityId,
 	InputFormat,
@@ -30,19 +32,7 @@ export class RoomsService {
 		const [courseLessons] = await this.lessonRepo.findAllByCourseIds([roomId]);
 		const [courseTasks] = await this.taskService.findBySingleParent(userId, roomId);
 
-		const courseReference = {
-			type: BoardExternalReferenceType.Course,
-			id: roomId,
-		};
-
-		const columnBoardIds = await this.columnBoardService.findIdsByExternalReference(courseReference);
-
-		if (columnBoardIds.length === 0) {
-			const columnBoard = await this.createWelcomeColumnBoard(courseReference);
-			columnBoardIds.push(columnBoard.id);
-		}
-
-		const courseColumnBoardTargets = await this.columnBoardTargetService.findOrCreateTargets(columnBoardIds);
+		const courseColumnBoardTargets = await this.handleColumnBoardIntegration(roomId);
 
 		const boardElementTargets = [...courseLessons, ...courseTasks, ...courseColumnBoardTargets];
 
@@ -50,6 +40,26 @@ export class RoomsService {
 
 		await this.boardRepo.save(board);
 		return board;
+	}
+
+	private async handleColumnBoardIntegration(roomId: EntityId): Promise<ColumnBoardTarget[]> {
+		let courseColumnBoardTargets: ColumnBoardTarget[] = [];
+
+		if ((Configuration.get('FEATURE_COLUMN_BOARD_ENABLED') as boolean) === true) {
+			const courseReference = {
+				type: BoardExternalReferenceType.Course,
+				id: roomId,
+			};
+
+			const columnBoardIds = await this.columnBoardService.findIdsByExternalReference(courseReference);
+			if (columnBoardIds.length === 0) {
+				const columnBoard = await this.createWelcomeColumnBoard(courseReference);
+				columnBoardIds.push(columnBoard.id);
+			}
+
+			courseColumnBoardTargets = await this.columnBoardTargetService.findOrCreateTargets(columnBoardIds);
+		}
+		return courseColumnBoardTargets;
 	}
 
 	private async createWelcomeColumnBoard(courseReference: BoardExternalReference) {

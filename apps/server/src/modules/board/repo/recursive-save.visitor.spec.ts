@@ -1,4 +1,4 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import {
 	BoardNodeType,
@@ -18,15 +18,19 @@ import {
 	richTextElementFactory,
 	taskElementFactory,
 } from '@shared/testing';
+import { BoardNodeRepo } from './board-node.repo';
 import { RecursiveSaveVisitor } from './recursive-save.visitor';
 
 describe(RecursiveSaveVisitor.name, () => {
 	let visitor: RecursiveSaveVisitor;
 	let em: DeepMocked<EntityManager>;
+	let boardNodeRepo: DeepMocked<BoardNodeRepo>;
 
 	beforeAll(() => {
 		em = createMock<EntityManager>();
-		visitor = new RecursiveSaveVisitor(em);
+		boardNodeRepo = createMock<BoardNodeRepo>();
+
+		visitor = new RecursiveSaveVisitor(em, boardNodeRepo);
 	});
 
 	describe('when visiting a board composite', () => {

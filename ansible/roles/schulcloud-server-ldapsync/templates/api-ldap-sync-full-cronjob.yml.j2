@@ -22,4 +22,11 @@ spec:
             - secretRef:
                 name: api-secret
             command: ['/schulcloud-server/scripts/ldapSync.sh']
+            resources:
+              limits:
+                cpu: {{ API_CPU_LIMITS|default("2000m", true) }}
+                memory: {{ API_MEMORY_LIMITS|default("2Gi", true) }}
+              requests:
+                cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
+                memory: {{ API_MEMORY_REQUESTS|default("150Mi", true) }}
           restartPolicy: OnFailure
