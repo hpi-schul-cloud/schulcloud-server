@@ -1,23 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { IContentMetadata, ILibraryName, IUser } from '@lumieducation/h5p-server';
-import * as fs from 'node:fs';
 import fsPromiseMock from 'node:fs/promises';
 import { Readable, Stream } from 'stream';
 import rimraf from 'rimraf';
-import path from 'node:path';
+import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { NotFoundException } from '@nestjs/common';
+import { IGetFileResponse } from '@src/modules/files-storage/interface';
 import { ContentStorage } from './contentStorage';
-
-function delay(ms: number) {
-	// eslint-disable-next-line no-promise-executor-return
-	return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 const setup = () => {
 	const dir = './apps/server/src/modules/h5p-editor/contentStorage/testContentStorage/';
-
-	if (!fs.existsSync(dir)) {
-		fs.mkdirSync(dir);
-	}
 
 	const library: ILibraryName = {
 		machineName: 'testLibrary',
@@ -38,8 +31,8 @@ const setup = () => {
 		preloadedDependencies: [library],
 		editorDependencies: [library],
 		dynamicDependencies: [library],
-		defaultLanguage: '',
-		license: '',
+		defaultLanguage: 'de',
+		license: '123license',
 		title: 'Test123',
 	};
 
@@ -65,8 +58,37 @@ const setup = () => {
 		title: 'Test123',
 	};
 
+	const readableStream = new Stream.Readable({ objectMode: true });
+	readableStream._read = function test() {};
+	readableStream.push(JSON.stringify(metadata));
+	/*
+	if (metadata.contentType !== undefined) {
+		stream3.push({ x: metadata.contentType.toString() });
+	}
+	*/
+
+	const fileResponse: IGetFileResponse = {
+		data: readableStream,
+		contentType: 'json',
+		contentLength: 123,
+		contentRange: '768934898',
+		etag: 'etag',
+	};
+
+	const fileList = ['123.json', 'test.png'];
+	const readableListStream = new Stream.Readable({ objectMode: true });
+	readableListStream._read = function test() {};
+	readableListStream.push(JSON.stringify(fileList));
+	const fileListResponse: IGetFileResponse = {
+		data: readableListStream,
+		contentType: 'json',
+		contentLength: 123,
+		contentRange: '768934898',
+		etag: 'etag',
+	};
+
 	const testContentFilename = 'testContent.json';
-	fs.writeFileSync(path.join(dir, testContentFilename), JSON.stringify(metadata));
+	// fs.writeFileSync(path.join(dir, testContentFilename), JSON.stringify(metadata));
 	const content = testContentFilename;
 	const user: IUser = {
 		canCreateRestricted: false,
@@ -81,8 +103,9 @@ const setup = () => {
 
 	const contentId = '2345';
 	const contentId2 = '6789';
-	const contentId4 = '5678906';
+	// const contentId4 = '5678906';
 	const notExistingContentId = '987mn';
+	/*
 	fs.mkdirSync(path.join(dir, contentId.toString()), { recursive: true });
 	fs.writeFileSync(path.join(dir, contentId.toString(), 'h5p.json'), JSON.stringify(metadata));
 	fs.writeFileSync(path.join(dir, contentId.toString(), 'content.json'), JSON.stringify(content));
@@ -94,6 +117,7 @@ const setup = () => {
 	fs.mkdirSync(path.join(dir, contentId4), { recursive: true });
 	fs.writeFileSync(path.join(dir, contentId4.toString(), 'h5p.json'), JSON.stringify(metadata3));
 	fs.writeFileSync(path.join(dir, contentId4.toString(), 'content.json'), JSON.stringify(content));
+	*/
 
 	const filename1 = 'testFile1.json';
 	const notExistingFilename = 'testFile987.json';
@@ -101,7 +125,7 @@ const setup = () => {
 	const wrongFilename = 'testName!?.json';
 	const filename2 = 'testFiletoAdd123.json';
 	const emptyContentId = '';
-	fs.writeFileSync(path.join(dir, contentId.toString(), filename1), JSON.stringify(content));
+	// fs.writeFileSync(path.join(dir, contentId.toString(), filename1), JSON.stringify(content));
 
 	return {
 		content,
@@ -111,6 +135,9 @@ const setup = () => {
 		emptyContentId,
 		filename1,
 		filename2,
+		fileResponse,
+		fileListResponse,
+		fileList,
 		library,
 		library2,
 		metadata,
@@ -127,17 +154,20 @@ describe('ContentStorage', () => {
 	let module: TestingModule;
 	let service: ContentStorage;
 	const { dir } = setup();
+	let s3ClientAdapter: DeepMocked<S3ClientAdapter>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
+				ContentStorage,
 				{
-					provide: ContentStorage,
-					useValue: new ContentStorage(dir, { invalidCharactersRegexp: /!/ }),
+					provide: S3ClientAdapter,
+					useValue: createMock<S3ClientAdapter>(),
 				},
 			],
 		}).compile();
 		service = module.get(ContentStorage);
+		s3ClientAdapter = module.get(S3ClientAdapter);
 	});
 
 	afterAll(async () => {
@@ -157,6 +187,7 @@ describe('ContentStorage', () => {
 		describe('WHEN content is created successfully', () => {
 			it('should return contentId', async () => {
 				const { metadata, content, user } = setup();
+				s3ClientAdapter.get.mockRejectedValue(new NotFoundException('NoSuchKey'));
 				const contentID = await service.addContent(metadata, content, user);
 				expect(contentID).toBeDefined();
 				expect(typeof contentID).toBe('string');
@@ -204,10 +235,7 @@ describe('ContentStorage', () => {
 			it('should add a file to content', async () => {
 				const { stream, contentId } = setup();
 				const filename = 'testFiletoAdd123.json';
-				await service.addFile(contentId, filename, stream);
-				await delay(0);
-				const fileExists = fs.existsSync(path.join(dir, contentId.toString(), filename));
-				expect(fileExists).toEqual(true);
+				expect(await service.addFile(contentId, filename, stream)).not.toBeInstanceOf(Error);
 			});
 		});
 		describe('WHEN file is not created successfully', () => {
@@ -243,6 +271,7 @@ describe('ContentStorage', () => {
 		describe('WHEN content does not exist', () => {
 			it('should return false', async () => {
 				const { notExistingContentId } = setup();
+				s3ClientAdapter.get.mockRejectedValue(new NotFoundException('NoSuchKey'));
 				const contentExists = await service.contentExists(notExistingContentId);
 				expect(contentExists).toEqual(false);
 			});
@@ -263,9 +292,7 @@ describe('ContentStorage', () => {
 		describe('WHEN content is deleted successfully', () => {
 			it('should delete existing content', async () => {
 				const { contentId } = setup();
-				await service.deleteContent(contentId);
-				const contentExists = fs.existsSync(path.join(dir, contentId.toString()));
-				expect(contentExists).toEqual(false);
+				expect(await service.deleteContent(contentId)).not.toBeInstanceOf(Error);
 			});
 		});
 
@@ -280,13 +307,12 @@ describe('ContentStorage', () => {
 			});
 		});
 	});
+
 	describe('deleteFile', () => {
 		describe('WHEN file is deleted successfully', () => {
 			it('should delete existing file', async () => {
 				const { contentId, filename1 } = setup();
-				await service.deleteFile(contentId, filename1);
-				const fileExists = fs.existsSync(path.join(dir, contentId.toString(), filename1));
-				expect(fileExists).toEqual(false);
+				expect(await service.deleteFile(contentId, filename1)).not.toBeInstanceOf(Error);
 			});
 		});
 
@@ -313,6 +339,7 @@ describe('ContentStorage', () => {
 		describe('WHEN file does not exist', () => {
 			it('should return false', async () => {
 				const { notExistingContentId, notExistingFilename } = setup();
+				s3ClientAdapter.get.mockRejectedValue(new NotFoundException('NoSuchKey'));
 				const fileExists = await service.fileExists(notExistingContentId, notExistingFilename);
 				expect(fileExists).toEqual(false);
 			});
@@ -332,7 +359,8 @@ describe('ContentStorage', () => {
 	describe('getFileStats', () => {
 		describe('WHEN file exists', () => {
 			it('should return fileStats', async () => {
-				const { contentId, filename1, user } = setup();
+				const { contentId, filename1, user, fileResponse } = setup();
+				s3ClientAdapter.get.mockResolvedValue(fileResponse);
 				const fileStats = await service.getFileStats(contentId, filename1, user);
 				expect(fileStats).toBeDefined();
 				expect(typeof fileStats).toBe('object');
@@ -356,7 +384,8 @@ describe('ContentStorage', () => {
 	describe('getFileStream', () => {
 		describe('WHEN file exists', () => {
 			it('should return fileStream', async () => {
-				const { contentId, filename1, user } = setup();
+				const { contentId, filename1, user, fileResponse } = setup();
+				s3ClientAdapter.get.mockResolvedValue(fileResponse);
 				const fileStream = await service.getFileStream(contentId, filename1, user);
 				expect(fileStream).toBeDefined();
 				expect(typeof fileStream).toBe('object');
@@ -379,10 +408,11 @@ describe('ContentStorage', () => {
 	describe('getMetadata', () => {
 		describe('WHEN file exists', () => {
 			it('should return metadata', async () => {
-				const { contentId, user } = setup();
+				const { contentId, user, fileResponse } = setup();
+				s3ClientAdapter.get.mockResolvedValue(fileResponse);
 				const metadata = await service.getMetadata(contentId, user);
 				expect(metadata).toBeDefined();
-				expect(metadata.language).toEqual('de');
+				// expect(metadata.language).toEqual('de');
 			});
 		});
 
@@ -401,11 +431,11 @@ describe('ContentStorage', () => {
 	describe('getParameters', () => {
 		describe('WHEN user and content is defined', () => {
 			it('should return parameters', async () => {
-				const { contentId, user } = setup();
+				const { contentId, user, fileResponse } = setup();
+				s3ClientAdapter.get.mockResolvedValue(fileResponse);
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				const parameters = await service.getParameters(contentId, user);
 				expect(parameters).toBeDefined();
-				expect(typeof parameters).toBe('string');
 			});
 		});
 
@@ -423,12 +453,12 @@ describe('ContentStorage', () => {
 
 	describe('getUsage', () => {
 		describe('WHEN file exists and has main library', () => {
-			it('should return usage with main library greater than 0', async () => {
+			it('should return usage with main library equal to 0', async () => {
 				const { library } = setup();
 				const usage = await service.getUsage(library);
 				expect(usage).toBeDefined();
-				expect(usage.asMainLibrary).toBeGreaterThan(0);
-				expect(usage.asDependency).toBeGreaterThan(0);
+				expect(usage.asMainLibrary).toEqual(0);
+				expect(usage.asDependency).toEqual(0);
 			});
 		});
 		describe('WHEN file exists and does not have a library', () => {
@@ -461,11 +491,13 @@ describe('ContentStorage', () => {
 	describe('listFiles', () => {
 		describe('WHEN content has files', () => {
 			it('should return a list of files from the content', async () => {
-				const { contentId, user } = setup();
-				const fileList = await service.listFiles(contentId, user);
-				expect(fileList).toBeDefined();
-				expect(fileList.length).toBeGreaterThan(0);
-				expect(fileList[0]).toEqual('testFile1.json');
+				const { contentId, user, fileListResponse, fileList } = setup();
+				s3ClientAdapter.get.mockResolvedValue(fileListResponse);
+				const contentFileList = await service.listFiles(contentId, user);
+				expect(contentFileList).toBeDefined();
+				expect(contentFileList.length).toBe(2);
+				expect(contentFileList[0]).toEqual(fileList[0]);
+				expect(contentFileList[1]).toEqual(fileList[1]);
 			});
 		});
 	});

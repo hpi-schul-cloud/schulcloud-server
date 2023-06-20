@@ -13,6 +13,7 @@ import { AuthenticationModule } from '@src/modules/authentication/authentication
 import { AuthorizationModule } from '@src/modules/authorization';
 
 import { ContentStorage } from './contentStorage/contentStorage';
+import { S3ClientAdapter } from '../files-storage/client/s3-client.adapter';
 import { H5PEditorController } from './controller';
 import { H5PEditorModule } from './h5p-editor.module';
 import { LibraryStorage } from './libraryStorage/libraryStorage';
@@ -21,7 +22,7 @@ import { TemporaryFileStorage } from './temporary-file-storage/temporary-file-st
 import { H5PEditorUc } from './uc/h5p.uc';
 
 const storages = [
-	{ provide: ContentStorage, useValue: new ContentStorage(path.join(os.tmpdir(), '/h5p_content')) },
+	ContentStorage,
 	{ provide: LibraryStorage, useValue: new LibraryStorage(path.join(os.tmpdir(), '/h5p_libraries')) },
 	{ provide: TemporaryFileStorage, useValue: new TemporaryFileStorage(path.join(os.tmpdir(), '/h5p_temporary')) },
 ];
@@ -33,6 +34,7 @@ const imports = [
 	AuthorizationModule,
 	AuthenticationModule,
 	CoreModule,
+	S3ClientAdapter,
 	LoggerModule,
 	RabbitMQWrapperTestModule,
 ];

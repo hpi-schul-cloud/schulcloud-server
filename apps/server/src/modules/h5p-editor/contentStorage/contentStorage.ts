@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/dot-notation */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable, NotFoundException, StreamableFile } from '@nestjs/common';
 import { Readable, Stream, pipeline } from 'stream';
@@ -72,7 +73,7 @@ export class ContentStorage implements IContentStorage {
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 			throw new Error(`Error creating content.${error.toString()}`);
 		}
-		const contentIdList = this.getContentIdList();
+		const contentIdList = await this.getContentIdList();
 		if (contentIdList.length === 0) {
 			await this.createOrUpdateContentIdList([contentId], true);
 		} else {
@@ -98,7 +99,7 @@ export class ContentStorage implements IContentStorage {
 			mimeType: 'json',
 		};
 		await this.storageClient.create(fullPath, file);
-		const fileList = this.getFileList(contentId);
+		const fileList = await this.getFileList(contentId);
 		if (fileList.length === 0) {
 			await this.createOrUpdateFileList(contentId, [filename], true);
 		} else {
@@ -116,21 +117,37 @@ export class ContentStorage implements IContentStorage {
 	}
 
 	public async deleteContent(contentId: string, user?: IUser | undefined): Promise<void> {
-		const fullPath = path.join(this.getContentPath(), contentId.toString());
 		try {
 			const contentPath = path.join(this.getContentPath(), contentId.toString());
 			const contentExists = await this.exists(contentPath);
 			if (!contentExists) {
 				throw new Error('404: Content not Found at deleteContent.');
 			}
-			await this.storageClient.delete([contentPath]);
+			const fileList = await this.getFileList(contentId);
+			if (fileList.length > 0) {
+				fileList.forEach((file) => {
+					void this.deleteFile(contentId, file);
+				});
+			}
+			const existH5p = await this.exists(path.join(contentPath, 'h5p.json'));
+			if (existH5p) {
+				await this.deleteFile(contentId, 'h5p.json');
+			}
+			const existContent = await this.exists(path.join(contentPath, 'content.json'));
+			if (existContent) {
+				await this.deleteFile(contentId, 'content.json');
+			}
+			const existList = await this.exists(path.join(contentPath, 'contentfilelist.json'));
+			if (existList) {
+				await this.deleteFile(contentId, 'contentfilelist.json');
+			}
 		} catch (error) {
 			if (error) {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 				throw new Error(error.toString());
 			}
 		}
-		const contentIdList = this.getContentIdList();
+		const contentIdList = await this.getContentIdList();
 		if (contentIdList.length === 1) {
 			await this.deleteFile('contentidlist', 'contentidlist.json');
 		} else {
@@ -148,10 +165,10 @@ export class ContentStorage implements IContentStorage {
 			throw new Error('404: Content not Found at deleteFile.');
 		}
 		await this.storageClient.delete([filePath]);
-		const fileList = this.getFileList(contentId);
+		const fileList = await this.getFileList(contentId);
 		if (fileList.length === 1) {
 			await this.deleteFile(contentId, 'contentfilelist.json');
-		} else {
+		} else if (fileList.length > 1) {
 			const index = fileList.indexOf(filename);
 			fileList.splice(index, 1);
 			await this.createOrUpdateContentIdList(fileList, false);
@@ -212,12 +229,8 @@ export class ContentStorage implements IContentStorage {
 	public async getMetadata(contentId: string, user?: IUser | undefined): Promise<IContentMetadata> {
 		if (user !== undefined && user !== null) {
 			const fileStream = await this.getFileStream(contentId, 'h5p.json', user);
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			const fileJson: JSON = JSON.parse(JSON.stringify(fileStream));
-			// eslint-disable-next-line prefer-destructuring, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/dot-notation, @typescript-eslint/no-unsafe-member-access
-			const data = fileJson['_readableState']['buffer']['head']['data'];
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument
-			return JSON.parse(data);
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+			return this.getJsonData(fileStream);
 		}
 		throw new Error('Could not get Metadata');
 	}
@@ -226,12 +239,8 @@ export class ContentStorage implements IContentStorage {
 		if (user !== undefined && user !== null) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			const fileStream = await this.getFileStream(contentId, 'content.json', user);
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			const fileJson: JSON = JSON.parse(JSON.stringify(fileStream));
-			// eslint-disable-next-line prefer-destructuring, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/dot-notation, @typescript-eslint/no-unsafe-member-access
-			const data = fileJson['_readableState']['buffer']['head']['data'];
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument
-			return JSON.parse(data);
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+			return this.getJsonData(fileStream);
 		}
 		throw new Error('Could not get Parameters');
 	}
@@ -360,7 +369,7 @@ export class ContentStorage implements IContentStorage {
 		throw new Error(`Filename contains forbidden characters ${filename}`);
 	}
 
-	private getContentIdList(): string[] {
+	private async getContentIdList(): Promise<string[]> {
 		try {
 			const user: IUser = {
 				canCreateRestricted: false,
@@ -372,13 +381,9 @@ export class ContentStorage implements IContentStorage {
 				type: '',
 			};
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-			const fileStream = this.getFileStream('contentidlist', 'contentidlist.json', user);
+			const fileStream = await this.getFileStream('contentidlist', 'contentidlist.json', user);
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			const fileJson: JSON = JSON.parse(JSON.stringify(fileStream));
-			// eslint-disable-next-line prefer-destructuring, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/dot-notation, @typescript-eslint/no-unsafe-member-access
-			const data = fileJson['_readableState']['buffer']['head']['data']['contentidlist'];
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-assignment
-			const contentIdList: string[] = JSON.parse(data);
+			const contentIdList: string[] = this.getJsonData(fileStream);
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			return contentIdList;
 		} catch (error) {
@@ -405,7 +410,7 @@ export class ContentStorage implements IContentStorage {
 		await this.storageClient.create(contentIdListPath, contentIdListFile);
 	}
 
-	private getFileList(contentId: string) {
+	private async getFileList(contentId: string) {
 		try {
 			const user: IUser = {
 				canCreateRestricted: false,
@@ -417,13 +422,9 @@ export class ContentStorage implements IContentStorage {
 				type: '',
 			};
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-			const fileStream = this.getFileStream(contentId, 'contentfilelist.json', user);
+			const fileStream = await this.getFileStream(contentId, 'contentfilelist.json', user);
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			const fileJson: JSON = JSON.parse(JSON.stringify(fileStream));
-			// eslint-disable-next-line prefer-destructuring, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/dot-notation, @typescript-eslint/no-unsafe-member-access
-			const data = fileJson['_readableState']['buffer']['head']['data']['contentfilelist'];
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-assignment
-			const contentIdList: string[] = JSON.parse(data);
+			const contentIdList: string[] = this.getJsonData(fileStream);
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			return contentIdList;
 		} catch (error) {
@@ -448,5 +449,14 @@ export class ContentStorage implements IContentStorage {
 			mimeType: 'json',
 		};
 		await this.storageClient.create(fileListPath, fileListFile);
+	}
+
+	private getJsonData(fileStream: Readable) {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		const fileJson: JSON = JSON.parse(JSON.stringify(fileStream));
+		// eslint-disable-next-line prefer-destructuring, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+		const data = fileJson['_readableState']['buffer']['head']['data'];
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument
+		return JSON.parse(data);
 	}
 }
