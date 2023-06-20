@@ -1,9 +1,13 @@
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Get, HttpStatus, Param, Put } from '@nestjs/common';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { VideoConferenceScope } from '@shared/domain';
 import { ICurrentUser } from '@src/modules/authentication';
-import { VideoConferenceCreateParams, VideoConferenceInfoResponse, VideoConferenceJoinResponse } from './dto';
+import {
+	VideoConferenceCreateParams,
+	VideoConferenceInfoResponse,
+	VideoConferenceJoinResponse,
+	VideoConferenceScopeParams,
+} from './dto';
 import { VideoConferenceCreateUc, VideoConferenceEndUc, VideoConferenceInfoUc, VideoConferenceJoinUc } from '../uc';
 import { ScopeRef, VideoConferenceInfo, VideoConferenceJoin } from '../uc/dto';
 import { VideoConferenceMapper } from '../mapper/video-conference.mapper';
@@ -38,11 +42,10 @@ export class VideoConferenceController {
 	@ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Unable to fetch required data.' })
 	async start(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param('scope') scope: VideoConferenceScope,
-		@Param('scopeId') scopeId: string,
+		@Param() scopeParams: VideoConferenceScopeParams,
 		@Body() params: VideoConferenceCreateParams
 	): Promise<void> {
-		const scopeRef = new ScopeRef(scopeId, scope);
+		const scopeRef = new ScopeRef(scopeParams.scopeId, scopeParams.scope);
 		const videoConferenceOptions: VideoConferenceOptions = VideoConferenceMapper.toVideoConferenceOptions(params);
 
 		await this.videoConferenceCreateUc.createIfNotRunning(currentUser.userId, scopeRef, videoConferenceOptions);
@@ -67,13 +70,10 @@ export class VideoConferenceController {
 	@ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Unable to fetch required data.' })
 	async join(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param('scope') scope: VideoConferenceScope,
-		@Param('scopeId') scopeId: string
+		@Param() scopeParams: VideoConferenceScopeParams
 	): Promise<VideoConferenceJoinResponse> {
-		const dto: VideoConferenceJoin = await this.videoConferenceJoinUc.join(
-			currentUser.userId,
-			new ScopeRef(scopeId, scope)
-		);
+		const scopeRef = new ScopeRef(scopeParams.scopeId, scopeParams.scope);
+		const dto: VideoConferenceJoin = await this.videoConferenceJoinUc.join(currentUser.userId, scopeRef);
 
 		const resp: VideoConferenceJoinResponse = VideoConferenceMapper.toVideoConferenceJoinResponse(dto);
 
@@ -98,13 +98,10 @@ export class VideoConferenceController {
 	@ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Unable to fetch required data.' })
 	async info(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param('scope') scope: VideoConferenceScope,
-		@Param('scopeId') scopeId: string
+		@Param() scopeParams: VideoConferenceScopeParams
 	): Promise<VideoConferenceInfoResponse> {
-		const dto: VideoConferenceInfo = await this.videoConferenceInfoUc.getMeetingInfo(
-			currentUser.userId,
-			new ScopeRef(scopeId, scope)
-		);
+		const scopeRef = new ScopeRef(scopeParams.scopeId, scopeParams.scope);
+		const dto: VideoConferenceInfo = await this.videoConferenceInfoUc.getMeetingInfo(currentUser.userId, scopeRef);
 
 		const resp: VideoConferenceInfoResponse = VideoConferenceMapper.toVideoConferenceInfoResponse(dto);
 
@@ -126,11 +123,9 @@ export class VideoConferenceController {
 		description: 'User does not have the permission to end this conference.',
 	})
 	@ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Unable to fetch required data.' })
-	async end(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param('scope') scope: VideoConferenceScope,
-		@Param('scopeId') scopeId: string
-	): Promise<void> {
-		await this.videoConferenceEndUc.end(currentUser.userId, new ScopeRef(scopeId, scope));
+	async end(@CurrentUser() currentUser: ICurrentUser, @Param() scopeParams: VideoConferenceScopeParams): Promise<void> {
+		const scopeRef = new ScopeRef(scopeParams.scopeId, scopeParams.scope);
+
+		await this.videoConferenceEndUc.end(currentUser.userId, scopeRef);
 	}
 }

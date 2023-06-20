@@ -1,9 +1,9 @@
 import { EntityId, VideoConferenceScope } from '@shared/domain';
 
 export class ScopeRef {
-	id!: EntityId;
+	id: EntityId;
 
-	scope!: VideoConferenceScope;
+	scope: VideoConferenceScope;
 
 	constructor(id: EntityId, scope: VideoConferenceScope) {
 		this.id = id;

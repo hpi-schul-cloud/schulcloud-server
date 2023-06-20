@@ -46,11 +46,9 @@ export class VideoConferenceMapper {
 
 	static toVideoConferenceOptions(params: VideoConferenceCreateParams): VideoConferenceOptions {
 		return {
-			everyAttendeeJoinsMuted: params.everyAttendeeJoinsMuted !== undefined ? params.everyAttendeeJoinsMuted : false,
-			everybodyJoinsAsModerator:
-				params.everybodyJoinsAsModerator !== undefined ? params.everybodyJoinsAsModerator : false,
-			moderatorMustApproveJoinRequests:
-				params.moderatorMustApproveJoinRequests !== undefined ? params.moderatorMustApproveJoinRequests : false,
+			everyAttendeeJoinsMuted: params.everyAttendeeJoinsMuted ?? false,
+			everybodyJoinsAsModerator: params.everybodyJoinsAsModerator ?? false,
+			moderatorMustApproveJoinRequests: params.moderatorMustApproveJoinRequests ?? false,
 		};
 	}
 }
