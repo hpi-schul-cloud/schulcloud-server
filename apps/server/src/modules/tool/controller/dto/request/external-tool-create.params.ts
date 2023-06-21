@@ -5,18 +5,13 @@ import { ToolConfigType } from '../../../interface';
 import {
 	BasicToolConfigParams,
 	ExternalToolConfigCreateParams,
-	Lti11ToolConfigParams,
-	Oauth2ToolConfigParams,
+	Lti11ToolConfigCreateParams,
+	Oauth2ToolConfigCreateParams,
 } from './config';
 import { CustomParameterPostParams } from './custom-parameter.params';
 
-@ApiExtraModels(Lti11ToolConfigParams, Oauth2ToolConfigParams, BasicToolConfigParams)
-export class ExternalToolPostParams {
-	@IsString()
-	@IsOptional()
-	@ApiProperty()
-	id?: string;
-
+@ApiExtraModels(Lti11ToolConfigCreateParams, Oauth2ToolConfigCreateParams, BasicToolConfigParams)
+export class ExternalToolCreateParams {
 	@IsString()
 	@ApiProperty()
 	name!: string;
@@ -37,8 +32,8 @@ export class ExternalToolPostParams {
 		discriminator: {
 			property: 'type',
 			subTypes: [
-				{ value: Lti11ToolConfigParams, name: ToolConfigType.LTI11 },
-				{ value: Oauth2ToolConfigParams, name: ToolConfigType.OAUTH2 },
+				{ value: Lti11ToolConfigCreateParams, name: ToolConfigType.LTI11 },
+				{ value: Oauth2ToolConfigCreateParams, name: ToolConfigType.OAUTH2 },
 				{ value: BasicToolConfigParams, name: ToolConfigType.BASIC },
 			],
 		},
@@ -46,11 +41,11 @@ export class ExternalToolPostParams {
 	@ApiProperty({
 		oneOf: [
 			{ $ref: getSchemaPath(BasicToolConfigParams) },
-			{ $ref: getSchemaPath(Lti11ToolConfigParams) },
-			{ $ref: getSchemaPath(Oauth2ToolConfigParams) },
+			{ $ref: getSchemaPath(Lti11ToolConfigCreateParams) },
+			{ $ref: getSchemaPath(Oauth2ToolConfigCreateParams) },
 		],
 	})
-	config!: Lti11ToolConfigParams | Oauth2ToolConfigParams | BasicToolConfigParams;
+	config!: Lti11ToolConfigCreateParams | Oauth2ToolConfigCreateParams | BasicToolConfigParams;
 
 	@ValidateNested({ each: true })
 	@IsArray()

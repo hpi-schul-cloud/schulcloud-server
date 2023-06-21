@@ -1,5 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ContextRef, EntityId } from '@shared/domain';
 import { ContextExternalToolDO } from '@shared/domain/domainobject/tool';
 import { ContextExternalToolRepo } from '@shared/repo';
@@ -40,13 +39,11 @@ export class ContextExternalToolService implements AuthorizationLoaderService {
 
 	async createContextExternalTool(contextExternalTool: ContextExternalToolDO): Promise<ContextExternalToolDO> {
 		const newContextExternalTool: ContextExternalToolDO = new ContextExternalToolDO({
-			contextToolName: contextExternalTool.contextToolName,
+			displayName: contextExternalTool.displayName,
 			contextRef: contextExternalTool.contextRef,
 			toolVersion: contextExternalTool.toolVersion,
 			parameters: contextExternalTool.parameters,
 			schoolToolRef: contextExternalTool.schoolToolRef,
-			createdAt: new Date(),
-			updatedAt: new Date(),
 		});
 
 		const createdContextExternalTool: ContextExternalToolDO = await this.contextExternalToolRepo.save(

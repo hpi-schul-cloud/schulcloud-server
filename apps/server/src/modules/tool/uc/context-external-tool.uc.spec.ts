@@ -1,13 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { contextExternalToolDOFactory, setupEntities } from '@shared/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { ContextExternalToolDO, EntityId, Permission } from '@shared/domain';
-import { Action } from '@src/modules';
+import { contextExternalToolDOFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
+import { Action } from '@src/modules';
 import { ForbiddenLoggableException } from '@src/modules/authorization/errors/forbidden.loggable-exception';
+import { ToolContextType } from '../interface';
 import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
 import { ContextExternalToolUc } from './context-external-tool.uc';
-import { ToolContextType } from '../interface';
 
 describe('ContextExternalToolUc', () => {
 	let module: TestingModule;
@@ -55,7 +55,7 @@ describe('ContextExternalToolUc', () => {
 				const userId: EntityId = 'userId';
 
 				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId({
-					contextToolName: 'Course',
+					displayName: 'Course',
 					contextRef: {
 						id: 'contextId',
 						type: ToolContextType.COURSE,
@@ -146,7 +146,7 @@ describe('ContextExternalToolUc', () => {
 				const contextType: ToolContextType = ToolContextType.COURSE;
 
 				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId({
-					contextToolName: 'Course',
+					displayName: 'Course',
 					contextRef: {
 						id: 'contextId',
 						type: ToolContextType.COURSE,

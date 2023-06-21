@@ -3,7 +3,7 @@ import { IsArray, IsBoolean, IsEnum, IsOptional, IsString } from 'class-validato
 import { TokenEndpointAuthMethod, ToolConfigType } from '../../../../interface';
 import { ExternalToolConfigCreateParams } from './external-tool-config.params';
 
-export class Oauth2ToolConfigParams extends ExternalToolConfigCreateParams {
+export class Oauth2ToolConfigCreateParams extends ExternalToolConfigCreateParams {
 	@IsEnum(ToolConfigType)
 	@ApiProperty()
 	type!: ToolConfigType;
@@ -17,9 +17,8 @@ export class Oauth2ToolConfigParams extends ExternalToolConfigCreateParams {
 	clientId!: string;
 
 	@IsString()
-	@IsOptional()
-	@ApiPropertyOptional()
-	clientSecret?: string;
+	@ApiProperty()
+	clientSecret!: string;
 
 	@IsBoolean()
 	@ApiProperty()
