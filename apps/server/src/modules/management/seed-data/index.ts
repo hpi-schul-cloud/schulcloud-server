@@ -12,7 +12,7 @@ export function generateSeedData(injectEnvVars: (s: string) => string) {
 	const systems = generateSystems(injectEnvVars);
 	const federalStates = generateFederalStates();
 	const years = generateSchoolYears();
-	const schools = generateSchools({ schoolYears: years, systems });
+	const schools = generateSchools({ schoolYears: years, systems, federalStates });
 	// schule,
 
 	// create user related collections

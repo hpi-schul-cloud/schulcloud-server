@@ -1,15 +1,33 @@
-import { IFederalStateProperties } from '@shared/domain/entity/federalstate.entity';
-import { ICounty } from '@shared/domain/interface/county';
-import { federalStateFactory } from '@shared/testing/factory/federalstate.factory';
-import { ObjectId } from 'bson';
+import { County, IFederalStateProperties } from '@shared/domain/entity/federal-state.entity';
+import { federalStateFactory } from '@shared/testing/factory/federal-state.factory';
 import { DeepPartial } from 'fishery';
 
 type SeedFederalStateProperties = Omit<IFederalStateProperties, 'counties'> & {
 	id: string;
-	counties?: (Omit<ICounty, 'id' | '_id'> & { id: string })[];
+	counties?: (County & { id: string })[];
 	createdAt?: string;
 	updatedAt?: string;
 };
+
+export enum EFederalState {
+	BADEN_WUERTTEMBERG = 'Baden-Württemberg',
+	BAYERN = 'Bayern',
+	BERLIN = 'Berlin',
+	BRANDENBURG = 'Brandenburg',
+	BREMEN = 'Bremen',
+	HAMBURG = 'Hamburg',
+	HESSEN = 'Hessen',
+	MECKLENBURG_VORPOMMERN = 'Mecklenburg-Vorpommern',
+	NIEDERSACHSEN = 'Niedersachsen',
+	NORDRHEIN_WESTFALEN = 'Nordrhein-Westfalen',
+	RHEINLAND_PFALZ = 'Rheinland-Pfalz',
+	SAARLAND = 'Saarland',
+	SACHSEN = 'Sachsen',
+	SACHSEN_ANHALT = 'Sachsen-Anhalt',
+	SCHLESWIG_HOLSTEIN = 'Schleswig-Holstein',
+	THUERINGEN = 'Thüringen',
+	INTERNATIONAL_SCHOOL = 'Internationale Schule',
+}
 
 const seedFederalStates: SeedFederalStateProperties[] = [
 	{
@@ -191,11 +209,16 @@ const seedFederalStates: SeedFederalStateProperties[] = [
 
 export function generateFederalStates() {
 	return seedFederalStates.map((federalState) => {
-		const counties: ICounty[] =
-			federalState.counties?.map((county): ICounty => {
+		const counties: County[] =
+			federalState.counties?.map((county) => {
+				return new County({
+					antaresKey: county.antaresKey,
+					name: county.name,
+					countyId: county.countyId,
+				});
 				return {
-					id: county.id,
-					_id: new ObjectId(county.id),
+					// id: county.id,
+					// _id: new ObjectId(county.id),
 					name: county.name,
 					antaresKey: county.antaresKey,
 					countyId: county.countyId,

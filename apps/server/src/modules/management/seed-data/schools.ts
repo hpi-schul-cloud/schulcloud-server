@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-import { ISchoolProperties, SchoolFeatures, SchoolRoles, SchoolYear, System } from '@shared/domain';
+import { FederalState, ISchoolProperties, SchoolFeatures, SchoolRoles, SchoolYear, System } from '@shared/domain';
 import { schoolFactory } from '@shared/testing';
-import { ObjectId } from 'bson';
 import { DeepPartial } from 'fishery';
+import { EFederalState } from './federalstates';
 import { SeedSchoolYearEnum } from './schoolyears';
 
-type SeedSchoolProperties = Omit<ISchoolProperties, 'systems'> & {
+type SeedSchoolProperties = Omit<ISchoolProperties, 'systems' | 'federalState'> & {
 	id: string;
 	updatedAt?: string;
 	createdAt?: string;
@@ -18,7 +18,7 @@ type SeedSchoolProperties = Omit<ISchoolProperties, 'systems'> & {
 	systems?: string[];
 	currentYear?: SeedSchoolYearEnum;
 	permissions?: SchoolRoles;
-	federalState?: string;
+	federalState?: EFederalState;
 	fileStorageType?: string;
 	purpose?: string;
 	documentBaseDirType?: string;
@@ -35,7 +35,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		id: '5f2987e020834114b8efd6f6',
 		updatedAt: '2020-07-27T08:21:14.719Z',
 		name: 'Demo Schule',
-		federalState: '0000b186816abba584714c53',
+		federalState: EFederalState.BRANDENBURG,
 		county: {
 			id: '5fa55eb53f472a2d986c8813',
 			countyId: 12052,
@@ -74,7 +74,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		id: '5f2987e020834114b8efd6f8',
 		updatedAt: '2020-07-27T08:21:14.719Z',
 		name: 'Paul-Gerhardt-Gymnasium',
-		federalState: '0000b186816abba584714c53',
+		federalState: EFederalState.BRANDENBURG,
 		county: {
 			id: '5fa55eb53f472a2d986c8812',
 			countyId: 12051,
@@ -103,7 +103,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		id: '5f2987e020834114b8efd6f9',
 		updatedAt: '2020-07-27T08:21:14.719Z',
 		name: 'Expertenschule',
-		federalState: '0000b186816abba584714c53',
+		federalState: EFederalState.BRANDENBURG,
 		county: {
 			id: '5fa55eb53f472a2d986c8813',
 			countyId: 12052,
@@ -121,7 +121,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		id: '5fa2c5ccb229544f2c69666c',
 		updatedAt: '2020-11-04T21:58:25.254Z',
 		name: 'Felix Mendelssohn-Gymnasium',
-		federalState: '0000b186816abba584714c53',
+		federalState: EFederalState.BRANDENBURG,
 		county: {
 			id: '5fa55eb53f472a2d986c8813',
 			countyId: 12052,
@@ -150,7 +150,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		id: '5fa318f2b229544f2c697a56',
 		updatedAt: '2020-11-04T21:59:44.255Z',
 		name: 'Ludwig van Beethoven-Liceum',
-		federalState: '0000b186816abba584714c53',
+		federalState: EFederalState.BRANDENBURG,
 		county: {
 			id: '5fa55eb53f472a2d986c8813',
 			countyId: 12052,
@@ -179,7 +179,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		id: '5fa31f3db229544f2c697e3e',
 		updatedAt: '2020-11-04T21:54:10.847Z',
 		name: 'Brasilien Schule',
-		federalState: '5f058f43174c832714864f96',
+		federalState: EFederalState.INTERNATIONAL_SCHOOL,
 		createdAt: '2020-11-04T21:38:05.110Z',
 		systems: [],
 		fileStorageType: 'awsS3',
@@ -203,7 +203,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		id: '5fcfb0bc685b9af4d4abf899',
 		updatedAt: '2020-12-08T16:58:36.527Z',
 		name: 'school in Ni',
-		federalState: '0000b186816abba584714c58',
+		federalState: EFederalState.NIEDERSACHSEN,
 		county: {
 			id: '5fa55eb53f472a2d986c8812',
 			countyId: 3256,
@@ -235,7 +235,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		id: '5f2987e020834114b8efd600',
 		updatedAt: '2020-07-27T08:21:14.719Z',
 		name: 'OIDC-Mock-School',
-		federalState: '0000b186816abba584714c53',
+		federalState: EFederalState.BRANDENBURG,
 		county: {
 			id: '5fa55eb53f472a2d986c8812',
 			countyId: 12051,
@@ -263,12 +263,18 @@ const seedSchools: SeedSchoolProperties[] = [
 	},
 ];
 
-export function generateSchools(entities: { systems: System[]; schoolYears: SchoolYear[] }) {
+export function generateSchools(entities: {
+	systems: System[];
+	schoolYears: SchoolYear[];
+	federalStates: FederalState[];
+}) {
 	return seedSchools.map((partial) => {
 		const schoolYear = entities.schoolYears.find((sy) => partial.currentYear && sy.name === partial.currentYear);
 		const systems = partial.systems
 			?.map((systemId) => entities.systems.find((s) => s.id === systemId))
 			.filter((s) => s) as System[] | undefined;
+
+		const federalState = entities.federalStates.find((fs) => partial.federalState && fs.name === partial.federalState);
 
 		const params: DeepPartial<ISchoolProperties> = {
 			externalId: partial.externalId,
@@ -281,13 +287,13 @@ export function generateSchools(entities: { systems: System[]; schoolYears: Scho
 			userLoginMigration: partial.userLoginMigration,
 			schoolYear,
 			systems,
+			federalState,
 		};
 		const schoolEntity = schoolFactory.buildWithId(params, partial.id);
 
 		schoolEntity.permissions = partial.permissions;
 
 		// entries not part of the school entity, they are not saved in the database
-		schoolEntity['federalState'] = new ObjectId(partial.federalState);
 		schoolEntity['fileStorageType'] = partial.fileStorageType;
 		schoolEntity['purpose'] = partial.purpose;
 		schoolEntity['documentBaseDirType'] = partial.documentBaseDirType;

@@ -18,7 +18,7 @@ export class County {
 
 	name: string;
 
-	countyId: string;
+	countyId: number;
 
 	antaresKey: string;
 }

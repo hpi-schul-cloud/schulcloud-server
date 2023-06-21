@@ -7,7 +7,7 @@ export * from './course.entity';
 export * from './coursegroup.entity';
 export * from './dashboard.entity';
 export * from './dashboard.model.entity';
-export * from './federalstate.entity';
+export * from './federal-state.entity';
 export * from './file.entity';
 export * from './import-user.entity';
 export * from './legacy-board';
@@ -29,4 +29,4 @@ export * from './tools';
 export * from './user-login-migration.entity';
 export * from './user.entity';
 export * from './video-conference.entity';
-export * from './federal-state.entity';
+
