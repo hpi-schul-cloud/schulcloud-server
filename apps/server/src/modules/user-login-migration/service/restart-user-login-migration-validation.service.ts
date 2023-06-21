@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { UserLoginMigrationDO } from '@shared/domain';
 import { CommonUserLoginMigrationService } from './common-user-login-migration.service';
-import { RestartUserLoginMigrationError } from '../error';
+import { UserLoginMigrationLoggableException } from '../error';
 
 @Injectable()
 export class RestartUserLoginMigrationValidationService {
@@ -19,7 +19,7 @@ export class RestartUserLoginMigrationValidationService {
 
 	private isClosed(userLoginMigration: UserLoginMigrationDO): void {
 		if (!userLoginMigration.closedAt) {
-			throw new RestartUserLoginMigrationError(
+			throw new UserLoginMigrationLoggableException(
 				`Migration for school with id ${userLoginMigration.schoolId} is already started, you are not able to restart.`,
 				userLoginMigration.schoolId
 			);
@@ -28,12 +28,10 @@ export class RestartUserLoginMigrationValidationService {
 
 	private validateGracePeriod(userLoginMigration: UserLoginMigrationDO) {
 		if (userLoginMigration.finishedAt && Date.now() >= userLoginMigration.finishedAt.getTime()) {
-			throw new RestartUserLoginMigrationError(
+			throw new UserLoginMigrationLoggableException(
 				'grace_period_expired: The grace period after finishing migration has expired',
 				userLoginMigration.schoolId,
-				{
-					finishedAt: userLoginMigration.finishedAt,
-				}
+				userLoginMigration.finishedAt
 			);
 		}
 	}
@@ -43,7 +41,7 @@ export class RestartUserLoginMigrationValidationService {
 			await this.commonUserLoginMigrationService.findExistingUserLoginMigration(schoolId);
 
 		if (existingUserLoginMigration === null) {
-			throw new RestartUserLoginMigrationError(
+			throw new UserLoginMigrationLoggableException(
 				`Existing migration for school with id: ${schoolId} could not be found for restart.`,
 				schoolId
 			);

@@ -3,9 +3,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SchoolDO, UserLoginMigrationDO } from '@shared/domain';
 import { schoolDOFactory, userDoFactory } from '@shared/testing';
 import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration-do.factory';
-import { RestartUserLoginMigrationError } from '../error';
 import { RestartUserLoginMigrationValidationService } from './restart-user-login-migration-validation.service';
 import { CommonUserLoginMigrationService } from './common-user-login-migration.service';
+import { UserLoginMigrationLoggableException } from '../error';
 
 describe('RestartUserLoginMigrationValidationService', () => {
 	let module: TestingModule;
@@ -86,13 +86,13 @@ describe('RestartUserLoginMigrationValidationService', () => {
 				return { userId: user.id as string, schoolId: school.id as string };
 			};
 
-			it('should throw RestartUserLoginMigrationError ', async () => {
+			it('should throw StartUserLoginMigrationLoggableException ', async () => {
 				const { userId, schoolId } = setup();
 
 				const func = () => service.checkPreconditions(userId, schoolId);
 
 				await expect(func()).rejects.toThrow(
-					new RestartUserLoginMigrationError(
+					new UserLoginMigrationLoggableException(
 						`Existing migration for school with id: ${schoolId} could not be found for restart.`,
 						schoolId
 					)
@@ -118,13 +118,13 @@ describe('RestartUserLoginMigrationValidationService', () => {
 				return { userId: user.id as string, migration, schoolId: school.id as string };
 			};
 
-			it('should throw RestartUserLoginMigrationError ', async () => {
+			it('should throw UserLoginMigrationLoggableException ', async () => {
 				const { userId, schoolId } = setup();
 
 				const func = () => service.checkPreconditions(userId, schoolId);
 
 				await expect(func()).rejects.toThrow(
-					new RestartUserLoginMigrationError(
+					new UserLoginMigrationLoggableException(
 						`Migration for school with id ${schoolId} is already started, you are not able to restart.`,
 						schoolId
 					)
@@ -150,18 +150,16 @@ describe('RestartUserLoginMigrationValidationService', () => {
 				return { userId: user.id as string, migration, schoolId: school.id as string };
 			};
 
-			it('should throw RestartUserLoginMigrationError ', async () => {
+			it('should throw UserLoginMigrationLoggableException ', async () => {
 				const { userId, schoolId, migration } = setup();
 
 				const func = () => service.checkPreconditions(userId, schoolId);
 
 				await expect(func()).rejects.toThrow(
-					new RestartUserLoginMigrationError(
+					new UserLoginMigrationLoggableException(
 						'grace_period_expired: The grace period after finishing migration has expired',
 						schoolId,
-						{
-							finishedAt: migration.finishedAt,
-						}
+						migration.finishedAt
 					)
 				);
 			});

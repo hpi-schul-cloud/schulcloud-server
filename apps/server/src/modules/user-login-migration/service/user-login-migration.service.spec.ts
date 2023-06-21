@@ -13,7 +13,7 @@ import { UserService } from '@src/modules/user';
 import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration-do.factory';
 import { UserLoginMigrationService } from './user-login-migration.service';
 import { SchoolMigrationService } from './school-migration.service';
-import { RestartUserLoginMigrationError } from '../error';
+import { UserLoginMigrationLoggableException } from '../error';
 
 describe('UserLoginMigrationService', () => {
 	let module: TestingModule;
@@ -872,11 +872,13 @@ describe('UserLoginMigrationService', () => {
 				};
 			};
 
-			it('should throw RestartUserLoginMigrationError ', async () => {
+			it('should throw UserLoginMigrationLoggableException ', async () => {
 				const { schoolId } = setup();
 
 				await expect(service.restartMigration(schoolId)).rejects.toThrow(
-					new RestartUserLoginMigrationError(`Migration for school with id ${schoolId} does not exist for restart.`)
+					new UserLoginMigrationLoggableException(
+						`Migration for school with id ${schoolId} does not exist for restart.`
+					)
 				);
 			});
 		});

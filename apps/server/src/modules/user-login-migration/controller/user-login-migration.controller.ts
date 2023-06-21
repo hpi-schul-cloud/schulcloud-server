@@ -21,7 +21,7 @@ import {
 } from './dto';
 import { Oauth2MigrationParams } from './dto/oauth2-migration.params';
 import { StartUserLoginMigrationUc } from '../uc/start-user-login-migration.uc';
-import { StartUserLoginMigrationError } from '../error';
+import { UserLoginMigrationLoggableException } from '../error';
 import { RestartUserLoginMigrationUc } from '../uc/restart-user-login-migration.uc';
 
 @ApiTags('UserLoginMigration')
@@ -67,7 +67,7 @@ export class UserLoginMigrationController {
 	@Post('start')
 	@ApiBadRequestResponse({
 		description: 'Preconditions for starting user login migration are not met',
-		type: StartUserLoginMigrationError,
+		type: UserLoginMigrationLoggableException,
 	})
 	@ApiOkResponse({ description: 'User login migration started', type: UserLoginMigrationResponse })
 	@ApiForbiddenResponse()
@@ -86,7 +86,7 @@ export class UserLoginMigrationController {
 	@Put('restart')
 	@ApiBadRequestResponse({
 		description: 'Preconditions for starting user login migration are not met',
-		type: StartUserLoginMigrationError,
+		type: UserLoginMigrationLoggableException,
 	})
 	@ApiOkResponse({ description: 'User login migration started', type: UserLoginMigrationResponse })
 	@ApiUnauthorizedResponse()

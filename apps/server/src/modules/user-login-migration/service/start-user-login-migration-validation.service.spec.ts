@@ -4,9 +4,9 @@ import { SchoolService } from '@src/modules/school';
 import { SchoolDO, User, UserLoginMigrationDO } from '@shared/domain';
 import { schoolDOFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
-import { StartUserLoginMigrationError } from '../error';
 import { StartUserLoginMigrationValidationService } from './start-user-login-migration-validation.service';
 import { CommonUserLoginMigrationService } from './common-user-login-migration.service';
+import { UserLoginMigrationLoggableException } from '../error';
 
 describe('StartUserLoginMigrationValidationService', () => {
 	let module: TestingModule;
@@ -117,13 +117,13 @@ describe('StartUserLoginMigrationValidationService', () => {
 				return { user, migration, schoolId: school.id as string };
 			};
 
-			it('should throw StartUserLoginMigrationError ', async () => {
+			it('should throw UserLoginMigrationLoggableException ', async () => {
 				const { schoolId, user } = setup();
 
 				const func = () => service.checkPreconditions(user.id, schoolId);
 
 				await expect(func()).rejects.toThrow(
-					new StartUserLoginMigrationError(`The school with schoolId ${schoolId} has no official school number.`)
+					new UserLoginMigrationLoggableException(`The school with schoolId ${schoolId} has no official school number.`)
 				);
 			});
 		});
@@ -150,13 +150,13 @@ describe('StartUserLoginMigrationValidationService', () => {
 				return { userId, migration };
 			};
 
-			it('should throw StartUserLoginMigrationError ', async () => {
+			it('should throw UserLoginMigrationLoggableException ', async () => {
 				const { userId, migration } = setup();
 
 				const func = () => service.checkPreconditions(userId, migration.schoolId);
 
 				await expect(func()).rejects.toThrow(
-					new StartUserLoginMigrationError(
+					new UserLoginMigrationLoggableException(
 						`The school with schoolId ${migration.schoolId} already finished the migration.`
 					)
 				);
@@ -183,13 +183,13 @@ describe('StartUserLoginMigrationValidationService', () => {
 				return { userId, migration };
 			};
 
-			it('should throw StartUserLoginMigrationError ', async () => {
+			it('should throw UserLoginMigrationLoggableException ', async () => {
 				const { userId, migration } = setup();
 
 				const func = () => service.checkPreconditions(userId, migration.schoolId);
 
 				await expect(func()).rejects.toThrow(
-					new StartUserLoginMigrationError(
+					new UserLoginMigrationLoggableException(
 						`The school with schoolId ${migration.schoolId} already started the migration.`
 					)
 				);

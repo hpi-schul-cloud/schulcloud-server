@@ -5,8 +5,8 @@ import { UserLoginMigrationRepo } from '@shared/repo';
 import { SchoolService } from '@src/modules/school';
 import { SystemDto, SystemService } from '@src/modules/system';
 import { UserService } from '@src/modules/user';
-import { RestartUserLoginMigrationError } from '../error';
 import { SchoolMigrationService } from './school-migration.service';
+import { UserLoginMigrationLoggableException } from '../error';
 
 @Injectable()
 export class UserLoginMigrationService {
@@ -85,7 +85,7 @@ export class UserLoginMigrationService {
 		);
 
 		if (existingUserLoginMigrationDO === null) {
-			throw new RestartUserLoginMigrationError(
+			throw new UserLoginMigrationLoggableException(
 				`Migration for school with id ${schoolId} does not exist for restart.`,
 				schoolId
 			);
