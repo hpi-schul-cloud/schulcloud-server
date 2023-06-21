@@ -1,31 +1,26 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, Permission, RoleName, School, System, User } from '@shared/domain';
+import { Permission, School, System } from '@shared/domain';
 import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
-	accountFactory,
 	cleanupCollections,
-	mapUserToCurrentUser,
-	roleFactory,
 	schoolFactory,
 	systemFactory,
-	userFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { JwtTestFactory } from '@shared/testing/factory/jwt.test.factory';
 import { userLoginMigrationFactory } from '@shared/testing/factory/user-login-migration.factory';
-import { ICurrentUser } from '@src/modules/authentication';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { OauthTokenResponse } from '@src/modules/oauth/service/dto';
 import { SanisResponse, SanisRole } from '@src/modules/provisioning';
 import { ServerTestModule } from '@src/modules/server';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { UUID } from 'bson';
-import { Request } from 'express';
-import request, { Response } from 'supertest';
+import { Response } from 'supertest';
 import { Oauth2MigrationParams } from '../dto/oauth2-migration.params';
 
 jest.mock('jwks-rsa', () => () => {
@@ -40,35 +35,24 @@ jest.mock('jwks-rsa', () => () => {
 		getSigningKeys: jest.fn(),
 	};
 });
-
 describe('UserLoginMigrationController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let userJwt: string;
-	let currentUser: ICurrentUser | undefined;
 	let axiosMock: MockAdapter;
+	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		Configuration.set('PUBLIC_BACKEND_URL', 'http://localhost:3030/api');
-		userJwt = JwtTestFactory.createJwt();
 
 		const moduleRef: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					req.headers.authorization = userJwt;
-					return true;
-				},
-			})
-			.compile();
+		}).compile();
+
 		axiosMock = new MockAdapter(axios);
 		app = moduleRef.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
+		testApiClient = new TestApiClient(app, '/user-login-migrations');
 	});
 
 	afterAll(async () => {
@@ -94,29 +78,28 @@ describe('UserLoginMigrationController (API)', () => {
 					sourceSystem,
 					startedAt: date,
 					mandatorySince: date,
-					closedAt: date,
-					finishedAt: date,
+					closedAt: undefined,
+					finishedAt: undefined,
 				});
-				const user: User = userFactory.buildWithId({ school });
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, user, userLoginMigration]);
+				await em.persistAndFlush([sourceSystem, targetSystem, school, teacherAccount, teacherUser, userLoginMigration]);
 
-				currentUser = mapUserToCurrentUser(user);
+				const loggedInClient = await testApiClient.login(teacherAccount);
 
 				return {
 					sourceSystem,
 					targetSystem,
-					user,
+					loggedInClient,
 					userLoginMigration,
+					teacherUser,
 				};
 			};
 
 			it('should return the users migration', async () => {
-				const { sourceSystem, targetSystem, user, userLoginMigration } = await setup();
+				const { sourceSystem, targetSystem, userLoginMigration, teacherUser, loggedInClient } = await setup();
 
-				const response: Response = await request(app.getHttpServer())
-					.get(`/user-login-migrations`)
-					.query({ userId: user.id });
+				const response: Response = await loggedInClient.get().query({ userId: teacherUser.id });
 
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual({
@@ -136,16 +119,8 @@ describe('UserLoginMigrationController (API)', () => {
 		});
 
 		describe('when unauthorized', () => {
-			const setup = () => {
-				currentUser = undefined;
-			};
-
 			it('should return Unauthorized', async () => {
-				setup();
-
-				const response: Response = await request(app.getHttpServer())
-					.get(`/user-login-migrations`)
-					.query({ userId: new ObjectId().toHexString() });
+				const response: Response = await testApiClient.get();
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -162,44 +137,31 @@ describe('UserLoginMigrationController (API)', () => {
 					officialSchoolNumber: '12345',
 				});
 
-				const adminRole = roleFactory.buildWithId({
-					name: RoleName.ADMINISTRATOR,
-					permissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
-				});
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
 
-				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser]);
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, user]);
-
-				currentUser = mapUserToCurrentUser(user);
+				const loggedInClient = await testApiClient.login(adminAccount);
 
 				return {
-					user,
+					loggedInClient,
 				};
 			};
 
 			it('should return the Status CREATED ', async () => {
-				const { user } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response: Response = await request(app.getHttpServer())
-					.post(`/user-login-migrations/start`)
-					.query({ userId: user.id });
+				const response: Response = await loggedInClient.post(`/start`);
 
 				expect(response.status).toEqual(HttpStatus.CREATED);
 			});
 		});
 
 		describe('when current User start the migration and is not authorized', () => {
-			const setup = () => {
-				currentUser = undefined;
-			};
-
 			it('should return Unauthorized', async () => {
-				setup();
-
-				const response: Response = await request(app.getHttpServer())
-					.post(`/user-login-migrations/start`)
-					.query({ userId: new ObjectId().toHexString() });
+				const response: Response = await testApiClient.post(`/start`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -207,17 +169,21 @@ describe('UserLoginMigrationController (API)', () => {
 
 		describe('when invalid User start the migration', () => {
 			const setup = async () => {
-				const invalidUser = userFactory.build();
-				await em.persistAndFlush([invalidUser]);
-				currentUser = mapUserToCurrentUser(invalidUser);
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+				await em.persistAndFlush([teacherAccount, teacherUser]);
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return {
+					loggedInClient,
+				};
 			};
 
 			it('should return forbidden', async () => {
-				await setup();
+				const { loggedInClient } = await setup();
 
-				const response: Response = await request(app.getHttpServer())
-					.post(`/user-login-migrations/start`)
-					.query({ userId: new ObjectId().toHexString() });
+				const response: Response = await loggedInClient.post(`/start`);
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 			});
@@ -241,28 +207,24 @@ describe('UserLoginMigrationController (API)', () => {
 					mandatorySince: date,
 				});
 
-				const adminRole = roleFactory.buildWithId({
-					name: RoleName.ADMINISTRATOR,
-					permissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
-				});
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
 
-				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, user, userLoginMigration]);
-
-				currentUser = mapUserToCurrentUser(user);
+				const loggedInClient = await testApiClient.login(adminAccount);
 
 				return {
-					user,
+					loggedInClient,
+					adminUser,
 				};
 			};
 
 			it('should return bad request ', async () => {
-				const { user } = await setup();
+				const { loggedInClient, adminUser } = await setup();
 
-				const response: Response = await request(app.getHttpServer())
-					.post(`/user-login-migrations/start`)
-					.query({ userId: user.id });
+				const response: Response = await loggedInClient.post(`/start`).query({ userId: adminUser.id });
 
 				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 			});
@@ -287,28 +249,24 @@ describe('UserLoginMigrationController (API)', () => {
 					finishedAt: date,
 				});
 
-				const adminRole = roleFactory.buildWithId({
-					name: RoleName.ADMINISTRATOR,
-					permissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
-				});
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
 
-				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, user, userLoginMigration]);
-
-				currentUser = mapUserToCurrentUser(user);
+				const loggedInClient = await testApiClient.login(adminAccount);
 
 				return {
-					user,
+					loggedInClient,
+					adminUser,
 				};
 			};
 
 			it('should return bad request ', async () => {
-				const { user } = await setup();
+				const { loggedInClient, adminUser } = await setup();
 
-				const response: Response = await request(app.getHttpServer())
-					.post(`/user-login-migrations/start`)
-					.query({ userId: user.id });
+				const response: Response = await loggedInClient.post(`/start`).query({ userId: adminUser.id });
 
 				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 			});
@@ -322,28 +280,24 @@ describe('UserLoginMigrationController (API)', () => {
 					systems: [sourceSystem],
 				});
 
-				const adminRole = roleFactory.buildWithId({
-					name: RoleName.ADMINISTRATOR,
-					permissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
-				});
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
 
-				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser]);
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, user]);
-
-				currentUser = mapUserToCurrentUser(user);
+				const loggedInClient = await testApiClient.login(adminAccount);
 
 				return {
-					user,
+					loggedInClient,
+					adminUser,
 				};
 			};
 
 			it('should return a bad request ', async () => {
-				const { user } = await setup();
+				const { loggedInClient, adminUser } = await setup();
 
-				const response: Response = await request(app.getHttpServer())
-					.post(`/user-login-migrations/start`)
-					.query({ userId: user.id });
+				const response: Response = await loggedInClient.post(`/start`).query({ userId: adminUser.id });
 
 				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 			});
@@ -423,18 +377,15 @@ describe('UserLoginMigrationController (API)', () => {
 					startedAt: new Date('2022-12-17T03:24:00'),
 				});
 
-				const user: User = userFactory.buildWithId({ externalId: 'externalUserId', school });
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin(
+					{ school, externalId: 'externalUserId' },
+					[Permission.USER_LOGIN_MIGRATION_ADMIN]
+				);
 
-				const account: Account = accountFactory.buildWithId({
-					userId: user.id,
-					systemId: sourceSystem.id,
-					username: user.email,
-				});
-
-				await em.persistAndFlush([sourceSystem, targetSystem, school, user, account, userLoginMigration]);
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
 				em.clear();
 
-				currentUser = mapUserToCurrentUser(user);
+				const loggedInClient = await testApiClient.login(adminAccount);
 
 				const idToken: string = JwtTestFactory.createJwt({
 					sub: 'testUser',
@@ -442,26 +393,24 @@ describe('UserLoginMigrationController (API)', () => {
 					aud: targetSystem.oauthConfig?.clientId,
 				});
 
-				mockPostOauthTokenEndpoint(idToken, targetSystem, currentUser.userId, externalId, officialSchoolNumber);
+				mockPostOauthTokenEndpoint(idToken, targetSystem, adminUser.id, externalId, officialSchoolNumber);
 
 				return {
 					query,
-					user,
+					loggedInClient,
 					sourceSystem,
 					targetSystem,
 				};
 			};
 
 			it('should migrate the user', async () => {
-				const { query } = await setup();
+				const { query, loggedInClient } = await setup();
 
-				const response: Response = await request(app.getHttpServer())
-					.post(`/user-login-migrations/migrate-to-oauth2`)
-					.send({
-						redirectUri: query.redirectUri,
-						code: query.code,
-						systemId: query.systemId,
-					});
+				const response: Response = await loggedInClient.post(`/migrate-to-oauth2`).send({
+					redirectUri: query.redirectUri,
+					code: query.code,
+					systemId: query.systemId,
+				});
 
 				expect(response.status).toEqual(HttpStatus.CREATED);
 			});
@@ -495,18 +444,15 @@ describe('UserLoginMigrationController (API)', () => {
 					startedAt: new Date('2022-12-17T03:24:00'),
 				});
 
-				const user: User = userFactory.buildWithId({ externalId: 'externalUserId', school });
-
-				const account: Account = accountFactory.buildWithId({
-					userId: user.id,
-					systemId: sourceSystem.id,
-					username: user.email,
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({
+					school,
+					externalId: 'externalUserId',
 				});
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, user, account, userLoginMigration]);
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
 				em.clear();
 
-				currentUser = mapUserToCurrentUser(user);
+				const loggedInClient = await testApiClient.login(adminAccount);
 
 				const idToken: string = JwtTestFactory.createJwt({
 					sub: 'testUser',
@@ -514,22 +460,20 @@ describe('UserLoginMigrationController (API)', () => {
 					aud: targetSystem.oauthConfig?.clientId,
 				});
 
-				mockPostOauthTokenEndpoint(idToken, targetSystem, currentUser.userId, externalId, 'kennung');
+				mockPostOauthTokenEndpoint(idToken, targetSystem, adminUser.id, externalId, 'kennung');
 
 				return {
 					query,
-					user,
+					loggedInClient,
 					sourceSystem,
 					targetSystem,
 				};
 			};
 
 			it('should throw Internal Server Error', async () => {
-				const { query } = await setup();
+				const { query, loggedInClient } = await setup();
 
-				const response: Response = await request(app.getHttpServer())
-					.post(`/user-login-migrations/migrate-to-oauth2`)
-					.send(query);
+				const response: Response = await loggedInClient.post(`/migrate-to-oauth2`).send(query);
 
 				expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
 			});
@@ -542,8 +486,6 @@ describe('UserLoginMigrationController (API)', () => {
 				query.systemId = new ObjectId().toHexString();
 				query.redirectUri = 'redirectUri';
 
-				currentUser = undefined;
-
 				return {
 					query,
 				};
@@ -552,9 +494,7 @@ describe('UserLoginMigrationController (API)', () => {
 			it('should throw an UnauthorizedException', async () => {
 				const { query } = setup();
 
-				const response: Response = await request(app.getHttpServer())
-					.post(`/user-login-migrations/migrate-to-oauth2`)
-					.send(query);
+				const response: Response = await testApiClient.post(`migrate-to-oauth2`).send(query);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -581,38 +521,33 @@ describe('UserLoginMigrationController (API)', () => {
 				});
 				school.userLoginMigration = userLoginMigration;
 
-				const adminRole = roleFactory.buildWithId({
-					name: RoleName.ADMINISTRATOR,
-					permissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
-				});
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
 
-				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				em.clear();
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, user, userLoginMigration, adminRole]);
-
-				currentUser = mapUserToCurrentUser(user);
+				const loggedInClient = await testApiClient.login(adminAccount);
 
 				return {
-					user,
+					loggedInClient,
+					adminUser,
 				};
 			};
 
 			it('should return the Status OK ', async () => {
-				const { user } = await setup();
+				const { loggedInClient, adminUser } = await setup();
 
-				const response: Response = await request(app.getHttpServer())
-					.put(`/user-login-migrations/restart`)
-					.query({ userId: user.id });
+				const response: Response = await loggedInClient.put(`/restart`).query({ userId: adminUser.id });
 
 				expect(response.status).toEqual(HttpStatus.OK);
 			});
 
 			it('should return the response ', async () => {
-				const { user } = await setup();
+				const { loggedInClient, adminUser } = await setup();
 
-				const response: Response = await request(app.getHttpServer())
-					.put(`/user-login-migrations/restart`)
-					.query({ userId: user.id });
+				const response: Response = await loggedInClient.put(`/restart`).query({ userId: adminUser.id });
 
 				expect(response.body).toHaveProperty('startedAt');
 				expect(response.body).not.toHaveProperty('closedAt');
@@ -622,33 +557,30 @@ describe('UserLoginMigrationController (API)', () => {
 
 		describe('when invalid User restart the migration', () => {
 			const setup = async () => {
-				const invalidUser = userFactory.build();
-				await em.persistAndFlush([invalidUser]);
-				currentUser = mapUserToCurrentUser(invalidUser);
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin();
+
+				await em.persistAndFlush([adminAccount, adminUser]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+				};
 			};
 
 			it('should return forbidden', async () => {
-				await setup();
+				const { loggedInClient } = await setup();
 
-				const response: Response = await request(app.getHttpServer())
-					.put(`/user-login-migrations/restart`)
-					.query({ userId: new ObjectId().toHexString() });
+				const response: Response = await loggedInClient.put(`/restart`);
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 			});
 		});
 
 		describe('when current User restart the migration and is not authorized', () => {
-			const setup = () => {
-				currentUser = undefined;
-			};
-
 			it('should return Unauthorized', async () => {
-				setup();
-
-				const response: Response = await request(app.getHttpServer())
-					.post(`/user-login-migrations/restart`)
-					.query({ userId: new ObjectId().toHexString() });
+				const response: Response = await testApiClient.put(`/restart`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -671,28 +603,24 @@ describe('UserLoginMigrationController (API)', () => {
 				});
 				school.userLoginMigration = userLoginMigration;
 
-				const adminRole = roleFactory.buildWithId({
-					name: RoleName.ADMINISTRATOR,
-					permissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
-				});
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
 
-				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				em.clear();
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, user, userLoginMigration]);
-
-				currentUser = mapUserToCurrentUser(user);
+				const loggedInClient = await testApiClient.login(adminAccount);
 
 				return {
-					user,
+					loggedInClient,
 				};
 			};
 
 			it('should return bad request ', async () => {
-				const { user } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response: Response = await request(app.getHttpServer())
-					.put(`/user-login-migrations/restart`)
-					.query({ userId: user.id });
+				const response: Response = await loggedInClient.put(`/restart`);
 
 				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 			});
@@ -717,28 +645,25 @@ describe('UserLoginMigrationController (API)', () => {
 				});
 				school.userLoginMigration = userLoginMigration;
 
-				const adminRole = roleFactory.buildWithId({
-					name: RoleName.ADMINISTRATOR,
-					permissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
-				});
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
 
-				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				em.clear();
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, user, userLoginMigration]);
-
-				currentUser = mapUserToCurrentUser(user);
+				const loggedInClient = await testApiClient.login(adminAccount);
 
 				return {
-					user,
+					loggedInClient,
+					adminUser,
 				};
 			};
 
 			it('should return bad request ', async () => {
-				const { user } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response: Response = await request(app.getHttpServer())
-					.put(`/user-login-migrations/restart`)
-					.query({ userId: user.id });
+				const response: Response = await loggedInClient.put(`/restart`);
 
 				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 			});
@@ -752,28 +677,25 @@ describe('UserLoginMigrationController (API)', () => {
 					systems: [sourceSystem],
 				});
 
-				const adminRole = roleFactory.buildWithId({
-					name: RoleName.ADMINISTRATOR,
-					permissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
-				});
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
 
-				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser]);
+				em.clear();
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, user]);
-
-				currentUser = mapUserToCurrentUser(user);
+				const loggedInClient = await testApiClient.login(adminAccount);
 
 				return {
-					user,
+					loggedInClient,
+					adminUser,
 				};
 			};
 
 			it('should return a bad request ', async () => {
-				const { user } = await setup();
+				const { loggedInClient, adminUser } = await setup();
 
-				const response: Response = await request(app.getHttpServer())
-					.put(`/user-login-migrations/restart`)
-					.query({ userId: user.id });
+				const response: Response = await loggedInClient.put(`/restart`).query({ userId: adminUser.id });
 
 				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 			});
