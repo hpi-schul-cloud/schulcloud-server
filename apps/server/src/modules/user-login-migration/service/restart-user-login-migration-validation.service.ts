@@ -46,6 +46,7 @@ export class RestartUserLoginMigrationValidationService {
 				schoolId
 			);
 		}
+
 		return existingUserLoginMigration;
 	}
 }
