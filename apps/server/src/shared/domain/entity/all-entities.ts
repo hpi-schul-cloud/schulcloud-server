@@ -42,6 +42,7 @@ import { ContextExternalTool, ExternalTool, SchoolExternalTool } from './tools';
 import { UserLoginMigration } from './user-login-migration.entity';
 import { User } from './user.entity';
 import { VideoConference } from './video-conference.entity';
+import { FederalState } from './federal-state.entity';
 
 export const ALL_ENTITIES = [
 	Account,

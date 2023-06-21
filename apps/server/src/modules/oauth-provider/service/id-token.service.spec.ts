@@ -1,19 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PseudonymDO, Team } from '@shared/domain';
+import { PseudonymDO, Team, UserDO } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolRepo, PseudonymsRepo, TeamsRepo } from '@shared/repo';
-import { setupEntities } from '@shared/testing';
+import { setupEntities, userDoFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { LegacyLogger } from '@src/core/logger';
 import { GroupNameIdTuple, IdToken } from '@src/modules/oauth-provider/interface/id-token';
 import { OauthScope } from '@src/modules/oauth-provider/interface/oauth-scope.enum';
 import { IdTokenService } from '@src/modules/oauth-provider/service/id-token.service';
 import { UserService } from '@src/modules/user/service/user.service';
-import { UserDto } from '@src/modules/user/uc/dto/user.dto';
-import resetAllMocks = jest.resetAllMocks;
-import clearAllMocks = jest.clearAllMocks;
+import { ObjectId } from 'bson';
 
 class IdTokenServiceSpec extends IdTokenService {
 	buildGroupsClaimSpec(teams: Team[]): GroupNameIdTuple[] {
@@ -37,7 +35,7 @@ describe('IdTokenService', () => {
 	let teamsRepo: DeepMocked<TeamsRepo>;
 	let userService: DeepMocked<UserService>;
 
-	const userId = 'userId';
+	const userId = new ObjectId().toHexString();
 	const clientId = 'clientId';
 	const host = 'http://host';
 	let ltiToolDo: LtiToolDO;
@@ -89,7 +87,6 @@ describe('IdTokenService', () => {
 
 	afterAll(async () => {
 		await module.close();
-		clearAllMocks();
 	});
 
 	beforeEach(() => {
@@ -98,17 +95,17 @@ describe('IdTokenService', () => {
 	});
 
 	afterEach(() => {
-		resetAllMocks();
+		jest.resetAllMocks();
 	});
 
 	describe('createIdToken', () => {
-		let userDto: UserDto;
+		let user: UserDO;
 		let scopes: string[];
 
 		beforeEach(() => {
-			userDto = { id: userId, email: 'email', schoolId: 'schoolId' } as UserDto;
+			user = userDoFactory.buildWithId({ email: 'email', schoolId: 'schoolId' }, userId);
 			scopes = ['openid', 'offline', 'profile', 'email', 'groups'];
-			userService.getUser.mockResolvedValue(userDto);
+			userService.findById.mockResolvedValue(user);
 		});
 
 		it('should call teamsRepo if scopes contains groups', async () => {
@@ -135,7 +132,7 @@ describe('IdTokenService', () => {
 				teamsRepo.findByUserId.mockResolvedValue(teams);
 				ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(ltiToolDo);
 				pseudonymRepo.findByUserIdAndToolId.mockResolvedValue(pseudonymDo);
-				userService.getUser.mockResolvedValue(userDto);
+				userService.findById.mockResolvedValue(user);
 				userService.getDisplayName.mockResolvedValue(expectedName);
 			});
 
@@ -143,10 +140,10 @@ describe('IdTokenService', () => {
 				const result: IdToken = await idTokenService.createIdToken(userId, scopes, clientId);
 
 				expect(result.iframe).toBeDefined();
-				expect(result.email).toEqual(userDto.email);
+				expect(result.email).toEqual(user.email);
 				expect(result.name).toEqual(expectedName);
-				expect(result.userId).toEqual(userDto.id);
-				expect(result.schoolId).toEqual(userDto.schoolId);
+				expect(result.userId).toEqual(user.id);
+				expect(result.schoolId).toEqual(user.schoolId);
 				expect(result.groups).toEqual(
 					expect.objectContaining<GroupNameIdTuple[]>([
 						{
@@ -156,7 +153,7 @@ describe('IdTokenService', () => {
 					])
 				);
 
-				expect(userService.getDisplayName).toHaveBeenCalledWith(userDto);
+				expect(userService.getDisplayName).toHaveBeenCalledWith(user);
 			});
 
 			it('iframe should be undefined if iframe cant be build', async () => {

@@ -10,8 +10,9 @@ import {
 	SchoolMigrationService,
 	UserLoginMigrationService,
 	UserMigrationService,
+	StartUserLoginMigrationCheckService,
+	UserLoginMigrationRevertService,
 } from './service';
-import { StartUserLoginMigrationCheckService } from './service/start-user-login-migration-check.service';
 import { AuthorizationModule } from '../authorization';
 
 @Module({
@@ -23,6 +24,7 @@ import { AuthorizationModule } from '../authorization';
 		UserLoginMigrationService,
 		UserLoginMigrationRepo,
 		StartUserLoginMigrationCheckService,
+		UserLoginMigrationRevertService,
 	],
 	exports: [
 		UserMigrationService,
@@ -30,6 +32,7 @@ import { AuthorizationModule } from '../authorization';
 		MigrationCheckService,
 		UserLoginMigrationService,
 		StartUserLoginMigrationCheckService,
+		UserLoginMigrationRevertService,
 	],
 })
 export class UserLoginMigrationModule {}

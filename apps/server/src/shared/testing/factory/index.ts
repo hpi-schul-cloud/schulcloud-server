@@ -7,9 +7,7 @@ export * from './card-element.factory';
 export * from './context-external-tool.factory';
 export * from './course.factory';
 export * from './coursegroup.factory';
-export * from './domainobject';
 export * from './external-tool.factory';
-export * from './federalstate.factory';
 export * from './file.factory';
 export * from './filerecord.factory';
 export * from './import-user.factory';
@@ -28,3 +26,6 @@ export * from './task.factory';
 export * from './user-and-account.test.factory';
 export * from './user.do.factory';
 export * from './user.factory';
+export * from './domainobject';
+export * from './federal-state.factory';
+

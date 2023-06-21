@@ -15,7 +15,7 @@ import {
 	CustomParameterTypeParams,
 	ToolConfigType,
 } from '../../interface';
-import { ExternalToolPostParams, ExternalToolResponse, ExternalToolSearchListResponse } from '../dto';
+import { ExternalToolCreateParams, ExternalToolResponse, ExternalToolSearchListResponse } from '../dto';
 
 describe('ToolController (API)', () => {
 	let app: INestApplication;
@@ -55,7 +55,7 @@ describe('ToolController (API)', () => {
 	});
 
 	describe('[POST] tools', () => {
-		const postParams: ExternalToolPostParams = {
+		const postParams: ExternalToolCreateParams = {
 			name: 'Tool 1',
 			parameters: [
 				{
@@ -83,7 +83,7 @@ describe('ToolController (API)', () => {
 
 		describe('when valid data is given', () => {
 			const setup = async () => {
-				const params: ExternalToolPostParams = { ...postParams };
+				const params: ExternalToolCreateParams = { ...postParams };
 
 				const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
 				const user: User = userFactory.buildWithId({ roles: [role] });
@@ -162,7 +162,7 @@ describe('ToolController (API)', () => {
 
 		describe('when user is not authenticated', () => {
 			const setup = async () => {
-				const params: ExternalToolPostParams = { ...postParams };
+				const params: ExternalToolCreateParams = { ...postParams };
 
 				const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
 				const user: User = userFactory.buildWithId({ roles: [role] });
@@ -185,7 +185,7 @@ describe('ToolController (API)', () => {
 
 		describe('when permission is missing', () => {
 			const setup = async () => {
-				const params: ExternalToolPostParams = { ...postParams };
+				const params: ExternalToolCreateParams = { ...postParams };
 
 				const role: Role = roleFactory.buildWithId({ permissions: [] });
 				const user: User = userFactory.buildWithId({ roles: [role] });
@@ -383,7 +383,7 @@ describe('ToolController (API)', () => {
 	});
 
 	describe('[POST] tools/:toolId', () => {
-		const postParams: ExternalToolPostParams = {
+		const postParams: ExternalToolCreateParams = {
 			name: 'Tool 1',
 			parameters: [
 				{

@@ -1,1 +1,1 @@
-export * from './federalstate.repo';
+export * from './federal-state.repo';
