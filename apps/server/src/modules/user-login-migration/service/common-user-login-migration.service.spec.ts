@@ -1,10 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { roleFactory, schoolDOFactory, setupEntities, userFactory } from '@shared/testing';
+import { roleFactory, schoolDOFactory, setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { Permission, RoleName, SchoolDO, User, UserLoginMigrationDO } from '@shared/domain';
 import { Action, AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
 import { SchoolService } from '@src/modules/school';
-import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration-do.factory';
 import { CommonUserLoginMigrationService } from './common-user-login-migration.service';
 import { UserLoginMigrationService } from './user-login-migration.service';
 

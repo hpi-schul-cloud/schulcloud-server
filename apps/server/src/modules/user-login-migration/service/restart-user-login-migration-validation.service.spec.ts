@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SchoolDO, UserLoginMigrationDO } from '@shared/domain';
-import { schoolDOFactory, userDoFactory } from '@shared/testing';
-import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration-do.factory';
+import { schoolDOFactory, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { RestartUserLoginMigrationValidationService } from './restart-user-login-migration-validation.service';
 import { CommonUserLoginMigrationService } from './common-user-login-migration.service';
 import { UserLoginMigrationLoggableException } from '../error';
