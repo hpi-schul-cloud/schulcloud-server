@@ -40,7 +40,7 @@ describe('RestartUserLoginMigrationValidationService', () => {
 		describe('when preconditions are met', () => {
 			const setup = () => {
 				const user = userDoFactory.buildWithId();
-
+				const userId = user.id ?? '';
 				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
@@ -48,13 +48,13 @@ describe('RestartUserLoginMigrationValidationService', () => {
 					closedAt: new Date('2023-12-17T03:24:00'),
 					finishedAt: new Date('2055-12-17T03:24:00'),
 				});
-
 				const school: SchoolDO = schoolDOFactory.buildWithId({ id: migration.id });
+				const schoolId = school.id ?? '';
 
 				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(migration);
 
-				return { userId: user.id as string, migration, schoolId: school.id as string };
+				return { userId, migration, schoolId };
 			};
 
 			it('should call ensurePermission', async () => {
@@ -77,13 +77,14 @@ describe('RestartUserLoginMigrationValidationService', () => {
 		describe('when migration could not be found', () => {
 			const setup = () => {
 				const user = userDoFactory.buildWithId();
-
+				const userId = user.id ?? '';
 				const school: SchoolDO = schoolDOFactory.buildWithId();
+				const schoolId = school.id ?? '';
 
 				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(null);
 
-				return { userId: user.id as string, schoolId: school.id as string };
+				return { userId, schoolId };
 			};
 
 			it('should throw StartUserLoginMigrationLoggableException ', async () => {
@@ -103,7 +104,9 @@ describe('RestartUserLoginMigrationValidationService', () => {
 		describe('when migration is not closed', () => {
 			const setup = () => {
 				const user = userDoFactory.buildWithId({ id: 'userId' });
+				const userId = user.id ?? '';
 				const school: SchoolDO = schoolDOFactory.buildWithId();
+				const schoolId = school.id ?? '';
 				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: school.id ?? '',
 					targetSystemId: 'targetSystemId',
@@ -115,7 +118,7 @@ describe('RestartUserLoginMigrationValidationService', () => {
 				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(migration);
 
-				return { userId: user.id as string, migration, schoolId: school.id as string };
+				return { userId, schoolId };
 			};
 
 			it('should throw UserLoginMigrationLoggableException ', async () => {
@@ -125,7 +128,7 @@ describe('RestartUserLoginMigrationValidationService', () => {
 
 				await expect(func()).rejects.toThrow(
 					new UserLoginMigrationLoggableException(
-						`Migration for school with id ${schoolId} is already started, you are not able to restart.`,
+						`Migration for school with id ${schoolId ?? ''} is already started, you are not able to restart.`,
 						schoolId
 					)
 				);
@@ -135,7 +138,9 @@ describe('RestartUserLoginMigrationValidationService', () => {
 		describe('when grace period expired', () => {
 			const setup = () => {
 				const user = userDoFactory.buildWithId();
+				const userId = user.id ?? '';
 				const school: SchoolDO = schoolDOFactory.buildWithId();
+				const schoolId = school.id ?? '';
 				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: school.id ?? '',
 					targetSystemId: 'targetSystemId',
@@ -147,7 +152,7 @@ describe('RestartUserLoginMigrationValidationService', () => {
 				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(migration);
 
-				return { userId: user.id as string, migration, schoolId: school.id as string };
+				return { userId, migration, schoolId };
 			};
 
 			it('should throw UserLoginMigrationLoggableException ', async () => {
