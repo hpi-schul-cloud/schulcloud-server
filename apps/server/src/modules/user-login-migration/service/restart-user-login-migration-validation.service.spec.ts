@@ -51,7 +51,7 @@ describe('RestartUserLoginMigrationValidationService', () => {
 				const school: SchoolDO = schoolDOFactory.buildWithId({ id: migration.id });
 				const schoolId = school.id ?? '';
 
-				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
+				commonUserLoginMigrationService.ensurePermission.mockResolvedValue();
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(migration);
 
 				return { userId, migration, schoolId };
@@ -81,7 +81,7 @@ describe('RestartUserLoginMigrationValidationService', () => {
 				const school: SchoolDO = schoolDOFactory.buildWithId();
 				const schoolId = school.id ?? '';
 
-				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
+				commonUserLoginMigrationService.ensurePermission.mockResolvedValue();
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(null);
 
 				return { userId, schoolId };
@@ -115,7 +115,7 @@ describe('RestartUserLoginMigrationValidationService', () => {
 					finishedAt: undefined,
 				});
 
-				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
+				commonUserLoginMigrationService.ensurePermission.mockResolvedValue();
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(migration);
 
 				return { userId, schoolId };
@@ -149,7 +149,7 @@ describe('RestartUserLoginMigrationValidationService', () => {
 					finishedAt: new Date('2023-01-17T03:24:00'),
 				});
 
-				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
+				commonUserLoginMigrationService.ensurePermission.mockResolvedValue();
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(migration);
 
 				return { userId, migration, schoolId };

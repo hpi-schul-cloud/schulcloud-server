@@ -824,7 +824,7 @@ describe('UserLoginMigrationService', () => {
 					startedAt: mockedDate,
 				});
 				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigrationDO);
-				schoolMigrationService.unmarkOutdatedUsers.mockResolvedValue(Promise.resolve());
+				schoolMigrationService.unmarkOutdatedUsers.mockResolvedValue();
 				userLoginMigrationRepo.save.mockResolvedValue(userLoginMigrationDO);
 
 				return {

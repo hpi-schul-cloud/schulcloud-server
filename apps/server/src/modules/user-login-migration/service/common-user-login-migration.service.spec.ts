@@ -67,7 +67,7 @@ describe('CommonUserLoginMigrationService', () => {
 				};
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				schoolService.getSchoolById.mockResolvedValue(school);
-				authorizationService.checkPermissionByReferences.mockResolvedValue(Promise.resolve());
+				authorizationService.checkPermissionByReferences.mockResolvedValue();
 
 				return {
 					user,

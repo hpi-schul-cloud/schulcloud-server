@@ -65,7 +65,7 @@ describe('StartUserLoginMigrationValidationService', () => {
 
 				const school: SchoolDO = schoolDOFactory.buildWithId({ id: migration.id });
 
-				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
+				commonUserLoginMigrationService.ensurePermission.mockResolvedValue();
 				schoolService.getSchoolById.mockResolvedValue(school);
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(null);
 
@@ -112,7 +112,7 @@ describe('StartUserLoginMigrationValidationService', () => {
 
 				schoolService.getSchoolById.mockResolvedValue(school);
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
-				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
+				commonUserLoginMigrationService.ensurePermission.mockResolvedValue();
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(null);
 
 				return { user, migration, schoolId: school.id as string };
@@ -145,7 +145,7 @@ describe('StartUserLoginMigrationValidationService', () => {
 
 				authorizationService.checkPermission.mockReturnThis();
 				schoolService.getSchoolById.mockResolvedValue(school);
-				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
+				commonUserLoginMigrationService.ensurePermission.mockResolvedValue();
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(migration);
 
 				return { userId, migration };
@@ -177,7 +177,7 @@ describe('StartUserLoginMigrationValidationService', () => {
 				const school: SchoolDO = schoolDOFactory.buildWithId();
 
 				authorizationService.checkPermission.mockReturnThis();
-				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
+				commonUserLoginMigrationService.ensurePermission.mockResolvedValue();
 				schoolService.getSchoolById.mockResolvedValue(school);
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(migration);
 
