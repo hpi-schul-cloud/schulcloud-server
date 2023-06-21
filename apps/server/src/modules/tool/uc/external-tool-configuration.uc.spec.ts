@@ -16,7 +16,7 @@ import { contextExternalToolDOFactory, setupEntities, userFactory } from '@share
 import { externalToolDOFactory, schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/tool';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
-import { ContextExternalToolService, ExternalToolService, SchoolExternalToolService } from '@src/modules/tool/service';
+import { ContextExternalToolService, ExternalToolService, SchoolExternalToolService } from '../service';
 import { ExternalToolConfigurationUc } from './external-tool-configuration.uc';
 import { ToolContextType } from '../interface';
 

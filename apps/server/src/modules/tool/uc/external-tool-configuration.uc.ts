@@ -12,8 +12,12 @@ import { Page } from '@shared/domain/domainobject/page';
 import { ExternalToolDO } from '@shared/domain/domainobject/tool';
 import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import { ToolContextType } from '../interface';
-import { ContextExternalToolService, ExternalToolService, SchoolExternalToolService } from '../service';
-import { ContextTypeMapper } from '../service/mapper';
+import {
+	ContextExternalToolService,
+	ExternalToolService,
+	SchoolExternalToolService,
+	ContextTypeMapper,
+} from '../service';
 
 @Injectable()
 export class ExternalToolConfigurationUc {
@@ -80,8 +84,9 @@ export class ExternalToolConfigurationUc {
 			schoolExternalTools,
 			toolIdsInUse
 		);
+		const resolved: Promise<[ExternalToolDO[], string[]]> = Promise.all([availableTools, availableSchoolToolIds]);
 
-		return Promise.all([availableTools, availableSchoolToolIds]);
+		return resolved;
 	}
 
 	private filterForSchoolExternalToolsInUse(

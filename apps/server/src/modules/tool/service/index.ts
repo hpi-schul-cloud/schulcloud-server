@@ -6,3 +6,4 @@ export * from './validation/common-tool-validation.service';
 export * from './validation/external-tool-validation.service';
 export * from './validation/context-external-tool-validation.service';
 export * from './validation/school-external-tool-validation.service';
+export * from './mapper';
