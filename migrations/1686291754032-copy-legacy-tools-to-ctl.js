@@ -17,15 +17,17 @@ const LtiTool = mongoose.model(
 			name: { type: String, required: true },
 			url: { type: String, required: true },
 			key: { type: String },
-			secret: { type: String, required: true, default: 'none' }, // default value?
+			secret: { type: String, required: true, default: 'none' },
 			logo_url: { type: String },
 			lti_message_type: { type: String },
 			lti_version: { type: String },
 			resource_link_id: { type: String },
-			roles: {
-				type: String,
-				enum: ['Learner', 'Instructor', 'ContentDeveloper', 'Administrator', 'Mentor', 'TeachingAssistant'],
-			},
+			roles: [
+				{
+					type: String,
+					enum: ['Learner', 'Instructor', 'ContentDeveloper', 'Administrator', 'Mentor', 'TeachingAssistant'],
+				},
+			],
 			privacy_permission: {
 				type: String,
 				enum: ['anonymous', 'e-mail', 'name', 'public', 'pseudonymous'],
@@ -60,27 +62,22 @@ const ExternalTool = mongoose.model(
 			name: { type: String, unique: true },
 			url: { type: String },
 			logoUrl: { type: String },
-
-			// basic Config
-			config_type: { type: String }, // required: true?
-			config_baseUrl: { type: String }, // required: true?
-			// Outh Config
-			config_clientId: { type: String }, // required: true?
-			config_skipConsent: { type: Boolean }, // required: true?
-			// Lti Config
-			config_key: { type: String }, // required: true?
-			config_secret: { type: String }, // required: true? default = 'none'?
+			config_type: { type: String, required: true },
+			config_baseUrl: { type: String, required: true },
+			config_clientId: { type: String },
+			config_skipConsent: { type: Boolean },
+			config_key: { type: String },
+			config_secret: { type: String },
 			config_resource_link_id: { type: String },
 			config_lti_message_type: {
 				type: String,
 				enum: ['basic-lti-launch-request', 'LtiResourceLinkRequest', 'LtiDeepLinkingRequest'],
-			}, // required: true?
+			},
 			config_privacy_permission: {
 				type: String,
 				enum: ['anonymous', 'e-mail', 'name', 'public', 'pseudonymous'],
 				default: 'anonymous',
-			}, // default? required: true?
-
+			},
 			parameters: [
 				{
 					type: {
@@ -102,8 +99,7 @@ const ExternalTool = mongoose.model(
 						},
 						type: {
 							type: String,
-							// change enum to context version?
-							enum: ['string', 'number', 'boolean', 'auto_courseid', 'auto_coursename', 'auto_schoolid'],
+							enum: ['string', 'number', 'boolean', 'auto_contextid', 'auto_contextname', 'auto_schoolid'],
 							required: true,
 						},
 						isOptional: { type: Boolean, required: true },
@@ -130,7 +126,7 @@ const SchoolExternalTool = mongoose.model(
 		{
 			_id: { type: Schema.Types.ObjectId, required: true },
 			tool: { type: Schema.Types.ObjectId, ref: 'externalTool', required: true },
-			school: { type: Schema.Types.ObjectId, ref: 'school', required: true }, // delete ref or create schoolSchema?
+			school: { type: Schema.Types.ObjectId, required: true },
 			schoolParameters: [{ type: { key: { type: String }, value: { type: String } } }],
 			toolVersion: { type: Number, required: true },
 			createdAt: { type: Date, default: Date.now },
@@ -149,7 +145,7 @@ const ContextExternalTool = mongoose.model(
 		{
 			_id: { type: Schema.Types.ObjectId, required: true },
 			schoolTool: { type: Schema.Types.ObjectId, ref: 'schoolExternalTool', required: true },
-			contextId: { type: Schema.Types.ObjectId, required: true }, // ref to course?
+			contextId: { type: Schema.Types.ObjectId, required: true },
 			contextType: { type: String, enum: ['course'], required: true },
 			contextToolName: { type: String },
 			parameters: [{ type: { key: { type: String }, value: { type: String } } }],
@@ -169,7 +165,7 @@ const Course = mongoose.model(
 	new mongoose.Schema(
 		{
 			_id: { type: Schema.Types.ObjectId, required: true },
-			school: { type: Schema.Types.ObjectId, required: true }, // ref? extra Schema?
+			school: { type: Schema.Types.ObjectId, required: true },
 		},
 		{
 			timestamps: true,
@@ -183,12 +179,12 @@ function mapToExternalToolParameter(ltiToolTemplate) {
 		return {
 			name: parameter.key,
 			displayName: parameter.key,
-			// description: '', // is optional
-			// default: parameter.value, // is optional
-			// regex: '', // is optional
-			// regexComment: '', // is optional
-			scope: 'context', // always scope: course/context?
-			location: 'body', // body
+			description: '',
+			default: parameter.value,
+			regex: '',
+			regexComment: '',
+			scope: 'context',
+			location: 'body',
 			type: 'string',
 			isOptional: true,
 		};
@@ -277,12 +273,8 @@ module.exports = {
 			return;
 		}
 
-		//
-		//
 		// FIND ALL LTI TOOL TEMPLATES
 		const ltiToolTemplates = await LtiTool.find({
-			// with name Bettermarks or Nextcloud
-			// normally we don't need to check for name, if we want to migrate all ltitools
 			$or: [{ name: { $regex: `Bettermarks` } }, { name: { $regex: `Nextcloud` } }],
 			isTemplate: true,
 		})
@@ -291,11 +283,10 @@ module.exports = {
 
 		if ((ltiToolTemplates || []).length === 0) {
 			alert('No LtiTool Template found.');
-			// Create ToolTemplate?
 			return;
 		}
 
-		// --- Migrate LtiTools ---
+		// FIND ALL LEGACY TOOLS
 		const ltiTools = await LtiTool.find({
 			$or: [{ name: { $regex: `Bettermarks` } }, { name: { $regex: `Nextcloud` } }],
 			isTemplate: false,
@@ -303,14 +294,12 @@ module.exports = {
 			.lean()
 			.exec();
 
-		// --- ITERATE OVER ALL LTITOOLS ---
 		/* eslint-disable no-await-in-loop */
 		for (const ltiTool of ltiTools) {
 			// GET TOOLTEMPLATE
 			const toolTemplate = ltiToolTemplates.filter((template) => template.name === ltiTool.name);
 
 			// GET COURSE
-			// courseSchema?
 			const course = await Course.findOne({
 				ltiToolIds: { $in: [ltiTool.id] },
 			})
@@ -325,34 +314,33 @@ module.exports = {
 				.lean()
 				.exec();
 
-			// CHECK IF EXTERNALTOOL EXISTS, IF NOT, CREATE ONE
+			// CHECK IF EXTERNALTOOL EXISTS
 			if (externalTool === undefined) {
 				externalTool = mapToExternalTool(toolTemplate);
 				externalTool = await ExternalTool.save(externalTool);
 			}
 
-			// GET/CREATE SCHOOLEXTERNALTOOL
 			let schoolExternalTool;
 
+			// GET SCHOOLEXTERNALTOOL
 			const schoolExternalTools = await SchoolExternalTool.find({
-				tool: externalTool._id,
 				school: course.schoolId,
+				tool: externalTool._id,
 				name: externalTool.name,
 				url: externalTool.url, // or other paramter for the query
 			})
 				.lean()
 				.exec();
 
+			// CHECK IF SCHOOLEXTERNALTOOL EXISTS
 			if ((schoolExternalTools || []).length === 0) {
 				schoolExternalTool = mapToSchoolExternalTool(externalTool, course);
-
 				schoolExternalTool = await SchoolExternalTool.save(schoolExternalTool);
 			} else {
 				schoolExternalTool = schoolExternalTools.filter((tool) => tool.name === externalTool.name); // filter with more parameter?
 			}
 
-			// ----------- ContextExternalTool -----------
-
+			// GET CONTEXTEXTERNALTOOL
 			const contextExternalTools = await ContextExternalTool.find({
 				schoolTool: schoolExternalTool.id,
 				contextId: course.Id,
@@ -361,6 +349,7 @@ module.exports = {
 				.lean()
 				.exec();
 
+			// CHECK IF CONTEXTEXTERNALTOOL EXISTS
 			if ((contextExternalTools || []).length === 0) {
 				const contextExternalTool = mapToContextExternalTool(schoolExternalTool, course);
 
