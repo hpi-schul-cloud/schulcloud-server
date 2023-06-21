@@ -84,6 +84,7 @@ export class ToolController {
 			pagination.skip,
 			pagination.limit
 		);
+
 		return response;
 	}
 
@@ -94,6 +95,7 @@ export class ToolController {
 	): Promise<ExternalToolResponse> {
 		const externalToolDO: ExternalToolDO = await this.externalToolUc.getExternalTool(currentUser.userId, params.toolId);
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(externalToolDO);
+
 		return mapped;
 	}
 
@@ -115,17 +117,24 @@ export class ToolController {
 		);
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(updated);
 		this.logger.debug(`ExternalTool with id ${mapped.id} was updated by user with id ${currentUser.userId}`);
+
 		return mapped;
 	}
 
 	@Delete(':toolId')
+	@ApiForbiddenResponse({ description: 'User is not allowed to access this resource.' })
+	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
 	async deleteExternalTool(@CurrentUser() currentUser: ICurrentUser, @Param() params: ToolIdParams): Promise<void> {
 		const promise: Promise<void> = this.externalToolUc.deleteExternalTool(currentUser.userId, params.toolId);
 		this.logger.debug(`ExternalTool with id ${params.toolId} was deleted by user with id ${currentUser.userId}`);
+
 		return promise;
 	}
 
 	@Get('/reference/:contextType/:contextId')
+	@ApiOkResponse({ description: 'The Tool has been successfully updated.', type: ToolReferenceListResponse })
+	@ApiForbiddenResponse({ description: 'User is not allowed to access this resource.' })
+	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
 	async getToolReferences(
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		@CurrentUser() currentUser: ICurrentUser,
@@ -147,6 +156,7 @@ export class ToolController {
 				openInNewTab: false,
 			}),
 		]);
+
 		return Promise.resolve(list);
 	}
 }
