@@ -1,4 +1,11 @@
-import type { Card, Column, ColumnBoard, FileElement, RichTextElement, TaskElement } from '../../../domainobject';
+import type {
+	Card,
+	Column,
+	ColumnBoard,
+	FileElement,
+	RichTextElement,
+	SubmissionContainerElement,
+} from '../../../domainobject';
 import type { CardNode } from '../card-node.entity';
 import type { ColumnBoardNode } from '../column-board-node.entity';
 import type { ColumnNode } from '../column-node.entity';
@@ -12,5 +19,5 @@ export interface BoardDoBuilder {
 	buildCard(boardNode: CardNode): Card;
 	buildFileElement(boardNode: FileElementNode): FileElement;
 	buildRichTextElement(boardNode: RichTextElementNode): RichTextElement;
-	buildTaskElement(boardNode: TaskElementNode): TaskElement;
+	buildTaskElement(boardNode: TaskElementNode): SubmissionContainerElement;
 }

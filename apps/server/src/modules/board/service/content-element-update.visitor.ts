@@ -7,7 +7,7 @@ import {
 	ColumnBoard,
 	FileElement,
 	RichTextElement,
-	TaskElement,
+	SubmissionContainerElement,
 } from '@shared/domain';
 import { FileContentBody, RichTextContentBody, TaskContentBody } from '../controller/dto';
 
@@ -49,7 +49,7 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 		}
 	}
 
-	visitTaskElement(taskElement: TaskElement): void {
+	visitTaskElement(taskElement: SubmissionContainerElement): void {
 		if (this.content instanceof TaskContentBody) {
 			taskElement.dueDate = this.content.dueDate;
 		} else {

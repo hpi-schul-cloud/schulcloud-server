@@ -2,7 +2,7 @@ import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import type { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
 // todo: to be renamed
-export class TaskElement extends BoardComposite<TaskElementProps> {
+export class SubmissionContainerElement extends BoardComposite<TaskElementProps> {
 	get dueDate(): Date {
 		return this.props.dueDate;
 	}

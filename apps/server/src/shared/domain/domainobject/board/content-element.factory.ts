@@ -3,7 +3,7 @@ import { InputFormat } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { FileElement } from './file-element.do';
 import { RichTextElement } from './rich-text-element.do';
-import { TaskElement } from './task-element.do';
+import { SubmissionContainerElement } from './task-element.do';
 import { AnyContentElementDo } from './types/any-content-element-do';
 import { ContentElementType } from './types/content-elements.enum';
 
@@ -59,7 +59,7 @@ export class ContentElementFactory {
 	}
 
 	private buildTask() {
-		const element = new TaskElement({
+		const element = new SubmissionContainerElement({
 			id: new ObjectId().toHexString(),
 			dueDate: new Date(),
 			children: [],
