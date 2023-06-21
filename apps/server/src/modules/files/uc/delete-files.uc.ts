@@ -1,21 +1,26 @@
 /* eslint-disable no-await-in-loop */
+import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
-import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+import { File, StorageProvider } from '@shared/domain';
 import { FilesRepo } from '@shared/repo';
-import { File } from '@shared/domain';
-import { FileStorageAdapter } from '@shared/infra/filestorage';
+import { StorageProviderRepo } from '@shared/repo/storageprovider/storageprovider.repo';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 
 @Injectable()
 export class DeleteFilesUc {
+	private s3ClientMap: Map<string, S3Client> = new Map();
+
 	constructor(
 		private readonly filesRepo: FilesRepo,
-		private readonly fileStorageAdapter: FileStorageAdapter,
+		private readonly storageProviderRepo: StorageProviderRepo,
 		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(DeleteFilesUc.name);
 	}
 
 	public async deleteMarkedFiles(thresholdDate: Date, batchSize: number): Promise<void> {
+		await this.initializeS3ClientMap();
+
 		let batchCounter = 0;
 		let numberOfFilesInBatch = 0;
 		let numberOfProcessedFiles = 0;
@@ -28,9 +33,12 @@ export class DeleteFilesUc {
 			const promises = files.map((file) => this.deleteFile(file));
 			const results = await Promise.all(promises);
 
+			let numberOfFailingFilesInBatch = 0;
+
 			results.forEach((result) => {
 				if (!result.success) {
 					failingFileIds.push(result.fileId);
+					numberOfFailingFilesInBatch += 1;
 				}
 			});
 
@@ -38,7 +46,9 @@ export class DeleteFilesUc {
 			numberOfProcessedFiles += files.length;
 			batchCounter += 1;
 
-			this.logger.log(`Finished batch ${batchCounter} with ${numberOfFilesInBatch} files`);
+			this.logger.log(
+				`Finished batch ${batchCounter} with ${numberOfFilesInBatch} files and ${numberOfFailingFilesInBatch} failed deletions`
+			);
 		} while (numberOfFilesInBatch > 0);
 
 		this.logger.log(
@@ -52,10 +62,35 @@ export class DeleteFilesUc {
 		}
 	}
 
+	private async initializeS3ClientMap() {
+		const providers = await this.storageProviderRepo.findAll();
+
+		providers.forEach((provider) => {
+			this.s3ClientMap.set(provider.id, this.createClient(provider));
+		});
+
+		this.logger.log(`Initialized s3ClientMap with ${this.s3ClientMap.size} clients.`);
+	}
+
+	private createClient(storageProvider: StorageProvider): S3Client {
+		const client = new S3Client({
+			endpoint: storageProvider.endpointUrl,
+			forcePathStyle: true,
+			region: storageProvider.region,
+			tls: true,
+			credentials: {
+				accessKeyId: storageProvider.accessKeyId,
+				secretAccessKey: storageProvider.secretAccessKey,
+			},
+		});
+
+		return client;
+	}
+
 	private async deleteFile(file: File): Promise<{ fileId: string; success: boolean }> {
 		try {
 			if (!file.isDirectory) {
-				await this.fileStorageAdapter.deleteFile(file);
+				await this.deleteFileInStorage(file);
 			}
 			await this.filesRepo.delete(file);
 
@@ -65,5 +100,16 @@ export class DeleteFilesUc {
 
 			return { fileId: file.id, success: false };
 		}
+	}
+
+	private async deleteFileInStorage(file: File) {
+		const bucket = file.bucket as string;
+		const storageFileName = file.storageFileName as string;
+		const deletionCommand = new DeleteObjectCommand({ Bucket: bucket, Key: storageFileName });
+
+		const storageProvider = file.storageProvider as StorageProvider;
+		const client = this.s3ClientMap.get(storageProvider.id) as S3Client;
+
+		await client.send(deletionCommand);
 	}
 }
