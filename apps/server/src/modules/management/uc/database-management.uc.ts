@@ -1,5 +1,3 @@
-/* eslint-disable no-await-in-loop */
-
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Inject, Injectable } from '@nestjs/common';
