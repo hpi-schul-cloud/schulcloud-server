@@ -1,7 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileStorageAdapter } from '@shared/infra/filestorage';
-import { FilesRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { DeleteFilesUc } from '../uc';
 import { DeleteFilesConsole } from './delete-files.console';
@@ -17,14 +15,6 @@ describe('DeleteFilesConsole', () => {
 				{
 					provide: DeleteFilesUc,
 					useValue: createMock<DeleteFilesUc>(),
-				},
-				{
-					provide: FilesRepo,
-					useValue: {},
-				},
-				{
-					provide: FileStorageAdapter,
-					useValue: {},
 				},
 				{
 					provide: LegacyLogger,
