@@ -26,12 +26,12 @@ import { ServerTestModule } from '@src/modules/server/server.module';
 import { ObjectId } from 'bson';
 import { Request } from 'express';
 import request, { Response } from 'supertest';
+import { ToolContextType } from '../../interface';
 import {
 	ContextExternalToolPostParams,
 	ContextExternalToolResponse,
 	ContextExternalToolSearchListResponse,
 } from '../dto';
-import { ToolContextType } from '../../interface';
 
 describe('ToolContextController (API)', () => {
 	let app: INestApplication;
@@ -93,7 +93,7 @@ describe('ToolContextController (API)', () => {
 				const postParams: ContextExternalToolPostParams = {
 					schoolToolId: schoolExternalTool.id,
 					contextId: course.id,
-					contextToolName: course.name,
+					displayName: course.name,
 					contextType: ToolContextType.COURSE,
 					parameters: [paramEntry],
 					toolVersion: 1,
@@ -125,7 +125,7 @@ describe('ToolContextController (API)', () => {
 								id: expect.any(String),
 								schoolToolId: postParams.schoolToolId,
 								contextId: postParams.contextId,
-								contextToolName: postParams.contextToolName,
+								displayName: postParams.displayName,
 								contextType: postParams.contextType,
 								parameters: postParams.parameters,
 								toolVersion: postParams.toolVersion,
@@ -361,7 +361,7 @@ describe('ToolContextController (API)', () => {
 							schoolToolId: contextExternalTool1.schoolTool.id,
 							contextId: contextExternalTool1.contextId,
 							contextType: ToolContextType.COURSE,
-							contextToolName: contextExternalTool1.contextToolName,
+							displayName: contextExternalTool1.displayName,
 							toolVersion: contextExternalTool1.toolVersion,
 						},
 						{
@@ -375,7 +375,7 @@ describe('ToolContextController (API)', () => {
 							schoolToolId: contextExternalTool2.schoolTool.id,
 							contextId: contextExternalTool2.contextId,
 							contextType: ToolContextType.COURSE,
-							contextToolName: contextExternalTool2.contextToolName,
+							displayName: contextExternalTool2.displayName,
 							toolVersion: contextExternalTool2.toolVersion,
 						},
 					],

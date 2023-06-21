@@ -8,7 +8,6 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-import { RoleService } from '@src/modules/role';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import jwt from 'jsonwebtoken';
@@ -31,7 +30,6 @@ describe('IservProvisioningStrategy', () => {
 
 	let schoolService: DeepMocked<SchoolService>;
 	let userService: DeepMocked<UserService>;
-	let roleService: DeepMocked<RoleService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -43,10 +41,6 @@ describe('IservProvisioningStrategy', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: RoleService,
-					useValue: createMock<RoleService>(),
-				},
-				{
 					provide: SchoolService,
 					useValue: createMock<SchoolService>(),
 				},
@@ -56,7 +50,6 @@ describe('IservProvisioningStrategy', () => {
 		strategy = module.get(IservProvisioningStrategy);
 		schoolService = module.get(SchoolService);
 		userService = module.get(UserService);
-		roleService = module.get(RoleService);
 	});
 
 	afterAll(async () => {
@@ -96,7 +89,9 @@ describe('IservProvisioningStrategy', () => {
 		describe('when the operation succeeds', () => {
 			it('should return the user data', async () => {
 				const { input, userUUID, email } = setup();
-				const user: UserDO = userDoFactory.buildWithId({ externalId: userUUID });
+				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.STUDENT }]).buildWithId({
+					externalId: userUUID,
+				});
 				const school: SchoolDO = schoolDOFactory.buildWithId({ externalId: 'schoolExternalId' });
 				const roleDto: RoleDto = new RoleDto({
 					name: RoleName.STUDENT,
@@ -107,7 +102,6 @@ describe('IservProvisioningStrategy', () => {
 				});
 				userService.findByExternalId.mockResolvedValue(user);
 				schoolService.getSchoolById.mockResolvedValue(school);
-				roleService.findByIds.mockResolvedValue([roleDto]);
 
 				const result: OauthDataDto = await strategy.getData(input);
 

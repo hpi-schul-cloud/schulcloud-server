@@ -16,7 +16,7 @@ export class BoardDoRepo {
 	) {}
 
 	async findById(id: EntityId, depth?: number): Promise<AnyBoardDo> {
-		const boardNode = await this.em.findOneOrFail(BoardNode, id);
+		const boardNode = await this.boardNodeRepo.findById(id);
 		const descendants = await this.boardNodeRepo.findDescendants(boardNode, depth);
 		const domainObject = new BoardDoBuilderImpl(descendants).buildDomainObject(boardNode);
 
@@ -73,19 +73,19 @@ export class BoardDoRepo {
 	}
 
 	async findParentOfId(childId: EntityId): Promise<AnyBoardDo | undefined> {
-		const boardNode = await this.em.findOneOrFail(BoardNode, childId);
+		const boardNode = await this.boardNodeRepo.findById(childId);
 		const domainObject = boardNode.parentId ? this.findById(boardNode.parentId) : undefined;
 
 		return domainObject;
 	}
 
 	async getAncestorIds(boardDo: AnyBoardDo): Promise<EntityId[]> {
-		const boardNode = await this.em.findOneOrFail(BoardNode, boardDo.id);
+		const boardNode = await this.boardNodeRepo.findById(boardDo.id);
 		return boardNode.ancestorIds;
 	}
 
 	async save(domainObject: AnyBoardDo | AnyBoardDo[], parent?: AnyBoardDo): Promise<void> {
-		const saveVisitor = new RecursiveSaveVisitor(this.em);
+		const saveVisitor = new RecursiveSaveVisitor(this.em, this.boardNodeRepo);
 		await saveVisitor.save(domainObject, parent);
 		await this.em.flush();
 	}

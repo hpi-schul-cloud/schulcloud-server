@@ -1,5 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ColumnBoardNode } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cardNodeFactory,
@@ -204,6 +205,34 @@ describe('BoardNodeRepo', () => {
 				const returnedDescendants = Object.values(result).flat();
 
 				expect(returnedDescendants).toHaveLength(0);
+			});
+		});
+	});
+
+	describe('findById', () => {
+		describe('when boardNode exists in the database but NOT in the unit-of-work', () => {
+			it('should return an equal object', async () => {
+				const columnBoard = columnBoardNodeFactory.build();
+				await em.persistAndFlush(columnBoard);
+
+				em.clear();
+
+				const boardNode = await repo.findById(columnBoard.id);
+
+				expect(columnBoard).toEqual(boardNode);
+			});
+		});
+
+		describe('when boardNode exists NOT in the database but in the unit of work', () => {
+			it('should return the exact same object', async () => {
+				const columnBoard = columnBoardNodeFactory.build();
+				await em.persistAndFlush(columnBoard);
+
+				await em.nativeDelete(ColumnBoardNode, columnBoard.id);
+
+				const boardNode = await repo.findById(columnBoard.id);
+
+				expect(columnBoard === boardNode).toBe(true);
 			});
 		});
 	});
