@@ -1,7 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { INestApplication, StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigService } from '@nestjs/config';
 import { Permission } from '@shared/domain';
 import { cleanupCollections, courseFactory, UserAndAccountTestFactory, TestApiClient } from '@shared/testing';
 import { CourseMetadataListResponse, CourseResponse } from '@src/modules/learnroom/controller/dto';
@@ -19,34 +18,19 @@ const createTeacher = () => {
 	return { account: teacherAccount, user: teacherUser };
 };
 
-class MockConfigService extends ConfigService {
-	get(key: string) {
-		// Provide the desired values for your environment variables
-		if (key === 'FEATURE_IMSCC_COURSE_EXPORT_ENABLED') {
-			return 'true'; // or 'false' based on your test case
-		}
-		// Handle other environment variables as needed
-		return super.get();
-	}
-}
 describe('Course Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let configService: DeepMocked<ConfigService>;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			.overrideProvider(ConfigService)
-			.useValue(new MockConfigService())
-			.compile();
+		}).compile();
 
-		em = module.get(EntityManager);
-		configService = module.get<ConfigService>(ConfigService);
 		app = module.createNestApplication();
 		await app.init();
+		em = module.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'courses');
 	});
 
@@ -212,13 +196,11 @@ describe('Course Controller (API)', () => {
 			const { teacher, course } = setup();
 			await em.persistAndFlush([teacher.account, teacher.user, course]);
 			em.clear();
-			console.log(configService);
 			const version = { version: '1.1.0' };
 
 			const loggedInClient = await testApiClient.login(teacher.account);
 			const response = await loggedInClient.get(`${course.id}/export`).query(version);
-			expect(configService.get('FEATURE_IMSCC_COURSE_EXPORT_ENABLED')).toBe(true);
-			console.log(configService);
+
 			expect(response.statusCode).toEqual(200);
 			const file = response.body as StreamableFile;
 			expect(file).toBeDefined();
@@ -227,5 +209,16 @@ describe('Course Controller (API)', () => {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			expect(response.header['content-disposition']).toBe('attachment;');
 		});
+		/* it('should not export course if the export is disable', async () => {
+			const { teacher, course } = setup();
+			Configuration.set('FEATURE_IMSCC_COURSE_EXPORT_ENABLED', false);
+			const version = { version: '1.1.0' };
+			await em.persistAndFlush([course, teacher.account, teacher.user]);
+			em.clear();
+
+			const loggedInClient = await testApiClient.login(teacher.account);
+			const response = await loggedInClient.get(`${course.id}/export`).query(version);
+			expect(response.statusCode).toEqual(404);
+		}); */
 	});
 });
