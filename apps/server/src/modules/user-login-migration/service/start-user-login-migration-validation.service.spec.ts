@@ -4,6 +4,7 @@ import { SchoolService } from '@src/modules/school';
 import { SchoolDO, User, UserLoginMigrationDO } from '@shared/domain';
 import { schoolDOFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
+import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration-do.factory';
 import { StartUserLoginMigrationValidationService } from './start-user-login-migration-validation.service';
 import { CommonUserLoginMigrationService } from './common-user-login-migration.service';
 import { UserLoginMigrationLoggableException } from '../error';
@@ -56,7 +57,7 @@ describe('StartUserLoginMigrationValidationService', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date(),
@@ -103,7 +104,7 @@ describe('StartUserLoginMigrationValidationService', () => {
 
 				const user: User = userFactory.buildWithId();
 
-				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date(),
@@ -132,7 +133,7 @@ describe('StartUserLoginMigrationValidationService', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date(),
@@ -167,7 +168,7 @@ describe('StartUserLoginMigrationValidationService', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date(),

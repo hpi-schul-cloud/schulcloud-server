@@ -12,6 +12,7 @@ import { ProvisioningService } from '@src/modules/provisioning';
 import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
 import { SchoolService } from '@src/modules/school';
 import { AuthorizationService } from '@src/modules/authorization';
+import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration-do.factory';
 import { Oauth2MigrationParams } from '../controller/dto/oauth2-migration.params';
 import { OAuthMigrationError, SchoolMigrationError, UserLoginMigrationError } from '../error';
 import { PageTypes } from '../interface/page-types.enum';
@@ -126,7 +127,7 @@ describe('UserLoginMigrationUc', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const migrations: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const migrations: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date(),

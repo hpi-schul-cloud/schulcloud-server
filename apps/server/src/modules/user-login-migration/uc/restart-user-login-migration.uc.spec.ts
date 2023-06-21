@@ -3,6 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@src/core/logger';
 import { SchoolDO, UserLoginMigrationDO } from '@shared/domain';
 import { schoolDOFactory } from '@shared/testing';
+import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration-do.factory';
 import { UserLoginMigrationService, RestartUserLoginMigrationValidationService } from '../service';
 import { RestartUserLoginMigrationUc } from './restart-user-login-migration.uc';
 import { UserLoginMigrationLoggableException } from '../error';
@@ -51,7 +52,7 @@ describe('RestartUserLoginMigrationUc', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date(),
@@ -96,7 +97,7 @@ describe('RestartUserLoginMigrationUc', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date(),
