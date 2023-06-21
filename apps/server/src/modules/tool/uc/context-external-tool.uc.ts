@@ -64,7 +64,7 @@ export class ContextExternalToolUc {
 		const toolPromises = tools.map(async (tool) => {
 			try {
 				await this.contextExternalToolService.ensureContextPermissions(userId, tool, {
-					requiredPermissions: [Permission.CONTEXT_TOOL_USER],
+					requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 					action: Action.read,
 				});
 
