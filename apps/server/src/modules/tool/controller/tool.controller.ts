@@ -17,6 +17,7 @@ import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate } from '../uc';
 import {
+	ContextExternalToolContextParams,
 	ExternalToolCreateParams,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
@@ -125,7 +126,12 @@ export class ToolController {
 	}
 
 	@Get('/reference/:contextType/:contextId')
-	async getToolReferences(): Promise<ToolReferenceListResponse> {
+	async getToolReferences(
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		@CurrentUser() currentUser: ICurrentUser,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		@Param() params: ContextExternalToolContextParams
+	): Promise<ToolReferenceListResponse> {
 		const list: ToolReferenceListResponse = new ToolReferenceListResponse([
 			new ToolReferenceResponse({
 				logoUrl: 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png',
