@@ -5962,5 +5962,364 @@
 			"$date": "2022-09-29T06:51:06.242Z"
 		},
 		"__v" : 0
+	},
+	{
+		"_id": {
+			"$oid": "6492cfa7ad0aa141f4e36354"
+		},
+		"consent": {
+			"parentConsents": [],
+			"userConsent": {
+				"form": "digital",
+				"privacyConsent": false,
+				"termsOfUseConsent": false,
+				"dateOfPrivacyConsent": {
+					"$date": "2023-06-21T10:23:35.977Z"
+				},
+				"dateOfTermsOfUseConsent": {
+					"$date": "2023-06-21T10:23:35.977Z"
+				}
+			}
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c98"
+			}
+		],
+		"emailSearchValues": [
+			"l",
+			"le",
+			"leh",
+			"ehr",
+			"hre",
+			"rer",
+			"ers",
+			"rsv",
+			"svs",
+			"vs@",
+			"s@s",
+			"@sc",
+			"sch",
+			"chu",
+			"hul",
+			"c",
+			"cl",
+			"clo",
+			"lou",
+			"oud",
+			"ud.",
+			"d.o",
+			".or",
+			"org"
+		],
+		"firstNameSearchValues": [
+			"L",
+			"Li",
+			"Lie",
+			"ies",
+			"ese",
+			"sel",
+			"elo",
+			"lot",
+			"ott",
+			"tte"
+		],
+		"lastNameSearchValues": [
+			"L",
+			"Le",
+			"Leh",
+			"ehr",
+			"hrk",
+			"rkr",
+			"kra",
+			"raf",
+			"aft"
+		],
+		"forcePasswordChange": false,
+		"features": [],
+		"deletedAt": null,
+		"firstName": "Lieselotte",
+		"lastName": "Lehrkraft",
+		"email": "lehrersvs@schul-cloud.org",
+		"schoolId": {
+			"$oid": "6492cc63ad0aa141f4e361d1"
+		},
+		"parents": [],
+		"createdAt": {
+			"$date": "2023-06-21T10:23:35.797Z"
+		},
+		"updatedAt": {
+			"$date": "2023-06-21T10:23:35.977Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6492d064ad0aa141f4e363ca"
+		},
+		"consent": {
+			"parentConsents": [],
+			"userConsent": {
+				"form": "digital",
+				"privacyConsent": false,
+				"termsOfUseConsent": false,
+				"dateOfPrivacyConsent": {
+					"$date": "2023-06-21T10:26:44.507Z"
+				},
+				"dateOfTermsOfUseConsent": {
+					"$date": "2023-06-21T10:26:44.507Z"
+				}
+			}
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c99"
+			}
+		],
+		"emailSearchValues": [
+			"s",
+			"sc",
+			"sch",
+			"chu",
+			"hue",
+			"uel",
+			"ele",
+			"ler",
+			"eri",
+			"rin",
+			"ins",
+			"nsv",
+			"svs",
+			"vs@",
+			"s@s",
+			"@sc",
+			"sch",
+			"chu",
+			"hul",
+			"c",
+			"cl",
+			"clo",
+			"lou",
+			"oud",
+			"ud.",
+			"d.o",
+			".or",
+			"org"
+		],
+		"firstNameSearchValues": [
+			"S",
+			"Sc",
+			"Sch",
+			"chw",
+			"hwa",
+			"wan",
+			"anh",
+			"nhi",
+			"hil",
+			"ild",
+			"lde"
+		],
+		"lastNameSearchValues": [
+			"S",
+			"Sc",
+			"Sch",
+			"chü",
+			"hül",
+			"üle",
+			"ler",
+			"eri",
+			"rin"
+		],
+		"forcePasswordChange": false,
+		"features": [],
+		"deletedAt": null,
+		"firstName": "Schwanhilde",
+		"lastName": "Schülerin",
+		"email": "schuelerinsvs@schul-cloud.org",
+		"schoolId": {
+			"$oid": "6492cc63ad0aa141f4e361d1"
+		},
+		"parents": [],
+		"createdAt": {
+			"$date": "2023-06-21T10:26:44.352Z"
+		},
+		"updatedAt": {
+			"$date": "2023-06-21T10:26:44.507Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6492d0dead0aa141f4e36440"
+		},
+		"consent": {
+			"parentConsents": [],
+			"userConsent": {
+				"form": "digital",
+				"privacyConsent": false,
+				"termsOfUseConsent": false,
+				"dateOfPrivacyConsent": {
+					"$date": "2023-06-21T10:28:46.567Z"
+				},
+				"dateOfTermsOfUseConsent": {
+					"$date": "2023-06-21T10:28:46.567Z"
+				}
+			}
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c99"
+			}
+		],
+		"emailSearchValues": [
+			"s",
+			"sc",
+			"sch",
+			"chu",
+			"hue",
+			"uel",
+			"ele",
+			"ler",
+			"ers",
+			"rsv",
+			"svs",
+			"vs@",
+			"s@s",
+			"@sc",
+			"sch",
+			"chu",
+			"hul",
+			"c",
+			"cl",
+			"clo",
+			"lou",
+			"oud",
+			"ud.",
+			"d.o",
+			".or",
+			"org"
+		],
+		"firstNameSearchValues": [
+			"S",
+			"Sc",
+			"Sch",
+			"chw",
+			"hwi",
+			"wie",
+			"ied",
+			"edh",
+			"dha",
+			"har",
+			"ard"
+		],
+		"lastNameSearchValues": [
+			"S",
+			"Sc",
+			"Sch",
+			"chü",
+			"hül",
+			"üle",
+			"ler"
+		],
+		"forcePasswordChange": false,
+		"features": [],
+		"deletedAt": null,
+		"firstName": "Schwiedhard",
+		"lastName": "Schüler",
+		"email": "schuelersvs@schul-cloud.org",
+		"schoolId": {
+			"$oid": "6492cc63ad0aa141f4e361d1"
+		},
+		"parents": [],
+		"createdAt": {
+			"$date": "2023-06-21T10:28:46.419Z"
+		},
+		"updatedAt": {
+			"$date": "2023-06-21T10:28:46.567Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6492d1b9ad0aa141f4e364b6"
+		},
+		"consent": {
+			"parentConsents": [],
+			"userConsent": {
+				"form": "digital",
+				"privacyConsent": false,
+				"termsOfUseConsent": false,
+				"dateOfPrivacyConsent": {
+					"$date": "2023-06-21T10:32:25.459Z"
+				},
+				"dateOfTermsOfUseConsent": {
+					"$date": "2023-06-21T10:32:25.459Z"
+				}
+			}
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c96"
+			}
+		],
+		"emailSearchValues": [
+			"a",
+			"ad",
+			"adm",
+			"dmi",
+			"min",
+			"ins",
+			"nsv",
+			"svs",
+			"vs@",
+			"s@s",
+			"@sc",
+			"sch",
+			"chu",
+			"hul",
+			"c",
+			"cl",
+			"clo",
+			"lou",
+			"oud",
+			"ud.",
+			"d.o",
+			".or",
+			"org"
+		],
+		"firstNameSearchValues": [
+			"A",
+			"Ad",
+			"Ade",
+			"del",
+			"elh",
+			"lhe",
+			"hei",
+			"eid"
+		],
+		"lastNameSearchValues": [
+			"A",
+			"Ad",
+			"Adm",
+			"dmi",
+			"min"
+		],
+		"forcePasswordChange": false,
+		"features": [],
+		"deletedAt": null,
+		"firstName": "Adelheid",
+		"lastName": "Admin",
+		"email": "adminsvs@schul-cloud.org",
+		"schoolId": {
+			"$oid": "6492cc63ad0aa141f4e361d1"
+		},
+		"parents": [],
+		"createdAt": {
+			"$date": "2023-06-21T10:32:25.311Z"
+		},
+		"updatedAt": {
+			"$date": "2023-06-21T10:32:25.459Z"
+		},
+		"__v": 0
 	}
 ]
