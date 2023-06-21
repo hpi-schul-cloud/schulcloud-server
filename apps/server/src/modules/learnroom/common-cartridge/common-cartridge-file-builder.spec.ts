@@ -114,49 +114,16 @@ describe('CommonCartridgeFileBuilder', () => {
 				await expect(parseStringPromise(manifest as string)).resolves.not.toThrow();
 			});
 
-			describe('common cartridge version 1.1', () => {
+			describe('when common cartridge version 1.1', () => {
 				it('should use common cartridge version 1.1.0', () => {
 					const manifest = getFileContentAsString('imsmanifest.xml');
 					expect(manifest).toContain(CommonCartridgeVersion.V_1_1_0);
 				});
 			});
-			describe('common cartridge version 1.3', () => {
-				const fileBuilderOptionsForCCVerions3: ICommonCartridgeFileBuilderOptions = {
-					identifier: 'file-identifier',
-					copyrightOwners: 'Placeholder Copyright',
-					creationYear: 'Placeholder Creation Year',
-					title: 'file-title',
-					version: CommonCartridgeVersion.V_1_3_0,
-				};
-				const ltiResourcePropsForCCVersion3: ICommonCartridgeResourceProps = {
-					version: CommonCartridgeVersion.V_1_3_0,
-					type: CommonCartridgeResourceType.LTI,
-					identifier: 'lti-identifier',
-					href: 'lti-identifier/lti.xml',
-					title: 'lti-title',
-					description: 'lti-description',
-					url: 'https://to-a-lti-tool.tld',
-				};
-				const webLinkResourcePropsForCCVersion3: ICommonCartridgeResourceProps = {
-					version: CommonCartridgeVersion.V_1_3_0,
-					type: CommonCartridgeResourceType.WEB_LINK_V1,
-					identifier: 'web-content-identifier',
-					href: 'web-content-identifier/web-content.xml',
-					title: 'web-link-title',
-					url: 'https://to-a-web-link.tld',
-				};
-				const organizationPropsForCCVersion3: ICommonCartridgeOrganizationProps = {
-					version: CommonCartridgeVersion.V_1_3_0,
-					identifier: 'organization-identifier',
-					title: 'organization-title',
-					resources: [ltiResourcePropsForCCVersion3, webLinkResourcePropsForCCVersion3],
-				};
-
+			describe('when common cartridge version 1.3', () => {
 				beforeAll(async () => {
-					const fileBuilder = new CommonCartridgeFileBuilder(fileBuilderOptionsForCCVerions3).addResourceToFile(
-						webContentResourceProps
-					);
-					fileBuilder.addOrganization(organizationPropsForCCVersion3);
+					fileBuilderOptions.version = CommonCartridgeVersion.V_1_3_0;
+					const fileBuilder = new CommonCartridgeFileBuilder(fileBuilderOptions);
 					archive = new AdmZip(await fileBuilder.build());
 				});
 
