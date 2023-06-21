@@ -29,3 +29,5 @@ export * from './user.entity';
 export * from './user-login-migration.entity';
 export * from './video-conference.entity';
 export * from './federal-state.entity';
+export * from './health';
+export * from './all-internal-entities';
