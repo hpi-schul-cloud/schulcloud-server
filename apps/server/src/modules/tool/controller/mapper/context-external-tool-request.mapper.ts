@@ -6,7 +6,6 @@ export class ContextExternalToolRequestMapper {
 	static mapContextExternalToolRequest(request: ContextExternalToolPostParams): ContextExternalTool {
 		return {
 			id: '',
-			contextToolName: request.contextToolName ?? '',
 			schoolToolRef: {
 				schoolToolId: request.schoolToolId,
 			},
@@ -14,6 +13,7 @@ export class ContextExternalToolRequestMapper {
 				id: request.contextId,
 				type: request.contextType,
 			},
+			displayName: request.displayName,
 			toolVersion: request.toolVersion,
 			parameters: this.mapRequestToCustomParameterEntryDO(request.parameters ?? []),
 		};

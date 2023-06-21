@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Card } from '@shared/domain';
+import { Card, ContentElementType } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import {
 	cardFactory,
@@ -11,12 +11,14 @@ import {
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { CardService } from './card.service';
+import { ContentElementService } from './content-element.service';
 
 describe(CardService.name, () => {
 	let module: TestingModule;
 	let service: CardService;
 	let boardDoRepo: DeepMocked<BoardDoRepo>;
 	let boardDoService: DeepMocked<BoardDoService>;
+	let contentElementService: DeepMocked<ContentElementService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -30,12 +32,17 @@ describe(CardService.name, () => {
 					provide: BoardDoService,
 					useValue: createMock<BoardDoService>(),
 				},
+				{
+					provide: ContentElementService,
+					useValue: createMock<ContentElementService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(CardService);
 		boardDoRepo = module.get(BoardDoRepo);
 		boardDoService = module.get(BoardDoService);
+		contentElementService = module.get(ContentElementService);
 
 		await setupEntities();
 	});
@@ -112,8 +119,11 @@ describe(CardService.name, () => {
 			const setup = () => {
 				const column = columnFactory.build();
 				const columnId = column.id;
+				const createCardBodyParams = {
+					requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
+				};
 
-				return { column, columnId };
+				return { column, columnId, createCardBodyParams };
 			};
 
 			it('should save a list of cards using the boardDo repo', async () => {
@@ -131,6 +141,21 @@ describe(CardService.name, () => {
 						}),
 					],
 					column
+				);
+			});
+			it('contentElementService.create should be called with given parameters', async () => {
+				const { column, createCardBodyParams } = setup();
+
+				const { requiredEmptyElements } = createCardBodyParams;
+
+				await service.create(column, requiredEmptyElements);
+
+				expect(contentElementService.create).toHaveBeenCalledTimes(2);
+				expect(contentElementService.create).toHaveBeenNthCalledWith(1, expect.anything(), ContentElementType.FILE);
+				expect(contentElementService.create).toHaveBeenNthCalledWith(
+					2,
+					expect.anything(),
+					ContentElementType.RICH_TEXT
 				);
 			});
 		});

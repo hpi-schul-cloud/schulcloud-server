@@ -1,9 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { RoleName } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { userDoFactory, schoolDOFactory } from '@shared/testing';
 import {
 	ExternalSchoolDto,
 	ExternalUserDto,
@@ -69,15 +71,14 @@ describe('OidcStrategy', () => {
 					externalId: externalUserId,
 				}),
 			});
-			const user: UserDO = new UserDO({
+			const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 				firstName: 'firstName',
 				lastName: 'lastName',
 				email: 'email',
 				schoolId: 'schoolId',
-				roleIds: ['roleId'],
 				externalId: externalUserId,
 			});
-			const school: SchoolDO = new SchoolDO({
+			const school: SchoolDO = schoolDOFactory.build({
 				id: schoolId,
 				name: 'schoolName',
 				externalId: externalSchoolId,

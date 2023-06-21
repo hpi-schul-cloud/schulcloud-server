@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ContextRef, EntityId } from '@shared/domain';
 import { ContextExternalToolDO } from '@shared/domain/domainobject/tool';
 import { ContextExternalToolRepo } from '@shared/repo';
@@ -8,7 +8,7 @@ import {
 	AuthorizationLoaderService,
 	AuthorizationService,
 } from '@src/modules/authorization';
-import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
+import { ContextExternalToolQuery } from '../uc/dto';
 import { ContextTypeMapper } from './mapper';
 
 @Injectable()
@@ -18,6 +18,12 @@ export class ContextExternalToolService implements AuthorizationLoaderService {
 		@Inject(forwardRef(() => AuthorizationService))
 		private readonly authorizationService: AuthorizationService
 	) {}
+
+	async findContextExternalTools(query: ContextExternalToolQuery): Promise<ContextExternalToolDO[]> {
+		const contextExternalTools: ContextExternalToolDO[] = await this.contextExternalToolRepo.find(query);
+
+		return contextExternalTools;
+	}
 
 	async getContextExternalToolById(contextExternalToolId: EntityId): Promise<ContextExternalToolDO> {
 		const contextExternalTools: ContextExternalToolDO[] = await this.contextExternalToolRepo.find({
@@ -33,13 +39,11 @@ export class ContextExternalToolService implements AuthorizationLoaderService {
 
 	async createContextExternalTool(contextExternalTool: ContextExternalToolDO): Promise<ContextExternalToolDO> {
 		const newContextExternalTool: ContextExternalToolDO = new ContextExternalToolDO({
-			contextToolName: contextExternalTool.contextToolName,
+			displayName: contextExternalTool.displayName,
 			contextRef: contextExternalTool.contextRef,
 			toolVersion: contextExternalTool.toolVersion,
 			parameters: contextExternalTool.parameters,
 			schoolToolRef: contextExternalTool.schoolToolRef,
-			createdAt: new Date(),
-			updatedAt: new Date(),
 		});
 
 		const createdContextExternalTool: ContextExternalToolDO = await this.contextExternalToolRepo.save(
@@ -85,7 +89,7 @@ export class ContextExternalToolService implements AuthorizationLoaderService {
 		);
 	}
 
-	findById(id: EntityId): Promise<ContextExternalToolDO> {
+	async findById(id: EntityId): Promise<ContextExternalToolDO> {
 		return this.getContextExternalToolById(id);
 	}
 
