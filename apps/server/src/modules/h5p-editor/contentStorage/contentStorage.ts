@@ -1,10 +1,7 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable, NotFoundException, StreamableFile } from '@nestjs/common';
-import { Readable, Stream, pipeline } from 'stream';
-import * as fs from 'node:fs';
-import * as fsPromises from 'node:fs/promises';
-import { getAllFiles } from 'get-all-files';
+import { Readable, Stream } from 'stream';
 import {
 	ContentId,
 	IContentMetadata,
@@ -19,6 +16,7 @@ import {
 import path from 'path';
 import { FileDto } from '@src/modules/files-storage/dto';
 import { S3ClientAdapter } from '../../files-storage/client/s3-client.adapter';
+import { lib } from 'crypto-js';
 
 @Injectable()
 export class ContentStorage implements IContentStorage {
@@ -61,25 +59,11 @@ export class ContentStorage implements IContentStorage {
 			};
 			await this.storageClient.create(contentPath, contentFile);
 		} catch (error) {
-			const h5pExistsAlready = await this.exists(h5pPath);
-			if (h5pExistsAlready) {
-				await this.storageClient.delete([h5pPath]);
-			}
-			const contentExistsAlready = await this.exists(contentPath);
-			if (contentExistsAlready) {
-				await this.storageClient.delete([contentPath]);
-			}
-
+			await this.deleteCreatedFiles(h5pPath, contentPath);
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 			throw new Error(`Error creating content.${error.toString()}`);
 		}
-		const contentIdList = await this.getContentIdList();
-		if (contentIdList.length === 0) {
-			await this.createOrUpdateContentIdList([contentId], true);
-		} else {
-			contentIdList.push(contentId);
-			await this.createOrUpdateContentIdList(contentIdList, false);
-		}
+		await this.updateContentIdList(contentId.toString(), 'add');
 		return contentId;
 	}
 
@@ -99,20 +83,14 @@ export class ContentStorage implements IContentStorage {
 			mimeType: 'json',
 		};
 		await this.storageClient.create(fullPath, file);
-		const fileList = await this.getFileList(contentId);
-		if (fileList.length === 0) {
-			await this.createOrUpdateFileList(contentId, [filename], true);
-		} else {
-			fileList.push(filename);
-			await this.createOrUpdateFileList(contentId, fileList, false);
-		}
+		await this.updateFileList(contentId, filename, 'add');
 	}
 
 	public contentExists(contentId: string): Promise<boolean> {
 		if (contentId === '' || contentId === undefined) {
 			throw new Error('ContentId is empty or undefined.');
 		}
-		const exist = this.exists(path.join(this.getContentPath(), contentId.toString()));
+		const exist = this.exists(path.join(this.getContentPath(), contentId.toString(), 'h5p.json'));
 		return exist;
 	}
 
@@ -147,14 +125,7 @@ export class ContentStorage implements IContentStorage {
 				throw new Error(error.toString());
 			}
 		}
-		const contentIdList = await this.getContentIdList();
-		if (contentIdList.length === 1) {
-			await this.deleteFile('contentidlist', 'contentidlist.json');
-		} else {
-			const index = contentIdList.indexOf(contentId);
-			contentIdList.splice(index, 1);
-			await this.createOrUpdateContentIdList(contentIdList, false);
-		}
+		await this.updateContentIdList(contentId, 'delete');
 	}
 
 	public async deleteFile(contentId: string, filename: string, user?: IUser | undefined): Promise<void> {
@@ -165,13 +136,8 @@ export class ContentStorage implements IContentStorage {
 			throw new Error('404: Content not Found at deleteFile.');
 		}
 		await this.storageClient.delete([filePath]);
-		const fileList = await this.getFileList(contentId);
-		if (fileList.length === 1) {
-			await this.deleteFile(contentId, 'contentfilelist.json');
-		} else if (fileList.length > 1) {
-			const index = fileList.indexOf(filename);
-			fileList.splice(index, 1);
-			await this.createOrUpdateContentIdList(fileList, false);
+		if (filename !== 'contentfilelist.json' && filename !== 'content.json' && filename !== 'h5p.json') {
+			await this.updateFileList(contentId, filename, 'delete');
 		}
 	}
 
@@ -191,16 +157,16 @@ export class ContentStorage implements IContentStorage {
 		const filePath = path.join(this.getContentPath(), contentId.toString(), file);
 		const fileResponse = this.storageClient.get(filePath);
 		const fileSize = (await fileResponse).contentLength;
+		// TODO: birthtime
+		const date = new Date('01.01.01');
+		const fileStats: IFileStats = {
+			birthtime: date,
+			size: 0,
+		};
 		if (fileSize) {
-			// TODO: birthtime
-			const date = new Date('01.01.01');
-			const fileStats2: IFileStats = {
-				birthtime: date,
-				size: fileSize,
-			};
-			return <Promise<IFileStats>>(<unknown>fileStats2);
+			fileStats.size = fileSize;
 		}
-		throw new Error('Missing File Stats!');
+		return <Promise<IFileStats>>(<unknown>fileStats);
 	}
 
 	public async getFileStream(
@@ -210,7 +176,7 @@ export class ContentStorage implements IContentStorage {
 		rangeStart?: number | undefined,
 		rangeEnd?: number | undefined
 	): Promise<Readable> {
-		const exist = <boolean>(<unknown>this.fileExists(contentId, file));
+		const exist = await this.exists(path.join(this.getContentPath(), contentId, file));
 		if (!exist) {
 			throw new Error('404: Content file missing.');
 		}
@@ -222,7 +188,6 @@ export class ContentStorage implements IContentStorage {
 			disposition: `inline; filename="${encodeURI(contentId)}"`,
 			length: (await fileResponse).contentLength,
 		});
-		const stream = (await fileResponse).data;
 		return streamFile.getStream();
 	}
 
@@ -246,8 +211,6 @@ export class ContentStorage implements IContentStorage {
 	}
 
 	public async getUsage(library: ILibraryName): Promise<{ asDependency: number; asMainLibrary: number }> {
-		let asDependency = 0;
-		let asMainLibrary = 0;
 		const defaultUser: IUser = {
 			canCreateRestricted: false,
 			canInstallRecommended: false,
@@ -259,19 +222,8 @@ export class ContentStorage implements IContentStorage {
 		};
 
 		const contentIds = await this.listContent();
-		for (const contentId of contentIds) {
-			// eslint-disable-next-line no-await-in-loop
-			const contentMetadata = await this.getMetadata(contentId, defaultUser);
-			const isMainLibrary = contentMetadata.mainLibrary === library.machineName;
-			if (this.hasDependencyOn(contentMetadata, library)) {
-				if (isMainLibrary) {
-					asMainLibrary += 1;
-				} else {
-					asDependency += 1;
-				}
-			}
-		}
-		return { asDependency, asMainLibrary };
+		const result = await this.resolveDependecies(contentIds, defaultUser, library);
+		return result;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -302,13 +254,8 @@ export class ContentStorage implements IContentStorage {
 		do {
 			id = ContentStorage.getRandomId(1, 2 ** 32);
 			counter += 1;
-			const p = path.join(this.getContentPath(), id.toString());
-			try {
-				// eslint-disable-next-line no-await-in-loop
-				await fsPromises.access(p);
-			} catch (error) {
-				exist = false;
-			}
+			// eslint-disable-next-line no-await-in-loop
+			exist = await this.contentExists(id.toString());
 		} while (exist && counter < 10);
 		if (exist && counter === 10) {
 			throw new Error('Error generating contentId.');
@@ -330,7 +277,6 @@ export class ContentStorage implements IContentStorage {
 	private async exists(checkPath: string): Promise<boolean> {
 		try {
 			await this.storageClient.get(checkPath);
-			return true;
 		} catch (error) {
 			if (error instanceof NotFoundException) {
 				return false;
@@ -340,7 +286,7 @@ export class ContentStorage implements IContentStorage {
 				throw new Error(error.toString());
 			}
 		}
-		return false;
+		return true;
 	}
 
 	private hasDependencyOn(
@@ -359,6 +305,24 @@ export class ContentStorage implements IContentStorage {
 			return true;
 		}
 		return false;
+	}
+
+	async resolveDependecies(contentIds: string[], user: IUser, library: ILibraryName) {
+		let asDependency = 0;
+		let asMainLibrary = 0;
+		for (const contentId of contentIds) {
+			// eslint-disable-next-line no-await-in-loop
+			const contentMetadata = await this.getMetadata(contentId, user);
+			const isMainLibrary = contentMetadata.mainLibrary === library.machineName;
+			if (this.hasDependencyOn(contentMetadata, library)) {
+				if (isMainLibrary) {
+					asMainLibrary += 1;
+				} else {
+					asDependency += 1;
+				}
+			}
+		}
+		return { asMainLibrary, asDependency };
 	}
 
 	private checkFilename(filename: string): void {
@@ -391,13 +355,30 @@ export class ContentStorage implements IContentStorage {
 		}
 	}
 
-	private async createOrUpdateContentIdList(contentIdListArray: string[], create: boolean) {
-		if (!create) {
-			await this.deleteFile('contentidlist', 'contentidlist.json');
+	async updateContentIdList(contentId: string, operation: string) {
+		const contentIdListArray = await this.getContentIdList();
+		let newContentIdList: string[] = [];
+		if (operation === 'add') {
+			if (contentIdListArray.length === 0) {
+				newContentIdList.push(contentId);
+			} else {
+				contentIdListArray.push(contentId);
+				newContentIdList = contentIdListArray;
+				await this.deleteFile('contentidlist', 'contentidlist.json');
+			}
+		} else if (operation === 'delete') {
+			if (contentIdListArray.length === 1) {
+				await this.deleteFile('contentidlist', 'contentidlist.json');
+				return;
+			}
+			const index = contentIdListArray.indexOf(contentId);
+			contentIdListArray.splice(index, 1);
+			newContentIdList = contentIdListArray;
 		}
+
 		const contentIdListPath = path.join(this.getContentPath(), 'contentidlist.json');
 		const contentIdList = {
-			contentIdList: [contentIdListArray],
+			contentIdList: [newContentIdList],
 		};
 		const readableStream = new Stream.Readable({ objectMode: true });
 		readableStream._read = function test() {};
@@ -432,13 +413,30 @@ export class ContentStorage implements IContentStorage {
 		}
 	}
 
-	private async createOrUpdateFileList(contentId: string, fileListArray: string[], create: boolean) {
-		if (!create) {
-			await this.deleteFile(contentId, 'contentfilelist.json');
+	async updateFileList(contentId: string, filename: string, operation: string) {
+		const fileListArray = await this.getFileList(contentId);
+		let newFileList: string[] = [];
+		if (operation === 'add') {
+			if (fileListArray.length === 0) {
+				newFileList.push(contentId);
+			} else {
+				fileListArray.push(contentId);
+				newFileList = fileListArray;
+				await this.deleteFile(contentId, 'contentfilelist.json');
+			}
+		} else if (operation === 'delete') {
+			if (fileListArray.length === 1) {
+				await this.deleteFile(contentId, 'contentfilelist.json');
+				return;
+			}
+			const index = fileListArray.indexOf(filename);
+			fileListArray.splice(index, 1);
+			newFileList = fileListArray;
 		}
+
 		const fileListPath = path.join(this.getContentPath(), 'contentfilelist.json');
 		const fileList = {
-			contentIdList: [fileListArray],
+			contentIdList: [newFileList],
 		};
 		const readableStream = new Stream.Readable({ objectMode: true });
 		readableStream._read = function test() {};
@@ -458,5 +456,16 @@ export class ContentStorage implements IContentStorage {
 		const data = fileJson['_readableState']['buffer']['head']['data'];
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument
 		return JSON.parse(data);
+	}
+
+	async deleteCreatedFiles(h5pPath: string, contentPath: string) {
+		const h5pExistsAlready = await this.exists(h5pPath);
+		if (h5pExistsAlready) {
+			await this.storageClient.delete([h5pPath]);
+		}
+		const contentExistsAlready = await this.exists(contentPath);
+		if (contentExistsAlready) {
+			await this.storageClient.delete([contentPath]);
+		}
 	}
 }

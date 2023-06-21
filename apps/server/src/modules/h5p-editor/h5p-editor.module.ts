@@ -23,6 +23,7 @@ import { H5PEditorUc } from './uc/h5p.uc';
 import { ContentStorage } from './contentStorage/contentStorage';
 import { LibraryStorage } from './libraryStorage/libraryStorage';
 import { TemporaryFileStorage } from './temporary-file-storage/temporary-file-storage';
+import { S3ClientAdapter } from '../files-storage/client/s3-client.adapter';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -81,6 +82,7 @@ const providers = [
 	Logger,
 	H5PEditorUc,
 	H5PEditorService,
+	S3ClientAdapter,
 	H5PPlayerService,
 	H5PAjaxEndpointService,
 	...storages,

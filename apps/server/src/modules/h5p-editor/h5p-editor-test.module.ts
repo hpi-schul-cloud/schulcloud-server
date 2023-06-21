@@ -13,7 +13,6 @@ import { AuthenticationModule } from '@src/modules/authentication/authentication
 import { AuthorizationModule } from '@src/modules/authorization';
 
 import { ContentStorage } from './contentStorage/contentStorage';
-import { S3ClientAdapter } from '../files-storage/client/s3-client.adapter';
 import { H5PEditorController } from './controller';
 import { H5PEditorModule } from './h5p-editor.module';
 import { LibraryStorage } from './libraryStorage/libraryStorage';
@@ -35,7 +34,6 @@ const imports = [
 	AuthorizationModule,
 	AuthenticationModule,
 	CoreModule,
-	S3ClientAdapter,
 	LoggerModule,
 	RabbitMQWrapperTestModule,
 ];
