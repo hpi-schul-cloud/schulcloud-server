@@ -38,19 +38,20 @@ describe(HealthcheckRepo.name, () => {
 
 	describe('findById', () => {
 		describe('should return', () => {
-			it('entity with given ID if present in the database', async () => {
+			it('healthcheck with given ID if present in the database', async () => {
 				await em.persistAndFlush(testEntity);
 				em.clear();
+				const expectedDO = new HealthcheckDO(testId, testUpdatedAt);
 
-				const foundEntity = await repo.findById(testId);
+				const foundDO = await repo.findById(testId);
 
-				expect(foundEntity?.id).toEqual(testEntity.id);
+				expect(foundDO).toEqual(expectedDO);
 			});
 
-			it('null entity if not present in the database', async () => {
-				const foundEntity = await repo.findById('non_existing_healthcheck_id');
+			it('null healthcheck if not present in the database', async () => {
+				const foundDO = await repo.findById('non_existing_healthcheck_id');
 
-				expect(foundEntity).toBeNull();
+				expect(foundDO).toBeNull();
 			});
 		});
 	});
