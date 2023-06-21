@@ -210,20 +210,14 @@ const seedFederalStates: SeedFederalStateProperties[] = [
 export function generateFederalStates() {
 	return seedFederalStates.map((federalState) => {
 		const counties: County[] =
-			federalState.counties?.map((county) => {
-				return new County({
-					antaresKey: county.antaresKey,
-					name: county.name,
-					countyId: county.countyId,
-				});
-				return {
-					// id: county.id,
-					// _id: new ObjectId(county.id),
-					name: county.name,
-					antaresKey: county.antaresKey,
-					countyId: county.countyId,
-				};
-			}) ?? [];
+			federalState.counties?.map(
+				(county) =>
+					new County({
+						antaresKey: county.antaresKey,
+						name: county.name,
+						countyId: county.countyId,
+					})
+			) ?? [];
 
 		const params: DeepPartial<IFederalStateProperties> = {
 			counties,
