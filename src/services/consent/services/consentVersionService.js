@@ -20,7 +20,7 @@ const ConsentVersionServiceHooks = {
 		create: [iff(isProvider('external'), [authenticate('jwt'), hasPermission('SCHOOL_EDIT'), restrictToCurrentSchool])],
 		update: [disallow()],
 		patch: [disallow()],
-		remove: [disallow()],
+		remove: [iff(isProvider('external'), [authenticate('jwt'), hasPermission('SCHOOL_EDIT'), restrictToCurrentSchool])],
 	},
 	after: {
 		all: [],
@@ -96,6 +96,14 @@ class ConsentVersionService {
 			delete consentDocumentData.consentData;
 		}
 		return this.app.service('consentVersionsModel').create(consentDocumentData, prepareInternalParams(params));
+	}
+
+	async remove(id, params) {
+		const consent = await this.app.service('consentVersionsModel').remove(id, prepareInternalParams(params));
+		if (consent.consentDataId) {
+			this.app.service('base64Files').remove({ _id: consent.consentDataId });
+		}
+		return consent;
 	}
 
 	setup(app) {
