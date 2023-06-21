@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CustomParameterEntryResponse } from './custom-parameter-entry.response';
-import { SchoolExternalToolStatusResponse } from './school-external-tool-status.response';
+import { ToolConfigurationStatusResponse } from './tool-configuration-status.response';
 
 export class SchoolExternalToolResponse {
 	@ApiProperty()
@@ -21,8 +21,8 @@ export class SchoolExternalToolResponse {
 	@ApiProperty()
 	toolVersion: number;
 
-	@ApiProperty({ enum: SchoolExternalToolStatusResponse })
-	status: SchoolExternalToolStatusResponse;
+	@ApiProperty({ enum: ToolConfigurationStatusResponse })
+	status: ToolConfigurationStatusResponse;
 
 	constructor(response: SchoolExternalToolResponse) {
 		this.id = response.id;

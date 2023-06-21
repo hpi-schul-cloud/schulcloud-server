@@ -9,12 +9,12 @@ import {
 	SchoolExternalToolSearchListResponse,
 	SchoolExternalToolResponse,
 	CustomParameterEntryResponse,
-	SchoolExternalToolStatusResponse,
+	ToolConfigurationStatusResponse,
 } from '../dto';
 
-const statusMapping: Record<SchoolExternalToolStatus, SchoolExternalToolStatusResponse> = {
-	[SchoolExternalToolStatus.LATEST]: SchoolExternalToolStatusResponse.LATEST,
-	[SchoolExternalToolStatus.OUTDATED]: SchoolExternalToolStatusResponse.OUTDATED,
+const statusMapping: Record<SchoolExternalToolStatus, ToolConfigurationStatusResponse> = {
+	[SchoolExternalToolStatus.LATEST]: ToolConfigurationStatusResponse.LATEST,
+	[SchoolExternalToolStatus.OUTDATED]: ToolConfigurationStatusResponse.OUTDATED,
 };
 
 @Injectable()
@@ -36,7 +36,7 @@ export class SchoolExternalToolResponseMapper {
 			toolVersion: schoolExternalToolDO.toolVersion,
 			status: schoolExternalToolDO.status
 				? statusMapping[schoolExternalToolDO.status]
-				: SchoolExternalToolStatusResponse.UNKNOWN,
+				: ToolConfigurationStatusResponse.UNKNOWN,
 		};
 	}
 

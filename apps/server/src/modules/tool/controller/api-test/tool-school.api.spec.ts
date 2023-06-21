@@ -21,7 +21,7 @@ import {
 	SchoolExternalToolResponse,
 	SchoolExternalToolSearchListResponse,
 	SchoolExternalToolSearchParams,
-	SchoolExternalToolStatusResponse,
+	ToolConfigurationStatusResponse,
 } from '../dto';
 
 describe('ToolSchoolController (API)', () => {
@@ -138,7 +138,7 @@ describe('ToolSchoolController (API)', () => {
 							name: externalTool.name,
 							schoolId: postParams.schoolId,
 							toolId: postParams.toolId,
-							status: SchoolExternalToolStatusResponse.LATEST,
+							status: ToolConfigurationStatusResponse.LATEST,
 							toolVersion: postParams.version,
 							parameters: [
 								{
@@ -211,7 +211,7 @@ describe('ToolSchoolController (API)', () => {
 									name: externalTool2.name,
 									schoolId: school.id,
 									toolId: externalTool2.id,
-									status: SchoolExternalToolStatusResponse.OUTDATED,
+									status: ToolConfigurationStatusResponse.OUTDATED,
 									toolVersion: schoolExternalTool.toolVersion,
 									parameters: [
 										{
@@ -250,7 +250,7 @@ describe('ToolSchoolController (API)', () => {
 							name: '',
 							schoolId: school.id,
 							toolId: externalTool2.id,
-							status: SchoolExternalToolStatusResponse.UNKNOWN,
+							status: ToolConfigurationStatusResponse.UNKNOWN,
 							toolVersion: schoolExternalTool.toolVersion,
 							parameters: [
 								{
@@ -301,7 +301,7 @@ describe('ToolSchoolController (API)', () => {
 							name: externalTool.name,
 							schoolId: postParams.schoolId,
 							toolId: postParams.toolId,
-							status: SchoolExternalToolStatusResponse.LATEST,
+							status: ToolConfigurationStatusResponse.LATEST,
 							toolVersion: postParams.version,
 							parameters: [
 								{

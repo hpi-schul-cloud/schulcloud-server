@@ -15,7 +15,7 @@ import { ExternalToolDO, IFindOptions, Page } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ExternalToolUc, ExternalToolCreate, ExternalToolUpdate } from '../uc';
+import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate } from '../uc';
 import {
 	ExternalToolCreateParams,
 	ExternalToolResponse,
@@ -23,9 +23,12 @@ import {
 	ExternalToolSearchParams,
 	ExternalToolUpdateParams,
 	SortExternalToolParams,
+	ToolConfigurationStatusResponse,
 	ToolIdParams,
+	ToolReferenceResponse,
 } from './dto';
 import { ExternalToolRequestMapper, ExternalToolResponseMapper } from './mapper';
+import { ToolReferenceListResponse } from './dto/response/tool-reference-list.response';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -119,5 +122,25 @@ export class ToolController {
 		const promise: Promise<void> = this.externalToolUc.deleteExternalTool(currentUser.userId, params.toolId);
 		this.logger.debug(`ExternalTool with id ${params.toolId} was deleted by user with id ${currentUser.userId}`);
 		return promise;
+	}
+
+	@Get('/reference/:contextType/:contextId')
+	async getToolReferences(): Promise<ToolReferenceListResponse> {
+		const list: ToolReferenceListResponse = new ToolReferenceListResponse([
+			new ToolReferenceResponse({
+				logoUrl: 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png',
+				displayName: 'Google',
+				contextToolId: '644a4839d0a8301e6cf25d8f',
+				status: ToolConfigurationStatusResponse.LATEST,
+				openInNewTab: true,
+			}),
+			new ToolReferenceResponse({
+				displayName: 'Google 2',
+				contextToolId: '644a4839d0a8301e6cf25d8f',
+				status: ToolConfigurationStatusResponse.OUTDATED,
+				openInNewTab: false,
+			}),
+		]);
+		return Promise.resolve(list);
 	}
 }
