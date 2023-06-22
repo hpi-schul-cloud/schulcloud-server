@@ -180,7 +180,7 @@ function mapToExternalToolParameter(ltiToolTemplate) {
 			name: parameter.key,
 			displayName: parameter.key,
 			description: '',
-			default: parameter.value,
+			default: '',
 			regex: '',
 			regexComment: '',
 			scope: 'context',
@@ -194,7 +194,7 @@ function mapToExternalToolParameter(ltiToolTemplate) {
 function mapToCustomParameterEntry(externalToolParameters, ltiToolCustomes) {
 	return externalToolParameters.map((parameter, index) => {
 		return {
-			name: parameter.name, // or displayname ?
+			name: parameter.name,
 			value: ltiToolCustomes[index].value,
 		};
 	});
