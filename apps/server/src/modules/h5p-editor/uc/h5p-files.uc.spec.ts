@@ -4,11 +4,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { Request } from 'express';
 import { Readable } from 'stream';
-import { H5PEditor, H5PPlayer, H5PAjaxEndpoint } from '@lumieducation/h5p-server';
 import { H5PEditorUc } from './h5p.uc';
 import { ContentStorage } from '../contentStorage/contentStorage';
 import { LibraryStorage } from '../libraryStorage/libraryStorage';
 import { TemporaryFileStorage } from '../temporary-file-storage/temporary-file-storage';
+import { H5PAjaxEndpointService, H5PEditorService, H5PPlayerService } from '../service';
 
 describe('H5P Files', () => {
 	let module: TestingModule;
@@ -21,18 +21,9 @@ describe('H5P Files', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				H5PEditorUc,
-				{
-					provide: H5PEditor,
-					useValue: createMock<H5PEditor>(),
-				},
-				{
-					provide: H5PPlayer,
-					useValue: createMock<H5PPlayer>(),
-				},
-				{
-					provide: H5PAjaxEndpoint,
-					useValue: createMock<H5PAjaxEndpoint>(),
-				},
+				H5PEditorService,
+				H5PPlayerService,
+				H5PAjaxEndpointService,
 				{
 					provide: ContentStorage,
 					useValue: createMock<ContentStorage>(),

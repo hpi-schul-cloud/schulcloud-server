@@ -1,9 +1,9 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { H5PEditor, H5PPlayer } from '@lumieducation/h5p-server';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
-import { H5PAjaxEndpoint, H5PEditor, H5PPlayer } from '@lumieducation/h5p-server';
-import { H5PEditorTestModule } from '../h5p-editor-test.module';
+import { H5PAjaxEndpointService } from '../service';
 import { H5PEditorUc } from './h5p.uc';
 
 const setup = () => {
@@ -36,6 +36,7 @@ describe('save or create H5P content', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				H5PEditorUc,
+				H5PAjaxEndpointService,
 				{
 					provide: H5PEditor,
 					useValue: createMock<H5PEditor>(),
@@ -43,10 +44,6 @@ describe('save or create H5P content', () => {
 				{
 					provide: H5PPlayer,
 					useValue: createMock<H5PPlayer>(),
-				},
-				{
-					provide: H5PAjaxEndpoint,
-					useValue: createMock<H5PAjaxEndpoint>(),
 				},
 			],
 		}).compile();
