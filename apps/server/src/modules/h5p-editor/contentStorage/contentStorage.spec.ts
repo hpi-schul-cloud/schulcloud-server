@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { IContentMetadata, ILibraryName, IUser } from '@lumieducation/h5p-server';
 import { Readable, Stream } from 'stream';
-import rimraf from 'rimraf';
 import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
@@ -252,7 +251,6 @@ const setup = () => {
 describe('ContentStorage', () => {
 	let module: TestingModule;
 	let service: ContentStorage;
-	const { dir } = setup();
 	let s3ClientAdapter: DeepMocked<S3ClientAdapter>;
 
 	beforeAll(async () => {
@@ -274,7 +272,6 @@ describe('ContentStorage', () => {
 	});
 
 	afterEach(() => {
-		rimraf.sync(dir);
 		jest.resetAllMocks();
 	});
 
