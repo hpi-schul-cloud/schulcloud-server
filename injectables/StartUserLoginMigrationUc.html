@@ -106,7 +106,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userLoginMigrationService: <a href="../injectables/UserLoginMigrationService.html" target="_self">UserLoginMigrationService</a>, startUserLoginMigrationCheckService: <a href="../injectables/StartUserLoginMigrationCheckService.html" target="_self">StartUserLoginMigrationCheckService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
+<code>constructor(userLoginMigrationService: <a href="../injectables/UserLoginMigrationService.html" target="_self">UserLoginMigrationService</a>, startUserLoginMigrationValidationService: <a href="../injectables/StartUserLoginMigrationValidationService.html" target="_self">StartUserLoginMigrationValidationService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -141,10 +141,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>startUserLoginMigrationCheckService</td>
+                                                        <td>startUserLoginMigrationValidationService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/StartUserLoginMigrationCheckService.html" target="_self" >StartUserLoginMigrationCheckService</a></code>
+                                                                        <code><a href="../injectables/StartUserLoginMigrationValidationService.html" target="_self" >StartUserLoginMigrationValidationService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -156,7 +156,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
+                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -200,8 +200,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="15"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/start-user-login-migration.uc.ts:15</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="17"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/start-user-login-migration.uc.ts:17</a></div>
                 </td>
             </tr>
 
@@ -269,23 +269,27 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
 import { UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
-import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { UserLoginMigrationService } from &#x27;../service&#x27;;
-import { StartUserLoginMigrationCheckService } from &#x27;../service/start-user-login-migration-check.service&#x27;;
+import { Logger } from &#x27;@src/core/logger&#x27;;
+import { UserLoginMigrationService, StartUserLoginMigrationValidationService } from &#x27;../service&#x27;;
+import { UserLoginMigrationLoggable } from &#x27;../loggable/user-login-migration.loggable&#x27;;
 
 @Injectable()
 export class StartUserLoginMigrationUc {
 	constructor(
 		private readonly userLoginMigrationService: UserLoginMigrationService,
-		private readonly startUserLoginMigrationCheckService: StartUserLoginMigrationCheckService,
-		private readonly logger: LegacyLogger
-	) {}
+		private readonly startUserLoginMigrationValidationService: StartUserLoginMigrationValidationService,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(StartUserLoginMigrationUc.name);
+	}
 
 	async startMigration(userId: string, schoolId: string): Promise&lt;UserLoginMigrationDO&gt; {
-		await this.startUserLoginMigrationCheckService.checkPreconditions(userId, schoolId);
+		await this.startUserLoginMigrationValidationService.checkPreconditions(userId, schoolId);
 
 		const userLoginMigrationDO: UserLoginMigrationDO &#x3D; await this.userLoginMigrationService.startMigration(schoolId);
-		this.logger.debug(&#x60;The school admin started the migration for the school with id: ${schoolId}&#x60;);
+		this.logger.log(
+			new UserLoginMigrationLoggable(&#x60;The school admin started the migration for the school with id:&#x60;, schoolId, userId)
+		);
 
 		return userLoginMigrationDO;
 	}

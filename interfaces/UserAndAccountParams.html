@@ -101,6 +101,7 @@ interface UserParams {
 	lastName?: string;
 	email?: string;
 	school?: School;
+	externalId?: string;
 }
 
 interface AccountParams {
@@ -112,7 +113,7 @@ export interface UserAndAccountParams extends UserParams, AccountParams {}
 
 export class UserAndAccountTestFactory {
 	private static getUserParams(params: UserAndAccountParams): UserParams {
-		const userParams &#x3D; _.pick(params, &#x27;firstName&#x27;, &#x27;lastName&#x27;, &#x27;email&#x27;, &#x27;school&#x27;);
+		const userParams &#x3D; _.pick(params, &#x27;firstName&#x27;, &#x27;lastName&#x27;, &#x27;email&#x27;, &#x27;school&#x27;, &#x27;externalId&#x27;);
 		return userParams;
 	}
 

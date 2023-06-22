@@ -107,11 +107,20 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#restartMigration" >restartMigration</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#setMigration" >setMigration</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#startMigration" >startMigration</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateExistingMigration" >updateExistingMigration</a>
                             </li>
                         </ul>
                     </td>
@@ -131,12 +140,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, userLoginMigrationRepo: <a href="../injectables/UserLoginMigrationRepo.html" target="_self">UserLoginMigrationRepo</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, systemService: <a href="../injectables/SystemService.html" target="_self">SystemService</a>)</code>
+<code>constructor(userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, userLoginMigrationRepo: <a href="../injectables/UserLoginMigrationRepo.html" target="_self">UserLoginMigrationRepo</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, systemService: <a href="../injectables/SystemService.html" target="_self">SystemService</a>, schoolMigrationService: <a href="../injectables/SchoolMigrationService.html" target="_self">SchoolMigrationService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -201,6 +210,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>schoolMigrationService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SchoolMigrationService.html" target="_self" >SchoolMigrationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -238,8 +259,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="79"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:79</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="100"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:100</a></div>
                 </td>
             </tr>
 
@@ -309,8 +330,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="135"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:135</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="166"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:166</a></div>
                 </td>
             </tr>
 
@@ -380,8 +401,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="101"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:101</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="132"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:132</a></div>
                 </td>
             </tr>
 
@@ -451,8 +472,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="109"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:109</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="140"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:140</a></div>
                 </td>
             </tr>
 
@@ -522,8 +543,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="115"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:115</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="146"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:146</a></div>
                 </td>
             </tr>
 
@@ -575,6 +596,77 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="restartMigration"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>restartMigration</b></span>
+                        <a href="#restartMigration"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>restartMigration(schoolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="82"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:82</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>schoolId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;UserLoginMigrationDO&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="setMigration"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -593,8 +685,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="18"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:18</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="21"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:21</a></div>
                 </td>
             </tr>
 
@@ -700,8 +792,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="66"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:66</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="69"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:69</a></div>
                 </td>
             </tr>
 
@@ -749,6 +841,78 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateExistingMigration"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>updateExistingMigration</b></span>
+                        <a href="#updateExistingMigration"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateExistingMigration(userLoginMigrationDO: <a href="../classes/UserLoginMigrationDO.html" target="_self">UserLoginMigrationDO</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="122"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:122</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userLoginMigrationDO</td>
+                                    <td>
+                                                <code><a href="../classes/UserLoginMigrationDO.html" target="_self" >UserLoginMigrationDO</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>unknown</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -762,6 +926,8 @@ import { UserLoginMigrationRepo } from &#x27;@shared/repo&#x27;;
 import { SchoolService } from &#x27;@src/modules/school&#x27;;
 import { SystemDto, SystemService } from &#x27;@src/modules/system&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
+import { SchoolMigrationService } from &#x27;./school-migration.service&#x27;;
+import { UserLoginMigrationLoggableException } from &#x27;../error&#x27;;
 
 @Injectable()
 export class UserLoginMigrationService {
@@ -769,7 +935,8 @@ export class UserLoginMigrationService {
 		private readonly userService: UserService,
 		private readonly userLoginMigrationRepo: UserLoginMigrationRepo,
 		private readonly schoolService: SchoolService,
-		private readonly systemService: SystemService
+		private readonly systemService: SystemService,
+		private readonly schoolMigrationService: SchoolMigrationService
 	) {}
 
 	async setMigration(
@@ -833,6 +1000,24 @@ export class UserLoginMigrationService {
 		return userLoginMigration;
 	}
 
+	async restartMigration(schoolId: string): Promise&lt;UserLoginMigrationDO&gt; {
+		const existingUserLoginMigrationDO: UserLoginMigrationDO | null &#x3D; await this.userLoginMigrationRepo.findBySchoolId(
+			schoolId
+		);
+
+		if (existingUserLoginMigrationDO &#x3D;&#x3D;&#x3D; null) {
+			throw new UserLoginMigrationLoggableException(
+				&#x60;Migration for school with id ${schoolId} does not exist for restart.&#x60;,
+				schoolId
+			);
+		}
+
+		const updatedUserLoginMigration &#x3D; await this.updateExistingMigration(existingUserLoginMigrationDO);
+		await this.schoolMigrationService.unmarkOutdatedUsers(schoolId);
+
+		return updatedUserLoginMigration;
+	}
+
 	private async createNewMigration(school: SchoolDO): Promise&lt;UserLoginMigrationDO&gt; {
 		const oauthSystems: SystemDto[] &#x3D; await this.systemService.findByType(SystemTypeEnum.OAUTH);
 		const sanisSystem: SystemDto | undefined &#x3D; oauthSystems.find((system: SystemDto) &#x3D;&gt; system.alias &#x3D;&#x3D;&#x3D; &#x27;SANIS&#x27;);
@@ -853,6 +1038,16 @@ export class UserLoginMigrationService {
 		});
 
 		return userLoginMigrationDO;
+	}
+
+	private async updateExistingMigration(userLoginMigrationDO: UserLoginMigrationDO) {
+		userLoginMigrationDO.startedAt &#x3D; new Date();
+		userLoginMigrationDO.closedAt &#x3D; undefined;
+		userLoginMigrationDO.finishedAt &#x3D; undefined;
+
+		const userLoginMigration: UserLoginMigrationDO &#x3D; await this.userLoginMigrationRepo.save(userLoginMigrationDO);
+
+		return userLoginMigration;
 	}
 
 	private enableOauthMigrationFeature(schoolDo: SchoolDO) {
