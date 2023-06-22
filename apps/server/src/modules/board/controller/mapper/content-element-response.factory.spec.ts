@@ -28,7 +28,7 @@ describe(ContentElementResponseFactory.name, () => {
 		expect(result).toBeInstanceOf(RichTextElementResponse);
 	});
 
-	it('should return instance of TaskElementResponse', () => {
+	it('should return instance of SubmissionContainerElementResponse', () => {
 		const { submissionContainerElement } = setup();
 
 		const result = ContentElementResponseFactory.mapToResponse(submissionContainerElement);

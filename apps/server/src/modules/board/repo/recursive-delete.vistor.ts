@@ -47,9 +47,9 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 		await this.visitChildrenAsync(richTextElement);
 	}
 
-	async visitTaskElementAsync(taskElement: SubmissionContainerElement): Promise<void> {
-		this.deleteNode(taskElement);
-		await this.visitChildrenAsync(taskElement);
+	async visitSubmissionContainerElementAsync(submissionContainerElement: SubmissionContainerElement): Promise<void> {
+		this.deleteNode(submissionContainerElement);
+		await this.visitChildrenAsync(submissionContainerElement);
 	}
 
 	deleteNode(domainObject: AnyBoardDo): void {

@@ -49,11 +49,11 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 		}
 	}
 
-	visitTaskElement(taskElement: SubmissionContainerElement): void {
+	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void {
 		if (this.content instanceof SubmissionContainerContentBody) {
-			taskElement.dueDate = this.content.dueDate;
+			submissionContainerElement.dueDate = this.content.dueDate;
 		} else {
-			this.throwNotHandled(taskElement);
+			this.throwNotHandled(submissionContainerElement);
 		}
 	}
 

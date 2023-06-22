@@ -11,7 +11,7 @@ export interface BoardCompositeVisitor {
 	visitCard(card: Card): void;
 	visitFileElement(fileElement: FileElement): void;
 	visitRichTextElement(richTextElement: RichTextElement): void;
-	visitTaskElement(taskElement: SubmissionContainerElement): void;
+	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void;
 }
 
 export interface BoardCompositeVisitorAsync {
@@ -20,5 +20,5 @@ export interface BoardCompositeVisitorAsync {
 	visitCardAsync(card: Card): Promise<void>;
 	visitFileElementAsync(fileElement: FileElement): Promise<void>;
 	visitRichTextElementAsync(richTextElement: RichTextElement): Promise<void>;
-	visitTaskElementAsync(taskElement: SubmissionContainerElement): Promise<void>;
+	visitSubmissionContainerElementAsync(submissionContainerElement: SubmissionContainerElement): Promise<void>;
 }
