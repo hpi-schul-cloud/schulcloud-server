@@ -9,7 +9,7 @@ import {
 	richTextElementFactory,
 	submissionContainerElementFactory,
 } from '@shared/testing/factory/domainobject';
-import { FileContentBody, RichTextContentBody, TaskContentBody } from '../controller/dto';
+import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementService } from './content-element.service';
@@ -231,7 +231,7 @@ describe(ContentElementService.name, () => {
 			const setup = () => {
 				const taskElement = submissionContainerElementFactory.build();
 
-				const content = new TaskContentBody();
+				const content = new SubmissionContainerContentBody();
 				content.dueDate = new Date();
 
 				const card = cardFactory.build();

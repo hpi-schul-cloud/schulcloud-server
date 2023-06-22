@@ -9,9 +9,9 @@ import {
 	RichTextElement,
 	SubmissionContainerElement,
 } from '@shared/domain';
-import { FileContentBody, RichTextContentBody, TaskContentBody } from '../controller/dto';
+import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from '../controller/dto';
 
-type ContentType = FileContentBody | RichTextContentBody | TaskContentBody;
+type ContentType = FileContentBody | RichTextContentBody | SubmissionContainerContentBody;
 
 export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 	private readonly content: ContentType;
@@ -50,7 +50,7 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 	}
 
 	visitTaskElement(taskElement: SubmissionContainerElement): void {
-		if (this.content instanceof TaskContentBody) {
+		if (this.content instanceof SubmissionContainerContentBody) {
 			taskElement.dueDate = this.content.dueDate;
 		} else {
 			this.throwNotHandled(taskElement);

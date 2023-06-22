@@ -47,7 +47,7 @@ export class RichTextElementContentBody extends ElementContentBody {
 	content!: RichTextContentBody;
 }
 
-export class TaskContentBody {
+export class SubmissionContainerContentBody {
 	@IsDate()
 	@ApiProperty()
 	dueDate!: Date;
@@ -59,7 +59,7 @@ export class TaskElementContentBody extends ElementContentBody {
 
 	@ValidateNested()
 	@ApiProperty()
-	content!: TaskContentBody;
+	content!: SubmissionContainerContentBody;
 }
 
 export type AnyElementContentBody = RichTextElementContentBody | FileContentBody;
