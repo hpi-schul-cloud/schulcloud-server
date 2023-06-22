@@ -162,9 +162,16 @@ describe('VideoConferenceCreateUc', () => {
 						moderatorMustApproveJoinRequests: true,
 					};
 
+					const scopeInfo: IScopeInfo = {
+						scopeId: scope.id,
+						scopeName: 'scopeName',
+						title: 'title',
+						logoutUrl: 'logoutUrl',
+					};
+
 					bbbService.getMeetingInfo.mockRejectedValue(new Error('Meeting not found'));
 					userService.findById.mockResolvedValue(user);
-
+					videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
 					videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.VIEWER);
 
 					return { currentUserId, scope, options };
