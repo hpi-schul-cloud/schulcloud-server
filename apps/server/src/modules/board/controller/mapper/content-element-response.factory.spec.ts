@@ -1,6 +1,6 @@
 import { NotImplementedException } from '@nestjs/common';
 import { fileElementFactory, richTextElementFactory, submissionContainerElementFactory } from '@shared/testing';
-import { FileElementResponse, RichTextElementResponse, TaskElementResponse } from '../dto';
+import { FileElementResponse, RichTextElementResponse, SubmissionContainerElementResponse } from '../dto';
 import { ContentElementResponseFactory } from './content-element-response.factory';
 
 describe(ContentElementResponseFactory.name, () => {
@@ -33,7 +33,7 @@ describe(ContentElementResponseFactory.name, () => {
 
 		const result = ContentElementResponseFactory.mapToResponse(taskElement);
 
-		expect(result).toBeInstanceOf(TaskElementResponse);
+		expect(result).toBeInstanceOf(SubmissionContainerElementResponse);
 	});
 
 	it('should throw NotImplementedException', () => {
