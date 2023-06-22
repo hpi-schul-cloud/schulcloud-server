@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { taskElementFactory } from '@shared/testing';
-import { TaskElementNode } from './task-element-node.entity';
+import { submissionContainerElementFactory } from '@shared/testing';
+import { SubmissionContainerElementNode } from './submission-container-element-node.entity';
 import { BoardDoBuilder, BoardNodeType } from './types';
 
 const inThreeDays = new Date(Date.now() + 259200000);
 
-describe(TaskElementNode.name, () => {
+describe(SubmissionContainerElementNode.name, () => {
 	describe('when trying to create a task element', () => {
 		const setup = () => {
 			const elementProps = { dueDate: inThreeDays };
@@ -17,7 +17,7 @@ describe(TaskElementNode.name, () => {
 		it('should create a FileElementNode', () => {
 			const { elementProps } = setup();
 
-			const element = new TaskElementNode(elementProps);
+			const element = new SubmissionContainerElementNode(elementProps);
 
 			expect(element.type).toEqual(BoardNodeType.TASK_ELEMENT);
 		});
@@ -25,9 +25,9 @@ describe(TaskElementNode.name, () => {
 
 	describe('useDoBuilder()', () => {
 		const setup = () => {
-			const element = new TaskElementNode({ dueDate: inThreeDays });
+			const element = new SubmissionContainerElementNode({ dueDate: inThreeDays });
 			const builder: DeepMocked<BoardDoBuilder> = createMock<BoardDoBuilder>();
-			const elementDo = taskElementFactory.build();
+			const elementDo = submissionContainerElementFactory.build();
 
 			builder.buildTaskElement.mockReturnValue(elementDo);
 

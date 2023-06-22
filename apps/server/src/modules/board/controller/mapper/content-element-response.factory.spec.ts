@@ -7,9 +7,9 @@ describe(ContentElementResponseFactory.name, () => {
 	const setup = () => {
 		const fileElement = fileElementFactory.build();
 		const richTextElement = richTextElementFactory.build();
-		const taskElement = submissionContainerElementFactory.build();
+		const submissionContainerElement = submissionContainerElementFactory.build();
 
-		return { fileElement, richTextElement, taskElement };
+		return { fileElement, richTextElement, submissionContainerElement };
 	};
 
 	it('should return instance of FileElementResponse', () => {
@@ -29,9 +29,9 @@ describe(ContentElementResponseFactory.name, () => {
 	});
 
 	it('should return instance of TaskElementResponse', () => {
-		const { taskElement } = setup();
+		const { submissionContainerElement } = setup();
 
-		const result = ContentElementResponseFactory.mapToResponse(taskElement);
+		const result = ContentElementResponseFactory.mapToResponse(submissionContainerElement);
 
 		expect(result).toBeInstanceOf(SubmissionContainerElementResponse);
 	});
