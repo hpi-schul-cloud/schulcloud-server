@@ -27,12 +27,12 @@ import { ObjectId } from 'bson';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { VideoConferenceService } from './video-conference.service';
 import { ErrorStatus } from '../error/error-status.enum';
 import { BBBRole } from '../bbb';
 import { IScopeInfo, ScopeRef, VideoConferenceState } from '../uc/dto';
 import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';
-import { CourseService } from '../../learnroom/service/course.service';
 
 describe('VideoConferenceService', () => {
 	let service: DeepMocked<VideoConferenceService>;
