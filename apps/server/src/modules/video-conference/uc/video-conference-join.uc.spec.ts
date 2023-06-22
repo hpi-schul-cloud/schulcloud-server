@@ -20,7 +20,7 @@ describe('VideoConferenceJoinUc', () => {
 	let userService: DeepMocked<UserService>;
 	let videoConferenceService: DeepMocked<VideoConferenceService>;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				VideoConferenceJoinUc,
