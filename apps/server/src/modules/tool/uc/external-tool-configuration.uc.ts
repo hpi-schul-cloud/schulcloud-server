@@ -79,12 +79,20 @@ export class ExternalToolConfigurationUc {
 			(schoolExternalTool: SchoolExternalToolDO): EntityId => schoolExternalTool.toolId
 		);
 
-		const [availableTools, availableSchoolToolIds] = this.filterForAvailableExternalTools(
+		const availableTools: ExternalToolDO[] = this.filterForAvailableExternalTools(
 			externalTools.data,
 			schoolExternalTools,
 			toolIdsInUse
 		);
-		const resolved: Promise<[ExternalToolDO[], string[]]> = Promise.all([availableTools, availableSchoolToolIds]);
+
+		const availableSchoolTools: SchoolExternalToolDO[] = this.filterForAvailableSchoolTools(
+			schoolExternalTools,
+			availableTools
+		);
+
+		const availableSchoolToolIds : EntityId[] = availableSchoolTools.id[]
+
+		const resolved: Promise<[ExternalToolDO[], EntityId[]]> = Promise.all([availableTools, availableSchoolToolIds]);
 
 		return resolved;
 	}
@@ -111,31 +119,32 @@ export class ExternalToolConfigurationUc {
 		externalTools: ExternalToolDO[],
 		schoolExternalTools: SchoolExternalToolDO[],
 		toolIdsInUse: EntityId[]
-	): [ExternalToolDO[], EntityId[]] {
-		const availableSchoolToolIds: EntityId[] = [];
-
+	): ExternalToolDO[] {
 		const availableTools: ExternalToolDO[] = externalTools.filter((tool: ExternalToolDO): boolean => {
 			const hasSchoolExternalTool: boolean = schoolExternalTools.some(
-				(schoolExternalTool: SchoolExternalToolDO): boolean => {
-					if (
-						schoolExternalTool.toolId === tool.id &&
-						schoolExternalTool.id &&
-						!tool.isHidden &&
-						!toolIdsInUse.includes(tool.id)
-					) {
-						availableSchoolToolIds.push(schoolExternalTool.id);
-
-						return true;
-					}
-
-					return false;
-				}
-			);
+				(schoolExternalTool: SchoolExternalToolDO): boolean => schoolExternalTool.toolId === tool.id && !tool.isHidden
+			); // &&schoolExternalTool.id
 
 			return !tool.isHidden && !!tool.id && !toolIdsInUse.includes(tool.id) && hasSchoolExternalTool;
 		});
 
-		return [availableTools, availableSchoolToolIds];
+		return availableTools;
+	}
+
+	private filterForAvailableSchoolTools(
+		schoolExternalTools: SchoolExternalToolDO[],
+		availableTools: ExternalToolDO[]
+	): SchoolExternalToolDO[] {
+		const availableSchoolTools: SchoolExternalToolDO[] = schoolExternalTools.filter(
+			(tool: SchoolExternalToolDO): boolean => {
+				const isAvailableSchoolExternalTool: boolean = availableTools.some(
+					(availableTool: ExternalToolDO): boolean => availableTool.id === tool.schoolId
+				);
+
+				return isAvailableSchoolExternalTool;
+			}
+		);
+		return availableSchoolTools;
 	}
 
 	public async getExternalToolForSchool(userId: EntityId, externalToolId: EntityId): Promise<ExternalToolDO> {
