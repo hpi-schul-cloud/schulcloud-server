@@ -44,7 +44,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >VideoConferenceInfoDTO</li>
+  <li class="breadcrumb-item" >VideoConferenceJoinResponse</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -68,17 +68,11 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/video-conference/dto/video-conference.dto.ts</code>
+            <code>apps/server/src/modules/video-conference/controller/dto/response/video-conference-join.response.ts</code>
         </p>
 
 
 
-            <p class="comment">
-                <h3>Extends</h3>
-            </p>
-            <p class="comment">
-                        <code><a href="../classes/VideoConferenceDTO.html" target="_self" >VideoConferenceDTO</a></code>
-            </p>
 
 
 
@@ -95,17 +89,8 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#options" >options</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Optional</span>
-                                <a href="#bbbResponse" >bbbResponse</a>
-                            </li>
-                            <li>
-                                <a href="#permission" >permission</a>
-                            </li>
-                            <li>
-                                <a href="#state" >state</a>
+                                    <span class="modifier"></span>
+                                <a href="#url" >url</a>
                             </li>
                         </ul>
                     </td>
@@ -126,12 +111,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(dto: <a href="../classes/VideoConferenceInfoDTO.html" target="_self">VideoConferenceInfoDTO</a>)</code>
+<code>constructor(resp: <a href="../classes/VideoConferenceJoinResponse.html" target="_self">VideoConferenceJoinResponse</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">apps/server/src/modules/video-conference/dto/video-conference.dto.ts:38</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/video-conference/controller/dto/response/video-conference-join.response.ts:5</a></div>
                             </td>
                         </tr>
 
@@ -149,10 +134,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>dto</td>
+                                                        <td>resp</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../classes/VideoConferenceInfoDTO.html" target="_self" >VideoConferenceInfoDTO</a></code>
+                                                                        <code><a href="../classes/VideoConferenceJoinResponse.html" target="_self" >VideoConferenceJoinResponse</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -178,122 +163,32 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="options"></a>
+                    <a name="url"></a>
                     <span class="name">
-                        <span ><b>options</b></span>
-                        <a href="#options"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier"></span>
+                        <span ><b>url</b></span>
+                        <a href="#url"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../interfaces/VideoConferenceOptions.html" target="_self" >VideoConferenceOptions</a></code>
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 
                     </td>
                 </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">apps/server/src/modules/video-conference/dto/video-conference.dto.ts:44</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="bbbResponse"></a>
-                    <span class="name">
-                            <span class="modifier">Optional</span>
-                        <span ><b>bbbResponse</b></span>
-                        <a href="#bbbResponse"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../interfaces/BBBResponse.html" target="_self" >BBBResponse&lt;T&gt;</a></code>
-
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty({description: &#x27;The URL to join the video conference.&#x27;})<br />
+                        </code>
                     </td>
                 </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Inherited from         <code><a href="../classes/VideoConferenceDTO.html" target="_self" >VideoConferenceDTO</a></code>
-</div>
-                            </td>
-                        </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/VideoConferenceDTO.html#source" target="_self" >VideoConferenceDTO:15</a></code>
-</div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="permission"></a>
-                    <span class="name">
-                        <span ><b>permission</b></span>
-                        <a href="#permission"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#Permission" target="_self" >Permission</a></code>
-
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Inherited from         <code><a href="../classes/VideoConferenceDTO.html" target="_self" >VideoConferenceDTO</a></code>
-</div>
-                            </td>
-                        </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/VideoConferenceDTO.html#source" target="_self" >VideoConferenceDTO:13</a></code>
-</div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="state"></a>
-                    <span class="name">
-                        <span ><b>state</b></span>
-                        <a href="#state"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#VideoConferenceState" target="_self" >VideoConferenceState</a></code>
-
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Inherited from         <code><a href="../classes/VideoConferenceDTO.html" target="_self" >VideoConferenceDTO</a></code>
-</div>
-                            </td>
-                        </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/VideoConferenceDTO.html#source" target="_self" >VideoConferenceDTO:11</a></code>
-</div>
+                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/video-conference/controller/dto/response/video-conference-join.response.ts:5</a></div>
                         </td>
                     </tr>
 
@@ -312,50 +207,15 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
-	BBBBaseResponse,
-	BBBMeetingInfoResponse,
-	BBBResponse,
-} from &#x27;@src/modules/video-conference/interface/bbb-response.interface&#x27;;
-import { VideoConferenceState } from &#x27;@src/modules/video-conference/controller/dto/vc-state.enum&#x27;;
-import { Permission } from &#x27;@shared/domain&#x27;;
-import { VideoConferenceOptions } from &#x27;@src/modules/video-conference/interface/vc-options.interface&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
 
-export class VideoConferenceDTO&lt;T extends BBBBaseResponse&gt; {
-	state: VideoConferenceState;
-
-	permission: Permission;
-
-	bbbResponse?: BBBResponse&lt;T&gt;;
-
-	constructor(dto: VideoConferenceDTO&lt;T&gt;) {
-		this.state &#x3D; dto.state;
-		this.bbbResponse &#x3D; dto.bbbResponse;
-		this.permission &#x3D; dto.permission;
-	}
-}
-
-export class VideoConferenceJoinDTO {
-	state: VideoConferenceState;
-
-	permission: Permission;
-
+export class VideoConferenceJoinResponse {
+	@ApiProperty({ description: &#x27;The URL to join the video conference.&#x27; })
 	url: string;
 
-	constructor(dto: VideoConferenceJoinDTO) {
-		this.state &#x3D; dto.state;
-		this.permission &#x3D; dto.permission;
-		this.url &#x3D; dto.url;
+	constructor(resp: VideoConferenceJoinResponse) {
+		this.url &#x3D; resp.url;
 	}
-}
-
-export class VideoConferenceInfoDTO extends VideoConferenceDTO&lt;BBBMeetingInfoResponse&gt; {
-	constructor(dto: VideoConferenceInfoDTO) {
-		super(dto);
-		this.options &#x3D; dto.options;
-	}
-
-	options: VideoConferenceOptions;
 }
 </code></pre>
     </div>
@@ -395,7 +255,7 @@ export class VideoConferenceInfoDTO extends VideoConferenceDTO&lt;BBBMeetingInfo
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'VideoConferenceInfoDTO.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'VideoConferenceJoinResponse-1.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

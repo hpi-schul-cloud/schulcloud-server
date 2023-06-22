@@ -95,7 +95,7 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#findByScopeId" >findByScopeId</a>
+                                <a href="#findByScopeAndScopeId" >findByScopeAndScopeId</a>
                             </li>
                             <li>
                                     <span class="modifier">Protected</span>
@@ -257,18 +257,18 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="findByScopeId"></a>
+                    <a name="findByScopeAndScopeId"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
-                        <span ><b>findByScopeId</b></span>
-                        <a href="#findByScopeId"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>findByScopeAndScopeId</b></span>
+                        <a href="#findByScopeAndScopeId"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findByScopeId(target: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, videoConferenceScope: <a href="../undefineds/VideoConferenceScope.html" target="_self">VideoConferenceScope</a>)</code>
+                    <code>findByScopeAndScopeId(scopeId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, videoConferenceScope: <a href="../undefineds/VideoConferenceScope.html" target="_self">VideoConferenceScope</a>)</code>
                 </td>
             </tr>
 
@@ -297,7 +297,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>target</td>
+                                    <td>scopeId</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                     </td>
@@ -1306,7 +1306,7 @@ import { IVideoConferenceProperties, VideoConferenceDO } from &#x27;@shared/doma
 import { TargetModels, VideoConference } from &#x27;@shared/domain/entity/video-conference.entity&#x27;;
 import { VideoConferenceScope } from &#x27;@shared/domain/interface&#x27;;
 import { BaseDORepo } from &#x27;@shared/repo/base.do.repo&#x27;;
-import { EntityName } from &#x27;@mikro-orm/core&#x27;;
+import { EntityName, Loaded } from &#x27;@mikro-orm/core&#x27;;
 
 const TargetModelsMapping &#x3D; {
 	[VideoConferenceScope.EVENT]: TargetModels.EVENTS,
@@ -1328,9 +1328,9 @@ export class VideoConferenceRepo extends BaseDORepo&lt;VideoConferenceDO, VideoC
 		return new VideoConference(props);
 	}
 
-	async findByScopeId(target: string, videoConferenceScope: VideoConferenceScope): Promise&lt;VideoConferenceDO&gt; {
-		const entity &#x3D; await this._em.findOneOrFail(VideoConference, {
-			target,
+	async findByScopeAndScopeId(scopeId: string, videoConferenceScope: VideoConferenceScope): Promise&lt;VideoConferenceDO&gt; {
+		const entity: Loaded&lt;VideoConference&gt; &#x3D; await this._em.findOneOrFail(VideoConference, {
+			target: scopeId,
 			targetModel: TargetModelsMapping[videoConferenceScope],
 		});
 

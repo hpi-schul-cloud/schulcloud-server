@@ -68,7 +68,7 @@
                 <h3>Prefix</h3>
             </p>
             <p class="comment">
-                <code>videoconference</code>
+                <code>videoconference2</code>
             </p>
 
 
@@ -95,14 +95,6 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
-                                    <span class="modifier">Async</span>
-                                <a href="#createAndJoin" >createAndJoin</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#end" >end</a>
@@ -116,6 +108,26 @@
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#info" >info</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#join" >join</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#start" >start</a>
                             </li>
                         </ul>
                     </td>
@@ -138,127 +150,9 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="createAndJoin"></a>
-                    <span class="name">
-                        <span class="modifier"></span>
-                        <span class="modifier"></span>
-                        <span class="modifier"></span>
-                        <span class="modifier"></span>
-                        <span class="modifier"></span>
-                        <span class="modifier">Async</span>
-                        <span ><b>createAndJoin</b></span>
-                        <a href="#createAndJoin"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createAndJoin(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, scope: <a href="../undefineds/VideoConferenceScope.html" target="_self">VideoConferenceScope</a>, scopeId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, params: <a href="../classes/VideoConferenceCreateParams.html" target="_self">VideoConferenceCreateParams</a>)</code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@Post(&#x27;:scope/:scopeId&#x27;)<br />@ApiOperation({summary: &#x27;Creates a join link for a video conference and creates the video conference, if it has not started yet.&#x27;})<br />@ApiResponse({status: 400, type: BadRequestException, description: &#x27;Invalid parameters.&#x27;})<br />@ApiResponse({status: 403, type: ForbiddenException, description: &#x27;User does not have the permission to create this conference.&#x27;})<br />@ApiResponse({status: 500, type: InternalServerErrorException, description: &#x27;Unable to fetch required data.&#x27;})<br /></code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="49"
-                            class="link-to-prism">apps/server/src/modules/video-conference/controller/video-conference.controller.ts:49</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>currentUser</td>
-                                    <td>
-                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>scope</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>scopeId</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>params</td>
-                                    <td>
-                                                <code><a href="../classes/VideoConferenceCreateParams.html" target="_self" >VideoConferenceCreateParams</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/VideoConference.html" target="_self" >Promise&lt;VideoConferenceBaseResponse&gt;</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="end"></a>
                     <span class="name">
+                        <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
@@ -273,7 +167,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>end(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, scope: <a href="../undefineds/VideoConferenceScope.html" target="_self">VideoConferenceScope</a>, scopeId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>end(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, scopeParams: <a href="../classes/VideoConferenceScopeParams.html" target="_self">VideoConferenceScopeParams</a>)</code>
                 </td>
             </tr>
 
@@ -281,14 +175,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Delete(&#x27;:scope/:scopeId&#x27;)<br />@ApiOperation({summary: &#x27;Ends a running video conference.&#x27;})<br />@ApiResponse({status: 400, type: BadRequestException, description: &#x27;Invalid parameters.&#x27;})<br />@ApiResponse({status: 403, type: ForbiddenException, description: &#x27;User does not have the permission to get information about this conference.&#x27;})<br />@ApiResponse({status: 500, type: InternalServerErrorException, description: &#x27;Unable to fetch required data.&#x27;})<br /></code>
+                    <code>@Get(&#x27;:scope/:scopeId/end&#x27;)<br />@ApiOperation({summary: &#x27;Ends a running video conference.&#x27;, description: &#x27;Use this endpoint to end a running video conference.&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;Returns the status of the operation.&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;Invalid parameters.&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;User does not have the permission to end this conference.&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;Unable to fetch required data.&#x27;})<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="109"
-                            class="link-to-prism">apps/server/src/modules/video-conference/controller/video-conference.controller.ts:109</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="126"
+                            class="link-to-prism">apps/server/src/modules/video-conference/controller/video-conference.controller.ts:126</a></div>
                 </td>
             </tr>
 
@@ -321,21 +215,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>scope</td>
+                                    <td>scopeParams</td>
                                     <td>
-                                                <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>scopeId</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                <code><a href="../classes/VideoConferenceScopeParams.html" target="_self" >VideoConferenceScopeParams</a></code>
                                     </td>
 
                                     <td>
@@ -350,7 +232,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/VideoConference.html" target="_self" >Promise&lt;VideoConferenceBaseResponse&gt;</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -381,7 +263,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>info(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, scope: <a href="../undefineds/VideoConferenceScope.html" target="_self">VideoConferenceScope</a>, scopeId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>info(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, scopeParams: <a href="../classes/VideoConferenceScopeParams.html" target="_self">VideoConferenceScopeParams</a>)</code>
                 </td>
             </tr>
 
@@ -389,14 +271,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;:scope/:scopeId&#x27;)<br />@ApiOperation({summary: &#x27;Returns information about a running video conference.&#x27;})<br />@ApiResponse({status: 200, type: VideoConferenceInfoResponse, description: &#x27;Returns a list of information about a video conference.&#x27;})<br />@ApiResponse({status: 400, type: BadRequestException, description: &#x27;Invalid parameters.&#x27;})<br />@ApiResponse({status: 403, type: ForbiddenException, description: &#x27;User does not have the permission to get information about this conference.&#x27;})<br />@ApiResponse({status: 500, type: InternalServerErrorException, description: &#x27;Unable to fetch required data.&#x27;})<br /></code>
+                    <code>@Get(&#x27;:scope/:scopeId/info&#x27;)<br />@ApiOperation({summary: &#x27;Returns information about a running video conference.&#x27;, description: &#x27;Use this endpoint to get information about a running video conference.&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;Returns a list of information about a video conference.&#x27;, type: VideoConferenceInfoResponse})<br />@ApiResponse({status: undefined, description: &#x27;Invalid parameters.&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;User does not have the permission to get information about this conference.&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;Unable to fetch required data.&#x27;})<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="89"
-                            class="link-to-prism">apps/server/src/modules/video-conference/controller/video-conference.controller.ts:89</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="99"
+                            class="link-to-prism">apps/server/src/modules/video-conference/controller/video-conference.controller.ts:99</a></div>
                 </td>
             </tr>
 
@@ -429,21 +311,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>scope</td>
+                                    <td>scopeParams</td>
                                     <td>
-                                                <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>scopeId</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                <code><a href="../classes/VideoConferenceScopeParams.html" target="_self" >VideoConferenceScopeParams</a></code>
                                     </td>
 
                                     <td>
@@ -468,125 +338,343 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="join"></a>
+                    <span class="name">
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier">Async</span>
+                        <span ><b>join</b></span>
+                        <a href="#join"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>join(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, scopeParams: <a href="../classes/VideoConferenceScopeParams.html" target="_self">VideoConferenceScopeParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;:scope/:scopeId/join&#x27;)<br />@ApiOperation({summary: &#x27;Creates a join link for a video conference, if it has started.&#x27;, description: &#x27;Use this endpoint to get a link to join an existing video conference. The conference must be running.&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;Returns the information for joining the conference.&#x27;, type: VideoConferenceJoinResponse})<br />@ApiResponse({status: undefined, description: &#x27;Invalid parameters.&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;User does not have the permission to join this conference.&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;Unable to fetch required data.&#x27;})<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="71"
+                            class="link-to-prism">apps/server/src/modules/video-conference/controller/video-conference.controller.ts:71</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>currentUser</td>
+                                    <td>
+                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>scopeParams</td>
+                                    <td>
+                                                <code><a href="../classes/VideoConferenceScopeParams.html" target="_self" >VideoConferenceScopeParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../entitys/VideoConference.html" target="_self" >Promise&lt;VideoConferenceJoinResponse&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="start"></a>
+                    <span class="name">
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier">Async</span>
+                        <span ><b>start</b></span>
+                        <a href="#start"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>start(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, scopeParams: <a href="../classes/VideoConferenceScopeParams.html" target="_self">VideoConferenceScopeParams</a>, params: <a href="../classes/VideoConferenceCreateParams.html" target="_self">VideoConferenceCreateParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Put(&#x27;:scope/:scopeId/start&#x27;)<br />@ApiOperation({summary: &#x27;Creates the video conference, if it has not started yet.&#x27;, description: &#x27;Use this endpoint to start a video conference. If the conference is not yet running, it will be created.&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;Video conference was created.&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;Invalid parameters.&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;User does not have the permission to create this conference.&#x27;})<br />@ApiResponse({status: undefined, description: &#x27;Unable to fetch required data.&#x27;})<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="43"
+                            class="link-to-prism">apps/server/src/modules/video-conference/controller/video-conference.controller.ts:43</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>currentUser</td>
+                                    <td>
+                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>scopeParams</td>
+                                    <td>
+                                                <code><a href="../classes/VideoConferenceScopeParams.html" target="_self" >VideoConferenceScopeParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>params</td>
+                                    <td>
+                                                <code><a href="../classes/VideoConferenceCreateParams.html" target="_self" >VideoConferenceCreateParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { Body, Controller, Get, HttpStatus, Param, Put } from &#x27;@nestjs/common&#x27;;
+import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
+import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import {
-	BadRequestException,
-	Body,
-	Controller,
-	Delete,
-	ForbiddenException,
-	Get,
-	InternalServerErrorException,
-	Param,
-	Post,
-} from &#x27;@nestjs/common&#x27;;
-import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
-import { VideoConferenceUc } from &#x27;@src/modules/video-conference/uc/video-conference.uc&#x27;;
-import { VideoConferenceResponseMapper } from &#x27;@src/modules/video-conference/mapper/vc-response.mapper&#x27;;
-import { BBBBaseResponse } from &#x27;@src/modules/video-conference/interface/bbb-response.interface&#x27;;
-import { VideoConferenceScope } from &#x27;@shared/domain/interface&#x27;;
-import {
-	VideoConferenceDTO,
-	VideoConferenceInfoDTO,
-	VideoConferenceJoinDTO,
-} from &#x27;@src/modules/video-conference/dto/video-conference.dto&#x27;;
-import { VideoConferenceState } from &#x27;@src/modules/video-conference/controller/dto/vc-state.enum&#x27;;
-import { defaultVideoConferenceOptions } from &#x27;@src/modules/video-conference/interface/vc-options.interface&#x27;;
-import { ICurrentUser } from &#x27;@src/modules/authentication/interface&#x27;;
-import { VideoConferenceBaseResponse, VideoConferenceInfoResponse } from &#x27;./dto/video-conference.response&#x27;;
-import { VideoConferenceCreateParams } from &#x27;./dto/video-conference.params&#x27;;
+	VideoConferenceCreateParams,
+	VideoConferenceInfoResponse,
+	VideoConferenceJoinResponse,
+	VideoConferenceScopeParams,
+} from &#x27;./dto&#x27;;
+import { VideoConferenceCreateUc, VideoConferenceEndUc, VideoConferenceInfoUc, VideoConferenceJoinUc } from &#x27;../uc&#x27;;
+import { ScopeRef, VideoConferenceInfo, VideoConferenceJoin } from &#x27;../uc/dto&#x27;;
+import { VideoConferenceMapper } from &#x27;../mapper/video-conference.mapper&#x27;;
+import { VideoConferenceOptions } from &#x27;../interface&#x27;;
 
 @ApiTags(&#x27;VideoConference&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
-@Controller(&#x27;videoconference&#x27;)
+@Controller(&#x27;videoconference2&#x27;)
 export class VideoConferenceController {
 	constructor(
-		private readonly videoConferenceUc: VideoConferenceUc,
-		private readonly responseMapper: VideoConferenceResponseMapper
+		private readonly videoConferenceCreateUc: VideoConferenceCreateUc,
+		private readonly videoConferenceJoinUc: VideoConferenceJoinUc,
+		private readonly videoConferenceEndUc: VideoConferenceEndUc,
+		private readonly videoConferenceInfoUc: VideoConferenceInfoUc
 	) {}
 
-	@Post(&#x27;:scope/:scopeId&#x27;)
+	@Put(&#x27;:scope/:scopeId/start&#x27;)
 	@ApiOperation({
-		summary: &#x27;Creates a join link for a video conference and creates the video conference, if it has not started yet.&#x27;,
+		summary: &#x27;Creates the video conference, if it has not started yet.&#x27;,
+		description:
+			&#x27;Use this endpoint to start a video conference. If the conference is not yet running, it will be created.&#x27;,
 	})
-	@ApiResponse({ status: 400, type: BadRequestException, description: &#x27;Invalid parameters.&#x27; })
 	@ApiResponse({
-		status: 403,
-		type: ForbiddenException,
+		status: HttpStatus.OK,
+		description: &#x27;Video conference was created.&#x27;,
+	})
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, description: &#x27;Invalid parameters.&#x27; })
+	@ApiResponse({
+		status: HttpStatus.FORBIDDEN,
 		description: &#x27;User does not have the permission to create this conference.&#x27;,
 	})
-	@ApiResponse({ status: 500, type: InternalServerErrorException, description: &#x27;Unable to fetch required data.&#x27; })
-	async createAndJoin(
+	@ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: &#x27;Unable to fetch required data.&#x27; })
+	async start(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param(&#x27;scope&#x27;) scope: VideoConferenceScope,
-		@Param(&#x27;scopeId&#x27;) scopeId: string,
+		@Param() scopeParams: VideoConferenceScopeParams,
 		@Body() params: VideoConferenceCreateParams
-	): Promise&lt;VideoConferenceBaseResponse&gt; {
-		const infoDto: VideoConferenceInfoDTO &#x3D; await this.videoConferenceUc.getMeetingInfo(currentUser, scope, scopeId);
+	): Promise&lt;void&gt; {
+		const scopeRef &#x3D; new ScopeRef(scopeParams.scopeId, scopeParams.scope);
+		const videoConferenceOptions: VideoConferenceOptions &#x3D; VideoConferenceMapper.toVideoConferenceOptions(params);
 
-		if (infoDto.state !&#x3D;&#x3D; VideoConferenceState.RUNNING) {
-			await this.videoConferenceUc.create(currentUser, scope, scopeId, {
-				everyAttendeeJoinsMuted:
-					params.everyAttendeeJoinsMuted ?? defaultVideoConferenceOptions.everyAttendeeJoinsMuted,
-				everybodyJoinsAsModerator:
-					params.everybodyJoinsAsModerator ?? defaultVideoConferenceOptions.everybodyJoinsAsModerator,
-				moderatorMustApproveJoinRequests:
-					params.moderatorMustApproveJoinRequests ?? defaultVideoConferenceOptions.moderatorMustApproveJoinRequests,
-			});
-		}
-
-		const dto: VideoConferenceJoinDTO &#x3D; await this.videoConferenceUc.join(currentUser, scope, scopeId);
-
-		return this.responseMapper.mapToJoinResponse(dto);
+		await this.videoConferenceCreateUc.createIfNotRunning(currentUser.userId, scopeRef, videoConferenceOptions);
 	}
 
-	@Get(&#x27;:scope/:scopeId&#x27;)
+	@Get(&#x27;:scope/:scopeId/join&#x27;)
+	@ApiOperation({
+		summary: &#x27;Creates a join link for a video conference, if it has started.&#x27;,
+		description:
+			&#x27;Use this endpoint to get a link to join an existing video conference. The conference must be running.&#x27;,
+	})
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: &#x27;Returns the information for joining the conference.&#x27;,
+		type: VideoConferenceJoinResponse,
+	})
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, description: &#x27;Invalid parameters.&#x27; })
+	@ApiResponse({
+		status: HttpStatus.FORBIDDEN,
+		description: &#x27;User does not have the permission to join this conference.&#x27;,
+	})
+	@ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: &#x27;Unable to fetch required data.&#x27; })
+	async join(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() scopeParams: VideoConferenceScopeParams
+	): Promise&lt;VideoConferenceJoinResponse&gt; {
+		const scopeRef &#x3D; new ScopeRef(scopeParams.scopeId, scopeParams.scope);
+		const dto: VideoConferenceJoin &#x3D; await this.videoConferenceJoinUc.join(currentUser.userId, scopeRef);
+
+		const resp: VideoConferenceJoinResponse &#x3D; VideoConferenceMapper.toVideoConferenceJoinResponse(dto);
+
+		return resp;
+	}
+
+	@Get(&#x27;:scope/:scopeId/info&#x27;)
 	@ApiOperation({
 		summary: &#x27;Returns information about a running video conference.&#x27;,
+		description: &#x27;Use this endpoint to get information about a running video conference.&#x27;,
 	})
 	@ApiResponse({
-		status: 200,
-		type: VideoConferenceInfoResponse,
+		status: HttpStatus.OK,
 		description: &#x27;Returns a list of information about a video conference.&#x27;,
+		type: VideoConferenceInfoResponse,
 	})
-	@ApiResponse({ status: 400, type: BadRequestException, description: &#x27;Invalid parameters.&#x27; })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, description: &#x27;Invalid parameters.&#x27; })
 	@ApiResponse({
-		status: 403,
-		type: ForbiddenException,
+		status: HttpStatus.FORBIDDEN,
 		description: &#x27;User does not have the permission to get information about this conference.&#x27;,
 	})
-	@ApiResponse({ status: 500, type: InternalServerErrorException, description: &#x27;Unable to fetch required data.&#x27; })
+	@ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: &#x27;Unable to fetch required data.&#x27; })
 	async info(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param(&#x27;scope&#x27;) scope: VideoConferenceScope,
-		@Param(&#x27;scopeId&#x27;) scopeId: string
+		@Param() scopeParams: VideoConferenceScopeParams
 	): Promise&lt;VideoConferenceInfoResponse&gt; {
-		const dto: VideoConferenceInfoDTO &#x3D; await this.videoConferenceUc.getMeetingInfo(currentUser, scope, scopeId);
-		return this.responseMapper.mapToInfoResponse(dto);
+		const scopeRef &#x3D; new ScopeRef(scopeParams.scopeId, scopeParams.scope);
+		const dto: VideoConferenceInfo &#x3D; await this.videoConferenceInfoUc.getMeetingInfo(currentUser.userId, scopeRef);
+
+		const resp: VideoConferenceInfoResponse &#x3D; VideoConferenceMapper.toVideoConferenceInfoResponse(dto);
+
+		return resp;
 	}
 
-	@Delete(&#x27;:scope/:scopeId&#x27;)
+	@Get(&#x27;:scope/:scopeId/end&#x27;)
 	@ApiOperation({
 		summary: &#x27;Ends a running video conference.&#x27;,
+		description: &#x27;Use this endpoint to end a running video conference.&#x27;,
 	})
-	@ApiResponse({ status: 400, type: BadRequestException, description: &#x27;Invalid parameters.&#x27; })
 	@ApiResponse({
-		status: 403,
-		type: ForbiddenException,
-		description: &#x27;User does not have the permission to get information about this conference.&#x27;,
+		status: HttpStatus.OK,
+		description: &#x27;Returns the status of the operation.&#x27;,
 	})
-	@ApiResponse({ status: 500, type: InternalServerErrorException, description: &#x27;Unable to fetch required data.&#x27; })
-	async end(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param(&#x27;scope&#x27;) scope: VideoConferenceScope,
-		@Param(&#x27;scopeId&#x27;) scopeId: string
-	): Promise&lt;VideoConferenceBaseResponse&gt; {
-		const dto: VideoConferenceDTO&lt;BBBBaseResponse&gt; &#x3D; await this.videoConferenceUc.end(currentUser, scope, scopeId);
-		return this.responseMapper.mapToBaseResponse(dto);
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, description: &#x27;Invalid parameters.&#x27; })
+	@ApiResponse({
+		status: HttpStatus.FORBIDDEN,
+		description: &#x27;User does not have the permission to end this conference.&#x27;,
+	})
+	@ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: &#x27;Unable to fetch required data.&#x27; })
+	async end(@CurrentUser() currentUser: ICurrentUser, @Param() scopeParams: VideoConferenceScopeParams): Promise&lt;void&gt; {
+		const scopeRef &#x3D; new ScopeRef(scopeParams.scopeId, scopeParams.scope);
+
+		await this.videoConferenceEndUc.end(currentUser.userId, scopeRef);
 	}
 }
 </code></pre>

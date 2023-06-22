@@ -68,7 +68,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/video-conference/builder/bbb-join-config.builder.ts</code>
+            <code>apps/server/src/modules/video-conference/bbb/builder/bbb-join-config.builder.ts</code>
         </p>
 
 
@@ -204,7 +204,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="5"
-                            class="link-to-prism">apps/server/src/modules/video-conference/builder/bbb-join-config.builder.ts:5</a></div>
+                            class="link-to-prism">apps/server/src/modules/video-conference/bbb/builder/bbb-join-config.builder.ts:5</a></div>
                 </td>
             </tr>
 
@@ -273,7 +273,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="10"
-                            class="link-to-prism">apps/server/src/modules/video-conference/builder/bbb-join-config.builder.ts:10</a></div>
+                            class="link-to-prism">apps/server/src/modules/video-conference/bbb/builder/bbb-join-config.builder.ts:10</a></div>
                 </td>
             </tr>
 
@@ -342,7 +342,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="15"
-                            class="link-to-prism">apps/server/src/modules/video-conference/builder/bbb-join-config.builder.ts:15</a></div>
+                            class="link-to-prism">apps/server/src/modules/video-conference/bbb/builder/bbb-join-config.builder.ts:15</a></div>
                 </td>
             </tr>
 
@@ -443,8 +443,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BBBJoinConfig, BBBRole } from &#x27;@src/modules/video-conference/config/bbb-join.config&#x27;;
-import { Builder } from &#x27;@src/modules/video-conference/builder/builder&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BBBJoinConfig, BBBRole } from &#x27;../request/bbb-join.config&#x27;;
+import { Builder } from &#x27;./builder&#x27;;
 
 export class BBBJoinConfigBuilder extends Builder&lt;BBBJoinConfig&gt; {
 	asGuest(value: boolean): BBBJoinConfigBuilder {

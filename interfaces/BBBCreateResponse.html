@@ -71,7 +71,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/video-conference/interface/bbb-response.interface.ts</code>
+            <code>apps/server/src/modules/video-conference/bbb/response/bbb-create.response.ts</code>
         </p>
 
 
@@ -501,20 +501,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export enum BBBStatus {
-	SUCCESS &#x3D; &#x27;SUCCESS&#x27;,
-	ERROR &#x3D; &#x27;ERROR&#x27;,
-}
-
-export interface BBBResponse&lt;T extends BBBBaseResponse&gt; {
-	response: T;
-}
-
-export interface BBBBaseResponse {
-	returncode: BBBStatus;
-	messageKey: string;
-	message: string;
-}
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BBBBaseResponse } from &#x27;./bbb-base.response&#x27;;
 
 export interface BBBCreateResponse extends BBBBaseResponse {
 	meetingID: string;
@@ -527,59 +514,6 @@ export interface BBBCreateResponse extends BBBBaseResponse {
 	hasUserJoined: boolean;
 	duration: number;
 	hasBeenForciblyEnded: boolean;
-}
-
-export interface BBBJoinResponse extends BBBBaseResponse {
-	meeting_id: string;
-	user_id: string;
-	auth_token: string;
-	session_token: string;
-	url: string;
-}
-
-export interface BBBMeetingInfoResponse extends BBBBaseResponse {
-	meetingName: string;
-	meetingID: string;
-	internalMeetingID: string;
-	createTime: number;
-	createDate: string;
-	voiceBridge: number;
-	dialNumber: string;
-	running: boolean;
-	duration: number;
-	hasUserJoined: boolean;
-	recording: boolean;
-	hasBeenForciblyEnded: boolean;
-	startTime: number;
-	endTime: number;
-	participantCount: number;
-	listenerCount: number;
-	voiceParticipantCount: number;
-	videoCount: number;
-	maxUsers: number;
-	moderatorCount: number;
-	attendees: {
-		attendee: {
-			userID: string;
-			fullName: string;
-			role: string;
-			isPresenter: boolean;
-			isListeningOnly: boolean;
-			hasJoinedVoice: boolean;
-			hasVideo: boolean;
-			clientType: string;
-		};
-	}[];
-	metadata: unknown;
-	isBreakout: boolean;
-	breakoutRooms?: {
-		breakout: string;
-	}[];
-	breakout?: {
-		parentMeetingID: string;
-		sequence: number;
-		freeJoin: boolean;
-	};
 }
 </code></pre>
     </div>

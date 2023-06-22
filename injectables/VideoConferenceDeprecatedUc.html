@@ -40,7 +40,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >VideoConferenceUc</li>
+  <li class="breadcrumb-item" >VideoConferenceDeprecatedUc</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -64,10 +64,17 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/video-conference/uc/video-conference.uc.ts</code>
+            <code>apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts</code>
         </p>
 
 
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>This uc is deprecated. Please use the new video conference ucs instead.</p>
+
+            </p>
 
 
 
@@ -167,12 +174,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(bbbService: <a href="../injectables/BBBService.html" target="_self">BBBService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, videoConferenceRepo: <a href="../injectables/VideoConferenceRepo.html" target="_self">VideoConferenceRepo</a>, teamsRepo: <a href="../injectables/TeamsRepo.html" target="_self">TeamsRepo</a>, courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, calendarService: <a href="../injectables/CalendarService.html" target="_self">CalendarService</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>)</code>
+<code>constructor(bbbService: <a href="../injectables/BBBService.html" target="_self">BBBService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, videoConferenceRepo: <a href="../injectables/VideoConferenceRepo.html" target="_self">VideoConferenceRepo</a>, teamsRepo: <a href="../injectables/TeamsRepo.html" target="_self">TeamsRepo</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, calendarService: <a href="../injectables/CalendarService.html" target="_self">CalendarService</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="71" class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference.uc.ts:71</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="61" class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:61</a></div>
                             </td>
                         </tr>
 
@@ -238,10 +245,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>courseRepo</td>
+                                                        <td>courseService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/CourseRepo.html" target="_self" >CourseRepo</a></code>
+                                                                        <code><a href="../injectables/CourseService.html" target="_self" >CourseService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -250,10 +257,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>userRepo</td>
+                                                        <td>userService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/UserRepo.html" target="_self" >UserRepo</a></code>
+                                                                        <code><a href="../injectables/UserService.html" target="_self" >UserService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -321,8 +328,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="276"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference.uc.ts:276</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="266"
+                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:266</a></div>
                 </td>
             </tr>
 
@@ -436,8 +443,8 @@ They only can join a conference:</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="393"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference.uc.ts:393</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="383"
+                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:383</a></div>
                 </td>
             </tr>
 
@@ -533,8 +540,8 @@ They only can join a conference:</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="94"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference.uc.ts:94</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="84"
+                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:84</a></div>
                 </td>
             </tr>
 
@@ -621,7 +628,7 @@ They only can join a conference:</p>
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../interfaces/BBBCreateResponse.html" target="_self" >Promise&lt;VideoConferenceDTO&lt;BBBCreateResponse&gt;&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../interfaces/BBBCreateResponse.html" target="_self" >Promise&lt;VideoConference&lt;BBBCreateResponse&gt;&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -653,8 +660,8 @@ They only can join a conference:</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="290"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference.uc.ts:290</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="280"
+                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:280</a></div>
                 </td>
             </tr>
 
@@ -727,7 +734,7 @@ They only can join a conference:</p>
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../interfaces/BBBBaseResponse.html" target="_self" >Promise&lt;VideoConferenceDTO&lt;BBBBaseResponse&gt;&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../interfaces/BBBBaseResponse.html" target="_self" >Promise&lt;VideoConference&lt;BBBBaseResponse&gt;&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -759,8 +766,8 @@ They only can join a conference:</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="213"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference.uc.ts:213</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="203"
+                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:203</a></div>
                 </td>
             </tr>
 
@@ -833,7 +840,7 @@ They only can join a conference:</p>
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/VideoConference.html" target="_self" >Promise&lt;VideoConferenceInfoDTO&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../entitys/VideoConference.html" target="_self" >Promise&lt;VideoConferenceInfo&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -866,8 +873,8 @@ They only can join a conference:</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="356"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference.uc.ts:356</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="346"
+                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:346</a></div>
                 </td>
             </tr>
 
@@ -972,8 +979,8 @@ They only can join a conference:</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="415"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference.uc.ts:415</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="405"
+                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:405</a></div>
                 </td>
             </tr>
 
@@ -1092,8 +1099,8 @@ They only can join a conference:</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="320"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference.uc.ts:320</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="310"
+                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:310</a></div>
                 </td>
             </tr>
 
@@ -1187,8 +1194,8 @@ They only can join a conference:</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="158"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference.uc.ts:158</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="148"
+                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:148</a></div>
                 </td>
             </tr>
 
@@ -1261,7 +1268,7 @@ They only can join a conference:</p>
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/VideoConference.html" target="_self" >Promise&lt;VideoConferenceJoinDTO&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../entitys/VideoConference.html" target="_self" >Promise&lt;VideoConferenceJoin&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -1294,8 +1301,8 @@ They only can join a conference:</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="452"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference.uc.ts:452</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="442"
+                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:442</a></div>
                 </td>
             </tr>
 
@@ -1366,8 +1373,8 @@ They only can join a conference:</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="437"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference.uc.ts:437</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="427"
+                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:427</a></div>
                 </td>
             </tr>
 
@@ -1444,7 +1451,7 @@ They only can join a conference:</p>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="71" class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference.uc.ts:71</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="61" class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-deprecated.uc.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -1467,14 +1474,14 @@ import {
 	SchoolFeatures,
 	Team,
 	TeamUser,
-	User,
+	UserDO,
 	VideoConferenceDO,
 	VideoConferenceOptionsDO,
 } from &#x27;@shared/domain&#x27;;
 import { VideoConferenceScope } from &#x27;@shared/domain/interface&#x27;;
 import { CalendarService } from &#x27;@shared/infra/calendar&#x27;;
 import { CalendarEventDto } from &#x27;@shared/infra/calendar/dto/calendar-event.dto&#x27;;
-import { CourseRepo, TeamsRepo, UserRepo } from &#x27;@shared/repo&#x27;;
+import { TeamsRepo } from &#x27;@shared/repo&#x27;;
 import { VideoConferenceRepo } from &#x27;@shared/repo/videoconference/video-conference.repo&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import {
@@ -1484,36 +1491,23 @@ import {
 	AuthorizationService,
 } from &#x27;@src/modules/authorization&#x27;;
 import { SchoolService } from &#x27;@src/modules/school/service/school.service&#x27;;
-import { BBBCreateConfigBuilder } from &#x27;@src/modules/video-conference/builder/bbb-create-config.builder&#x27;;
-import { BBBJoinConfigBuilder } from &#x27;@src/modules/video-conference/builder/bbb-join-config.builder&#x27;;
-import { BBBBaseMeetingConfig } from &#x27;@src/modules/video-conference/config/bbb-base-meeting.config&#x27;;
-import { GuestPolicy } from &#x27;@src/modules/video-conference/config/bbb-create.config&#x27;;
-import { BBBRole } from &#x27;@src/modules/video-conference/config/bbb-join.config&#x27;;
-import { VideoConferenceState } from &#x27;@src/modules/video-conference/controller/dto/vc-state.enum&#x27;;
+import { CourseService } from &#x27;@src/modules/learnroom/service/course.service&#x27;;
+import { UserService } from &#x27;@src/modules/user&#x27;;
+import { IScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from &#x27;./dto&#x27;;
 import {
-	VideoConferenceDTO,
-	VideoConferenceInfoDTO,
-	VideoConferenceJoinDTO,
-} from &#x27;@src/modules/video-conference/dto/video-conference.dto&#x27;;
-import { ErrorStatus } from &#x27;@src/modules/video-conference/error/error-status.enum&#x27;;
-import {
+	BBBBaseMeetingConfig,
 	BBBBaseResponse,
+	BBBCreateConfigBuilder,
 	BBBCreateResponse,
+	BBBJoinConfigBuilder,
 	BBBMeetingInfoResponse,
 	BBBResponse,
-} from &#x27;@src/modules/video-conference/interface/bbb-response.interface&#x27;;
-import {
-	VideoConferenceOptions,
-	defaultVideoConferenceOptions,
-} from &#x27;@src/modules/video-conference/interface/vc-options.interface&#x27;;
-import { BBBService } from &#x27;@src/modules/video-conference/service/bbb.service&#x27;;
-
-export interface IScopeInfo {
-	scopeId: EntityId;
-	scopeName: string;
-	logoutUrl: string;
-	title: string;
-}
+	BBBRole,
+	BBBService,
+	GuestPolicy,
+} from &#x27;../bbb&#x27;;
+import { defaultVideoConferenceOptions, VideoConferenceOptions } from &#x27;../interface&#x27;;
+import { ErrorStatus } from &#x27;../error/error-status.enum&#x27;;
 
 const PermissionMapping &#x3D; {
 	[BBBRole.MODERATOR]: Permission.START_MEETING,
@@ -1525,8 +1519,11 @@ const PermissionScopeMapping &#x3D; {
 	[VideoConferenceScope.EVENT]: AuthorizableReferenceType.Team,
 };
 
+/**
+ * This uc is deprecated. Please use the new video conference ucs instead.
+ */
 @Injectable()
-export class VideoConferenceUc {
+export class VideoConferenceDeprecatedUc {
 	private readonly hostURL: string;
 
 	constructor(
@@ -1534,8 +1531,8 @@ export class VideoConferenceUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly videoConferenceRepo: VideoConferenceRepo,
 		private readonly teamsRepo: TeamsRepo,
-		private readonly courseRepo: CourseRepo,
-		private readonly userRepo: UserRepo,
+		private readonly courseService: CourseService,
+		private readonly userService: UserService,
 		private readonly calendarService: CalendarService,
 		private readonly schoolService: SchoolService
 	) {
@@ -1548,14 +1545,14 @@ export class VideoConferenceUc {
 	 * @param {VideoConferenceScope} conferenceScope
 	 * @param {EntityId} refId eventId or courseId, depending on scope.
 	 * @param {VideoConferenceOptions} options
-	 * @returns {Promise&lt;VideoConferenceDTO&lt;BBBCreateResponse&gt;&gt;}
+	 * @returns {Promise&lt;VideoConference&lt;BBBCreateResponse&gt;&gt;}
 	 */
 	async create(
 		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
 		refId: EntityId,
 		options: VideoConferenceOptions
-	): Promise&lt;VideoConferenceDTO&lt;BBBCreateResponse&gt;&gt; {
+	): Promise&lt;VideoConference&lt;BBBCreateResponse&gt;&gt; {
 		const { userId, schoolId } &#x3D; currentUser;
 
 		await this.throwOnFeaturesDisabled(schoolId);
@@ -1571,7 +1568,7 @@ export class VideoConferenceUc {
 		}
 
 		const configBuilder: BBBCreateConfigBuilder &#x3D; new BBBCreateConfigBuilder({
-			name: VideoConferenceUc.sanitizeString(scopeInfo.title),
+			name: VideoConferenceDeprecatedUc.sanitizeString(scopeInfo.title),
 			meetingID: refId,
 		}).withLogoutUrl(scopeInfo.logoutUrl);
 
@@ -1586,7 +1583,7 @@ export class VideoConferenceUc {
 		let vcDo: VideoConferenceDO;
 		try {
 			// Patch options, if preset exists
-			vcDo &#x3D; await this.videoConferenceRepo.findByScopeId(refId, conferenceScope);
+			vcDo &#x3D; await this.videoConferenceRepo.findByScopeAndScopeId(refId, conferenceScope);
 			vcDo.options &#x3D; options;
 		} catch (error) {
 			// Create new preset
@@ -1600,7 +1597,7 @@ export class VideoConferenceUc {
 
 		const bbbResponse: BBBResponse&lt;BBBCreateResponse&gt; &#x3D; await this.bbbService.create(configBuilder.build());
 
-		return new VideoConferenceDTO&lt;BBBCreateResponse&gt;({
+		return new VideoConference&lt;BBBCreateResponse&gt;({
 			state: VideoConferenceState.NOT_STARTED,
 			permission: PermissionMapping[bbbRole],
 			bbbResponse,
@@ -1618,7 +1615,7 @@ export class VideoConferenceUc {
 		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
 		refId: EntityId
-	): Promise&lt;VideoConferenceJoinDTO&gt; {
+	): Promise&lt;VideoConferenceJoin&gt; {
 		const { userId, schoolId } &#x3D; currentUser;
 
 		await this.throwOnFeaturesDisabled(schoolId);
@@ -1627,15 +1624,15 @@ export class VideoConferenceUc {
 
 		const bbbRole: BBBRole &#x3D; await this.checkPermission(userId, conferenceScope, scopeInfo.scopeId);
 
-		const resolvedUser: User &#x3D; await this.userRepo.findById(userId);
+		const resolvedUser: UserDO &#x3D; await this.userService.findById(userId);
 		const configBuilder: BBBJoinConfigBuilder &#x3D; new BBBJoinConfigBuilder({
-			fullName: VideoConferenceUc.sanitizeString(&#x60;${resolvedUser.firstName} ${resolvedUser.lastName}&#x60;),
+			fullName: VideoConferenceDeprecatedUc.sanitizeString(&#x60;${resolvedUser.firstName} ${resolvedUser.lastName}&#x60;),
 			meetingID: refId,
 			role: bbbRole,
 		});
 
 		const isGuest: boolean &#x3D; await this.isExpert(currentUser, conferenceScope, scopeInfo.scopeId);
-		const vcDO: VideoConferenceDO &#x3D; await this.videoConferenceRepo.findByScopeId(refId, conferenceScope);
+		const vcDO: VideoConferenceDO &#x3D; await this.videoConferenceRepo.findByScopeAndScopeId(refId, conferenceScope);
 		configBuilder.withUserId(currentUser.userId);
 
 		if (isGuest) {
@@ -1655,7 +1652,7 @@ export class VideoConferenceUc {
 
 		const url: string &#x3D; await this.bbbService.join(configBuilder.build());
 
-		return new VideoConferenceJoinDTO({
+		return new VideoConferenceJoin({
 			state: VideoConferenceState.RUNNING,
 			permission: PermissionMapping[bbbRole],
 			url,
@@ -1673,7 +1670,7 @@ export class VideoConferenceUc {
 		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
 		refId: EntityId
-	): Promise&lt;VideoConferenceInfoDTO&gt; {
+	): Promise&lt;VideoConferenceInfo&gt; {
 		const { userId, schoolId } &#x3D; currentUser;
 
 		await this.throwOnFeaturesDisabled(schoolId);
@@ -1687,15 +1684,15 @@ export class VideoConferenceUc {
 		});
 
 		const options: VideoConferenceOptionsDO &#x3D; await this.videoConferenceRepo
-			.findByScopeId(refId, conferenceScope)
+			.findByScopeAndScopeId(refId, conferenceScope)
 			.then((vcDO: VideoConferenceDO) &#x3D;&gt; vcDO.options)
 			.catch(() &#x3D;&gt; defaultVideoConferenceOptions);
 
-		const response: VideoConferenceInfoDTO &#x3D; await this.bbbService
+		const response: VideoConferenceInfo &#x3D; await this.bbbService
 			.getMeetingInfo(config)
 			.then(
 				(bbbResponse: BBBResponse&lt;BBBMeetingInfoResponse&gt;) &#x3D;&gt;
-					new VideoConferenceInfoDTO({
+					new VideoConferenceInfo({
 						state: VideoConferenceState.RUNNING,
 						permission: PermissionMapping[bbbRole],
 						bbbResponse,
@@ -1704,7 +1701,7 @@ export class VideoConferenceUc {
 			)
 			.catch(
 				() &#x3D;&gt;
-					new VideoConferenceInfoDTO({
+					new VideoConferenceInfo({
 						state: VideoConferenceState.NOT_STARTED,
 						permission: PermissionMapping[bbbRole],
 						options: bbbRole &#x3D;&#x3D;&#x3D; BBBRole.MODERATOR ? options : ({} as VideoConferenceOptions),
@@ -1744,13 +1741,13 @@ export class VideoConferenceUc {
 	 * @param {ICurrentUser} currentUser
 	 * @param {VideoConferenceScope} conferenceScope
 	 * @param {EntityId} refId eventId or courseId, depending on scope.
-	 * @returns {Promise&lt;VideoConferenceDTO&lt;BBBBaseResponse&gt;&gt;}
+	 * @returns {Promise&lt;VideoConference&lt;BBBBaseResponse&gt;&gt;}
 	 */
 	async end(
 		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
 		refId: EntityId
-	): Promise&lt;VideoConferenceDTO&lt;BBBBaseResponse&gt;&gt; {
+	): Promise&lt;VideoConference&lt;BBBBaseResponse&gt;&gt; {
 		const { userId, schoolId } &#x3D; currentUser;
 
 		await this.throwOnFeaturesDisabled(schoolId);
@@ -1769,7 +1766,7 @@ export class VideoConferenceUc {
 
 		const bbbResponse: BBBResponse&lt;BBBBaseResponse&gt; &#x3D; await this.bbbService.end(config);
 
-		return new VideoConferenceDTO&lt;BBBBaseResponse&gt;({
+		return new VideoConference&lt;BBBBaseResponse&gt;({
 			state: VideoConferenceState.FINISHED,
 			permission: PermissionMapping[bbbRole],
 			bbbResponse,
@@ -1819,7 +1816,7 @@ export class VideoConferenceUc {
 	): Promise&lt;IScopeInfo&gt; {
 		switch (conferenceScope) {
 			case VideoConferenceScope.COURSE: {
-				const course: Course &#x3D; await this.courseRepo.findById(refId);
+				const course: Course &#x3D; await this.courseService.findById(refId);
 				return {
 					scopeId: refId,
 					scopeName: &#x27;courses&#x27;,
@@ -1955,7 +1952,7 @@ export class VideoConferenceUc {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'VideoConferenceUc.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'VideoConferenceDeprecatedUc.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

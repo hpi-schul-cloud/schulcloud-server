@@ -1597,13 +1597,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/ServerModule.html" data-type="entity-link" >ServerModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-ServerModule-5df156f7f670fd32499be3023e2840488880dfd7d1a94b77ecebab04d61ccb30f38acec53bd31b4e21681d3daee2cb3b81953fe83703f90d9b8cddc56341566b"' : 'data-bs-target="#xs-controllers-links-module-ServerModule-5df156f7f670fd32499be3023e2840488880dfd7d1a94b77ecebab04d61ccb30f38acec53bd31b4e21681d3daee2cb3b81953fe83703f90d9b8cddc56341566b"' }>
+                                            'data-bs-target="#controllers-links-module-ServerModule-54a4453b627331bc8503aa5cabe271625adfdfb483a1758f1932e434b6b5dcbc5760a2d33c32003e4c0f64b334fa1b59cb403ba94d42902a9a7409822bc34b3c"' : 'data-bs-target="#xs-controllers-links-module-ServerModule-54a4453b627331bc8503aa5cabe271625adfdfb483a1758f1932e434b6b5dcbc5760a2d33c32003e4c0f64b334fa1b59cb403ba94d42902a9a7409822bc34b3c"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-ServerModule-5df156f7f670fd32499be3023e2840488880dfd7d1a94b77ecebab04d61ccb30f38acec53bd31b4e21681d3daee2cb3b81953fe83703f90d9b8cddc56341566b"' :
-                                            'id="xs-controllers-links-module-ServerModule-5df156f7f670fd32499be3023e2840488880dfd7d1a94b77ecebab04d61ccb30f38acec53bd31b4e21681d3daee2cb3b81953fe83703f90d9b8cddc56341566b"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-ServerModule-54a4453b627331bc8503aa5cabe271625adfdfb483a1758f1932e434b6b5dcbc5760a2d33c32003e4c0f64b334fa1b59cb403ba94d42902a9a7409822bc34b3c"' :
+                                            'id="xs-controllers-links-module-ServerModule-54a4453b627331bc8503aa5cabe271625adfdfb483a1758f1932e434b6b5dcbc5760a2d33c32003e4c0f64b334fa1b59cb403ba94d42902a9a7409822bc34b3c"' }>
                                             <li class="link">
                                                 <a href="controllers/ServerController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ServerController</a>
                                             </li>
@@ -1614,13 +1614,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/ServerTestModule.html" data-type="entity-link" >ServerTestModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-ServerTestModule-5df156f7f670fd32499be3023e2840488880dfd7d1a94b77ecebab04d61ccb30f38acec53bd31b4e21681d3daee2cb3b81953fe83703f90d9b8cddc56341566b"' : 'data-bs-target="#xs-controllers-links-module-ServerTestModule-5df156f7f670fd32499be3023e2840488880dfd7d1a94b77ecebab04d61ccb30f38acec53bd31b4e21681d3daee2cb3b81953fe83703f90d9b8cddc56341566b"' }>
+                                            'data-bs-target="#controllers-links-module-ServerTestModule-54a4453b627331bc8503aa5cabe271625adfdfb483a1758f1932e434b6b5dcbc5760a2d33c32003e4c0f64b334fa1b59cb403ba94d42902a9a7409822bc34b3c"' : 'data-bs-target="#xs-controllers-links-module-ServerTestModule-54a4453b627331bc8503aa5cabe271625adfdfb483a1758f1932e434b6b5dcbc5760a2d33c32003e4c0f64b334fa1b59cb403ba94d42902a9a7409822bc34b3c"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-ServerTestModule-5df156f7f670fd32499be3023e2840488880dfd7d1a94b77ecebab04d61ccb30f38acec53bd31b4e21681d3daee2cb3b81953fe83703f90d9b8cddc56341566b"' :
-                                            'id="xs-controllers-links-module-ServerTestModule-5df156f7f670fd32499be3023e2840488880dfd7d1a94b77ecebab04d61ccb30f38acec53bd31b4e21681d3daee2cb3b81953fe83703f90d9b8cddc56341566b"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-ServerTestModule-54a4453b627331bc8503aa5cabe271625adfdfb483a1758f1932e434b6b5dcbc5760a2d33c32003e4c0f64b334fa1b59cb403ba94d42902a9a7409822bc34b3c"' :
+                                            'id="xs-controllers-links-module-ServerTestModule-54a4453b627331bc8503aa5cabe271625adfdfb483a1758f1932e434b6b5dcbc5760a2d33c32003e4c0f64b334fa1b59cb403ba94d42902a9a7409822bc34b3c"' }>
                                             <li class="link">
                                                 <a href="controllers/ServerController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ServerController</a>
                                             </li>
@@ -2131,16 +2131,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/ValidationModule.html" data-type="entity-link" >ValidationModule</a>
                             </li>
                             <li class="link">
-                                <a href="modules/VideoConferenceModule.html" data-type="entity-link" >VideoConferenceModule</a>
+                                <a href="modules/VideoConferenceApiModule.html" data-type="entity-link" >VideoConferenceApiModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-VideoConferenceModule-d603159e88dc86016018c3ffa183871f25c9d58e8cd20127d8a12e26bd0af15686874baa83ff9d5398f51e60d9399e7f2757f83d89c86f3150893bc35e03909c"' : 'data-bs-target="#xs-controllers-links-module-VideoConferenceModule-d603159e88dc86016018c3ffa183871f25c9d58e8cd20127d8a12e26bd0af15686874baa83ff9d5398f51e60d9399e7f2757f83d89c86f3150893bc35e03909c"' }>
+                                            'data-bs-target="#controllers-links-module-VideoConferenceApiModule-3c13d59518096522e883017a5f3cbdbbfdaaa22373cbdfa3659e2bd3e6d25b0b787b899d37a852bd32035c83d6fba66886f798e5b1acbb6c993a8a58b0ad3613"' : 'data-bs-target="#xs-controllers-links-module-VideoConferenceApiModule-3c13d59518096522e883017a5f3cbdbbfdaaa22373cbdfa3659e2bd3e6d25b0b787b899d37a852bd32035c83d6fba66886f798e5b1acbb6c993a8a58b0ad3613"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-VideoConferenceModule-d603159e88dc86016018c3ffa183871f25c9d58e8cd20127d8a12e26bd0af15686874baa83ff9d5398f51e60d9399e7f2757f83d89c86f3150893bc35e03909c"' :
-                                            'id="xs-controllers-links-module-VideoConferenceModule-d603159e88dc86016018c3ffa183871f25c9d58e8cd20127d8a12e26bd0af15686874baa83ff9d5398f51e60d9399e7f2757f83d89c86f3150893bc35e03909c"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-VideoConferenceApiModule-3c13d59518096522e883017a5f3cbdbbfdaaa22373cbdfa3659e2bd3e6d25b0b787b899d37a852bd32035c83d6fba66886f798e5b1acbb6c993a8a58b0ad3613"' :
+                                            'id="xs-controllers-links-module-VideoConferenceApiModule-3c13d59518096522e883017a5f3cbdbbfdaaa22373cbdfa3659e2bd3e6d25b0b787b899d37a852bd32035c83d6fba66886f798e5b1acbb6c993a8a58b0ad3613"' }>
                                             <li class="link">
                                                 <a href="controllers/VideoConferenceController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >VideoConferenceController</a>
                                             </li>
@@ -2148,13 +2148,53 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     </li>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-VideoConferenceModule-d603159e88dc86016018c3ffa183871f25c9d58e8cd20127d8a12e26bd0af15686874baa83ff9d5398f51e60d9399e7f2757f83d89c86f3150893bc35e03909c"' : 'data-bs-target="#xs-injectables-links-module-VideoConferenceModule-d603159e88dc86016018c3ffa183871f25c9d58e8cd20127d8a12e26bd0af15686874baa83ff9d5398f51e60d9399e7f2757f83d89c86f3150893bc35e03909c"' }>
+                                        'data-bs-target="#injectables-links-module-VideoConferenceApiModule-3c13d59518096522e883017a5f3cbdbbfdaaa22373cbdfa3659e2bd3e6d25b0b787b899d37a852bd32035c83d6fba66886f798e5b1acbb6c993a8a58b0ad3613"' : 'data-bs-target="#xs-injectables-links-module-VideoConferenceApiModule-3c13d59518096522e883017a5f3cbdbbfdaaa22373cbdfa3659e2bd3e6d25b0b787b899d37a852bd32035c83d6fba66886f798e5b1acbb6c993a8a58b0ad3613"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-VideoConferenceModule-d603159e88dc86016018c3ffa183871f25c9d58e8cd20127d8a12e26bd0af15686874baa83ff9d5398f51e60d9399e7f2757f83d89c86f3150893bc35e03909c"' :
-                                        'id="xs-injectables-links-module-VideoConferenceModule-d603159e88dc86016018c3ffa183871f25c9d58e8cd20127d8a12e26bd0af15686874baa83ff9d5398f51e60d9399e7f2757f83d89c86f3150893bc35e03909c"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-VideoConferenceApiModule-3c13d59518096522e883017a5f3cbdbbfdaaa22373cbdfa3659e2bd3e6d25b0b787b899d37a852bd32035c83d6fba66886f798e5b1acbb6c993a8a58b0ad3613"' :
+                                        'id="xs-injectables-links-module-VideoConferenceApiModule-3c13d59518096522e883017a5f3cbdbbfdaaa22373cbdfa3659e2bd3e6d25b0b787b899d37a852bd32035c83d6fba66886f798e5b1acbb6c993a8a58b0ad3613"' }>
+                                        <li class="link">
+                                            <a href="injectables/VideoConferenceCreateUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >VideoConferenceCreateUc</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/VideoConferenceEndUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >VideoConferenceEndUc</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/VideoConferenceInfoUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >VideoConferenceInfoUc</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/VideoConferenceJoinUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >VideoConferenceJoinUc</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </li>
+                            <li class="link">
+                                <a href="modules/VideoConferenceModule.html" data-type="entity-link" >VideoConferenceModule</a>
+                                    <li class="chapter inner">
+                                        <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
+                                            'data-bs-target="#controllers-links-module-VideoConferenceModule-4c9a166f07bdbdaa27d18d83aa2233ff2378636d7c30aacc00ad930206d0e1ba9093f556314ebbaaf484edf2c33e7a2b279649a0b78b2965b6f0de6a5d9946c4"' : 'data-bs-target="#xs-controllers-links-module-VideoConferenceModule-4c9a166f07bdbdaa27d18d83aa2233ff2378636d7c30aacc00ad930206d0e1ba9093f556314ebbaaf484edf2c33e7a2b279649a0b78b2965b6f0de6a5d9946c4"' }>
+                                            <span class="icon ion-md-swap"></span>
+                                            <span>Controllers</span>
+                                            <span class="icon ion-ios-arrow-down"></span>
+                                        </div>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-VideoConferenceModule-4c9a166f07bdbdaa27d18d83aa2233ff2378636d7c30aacc00ad930206d0e1ba9093f556314ebbaaf484edf2c33e7a2b279649a0b78b2965b6f0de6a5d9946c4"' :
+                                            'id="xs-controllers-links-module-VideoConferenceModule-4c9a166f07bdbdaa27d18d83aa2233ff2378636d7c30aacc00ad930206d0e1ba9093f556314ebbaaf484edf2c33e7a2b279649a0b78b2965b6f0de6a5d9946c4"' }>
+                                            <li class="link">
+                                                <a href="controllers/VideoConferenceDeprecatedController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >VideoConferenceDeprecatedController</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                <li class="chapter inner">
+                                    <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
+                                        'data-bs-target="#injectables-links-module-VideoConferenceModule-4c9a166f07bdbdaa27d18d83aa2233ff2378636d7c30aacc00ad930206d0e1ba9093f556314ebbaaf484edf2c33e7a2b279649a0b78b2965b6f0de6a5d9946c4"' : 'data-bs-target="#xs-injectables-links-module-VideoConferenceModule-4c9a166f07bdbdaa27d18d83aa2233ff2378636d7c30aacc00ad930206d0e1ba9093f556314ebbaaf484edf2c33e7a2b279649a0b78b2965b6f0de6a5d9946c4"' }>
+                                        <span class="icon ion-md-arrow-round-down"></span>
+                                        <span>Injectables</span>
+                                        <span class="icon ion-ios-arrow-down"></span>
+                                    </div>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-VideoConferenceModule-4c9a166f07bdbdaa27d18d83aa2233ff2378636d7c30aacc00ad930206d0e1ba9093f556314ebbaaf484edf2c33e7a2b279649a0b78b2965b6f0de6a5d9946c4"' :
+                                        'id="xs-injectables-links-module-VideoConferenceModule-4c9a166f07bdbdaa27d18d83aa2233ff2378636d7c30aacc00ad930206d0e1ba9093f556314ebbaaf484edf2c33e7a2b279649a0b78b2965b6f0de6a5d9946c4"' }>
                                         <li class="link">
                                             <a href="injectables/BBBService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >BBBService</a>
                                         </li>
@@ -2162,28 +2202,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                             <a href="injectables/ConverterUtil.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ConverterUtil</a>
                                         </li>
                                         <li class="link">
-                                            <a href="injectables/CourseRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >CourseRepo</a>
-                                        </li>
-                                        <li class="link">
-                                            <a href="injectables/SchoolRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchoolRepo</a>
-                                        </li>
-                                        <li class="link">
-                                            <a href="injectables/SchoolService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchoolService</a>
-                                        </li>
-                                        <li class="link">
                                             <a href="injectables/TeamsRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TeamsRepo</a>
                                         </li>
                                         <li class="link">
-                                            <a href="injectables/UserRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >UserRepo</a>
+                                            <a href="injectables/VideoConferenceDeprecatedUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >VideoConferenceDeprecatedUc</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/VideoConferenceRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >VideoConferenceRepo</a>
                                         </li>
                                         <li class="link">
-                                            <a href="injectables/VideoConferenceResponseMapper.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >VideoConferenceResponseMapper</a>
-                                        </li>
-                                        <li class="link">
-                                            <a href="injectables/VideoConferenceUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >VideoConferenceUc</a>
+                                            <a href="injectables/VideoConferenceService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >VideoConferenceService</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -2245,6 +2273,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="controllers/VideoConferenceController.html" data-type="entity-link" >VideoConferenceController</a>
+                                </li>
+                                <li class="link">
+                                    <a href="controllers/VideoConferenceDeprecatedController.html" data-type="entity-link" >VideoConferenceDeprecatedController</a>
                                 </li>
                             </ul>
                         </li>
@@ -3527,6 +3558,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/Scope.html" data-type="entity-link" >Scope</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ScopeRef.html" data-type="entity-link" >ScopeRef</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ServerConsole.html" data-type="entity-link" >ServerConsole</a>
                             </li>
                             <li class="link">
@@ -3887,7 +3921,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/VideoConference.html" data-type="entity-link" >VideoConference</a>
                             </li>
                             <li class="link">
-                                <a href="classes/VideoConferenceBaseResponse.html" data-type="entity-link" >VideoConferenceBaseResponse</a>
+                                <a href="classes/VideoConference-1.html" data-type="entity-link" >VideoConference</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/VideoConferenceBaseResponse.html" data-type="entity-link" class="deprecated-name">VideoConferenceBaseResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/VideoConferenceConfiguration.html" data-type="entity-link" >VideoConferenceConfiguration</a>
                             </li>
                             <li class="link">
                                 <a href="classes/VideoConferenceCreateParams.html" data-type="entity-link" >VideoConferenceCreateParams</a>
@@ -3896,25 +3936,40 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/VideoConferenceDO.html" data-type="entity-link" >VideoConferenceDO</a>
                             </li>
                             <li class="link">
-                                <a href="classes/VideoConferenceDTO.html" data-type="entity-link" >VideoConferenceDTO</a>
+                                <a href="classes/VideoConferenceInfo.html" data-type="entity-link" >VideoConferenceInfo</a>
                             </li>
                             <li class="link">
-                                <a href="classes/VideoConferenceInfoDTO.html" data-type="entity-link" >VideoConferenceInfoDTO</a>
+                                <a href="classes/VideoConferenceInfoResponse.html" data-type="entity-link" class="deprecated-name">VideoConferenceInfoResponse</a>
                             </li>
                             <li class="link">
-                                <a href="classes/VideoConferenceInfoResponse.html" data-type="entity-link" >VideoConferenceInfoResponse</a>
+                                <a href="classes/VideoConferenceInfoResponse-1.html" data-type="entity-link" >VideoConferenceInfoResponse</a>
                             </li>
                             <li class="link">
-                                <a href="classes/VideoConferenceJoinDTO.html" data-type="entity-link" >VideoConferenceJoinDTO</a>
+                                <a href="classes/VideoConferenceJoin.html" data-type="entity-link" >VideoConferenceJoin</a>
                             </li>
                             <li class="link">
-                                <a href="classes/VideoConferenceJoinResponse.html" data-type="entity-link" >VideoConferenceJoinResponse</a>
+                                <a href="classes/VideoConferenceJoinResponse.html" data-type="entity-link" class="deprecated-name">VideoConferenceJoinResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/VideoConferenceJoinResponse-1.html" data-type="entity-link" >VideoConferenceJoinResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/VideoConferenceMapper.html" data-type="entity-link" >VideoConferenceMapper</a>
                             </li>
                             <li class="link">
                                 <a href="classes/VideoConferenceOptions.html" data-type="entity-link" >VideoConferenceOptions</a>
                             </li>
                             <li class="link">
                                 <a href="classes/VideoConferenceOptionsDO.html" data-type="entity-link" >VideoConferenceOptionsDO</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/VideoConferenceOptionsResponse.html" data-type="entity-link" >VideoConferenceOptionsResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/VideoConferenceResponseDeprecatedMapper.html" data-type="entity-link" class="deprecated-name">VideoConferenceResponseDeprecatedMapper</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/VideoConferenceScopeParams.html" data-type="entity-link" >VideoConferenceScopeParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/VisibilitySettingsResponse.html" data-type="entity-link" >VisibilitySettingsResponse</a>
@@ -4353,13 +4408,25 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/UserUc.html" data-type="entity-link" >UserUc</a>
                                 </li>
                                 <li class="link">
+                                    <a href="injectables/VideoConferenceCreateUc.html" data-type="entity-link" >VideoConferenceCreateUc</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/VideoConferenceDeprecatedUc.html" data-type="entity-link" >VideoConferenceDeprecatedUc</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/VideoConferenceEndUc.html" data-type="entity-link" >VideoConferenceEndUc</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/VideoConferenceInfoUc.html" data-type="entity-link" >VideoConferenceInfoUc</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/VideoConferenceJoinUc.html" data-type="entity-link" >VideoConferenceJoinUc</a>
+                                </li>
+                                <li class="link">
                                     <a href="injectables/VideoConferenceRepo.html" data-type="entity-link" >VideoConferenceRepo</a>
                                 </li>
                                 <li class="link">
-                                    <a href="injectables/VideoConferenceResponseMapper.html" data-type="entity-link" >VideoConferenceResponseMapper</a>
-                                </li>
-                                <li class="link">
-                                    <a href="injectables/VideoConferenceUc.html" data-type="entity-link" >VideoConferenceUc</a>
+                                    <a href="injectables/VideoConferenceService.html" data-type="entity-link" >VideoConferenceService</a>
                                 </li>
                             </ul>
                         </li>
@@ -4508,6 +4575,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/IAccountConfig.html" data-type="entity-link" >IAccountConfig</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/IBbbSettings.html" data-type="entity-link" >IBbbSettings</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/ICalendarEvent.html" data-type="entity-link" >ICalendarEvent</a>
@@ -4817,6 +4887,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/IUserProperties.html" data-type="entity-link" >IUserProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/IVideoConferenceSettings.html" data-type="entity-link" >IVideoConferenceSettings</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/JwtConstants.html" data-type="entity-link" >JwtConstants</a>

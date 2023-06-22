@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/video-conference/service/bbb.service.ts</code>
+            <code>apps/server/src/modules/video-conference/bbb/bbb.service.ts</code>
         </p>
 
 
@@ -75,32 +75,6 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <h6><b>Properties</b></h6>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <ul class="index-list">
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Readonly</span>
-                                <a href="#baseURL" >baseURL</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Readonly</span>
-                                <a href="#presentationUrl" >presentationUrl</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Readonly</span>
-                                <a href="#salt" >salt</a>
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -146,6 +120,26 @@
 
 
 
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Accessors</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                    <a href="#baseUrl" >baseUrl</a>
+                                </li>
+                                <li>
+                                    <a href="#salt" >salt</a>
+                                </li>
+                                <li>
+                                    <a href="#presentationUrl" >presentationUrl</a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
         </tbody>
     </table>
 </section>
@@ -156,12 +150,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(httpService: HttpService, converterUtil: <a href="../injectables/ConverterUtil.html" target="_self">ConverterUtil</a>)</code>
+<code>constructor(bbbSettings: <a href="../interfaces/IBbbSettings.html" target="_self">IBbbSettings</a>, httpService: HttpService, converterUtil: <a href="../injectables/ConverterUtil.html" target="_self">ConverterUtil</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/video-conference/service/bbb.service.ts:26</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -178,6 +172,18 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                                <tr>
+                                                        <td>bbbSettings</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/IBbbSettings.html" target="_self" >IBbbSettings</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                                 <tr>
                                                         <td>httpService</td>
                                                   
@@ -236,8 +242,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="40"
-                            class="link-to-prism">apps/server/src/modules/video-conference/service/bbb.service.ts:40</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="38"
+                            class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:38</a></div>
                 </td>
             </tr>
 
@@ -307,8 +313,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="83"
-                            class="link-to-prism">apps/server/src/modules/video-conference/service/bbb.service.ts:83</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="81"
+                            class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:81</a></div>
                 </td>
             </tr>
 
@@ -380,8 +386,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="131"
-                            class="link-to-prism">apps/server/src/modules/video-conference/service/bbb.service.ts:131</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="129"
+                            class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:129</a></div>
                 </td>
             </tr>
 
@@ -463,8 +469,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="60"
-                            class="link-to-prism">apps/server/src/modules/video-conference/service/bbb.service.ts:60</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="58"
+                            class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:58</a></div>
                 </td>
             </tr>
 
@@ -532,8 +538,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="106"
-                            class="link-to-prism">apps/server/src/modules/video-conference/service/bbb.service.ts:106</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="104"
+                            class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:104</a></div>
                 </td>
             </tr>
 
@@ -605,8 +611,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="160"
-                            class="link-to-prism">apps/server/src/modules/video-conference/service/bbb.service.ts:160</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="158"
+                            class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:158</a></div>
                 </td>
             </tr>
 
@@ -700,8 +706,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="71"
-                            class="link-to-prism">apps/server/src/modules/video-conference/service/bbb.service.ts:71</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="69"
+                            class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:69</a></div>
                 </td>
             </tr>
 
@@ -774,8 +780,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="144"
-                            class="link-to-prism">apps/server/src/modules/video-conference/service/bbb.service.ts:144</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="142"
+                            class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:142</a></div>
                 </td>
             </tr>
 
@@ -826,132 +832,111 @@
         </tbody>
     </table>
 </section>
-            <section data-compodoc="block-properties">
-    
-    <h3 id="inputs">
-        Properties
+
+            <section data-compodoc="block-accessors">
+    <h3 id="accessors">
+        Accessors
     </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="baseURL"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Readonly</span>
-                        <span ><b>baseURL</b></span>
-                        <a href="#baseURL"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
+        <table class="table table-sm table-bordered">
+            <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
+                        <a name="baseUrl"></a>
+                        <span class="name"><b>baseUrl</b><a href="#baseUrl"><span class="icon ion-ios-link"></span></a></span>
                     </td>
                 </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/video-conference/service/bbb.service.ts:22</a></div>
-                        </td>
-                    </tr>
 
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="presentationUrl"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Readonly</span>
-                        <span ><b>presentationUrl</b></span>
-                        <a href="#presentationUrl"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
+                        <span class="accessor"><b>get</b><code>baseUrl()</code></span>
                     </td>
                 </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/video-conference/service/bbb.service.ts:26</a></div>
-                        </td>
-                    </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:20</a></div>
+                                </td>
+                            </tr>
 
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="salt"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Readonly</span>
-                        <span ><b>salt</b></span>
-                        <a href="#salt"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
+                        <a name="salt"></a>
+                        <span class="name"><b>salt</b><a href="#salt"><span class="icon ion-ios-link"></span></a></span>
                     </td>
                 </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/video-conference/service/bbb.service.ts:24</a></div>
-                        </td>
-                    </tr>
 
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>salt()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:24</a></div>
+                                </td>
+                            </tr>
 
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="presentationUrl"></a>
+                        <span class="name"><b>presentationUrl</b><a href="#presentationUrl"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>presentationUrl()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">apps/server/src/modules/video-conference/bbb/bbb.service.ts:28</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
 </section>
-
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import crypto from &#x27;crypto&#x27;;
-import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
+import { Inject, Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { AxiosResponse } from &#x27;axios&#x27;;
 import { HttpService } from &#x27;@nestjs/axios&#x27;;
-import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
 import { URL, URLSearchParams } from &#x27;url&#x27;;
 import { firstValueFrom, Observable } from &#x27;rxjs&#x27;;
-import { BBBCreateConfig } from &#x27;@src/modules/video-conference/config/bbb-create.config&#x27;;
-import { BBBJoinConfig } from &#x27;@src/modules/video-conference/config/bbb-join.config&#x27;;
-import { BBBBaseMeetingConfig } from &#x27;@src/modules/video-conference/config/bbb-base-meeting.config&#x27;;
-import {
-	BBBBaseResponse,
-	BBBCreateResponse,
-	BBBMeetingInfoResponse,
-	BBBResponse,
-	BBBStatus,
-} from &#x27;@src/modules/video-conference/interface/bbb-response.interface&#x27;;
 import { ConverterUtil } from &#x27;@shared/common/utils&#x27;;
+import { BbbSettings, IBbbSettings } from &#x27;./bbb-settings.interface&#x27;;
+import { BBBBaseResponse, BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse, BBBStatus } from &#x27;./response&#x27;;
+import { BBBBaseMeetingConfig, BBBCreateConfig, BBBJoinConfig } from &#x27;./request&#x27;;
 
 @Injectable()
 export class BBBService {
-	private readonly baseURL: string;
+	constructor(
+		@Inject(BbbSettings) private readonly bbbSettings: IBbbSettings,
+		private readonly httpService: HttpService,
+		private readonly converterUtil: ConverterUtil
+	) {}
 
-	private readonly salt: string;
+	protected get baseUrl(): string {
+		return this.bbbSettings.host;
+	}
 
-	private readonly presentationUrl: string;
+	protected get salt(): string {
+		return this.bbbSettings.salt;
+	}
 
-	constructor(private readonly httpService: HttpService, private readonly converterUtil: ConverterUtil) {
-		this.baseURL &#x3D; Configuration.get(&#x27;VIDEOCONFERENCE_HOST&#x27;) as string;
-		this.salt &#x3D; Configuration.get(&#x27;VIDEOCONFERENCE_SALT&#x27;) as string;
-		this.presentationUrl &#x3D; Configuration.get(&#x27;VIDEOCONFERENCE_DEFAULT_PRESENTATION&#x27;) as string;
+	protected get presentationUrl(): string {
+		return this.bbbSettings.presentationUrl;
 	}
 
 	/**
@@ -1084,7 +1069,7 @@ export class BBBService {
 		const checksum: string &#x3D; this.generateChecksum(callName, queryParams);
 		queryParams.append(&#x27;checksum&#x27;, checksum);
 
-		const url: URL &#x3D; new URL(this.baseURL);
+		const url: URL &#x3D; new URL(this.baseUrl);
 		url.pathname &#x3D; &#x60;/bigbluebutton/api/${callName}&#x60;;
 		url.search &#x3D; queryParams.toString();
 

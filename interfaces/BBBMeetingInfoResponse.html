@@ -71,7 +71,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/video-conference/interface/bbb-response.interface.ts</code>
+            <code>apps/server/src/modules/video-conference/bbb/response/bbb-meeting-info.response.ts</code>
         </p>
 
 
@@ -1092,41 +1092,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export enum BBBStatus {
-	SUCCESS &#x3D; &#x27;SUCCESS&#x27;,
-	ERROR &#x3D; &#x27;ERROR&#x27;,
-}
-
-export interface BBBResponse&lt;T extends BBBBaseResponse&gt; {
-	response: T;
-}
-
-export interface BBBBaseResponse {
-	returncode: BBBStatus;
-	messageKey: string;
-	message: string;
-}
-
-export interface BBBCreateResponse extends BBBBaseResponse {
-	meetingID: string;
-	internalMeetingID: string;
-	parentMeetingID: string;
-	createTime: number;
-	voiceBridge: number;
-	dialNumber: string;
-	createDate: string;
-	hasUserJoined: boolean;
-	duration: number;
-	hasBeenForciblyEnded: boolean;
-}
-
-export interface BBBJoinResponse extends BBBBaseResponse {
-	meeting_id: string;
-	user_id: string;
-	auth_token: string;
-	session_token: string;
-	url: string;
-}
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BBBBaseResponse } from &#x27;./bbb-base.response&#x27;;
 
 export interface BBBMeetingInfoResponse extends BBBBaseResponse {
 	meetingName: string;
