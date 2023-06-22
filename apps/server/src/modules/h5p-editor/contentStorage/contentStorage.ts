@@ -41,7 +41,7 @@ export class ContentStorage implements IContentStorage {
 			const readableStreamMetadata = new Stream.Readable({ objectMode: true });
 			readableStreamMetadata._read = function test() {};
 			readableStreamMetadata.push(JSON.stringify(metadata));
-			const readableH5p = Readable.from(metadata.toString());
+			const readableH5p = Readable.from(JSON.stringify(metadata));
 			const h5pFile: FileDto = {
 				name: 'h5p.json',
 				data: readableH5p,
@@ -79,7 +79,6 @@ export class ContentStorage implements IContentStorage {
 			throw new Error('404: Content not Found at addFile.');
 		}
 		const fullPath = path.join(this.getContentPath(), contentId.toString(), filename);
-		// TODO: Hier
 		const file: FileDto = {
 			name: filename,
 			data: stream as Readable,
@@ -183,37 +182,29 @@ export class ContentStorage implements IContentStorage {
 		if (!exist) {
 			throw new Error('404: Content file missing.');
 		}
-		const filePath = path.join(this.getContentPath(), contentId.toString(), file);
+		const filePath = path.join(this.getContentPath(), contentId, file);
 		// TODO: add bytesRange
-		console.log('getFileStream');
 		const fileResponse = await this.storageClient.get(filePath);
-		/* const streamFile = new StreamableFile(fileResponse.data, {
-			type: fileResponse.contentType,
-			disposition: `inline; filename="${encodeURI(contentId)}"`,
-			length: fileResponse.contentLength,
-		}); */
 		return fileResponse.data;
 	}
 
 	public async getMetadata(contentId: string, user?: IUser | undefined): Promise<IContentMetadata> {
-		// TODO:
-		console.log('getMetadata');
 		if (user !== undefined && user !== null) {
 			const fileStream = await this.getFileStream(contentId, 'h5p.json', user);
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-			return this.getJsonData(fileStream);
+			const metadata = (await this.getJsonData(fileStream)) as IContentMetadata;
+			return metadata;
 		}
 		throw new Error('Could not get Metadata');
 	}
 
 	public async getParameters(contentId: string, user?: IUser | undefined): Promise<unknown> {
-		// TODO:
-		console.log('getParameters');
 		if (user !== undefined && user !== null) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			const fileStream = await this.getFileStream(contentId, 'content.json', user);
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-			return this.getJsonData(fileStream);
+			const jsonData = await this.getJsonData(fileStream);
+			return jsonData;
 		}
 		throw new Error('Could not get Parameters');
 	}
@@ -284,7 +275,8 @@ export class ContentStorage implements IContentStorage {
 
 	private async exists(checkPath: string): Promise<boolean> {
 		try {
-			await this.storageClient.get(checkPath);
+			const file = await this.storageClient.get(checkPath);
+			file.data.destroy();
 		} catch (error) {
 			if (error instanceof NotFoundException) {
 				return false;
@@ -355,7 +347,7 @@ export class ContentStorage implements IContentStorage {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			const fileStream = await this.getFileStream('contentidlist', 'contentidlist.json', user);
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			const contentIdList: string[] = this.getJsonData(fileStream);
+			const contentIdList: string[] = (await this.getJsonData(fileStream)) as string[];
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			return contentIdList;
 		} catch (error) {
@@ -414,7 +406,7 @@ export class ContentStorage implements IContentStorage {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			const fileStream = await this.getFileStream(contentId, 'contentfilelist.json', user);
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			const contentIdList: string[] = this.getJsonData(fileStream);
+			const contentIdList: string[] = (await this.getJsonData(fileStream)) as string[];
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			return contentIdList;
 		} catch (error) {
@@ -459,13 +451,10 @@ export class ContentStorage implements IContentStorage {
 		await this.storageClient.create(fileListPath, fileListFile);
 	}
 
-	private getJsonData(fileStream: Readable) {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		const fileJson: JSON = JSON.parse(JSON.stringify(fileStream));
-		// eslint-disable-next-line prefer-destructuring, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-		const data = fileJson['_readableState']['buffer']['head']['data'];
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument
-		return JSON.parse(data);
+	private async getJsonData(fileStream: Readable): Promise<unknown> {
+		const body = await streamToString(fileStream);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+		return JSON.parse(body);
 	}
 
 	async deleteCreatedFiles(h5pPath: string, contentPath: string) {
