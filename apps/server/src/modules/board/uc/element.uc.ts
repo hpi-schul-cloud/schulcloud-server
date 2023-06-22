@@ -1,10 +1,18 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { AnyBoardDo, ContentSubElementType, EntityId, SubmissionSubElement } from '@shared/domain';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+	AnyBoardDo,
+	ContentSubElementType,
+	EntityId,
+	SubmissionBoard,
+	SubmissionSubElement,
+	TaskElement,
+} from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Action } from '@src/modules/authorization/types/action.enum';
 import { FileContentBody, RichTextContentBody, TaskContentBody } from '../controller/dto';
 import { BoardDoAuthorizableService, ContentElementService, ContentSubElementService } from '../service';
+import { SubmissionBoardService } from '../service/submission.service';
 // import { SubmissionSubElementContentBody } from './';
 
 @Injectable()
@@ -15,6 +23,7 @@ export class ElementUc {
 		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly elementService: ContentElementService,
 		private readonly subElementService: ContentSubElementService,
+		private readonly submissionBoardService: SubmissionBoardService,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(ElementUc.name);
@@ -40,6 +49,7 @@ export class ElementUc {
 		return this.authorizationService.checkPermission(user, boardDoAuthorizable, context);
 	}
 
+	// TODO: remove this
 	async createSubElement(
 		userId: EntityId,
 		contentElementId: EntityId,
@@ -65,5 +75,19 @@ export class ElementUc {
 		await this.checkPermission(userId, subElement, Action.read);
 
 		await this.subElementService.delete(subElement);
+	}
+
+	async createSubmission(userId: EntityId, contentElementId: EntityId): Promise<SubmissionBoard> {
+		const element = await this.elementService.findById(contentElementId);
+		if (!(element instanceof TaskElement))
+			throw new HttpException('Cannot create submission for non-task element', HttpStatus.UNPROCESSABLE_ENTITY);
+
+		// TODO
+		await this.checkPermission(userId, element, Action.read);
+
+		// TODO pass in value directly on create - no create empty stuff?
+		const subElement = await this.submissionBoardService.create(userId, element);
+
+		return subElement;
 	}
 }

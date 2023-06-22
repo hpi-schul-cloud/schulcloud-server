@@ -6,13 +6,15 @@ import {
 	ColumnBoard,
 	FileElement,
 	RichTextElement,
-	TaskElement,
+	SubmissionBoard,
 	SubmissionSubElement,
+	TaskElement,
 } from '@shared/domain';
 import { SubmissionContentBody } from '../controller/dto';
 
 type ContentType = SubmissionContentBody;
 
+// TODO: remove this
 export class ContentSubElementUpdateVisitor implements BoardCompositeVisitor {
 	private readonly content: ContentType;
 
@@ -42,6 +44,10 @@ export class ContentSubElementUpdateVisitor implements BoardCompositeVisitor {
 
 	visitTaskElement(taskElement: TaskElement): void {
 		this.throwNotHandled(taskElement);
+	}
+
+	visitSubmission(submission: SubmissionBoard): void {
+		this.throwNotHandled(submission);
 	}
 
 	visitSubmissionSubElement(submissionSubElement: SubmissionSubElement): void {

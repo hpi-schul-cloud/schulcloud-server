@@ -5,3 +5,4 @@ export * from './column-board.service';
 export * from './column.service';
 export * from './content-element.service';
 export * from './subelement.service';
+export * from './submission.service';

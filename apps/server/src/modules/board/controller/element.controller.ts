@@ -20,7 +20,9 @@ import {
 	AnySubElementResponse,
 	ContentElementUrlParams,
 	CreateSubElementBody,
+	CreateSubmissionBodyParams,
 	MoveContentElementBody,
+	SubmissionResponse,
 	SubmissionSubElementResponse,
 } from './dto';
 import {
@@ -29,6 +31,7 @@ import {
 	RichTextElementContentBody,
 	TaskElementContentBody,
 } from './dto/element/element-content-update.body.params';
+import { SubmissionResponseMapper } from './mapper';
 import { SubmissionSubElementResponseMapper } from './mapper/submission-subelement-response.mapper';
 
 @ApiTags('Board Element')
@@ -87,6 +90,7 @@ export class ElementController {
 		await this.cardUc.deleteElement(currentUser.userId, urlParams.contentElementId);
 	}
 
+	// TODO: remove this
 	@ApiOperation({ summary: 'Create a new subelement on an element.' })
 	@ApiExtraModels(SubmissionSubElementResponse)
 	@ApiResponse({
@@ -109,6 +113,32 @@ export class ElementController {
 		const subElement = await this.elementUc.createSubElement(currentUser.userId, urlParams.contentElementId, type);
 		const mapper = SubmissionSubElementResponseMapper.getInstance();
 		const response = mapper.mapToResponse(subElement);
+
+		return response;
+	}
+
+	@ApiOperation({ summary: 'Create a new submission on a submission container element.' })
+	@ApiExtraModels(SubmissionResponse)
+	@ApiResponse({
+		status: 201,
+		schema: {
+			oneOf: [{ $ref: getSchemaPath(SubmissionResponse) }],
+		},
+	})
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Post(':contentElementId/submissions')
+	async createSubmission(
+		@Param() urlParams: ContentElementUrlParams,
+		@Body() bodyParams: CreateSubmissionBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<SubmissionResponse> {
+		// const { type } = bodyParams;
+		// TODO current user as userId
+		const submission = await this.elementUc.createSubmission(currentUser.userId, urlParams.contentElementId);
+		const mapper = SubmissionResponseMapper.getInstance();
+		const response = mapper.mapToResponse(submission);
 
 		return response;
 	}

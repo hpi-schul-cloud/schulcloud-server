@@ -15,10 +15,12 @@ import {
 	FileElementNode,
 	RichTextElement,
 	RichTextElementNode,
-	TaskElement,
-	TaskElementNode,
+	SubmissionBoard,
+	SubmissionBoardNode,
 	SubmissionSubElement,
 	SubmissionSubElementNode,
+	TaskElement,
+	TaskElementNode,
 } from '@shared/domain';
 import { BoardNodeRepo } from './board-node.repo';
 
@@ -146,6 +148,20 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 
 		this.createOrUpdateBoardNode(boardNode);
 		this.visitChildren(submissionSubElement, boardNode);
+	}
+
+	visitSubmission(submission: SubmissionBoard): void {
+		const parentData = this.parentsMap.get(submission.id);
+		const boardNode = new SubmissionBoardNode({
+			id: submission.id,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+			completed: submission.completed,
+			userId: submission.userId,
+		});
+
+		this.createOrUpdateBoardNode(boardNode);
+		this.visitChildren(submission, boardNode);
 	}
 
 	visitChildren(parent: AnyBoardDo, parentNode: BoardNode) {

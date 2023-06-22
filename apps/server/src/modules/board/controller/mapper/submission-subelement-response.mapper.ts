@@ -1,6 +1,7 @@
 import { ContentSubElementType, SubmissionSubElement } from '@shared/domain';
 import { SubmissionSubElementContent, SubmissionSubElementResponse, TimestampsResponse } from '../dto';
 
+// TODO: remove this class, replaced by SubmissionResponseMapper
 export class SubmissionSubElementResponseMapper {
 	private static instance: SubmissionSubElementResponseMapper;
 

@@ -14,6 +14,7 @@ import {
 	ColumnService,
 	ContentElementService,
 	ContentSubElementService,
+	SubmissionBoardService,
 } from './service';
 
 @Module({
@@ -27,6 +28,7 @@ import {
 		ColumnService,
 		ContentElementService,
 		ContentSubElementService,
+		SubmissionBoardService,
 		RecursiveDeleteVisitor,
 		ContentElementFactory,
 		ContentSubElementFactory,
@@ -39,6 +41,7 @@ import {
 		CardService,
 		ContentElementService,
 		ContentSubElementService,
+		SubmissionBoardService,
 		BoardDoAuthorizableService,
 	],
 })

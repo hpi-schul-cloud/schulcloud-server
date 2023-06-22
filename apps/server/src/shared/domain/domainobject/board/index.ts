@@ -6,6 +6,7 @@ export * from './content-element.factory';
 export * from './content-subelement.factory';
 export * from './file-element.do';
 export * from './rich-text-element.do';
-export * from './task-element.do';
+export * from './submission-board.do';
 export * from './submission-subelment.do';
+export * from './task-element.do';
 export * from './types';

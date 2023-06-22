@@ -6,9 +6,8 @@ import { BoardDoBuilder, BoardNodeType } from './types';
 // import { User } from '../user.entity';
 // import {ObjectId} from "@mikro-orm/mongodb";
 
-// TODO: remove this
-@Entity({ discriminatorValue: BoardNodeType.SUBMISSION_SUBELEMENT })
-export class SubmissionSubElementNode extends BoardNode {
+@Entity({ discriminatorValue: BoardNodeType.SUBMISSION_BOARD })
+export class SubmissionBoardNode extends BoardNode {
 	@Property()
 	completed!: boolean;
 
@@ -16,21 +15,21 @@ export class SubmissionSubElementNode extends BoardNode {
 	@Property()
 	userId!: EntityId;
 
-	constructor(props: SubmissionSubElementNodeProps) {
+	constructor(props: SubmissionBoardNodeProps) {
 		super(props);
-		this.type = BoardNodeType.SUBMISSION_SUBELEMENT;
+		this.type = BoardNodeType.SUBMISSION_BOARD;
 		this.completed = props.completed;
 		this.userId = props.userId;
 	}
 
 	useDoBuilder(builder: BoardDoBuilder): AnyBoardDo {
-		const domainObject = builder.buildSubmissionSubElement(this);
+		const domainObject = builder.buildSubmissionBoard(this);
 
 		return domainObject;
 	}
 }
 
-export interface SubmissionSubElementNodeProps extends BoardNodeProps {
+export interface SubmissionBoardNodeProps extends BoardNodeProps {
 	completed: boolean;
 	userId: EntityId;
 }

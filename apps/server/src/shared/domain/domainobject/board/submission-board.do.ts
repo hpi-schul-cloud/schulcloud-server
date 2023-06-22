@@ -2,8 +2,7 @@ import { EntityId } from '@shared/domain';
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import type { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
-// TODO: remove this class, replaced by Submission
-export class SubmissionSubElement extends BoardComposite<SubmissionSubElementProps> {
+export class SubmissionBoard extends BoardComposite<SubmissionBoardProps> {
 	get completed(): boolean {
 		return this.props.completed;
 	}
@@ -25,15 +24,15 @@ export class SubmissionSubElement extends BoardComposite<SubmissionSubElementPro
 	}
 
 	accept(visitor: BoardCompositeVisitor): void {
-		visitor.visitSubmissionSubElement(this);
+		visitor.visitSubmission(this);
 	}
 
 	async acceptAsync(visitor: BoardCompositeVisitorAsync): Promise<void> {
-		await visitor.visitSubmissionSubElementAsync(this);
+		await visitor.visitSubmissionAsync(this);
 	}
 }
 
-export interface SubmissionSubElementProps extends BoardCompositeProps {
+export interface SubmissionBoardProps extends BoardCompositeProps {
 	completed: boolean;
 	userId: EntityId;
 }
