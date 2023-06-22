@@ -1,5 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import { cardFactory, richTextElementFactory } from '@shared/testing';
+import { cardFactory, richTextElementFactory, taskElementFactory } from '@shared/testing';
 import { Card } from './card.do';
 import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
@@ -9,6 +9,12 @@ describe(Card.name, () => {
 			const card = cardFactory.build();
 			const richTextElement = richTextElementFactory.build();
 			expect(card.isAllowedAsChild(richTextElement)).toBe(true);
+		});
+
+		it('should allow task element objects', () => {
+			const card = cardFactory.build();
+			const taskElement = taskElementFactory.build();
+			expect(card.isAllowedAsChild(taskElement)).toBe(true);
 		});
 	});
 

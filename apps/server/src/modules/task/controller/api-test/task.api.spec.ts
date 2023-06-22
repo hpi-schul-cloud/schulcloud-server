@@ -43,7 +43,7 @@ const createTeacher = () => {
 describe('Task Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let apiRequest: TestApiClient;
+	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -53,7 +53,7 @@ describe('Task Controller (API)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		apiRequest = new TestApiClient(app, 'tasks');
+		testApiClient = new TestApiClient(app, 'tasks');
 	});
 
 	afterAll(async () => {
@@ -67,7 +67,7 @@ describe('Task Controller (API)', () => {
 	describe('[GET] /tasks', () => {
 		describe('when no authorization is provided', () => {
 			it('should return 401', async () => {
-				const { statusCode } = await apiRequest.get();
+				const { statusCode } = await testApiClient.get();
 				expect(statusCode).toEqual(401);
 			});
 		});
@@ -83,13 +83,14 @@ describe('Task Controller (API)', () => {
 				});
 				await em.persistAndFlush([account, user, course, task]);
 				em.clear();
-				return { account, teacher: user, course, task };
+				const loggedInClient = await testApiClient.login(account);
+				return { loggedInClient, teacher: user, course, task };
 			};
 
 			it('should return tasks that include the appropriate information of task.', async () => {
-				const { account } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response = await apiRequest.get(undefined, account);
+				const response = await loggedInClient.get();
 				const result = response.body as TaskListResponse;
 
 				expect(result.data[0]).toBeDefined();
@@ -108,12 +109,13 @@ describe('Task Controller (API)', () => {
 				const task = taskFactory.build({ course });
 				await em.persistAndFlush([account, user, course, task]);
 				em.clear();
-				return { account, teacher: user, course, task };
+				const loggedInClient = await testApiClient.login(account);
+				return { loggedInClient, teacher: user, course, task };
 			};
 			it('should retun a status flag in task if the teacher is only a substitution teacher.', async () => {
-				const { account: teacherAccount } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response = await apiRequest.get(undefined, teacherAccount);
+				const response = await loggedInClient.get();
 				const result = response.body as TaskListResponse;
 
 				expect(result.data[0].status.isSubstitutionTeacher).toEqual(true);
@@ -126,14 +128,15 @@ describe('Task Controller (API)', () => {
 				const course = courseFactory.build({ teachers: [user] });
 				const task = taskFactory.draft().build({ creator: user, course });
 				await em.persistAndFlush([account, user, course, task]);
+				const loggedInClient = await testApiClient.login(account);
 				em.clear();
-				return { account, teacher: user, course, task };
+				return { loggedInClient, teacher: user, course, task };
 			};
 
 			it('should return private tasks created by the user', async () => {
-				const { account: teacherAccount } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response = await apiRequest.get(undefined, teacherAccount);
+				const response = await loggedInClient.get();
 				const result = response.body as TaskListResponse;
 
 				expect(result.total).toEqual(1);
@@ -148,13 +151,14 @@ describe('Task Controller (API)', () => {
 				const task = taskFactory.build({ creator: user, course, availableDate: tomorrow });
 				await em.persistAndFlush([account, user, course, task]);
 				em.clear();
-				return { account, teacher: user, course, task };
+				const loggedInClient = await testApiClient.login(account);
+				return { loggedInClient, teacher: user, course, task };
 			};
 
 			it('should return unavailable tasks created by the user', async () => {
-				const { account } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response = await apiRequest.get(undefined, account);
+				const response = await loggedInClient.get();
 				const result = response.body as TaskListResponse;
 
 				expect(result.total).toEqual(1);
@@ -171,13 +175,16 @@ describe('Task Controller (API)', () => {
 
 				await em.persistAndFlush([account, user, course, task, otherTeacher, otherTeacherAccount]);
 				em.clear();
-				return { account, teacher: user, course, task, otherTeacher, otherTeacherAccount };
+
+				const loggedInClient = await testApiClient.login(account);
+
+				return { loggedInClient, teacher: user, course, task, otherTeacher, otherTeacherAccount };
 			};
 
 			it('should not return unavailable tasks created by other users', async () => {
-				const { account: teacherAccount } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response = await apiRequest.get(undefined, teacherAccount);
+				const response = await loggedInClient.get();
 				const result = response.body as TaskListResponse;
 
 				expect(result.total).toEqual(0);
@@ -192,13 +199,14 @@ describe('Task Controller (API)', () => {
 				const task = taskFactory.draft().build({ creator: otherUser, course });
 				await em.persistAndFlush([account, user, course, task, otherUser, otherUserAccount]);
 				em.clear();
-				return { account, teacher: user, course, task, otherUser, otherUserAccount };
+				const loggedInClient = await testApiClient.login(account);
+				return { loggedInClient, teacher: user, course, task, otherUser, otherUserAccount };
 			};
 
 			it('should not return private tasks created by other users', async () => {
-				const { account: teacherAccount } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response = await apiRequest.get(undefined, teacherAccount);
+				const response = await loggedInClient.get();
 				const result = response.body as TaskListResponse;
 
 				expect(result.total).toEqual(0);
@@ -211,13 +219,14 @@ describe('Task Controller (API)', () => {
 				const course = courseFactory.build({ teachers: [user] });
 				await em.persistAndFlush([account, user, course]);
 				em.clear();
-				return { account, teacher: user, course };
+				const loggedInClient = await testApiClient.login(account);
+				return { loggedInClient, teacher: user, course };
 			};
 
 			it('should allow teacher to open it', async () => {
-				const { account } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response = await apiRequest.get(undefined, account);
+				const response = await loggedInClient.get();
 				const result = response.body as TaskListResponse;
 
 				expect(result).toEqual({
@@ -229,9 +238,9 @@ describe('Task Controller (API)', () => {
 			});
 
 			it('should allow teacher to set modified pagination and set correct limit', async () => {
-				const { account } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response = await apiRequest.get(undefined, account, { limit: '100', skip: '100' });
+				const response = await loggedInClient.get().query({ limit: '100', skip: '100' });
 				const result = response.body as TaskListResponse;
 
 				expect(result).toEqual({
@@ -243,9 +252,9 @@ describe('Task Controller (API)', () => {
 			});
 
 			it('should not allow teacher to set modified pagination limit greater then 100', async () => {
-				const { account } = await setup();
+				const { loggedInClient } = await setup();
 
-				const { statusCode } = await apiRequest.get(undefined, account, { limit: '1000', skip: '100' });
+				const { statusCode } = await loggedInClient.get().query({ limit: '1000', skip: '100' });
 
 				expect(statusCode).toEqual(400);
 			});
@@ -260,12 +269,13 @@ describe('Task Controller (API)', () => {
 				const task3 = taskFactory.build({ course });
 				await em.persistAndFlush([account, user, course, task1, task2, task3]);
 				em.clear();
-				return { account, teacher: user, course, task1, task2, task3 };
+				const loggedInClient = await testApiClient.login(account);
+				return { loggedInClient, teacher: user, course, task1, task2, task3 };
 			};
 
 			it('should return a list of tasks', async () => {
-				const { account } = await setup();
-				const response = await apiRequest.get(undefined, account);
+				const { loggedInClient } = await setup();
+				const response = await loggedInClient.get();
 				const result = response.body as TaskListResponse;
 				expect(result.total).toEqual(3);
 			});
@@ -282,12 +292,13 @@ describe('Task Controller (API)', () => {
 				const task3 = taskFactory.build({ course: course3 });
 				await em.persistAndFlush([account, user, course1, course2, course3, task1, task2, task3]);
 				em.clear();
-				return { account, teacher: user, course1, course2, course3, task1, task2, task3 };
+				const loggedInClient = await testApiClient.login(account);
+				return { loggedInClient, teacher: user, course1, course2, course3, task1, task2, task3 };
 			};
 
 			it('should return a list of tasks from multiple courses', async () => {
-				const { account } = await setup();
-				const response = await apiRequest.get(undefined, account);
+				const { loggedInClient } = await setup();
+				const response = await loggedInClient.get();
 				const result = response.body as TaskListResponse;
 				expect(result.total).toEqual(3);
 			});
@@ -306,7 +317,7 @@ describe('Task Controller (API)', () => {
 			it('should return nothing from courses when the student has only TASK_DASHBOARD_VIEW_V3 permissions', async () => {
 				const { studentAccount } = await setup();
 
-				const response = await apiRequest.get(undefined, studentAccount);
+				const response = await (await testApiClient.login(studentAccount)).get();
 				const result = response.body as TaskListResponse;
 				expect(result.total).toEqual(0);
 			});
@@ -329,7 +340,7 @@ describe('Task Controller (API)', () => {
 			it('should return a list of tasks with additional tasks', async () => {
 				const { studentAccount } = await setup();
 
-				const response = await apiRequest.get(undefined, studentAccount);
+				const response = await (await testApiClient.login(studentAccount)).get();
 				const result = response.body as TaskListResponse;
 
 				expect(result.total).toEqual(3);
@@ -353,7 +364,7 @@ describe('Task Controller (API)', () => {
 			it('should return tasks that include the appropriate information of task with submission.', async () => {
 				const { teacherAccount, course } = await setup();
 
-				const response = await apiRequest.get(undefined, teacherAccount);
+				const response = await (await testApiClient.login(teacherAccount)).get();
 				const result = response.body as TaskListResponse;
 
 				expect(result.data[0]).toBeDefined();
@@ -369,7 +380,7 @@ describe('Task Controller (API)', () => {
 
 			it('should not return finished tasks for student', async () => {
 				const { studentAccount } = await setup();
-				const response = await apiRequest.get(undefined, studentAccount);
+				const response = await (await testApiClient.login(studentAccount)).get();
 				const result = response.body as TaskListResponse;
 
 				expect(result.total).toEqual(1);
@@ -378,7 +389,7 @@ describe('Task Controller (API)', () => {
 			it('should return tasks that include the appropriate information.', async () => {
 				const { studentAccount } = await setup();
 
-				const response = await apiRequest.get(undefined, studentAccount);
+				const response = await (await testApiClient.login(studentAccount)).get();
 				const result = response.body as TaskListResponse;
 
 				expect(result.data[0]).toBeDefined();
@@ -398,7 +409,7 @@ describe('Task Controller (API)', () => {
 			it('should not return finished tasks', async () => {
 				const { studentAccount } = await setup();
 
-				const response = await apiRequest.get(undefined, studentAccount);
+				const response = await (await testApiClient.login(studentAccount)).get();
 				const result = response.body as TaskListResponse;
 
 				expect(result.total).toEqual(1);
@@ -412,13 +423,14 @@ describe('Task Controller (API)', () => {
 				const task = taskFactory.build({ course, private: true });
 				await em.persistAndFlush([account, user, course, task]);
 				em.clear();
-				return { account, student: user, course };
+				const loggedInClient = await testApiClient.login(account);
+				return { loggedInClient, student: user, course };
 			};
 
 			it('should not return private tasks', async () => {
-				const { account } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response = await apiRequest.get(undefined, account);
+				const response = await loggedInClient.get();
 				const result = response.body as TaskListResponse;
 
 				expect(result.total).toEqual(0);
@@ -432,13 +444,14 @@ describe('Task Controller (API)', () => {
 				const task = taskFactory.build({ course, availableDate: tomorrow });
 				await em.persistAndFlush([account, user, course, task]);
 				em.clear();
-				return { account, student: user, course };
+				const loggedInClient = await testApiClient.login(account);
+				return { loggedInClient, student: user, course };
 			};
 
 			it('should not return a task of a course that has no lesson and is not published', async () => {
-				const { account } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response = await apiRequest.get(undefined, account);
+				const response = await loggedInClient.get();
 				const result = response.body as TaskListResponse;
 
 				expect(result.total).toEqual(0);
@@ -452,13 +465,14 @@ describe('Task Controller (API)', () => {
 				const task = taskFactory.build({ creator: user, course, availableDate: tomorrow });
 				await em.persistAndFlush([account, user, course, task]);
 				em.clear();
-				return { account, student: user, course };
+				const loggedInClient = await testApiClient.login(account);
+				return { loggedInClient, student: user, course };
 			};
 
 			it('should return unavailable tasks created by the student', async () => {
-				const { account } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response = await apiRequest.get(undefined, account);
+				const response = await loggedInClient.get();
 				const result = response.body as TaskListResponse;
 
 				expect(result.total).toEqual(1);
@@ -473,13 +487,14 @@ describe('Task Controller (API)', () => {
 				const task = taskFactory.build({ course, dueDate: null });
 				await em.persistAndFlush([account, user, course, task]);
 				em.clear();
-				return { account, student: user, course };
+				const loggedInClient = await testApiClient.login(account);
+				return { loggedInClient, student: user, course };
 			};
 
 			it('should return a task of a course that has no lesson and is not limited by date', async () => {
-				const { account } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response = await apiRequest.get(undefined, account);
+				const response = await loggedInClient.get();
 				const result = response.body as TaskListResponse;
 
 				expect(result.total).toEqual(1);
@@ -494,13 +509,14 @@ describe('Task Controller (API)', () => {
 				const task = taskFactory.build({ course });
 				await em.persistAndFlush([account, user, course, task]);
 				em.clear();
-				return { account, student: user, course, task };
+				const loggedInClient = await testApiClient.login(account);
+				return { loggedInClient, student: user, course, task };
 			};
 
 			it('should not return task of finished courses', async () => {
-				const { account } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response = await apiRequest.get(undefined, account);
+				const response = await loggedInClient.get();
 				const result = response.body as TaskListResponse;
 
 				expect(result.total).toEqual(0);
@@ -513,21 +529,22 @@ describe('Task Controller (API)', () => {
 				const course = courseFactory.build({ students: [user] });
 				await em.persistAndFlush([account, user, course]);
 				em.clear();
-				return { account, student: user, course };
+				const loggedInClient = await testApiClient.login(account);
+				return { loggedInClient, student: user, course };
 			};
 
 			it('should return 200 when student open it', async () => {
-				const { account } = await setup();
+				const { loggedInClient } = await setup();
 
-				const { statusCode } = await apiRequest.get(undefined, account);
+				const { statusCode } = await loggedInClient.get();
 
 				expect(statusCode).toEqual(200);
 			});
 
 			it('should return empty tasks when student open it', async () => {
-				const { account } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response = await apiRequest.get(undefined, account);
+				const response = await loggedInClient.get();
 				const result = response.body as TaskListResponse;
 
 				expect(result).toEqual({
@@ -539,9 +556,9 @@ describe('Task Controller (API)', () => {
 			});
 
 			it('should allow to modified pagination and set correct limit', async () => {
-				const { account } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response = await apiRequest.get(undefined, account, { limit: '100', skip: '100' });
+				const response = await loggedInClient.get().query({ limit: '100', skip: '100' });
 				const result = response.body as TaskListResponse;
 
 				expect(result).toEqual({
@@ -553,9 +570,9 @@ describe('Task Controller (API)', () => {
 			});
 
 			it('should not allow to set modified pagination limit greater then 100', async () => {
-				const { account } = await setup();
+				const { loggedInClient } = await setup();
 
-				const { statusCode } = await apiRequest.get(undefined, account, { limit: '1000', skip: '100' });
+				const { statusCode } = await loggedInClient.get().query({ limit: '1000', skip: '100' });
 
 				expect(statusCode).toEqual(400);
 			});
@@ -572,12 +589,13 @@ describe('Task Controller (API)', () => {
 				const task3 = taskFactory.build({ course: course3 });
 				await em.persistAndFlush([account, user, course1, course2, course3, task1, task2, task3]);
 				em.clear();
-				return { account, student: user, course1, course2, course3, task1, task2, task3 };
+				const loggedInClient = await testApiClient.login(account);
+				return { loggedInClient, student: user, course1, course2, course3, task1, task2, task3 };
 			};
 
 			it('should return a list of tasks from multiple courses', async () => {
-				const { account } = await setup();
-				const response = await apiRequest.get(undefined, account);
+				const { loggedInClient } = await setup();
+				const response = await loggedInClient.get();
 				const result = response.body as TaskListResponse;
 				expect(result.total).toEqual(3);
 			});
@@ -602,7 +620,7 @@ describe('Task Controller (API)', () => {
 			it('should find tasks to which student is assigned', async () => {
 				const { student, task } = await setup();
 
-				const response = await apiRequest.get(undefined, student.account);
+				const response = await (await testApiClient.login(student.account)).get();
 				const { data } = response.body as TaskListResponse;
 
 				expect(response.statusCode).toBe(200);
@@ -612,7 +630,7 @@ describe('Task Controller (API)', () => {
 			it('should finds all tasks as teacher (assignment does not change the result)', async () => {
 				const { teacher } = await setup();
 
-				const response = await apiRequest.get(undefined, teacher.account);
+				const response = await (await testApiClient.login(teacher.account)).get();
 
 				const { total } = response.body as TaskListResponse;
 				expect(response.statusCode).toBe(200);
@@ -649,7 +667,7 @@ describe('Task Controller (API)', () => {
 			it('student does not find tasks, it task has users assigned, but himself is not assigned', async () => {
 				const { notAssignedStudent } = await setup();
 
-				const response = await apiRequest.get(undefined, notAssignedStudent.account);
+				const response = await (await testApiClient.login(notAssignedStudent.account)).get();
 
 				const { total } = response.body as TaskListResponse;
 				expect(response.statusCode).toBe(200);
@@ -676,7 +694,7 @@ describe('Task Controller (API)', () => {
 			it('student finds tasks, if task assignment list is empty', async () => {
 				const { student, task } = await setup();
 
-				const response = await apiRequest.get(undefined, student.account);
+				const response = await (await testApiClient.login(student.account)).get();
 
 				const { data } = response.body as TaskListResponse;
 				expect(response.statusCode).toBe(200);
@@ -703,7 +721,7 @@ describe('Task Controller (API)', () => {
 			it('student does not find tasks to which he is assigned, if he does not belong to course', async () => {
 				const { student } = await setup();
 
-				const response = await apiRequest.get(undefined, student.account);
+				const response = await (await testApiClient.login(student.account)).get();
 
 				const { total } = response.body as TaskListResponse;
 				expect(response.statusCode).toBe(200);
@@ -742,7 +760,7 @@ describe('Task Controller (API)', () => {
 			it('should find finished tasks to which student is assigned ', async () => {
 				const { student, task } = await setup();
 
-				const response = await apiRequest.get('/finished', student.account);
+				const response = await (await testApiClient.login(student.account)).get('/finished');
 
 				const { data } = response.body as TaskListResponse;
 				expect(response.statusCode).toBe(200);
@@ -752,7 +770,7 @@ describe('Task Controller (API)', () => {
 			it('student does not find finished tasks, if tasks have users assigned, but himself is not assigned', async () => {
 				const { notAssignedStudent } = await setup();
 
-				const response = await apiRequest.get('/finished', notAssignedStudent.account);
+				const response = await (await testApiClient.login(notAssignedStudent.account)).get('/finished');
 
 				const { total } = response.body as TaskListResponse;
 				expect(response.statusCode).toBe(200);

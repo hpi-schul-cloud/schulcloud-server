@@ -7,8 +7,18 @@ import type {
 	ColumnNode,
 	FileElementNode,
 	RichTextElementNode,
+	TaskElementNode,
 } from '@shared/domain';
-import { AnyBoardDo, BoardNodeType, Card, Column, ColumnBoard, FileElement, RichTextElement } from '@shared/domain';
+import {
+	AnyBoardDo,
+	BoardNodeType,
+	Card,
+	Column,
+	ColumnBoard,
+	FileElement,
+	RichTextElement,
+	TaskElement,
+} from '@shared/domain';
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
 	private childrenMap: Record<string, BoardNode[]> = {};
@@ -35,6 +45,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			children: columns,
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
+			context: boardNode.context,
 		});
 
 		return columnBoard;
@@ -57,11 +68,12 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 
 	public buildCard(boardNode: CardNode): Card {
 		this.ensureBoardNodeType(this.getChildren(boardNode), [
-			BoardNodeType.RICH_TEXT_ELEMENT,
 			BoardNodeType.FILE_ELEMENT,
+			BoardNodeType.RICH_TEXT_ELEMENT,
+			BoardNodeType.TASK_ELEMENT,
 		]);
 
-		const elements = this.buildChildren<RichTextElement>(boardNode);
+		const elements = this.buildChildren<RichTextElement | TaskElement>(boardNode);
 
 		const card = new Card({
 			id: boardNode.id,
@@ -72,6 +84,19 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			updatedAt: boardNode.updatedAt,
 		});
 		return card;
+	}
+
+	public buildFileElement(boardNode: FileElementNode): FileElement {
+		this.ensureLeafNode(boardNode);
+
+		const element = new FileElement({
+			id: boardNode.id,
+			caption: boardNode.caption,
+			children: [],
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+		});
+		return element;
 	}
 
 	public buildRichTextElement(boardNode: RichTextElementNode): RichTextElement {
@@ -88,12 +113,12 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 		return element;
 	}
 
-	public buildFileElement(boardNode: FileElementNode): FileElement {
+	public buildTaskElement(boardNode: TaskElementNode): TaskElement {
 		this.ensureLeafNode(boardNode);
 
-		const element = new FileElement({
+		const element = new TaskElement({
 			id: boardNode.id,
-			caption: boardNode.caption,
+			dueDate: boardNode.dueDate,
 			children: [],
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,

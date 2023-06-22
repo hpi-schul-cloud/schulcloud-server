@@ -1,0 +1,204 @@
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { H5PAjaxEndpoint, H5pError } from '@lumieducation/h5p-server';
+import { HttpException, InternalServerErrorException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { setupEntities } from '@shared/testing';
+import { H5PEditorTestModule } from '../h5p-editor-test.module';
+import { H5PEditorUc } from './h5p.uc';
+
+describe('H5P Ajax', () => {
+	let module: TestingModule;
+	let uc: H5PEditorUc;
+	let ajaxEndpoint: DeepMocked<H5PAjaxEndpoint>;
+
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
+			imports: [H5PEditorTestModule],
+		})
+			.overrideProvider(H5PAjaxEndpoint)
+			.useValue(createMock<H5PAjaxEndpoint>())
+			.compile();
+
+		uc = module.get(H5PEditorUc);
+		ajaxEndpoint = module.get(H5PAjaxEndpoint);
+		await setupEntities();
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
+	afterAll(async () => {
+		await module.close();
+	});
+
+	describe('when calling GET', () => {
+		const userMock = { userId: 'dummyId', roles: [], schoolId: 'dummySchool', accountId: 'dummyAccountId' };
+
+		it('should call H5PAjaxEndpoint.getAjax and return the result', async () => {
+			const dummyResponse = {
+				apiVersion: { major: 1, minor: 1 },
+				details: [],
+				libraries: [],
+				outdated: false,
+				recentlyUsed: [],
+				user: 'DummyUser',
+			};
+
+			ajaxEndpoint.getAjax.mockResolvedValueOnce(dummyResponse);
+
+			const result = await uc.getAjax({ action: 'content-type-cache', language: 'de' }, userMock);
+
+			expect(result).toBe(dummyResponse);
+			expect(ajaxEndpoint.getAjax).toHaveBeenCalledWith(
+				'content-type-cache',
+				undefined, // MachineName
+				undefined, // MajorVersion
+				undefined, // MinorVersion
+				'de',
+				expect.objectContaining({ id: 'dummyId' })
+			);
+		});
+
+		it('should convert any H5P-Errors into HttpExceptions', async () => {
+			ajaxEndpoint.getAjax.mockRejectedValueOnce(new H5pError('dummy-error', { error: 'Dummy Error' }, 400));
+
+			const result = uc.getAjax({ action: 'content-type-cache', language: 'de' }, userMock);
+
+			await expect(result).rejects.toThrowError(new HttpException('dummy-error (error: Dummy Error)', 400));
+		});
+
+		it('should convert any non-H5P-Errors into InternalServerErrorException', async () => {
+			ajaxEndpoint.getAjax.mockRejectedValueOnce(new Error('Dummy Error'));
+
+			const result = uc.getAjax({ action: 'content-type-cache', language: 'de' }, userMock);
+
+			await expect(result).rejects.toThrowError(InternalServerErrorException);
+		});
+	});
+
+	describe('when calling POST', () => {
+		const userMock = { userId: 'dummyId', roles: [], schoolId: 'dummySchool', accountId: 'dummyAccountId' };
+
+		it('should call H5PAjaxEndpoint.postAjax and return the result', async () => {
+			const dummyResponse = [
+				{
+					majorVersion: 1,
+					minorVersion: 2,
+					metadataSettings: {},
+					name: 'Dummy Library',
+					restricted: false,
+					runnable: true,
+					title: 'Dummy Library',
+					tutorialUrl: '',
+					uberName: 'dummyLibrary-1.1',
+				},
+			];
+
+			ajaxEndpoint.postAjax.mockResolvedValueOnce(dummyResponse);
+
+			const result = await uc.postAjax(
+				userMock,
+				{ action: 'libraries' },
+				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' }
+			);
+
+			expect(result).toBe(dummyResponse);
+			expect(ajaxEndpoint.postAjax).toHaveBeenCalledWith(
+				'libraries',
+				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' },
+				undefined,
+				expect.objectContaining({ id: 'dummyId' }),
+				undefined,
+				undefined,
+				undefined,
+				undefined,
+				undefined
+			);
+		});
+
+		it('should call H5PAjaxEndpoint.postAjax with files', async () => {
+			const dummyResponse = [
+				{
+					majorVersion: 1,
+					minorVersion: 2,
+					metadataSettings: {},
+					name: 'Dummy Library',
+					restricted: false,
+					runnable: true,
+					title: 'Dummy Library',
+					tutorialUrl: '',
+					uberName: 'dummyLibrary-1.1',
+				},
+			];
+
+			ajaxEndpoint.postAjax.mockResolvedValueOnce(dummyResponse);
+
+			const result = await uc.postAjax(
+				userMock,
+				{ action: 'libraries' },
+				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' },
+				[
+					{
+						fieldname: 'file',
+						buffer: Buffer.from(''),
+						originalname: 'OriginalFile.jpg',
+						size: 0,
+						mimetype: 'image/jpg',
+					} as Express.Multer.File,
+					{
+						fieldname: 'h5p',
+						buffer: Buffer.from(''),
+						originalname: 'OriginalFile.jpg',
+						size: 0,
+						mimetype: 'image/jpg',
+					} as Express.Multer.File,
+				]
+			);
+
+			const bufferTest = {
+				data: expect.any(Buffer),
+				mimetype: 'image/jpg',
+				name: 'OriginalFile.jpg',
+				size: 0,
+			};
+
+			expect(result).toBe(dummyResponse);
+			expect(ajaxEndpoint.postAjax).toHaveBeenCalledWith(
+				'libraries',
+				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' },
+				undefined,
+				expect.objectContaining({ id: 'dummyId' }),
+				bufferTest,
+				undefined,
+				undefined,
+				bufferTest,
+				undefined
+			);
+		});
+
+		it('should convert any H5P-Errors into HttpExceptions', async () => {
+			ajaxEndpoint.postAjax.mockRejectedValueOnce(new H5pError('dummy-error', { error: 'Dummy Error' }, 400));
+
+			const result = uc.postAjax(
+				userMock,
+				{ action: 'libraries' },
+				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' }
+			);
+
+			await expect(result).rejects.toThrowError(new HttpException('dummy-error (error: Dummy Error)', 400));
+		});
+
+		it('should convert any non-H5P-Errors into InternalServerErrorException', async () => {
+			ajaxEndpoint.postAjax.mockRejectedValueOnce(new Error('Dummy Error'));
+
+			const result = uc.postAjax(
+				userMock,
+				{ action: 'libraries' },
+				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' }
+			);
+
+			await expect(result).rejects.toThrowError(InternalServerErrorException);
+		});
+	});
+});

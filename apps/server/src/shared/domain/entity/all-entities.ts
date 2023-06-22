@@ -1,8 +1,13 @@
 import { ShareToken } from '@src/modules/sharing/entity/share-token.entity';
 import { Account } from './account.entity';
-import { Board } from './board.entity';
-import { BoardElement, LessonBoardElement, TaskBoardElement } from './boardelement.entity';
-import { CardNode, ColumnBoardNode, ColumnNode, FileElementNode, RichTextElementNode } from './boardnode';
+import {
+	CardNode,
+	ColumnBoardNode,
+	ColumnNode,
+	FileElementNode,
+	RichTextElementNode,
+	TaskElementNode,
+} from './boardnode';
 import { BoardNode } from './boardnode/boardnode.entity';
 import { CardElement, RichTextCardElement } from './card-element.entity';
 import { Course } from './course.entity';
@@ -10,6 +15,14 @@ import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
 import { File } from './file.entity';
 import { ImportUser } from './import-user.entity';
+import {
+	Board,
+	BoardElement,
+	ColumnboardBoardElement,
+	ColumnBoardTarget,
+	LessonBoardElement,
+	TaskBoardElement,
+} from './legacy-board';
 import { Lesson } from './lesson.entity';
 import { LtiTool } from './ltitool.entity';
 import { Material } from './materials.entity';
@@ -25,6 +38,7 @@ import { TaskCard } from './task-card.entity';
 import { Task } from './task.entity';
 import { Team, TeamUser } from './team.entity';
 import { ContextExternalTool, ExternalTool, SchoolExternalTool } from './tools';
+import { UserLoginMigration } from './user-login-migration.entity';
 import { User } from './user.entity';
 import { VideoConference } from './video-conference.entity';
 
@@ -34,10 +48,13 @@ export const ALL_ENTITIES = [
 	BoardElement,
 	BoardNode,
 	CardNode,
+	ColumnboardBoardElement,
 	ColumnBoardNode,
+	ColumnBoardTarget,
 	ColumnNode,
 	FileElementNode,
 	RichTextElementNode,
+	TaskElementNode,
 	Course,
 	ContextExternalTool,
 	CourseGroup,
@@ -73,5 +90,6 @@ export const ALL_ENTITIES = [
 	TeamNews,
 	TeamUser,
 	User,
+	UserLoginMigration,
 	VideoConference,
 ];

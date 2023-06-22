@@ -2,7 +2,7 @@
 // needed for listFiles()
 import { ReadStream } from 'fs';
 import { Readable } from 'stream';
-import { accessSync, constants } from 'node:fs';
+import { mkdirSync } from 'node:fs';
 import { readFile, writeFile, access, mkdir, open, readdir, stat, rm, rmdir } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { relative } from 'path';
@@ -14,8 +14,7 @@ import { TemporaryFile } from './temporary-file';
 @Injectable()
 export class TemporaryFileStorage implements ITemporaryFileStorage {
 	constructor(private readonly path: string) {
-		// eslint-disable-next-line no-bitwise
-		accessSync(path, constants.R_OK | constants.W_OK);
+		mkdirSync(path, { recursive: true });
 	}
 
 	private checkFilename(filename: string): void {

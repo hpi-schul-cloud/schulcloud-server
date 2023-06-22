@@ -2,8 +2,6 @@ const mongoose = require('mongoose');
 const mongooseDelete = require('mongoose-delete');
 const { v4: uuidv4 } = require('uuid');
 
-const { enableAuditLog } = require('../../utils/database');
-
 const { Schema } = mongoose;
 
 const permissionSchema = new Schema(
@@ -23,8 +21,6 @@ const permissionSchema = new Schema(
 	},
 	{ _id: false }
 );
-
-enableAuditLog(permissionSchema);
 
 const SecurityCheckStatusTypes = Object.freeze({
 	PENDING: 'pending',
@@ -119,8 +115,6 @@ const fileSchema = new Schema({
 });
 
 fileSchema.plugin(mongooseDelete, { deletedAt: true, overrideMethods: true, indexFields: true });
-
-enableAuditLog(fileSchema);
 
 /*
 query list with bigges impact of database load

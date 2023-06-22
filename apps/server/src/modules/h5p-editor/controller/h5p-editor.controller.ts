@@ -1,7 +1,39 @@
-import { BadRequestException, Controller, ForbiddenException, Get, InternalServerErrorException } from '@nestjs/common';
+import {
+	BadRequestException,
+	Body,
+	Controller,
+	ForbiddenException,
+	Get,
+	HttpStatus,
+	InternalServerErrorException,
+	Param,
+	Post,
+	Query,
+	Req,
+	Res,
+	StreamableFile,
+	UploadedFiles,
+	UseInterceptors,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
+import { ICurrentUser } from '@src/modules/authentication';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { Request, Response } from 'express';
+
+import { H5PEditorUc } from '../uc/h5p.uc';
+
+import {
+	AjaxGetQueryParams,
+	AjaxPostBodyParams,
+	AjaxPostBodyParamsFilesInterceptor,
+	AjaxPostBodyParamsTransformPipe,
+	AjaxPostQueryParams,
+	ContentFileUrlParams,
+	GetH5PContentParams,
+	LibraryFileUrlParams,
+	PostH5PContentCreateParams,
+} from './dto';
 
 // Dummy html response so we can test i-frame integration
 const dummyResponse = (title: string) => `
@@ -24,15 +56,18 @@ const dummyResponse = (title: string) => `
 @Authenticate('jwt')
 @Controller('h5p-editor')
 export class H5PEditorController {
+	constructor(private h5pEditorUc: H5PEditorUc) {}
+
 	@ApiOperation({ summary: 'Return dummy HTML for testing' })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 400, type: BadRequestException })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
-	@Get('/:contentId/play')
-	async getPlayer() {
+	@Get('/play/:contentId')
+	async getPlayer(@CurrentUser() currentUser: ICurrentUser, @Param() params: GetH5PContentParams) {
+		return this.h5pEditorUc.getH5pPlayer(currentUser, params.contentId);
 		// Dummy Response
-		return Promise.resolve(dummyResponse('H5P Player Dummy'));
+		// return Promise.resolve(dummyResponse('H5P Player Dummy'));
 	}
 
 	@ApiOperation({ summary: 'Return dummy HTML for testing' })
@@ -53,4 +88,141 @@ export class H5PEditorController {
 	// - ajax endpoint for h5p 		(e.g. GET/POST `/ajax/*`)
 	// - static files from h5p-core	(e.g. GET `/core/*`)
 	// - static files for editor	(e.g. GET `/editor/*`)
+
+	@Get('libraries/:ubername/:file(*)')
+	async getLibraryFile(@Param() params: LibraryFileUrlParams, @Req() req: Request) {
+		const { data, contentType, contentLength } = await this.h5pEditorUc.getLibraryFile(params.ubername, params.file);
+
+		req.on('close', () => data.destroy());
+
+		return new StreamableFile(data, { type: contentType, length: contentLength });
+	}
+
+	@Get('params/:id')
+	async getContentParameters(@Param('id') id: string, @CurrentUser() currentUser: ICurrentUser) {
+		const content = await this.h5pEditorUc.getContentParameters(id, currentUser);
+
+		return content;
+	}
+
+	@Get('content/:id/:file(*)')
+	async getContentFile(
+		@Param() params: ContentFileUrlParams,
+		@Req() req: Request,
+		@Res({ passthrough: true }) res: Response,
+		@CurrentUser() currentUser: ICurrentUser
+	) {
+		const { data, contentType, contentLength, contentRange } = await this.h5pEditorUc.getContentFile(
+			params.id,
+			params.file,
+			req,
+			currentUser
+		);
+
+		if (contentRange) {
+			const contentRangeHeader = `bytes ${contentRange.start}-${contentRange.end}/${contentLength}`;
+
+			res.set({
+				'Accept-Ranges': 'bytes',
+				'Content-Range': contentRangeHeader,
+			});
+
+			res.status(HttpStatus.PARTIAL_CONTENT);
+		} else {
+			res.status(HttpStatus.OK);
+		}
+
+		req.on('close', () => data.destroy());
+
+		return new StreamableFile(data, { type: contentType, length: contentLength });
+	}
+
+	@Get('temp-files/:file(*)')
+	async getTemporaryFile(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param('file') file: string,
+		@Req() req: Request,
+		@Res({ passthrough: true }) res: Response
+	) {
+		const { data, contentType, contentLength, contentRange } = await this.h5pEditorUc.getTemporaryFile(
+			file,
+			req,
+			currentUser
+		);
+
+		if (contentRange) {
+			const contentRangeHeader = `bytes ${contentRange.start}-${contentRange.end}/${contentLength}`;
+
+			res.set({
+				'Accept-Ranges': 'bytes',
+				'Content-Range': contentRangeHeader,
+			});
+
+			res.status(HttpStatus.PARTIAL_CONTENT);
+		} else {
+			res.status(HttpStatus.OK);
+		}
+
+		req.on('close', () => data.destroy());
+
+		return new StreamableFile(data, { type: contentType, length: contentLength });
+	}
+
+	@Get('ajax')
+	async getAjax(@Query() query: AjaxGetQueryParams, @CurrentUser() currentUser: ICurrentUser) {
+		const response = this.h5pEditorUc.getAjax(query, currentUser);
+		return response;
+	}
+
+	@Post('ajax')
+	@UseInterceptors(AjaxPostBodyParamsFilesInterceptor)
+	async postAjax(
+		@Body(AjaxPostBodyParamsTransformPipe) body: AjaxPostBodyParams,
+		@Query() query: AjaxPostQueryParams,
+		@UploadedFiles() files: Express.Multer.File[],
+		@CurrentUser() currentUser: ICurrentUser
+	) {
+		const result = await this.h5pEditorUc.postAjax(currentUser, query, body, files);
+		return result;
+	}
+
+	@Post('/delete/:contentId')
+	async deleteH5pContent(
+		@Param() params: GetH5PContentParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<boolean> {
+		const deleteSuccessfull = this.h5pEditorUc.deleteH5pContent(currentUser, params.contentId);
+
+		return deleteSuccessfull;
+	}
+
+	@Get('/:contentId')
+	async getH5PEditor(@Param() params: GetH5PContentParams, @CurrentUser() currentUser: ICurrentUser): Promise<string> {
+		// TODO: Get user language
+		if (params.contentId === 'create') {
+			params.contentId = undefined as unknown as string;
+		}
+		const response = this.h5pEditorUc.getH5pEditor(currentUser, params.contentId, 'de');
+		return response;
+	}
+
+	@Post('/:contentId')
+	async createOrSaveH5pContent(
+		@Body() body: PostH5PContentCreateParams,
+		@Param() params: GetH5PContentParams,
+		@CurrentUser() currentUser: ICurrentUser
+	) {
+		if (params.contentId === 'create') {
+			params.contentId = undefined as unknown as string;
+		}
+		const response = await this.h5pEditorUc.saveH5pContentGetMetadata(
+			params.contentId,
+			currentUser,
+			body.params.params,
+			body.params.metadata,
+			body.library
+		);
+
+		return response;
+	}
 }

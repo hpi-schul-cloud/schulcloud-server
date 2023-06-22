@@ -29,35 +29,41 @@ describe(BoardManagementConsole.name, () => {
 		service = module.get(BoardManagementConsole);
 		consoleWriter = module.get(ConsoleWriterService);
 		boarManagementUc = module.get(BoardManagementUc);
-		boarManagementUc.createBoards.mockResolvedValue(new ObjectId().toHexString());
+		boarManagementUc.createBoard.mockResolvedValue(new ObjectId().toHexString());
 	});
 
 	afterAll(async () => {
 		await module.close();
 	});
 
-	describe('createBoards', () => {
+	describe('createBoard', () => {
 		it('should call the board use case', async () => {
-			await service.createBoards();
+			const fakeEntityId = new ObjectId().toHexString();
+			await service.createBoard(fakeEntityId);
 
-			expect(boarManagementUc.createBoards).toHaveBeenCalled();
+			expect(boarManagementUc.createBoard).toHaveBeenCalled();
 		});
 
 		it('should log a report to the console', async () => {
-			await service.createBoards();
+			const fakeEntityId = new ObjectId().toHexString();
+			await service.createBoard(fakeEntityId);
+
 			expect(consoleWriter.info).toHaveBeenCalled();
 		});
 
 		it('should return the report', async () => {
-			let report = '';
+			const fakeEntityId = new ObjectId().toHexString();
+			await service.createBoard(fakeEntityId);
 
-			consoleWriter.info.mockImplementationOnce((text) => {
-				report = text;
-			});
+			expect(consoleWriter.info).toHaveBeenCalledWith(expect.stringContaining('Success'));
+		});
 
-			const output = await service.createBoards();
+		it('should fail if no valid courseId was provided', async () => {
+			await service.createBoard('123');
 
-			expect(output).toEqual(report);
+			expect(consoleWriter.info).toHaveBeenCalledWith(
+				expect.stringContaining('Error: please provide a valid courseId')
+			);
 		});
 	});
 });
