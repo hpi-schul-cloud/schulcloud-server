@@ -7,7 +7,7 @@ import {
 	ColumnNode,
 	FileElementNode,
 	RichTextElementNode,
-	TaskElementNode,
+	SubmissionContainerElementNode,
 } from '@shared/domain';
 import {
 	cardFactory,
@@ -16,7 +16,7 @@ import {
 	columnFactory,
 	fileElementFactory,
 	richTextElementFactory,
-	taskElementFactory,
+	submissionContainerElementFactory,
 } from '@shared/testing';
 import { BoardNodeRepo } from './board-node.repo';
 import { RecursiveSaveVisitor } from './recursive-save.visitor';
@@ -146,12 +146,12 @@ describe(RecursiveSaveVisitor.name, () => {
 
 	describe('when visiting a task element composite', () => {
 		it('should create or update the node', () => {
-			const taskElement = taskElementFactory.build();
+			const taskElement = submissionContainerElementFactory.build();
 			jest.spyOn(visitor, 'createOrUpdateBoardNode');
 
 			visitor.visitTaskElement(taskElement);
 
-			const expectedNode: Partial<TaskElementNode> = {
+			const expectedNode: Partial<SubmissionContainerElementNode> = {
 				id: taskElement.id,
 				type: BoardNodeType.TASK_ELEMENT,
 				dueDate: taskElement.dueDate,

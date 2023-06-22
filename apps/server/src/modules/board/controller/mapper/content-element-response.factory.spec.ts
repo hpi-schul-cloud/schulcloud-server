@@ -1,5 +1,5 @@
 import { NotImplementedException } from '@nestjs/common';
-import { fileElementFactory, richTextElementFactory, taskElementFactory } from '@shared/testing';
+import { fileElementFactory, richTextElementFactory, submissionContainerElementFactory } from '@shared/testing';
 import { FileElementResponse, RichTextElementResponse, TaskElementResponse } from '../dto';
 import { ContentElementResponseFactory } from './content-element-response.factory';
 
@@ -7,7 +7,7 @@ describe(ContentElementResponseFactory.name, () => {
 	const setup = () => {
 		const fileElement = fileElementFactory.build();
 		const richTextElement = richTextElementFactory.build();
-		const taskElement = taskElementFactory.build();
+		const taskElement = submissionContainerElementFactory.build();
 
 		return { fileElement, richTextElement, taskElement };
 	};
