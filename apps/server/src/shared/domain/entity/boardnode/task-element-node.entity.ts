@@ -4,7 +4,7 @@ import { BoardNode, BoardNodeProps } from './boardnode.entity';
 import { BoardDoBuilder, BoardNodeType } from './types';
 
 @Entity({ discriminatorValue: BoardNodeType.TASK_ELEMENT })
-export class TaskElementNode extends BoardNode {
+export class SubmissionContainerElementNode extends BoardNode {
 	@Property()
 	dueDate: Date;
 

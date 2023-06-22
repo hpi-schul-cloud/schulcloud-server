@@ -16,7 +16,7 @@ import {
 	RichTextElement,
 	RichTextElementNode,
 	SubmissionContainerElement,
-	TaskElementNode,
+	SubmissionContainerElementNode,
 } from '@shared/domain';
 import { BoardNodeRepo } from './board-node.repo';
 
@@ -120,7 +120,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 	visitTaskElement(taskElement: SubmissionContainerElement): void {
 		const parentData = this.parentsMap.get(taskElement.id);
 
-		const boardNode = new TaskElementNode({
+		const boardNode = new SubmissionContainerElementNode({
 			id: taskElement.id,
 			dueDate: taskElement.dueDate,
 			parent: parentData?.boardNode,

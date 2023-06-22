@@ -7,7 +7,7 @@ import type {
 	ColumnNode,
 	FileElementNode,
 	RichTextElementNode,
-	TaskElementNode,
+	SubmissionContainerElementNode,
 } from '@shared/domain';
 import {
 	AnyBoardDo,
@@ -113,7 +113,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 		return element;
 	}
 
-	public buildTaskElement(boardNode: TaskElementNode): SubmissionContainerElement {
+	public buildTaskElement(boardNode: SubmissionContainerElementNode): SubmissionContainerElement {
 		this.ensureLeafNode(boardNode);
 
 		const element = new SubmissionContainerElement({
