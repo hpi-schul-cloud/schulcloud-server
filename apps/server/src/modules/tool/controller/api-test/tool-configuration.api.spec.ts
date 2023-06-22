@@ -15,7 +15,12 @@ import { ICurrentUser, JwtAuthGuard } from '@src/modules/authentication';
 import { ServerTestModule } from '@src/modules/server';
 import { Request } from 'express';
 import request, { Response } from 'supertest';
-import { SchoolToolConfigurationListResponse } from '../dto';
+import { CustomParameterResponse, SchoolToolConfigurationListResponse, ToolConfigurationListResponse } from '../dto';
+import {
+	CustomParameterLocationParams,
+	CustomParameterScopeTypeParams,
+	CustomParameterTypeParams,
+} from '../../interface';
 
 describe('ToolSchoolController (API)', () => {
 	let app: INestApplication;
@@ -52,7 +57,7 @@ describe('ToolSchoolController (API)', () => {
 		await orm.getSchemaGenerator().clearDatabase();
 	});
 
-	describe('[GET] tools/available/course/:id', () => {
+	describe('[GET] tools/available/context/:id', () => {
 		describe('when the user is not authorized', () => {
 			const setup = async () => {
 				const school: School = schoolFactory.buildWithId();
@@ -167,6 +172,223 @@ describe('ToolSchoolController (API)', () => {
 				expect(response.body).toEqual<SchoolToolConfigurationListResponse>({
 					data: [],
 				});
+			});
+		});
+	});
+
+	describe('[GET] tools/available/school/:id', () => {
+		describe('when the user is not authorized', () => {
+			const setup = async () => {
+				const school: School = schoolFactory.buildWithId();
+
+				const user: User = userFactory.buildWithId({ school, roles: [] });
+
+				await em.persistAndFlush([user, school]);
+				em.clear();
+
+				return {
+					user,
+					school,
+				};
+			};
+
+			it('should return a forbidden status', async () => {
+				const { user, school } = await setup();
+				currentUser = mapUserToCurrentUser(user);
+
+				const response: Response = await request(app.getHttpServer()).get(`/tools/available/school/${school.id}`);
+
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+			});
+		});
+
+		describe('when tools are available for a school', () => {
+			const setup = async () => {
+				const adminRole: Role = roleFactory.buildWithId({
+					name: RoleName.ADMINISTRATOR,
+					permissions: [Permission.SCHOOL_TOOL_ADMIN],
+				});
+
+				const school: School = schoolFactory.buildWithId();
+
+				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+
+				await em.persistAndFlush([user, school, adminRole, externalTool]);
+				em.clear();
+
+				return {
+					user,
+					school,
+					externalTool,
+				};
+			};
+
+			it('should return a list of available external tools', async () => {
+				const { user, school, externalTool } = await setup();
+				currentUser = mapUserToCurrentUser(user);
+
+				const response: Response = await request(app.getHttpServer()).get(`/tools/available/school/${school.id}`);
+
+				expect(response.body).toEqual<ToolConfigurationListResponse>({
+					data: [
+						{
+							id: externalTool.id,
+							name: externalTool.name,
+							logoUrl: externalTool.logoUrl,
+						},
+					],
+				});
+			});
+		});
+
+		describe('when no tools are available for a school', () => {
+			const setup = async () => {
+				const adminRole: Role = roleFactory.buildWithId({
+					name: RoleName.ADMINISTRATOR,
+					permissions: [Permission.SCHOOL_TOOL_ADMIN],
+				});
+
+				const school: School = schoolFactory.buildWithId();
+
+				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+
+				await em.persistAndFlush([user, school, adminRole]);
+				em.clear();
+
+				return {
+					user,
+					school,
+				};
+			};
+
+			it('should return an empty array', async () => {
+				const { user, school } = await setup();
+				currentUser = mapUserToCurrentUser(user);
+
+				const response: Response = await request(app.getHttpServer()).get(`/tools/available/school/${school.id}`);
+
+				expect(response.body).toEqual<ToolConfigurationListResponse>({
+					data: [],
+				});
+			});
+		});
+	});
+
+	describe('GET tools/:toolId/configuration', () => {
+		describe('when the user is not authorized', () => {
+			const setup = async () => {
+				const school: School = schoolFactory.buildWithId();
+
+				const user: User = userFactory.buildWithId({ school, roles: [] });
+
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+
+				await em.persistAndFlush([user, school, externalTool]);
+				em.clear();
+
+				return {
+					user,
+					externalTool,
+				};
+			};
+
+			it('should return a forbidden status', async () => {
+				const { user, externalTool } = await setup();
+				currentUser = mapUserToCurrentUser(user);
+
+				const response: Response = await request(app.getHttpServer()).get(`/tools/${externalTool.id}/configuration`);
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when tool is not hidden', () => {
+			const setup = async () => {
+				const adminRole: Role = roleFactory.buildWithId({
+					name: RoleName.ADMINISTRATOR,
+					permissions: [Permission.SCHOOL_TOOL_ADMIN],
+				});
+
+				const school: School = schoolFactory.buildWithId();
+
+				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+
+				const customParameterResponse: CustomParameterResponse[] = [
+					{
+						name: 'name',
+						displayName: 'User Friendly Name',
+						description: 'This is a mock parameter.',
+						defaultValue: 'default',
+						location: CustomParameterLocationParams.PATH,
+						scope: CustomParameterScopeTypeParams.SCHOOL,
+						type: CustomParameterTypeParams.STRING,
+						regex: 'regex',
+						regexComment: 'mockComment',
+						isOptional: false,
+					},
+				];
+
+				await em.persistAndFlush([user, school, adminRole, externalTool]);
+				em.clear();
+
+				return {
+					user,
+					school,
+					externalTool,
+					customParameterResponse,
+				};
+			};
+
+			it('should return a tool', async () => {
+				const { user, externalTool, customParameterResponse } = await setup();
+				currentUser = mapUserToCurrentUser(user);
+
+				const response: Response = await request(app.getHttpServer()).get(`/tools/${externalTool.id}/configuration`);
+
+				expect(response.body).toEqual({
+					id: externalTool.id,
+					name: externalTool.name,
+					logoUrl: externalTool.logoUrl,
+					version: externalTool.version,
+					parameters: customParameterResponse,
+				});
+			});
+		});
+
+		describe('when tool is hidden', () => {
+			const setup = async () => {
+				const adminRole: Role = roleFactory.buildWithId({
+					name: RoleName.ADMINISTRATOR,
+					permissions: [Permission.SCHOOL_TOOL_ADMIN],
+				});
+
+				const school: School = schoolFactory.buildWithId();
+
+				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({ isHidden: true });
+
+				await em.persistAndFlush([user, school, adminRole, externalTool]);
+				em.clear();
+
+				return {
+					user,
+					school,
+					externalTool,
+				};
+			};
+
+			it('should throw notFoundException', async () => {
+				const { user, externalTool } = await setup();
+				currentUser = mapUserToCurrentUser(user);
+
+				const response: Response = await request(app.getHttpServer()).get(`/tools/${externalTool.id}/configuration`);
+
+				expect(response.status).toEqual(HttpStatus.NOT_FOUND);
 			});
 		});
 	});

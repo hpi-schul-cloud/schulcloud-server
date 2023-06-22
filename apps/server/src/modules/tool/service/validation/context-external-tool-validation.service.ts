@@ -16,6 +16,7 @@ export class ContextExternalToolValidationService {
 			schoolToolRef: contextExternalTool.schoolToolRef,
 			context: contextExternalTool.contextRef,
 		});
+
 		if (duplicate.length > 0) {
 			throw new UnprocessableEntityException('Tool is already assigned.');
 		}
