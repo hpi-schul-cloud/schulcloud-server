@@ -306,6 +306,12 @@ module.exports = {
 				.lean()
 				.exec();
 
+			if (course === undefined) {
+				alert(`No course found with LtiToolId: ${ltiTool.id}.`);
+				// eslint-disable-next-line no-continue
+				continue;
+			}
+
 			// GET EXTERNALTOOL
 			let externalTool = await ExternalTool.findOne({
 				name: toolTemplate.name,
