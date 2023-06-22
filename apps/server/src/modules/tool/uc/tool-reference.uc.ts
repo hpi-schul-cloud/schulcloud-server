@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ToolReference } from '@shared/domain/domainobject/tool/tool-reference';
 import {
 	ContextExternalToolDO,
@@ -9,7 +9,7 @@ import {
 	SchoolExternalToolDO,
 	ToolConfigurationStatus,
 } from '@shared/domain';
-import { Action, AuthorizationService } from '@src/modules/authorization';
+import { Action } from '@src/modules/authorization';
 import {
 	CommonToolService,
 	ContextExternalToolService,
@@ -21,7 +21,6 @@ import { ToolContextType } from '../interface';
 @Injectable()
 export class ToolReferenceUc {
 	constructor(
-		private readonly authorizationService: AuthorizationService,
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
@@ -35,18 +34,29 @@ export class ToolReferenceUc {
 			contextRef
 		);
 
-		const toolReferencesPromises: Promise<ToolReference>[] = contextExternalTools.map(
+		const toolReferencesPromises: Promise<ToolReference | null>[] = contextExternalTools.map(
 			(contextExternalTool: ContextExternalToolDO) => this.buildToolReference(userId, contextExternalTool)
 		);
 
-		return Promise.all(toolReferencesPromises);
+		const toolReferencesWithNull: (ToolReference | null)[] = await Promise.all(toolReferencesPromises);
+		const filteredToolReferences: ToolReference[] = toolReferencesWithNull.filter(
+			(toolReference: ToolReference | null): toolReference is ToolReference => toolReference !== null
+		);
+
+		return filteredToolReferences;
 	}
 
 	private async buildToolReference(
 		userId: EntityId,
 		contextExternalTool: ContextExternalToolDO
-	): Promise<ToolReference> {
-		await this.ensureToolPermissions(userId, contextExternalTool);
+	): Promise<ToolReference | null> {
+		try {
+			await this.ensureToolPermissions(userId, contextExternalTool);
+		} catch (e: unknown) {
+			if (e instanceof ForbiddenException) {
+				return null;
+			}
+		}
 
 		const schoolExternalTool: SchoolExternalToolDO = await this.fetchSchoolExternalTool(contextExternalTool);
 		const externalTool: ExternalToolDO = await this.fetchExternalTool(schoolExternalTool);
@@ -57,7 +67,9 @@ export class ToolReferenceUc {
 			contextExternalTool
 		);
 
-		return this.createToolReference(externalTool, contextExternalTool, status);
+		const toolReference: ToolReference = this.createToolReference(externalTool, contextExternalTool, status);
+
+		return toolReference;
 	}
 
 	private async ensureToolPermissions(userId: EntityId, contextExternalTool: ContextExternalToolDO): Promise<void> {

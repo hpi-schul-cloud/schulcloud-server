@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalToolDO, ToolConfigurationStatus, SchoolExternalToolDO } from '@shared/domain';
+import { ExternalToolDO, SchoolExternalToolDO, ToolConfigurationStatus } from '@shared/domain';
 import { SchoolExternalToolRepo } from '@shared/repo';
 import { externalToolDOFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
@@ -148,14 +148,6 @@ describe('SchoolExternalToolService', () => {
 				await service.getSchoolExternalToolById(schoolExternalToolId);
 
 				expect(schoolExternalToolRepo.findById).toHaveBeenCalledWith(schoolExternalToolId);
-			});
-
-			it('should enrich data from externalTool', async () => {
-				const { schoolExternalToolId, schoolExternalTool } = setup();
-
-				await service.getSchoolExternalToolById(schoolExternalToolId);
-
-				expect(externalToolService.findExternalToolById).toHaveBeenCalledWith(schoolExternalTool.toolId);
 			});
 		});
 	});

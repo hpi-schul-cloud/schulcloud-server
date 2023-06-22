@@ -1,14 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { ToolConfigurationStatus, ToolVersion } from '@shared/domain';
+import {
+	ContextExternalToolDO,
+	ExternalToolDO,
+	SchoolExternalToolDO,
+	ToolConfigurationStatus,
+	ToolVersion,
+} from '@shared/domain';
 
 @Injectable()
 export class CommonToolService {
 	determineToolConfigurationStatus(
-		tool1: ToolVersion,
-		tool2: ToolVersion,
-		tool3: ToolVersion
+		externalTool: ExternalToolDO,
+		schoolExternalTool: SchoolExternalToolDO,
+		contextExternalTool: ContextExternalToolDO
 	): ToolConfigurationStatus {
-		if (this.compareVersions(tool1, tool2) && this.compareVersions(tool2, tool3)) {
+		if (
+			this.compareVersions(schoolExternalTool, externalTool) &&
+			this.compareVersions(contextExternalTool, schoolExternalTool) &&
+			this.compareVersions(contextExternalTool, externalTool)
+		) {
 			return ToolConfigurationStatus.LATEST;
 		}
 
@@ -16,6 +26,6 @@ export class CommonToolService {
 	}
 
 	compareVersions(tool1: ToolVersion, tool2: ToolVersion): boolean {
-		return tool1.getVersion() === tool2.getVersion();
+		return tool1.getVersion() >= tool2.getVersion();
 	}
 }
