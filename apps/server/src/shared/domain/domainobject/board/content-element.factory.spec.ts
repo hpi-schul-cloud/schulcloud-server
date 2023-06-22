@@ -2,7 +2,7 @@ import { NotImplementedException } from '@nestjs/common';
 import { ContentElementFactory } from './content-element.factory';
 import { FileElement } from './file-element.do';
 import { RichTextElement } from './rich-text-element.do';
-import { SubmissionContainerElement } from './task-element.do';
+import { SubmissionContainerElement } from './submission-container-element.do';
 import { ContentElementType } from './types/content-elements.enum';
 
 describe(ContentElementFactory.name, () => {

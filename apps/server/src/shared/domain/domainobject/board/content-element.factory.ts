@@ -3,7 +3,7 @@ import { InputFormat } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { FileElement } from './file-element.do';
 import { RichTextElement } from './rich-text-element.do';
-import { SubmissionContainerElement } from './task-element.do';
+import { SubmissionContainerElement } from './submission-container-element.do';
 import { AnyContentElementDo } from './types/any-content-element-do';
 import { ContentElementType } from './types/content-elements.enum';
 

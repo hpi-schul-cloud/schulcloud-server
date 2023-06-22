@@ -1,6 +1,6 @@
 import { FileElement } from '../file-element.do';
 import { RichTextElement } from '../rich-text-element.do';
-import { SubmissionContainerElement } from '../task-element.do';
+import { SubmissionContainerElement } from '../submission-container-element.do';
 import type { AnyBoardDo } from './any-board-do';
 
 export type AnyContentElementDo = FileElement | RichTextElement | SubmissionContainerElement;
