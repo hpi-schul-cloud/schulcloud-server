@@ -6,6 +6,7 @@ import { Test } from '@nestjs/testing';
 import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { H5PEditorTestModule } from '@src/modules/h5p-editor/h5p-editor-test.module';
 import { Readable } from 'stream';
+import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 import { ContentStorage } from '../../contentStorage/contentStorage';
 import { LibraryStorage } from '../../libraryStorage/libraryStorage';
 import { TemporaryFileStorage } from '../../temporary-file-storage/temporary-file-storage';
@@ -23,6 +24,8 @@ describe('H5PEditor Controller (api)', () => {
 		const module = await Test.createTestingModule({
 			imports: [H5PEditorTestModule],
 		})
+			.overrideProvider(S3ClientAdapter)
+			.useValue(createMock<S3ClientAdapter>())
 			.overrideProvider(ContentStorage)
 			.useValue(createMock<ContentStorage>())
 			.overrideProvider(LibraryStorage)
