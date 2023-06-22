@@ -172,7 +172,7 @@ describe(BoardDoBuilderImpl.name, () => {
 
 			const domainObject = new BoardDoBuilderImpl().buildTaskElement(taskElementNode);
 
-			expect(domainObject.constructor.name).toBe('TaskElement');
+			expect(domainObject.constructor.name).toBe('SubmissionContainerElement');
 		});
 
 		it('should throw error if taskElement is not a leaf', () => {

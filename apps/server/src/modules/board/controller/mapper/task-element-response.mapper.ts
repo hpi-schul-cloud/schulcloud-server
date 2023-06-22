@@ -1,5 +1,5 @@
 import { ContentElementType, SubmissionContainerElement } from '@shared/domain';
-import { TaskElementContent, TaskElementResponse, TimestampsResponse } from '../dto';
+import { SubmissionContainerElementContent, TaskElementResponse, TimestampsResponse } from '../dto';
 import { BaseResponseMapper } from './base-mapper.interface';
 
 export class TaskElementResponseMapper implements BaseResponseMapper {
@@ -18,7 +18,7 @@ export class TaskElementResponseMapper implements BaseResponseMapper {
 			id: element.id,
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
 			type: ContentElementType.TASK,
-			content: new TaskElementContent({ dueDate: element.dueDate }),
+			content: new SubmissionContainerElementContent({ dueDate: element.dueDate }),
 		});
 
 		return result;
