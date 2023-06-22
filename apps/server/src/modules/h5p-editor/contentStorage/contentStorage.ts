@@ -16,7 +16,6 @@ import {
 import path from 'path';
 import { FileDto } from '@src/modules/files-storage/dto';
 import { S3ClientAdapter } from '../../files-storage/client/s3-client.adapter';
-import { lib } from 'crypto-js';
 
 @Injectable()
 export class ContentStorage implements IContentStorage {
