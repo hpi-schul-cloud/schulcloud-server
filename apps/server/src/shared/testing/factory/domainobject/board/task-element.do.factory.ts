@@ -3,7 +3,7 @@ import { SubmissionContainerElement, TaskElementProps } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { BaseFactory } from '../../base.factory';
 
-export const taskElementFactory = BaseFactory.define<SubmissionContainerElement, TaskElementProps>(
+export const SubmissionContainerElementFactory = BaseFactory.define<SubmissionContainerElement, TaskElementProps>(
 	SubmissionContainerElement,
 	({ sequence }) => {
 		const inThreeDays = new Date(Date.now() + 259200000);
