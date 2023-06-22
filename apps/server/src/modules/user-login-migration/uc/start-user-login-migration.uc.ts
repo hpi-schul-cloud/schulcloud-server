@@ -1,22 +1,26 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { UserLoginMigrationDO } from '@shared/domain';
-import { LegacyLogger } from '@src/core/logger';
-import { UserLoginMigrationService } from '../service';
-import { StartUserLoginMigrationCheckService } from '../service/start-user-login-migration-check.service';
+import { Logger } from '@src/core/logger';
+import { UserLoginMigrationService, StartUserLoginMigrationValidationService } from '../service';
+import { UserLoginMigrationLoggable } from '../loggable/user-login-migration.loggable';
 
 @Injectable()
 export class StartUserLoginMigrationUc {
 	constructor(
 		private readonly userLoginMigrationService: UserLoginMigrationService,
-		private readonly startUserLoginMigrationCheckService: StartUserLoginMigrationCheckService,
-		private readonly logger: LegacyLogger
-	) {}
+		private readonly startUserLoginMigrationValidationService: StartUserLoginMigrationValidationService,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(StartUserLoginMigrationUc.name);
+	}
 
 	async startMigration(userId: string, schoolId: string): Promise<UserLoginMigrationDO> {
-		await this.startUserLoginMigrationCheckService.checkPreconditions(userId, schoolId);
+		await this.startUserLoginMigrationValidationService.checkPreconditions(userId, schoolId);
 
 		const userLoginMigrationDO: UserLoginMigrationDO = await this.userLoginMigrationService.startMigration(schoolId);
-		this.logger.debug(`The school admin started the migration for the school with id: ${schoolId}`);
+		this.logger.log(
+			new UserLoginMigrationLoggable(`The school admin started the migration for the school with id:`, schoolId, userId)
+		);
 
 		return userLoginMigrationDO;
 	}
