@@ -13,7 +13,7 @@ import {
 	VideoConferenceScope,
 } from '@shared/domain';
 import { CalendarEventDto, CalendarService } from '@shared/infra/calendar';
-import { CourseRepo, TeamsRepo, VideoConferenceRepo } from '@shared/repo';
+import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import {
 	AuthorizableReferenceType,
 	AuthorizationContextBuilder,
