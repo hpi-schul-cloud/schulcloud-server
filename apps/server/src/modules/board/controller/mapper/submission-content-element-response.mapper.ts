@@ -1,5 +1,5 @@
 import { ContentElementType, SubmissionContainerElement } from '@shared/domain';
-import { SubmissionContainerElementContent, TaskElementResponse, TimestampsResponse } from '../dto';
+import { SubmissionContainerElementContent, SubmissionContainerElementResponse, TimestampsResponse } from '../dto';
 import { BaseResponseMapper } from './base-mapper.interface';
 
 export class SubmissionContentElementResponseMapper implements BaseResponseMapper {
@@ -13,8 +13,8 @@ export class SubmissionContentElementResponseMapper implements BaseResponseMappe
 		return SubmissionContentElementResponseMapper.instance;
 	}
 
-	mapToResponse(element: SubmissionContainerElement): TaskElementResponse {
-		const result = new TaskElementResponse({
+	mapToResponse(element: SubmissionContainerElement): SubmissionContainerElementResponse {
+		const result = new SubmissionContainerElementResponse({
 			id: element.id,
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
 			type: ContentElementType.TASK,

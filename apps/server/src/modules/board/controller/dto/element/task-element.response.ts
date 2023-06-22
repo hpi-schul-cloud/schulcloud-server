@@ -11,8 +11,8 @@ export class SubmissionContainerElementContent {
 	dueDate: Date;
 }
 
-export class TaskElementResponse {
-	constructor({ id, content, timestamps, type }: TaskElementResponse) {
+export class SubmissionContainerElementResponse {
+	constructor({ id, content, timestamps, type }: SubmissionContainerElementResponse) {
 		this.id = id;
 		this.content = content;
 		this.timestamps = timestamps;

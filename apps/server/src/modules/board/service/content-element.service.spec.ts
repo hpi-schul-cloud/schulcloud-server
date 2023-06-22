@@ -7,7 +7,7 @@ import {
 	cardFactory,
 	fileElementFactory,
 	richTextElementFactory,
-	taskElementFactory,
+	submissionContainerElementFactory,
 } from '@shared/testing/factory/domainobject';
 import { FileContentBody, RichTextContentBody, TaskContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';
@@ -229,7 +229,7 @@ describe(ContentElementService.name, () => {
 
 		describe('when element is a task element', () => {
 			const setup = () => {
-				const taskElement = taskElementFactory.build();
+				const taskElement = submissionContainerElementFactory.build();
 
 				const content = new TaskContentBody();
 				content.dueDate = new Date();

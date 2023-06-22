@@ -5,7 +5,7 @@ import {
 	columnFactory,
 	fileElementFactory,
 	richTextElementFactory,
-	taskElementNodeFactory,
+	submissionContainerElementFactory,
 } from '@shared/testing';
 import { FileContentBody, RichTextContentBody } from '../controller/dto';
 import { ContentElementUpdateVisitor } from './content-element-update.visitor';
@@ -83,7 +83,7 @@ describe(ContentElementUpdateVisitor.name, () => {
 
 	describe('when visiting a task element using the wrong content', () => {
 		const setup = () => {
-			const taskElement = taskElementNodeFactory.build();
+			const taskElement = submissionContainerElementFactory.build();
 			const content = new RichTextContentBody();
 			content.text = 'a text';
 			content.inputFormat = InputFormat.RICH_TEXT_CK5;
