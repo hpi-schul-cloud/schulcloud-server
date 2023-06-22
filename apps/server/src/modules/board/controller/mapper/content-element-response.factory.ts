@@ -4,7 +4,7 @@ import { AnyContentElementResponse } from '../dto';
 import { BaseResponseMapper } from './base-mapper.interface';
 import { FileElementResponseMapper } from './file-element-response.mapper';
 import { RichTextElementResponseMapper } from './rich-text-element-response.mapper';
-import { SubmissionContentElementResponseMapper } from './task-element-response.mapper';
+import { SubmissionContentElementResponseMapper } from './submission-content-element-response.mapper';
 
 export class ContentElementResponseFactory {
 	private static mappers: BaseResponseMapper[] = [
