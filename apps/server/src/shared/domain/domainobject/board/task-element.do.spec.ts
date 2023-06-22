@@ -1,9 +1,9 @@
 import { createMock } from '@golevelup/ts-jest';
 import { taskElementFactory } from '@shared/testing';
-import { TaskElement } from './task-element.do';
+import { SubmissionContainerElement } from './task-element.do';
 import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
-describe(TaskElement.name, () => {
+describe(SubmissionContainerElement.name, () => {
 	describe('when trying to add a child to a task element', () => {
 		it('should throw an error ', () => {
 			const taskElement = taskElementFactory.build();

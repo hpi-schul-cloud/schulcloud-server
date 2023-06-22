@@ -2,7 +2,7 @@ import { NotImplementedException } from '@nestjs/common';
 import { ContentElementFactory } from './content-element.factory';
 import { FileElement } from './file-element.do';
 import { RichTextElement } from './rich-text-element.do';
-import { TaskElement } from './task-element.do';
+import { SubmissionContainerElement } from './task-element.do';
 import { ContentElementType } from './types/content-elements.enum';
 
 describe(ContentElementFactory.name, () => {
@@ -34,7 +34,7 @@ describe(ContentElementFactory.name, () => {
 
 			const element = contentElementFactory.build(ContentElementType.TASK);
 
-			expect(element).toBeInstanceOf(TaskElement);
+			expect(element).toBeInstanceOf(SubmissionContainerElement);
 		});
 
 		it('should throw NotImplementedException', () => {
