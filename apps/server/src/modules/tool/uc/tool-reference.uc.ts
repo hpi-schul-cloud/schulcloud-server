@@ -17,6 +17,7 @@ import {
 	SchoolExternalToolService,
 } from '../service';
 import { ToolContextType } from '../interface';
+import { ToolReferenceMapper } from '../controller/mapper/tool-reference.mapper';
 
 @Injectable()
 export class ToolReferenceUc {
@@ -67,7 +68,11 @@ export class ToolReferenceUc {
 			contextExternalTool
 		);
 
-		const toolReference: ToolReference = this.createToolReference(externalTool, contextExternalTool, status);
+		const toolReference: ToolReference = ToolReferenceMapper.mapToToolReference(
+			externalTool,
+			contextExternalTool,
+			status
+		);
 
 		return toolReference;
 	}
@@ -85,21 +90,5 @@ export class ToolReferenceUc {
 
 	private async fetchExternalTool(schoolExternalTool: SchoolExternalToolDO): Promise<ExternalToolDO> {
 		return this.externalToolService.findExternalToolById(schoolExternalTool.toolId);
-	}
-
-	private createToolReference(
-		externalTool: ExternalToolDO,
-		contextExternalTool: ContextExternalToolDO,
-		status: ToolConfigurationStatus
-	): ToolReference {
-		const toolReference = new ToolReference({
-			contextToolId: contextExternalTool.id as string,
-			logoUrl: externalTool.logoUrl,
-			displayName: contextExternalTool.displayName ?? externalTool.name,
-			status,
-			openInNewTab: externalTool.openNewTab,
-		});
-
-		return toolReference;
 	}
 }

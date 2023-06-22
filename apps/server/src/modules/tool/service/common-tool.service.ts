@@ -15,9 +15,9 @@ export class CommonToolService {
 		contextExternalTool: ContextExternalToolDO
 	): ToolConfigurationStatus {
 		if (
-			this.compareVersions(schoolExternalTool, externalTool) &&
-			this.compareVersions(contextExternalTool, schoolExternalTool) &&
-			this.compareVersions(contextExternalTool, externalTool)
+			this.isLatest(schoolExternalTool, externalTool) &&
+			this.isLatest(contextExternalTool, schoolExternalTool) &&
+			this.isLatest(contextExternalTool, externalTool)
 		) {
 			return ToolConfigurationStatus.LATEST;
 		}
@@ -25,7 +25,7 @@ export class CommonToolService {
 		return ToolConfigurationStatus.OUTDATED;
 	}
 
-	compareVersions(tool1: ToolVersion, tool2: ToolVersion): boolean {
+	private isLatest(tool1: ToolVersion, tool2: ToolVersion): boolean {
 		return tool1.getVersion() >= tool2.getVersion();
 	}
 }
