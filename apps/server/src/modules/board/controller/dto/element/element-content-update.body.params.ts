@@ -54,8 +54,8 @@ export class SubmissionContainerContentBody {
 }
 
 export class TaskElementContentBody extends ElementContentBody {
-	@ApiProperty({ type: ContentElementType.TASK })
-	type!: ContentElementType.TASK;
+	@ApiProperty({ type: ContentElementType.SUBMISSION_CONTAINER })
+	type!: ContentElementType.SUBMISSION_CONTAINER;
 
 	@ValidateNested()
 	@ApiProperty()
@@ -72,7 +72,7 @@ export class ElementContentUpdateBodyParams {
 			subTypes: [
 				{ value: FileElementContentBody, name: ContentElementType.FILE },
 				{ value: RichTextElementContentBody, name: ContentElementType.RICH_TEXT },
-				{ value: TaskElementContentBody, name: ContentElementType.TASK },
+				{ value: TaskElementContentBody, name: ContentElementType.SUBMISSION_CONTAINER },
 			],
 		},
 		keepDiscriminatorProperty: true,

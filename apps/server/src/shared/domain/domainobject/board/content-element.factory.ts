@@ -19,7 +19,7 @@ export class ContentElementFactory {
 			case ContentElementType.RICH_TEXT:
 				element = this.buildRichText();
 				break;
-			case ContentElementType.TASK:
+			case ContentElementType.SUBMISSION_CONTAINER:
 				element = this.buildTask();
 				break;
 			default:

@@ -23,7 +23,7 @@ export class SubmissionContainerElementResponse {
 	id: string;
 
 	@ApiProperty({ enum: ContentElementType, enumName: 'ContentElementType' })
-	type: ContentElementType.TASK;
+	type: ContentElementType.SUBMISSION_CONTAINER;
 
 	@ApiProperty()
 	content: SubmissionContainerElementContent;

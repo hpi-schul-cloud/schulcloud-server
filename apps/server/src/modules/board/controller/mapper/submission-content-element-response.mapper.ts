@@ -17,7 +17,7 @@ export class SubmissionContentElementResponseMapper implements BaseResponseMappe
 		const result = new SubmissionContainerElementResponse({
 			id: element.id,
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
-			type: ContentElementType.TASK,
+			type: ContentElementType.SUBMISSION_CONTAINER,
 			content: new SubmissionContainerElementContent({ dueDate: element.dueDate }),
 		});
 
