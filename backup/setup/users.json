@@ -5971,13 +5971,13 @@
 			"parentConsents": [],
 			"userConsent": {
 				"form": "digital",
-				"privacyConsent": false,
-				"termsOfUseConsent": false,
+				"privacyConsent": true,
+				"termsOfUseConsent": true,
 				"dateOfPrivacyConsent": {
-					"$date": "2023-06-21T10:23:35.977Z"
+					"$date": "2023-06-21T13:32:00.737Z"
 				},
 				"dateOfTermsOfUseConsent": {
-					"$date": "2023-06-21T10:23:35.977Z"
+					"$date": "2023-06-21T13:32:00.737Z"
 				}
 			}
 		},
@@ -6049,9 +6049,12 @@
 			"$date": "2023-06-21T10:23:35.797Z"
 		},
 		"updatedAt": {
-			"$date": "2023-06-21T10:23:35.977Z"
+			"$date": "2023-06-22T06:40:55.600Z"
 		},
-		"__v": 0
+		"__v": 0,
+		"preferences": {
+			"firstLogin": true
+		}
 	},
 	{
 		"_id": {
@@ -6061,13 +6064,13 @@
 			"parentConsents": [],
 			"userConsent": {
 				"form": "digital",
-				"privacyConsent": false,
-				"termsOfUseConsent": false,
+				"privacyConsent": true,
+				"termsOfUseConsent": true,
 				"dateOfPrivacyConsent": {
-					"$date": "2023-06-21T10:26:44.507Z"
+					"$date": "2023-06-22T06:38:55.542Z"
 				},
 				"dateOfTermsOfUseConsent": {
-					"$date": "2023-06-21T10:26:44.507Z"
+					"$date": "2023-06-22T06:38:55.542Z"
 				}
 			}
 		},
@@ -6144,9 +6147,15 @@
 			"$date": "2023-06-21T10:26:44.352Z"
 		},
 		"updatedAt": {
-			"$date": "2023-06-21T10:26:44.507Z"
+			"$date": "2023-06-22T06:40:11.257Z"
 		},
-		"__v": 0
+		"__v": 0,
+		"birthday": {
+			"$date": "2002-02-01T00:00:00Z"
+		},
+		"preferences": {
+			"firstLogin": true
+		}
 	},
 	{
 		"_id": {
@@ -6156,13 +6165,13 @@
 			"parentConsents": [],
 			"userConsent": {
 				"form": "digital",
-				"privacyConsent": false,
-				"termsOfUseConsent": false,
+				"privacyConsent": true,
+				"termsOfUseConsent": true,
 				"dateOfPrivacyConsent": {
-					"$date": "2023-06-21T10:28:46.567Z"
+					"$date": "2023-06-22T06:33:27.675Z"
 				},
 				"dateOfTermsOfUseConsent": {
-					"$date": "2023-06-21T10:28:46.567Z"
+					"$date": "2023-06-22T06:33:27.675Z"
 				}
 			}
 		},
@@ -6235,9 +6244,15 @@
 			"$date": "2023-06-21T10:28:46.419Z"
 		},
 		"updatedAt": {
-			"$date": "2023-06-21T10:28:46.567Z"
+			"$date": "2023-06-22T06:33:30.498Z"
 		},
-		"__v": 0
+		"__v": 0,
+		"birthday": {
+			"$date": "2000-01-01T00:00:00Z"
+		},
+		"preferences": {
+			"firstLogin": true
+		}
 	},
 	{
 		"_id": {
@@ -6247,13 +6262,13 @@
 			"parentConsents": [],
 			"userConsent": {
 				"form": "digital",
-				"privacyConsent": false,
-				"termsOfUseConsent": false,
+				"privacyConsent": true,
+				"termsOfUseConsent": true,
 				"dateOfPrivacyConsent": {
-					"$date": "2023-06-21T10:32:25.459Z"
+					"$date": "2023-06-21T11:05:11.270Z"
 				},
 				"dateOfTermsOfUseConsent": {
-					"$date": "2023-06-21T10:32:25.459Z"
+					"$date": "2023-06-21T11:05:11.270Z"
 				}
 			}
 		},
@@ -6318,8 +6333,11 @@
 			"$date": "2023-06-21T10:32:25.311Z"
 		},
 		"updatedAt": {
-			"$date": "2023-06-21T10:32:25.459Z"
+			"$date": "2023-06-22T06:41:37.258Z"
 		},
-		"__v": 0
+		"__v": 0,
+		"preferences": {
+			"firstLogin": true
+		}
 	}
 ]
