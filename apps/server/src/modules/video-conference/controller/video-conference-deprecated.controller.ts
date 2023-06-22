@@ -13,7 +13,7 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { VideoConferenceScope } from '@shared/domain/interface';
 import { ICurrentUser } from '@src/modules/authentication/interface';
-import { VideoConferenceResponseDeprecatedMapper } from '../mapper/vc-response.mapper';
+import { VideoConferenceResponseDeprecatedMapper } from '../mapper/vc-deprecated-response.mapper';
 import { VideoConferenceDeprecatedUc } from '../uc';
 import { VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
 import { VideoConferenceCreateParams } from './dto';

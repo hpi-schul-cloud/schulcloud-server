@@ -33,10 +33,10 @@ import { VideoConferenceSettings } from './interface';
 		UserRepo,
 		ConverterUtil,
 		VideoConferenceService,
-		// TODO: remove VideoConferenceDeprecatedUc from providers
+		// TODO: N21-885 remove VideoConferenceDeprecatedUc from providers
 		VideoConferenceDeprecatedUc,
 	],
-	// TODO: remove VideoConferenceDeprecatedController from exports
+	// TODO: N21-885 remove VideoConferenceDeprecatedController from exports
 	controllers: [VideoConferenceDeprecatedController],
 	exports: [BBBService, VideoConferenceService],
 })

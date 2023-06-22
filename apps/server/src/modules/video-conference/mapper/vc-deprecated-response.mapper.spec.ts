@@ -1,5 +1,4 @@
 import { Permission } from '@shared/domain';
-import { VideoConferenceResponseDeprecatedMapper } from '@src/modules/video-conference/mapper/vc-response.mapper';
 import { VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
 import { BBBBaseResponse } from '../bbb';
 import {
@@ -7,6 +6,7 @@ import {
 	VideoConferenceInfoResponse,
 	VideoConferenceJoinResponse,
 } from '../controller/dto/response/video-conference-deprecated.response';
+import { VideoConferenceResponseDeprecatedMapper } from './vc-deprecated-response.mapper';
 
 /**
  * @deprecated Please use the VideoConferenceResponseMapper instead.

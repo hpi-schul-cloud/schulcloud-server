@@ -197,6 +197,7 @@ export class VideoConferenceService {
 		options: VideoConferenceOptions
 	): Promise<VideoConferenceDO> {
 		let vcDo: VideoConferenceDO;
+		// try and catch based on legacy behavior
 		try {
 			vcDo = await this.findVideoConferenceByScopeIdAndScope(scopeId, scope);
 			vcDo.options = options;

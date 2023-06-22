@@ -28,3 +28,4 @@ export * from './user.do.factory';
 export * from './user-and-account.test.factory';
 export * from './domainobject';
 export * from './federal-state.factory';
+export * from './base.factory';

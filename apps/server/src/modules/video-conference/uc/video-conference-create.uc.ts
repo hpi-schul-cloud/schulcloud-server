@@ -1,6 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId, UserDO } from '@shared/domain';
-import { ErrorStatus } from '@src/modules/video-conference/error/error-status.enum';
 import { UserService } from '@src/modules/user';
 import {
 	BBBBaseMeetingConfig,
@@ -14,6 +13,7 @@ import {
 import { IScopeInfo, ScopeRef } from './dto';
 import { VideoConferenceService } from '../service';
 import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
+import { ErrorStatus } from '../error/error-status.enum';
 
 @Injectable()
 export class VideoConferenceCreateUc {
@@ -25,6 +25,7 @@ export class VideoConferenceCreateUc {
 
 	async createIfNotRunning(currentUserId: EntityId, scope: ScopeRef, options: VideoConferenceOptions): Promise<void> {
 		let bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> | undefined;
+		// try and catch based on legacy behavior
 		try {
 			bbbMeetingInfoResponse = await this.bbbService.getMeetingInfo(new BBBBaseMeetingConfig({ meetingID: scope.id }));
 		} catch (e) {
