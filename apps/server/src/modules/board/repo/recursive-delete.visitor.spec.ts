@@ -6,7 +6,7 @@ import {
 	columnBoardFactory,
 	columnFactory,
 	fileElementFactory,
-	taskElementFactory,
+	submissionContainerElementFactory,
 	setupEntities,
 } from '@shared/testing';
 import { FileDto, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
@@ -145,8 +145,8 @@ describe(RecursiveDeleteVisitor.name, () => {
 
 	describe('visitTaskElementAsync', () => {
 		const setup = () => {
-			const childTaskElement = taskElementFactory.build();
-			const taskElement = taskElementFactory.build({ children: [childTaskElement] });
+			const childTaskElement = submissionContainerElementFactory.build();
+			const taskElement = submissionContainerElementFactory.build({ children: [childTaskElement] });
 
 			return { taskElement, childTaskElement };
 		};
