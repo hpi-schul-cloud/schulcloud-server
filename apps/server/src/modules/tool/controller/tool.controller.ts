@@ -4,6 +4,7 @@ import {
 	ApiForbiddenResponse,
 	ApiFoundResponse,
 	ApiOkResponse,
+	ApiOperation,
 	ApiResponse,
 	ApiTags,
 	ApiUnauthorizedResponse,
@@ -11,11 +12,11 @@ import {
 } from '@nestjs/swagger';
 import { ValidationError } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
-import { ExternalToolDO, IFindOptions, Page } from '@shared/domain';
+import { ExternalToolDO, IFindOptions, Page, ToolReference } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate } from '../uc';
+import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate, ToolReferenceUc } from '../uc';
 import {
 	ContextExternalToolContextParams,
 	ExternalToolCreateParams,
@@ -24,7 +25,6 @@ import {
 	ExternalToolSearchParams,
 	ExternalToolUpdateParams,
 	SortExternalToolParams,
-	ToolConfigurationStatusResponse,
 	ToolIdParams,
 	ToolReferenceResponse,
 } from './dto';
@@ -39,6 +39,7 @@ export class ToolController {
 		private readonly externalToolUc: ExternalToolUc,
 		private readonly externalToolDOMapper: ExternalToolRequestMapper,
 		private readonly externalResponseMapper: ExternalToolResponseMapper,
+		private readonly toolReferenceUc: ToolReferenceUc,
 		private readonly logger: LegacyLogger
 	) {}
 
@@ -54,7 +55,7 @@ export class ToolController {
 	): Promise<ExternalToolResponse> {
 		const externalToolDO: ExternalToolCreate = this.externalToolDOMapper.mapCreateRequest(externalToolParams);
 		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(currentUser.userId, externalToolDO);
-		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(created);
+		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToExternalToolResponse(created);
 		this.logger.debug(`ExternalTool with id ${mapped.id} was created by user with id ${currentUser.userId}`);
 		return mapped;
 	}
@@ -76,7 +77,7 @@ export class ToolController {
 		const tools: Page<ExternalToolDO> = await this.externalToolUc.findExternalTool(currentUser.userId, query, options);
 
 		const dtoList: ExternalToolResponse[] = tools.data.map(
-			(tool: ExternalToolDO): ExternalToolResponse => this.externalResponseMapper.mapToResponse(tool)
+			(tool: ExternalToolDO): ExternalToolResponse => this.externalResponseMapper.mapToExternalToolResponse(tool)
 		);
 		const response: ExternalToolSearchListResponse = new ExternalToolSearchListResponse(
 			dtoList,
@@ -94,7 +95,7 @@ export class ToolController {
 		@Param() params: ToolIdParams
 	): Promise<ExternalToolResponse> {
 		const externalToolDO: ExternalToolDO = await this.externalToolUc.getExternalTool(currentUser.userId, params.toolId);
-		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(externalToolDO);
+		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToExternalToolResponse(externalToolDO);
 
 		return mapped;
 	}
@@ -115,7 +116,7 @@ export class ToolController {
 			params.toolId,
 			externalTool
 		);
-		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(updated);
+		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToExternalToolResponse(updated);
 		this.logger.debug(`ExternalTool with id ${mapped.id} was updated by user with id ${currentUser.userId}`);
 
 		return mapped;
@@ -132,31 +133,24 @@ export class ToolController {
 	}
 
 	@Get('/reference/:contextType/:contextId')
-	@ApiOkResponse({ description: 'The Tool has been successfully updated.', type: ToolReferenceListResponse })
+	@ApiOperation({ summary: 'Get Tool References' })
+	@ApiOkResponse({ description: 'The Tool Referecnes has been successfully fetched.', type: ToolReferenceListResponse })
 	@ApiForbiddenResponse({ description: 'User is not allowed to access this resource.' })
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
 	async getToolReferences(
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		@CurrentUser() currentUser: ICurrentUser,
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		@Param() params: ContextExternalToolContextParams
 	): Promise<ToolReferenceListResponse> {
-		const list: ToolReferenceListResponse = new ToolReferenceListResponse([
-			new ToolReferenceResponse({
-				logoUrl: 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png',
-				displayName: 'Google',
-				contextToolId: '644a4839d0a8301e6cf25d8f',
-				status: ToolConfigurationStatusResponse.LATEST,
-				openInNewTab: true,
-			}),
-			new ToolReferenceResponse({
-				displayName: 'Google 2',
-				contextToolId: '644a4839d0a8301e6cf25d8f',
-				status: ToolConfigurationStatusResponse.OUTDATED,
-				openInNewTab: false,
-			}),
-		]);
+		const toolReferences: ToolReference[] = await this.toolReferenceUc.getToolReferences(
+			currentUser.userId,
+			params.contextType,
+			params.contextId
+		);
 
-		return Promise.resolve(list);
+		const toolReferenceResponses: ToolReferenceResponse[] =
+			this.externalResponseMapper.mapToToolReferenceResponses(toolReferences);
+		const toolReferenceListResponse = new ToolReferenceListResponse(toolReferenceResponses);
+
+		return toolReferenceListResponse;
 	}
 }

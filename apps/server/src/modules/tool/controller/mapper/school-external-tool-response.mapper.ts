@@ -3,7 +3,7 @@ import {
 	SchoolExternalToolDO,
 	CustomParameterEntryDO,
 	CustomParameterEntry,
-	SchoolExternalToolStatus,
+	ToolConfigurationStatus,
 } from '@shared/domain';
 import {
 	SchoolExternalToolSearchListResponse,
@@ -12,9 +12,10 @@ import {
 	ToolConfigurationStatusResponse,
 } from '../dto';
 
-const statusMapping: Record<SchoolExternalToolStatus, ToolConfigurationStatusResponse> = {
-	[SchoolExternalToolStatus.LATEST]: ToolConfigurationStatusResponse.LATEST,
-	[SchoolExternalToolStatus.OUTDATED]: ToolConfigurationStatusResponse.OUTDATED,
+export const statusMapping: Record<ToolConfigurationStatus, ToolConfigurationStatusResponse> = {
+	[ToolConfigurationStatus.LATEST]: ToolConfigurationStatusResponse.LATEST,
+	[ToolConfigurationStatus.OUTDATED]: ToolConfigurationStatusResponse.OUTDATED,
+	[ToolConfigurationStatus.UNKNOWN]: ToolConfigurationStatusResponse.UNKNOWN,
 };
 
 @Injectable()

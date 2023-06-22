@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalToolDO, SchoolExternalToolStatus, SchoolExternalToolDO } from '@shared/domain';
+import { ExternalToolDO, ToolConfigurationStatus, SchoolExternalToolDO } from '@shared/domain';
 import { SchoolExternalToolRepo } from '@shared/repo';
 import { externalToolDOFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
@@ -36,7 +36,10 @@ describe('SchoolExternalToolService', () => {
 
 	const setup = () => {
 		const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build();
-		const externalTool: ExternalToolDO = externalToolDOFactory.build();
+		const externalTool: ExternalToolDO = externalToolDOFactory.buildWithId();
+
+		schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
+
 		return {
 			schoolExternalTool,
 			schoolExternalToolId: schoolExternalTool.id as string,
@@ -87,7 +90,7 @@ describe('SchoolExternalToolService', () => {
 						schoolExternalTool
 					);
 
-					expect(schoolExternalToolDOs[0].status).toEqual(SchoolExternalToolStatus.OUTDATED);
+					expect(schoolExternalToolDOs[0].status).toEqual(ToolConfigurationStatus.OUTDATED);
 				});
 			});
 
@@ -103,7 +106,7 @@ describe('SchoolExternalToolService', () => {
 						schoolExternalTool
 					);
 
-					expect(schoolExternalToolDOs[0].status).toEqual(SchoolExternalToolStatus.LATEST);
+					expect(schoolExternalToolDOs[0].status).toEqual(ToolConfigurationStatus.LATEST);
 				});
 			});
 
@@ -119,7 +122,7 @@ describe('SchoolExternalToolService', () => {
 						schoolExternalTool
 					);
 
-					expect(schoolExternalToolDOs[0].status).toEqual(SchoolExternalToolStatus.LATEST);
+					expect(schoolExternalToolDOs[0].status).toEqual(ToolConfigurationStatus.LATEST);
 				});
 			});
 		});
@@ -146,6 +149,14 @@ describe('SchoolExternalToolService', () => {
 
 				expect(schoolExternalToolRepo.findById).toHaveBeenCalledWith(schoolExternalToolId);
 			});
+
+			it('should enrich data from externalTool', async () => {
+				const { schoolExternalToolId, schoolExternalTool } = setup();
+
+				await service.getSchoolExternalToolById(schoolExternalToolId);
+
+				expect(externalToolService.findExternalToolById).toHaveBeenCalledWith(schoolExternalTool.toolId);
+			});
 		});
 	});
 
@@ -161,7 +172,6 @@ describe('SchoolExternalToolService', () => {
 
 			it('should enrich data from externalTool', async () => {
 				const { schoolExternalTool } = setup();
-				schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
 
 				await service.saveSchoolExternalTool(schoolExternalTool);
 

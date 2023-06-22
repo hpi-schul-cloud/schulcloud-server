@@ -17,6 +17,7 @@ import { Lti11EncryptionService } from './launch-tool/service/lti11-encryption.s
 import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy } from './launch-tool/service/strategy';
 import { ToolLaunchService } from './launch-tool/service/tool-launch.service';
 import {
+	CommonToolService,
 	CommonToolValidationService,
 	ContextExternalToolService,
 	ContextExternalToolValidationService,
@@ -57,6 +58,7 @@ import { ExternalToolServiceMapper } from './service/mapper';
 		Lti11EncryptionService,
 		BasicToolLaunchStrategy,
 		Lti11ToolLaunchStrategy,
+		CommonToolService,
 	],
 	exports: [
 		ExternalToolService,
@@ -68,6 +70,7 @@ import { ExternalToolServiceMapper } from './service/mapper';
 		SchoolExternalToolValidationService,
 		ContextExternalToolValidationService,
 		ToolLaunchService,
+		CommonToolService,
 	],
 })
 export class ToolModule {}
