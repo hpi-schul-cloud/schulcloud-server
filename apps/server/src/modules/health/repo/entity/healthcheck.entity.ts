@@ -1,23 +1,21 @@
 import { Entity, PrimaryKeyType, PrimaryKey, Property } from '@mikro-orm/core';
 
-import { EntityId } from '@shared/domain';
-
-export interface HealthcheckProps {
-	id: EntityId;
+export interface HealthcheckEntityProps {
+	id: string;
 	updatedAt: Date;
 }
 
 @Entity({ tableName: 'healthchecks' })
-export class Healthcheck {
+export class HealthcheckEntity {
 	[PrimaryKeyType]?: string;
 
 	@PrimaryKey({ name: '_id' })
-	id!: EntityId;
+	id!: string;
 
 	@Property()
 	updatedAt!: Date;
 
-	constructor(props: HealthcheckProps) {
+	constructor(props: HealthcheckEntityProps) {
 		this.id = props.id;
 		this.updatedAt = props.updatedAt;
 	}

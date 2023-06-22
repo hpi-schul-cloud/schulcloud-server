@@ -1,15 +1,16 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { TestingModule, Test } from '@nestjs/testing';
 
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections } from '@shared/testing';
-import { Healthcheck, HealthcheckDO } from '@shared/domain';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { Healthcheck } from '../domain';
+import { HealthcheckEntity } from './entity';
 import { HealthcheckRepo } from './healthcheck.repo';
 
 describe(HealthcheckRepo.name, () => {
 	const testId = 'test_healthcheck_id';
 	const testUpdatedAt = new Date();
-	const testEntity = new Healthcheck({ id: testId, updatedAt: testUpdatedAt });
+	const testEntity = new HealthcheckEntity({ id: testId, updatedAt: testUpdatedAt });
 
 	let module: TestingModule;
 	let em: EntityManager;
@@ -19,7 +20,7 @@ describe(HealthcheckRepo.name, () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [Healthcheck],
+					entities: [HealthcheckEntity],
 				}),
 			],
 			providers: [HealthcheckRepo],
@@ -38,10 +39,10 @@ describe(HealthcheckRepo.name, () => {
 
 	describe('findById', () => {
 		describe('should return', () => {
-			it('healthcheck with given ID if present in the database', async () => {
+			it('healthcheck with given Id if present in the database', async () => {
 				await em.persistAndFlush(testEntity);
 				em.clear();
-				const expectedDO = new HealthcheckDO(testId, testUpdatedAt);
+				const expectedDO = new Healthcheck(testId, testUpdatedAt);
 
 				const foundDO = await repo.findById(testId);
 
@@ -52,24 +53,6 @@ describe(HealthcheckRepo.name, () => {
 				const foundDO = await repo.findById('non_existing_healthcheck_id');
 
 				expect(foundDO).toBeNull();
-			});
-		});
-	});
-
-	describe('mapHealthcheckEntityToDO', () => {
-		describe('should map', () => {
-			it('null entity to null domain object', () => {
-				const mappedDO = repo.mapHealthcheckEntityToDO(null);
-
-				expect(mappedDO).toBeNull();
-			});
-
-			it('entity with all the fields filled to proper domain object', () => {
-				const expectedDomainObject = new HealthcheckDO(testId, testUpdatedAt);
-
-				const mappedDO = repo.mapHealthcheckEntityToDO(testEntity);
-
-				expect(mappedDO).toEqual(expectedDomainObject);
 			});
 		});
 	});

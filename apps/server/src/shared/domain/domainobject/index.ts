@@ -8,4 +8,3 @@ export * from './user.do';
 export * from './page';
 export * from './tool';
 export * from './role-reference';
-export * from './health';

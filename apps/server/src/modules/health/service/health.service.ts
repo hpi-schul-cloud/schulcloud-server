@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 
-import { EntityId, HealthcheckDO } from '@shared/domain';
+import { Healthcheck } from '../domain';
 import { HealthcheckRepo } from '../repo';
 
 @Injectable()
 export class HealthService {
 	constructor(private readonly healthcheckRepo: HealthcheckRepo) {}
 
-	async findHealthcheckById(id: EntityId): Promise<HealthcheckDO | null> {
+	async findHealthcheckById(id: string): Promise<Healthcheck | null> {
 		return this.healthcheckRepo.findById(id);
 	}
 }

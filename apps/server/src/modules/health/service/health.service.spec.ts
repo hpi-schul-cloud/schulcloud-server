@@ -1,15 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 
-import { ALL_INTERNAL_ENTITIES, HealthcheckDO } from '@shared/domain';
-import { HealthcheckRepo } from '@src/modules/health/repo';
 import { setupEntities } from '@shared/testing';
 import { HealthService } from './health.service';
+import { HealthcheckRepo } from '../repo';
+import { Healthcheck } from '../domain';
+import { HealthcheckEntity } from '../repo/entity';
 
 describe(HealthService.name, () => {
 	const testId = 'test_healthcheck_id';
 	const testUpdatedAt = new Date();
-	const testDO = new HealthcheckDO(testId, testUpdatedAt);
+	const testDO = new Healthcheck(testId, testUpdatedAt);
 
 	let module: TestingModule;
 	let service: HealthService;
@@ -28,7 +29,7 @@ describe(HealthService.name, () => {
 		service = module.get(HealthService);
 		repo = module.get(HealthcheckRepo);
 
-		await setupEntities(ALL_INTERNAL_ENTITIES);
+		await setupEntities([HealthcheckEntity]);
 	});
 
 	afterAll(async () => {
@@ -47,7 +48,7 @@ describe(HealthService.name, () => {
 		describe('should return', () => {
 			it('the healthcheck domain object with given ID (if found in a repo)', async () => {
 				repo.findById.mockResolvedValueOnce(testDO);
-				const expectedDO = new HealthcheckDO(testId, testUpdatedAt);
+				const expectedDO = new Healthcheck(testId, testUpdatedAt);
 
 				const foundDO = await service.findHealthcheckById(testId);
 
