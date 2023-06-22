@@ -41,9 +41,10 @@ export class ContentStorage implements IContentStorage {
 			const readableStreamMetadata = new Stream.Readable({ objectMode: true });
 			readableStreamMetadata._read = function test() {};
 			readableStreamMetadata.push(JSON.stringify(metadata));
+			const readableH5p = Readable.from(metadata.toString());
 			const h5pFile: FileDto = {
 				name: 'h5p.json',
-				data: readableStreamMetadata,
+				data: readableH5p,
 				mimeType: 'json',
 			};
 			await this.storageClient.create(h5pPath, h5pFile);
@@ -51,9 +52,11 @@ export class ContentStorage implements IContentStorage {
 			const readableStreamContent = new Stream.Readable({ objectMode: true });
 			readableStreamContent._read = function test() {};
 			readableStreamContent.push(JSON.stringify(content));
+			// const contentString: string = content.toString();
+			const readableContent = Readable.from(JSON.stringify(content));
 			const contentFile: FileDto = {
 				name: 'content.json',
-				data: readableStreamContent,
+				data: readableContent,
 				mimeType: 'json',
 			};
 			await this.storageClient.create(contentPath, contentFile);
@@ -76,6 +79,7 @@ export class ContentStorage implements IContentStorage {
 			throw new Error('404: Content not Found at addFile.');
 		}
 		const fullPath = path.join(this.getContentPath(), contentId.toString(), filename);
+		// TODO: Hier
 		const file: FileDto = {
 			name: filename,
 			data: stream as Readable,
@@ -181,16 +185,19 @@ export class ContentStorage implements IContentStorage {
 		}
 		const filePath = path.join(this.getContentPath(), contentId.toString(), file);
 		// TODO: add bytesRange
-		const fileResponse = this.storageClient.get(filePath);
-		const streamFile = new StreamableFile((await fileResponse).data, {
-			type: (await fileResponse).contentType,
+		console.log('getFileStream');
+		const fileResponse = await this.storageClient.get(filePath);
+		/* const streamFile = new StreamableFile(fileResponse.data, {
+			type: fileResponse.contentType,
 			disposition: `inline; filename="${encodeURI(contentId)}"`,
-			length: (await fileResponse).contentLength,
-		});
-		return streamFile.getStream();
+			length: fileResponse.contentLength,
+		}); */
+		return fileResponse.data;
 	}
 
 	public async getMetadata(contentId: string, user?: IUser | undefined): Promise<IContentMetadata> {
+		// TODO:
+		console.log('getMetadata');
 		if (user !== undefined && user !== null) {
 			const fileStream = await this.getFileStream(contentId, 'h5p.json', user);
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
@@ -200,6 +207,8 @@ export class ContentStorage implements IContentStorage {
 	}
 
 	public async getParameters(contentId: string, user?: IUser | undefined): Promise<unknown> {
+		// TODO:
+		console.log('getParameters');
 		if (user !== undefined && user !== null) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			const fileStream = await this.getFileStream(contentId, 'content.json', user);
@@ -382,9 +391,10 @@ export class ContentStorage implements IContentStorage {
 		const readableStream = new Stream.Readable({ objectMode: true });
 		readableStream._read = function test() {};
 		readableStream.push(JSON.stringify(contentIdList));
+		const readable = Readable.from(contentIdList.toString());
 		const contentIdListFile: FileDto = {
 			name: 'contentidlist.json',
-			data: readableStream,
+			data: readable,
 			mimeType: 'json',
 		};
 		await this.storageClient.create(contentIdListPath, contentIdListFile);
@@ -440,9 +450,10 @@ export class ContentStorage implements IContentStorage {
 		const readableStream = new Stream.Readable({ objectMode: true });
 		readableStream._read = function test() {};
 		readableStream.push(JSON.stringify(fileList));
+		const readable = Readable.from(fileList.toString());
 		const fileListFile: FileDto = {
 			name: 'contentfilelist.json',
-			data: readableStream,
+			data: readable,
 			mimeType: 'json',
 		};
 		await this.storageClient.create(fileListPath, fileListFile);
