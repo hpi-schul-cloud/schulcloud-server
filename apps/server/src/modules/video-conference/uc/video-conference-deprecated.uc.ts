@@ -8,14 +8,14 @@ import {
 	SchoolFeatures,
 	Team,
 	TeamUser,
-	User,
+	UserDO,
 	VideoConferenceDO,
 	VideoConferenceOptionsDO,
 } from '@shared/domain';
 import { VideoConferenceScope } from '@shared/domain/interface';
 import { CalendarService } from '@shared/infra/calendar';
 import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
-import { CourseRepo, TeamsRepo, UserRepo } from '@shared/repo';
+import { TeamsRepo } from '@shared/repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import { ICurrentUser } from '@src/modules/authentication';
 import {
@@ -25,6 +25,8 @@ import {
 	AuthorizationService,
 } from '@src/modules/authorization';
 import { SchoolService } from '@src/modules/school/service/school.service';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { UserService } from '@src/modules/user';
 import { IScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from './dto';
 import {
 	BBBBaseMeetingConfig,
@@ -63,8 +65,8 @@ export class VideoConferenceDeprecatedUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly videoConferenceRepo: VideoConferenceRepo,
 		private readonly teamsRepo: TeamsRepo,
-		private readonly courseRepo: CourseRepo,
-		private readonly userRepo: UserRepo,
+		private readonly courseService: CourseService,
+		private readonly userService: UserService,
 		private readonly calendarService: CalendarService,
 		private readonly schoolService: SchoolService
 	) {
@@ -156,7 +158,7 @@ export class VideoConferenceDeprecatedUc {
 
 		const bbbRole: BBBRole = await this.checkPermission(userId, conferenceScope, scopeInfo.scopeId);
 
-		const resolvedUser: User = await this.userRepo.findById(userId);
+		const resolvedUser: UserDO = await this.userService.findById(userId);
 		const configBuilder: BBBJoinConfigBuilder = new BBBJoinConfigBuilder({
 			fullName: VideoConferenceDeprecatedUc.sanitizeString(`${resolvedUser.firstName} ${resolvedUser.lastName}`),
 			meetingID: refId,
@@ -348,7 +350,7 @@ export class VideoConferenceDeprecatedUc {
 	): Promise<IScopeInfo> {
 		switch (conferenceScope) {
 			case VideoConferenceScope.COURSE: {
-				const course: Course = await this.courseRepo.findById(refId);
+				const course: Course = await this.courseService.findById(refId);
 				return {
 					scopeId: refId,
 					scopeName: 'courses',

@@ -13,7 +13,7 @@ import {
 	VideoConferenceScope,
 } from '@shared/domain';
 import { CalendarEventDto, CalendarService } from '@shared/infra/calendar';
-import { CourseRepo, TeamsRepo, VideoConferenceRepo } from '@shared/repo';
+import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import {
 	Action,
 	AuthorizableReferenceType,
@@ -22,6 +22,7 @@ import {
 } from '@src/modules/authorization';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { ErrorStatus } from '../error/error-status.enum';
 import { BBBRole } from '../bbb';
 import { PermissionScopeMapping } from '../mapper/video-conference.mapper';
@@ -32,7 +33,7 @@ import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettin
 export class VideoConferenceService {
 	constructor(
 		@Inject(VideoConferenceSettings) private readonly vcSettings: IVideoConferenceSettings,
-		private readonly courseRepo: CourseRepo,
+		private readonly courseService: CourseService,
 		private readonly calendarService: CalendarService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolService: SchoolService,
@@ -77,7 +78,6 @@ export class VideoConferenceService {
 				isExpert = teamUser.role.name === RoleName.TEAMEXPERT;
 				return isExpert;
 			}
-			/* istanbul ignore next */
 			default:
 				throw new BadRequestException('Unknown scope name.');
 		}
@@ -147,7 +147,7 @@ export class VideoConferenceService {
 	async getScopeInfo(userId: EntityId, scopeId: string, scope: VideoConferenceScope): Promise<IScopeInfo> {
 		switch (scope) {
 			case VideoConferenceScope.COURSE: {
-				const course: Course = await this.courseRepo.findById(scopeId);
+				const course: Course = await this.courseService.findById(scopeId);
 				return {
 					scopeId,
 					scopeName: 'courses',

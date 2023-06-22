@@ -3,7 +3,7 @@ import { HttpModule } from '@nestjs/axios';
 import { CalendarModule } from '@shared/infra/calendar';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import { AuthorizationModule } from '@src/modules/authorization';
-import { CourseRepo, TeamsRepo, UserRepo } from '@shared/repo';
+import { TeamsRepo } from '@shared/repo';
 import { SchoolModule } from '@src/modules/school/school.module';
 import { LoggerModule } from '@src/core/logger';
 import { ConverterUtil } from '@shared/common';
@@ -14,9 +14,19 @@ import { VideoConferenceDeprecatedUc } from './uc';
 import { VideoConferenceDeprecatedController } from './controller';
 import VideoConferenceConfiguration from './video-conference-config';
 import { VideoConferenceSettings } from './interface';
+import { LearnroomModule } from '../learnroom';
 
 @Module({
-	imports: [AuthorizationModule, CalendarModule, HttpModule, SchoolModule, LoggerModule, UserModule],
+	imports: [
+		AuthorizationModule,
+		CalendarModule,
+		HttpModule,
+		SchoolModule,
+		LoggerModule,
+		UserModule,
+		LearnroomModule,
+		UserModule,
+	],
 	providers: [
 		{
 			provide: VideoConferenceSettings,
@@ -28,9 +38,8 @@ import { VideoConferenceSettings } from './interface';
 		},
 		BBBService,
 		VideoConferenceRepo,
+		// TODO: N21-1010 clean up video conferences - remove repos
 		TeamsRepo,
-		CourseRepo,
-		UserRepo,
 		ConverterUtil,
 		VideoConferenceService,
 		// TODO: N21-885 remove VideoConferenceDeprecatedUc from providers

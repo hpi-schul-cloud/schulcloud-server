@@ -14,13 +14,14 @@ import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interf
 import { ErrorStatus } from '../error/error-status.enum';
 
 describe('VideoConferenceInfoUc', () => {
+	let module: TestingModule;
 	let uc: VideoConferenceInfoUc;
 	let bbbService: DeepMocked<BBBService>;
 	let userService: DeepMocked<UserService>;
 	let videoConferenceService: DeepMocked<VideoConferenceService>;
 
 	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [
 				VideoConferenceInfoUc,
 				{
@@ -42,6 +43,14 @@ describe('VideoConferenceInfoUc', () => {
 		bbbService = module.get(BBBService);
 		userService = module.get(UserService);
 		videoConferenceService = module.get(VideoConferenceService);
+	});
+
+	afterAll(async () => {
+		await module.close();
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
 	});
 
 	const createBbbMeetingInfoSuccessResponse = (scopeId: string): BBBResponse<BBBMeetingInfoResponse> => {

@@ -32,10 +32,11 @@ import { ErrorStatus } from '../error/error-status.enum';
 import { BBBRole } from '../bbb';
 import { IScopeInfo, ScopeRef, VideoConferenceState } from '../uc/dto';
 import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';
+import { CourseService } from '../../learnroom/service/course.service';
 
 describe('VideoConferenceService', () => {
 	let service: DeepMocked<VideoConferenceService>;
-	let courseRepo: DeepMocked<CourseRepo>;
+	let courseService: DeepMocked<CourseService>;
 	let calendarService: DeepMocked<CalendarService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolService: DeepMocked<SchoolService>;
@@ -55,8 +56,8 @@ describe('VideoConferenceService', () => {
 					}),
 				},
 				{
-					provide: CourseRepo,
-					useValue: createMock<CourseRepo>(),
+					provide: CourseService,
+					useValue: createMock<CourseService>(),
 				},
 				{
 					provide: CalendarService,
@@ -86,7 +87,7 @@ describe('VideoConferenceService', () => {
 		}).compile();
 
 		service = module.get(VideoConferenceService);
-		courseRepo = module.get(CourseRepo);
+		courseService = module.get(CourseService);
 		calendarService = module.get(CalendarService);
 		authorizationService = module.get(AuthorizationService);
 		schoolService = module.get(SchoolService);
@@ -430,7 +431,7 @@ describe('VideoConferenceService', () => {
 				const { userId, conferenceScope, scopeId } = setup();
 				const course: Course = courseFactory.buildWithId({ name: 'Course' });
 				course.id = scopeId;
-				courseRepo.findById.mockResolvedValue(course);
+				courseService.findById.mockResolvedValue(course);
 
 				const result: IScopeInfo = await service.getScopeInfo(userId, scopeId, conferenceScope);
 
@@ -440,7 +441,7 @@ describe('VideoConferenceService', () => {
 					logoutUrl: `${service.hostUrl}/courses/${scopeId}?activeTab=tools`,
 					title: course.name,
 				});
-				expect(courseRepo.findById).toHaveBeenCalledWith(scopeId);
+				expect(courseService.findById).toHaveBeenCalledWith(scopeId);
 			});
 		});
 
@@ -499,7 +500,7 @@ describe('VideoConferenceService', () => {
 
 				await service.getUserRoleAndGuestStatusByUserIdForBbb(userId, scopeId, conferenceScope);
 
-				expect(courseRepo.findById).toHaveBeenCalledWith(scopeId);
+				expect(courseService.findById).toHaveBeenCalledWith(scopeId);
 			});
 
 			it('should call userService.findById', async () => {
@@ -513,7 +514,7 @@ describe('VideoConferenceService', () => {
 
 			it('should return the user role and guest status for a course conference', async () => {
 				const { user, userId, conferenceScope, scopeId } = setup(VideoConferenceScope.COURSE);
-				courseRepo.findById.mockResolvedValue(courseFactory.buildWithId({ name: 'Course' }));
+				courseService.findById.mockResolvedValue(courseFactory.buildWithId({ name: 'Course' }));
 				userService.findById.mockResolvedValue(user);
 
 				const result = await service.getUserRoleAndGuestStatusByUserIdForBbb(userId, scopeId, conferenceScope);

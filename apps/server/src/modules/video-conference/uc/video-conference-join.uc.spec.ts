@@ -14,13 +14,14 @@ import { ErrorStatus } from '../error/error-status.enum';
 import { VideoConferenceJoinUc } from './video-conference-join.uc';
 
 describe('VideoConferenceJoinUc', () => {
+	let module: TestingModule;
 	let uc: VideoConferenceJoinUc;
 	let bbbService: DeepMocked<BBBService>;
 	let userService: DeepMocked<UserService>;
 	let videoConferenceService: DeepMocked<VideoConferenceService>;
 
 	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [
 				VideoConferenceJoinUc,
 				{
@@ -42,6 +43,14 @@ describe('VideoConferenceJoinUc', () => {
 		bbbService = module.get(BBBService);
 		userService = module.get(UserService);
 		videoConferenceService = module.get(VideoConferenceService);
+	});
+
+	afterAll(async () => {
+		await module.close();
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
 	});
 
 	describe('join', () => {
