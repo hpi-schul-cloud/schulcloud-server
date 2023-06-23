@@ -81,21 +81,21 @@ describe(ContentElementUpdateVisitor.name, () => {
 		});
 	});
 
-	describe('when visiting a task element using the wrong content', () => {
+	describe('when visiting a submission container element using the wrong content', () => {
 		const setup = () => {
-			const taskElement = submissionContainerElementFactory.build();
+			const submissionContainerElement = submissionContainerElementFactory.build();
 			const content = new RichTextContentBody();
 			content.text = 'a text';
 			content.inputFormat = InputFormat.RICH_TEXT_CK5;
 			const updater = new ContentElementUpdateVisitor(content);
 
-			return { taskElement, updater };
+			return { submissionContainerElement, updater };
 		};
 
 		it('should throw an error', () => {
-			const { taskElement, updater } = setup();
+			const { submissionContainerElement, updater } = setup();
 
-			expect(() => updater.visitTaskElement(taskElement)).toThrow();
+			expect(() => updater.visitSubmissionContainerElement(submissionContainerElement)).toThrow();
 		});
 	});
 });

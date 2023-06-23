@@ -166,7 +166,7 @@ describe(BoardDoBuilderImpl.name, () => {
 		});
 	});
 
-	describe('when building a task element', () => {
+	describe('when building a submission container element', () => {
 		it('should work without descendants', () => {
 			const submissionContainerElementNode = submissionContainerElementNodeFactory.build();
 
@@ -175,7 +175,7 @@ describe(BoardDoBuilderImpl.name, () => {
 			expect(domainObject.constructor.name).toBe('SubmissionContainerElement');
 		});
 
-		it('should throw error if taskElement is not a leaf', () => {
+		it('should throw error if submissionContainerElement is not a leaf', () => {
 			const submissionContainerElementNode = submissionContainerElementNodeFactory.buildWithId();
 			const columnNode = columnNodeFactory.buildWithId({ parent: submissionContainerElementNode });
 

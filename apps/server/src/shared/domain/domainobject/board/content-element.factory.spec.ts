@@ -29,10 +29,10 @@ describe(ContentElementFactory.name, () => {
 			expect(element).toBeInstanceOf(RichTextElement);
 		});
 
-		it('should return element of TASK', () => {
+		it('should return element of SUBMISSION_CONTAINER', () => {
 			const { contentElementFactory } = setup();
 
-			const element = contentElementFactory.build(ContentElementType.TASK);
+			const element = contentElementFactory.build(ContentElementType.SUBMISSION_CONTAINER);
 
 			expect(element).toBeInstanceOf(SubmissionContainerElement);
 		});

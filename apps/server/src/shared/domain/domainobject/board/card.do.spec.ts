@@ -11,10 +11,10 @@ describe(Card.name, () => {
 			expect(card.isAllowedAsChild(richTextElement)).toBe(true);
 		});
 
-		it('should allow task element objects', () => {
+		it('should allow submission container element objects', () => {
 			const card = cardFactory.build();
-			const taskElement = submissionContainerElementFactory.build();
-			expect(card.isAllowedAsChild(taskElement)).toBe(true);
+			const submissionContainerElement = submissionContainerElementFactory.build();
+			expect(card.isAllowedAsChild(submissionContainerElement)).toBe(true);
 		});
 	});
 

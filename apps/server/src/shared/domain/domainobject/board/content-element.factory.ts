@@ -20,7 +20,7 @@ export class ContentElementFactory {
 				element = this.buildRichText();
 				break;
 			case ContentElementType.SUBMISSION_CONTAINER:
-				element = this.buildTask();
+				element = this.buildSubmissionContainer();
 				break;
 			default:
 				break;
@@ -58,7 +58,7 @@ export class ContentElementFactory {
 		return element;
 	}
 
-	private buildTask() {
+	private buildSubmissionContainer() {
 		const element = new SubmissionContainerElement({
 			id: new ObjectId().toHexString(),
 			dueDate: new Date(),

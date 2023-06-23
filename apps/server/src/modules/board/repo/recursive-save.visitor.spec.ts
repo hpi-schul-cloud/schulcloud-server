@@ -144,17 +144,17 @@ describe(RecursiveSaveVisitor.name, () => {
 		});
 	});
 
-	describe('when visiting a task element composite', () => {
+	describe('when visiting a submission container element composite', () => {
 		it('should create or update the node', () => {
-			const taskElement = submissionContainerElementFactory.build();
+			const submissionContainerElement = submissionContainerElementFactory.build();
 			jest.spyOn(visitor, 'createOrUpdateBoardNode');
 
-			visitor.visitTaskElement(taskElement);
+			visitor.visitSubmissionContainerElement(submissionContainerElement);
 
 			const expectedNode: Partial<SubmissionContainerElementNode> = {
-				id: taskElement.id,
-				type: BoardNodeType.TASK_ELEMENT,
-				dueDate: taskElement.dueDate,
+				id: submissionContainerElement.id,
+				type: BoardNodeType.SUBMISSION_CONTAINER_ELEMENT,
+				dueDate: submissionContainerElement.dueDate,
 			};
 			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
 		});
