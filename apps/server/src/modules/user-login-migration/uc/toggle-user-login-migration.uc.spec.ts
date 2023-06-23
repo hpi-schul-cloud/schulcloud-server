@@ -1,11 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolDO, UserLoginMigrationDO } from '@shared/domain';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { schoolDOFactory } from '@shared/testing';
-import { UserLoginMigrationService } from '../service';
-import { LegacyLogger } from '../../../core/logger';
+import { schoolDOFactory, userLoginMigrationDOFactory } from '@shared/testing';
+import { UserLoginMigrationService, CommonUserLoginMigrationService } from '../service';
+import { Logger } from '@src/core/logger';
 import { ToggleUserLoginMigrationUc } from './toggle-user-login-migration.uc';
-import { CommonUserLoginMigrationService } from '../service/common-user-login-migration.service';
 
 describe('ToggleUserLoginMigrationUc', () => {
 	let module: TestingModule;
@@ -27,8 +26,8 @@ describe('ToggleUserLoginMigrationUc', () => {
 					useValue: createMock<CommonUserLoginMigrationService>(),
 				},
 				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
@@ -51,20 +50,21 @@ describe('ToggleUserLoginMigrationUc', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date(),
 				});
 
 				const school: SchoolDO = schoolDOFactory.buildWithId();
+				const schoolId = school.id ?? '';
 
 				commonUserLoginMigrationCheckService.ensurePermission.mockResolvedValue(Promise.resolve());
 				commonUserLoginMigrationCheckService.findExistingUserLoginMigration.mockResolvedValue(migration);
 				commonUserLoginMigrationCheckService.hasNotFinishedMigrationOrThrow.mockReturnThis();
 				userLoginMigrationService.toggleMigration.mockResolvedValue(migration);
 
-				return { userId, migration, schoolId: school.id as string };
+				return { userId, migration, schoolId };
 			};
 
 			it('should check preconditions', async () => {

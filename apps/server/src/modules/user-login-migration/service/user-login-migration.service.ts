@@ -6,8 +6,7 @@ import { SchoolService } from '@src/modules/school';
 import { SystemDto, SystemService } from '@src/modules/system';
 import { UserService } from '@src/modules/user';
 import { SchoolMigrationService } from './school-migration.service';
-import { UserLoginMigrationLoggableException } from '../error';
-import { ToggleUserLoginMigrationError } from '../error/toggle-user-login-migration.error';
+import { ModifyUserLoginMigrationLoggableException } from '../error';
 
 @Injectable()
 export class UserLoginMigrationService {
@@ -86,7 +85,7 @@ export class UserLoginMigrationService {
 		);
 
 		if (existingUserLoginMigrationDO === null) {
-			throw new UserLoginMigrationLoggableException(
+			throw new ModifyUserLoginMigrationLoggableException(
 				`Migration for school with id ${schoolId} does not exist for restart.`,
 				schoolId
 			);
@@ -102,7 +101,9 @@ export class UserLoginMigrationService {
 		let userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
 
 		if (userLoginMigration === null) {
-			throw new ToggleUserLoginMigrationError(`Migration for school with id ${schoolId} does not exist for toggling.`);
+			throw new ModifyUserLoginMigrationLoggableException(
+				`Migration for school with id ${schoolId} does not exist for toggling.`
+			);
 		}
 
 		if (!userLoginMigration.mandatorySince) {
@@ -115,7 +116,6 @@ export class UserLoginMigrationService {
 
 		return userLoginMigration;
 	}
-
 
 	private async createNewMigration(school: SchoolDO): Promise<UserLoginMigrationDO> {
 		const oauthSystems: SystemDto[] = await this.systemService.findByType(SystemTypeEnum.OAUTH);

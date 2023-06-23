@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 import { UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationService, CommonUserLoginMigrationService } from '../service';
+import { UserLoginMigrationLoggable } from '../loggable/user-login-migration.loggable';
 
 @Injectable()
 export class ToggleUserLoginMigrationUc {
 	constructor(
 		private readonly userLoginMigrationService: UserLoginMigrationService,
 		private readonly commonUserLoginMigrationService: CommonUserLoginMigrationService,
-		private readonly logger: LegacyLogger
+		private readonly logger: Logger
 	) {}
 
 	async toggleMigration(userId: string, schoolId: string): Promise<UserLoginMigrationDO> {
@@ -18,7 +19,9 @@ export class ToggleUserLoginMigrationUc {
 
 		const toggled = toggledMigration.mandatorySince ? 'true' : 'false';
 
-		this.logger.debug(`The school admin changed the user login migration toggle to: ${toggled}`);
+		this.logger.debug(
+			new UserLoginMigrationLoggable(`The school admin changed the user login migration toggle to: ${toggled}`)
+		);
 
 		return toggledMigration;
 	}

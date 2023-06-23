@@ -6,7 +6,7 @@ import { Action, AuthorizationContext, AuthorizationService } from '@src/modules
 import { SchoolService } from '@src/modules/school';
 import { CommonUserLoginMigrationService } from './common-user-login-migration.service';
 import { UserLoginMigrationService } from './user-login-migration.service';
-import { ModifyUserLoginMigrationError } from '../error';
+import { ModifyUserLoginMigrationLoggableException } from '../error';
 
 describe('CommonUserLoginMigrationService', () => {
 	let module: TestingModule;
@@ -175,12 +175,14 @@ describe('CommonUserLoginMigrationService', () => {
 				return { userId, migration };
 			};
 
-			it('should throw ModifyUserLoginMigrationError ', () => {
+			it('should throw ModifyUserLoginMigrationLoggableException ', () => {
 				const { migration } = setup();
 
 				expect(() => service.hasNotFinishedMigrationOrThrow(migration)).toThrow(
-					new ModifyUserLoginMigrationError(
-						`The school with schoolId ${migration.schoolId} already finished the migration.`
+					new ModifyUserLoginMigrationLoggableException(
+						`The school with schoolId ${migration.schoolId} already finished the migration.`,
+						migration.schoolId,
+						migration.finishedAt
 					)
 				);
 			});

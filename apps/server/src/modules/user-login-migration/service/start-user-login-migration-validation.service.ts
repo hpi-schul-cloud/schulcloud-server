@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { SchoolDO, UserLoginMigrationDO } from '@shared/domain';
 import { SchoolService } from '@src/modules/school';
 import { CommonUserLoginMigrationService } from './common-user-login-migration.service';
-import { UserLoginMigrationLoggableException } from '../error';
+import { ModifyUserLoginMigrationLoggableException } from '../error';
 
 @Injectable()
 export class StartUserLoginMigrationValidationService {
@@ -19,7 +19,7 @@ export class StartUserLoginMigrationValidationService {
 		const existingUserLoginMigration: UserLoginMigrationDO | null =
 			await this.commonUserLoginMigrationService.findExistingUserLoginMigration(schoolId);
 
-		this.hasFinishedMigrationOrThrow(existingUserLoginMigration);
+		this.commonUserLoginMigrationService.hasNotFinishedMigrationOrThrow(existingUserLoginMigration);
 
 		this.hasAlreadyStartedMigrationOrThrow(existingUserLoginMigration);
 	}
@@ -28,7 +28,7 @@ export class StartUserLoginMigrationValidationService {
 		const schoolDo: SchoolDO = await this.schoolService.getSchoolById(schoolId);
 
 		if (!schoolDo.officialSchoolNumber) {
-			throw new UserLoginMigrationLoggableException(
+			throw new ModifyUserLoginMigrationLoggableException(
 				`The school with schoolId ${schoolId} has no official school number.`
 			);
 		}
@@ -36,16 +36,8 @@ export class StartUserLoginMigrationValidationService {
 
 	private hasAlreadyStartedMigrationOrThrow(userLoginMigration: UserLoginMigrationDO | null): void {
 		if (userLoginMigration) {
-			throw new UserLoginMigrationLoggableException(
+			throw new ModifyUserLoginMigrationLoggableException(
 				`The school with schoolId ${userLoginMigration.schoolId} already started the migration.`
-			);
-		}
-	}
-
-	private hasFinishedMigrationOrThrow(userLoginMigration: UserLoginMigrationDO | null) {
-		if (userLoginMigration?.finishedAt) {
-			throw new UserLoginMigrationLoggableException(
-				`The school with schoolId ${userLoginMigration.schoolId} already finished the migration.`
 			);
 		}
 	}

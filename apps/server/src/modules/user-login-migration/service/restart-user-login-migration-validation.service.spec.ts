@@ -4,7 +4,7 @@ import { SchoolDO, UserLoginMigrationDO } from '@shared/domain';
 import { schoolDOFactory, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { RestartUserLoginMigrationValidationService } from './restart-user-login-migration-validation.service';
 import { CommonUserLoginMigrationService } from './common-user-login-migration.service';
-import { UserLoginMigrationLoggableException } from '../error';
+import { ModifyUserLoginMigrationLoggableException } from '../error';
 
 describe('RestartUserLoginMigrationValidationService', () => {
 	let module: TestingModule;
@@ -92,7 +92,7 @@ describe('RestartUserLoginMigrationValidationService', () => {
 				const func = () => service.checkPreconditions(userId, schoolId);
 
 				await expect(func()).rejects.toThrow(
-					new UserLoginMigrationLoggableException(
+					new ModifyUserLoginMigrationLoggableException(
 						`Existing migration for school with id: ${schoolId} could not be found for restart.`,
 						schoolId
 					)
@@ -126,7 +126,7 @@ describe('RestartUserLoginMigrationValidationService', () => {
 				const func = () => service.checkPreconditions(userId, schoolId);
 
 				await expect(func()).rejects.toThrow(
-					new UserLoginMigrationLoggableException(
+					new ModifyUserLoginMigrationLoggableException(
 						`Migration for school with id ${schoolId ?? ''} is already started, you are not able to restart.`,
 						schoolId
 					)
@@ -160,7 +160,7 @@ describe('RestartUserLoginMigrationValidationService', () => {
 				const func = () => service.checkPreconditions(userId, schoolId);
 
 				await expect(func()).rejects.toThrow(
-					new UserLoginMigrationLoggableException(
+					new ModifyUserLoginMigrationLoggableException(
 						'grace_period_expired: The grace period after finishing migration has expired',
 						schoolId,
 						migration.finishedAt

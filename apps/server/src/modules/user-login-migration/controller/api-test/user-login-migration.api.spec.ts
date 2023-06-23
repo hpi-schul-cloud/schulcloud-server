@@ -704,52 +704,44 @@ describe('UserLoginMigrationController (API)', () => {
 	});
 
 	describe('[PUT] /toggle', () => {
-		const setupToggle = async () => {
-			const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-			const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
-			const school: School = schoolFactory.buildWithId({
-				systems: [sourceSystem],
-				officialSchoolNumber: '12345',
-			});
-
-			const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
-				school,
-				targetSystem,
-				sourceSystem,
-				startedAt: new Date(2023, 1, 4),
-				closedAt: new Date(2023, 1, 5),
-			});
-			school.userLoginMigration = userLoginMigration;
-
-			const adminRole = roleFactory.buildWithId({
-				name: RoleName.ADMINISTRATOR,
-				permissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
-			});
-
-			const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
-
-			await em.persistAndFlush([sourceSystem, targetSystem, school, user, userLoginMigration]);
-
-			currentUser = mapUserToCurrentUser(user);
-
-			return {
-				user,
-				userLoginMigration,
-			};
-		};
-
 		describe('when migration is optional', () => {
 			const setup = async () => {
-				const { userLoginMigration } = await setupToggle();
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
 
-				userLoginMigration.mandatorySince = undefined;
-				await em.persistAndFlush(userLoginMigration);
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: new Date(2023, 1, 4),
+					closedAt: new Date(2023, 1, 5),
+					mandatorySince: undefined,
+				});
+				school.userLoginMigration = userLoginMigration;
+
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+					userLoginMigration,
+				};
 			};
 
 			it('it should set migration to mandatory', async () => {
-				await setup();
+				const { loggedInClient } = await setup();
 
-				const response: Response = await request(app.getHttpServer()).put(`/user-login-migrations/toggle`);
+				const response: Response = await loggedInClient.put(`/toggle`);
 
 				const responseBody = response.body as UserLoginMigrationResponse;
 				expect(responseBody.mandatorySince).toBeDefined();
@@ -758,16 +750,42 @@ describe('UserLoginMigrationController (API)', () => {
 
 		describe('when migration is mandatory', () => {
 			const setup = async () => {
-				const { userLoginMigration } = await setupToggle();
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
 
-				userLoginMigration.mandatorySince = new Date();
-				await em.persistAndFlush(userLoginMigration);
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: new Date(2023, 1, 4),
+					mandatorySince: new Date(2023, 1, 4),
+					closedAt: new Date(2023, 1, 5),
+				});
+				school.userLoginMigration = userLoginMigration;
+
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+					userLoginMigration,
+				};
 			};
 
 			it('it should set migration to optional', async () => {
-				await setup();
+				const { loggedInClient } = await setup();
 
-				const response: Response = await request(app.getHttpServer()).put(`/user-login-migrations/toggle`);
+				const response: Response = await loggedInClient.put(`/toggle`);
 
 				const responseBody = response.body as UserLoginMigrationResponse;
 				expect(responseBody.mandatorySince).toBeUndefined();
@@ -776,16 +794,31 @@ describe('UserLoginMigrationController (API)', () => {
 
 		describe('when migration is not started', () => {
 			const setup = async () => {
-				const { userLoginMigration } = await setupToggle();
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
 
-				em.remove(userLoginMigration);
-				await em.flush();
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+				};
 			};
 
 			it('should return a bad request', async () => {
-				await setup();
+				const { loggedInClient } = await setup();
 
-				const response: Response = await request(app.getHttpServer()).put(`/user-login-migrations/toggle`);
+				const response: Response = await loggedInClient.put(`/toggle`);
 
 				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 			});
@@ -793,14 +826,41 @@ describe('UserLoginMigrationController (API)', () => {
 
 		describe('when user is not authorized', () => {
 			const setup = async () => {
-				await setupToggle();
-				currentUser = undefined;
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
+
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: new Date(2023, 1, 4),
+					closedAt: new Date(2023, 1, 5),
+				});
+				school.userLoginMigration = userLoginMigration;
+
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+					userLoginMigration,
+				};
 			};
 
 			it('should return unauthorized', async () => {
 				await setup();
 
-				const response: Response = await request(app.getHttpServer()).put(`/user-login-migrations/toggle`);
+				const response: Response = await testApiClient.put(`/toggle`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -808,23 +868,38 @@ describe('UserLoginMigrationController (API)', () => {
 
 		describe('when user has not the required permission', () => {
 			const setup = async () => {
-				const { user } = await setupToggle();
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
 
-				user.roles.removeAll();
-				await em.persistAndFlush(user);
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: new Date(2023, 1, 4),
+					closedAt: new Date(2023, 1, 5),
+				});
+				school.userLoginMigration = userLoginMigration;
 
-				const userWithoutPermission: User = userFactory.transient(user).build({ roles: [] });
-				await em.persistAndFlush(userWithoutPermission);
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, []);
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
 
 				return {
-					user,
+					loggedInClient,
+					userLoginMigration,
 				};
 			};
-
 			it('should return forbidden', async () => {
-				await setup();
+				const { loggedInClient } = await setup();
 
-				const response: Response = await request(app.getHttpServer()).put(`/user-login-migrations/toggle`);
+				const response: Response = await loggedInClient.put(`/toggle`);
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 			});

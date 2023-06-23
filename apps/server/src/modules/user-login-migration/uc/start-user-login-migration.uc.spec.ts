@@ -5,7 +5,7 @@ import { SchoolDO, UserLoginMigrationDO } from '@shared/domain';
 import { schoolDOFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { UserLoginMigrationService, StartUserLoginMigrationValidationService } from '../service';
 import { StartUserLoginMigrationUc } from './start-user-login-migration.uc';
-import { UserLoginMigrationLoggableException } from '../error';
+import { ModifyUserLoginMigrationLoggableException } from '../error';
 
 describe('StartUserLoginMigrationUc', () => {
 	let module: TestingModule;
@@ -101,7 +101,7 @@ describe('StartUserLoginMigrationUc', () => {
 				});
 
 				const school: SchoolDO = schoolDOFactory.buildWithId();
-				const error: UserLoginMigrationLoggableException = new UserLoginMigrationLoggableException('');
+				const error: ModifyUserLoginMigrationLoggableException = new ModifyUserLoginMigrationLoggableException('');
 
 				startUserLoginMigrationValidationService.checkPreconditions.mockRejectedValue(error);
 				userLoginMigrationService.startMigration.mockResolvedValue(migration);
@@ -112,7 +112,9 @@ describe('StartUserLoginMigrationUc', () => {
 			it('should throw ForbiddenException ', async () => {
 				const { userId, schoolId } = setup();
 
-				await expect(uc.startMigration(userId, schoolId)).rejects.toThrow(new UserLoginMigrationLoggableException(''));
+				await expect(uc.startMigration(userId, schoolId)).rejects.toThrow(
+					new ModifyUserLoginMigrationLoggableException('')
+				);
 			});
 		});
 	});

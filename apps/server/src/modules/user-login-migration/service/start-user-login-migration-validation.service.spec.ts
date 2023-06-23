@@ -6,7 +6,7 @@ import { schoolDOFactory, setupEntities, userFactory, userLoginMigrationDOFactor
 import { AuthorizationService } from '@src/modules/authorization';
 import { StartUserLoginMigrationValidationService } from './start-user-login-migration-validation.service';
 import { CommonUserLoginMigrationService } from './common-user-login-migration.service';
-import { UserLoginMigrationLoggableException } from '../error';
+import { ModifyUserLoginMigrationLoggableException } from '../error';
 
 describe('StartUserLoginMigrationValidationService', () => {
 	let module: TestingModule;
@@ -132,7 +132,9 @@ describe('StartUserLoginMigrationValidationService', () => {
 				const func = () => service.checkPreconditions(user.id, schoolId);
 
 				await expect(func()).rejects.toThrow(
-					new UserLoginMigrationLoggableException(`The school with schoolId ${schoolId} has no official school number.`)
+					new ModifyUserLoginMigrationLoggableException(
+						`The school with schoolId ${schoolId} has no official school number.`
+					)
 				);
 			});
 		});
@@ -165,7 +167,7 @@ describe('StartUserLoginMigrationValidationService', () => {
 				const func = () => service.checkPreconditions(userId, migration.schoolId);
 
 				await expect(func()).rejects.toThrow(
-					new UserLoginMigrationLoggableException(
+					new ModifyUserLoginMigrationLoggableException(
 						`The school with schoolId ${migration.schoolId} already finished the migration.`
 					)
 				);
@@ -198,7 +200,7 @@ describe('StartUserLoginMigrationValidationService', () => {
 				const func = () => service.checkPreconditions(userId, migration.schoolId);
 
 				await expect(func()).rejects.toThrow(
-					new UserLoginMigrationLoggableException(
+					new ModifyUserLoginMigrationLoggableException(
 						`The school with schoolId ${migration.schoolId} already started the migration.`
 					)
 				);
