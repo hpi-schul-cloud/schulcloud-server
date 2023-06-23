@@ -78,11 +78,11 @@ describe('ToolReferenceUc', () => {
 				const contextType: ToolContextType = ToolContextType.COURSE;
 				const contextId = 'contextId';
 
-				contextExternalToolService.findAllByContext.mockResolvedValue([contextExternalTool]);
-				contextExternalToolService.ensureContextPermissions.mockResolvedValue();
-				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValue(schoolExternalTool);
-				externalToolService.findExternalToolById.mockResolvedValue(externalTool);
-				commonToolService.determineToolConfigurationStatus.mockReturnValue(ToolConfigurationStatus.LATEST);
+				contextExternalToolService.findAllByContext.mockResolvedValueOnce([contextExternalTool]);
+				contextExternalToolService.ensureContextPermissions.mockResolvedValueOnce();
+				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(schoolExternalTool);
+				externalToolService.findExternalToolById.mockResolvedValueOnce(externalTool);
+				commonToolService.determineToolConfigurationStatus.mockReturnValueOnce(ToolConfigurationStatus.LATEST);
 
 				return {
 					userId,
@@ -177,10 +177,10 @@ describe('ToolReferenceUc', () => {
 				const contextType: ToolContextType = ToolContextType.COURSE;
 				const contextId = 'contextId';
 
-				contextExternalToolService.findAllByContext.mockResolvedValue([contextExternalTool]);
+				contextExternalToolService.findAllByContext.mockResolvedValueOnce([contextExternalTool]);
 				contextExternalToolService.ensureContextPermissions.mockRejectedValueOnce(new ForbiddenException());
-				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValue(schoolExternalTool);
-				externalToolService.findExternalToolById.mockResolvedValue(externalTool);
+				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(schoolExternalTool);
+				externalToolService.findExternalToolById.mockResolvedValueOnce(externalTool);
 
 				return {
 					userId,

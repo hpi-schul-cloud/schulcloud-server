@@ -78,10 +78,16 @@ export class ToolReferenceUc {
 	}
 
 	private async ensureToolPermissions(userId: EntityId, contextExternalTool: ContextExternalToolDO): Promise<void> {
-		return this.contextExternalToolService.ensureContextPermissions(userId, contextExternalTool, {
-			requiredPermissions: [Permission.CONTEXT_TOOL_USER],
-			action: Action.read,
-		});
+		const promise: Promise<void> = this.contextExternalToolService.ensureContextPermissions(
+			userId,
+			contextExternalTool,
+			{
+				requiredPermissions: [Permission.CONTEXT_TOOL_USER],
+				action: Action.read,
+			}
+		);
+
+		return promise;
 	}
 
 	private async fetchSchoolExternalTool(contextExternalTool: ContextExternalToolDO): Promise<SchoolExternalToolDO> {
