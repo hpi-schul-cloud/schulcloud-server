@@ -1,10 +1,9 @@
+import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Course, EntityId, SortOrder } from '@shared/domain';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-
-import { NotFoundError } from '@mikro-orm/core';
-import { Course, EntityId, SortOrder } from '@shared/domain';
 import { cleanupCollections, courseFactory, courseGroupFactory, userFactory } from '@shared/testing';
 import { CourseRepo } from './course.repo';
 
@@ -72,6 +71,7 @@ describe('course repo', () => {
 				'untilDate',
 				'updatedAt',
 				'students',
+				'features',
 			].sort();
 			expect(keysOfFirstElements).toEqual(expectedResult);
 		});
