@@ -34,7 +34,9 @@ import {
 	GetH5PEditorParams,
 	LibraryFileUrlParams,
 	PostH5PContentCreateParams,
+	SaveH5PEditorParams,
 } from './dto';
+import { H5PSaveResponse } from './dto/h5p-editor.response';
 
 // Dummy html response so we can test i-frame integration
 const dummyResponse = (title: string) => `
@@ -204,20 +206,36 @@ export class H5PEditorController {
 		return response;
 	}
 
-	@Post('/edit/:contentId?')
-	async createOrSaveH5pContent(
-		@Body() body: PostH5PContentCreateParams,
-		@Param() params: GetH5PEditorParams,
-		@CurrentUser() currentUser: ICurrentUser
-	) {
-		const response = await this.h5pEditorUc.saveH5pContentGetMetadata(
-			params.contentId as string,
+	@Post('/edit')
+	@ApiResponse({ status: 201, type: H5PSaveResponse })
+	async createH5pContent(@Body() body: PostH5PContentCreateParams, @CurrentUser() currentUser: ICurrentUser) {
+		const response = await this.h5pEditorUc.createH5pContentGetMetadata(
 			currentUser,
 			body.params.params,
 			body.params.metadata,
 			body.library
 		);
 
-		return response;
+		const saveResponse = new H5PSaveResponse(response.id, response.metadata);
+		return saveResponse;
+	}
+
+	@Post('/edit/:contentId?')
+	@ApiResponse({ status: 201, type: H5PSaveResponse })
+	async saveH5pContent(
+		@Body() body: PostH5PContentCreateParams,
+		@Param() params: SaveH5PEditorParams,
+		@CurrentUser() currentUser: ICurrentUser
+	) {
+		const response = await this.h5pEditorUc.saveH5pContentGetMetadata(
+			params.contentId,
+			currentUser,
+			body.params.params,
+			body.params.metadata,
+			body.library
+		);
+
+		const saveResponse = new H5PSaveResponse(response.id, response.metadata);
+		return saveResponse;
 	}
 }

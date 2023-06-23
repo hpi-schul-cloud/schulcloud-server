@@ -232,6 +232,26 @@ export class H5PEditorUc {
 		return deletedContent;
 	}
 
+	public async createH5pContentGetMetadata(
+		currentUser: ICurrentUser,
+		params: unknown,
+		metadata: IContentMetadata,
+		mainLibraryUbername: string
+	): Promise<{ id: string; metadata: IContentMetadata }> {
+		// TODO: await this.checkPermission...
+		const user = this.changeUserType(currentUser);
+
+		const newContentId = await this.h5pEditor.saveOrUpdateContentReturnMetaData(
+			undefined as unknown as string, // Lumi typings are wrong, this method accepts both string and undefined
+			params,
+			metadata,
+			mainLibraryUbername,
+			user
+		);
+
+		return newContentId;
+	}
+
 	public async saveH5pContentGetMetadata(
 		contentId: string,
 		currentUser: ICurrentUser,
@@ -243,7 +263,7 @@ export class H5PEditorUc {
 		const user = this.changeUserType(currentUser);
 
 		const newContentId = await this.h5pEditor.saveOrUpdateContentReturnMetaData(
-			contentId, // Typings are wrong
+			contentId,
 			params,
 			metadata,
 			mainLibraryUbername,

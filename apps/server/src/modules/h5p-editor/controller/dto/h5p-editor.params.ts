@@ -1,39 +1,50 @@
 import { IContentMetadata } from '@lumieducation/h5p-server';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { SanitizeHtml } from '@shared/controller';
 import { IsNotEmpty, IsObject, IsOptional, IsString, Matches } from 'class-validator';
 
 export class GetH5PContentParams {
-	@ApiProperty()
+	@ApiPropertyOptional()
 	@Matches('([a-z]+-[a-z]+)')
 	@IsString()
-	@IsOptional()
+	@SanitizeHtml()
 	language?: string;
 
 	@ApiProperty()
 	@Matches('([A-Z0-9a-z]+)')
 	@IsString()
+	@SanitizeHtml()
 	@IsNotEmpty()
 	contentId!: string;
 }
 
 export class GetH5PEditorParams {
-	@ApiProperty()
+	@ApiPropertyOptional()
 	@Matches('([a-z]+-[a-z]+)')
 	@IsString()
-	@IsOptional()
 	language?: string;
 
+	@ApiPropertyOptional()
+	@Matches('([A-Z0-9a-z]+)')
+	@IsString()
+	@SanitizeHtml()
+	contentId?: string;
+}
+
+export class SaveH5PEditorParams {
 	@ApiProperty()
 	@Matches('([A-Z0-9a-z]+)')
 	@IsString()
-	@IsOptional()
-	contentId?: string;
+	@SanitizeHtml()
+	@IsNotEmpty()
+	contentId!: string;
 }
 
 export class PostH5PContentParams {
 	@ApiProperty()
 	@Matches('([A-Z0-9a-z]+)')
 	@IsString()
+	@SanitizeHtml()
 	@IsNotEmpty()
 	contentId!: string;
 
@@ -47,6 +58,7 @@ export class PostH5PContentParams {
 
 	@ApiProperty()
 	@IsString()
+	@SanitizeHtml()
 	@IsNotEmpty()
 	mainLibraryUbername!: string;
 }
