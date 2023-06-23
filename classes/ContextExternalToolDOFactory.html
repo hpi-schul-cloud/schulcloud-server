@@ -234,8 +234,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="7"
-                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/context-external-tool.factory.ts:7</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="11"
+                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/context-external-tool.factory.ts:11</a></div>
                 </td>
             </tr>
 
@@ -1334,12 +1334,16 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ContextExternalToolDO, CustomParameterEntryDO } from &#x27;@shared/domain/domainobject/tool&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+	ContextExternalToolDO,
+	ContextExternalToolProps,
+	CustomParameterEntryDO,
+} from &#x27;@shared/domain/domainobject/tool&#x27;;
 import { ToolContextType } from &#x27;@src/modules/tool/interface&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
 import { DoBaseFactory } from &#x27;../do-base.factory&#x27;;
 
-class ContextExternalToolDOFactory extends DoBaseFactory&lt;ContextExternalToolDO, ContextExternalToolDO&gt; {
+class ContextExternalToolDOFactory extends DoBaseFactory&lt;ContextExternalToolDO, ContextExternalToolProps&gt; {
 	withSchoolExternalToolRef(schoolToolId: string, schoolId?: string | undefined): this {
 		const params: DeepPartial&lt;ContextExternalToolDO&gt; &#x3D; {
 			schoolToolRef: { schoolToolId, schoolId },

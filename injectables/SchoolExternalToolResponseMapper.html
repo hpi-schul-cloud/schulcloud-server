@@ -134,8 +134,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="43"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/school-external-tool-response.mapper.ts:43</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="44"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/school-external-tool-response.mapper.ts:44</a></div>
                 </td>
             </tr>
 
@@ -203,8 +203,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="29"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/school-external-tool-response.mapper.ts:29</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="30"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/school-external-tool-response.mapper.ts:30</a></div>
                 </td>
             </tr>
 
@@ -272,8 +272,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="22"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/school-external-tool-response.mapper.ts:22</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="23"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/school-external-tool-response.mapper.ts:23</a></div>
                 </td>
             </tr>
 
@@ -332,18 +332,19 @@ import {
 	SchoolExternalToolDO,
 	CustomParameterEntryDO,
 	CustomParameterEntry,
-	SchoolExternalToolStatus,
+	ToolConfigurationStatus,
 } from &#x27;@shared/domain&#x27;;
 import {
 	SchoolExternalToolSearchListResponse,
 	SchoolExternalToolResponse,
 	CustomParameterEntryResponse,
-	SchoolExternalToolStatusResponse,
+	ToolConfigurationStatusResponse,
 } from &#x27;../dto&#x27;;
 
-const statusMapping: Record&lt;SchoolExternalToolStatus, SchoolExternalToolStatusResponse&gt; &#x3D; {
-	[SchoolExternalToolStatus.LATEST]: SchoolExternalToolStatusResponse.LATEST,
-	[SchoolExternalToolStatus.OUTDATED]: SchoolExternalToolStatusResponse.OUTDATED,
+export const statusMapping: Record&lt;ToolConfigurationStatus, ToolConfigurationStatusResponse&gt; &#x3D; {
+	[ToolConfigurationStatus.LATEST]: ToolConfigurationStatusResponse.LATEST,
+	[ToolConfigurationStatus.OUTDATED]: ToolConfigurationStatusResponse.OUTDATED,
+	[ToolConfigurationStatus.UNKNOWN]: ToolConfigurationStatusResponse.UNKNOWN,
 };
 
 @Injectable()
@@ -365,7 +366,7 @@ export class SchoolExternalToolResponseMapper {
 			toolVersion: schoolExternalToolDO.toolVersion,
 			status: schoolExternalToolDO.status
 				? statusMapping[schoolExternalToolDO.status]
-				: SchoolExternalToolStatusResponse.UNKNOWN,
+				: ToolConfigurationStatusResponse.UNKNOWN,
 		};
 	}
 

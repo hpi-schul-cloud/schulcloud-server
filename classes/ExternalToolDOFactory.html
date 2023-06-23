@@ -240,8 +240,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="95"
-                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:95</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="96"
+                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:96</a></div>
                 </td>
             </tr>
 
@@ -314,8 +314,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="88"
-                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:88</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="89"
+                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:89</a></div>
                 </td>
             </tr>
 
@@ -376,8 +376,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="81"
-                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:81</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="82"
+                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:82</a></div>
                 </td>
             </tr>
 
@@ -1477,6 +1477,7 @@ import {
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
+	ExternalToolProps,
 } from &#x27;@shared/domain&#x27;;
 import { TokenEndpointAuthMethod } from &#x27;@src/modules/tool/interface&#x27;;
 import { DoBaseFactory } from &#x27;../do-base.factory&#x27;;
@@ -1543,7 +1544,7 @@ export const customParameterDOFactory &#x3D; DoBaseFactory.define&lt;CustomParam
 	}
 );
 
-class ExternalToolDOFactory extends DoBaseFactory&lt;ExternalToolDO, ExternalToolDO&gt; {
+class ExternalToolDOFactory extends DoBaseFactory&lt;ExternalToolDO, ExternalToolProps&gt; {
 	withOauth2Config(customParam?: DeepPartial&lt;Oauth2ToolConfigDO&gt;): this {
 		const params: DeepPartial&lt;ExternalToolDO&gt; &#x3D; {
 			config: oauth2ToolConfigDOFactory.build(customParam),

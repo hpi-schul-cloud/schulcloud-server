@@ -24,419 +24,419 @@
 <title>cluster_AuthorizationModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 4925,-268 4925,-70 8,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_AuthorizationModule_providers</title>
-<polygon fill="none" stroke="black" points="492,-78 492,-130 4917,-130 4917,-78 492,-78"/>
+<g id="clust3" class="cluster">
+<title>cluster_AuthorizationModule_imports</title>
+<polygon fill="none" stroke="black" points="4449,-78 4449,-130 4917,-130 4917,-78 4449,-78"/>
 </g>
 <g id="clust4" class="cluster">
 <title>cluster_AuthorizationModule_exports</title>
-<polygon fill="none" stroke="black" points="1885,-208 1885,-260 2245,-260 2245,-208 1885,-208"/>
+<polygon fill="none" stroke="black" points="2145,-208 2145,-260 2505,-260 2505,-208 2145,-208"/>
 </g>
-<g id="clust3" class="cluster">
-<title>cluster_AuthorizationModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 484,-130 484,-78 16,-78"/>
+<g id="clust6" class="cluster">
+<title>cluster_AuthorizationModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 4441,-130 4441,-78 16,-78"/>
 </g>
 <!-- BoardModule -->
 <g id="node1" class="node">
 <title>BoardModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="475.76,-122 472.76,-126 451.76,-126 448.76,-122 382.24,-122 382.24,-86 475.76,-86 475.76,-122"/>
-<text text-anchor="middle" x="429" y="-99.8" font-family="Times,serif" font-size="14.00">BoardModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="4908.76,-122 4905.76,-126 4884.76,-126 4881.76,-122 4815.24,-122 4815.24,-86 4908.76,-86 4908.76,-122"/>
+<text text-anchor="middle" x="4862" y="-99.8" font-family="Times,serif" font-size="14.00">BoardModule</text>
 </g>
 <!-- AuthorizationModule -->
 <g id="node5" class="node">
 <title>AuthorizationModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="2144.81,-187 2141.81,-191 2120.81,-191 2117.81,-187 2007.19,-187 2007.19,-151 2144.81,-151 2144.81,-187"/>
-<text text-anchor="middle" x="2076" y="-164.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="2404.81,-187 2401.81,-191 2380.81,-191 2377.81,-187 2267.19,-187 2267.19,-151 2404.81,-151 2404.81,-187"/>
+<text text-anchor="middle" x="2336" y="-164.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
 </g>
 <!-- BoardModule&#45;&gt;AuthorizationModule -->
 <g id="edge1" class="edge">
 <title>BoardModule&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M429,-122.29C429,-144.21 429,-178 429,-178 429,-178 1997.33,-178 1997.33,-178"/>
-<polygon fill="black" stroke="black" points="1997.33,-181.5 2007.33,-178 1997.33,-174.5 1997.33,-181.5"/>
+<path fill="none" stroke="black" d="M4862,-122.38C4862,-146.28 4862,-185 4862,-185 4862,-185 2414.87,-185 2414.87,-185"/>
+<polygon fill="black" stroke="black" points="2414.87,-181.5 2404.87,-185 2414.87,-188.5 2414.87,-181.5"/>
 </g>
 <!-- FeathersModule -->
 <g id="node2" class="node">
 <title>FeathersModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="364.47,-122 361.47,-126 340.47,-126 337.47,-122 257.53,-122 257.53,-86 364.47,-86 364.47,-122"/>
-<text text-anchor="middle" x="311" y="-99.8" font-family="Times,serif" font-size="14.00">FeathersModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="4797.47,-122 4794.47,-126 4773.47,-126 4770.47,-122 4690.53,-122 4690.53,-86 4797.47,-86 4797.47,-122"/>
+<text text-anchor="middle" x="4744" y="-99.8" font-family="Times,serif" font-size="14.00">FeathersModule</text>
 </g>
 <!-- FeathersModule&#45;&gt;AuthorizationModule -->
 <g id="edge2" class="edge">
 <title>FeathersModule&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M311,-122.25C311,-145.02 311,-181 311,-181 311,-181 1997.08,-181 1997.08,-181"/>
-<polygon fill="black" stroke="black" points="1997.08,-184.5 2007.08,-181 1997.08,-177.5 1997.08,-184.5"/>
+<path fill="none" stroke="black" d="M4744,-122.32C4744,-145.66 4744,-183 4744,-183 4744,-183 2414.83,-183 2414.83,-183"/>
+<polygon fill="black" stroke="black" points="2414.83,-179.5 2404.83,-183 2414.83,-186.5 2414.83,-179.5"/>
 </g>
 <!-- LoggerModule -->
 <g id="node3" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="239.98,-122 236.98,-126 215.98,-126 212.98,-122 140.02,-122 140.02,-86 239.98,-86 239.98,-122"/>
-<text text-anchor="middle" x="190" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="4672.98,-122 4669.98,-126 4648.98,-126 4645.98,-122 4573.02,-122 4573.02,-86 4672.98,-86 4672.98,-122"/>
+<text text-anchor="middle" x="4623" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;AuthorizationModule -->
 <g id="edge3" class="edge">
 <title>LoggerModule&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M190,-122.32C190,-145.66 190,-183 190,-183 190,-183 1997.2,-183 1997.2,-183"/>
-<polygon fill="black" stroke="black" points="1997.2,-186.5 2007.2,-183 1997.2,-179.5 1997.2,-186.5"/>
+<path fill="none" stroke="black" d="M4623,-122.01C4623,-144.49 4623,-180 4623,-180 4623,-180 2414.76,-180 2414.76,-180"/>
+<polygon fill="black" stroke="black" points="2414.76,-176.5 2404.76,-180 2414.76,-183.5 2414.76,-176.5"/>
 </g>
 <!-- SchoolModule -->
 <g id="node4" class="node">
 <title>SchoolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="122.44,-122 119.44,-126 98.44,-126 95.44,-122 23.56,-122 23.56,-86 122.44,-86 122.44,-122"/>
-<text text-anchor="middle" x="73" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="4555.44,-122 4552.44,-126 4531.44,-126 4528.44,-122 4456.56,-122 4456.56,-86 4555.44,-86 4555.44,-122"/>
+<text text-anchor="middle" x="4506" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolModule</text>
 </g>
 <!-- SchoolModule&#45;&gt;AuthorizationModule -->
 <g id="edge4" class="edge">
 <title>SchoolModule&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M73,-122.38C73,-146.28 73,-185 73,-185 73,-185 1997.34,-185 1997.34,-185"/>
-<polygon fill="black" stroke="black" points="1997.34,-188.5 2007.34,-185 1997.34,-181.5 1997.34,-188.5"/>
+<path fill="none" stroke="black" d="M4506,-122.29C4506,-144.21 4506,-178 4506,-178 4506,-178 2414.83,-178 2414.83,-178"/>
+<polygon fill="black" stroke="black" points="2414.83,-174.5 2404.83,-178 2414.83,-181.5 2414.83,-174.5"/>
 </g>
 <!-- AuthorizationService  -->
 <g id="node6" class="node">
 <title>AuthorizationService </title>
-<polygon fill="#fb8072" stroke="black" points="2236.74,-252 2097.26,-252 2097.26,-216 2236.74,-216 2236.74,-252"/>
-<text text-anchor="middle" x="2167" y="-229.8" font-family="Times,serif" font-size="14.00">AuthorizationService </text>
+<polygon fill="#fb8072" stroke="black" points="2496.74,-252 2357.26,-252 2357.26,-216 2496.74,-216 2496.74,-252"/>
+<text text-anchor="middle" x="2427" y="-229.8" font-family="Times,serif" font-size="14.00">AuthorizationService </text>
 </g>
 <!-- AuthorizationModule&#45;&gt;AuthorizationService  -->
 <g id="edge5" class="edge">
 <title>AuthorizationModule&#45;&gt;AuthorizationService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M2121.02,-187.11C2121.02,-187.11 2121.02,-205.99 2121.02,-205.99"/>
-<polygon fill="black" stroke="black" points="2117.52,-205.99 2121.02,-215.99 2124.52,-205.99 2117.52,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M2381.02,-187.11C2381.02,-187.11 2381.02,-205.99 2381.02,-205.99"/>
+<polygon fill="black" stroke="black" points="2377.52,-205.99 2381.02,-215.99 2384.52,-205.99 2377.52,-205.99"/>
 </g>
 <!-- FeathersAuthorizationService  -->
 <g id="node7" class="node">
 <title>FeathersAuthorizationService </title>
-<polygon fill="#fb8072" stroke="black" points="2079.16,-252 1892.84,-252 1892.84,-216 2079.16,-216 2079.16,-252"/>
-<text text-anchor="middle" x="1986" y="-229.8" font-family="Times,serif" font-size="14.00">FeathersAuthorizationService </text>
+<polygon fill="#fb8072" stroke="black" points="2339.16,-252 2152.84,-252 2152.84,-216 2339.16,-216 2339.16,-252"/>
+<text text-anchor="middle" x="2246" y="-229.8" font-family="Times,serif" font-size="14.00">FeathersAuthorizationService </text>
 </g>
 <!-- AuthorizationModule&#45;&gt;FeathersAuthorizationService  -->
 <g id="edge6" class="edge">
 <title>AuthorizationModule&#45;&gt;FeathersAuthorizationService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M2043.34,-187.11C2043.34,-187.11 2043.34,-205.99 2043.34,-205.99"/>
-<polygon fill="black" stroke="black" points="2039.84,-205.99 2043.34,-215.99 2046.84,-205.99 2039.84,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M2303.34,-187.11C2303.34,-187.11 2303.34,-205.99 2303.34,-205.99"/>
+<polygon fill="black" stroke="black" points="2299.84,-205.99 2303.34,-215.99 2306.84,-205.99 2299.84,-205.99"/>
 </g>
 <!-- AuthorizationHelper -->
 <g id="node8" class="node">
 <title>AuthorizationHelper</title>
-<ellipse fill="#fdb462" stroke="black" cx="4818" cy="-104" rx="90.89" ry="18"/>
-<text text-anchor="middle" x="4818" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationHelper</text>
+<ellipse fill="#fdb462" stroke="black" cx="4342" cy="-104" rx="90.89" ry="18"/>
+<text text-anchor="middle" x="4342" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationHelper</text>
 </g>
 <!-- AuthorizationHelper&#45;&gt;AuthorizationModule -->
 <g id="edge7" class="edge">
 <title>AuthorizationHelper&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M4818,-122.38C4818,-146.28 4818,-185 4818,-185 4818,-185 2154.81,-185 2154.81,-185"/>
-<polygon fill="black" stroke="black" points="2154.81,-181.5 2144.81,-185 2154.81,-188.5 2154.81,-181.5"/>
+<path fill="none" stroke="black" d="M4342,-122.28C4342,-143.32 4342,-175 4342,-175 4342,-175 2414.76,-175 2414.76,-175"/>
+<polygon fill="black" stroke="black" points="2414.76,-171.5 2404.76,-175 2414.76,-178.5 2414.76,-171.5"/>
 </g>
 <!-- AuthorizationService -->
 <g id="node9" class="node">
 <title>AuthorizationService</title>
-<ellipse fill="#fdb462" stroke="black" cx="4615" cy="-104" rx="93.76" ry="18"/>
-<text text-anchor="middle" x="4615" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationService</text>
+<ellipse fill="#fdb462" stroke="black" cx="4139" cy="-104" rx="93.76" ry="18"/>
+<text text-anchor="middle" x="4139" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationService</text>
 </g>
 <!-- AuthorizationService&#45;&gt;AuthorizationModule -->
 <g id="edge8" class="edge">
 <title>AuthorizationService&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M4615,-122.32C4615,-145.66 4615,-183 4615,-183 4615,-183 2154.9,-183 2154.9,-183"/>
-<polygon fill="black" stroke="black" points="2154.9,-179.5 2144.9,-183 2154.9,-186.5 2154.9,-179.5"/>
+<path fill="none" stroke="black" d="M4139,-122.13C4139,-142.57 4139,-173 4139,-173 4139,-173 2414.75,-173 2414.75,-173"/>
+<polygon fill="black" stroke="black" points="2414.75,-169.5 2404.75,-173 2414.75,-176.5 2414.75,-169.5"/>
 </g>
 <!-- BoardDoRule -->
 <g id="node10" class="node">
 <title>BoardDoRule</title>
-<ellipse fill="#fdb462" stroke="black" cx="4439" cy="-104" rx="64.85" ry="18"/>
-<text text-anchor="middle" x="4439" y="-99.8" font-family="Times,serif" font-size="14.00">BoardDoRule</text>
+<ellipse fill="#fdb462" stroke="black" cx="3963" cy="-104" rx="64.85" ry="18"/>
+<text text-anchor="middle" x="3963" y="-99.8" font-family="Times,serif" font-size="14.00">BoardDoRule</text>
 </g>
 <!-- BoardDoRule&#45;&gt;AuthorizationModule -->
 <g id="edge9" class="edge">
 <title>BoardDoRule&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M4439,-122.25C4439,-145.02 4439,-181 4439,-181 4439,-181 2154.8,-181 2154.8,-181"/>
-<polygon fill="black" stroke="black" points="2154.8,-177.5 2144.8,-181 2154.8,-184.5 2154.8,-177.5"/>
+<path fill="none" stroke="black" d="M3963,-122.31C3963,-142.15 3963,-171 3963,-171 3963,-171 2414.87,-171 2414.87,-171"/>
+<polygon fill="black" stroke="black" points="2414.87,-167.5 2404.87,-171 2414.87,-174.5 2414.87,-167.5"/>
 </g>
 <!-- ContextExternalToolRule -->
 <g id="node11" class="node">
 <title>ContextExternalToolRule</title>
-<ellipse fill="#fdb462" stroke="black" cx="4246" cy="-104" rx="110.61" ry="18"/>
-<text text-anchor="middle" x="4246" y="-99.8" font-family="Times,serif" font-size="14.00">ContextExternalToolRule</text>
+<ellipse fill="#fdb462" stroke="black" cx="3770" cy="-104" rx="110.61" ry="18"/>
+<text text-anchor="middle" x="3770" y="-99.8" font-family="Times,serif" font-size="14.00">ContextExternalToolRule</text>
 </g>
 <!-- ContextExternalToolRule&#45;&gt;AuthorizationModule -->
 <g id="edge10" class="edge">
 <title>ContextExternalToolRule&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M4246,-122.29C4246,-144.21 4246,-178 4246,-178 4246,-178 2154.83,-178 2154.83,-178"/>
-<polygon fill="black" stroke="black" points="2154.83,-174.5 2144.83,-178 2154.83,-181.5 2154.83,-174.5"/>
+<path fill="none" stroke="black" d="M3770,-122.17C3770,-141.09 3770,-168 3770,-168 3770,-168 2414.68,-168 2414.68,-168"/>
+<polygon fill="black" stroke="black" points="2414.68,-164.5 2404.68,-168 2414.68,-171.5 2414.68,-164.5"/>
 </g>
 <!-- CourseGroupRepo -->
 <g id="node12" class="node">
 <title>CourseGroupRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="4034" cy="-104" rx="83.39" ry="18"/>
-<text text-anchor="middle" x="4034" y="-99.8" font-family="Times,serif" font-size="14.00">CourseGroupRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="3558" cy="-104" rx="83.39" ry="18"/>
+<text text-anchor="middle" x="3558" y="-99.8" font-family="Times,serif" font-size="14.00">CourseGroupRepo</text>
 </g>
 <!-- CourseGroupRepo&#45;&gt;AuthorizationModule -->
 <g id="edge11" class="edge">
 <title>CourseGroupRepo&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M4034,-122.17C4034,-143.5 4034,-176 4034,-176 4034,-176 2154.82,-176 2154.82,-176"/>
-<polygon fill="black" stroke="black" points="2154.82,-172.5 2144.82,-176 2154.82,-179.5 2154.82,-172.5"/>
+<path fill="none" stroke="black" d="M3558,-122.27C3558,-140.56 3558,-166 3558,-166 3558,-166 2414.76,-166 2414.76,-166"/>
+<polygon fill="black" stroke="black" points="2414.76,-162.5 2404.76,-166 2414.76,-169.5 2414.76,-162.5"/>
 </g>
 <!-- CourseGroupRule -->
 <g id="node13" class="node">
 <title>CourseGroupRule</title>
-<ellipse fill="#fdb462" stroke="black" cx="3851" cy="-104" rx="81.1" ry="18"/>
-<text text-anchor="middle" x="3851" y="-99.8" font-family="Times,serif" font-size="14.00">CourseGroupRule</text>
+<ellipse fill="#fdb462" stroke="black" cx="3375" cy="-104" rx="81.1" ry="18"/>
+<text text-anchor="middle" x="3375" y="-99.8" font-family="Times,serif" font-size="14.00">CourseGroupRule</text>
 </g>
 <!-- CourseGroupRule&#45;&gt;AuthorizationModule -->
 <g id="edge12" class="edge">
 <title>CourseGroupRule&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M3851,-122.03C3851,-142.77 3851,-174 3851,-174 3851,-174 2154.77,-174 2154.77,-174"/>
-<polygon fill="black" stroke="black" points="2154.77,-170.5 2144.77,-174 2154.77,-177.5 2154.77,-170.5"/>
+<path fill="none" stroke="black" d="M3375,-122.02C3375,-139.37 3375,-163 3375,-163 3375,-163 2414.98,-163 2414.98,-163"/>
+<polygon fill="black" stroke="black" points="2414.98,-159.5 2404.98,-163 2414.98,-166.5 2414.98,-159.5"/>
 </g>
 <!-- CourseRepo -->
 <g id="node14" class="node">
 <title>CourseRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="3693" cy="-104" rx="58.55" ry="18"/>
-<text text-anchor="middle" x="3693" y="-99.8" font-family="Times,serif" font-size="14.00">CourseRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="3217" cy="-104" rx="58.55" ry="18"/>
+<text text-anchor="middle" x="3217" y="-99.8" font-family="Times,serif" font-size="14.00">CourseRepo</text>
 </g>
 <!-- CourseRepo&#45;&gt;AuthorizationModule -->
 <g id="edge13" class="edge">
 <title>CourseRepo&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M3693,-122.22C3693,-142.37 3693,-172 3693,-172 3693,-172 2154.71,-172 2154.71,-172"/>
-<polygon fill="black" stroke="black" points="2154.71,-168.5 2144.71,-172 2154.71,-175.5 2154.71,-168.5"/>
+<path fill="none" stroke="black" d="M3217,-122.04C3217,-138.73 3217,-161 3217,-161 3217,-161 2414.76,-161 2414.76,-161"/>
+<polygon fill="black" stroke="black" points="2414.76,-157.5 2404.76,-161 2414.76,-164.5 2414.76,-157.5"/>
 </g>
 <!-- CourseRule -->
 <g id="node15" class="node">
 <title>CourseRule</title>
-<ellipse fill="#fdb462" stroke="black" cx="3560" cy="-104" rx="56.76" ry="18"/>
-<text text-anchor="middle" x="3560" y="-99.8" font-family="Times,serif" font-size="14.00">CourseRule</text>
+<ellipse fill="#fdb462" stroke="black" cx="3084" cy="-104" rx="56.76" ry="18"/>
+<text text-anchor="middle" x="3084" y="-99.8" font-family="Times,serif" font-size="14.00">CourseRule</text>
 </g>
 <!-- CourseRule&#45;&gt;AuthorizationModule -->
 <g id="edge14" class="edge">
 <title>CourseRule&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M3560,-122.11C3560,-141.34 3560,-169 3560,-169 3560,-169 2155.09,-169 2155.09,-169"/>
-<polygon fill="black" stroke="black" points="2155.09,-165.5 2145.09,-169 2155.09,-172.5 2155.09,-165.5"/>
+<path fill="none" stroke="black" d="M3084,-122.01C3084,-138.05 3084,-159 3084,-159 3084,-159 2414.7,-159 2414.7,-159"/>
+<polygon fill="black" stroke="black" points="2414.7,-155.5 2404.7,-159 2414.7,-162.5 2414.7,-155.5"/>
 </g>
 <!-- FeathersAuthProvider -->
 <g id="node16" class="node">
 <title>FeathersAuthProvider</title>
-<ellipse fill="#fdb462" stroke="black" cx="3389" cy="-104" rx="96.13" ry="18"/>
-<text text-anchor="middle" x="3389" y="-99.8" font-family="Times,serif" font-size="14.00">FeathersAuthProvider</text>
+<ellipse fill="#fdb462" stroke="black" cx="2913" cy="-104" rx="96.13" ry="18"/>
+<text text-anchor="middle" x="2913" y="-99.8" font-family="Times,serif" font-size="14.00">FeathersAuthProvider</text>
 </g>
 <!-- FeathersAuthProvider&#45;&gt;AuthorizationModule -->
 <g id="edge15" class="edge">
 <title>FeathersAuthProvider&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M3389,-122.22C3389,-140.83 3389,-167 3389,-167 3389,-167 2154.74,-167 2154.74,-167"/>
-<polygon fill="black" stroke="black" points="2154.74,-163.5 2144.74,-167 2154.74,-170.5 2154.74,-163.5"/>
+<path fill="none" stroke="black" d="M2913,-122.19C2913,-137.18 2913,-156 2913,-156 2913,-156 2414.74,-156 2414.74,-156"/>
+<polygon fill="black" stroke="black" points="2414.74,-152.5 2404.74,-156 2414.74,-159.5 2414.74,-152.5"/>
 </g>
 <!-- FeathersAuthorizationService -->
 <g id="node17" class="node">
 <title>FeathersAuthorizationService</title>
-<ellipse fill="#fdb462" stroke="black" cx="3148" cy="-104" rx="126.18" ry="18"/>
-<text text-anchor="middle" x="3148" y="-99.8" font-family="Times,serif" font-size="14.00">FeathersAuthorizationService</text>
+<ellipse fill="#fdb462" stroke="black" cx="2672" cy="-104" rx="126.18" ry="18"/>
+<text text-anchor="middle" x="2672" y="-99.8" font-family="Times,serif" font-size="14.00">FeathersAuthorizationService</text>
 </g>
 <!-- FeathersAuthorizationService&#45;&gt;AuthorizationModule -->
 <g id="edge16" class="edge">
 <title>FeathersAuthorizationService&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M3148,-122.3C3148,-140.27 3148,-165 3148,-165 3148,-165 2154.69,-165 2154.69,-165"/>
-<polygon fill="black" stroke="black" points="2154.69,-161.5 2144.69,-165 2154.69,-168.5 2154.69,-161.5"/>
+<path fill="none" stroke="black" d="M2672,-122.05C2672,-136.37 2672,-154 2672,-154 2672,-154 2414.81,-154 2414.81,-154"/>
+<polygon fill="black" stroke="black" points="2414.81,-150.5 2404.81,-154 2414.81,-157.5 2414.81,-150.5"/>
 </g>
 <!-- LessonRepo -->
 <g id="node18" class="node">
 <title>LessonRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="2945" cy="-104" rx="58.55" ry="18"/>
-<text text-anchor="middle" x="2945" y="-99.8" font-family="Times,serif" font-size="14.00">LessonRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="2469" cy="-104" rx="58.55" ry="18"/>
+<text text-anchor="middle" x="2469" y="-99.8" font-family="Times,serif" font-size="14.00">LessonRepo</text>
 </g>
 <!-- LessonRepo&#45;&gt;AuthorizationModule -->
 <g id="edge17" class="edge">
 <title>LessonRepo&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M2945,-122.02C2945,-139.37 2945,-163 2945,-163 2945,-163 2154.92,-163 2154.92,-163"/>
-<polygon fill="black" stroke="black" points="2154.92,-159.5 2144.92,-163 2154.92,-166.5 2154.92,-159.5"/>
+<path fill="none" stroke="black" d="M2409.95,-104C2403.18,-104 2398.64,-104 2398.64,-104 2398.64,-104 2398.64,-140.89 2398.64,-140.89"/>
+<polygon fill="black" stroke="black" points="2395.14,-140.89 2398.64,-150.89 2402.14,-140.89 2395.14,-140.89"/>
 </g>
 <!-- LessonRule -->
 <g id="node19" class="node">
 <title>LessonRule</title>
-<ellipse fill="#fdb462" stroke="black" cx="2812" cy="-104" rx="56.76" ry="18"/>
-<text text-anchor="middle" x="2812" y="-99.8" font-family="Times,serif" font-size="14.00">LessonRule</text>
+<ellipse fill="#fdb462" stroke="black" cx="2336" cy="-104" rx="56.76" ry="18"/>
+<text text-anchor="middle" x="2336" y="-99.8" font-family="Times,serif" font-size="14.00">LessonRule</text>
 </g>
 <!-- LessonRule&#45;&gt;AuthorizationModule -->
 <g id="edge18" class="edge">
 <title>LessonRule&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M2812,-122.03C2812,-138.4 2812,-160 2812,-160 2812,-160 2154.91,-160 2154.91,-160"/>
-<polygon fill="black" stroke="black" points="2154.91,-156.5 2144.91,-160 2154.91,-163.5 2154.91,-156.5"/>
+<path fill="none" stroke="black" d="M2336,-122.11C2336,-122.11 2336,-140.99 2336,-140.99"/>
+<polygon fill="black" stroke="black" points="2332.5,-140.99 2336,-150.99 2339.5,-140.99 2332.5,-140.99"/>
 </g>
 <!-- ReferenceLoader -->
 <g id="node20" class="node">
 <title>ReferenceLoader</title>
-<ellipse fill="#fdb462" stroke="black" cx="2660" cy="-104" rx="77.53" ry="18"/>
-<text text-anchor="middle" x="2660" y="-99.8" font-family="Times,serif" font-size="14.00">ReferenceLoader</text>
+<ellipse fill="#fdb462" stroke="black" cx="2184" cy="-104" rx="77.53" ry="18"/>
+<text text-anchor="middle" x="2184" y="-99.8" font-family="Times,serif" font-size="14.00">ReferenceLoader</text>
 </g>
 <!-- ReferenceLoader&#45;&gt;AuthorizationModule -->
 <g id="edge19" class="edge">
 <title>ReferenceLoader&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M2660,-122.28C2660,-137.95 2660,-158 2660,-158 2660,-158 2154.71,-158 2154.71,-158"/>
-<polygon fill="black" stroke="black" points="2154.71,-154.5 2144.71,-158 2154.71,-161.5 2154.71,-154.5"/>
+<path fill="none" stroke="black" d="M2261.68,-104C2268.77,-104 2273.36,-104 2273.36,-104 2273.36,-104 2273.36,-140.89 2273.36,-140.89"/>
+<polygon fill="black" stroke="black" points="2269.86,-140.89 2273.36,-150.89 2276.86,-140.89 2269.86,-140.89"/>
 </g>
 <!-- RuleManager -->
 <g id="node21" class="node">
 <title>RuleManager</title>
-<ellipse fill="#fdb462" stroke="black" cx="2501" cy="-104" rx="63.68" ry="18"/>
-<text text-anchor="middle" x="2501" y="-99.8" font-family="Times,serif" font-size="14.00">RuleManager</text>
+<ellipse fill="#fdb462" stroke="black" cx="2025" cy="-104" rx="63.68" ry="18"/>
+<text text-anchor="middle" x="2025" y="-99.8" font-family="Times,serif" font-size="14.00">RuleManager</text>
 </g>
 <!-- RuleManager&#45;&gt;AuthorizationModule -->
 <g id="edge20" class="edge">
 <title>RuleManager&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M2501,-122.19C2501,-137.18 2501,-156 2501,-156 2501,-156 2154.76,-156 2154.76,-156"/>
-<polygon fill="black" stroke="black" points="2154.76,-152.5 2144.76,-156 2154.76,-159.5 2154.76,-152.5"/>
+<path fill="none" stroke="black" d="M2025,-122.05C2025,-136.37 2025,-154 2025,-154 2025,-154 2256.98,-154 2256.98,-154"/>
+<polygon fill="black" stroke="black" points="2256.98,-157.5 2266.98,-154 2256.98,-150.5 2256.98,-157.5"/>
 </g>
 <!-- SchoolExternalToolRepo -->
 <g id="node22" class="node">
 <title>SchoolExternalToolRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="2310" cy="-104" rx="109.39" ry="18"/>
-<text text-anchor="middle" x="2310" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolExternalToolRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="1834" cy="-104" rx="109.39" ry="18"/>
+<text text-anchor="middle" x="1834" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolExternalToolRepo</text>
 </g>
 <!-- SchoolExternalToolRepo&#45;&gt;AuthorizationModule -->
 <g id="edge21" class="edge">
 <title>SchoolExternalToolRepo&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M2218.71,-114.12C2218.71,-128.73 2218.71,-154 2218.71,-154 2218.71,-154 2154.85,-154 2154.85,-154"/>
-<polygon fill="black" stroke="black" points="2154.85,-150.5 2144.85,-154 2154.85,-157.5 2154.85,-150.5"/>
+<path fill="none" stroke="black" d="M1834,-122.19C1834,-137.18 1834,-156 1834,-156 1834,-156 2257.25,-156 2257.25,-156"/>
+<polygon fill="black" stroke="black" points="2257.25,-159.5 2267.25,-156 2257.25,-152.5 2257.25,-159.5"/>
 </g>
 <!-- SchoolExternalToolRule -->
 <g id="node23" class="node">
 <title>SchoolExternalToolRule</title>
-<ellipse fill="#fdb462" stroke="black" cx="2076" cy="-104" rx="107.1" ry="18"/>
-<text text-anchor="middle" x="2076" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolExternalToolRule</text>
+<ellipse fill="#fdb462" stroke="black" cx="1600" cy="-104" rx="107.1" ry="18"/>
+<text text-anchor="middle" x="1600" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolExternalToolRule</text>
 </g>
 <!-- SchoolExternalToolRule&#45;&gt;AuthorizationModule -->
 <g id="edge22" class="edge">
 <title>SchoolExternalToolRule&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M2076,-122.11C2076,-122.11 2076,-140.99 2076,-140.99"/>
-<polygon fill="black" stroke="black" points="2072.5,-140.99 2076,-150.99 2079.5,-140.99 2072.5,-140.99"/>
+<path fill="none" stroke="black" d="M1600,-122.01C1600,-138.05 1600,-159 1600,-159 1600,-159 2257.09,-159 2257.09,-159"/>
+<polygon fill="black" stroke="black" points="2257.09,-162.5 2267.09,-159 2257.09,-155.5 2257.09,-162.5"/>
 </g>
 <!-- SchoolRepo -->
 <g id="node24" class="node">
 <title>SchoolRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="1893" cy="-104" rx="58.49" ry="18"/>
-<text text-anchor="middle" x="1893" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="1417" cy="-104" rx="58.49" ry="18"/>
+<text text-anchor="middle" x="1417" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolRepo</text>
 </g>
 <!-- SchoolRepo&#45;&gt;AuthorizationModule -->
 <g id="edge23" class="edge">
 <title>SchoolRepo&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M1921.96,-119.82C1921.96,-134.47 1921.96,-154 1921.96,-154 1921.96,-154 1997.09,-154 1997.09,-154"/>
-<polygon fill="black" stroke="black" points="1997.09,-157.5 2007.09,-154 1997.09,-150.5 1997.09,-157.5"/>
+<path fill="none" stroke="black" d="M1417,-122.04C1417,-138.73 1417,-161 1417,-161 1417,-161 2257.3,-161 2257.3,-161"/>
+<polygon fill="black" stroke="black" points="2257.3,-164.5 2267.3,-161 2257.3,-157.5 2257.3,-164.5"/>
 </g>
 <!-- SchoolRule -->
 <g id="node25" class="node">
 <title>SchoolRule</title>
-<ellipse fill="#fdb462" stroke="black" cx="1761" cy="-104" rx="56.2" ry="18"/>
-<text text-anchor="middle" x="1761" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolRule</text>
+<ellipse fill="#fdb462" stroke="black" cx="1285" cy="-104" rx="56.2" ry="18"/>
+<text text-anchor="middle" x="1285" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolRule</text>
 </g>
 <!-- SchoolRule&#45;&gt;AuthorizationModule -->
 <g id="edge24" class="edge">
 <title>SchoolRule&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M1761,-122.19C1761,-137.18 1761,-156 1761,-156 1761,-156 1997.26,-156 1997.26,-156"/>
-<polygon fill="black" stroke="black" points="1997.26,-159.5 2007.26,-156 1997.26,-152.5 1997.26,-159.5"/>
+<path fill="none" stroke="black" d="M1285,-122.02C1285,-139.37 1285,-163 1285,-163 1285,-163 2257.04,-163 2257.04,-163"/>
+<polygon fill="black" stroke="black" points="2257.04,-166.5 2267.04,-163 2257.04,-159.5 2257.04,-166.5"/>
 </g>
 <!-- SubmissionRepo -->
 <g id="node26" class="node">
 <title>SubmissionRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="1610" cy="-104" rx="76.49" ry="18"/>
-<text text-anchor="middle" x="1610" y="-99.8" font-family="Times,serif" font-size="14.00">SubmissionRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="1134" cy="-104" rx="76.49" ry="18"/>
+<text text-anchor="middle" x="1134" y="-99.8" font-family="Times,serif" font-size="14.00">SubmissionRepo</text>
 </g>
 <!-- SubmissionRepo&#45;&gt;AuthorizationModule -->
 <g id="edge25" class="edge">
 <title>SubmissionRepo&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M1610,-122.28C1610,-137.95 1610,-158 1610,-158 1610,-158 1997.24,-158 1997.24,-158"/>
-<polygon fill="black" stroke="black" points="1997.24,-161.5 2007.24,-158 1997.24,-154.5 1997.24,-161.5"/>
+<path fill="none" stroke="black" d="M1134,-122.27C1134,-140.56 1134,-166 1134,-166 1134,-166 2257.06,-166 2257.06,-166"/>
+<polygon fill="black" stroke="black" points="2257.06,-169.5 2267.06,-166 2257.06,-162.5 2257.06,-169.5"/>
 </g>
 <!-- SubmissionRule -->
 <g id="node27" class="node">
 <title>SubmissionRule</title>
-<ellipse fill="#fdb462" stroke="black" cx="1441" cy="-104" rx="74.2" ry="18"/>
-<text text-anchor="middle" x="1441" y="-99.8" font-family="Times,serif" font-size="14.00">SubmissionRule</text>
+<ellipse fill="#fdb462" stroke="black" cx="965" cy="-104" rx="74.2" ry="18"/>
+<text text-anchor="middle" x="965" y="-99.8" font-family="Times,serif" font-size="14.00">SubmissionRule</text>
 </g>
 <!-- SubmissionRule&#45;&gt;AuthorizationModule -->
 <g id="edge26" class="edge">
 <title>SubmissionRule&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M1441,-122.03C1441,-138.4 1441,-160 1441,-160 1441,-160 1997.14,-160 1997.14,-160"/>
-<polygon fill="black" stroke="black" points="1997.14,-163.5 2007.14,-160 1997.14,-156.5 1997.14,-163.5"/>
+<path fill="none" stroke="black" d="M965,-122.17C965,-141.09 965,-168 965,-168 965,-168 2257.07,-168 2257.07,-168"/>
+<polygon fill="black" stroke="black" points="2257.07,-171.5 2267.07,-168 2257.07,-164.5 2257.07,-171.5"/>
 </g>
 <!-- TaskCardRule -->
 <g id="node28" class="node">
 <title>TaskCardRule</title>
-<ellipse fill="#fdb462" stroke="black" cx="1282" cy="-104" rx="66.63" ry="18"/>
-<text text-anchor="middle" x="1282" y="-99.8" font-family="Times,serif" font-size="14.00">TaskCardRule</text>
+<ellipse fill="#fdb462" stroke="black" cx="806" cy="-104" rx="66.63" ry="18"/>
+<text text-anchor="middle" x="806" y="-99.8" font-family="Times,serif" font-size="14.00">TaskCardRule</text>
 </g>
 <!-- TaskCardRule&#45;&gt;AuthorizationModule -->
 <g id="edge27" class="edge">
 <title>TaskCardRule&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M1282,-122.02C1282,-139.37 1282,-163 1282,-163 1282,-163 1997.27,-163 1997.27,-163"/>
-<polygon fill="black" stroke="black" points="1997.27,-166.5 2007.27,-163 1997.27,-159.5 1997.27,-166.5"/>
+<path fill="none" stroke="black" d="M806,-122.31C806,-142.15 806,-171 806,-171 806,-171 2257.29,-171 2257.29,-171"/>
+<polygon fill="black" stroke="black" points="2257.29,-174.5 2267.29,-171 2257.29,-167.5 2257.29,-174.5"/>
 </g>
 <!-- TaskRepo -->
 <g id="node29" class="node">
 <title>TaskRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="1147" cy="-104" rx="50.38" ry="18"/>
-<text text-anchor="middle" x="1147" y="-99.8" font-family="Times,serif" font-size="14.00">TaskRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="671" cy="-104" rx="50.38" ry="18"/>
+<text text-anchor="middle" x="671" y="-99.8" font-family="Times,serif" font-size="14.00">TaskRepo</text>
 </g>
 <!-- TaskRepo&#45;&gt;AuthorizationModule -->
 <g id="edge28" class="edge">
 <title>TaskRepo&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M1147,-122.3C1147,-140.27 1147,-165 1147,-165 1147,-165 1997.31,-165 1997.31,-165"/>
-<polygon fill="black" stroke="black" points="1997.31,-168.5 2007.31,-165 1997.31,-161.5 1997.31,-168.5"/>
+<path fill="none" stroke="black" d="M671,-122.13C671,-142.57 671,-173 671,-173 671,-173 2257.1,-173 2257.1,-173"/>
+<polygon fill="black" stroke="black" points="2257.1,-176.5 2267.1,-173 2257.1,-169.5 2257.1,-176.5"/>
 </g>
 <!-- TaskRule -->
 <g id="node30" class="node">
 <title>TaskRule</title>
-<ellipse fill="#fdb462" stroke="black" cx="1031" cy="-104" rx="48.09" ry="18"/>
-<text text-anchor="middle" x="1031" y="-99.8" font-family="Times,serif" font-size="14.00">TaskRule</text>
+<ellipse fill="#fdb462" stroke="black" cx="555" cy="-104" rx="48.09" ry="18"/>
+<text text-anchor="middle" x="555" y="-99.8" font-family="Times,serif" font-size="14.00">TaskRule</text>
 </g>
 <!-- TaskRule&#45;&gt;AuthorizationModule -->
 <g id="edge29" class="edge">
 <title>TaskRule&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M1031,-122.22C1031,-140.83 1031,-167 1031,-167 1031,-167 1997.03,-167 1997.03,-167"/>
-<polygon fill="black" stroke="black" points="1997.03,-170.5 2007.03,-167 1997.03,-163.5 1997.03,-170.5"/>
+<path fill="none" stroke="black" d="M555,-122.28C555,-143.32 555,-175 555,-175 555,-175 2257.27,-175 2257.27,-175"/>
+<polygon fill="black" stroke="black" points="2257.27,-178.5 2267.27,-175 2257.27,-171.5 2257.27,-178.5"/>
 </g>
 <!-- TeamRule -->
 <g id="node31" class="node">
 <title>TeamRule</title>
-<ellipse fill="#fdb462" stroke="black" cx="914" cy="-104" rx="51.02" ry="18"/>
-<text text-anchor="middle" x="914" y="-99.8" font-family="Times,serif" font-size="14.00">TeamRule</text>
+<ellipse fill="#fdb462" stroke="black" cx="438" cy="-104" rx="51.02" ry="18"/>
+<text text-anchor="middle" x="438" y="-99.8" font-family="Times,serif" font-size="14.00">TeamRule</text>
 </g>
 <!-- TeamRule&#45;&gt;AuthorizationModule -->
 <g id="edge30" class="edge">
 <title>TeamRule&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M914,-122.11C914,-141.34 914,-169 914,-169 914,-169 1997.22,-169 1997.22,-169"/>
-<polygon fill="black" stroke="black" points="1997.22,-172.5 2007.22,-169 1997.22,-165.5 1997.22,-172.5"/>
+<path fill="none" stroke="black" d="M438,-122.29C438,-144.21 438,-178 438,-178 438,-178 2257.33,-178 2257.33,-178"/>
+<polygon fill="black" stroke="black" points="2257.33,-181.5 2267.33,-178 2257.33,-174.5 2257.33,-181.5"/>
 </g>
 <!-- TeamsRepo -->
 <g id="node32" class="node">
 <title>TeamsRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="788" cy="-104" rx="57.32" ry="18"/>
-<text text-anchor="middle" x="788" y="-99.8" font-family="Times,serif" font-size="14.00">TeamsRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="312" cy="-104" rx="57.32" ry="18"/>
+<text text-anchor="middle" x="312" y="-99.8" font-family="Times,serif" font-size="14.00">TeamsRepo</text>
 </g>
 <!-- TeamsRepo&#45;&gt;AuthorizationModule -->
 <g id="edge31" class="edge">
 <title>TeamsRepo&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M788,-122.22C788,-142.37 788,-172 788,-172 788,-172 1997.21,-172 1997.21,-172"/>
-<polygon fill="black" stroke="black" points="1997.21,-175.5 2007.21,-172 1997.21,-168.5 1997.21,-175.5"/>
+<path fill="none" stroke="black" d="M312,-122.01C312,-144.49 312,-180 312,-180 312,-180 2257.21,-180 2257.21,-180"/>
+<polygon fill="black" stroke="black" points="2257.21,-183.5 2267.21,-180 2257.21,-176.5 2257.21,-183.5"/>
 </g>
 <!-- UserRepo -->
 <g id="node33" class="node">
 <title>UserRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="663" cy="-104" rx="49.8" ry="18"/>
-<text text-anchor="middle" x="663" y="-99.8" font-family="Times,serif" font-size="14.00">UserRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="187" cy="-104" rx="49.8" ry="18"/>
+<text text-anchor="middle" x="187" y="-99.8" font-family="Times,serif" font-size="14.00">UserRepo</text>
 </g>
 <!-- UserRepo&#45;&gt;AuthorizationModule -->
 <g id="edge32" class="edge">
 <title>UserRepo&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M663,-122.03C663,-142.77 663,-174 663,-174 663,-174 1996.89,-174 1996.89,-174"/>
-<polygon fill="black" stroke="black" points="1996.89,-177.5 2006.89,-174 1996.89,-170.5 1996.89,-177.5"/>
+<path fill="none" stroke="black" d="M187,-122.32C187,-145.66 187,-183 187,-183 187,-183 2257.23,-183 2257.23,-183"/>
+<polygon fill="black" stroke="black" points="2257.23,-186.5 2267.23,-183 2257.23,-179.5 2257.23,-186.5"/>
 </g>
 <!-- UserRule -->
 <g id="node34" class="node">
 <title>UserRule</title>
-<ellipse fill="#fdb462" stroke="black" cx="548" cy="-104" rx="47.51" ry="18"/>
-<text text-anchor="middle" x="548" y="-99.8" font-family="Times,serif" font-size="14.00">UserRule</text>
+<ellipse fill="#fdb462" stroke="black" cx="72" cy="-104" rx="47.51" ry="18"/>
+<text text-anchor="middle" x="72" y="-99.8" font-family="Times,serif" font-size="14.00">UserRule</text>
 </g>
 <!-- UserRule&#45;&gt;AuthorizationModule -->
 <g id="edge33" class="edge">
 <title>UserRule&#45;&gt;AuthorizationModule</title>
-<path fill="none" stroke="black" d="M548,-122.17C548,-143.5 548,-176 548,-176 548,-176 1997.13,-176 1997.13,-176"/>
-<polygon fill="black" stroke="black" points="1997.13,-179.5 2007.13,-176 1997.13,-172.5 1997.13,-179.5"/>
+<path fill="none" stroke="black" d="M72,-122.38C72,-146.28 72,-185 72,-185 72,-185 2257.32,-185 2257.32,-185"/>
+<polygon fill="black" stroke="black" points="2257.32,-188.5 2267.32,-185 2257.32,-181.5 2257.32,-188.5"/>
 </g>
 </g>
 </svg>

@@ -525,7 +525,7 @@ export class ToolContextController {
 			);
 
 		const mappedTools: ContextExternalToolResponse[] &#x3D; contextExternalTools.map(
-			(tool: ContextExternalToolDO): ContextExternalToolResponse &#x3D;&gt;
+			(tool: ContextExternalTool): ContextExternalToolResponse &#x3D;&gt;
 				ContextExternalToolResponseMapper.mapContextExternalToolResponse(tool)
 		);
 

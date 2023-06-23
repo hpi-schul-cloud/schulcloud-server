@@ -234,8 +234,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="29"
-                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:29</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="30"
+                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:30</a></div>
                 </td>
             </tr>
 
@@ -1335,6 +1335,7 @@ import {
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
+	ExternalToolProps,
 } from &#x27;@shared/domain&#x27;;
 import { TokenEndpointAuthMethod } from &#x27;@src/modules/tool/interface&#x27;;
 import { DoBaseFactory } from &#x27;../do-base.factory&#x27;;
@@ -1401,7 +1402,7 @@ export const customParameterDOFactory &#x3D; DoBaseFactory.define&lt;CustomParam
 	}
 );
 
-class ExternalToolDOFactory extends DoBaseFactory&lt;ExternalToolDO, ExternalToolDO&gt; {
+class ExternalToolDOFactory extends DoBaseFactory&lt;ExternalToolDO, ExternalToolProps&gt; {
 	withOauth2Config(customParam?: DeepPartial&lt;Oauth2ToolConfigDO&gt;): this {
 		const params: DeepPartial&lt;ExternalToolDO&gt; &#x3D; {
 			config: oauth2ToolConfigDOFactory.build(customParam),

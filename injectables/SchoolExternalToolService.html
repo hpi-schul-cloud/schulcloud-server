@@ -214,8 +214,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="56"
-                            class="link-to-prism">apps/server/src/modules/tool/service/school-external-tool.service.ts:56</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="59"
+                            class="link-to-prism">apps/server/src/modules/tool/service/school-external-tool.service.ts:59</a></div>
                 </td>
             </tr>
 
@@ -285,8 +285,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="49"
-                            class="link-to-prism">apps/server/src/modules/tool/service/school-external-tool.service.ts:49</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="51"
+                            class="link-to-prism">apps/server/src/modules/tool/service/school-external-tool.service.ts:51</a></div>
                 </td>
             </tr>
 
@@ -336,7 +336,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#SchoolExternalToolStatus" target="_self" >SchoolExternalToolStatus</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#ToolConfigurationStatus" target="_self" >ToolConfigurationStatus</a></code>
 
                     </div>
                     <div class="io-description">
@@ -369,8 +369,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="38"
-                            class="link-to-prism">apps/server/src/modules/tool/service/school-external-tool.service.ts:38</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">apps/server/src/modules/tool/service/school-external-tool.service.ts:39</a></div>
                 </td>
             </tr>
 
@@ -654,8 +654,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="60"
-                            class="link-to-prism">apps/server/src/modules/tool/service/school-external-tool.service.ts:60</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="63"
+                            class="link-to-prism">apps/server/src/modules/tool/service/school-external-tool.service.ts:63</a></div>
                 </td>
             </tr>
 
@@ -711,7 +711,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { SchoolExternalToolRepo } from &#x27;@shared/repo&#x27;;
-import { SchoolExternalToolDO, ExternalToolDO, SchoolExternalToolStatus, EntityId } from &#x27;@shared/domain&#x27;;
+import { SchoolExternalToolDO, ExternalToolDO, ToolConfigurationStatus, EntityId } from &#x27;@shared/domain&#x27;;
 import { ExternalToolService } from &#x27;./external-tool.service&#x27;;
 import { SchoolExternalToolQuery } from &#x27;../uc/dto&#x27;;
 
@@ -743,25 +743,28 @@ export class SchoolExternalToolService {
 				async (tool: SchoolExternalToolDO): Promise&lt;SchoolExternalToolDO&gt; &#x3D;&gt; this.enrichDataFromExternalTool(tool)
 			)
 		);
+
 		return enrichedTools;
 	}
 
 	private async enrichDataFromExternalTool(tool: SchoolExternalToolDO): Promise&lt;SchoolExternalToolDO&gt; {
 		const externalToolDO: ExternalToolDO &#x3D; await this.externalToolService.findExternalToolById(tool.toolId);
-		const status &#x3D; this.determineStatus(tool, externalToolDO);
-		const schoolExternalTool &#x3D; new SchoolExternalToolDO({
+		const status: ToolConfigurationStatus &#x3D; this.determineStatus(tool, externalToolDO);
+		const schoolExternalTool: SchoolExternalToolDO &#x3D; new SchoolExternalToolDO({
 			...tool,
 			status,
 			name: externalToolDO.name,
 		});
+
 		return schoolExternalTool;
 	}
 
-	private determineStatus(tool: SchoolExternalToolDO, externalToolDO: ExternalToolDO): SchoolExternalToolStatus {
+	private determineStatus(tool: SchoolExternalToolDO, externalToolDO: ExternalToolDO): ToolConfigurationStatus {
 		if (externalToolDO.version &lt;&#x3D; tool.toolVersion) {
-			return SchoolExternalToolStatus.LATEST;
+			return ToolConfigurationStatus.LATEST;
 		}
-		return SchoolExternalToolStatus.OUTDATED;
+
+		return ToolConfigurationStatus.OUTDATED;
 	}
 
 	async deleteSchoolExternalToolById(schoolExternalToolId: EntityId): Promise&lt;void&gt; {

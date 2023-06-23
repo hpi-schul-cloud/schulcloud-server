@@ -141,7 +141,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({nullable: false, required: true})<br />@IsMongoId()<br />
+                            @ApiProperty({nullable: false, required: true, example: &#x27;0000dcfbfb5c7a3f00bf21ab&#x27;})<br />@IsMongoId()<br />
                         </code>
                     </td>
                 </tr>
@@ -178,7 +178,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsEnum(ToolContextType)<br />@ApiProperty({nullable: false, required: true})<br />
+                            @IsEnum(ToolContextType)<br />@ApiProperty({nullable: false, required: true, example: undefined})<br />
                         </code>
                     </td>
                 </tr>
@@ -208,12 +208,12 @@ import { IsEnum, IsMongoId } from &#x27;class-validator&#x27;;
 import { ToolContextType } from &#x27;../../../interface&#x27;;
 
 export class ContextExternalToolContextParams {
-	@ApiProperty({ nullable: false, required: true })
+	@ApiProperty({ nullable: false, required: true, example: &#x27;0000dcfbfb5c7a3f00bf21ab&#x27; })
 	@IsMongoId()
 	contextId!: string;
 
 	@IsEnum(ToolContextType)
-	@ApiProperty({ nullable: false, required: true })
+	@ApiProperty({ nullable: false, required: true, example: ToolContextType.COURSE })
 	contextType!: ToolContextType;
 }
 </code></pre>
