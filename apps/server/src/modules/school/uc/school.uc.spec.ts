@@ -12,7 +12,7 @@ import {
 	UserLoginMigrationRevertService,
 	UserLoginMigrationService,
 } from '@src/modules/user-login-migration';
-import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration.factory';
+import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration-do.factory';
 import { OauthMigrationDto } from './dto/oauth-migration.dto';
 
 describe('SchoolUc', () => {
