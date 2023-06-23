@@ -392,4 +392,135 @@ describe('ToolSchoolController (API)', () => {
 			});
 		});
 	});
+
+	describe('GET tools/:toolId/:context/:id/configuration', () => {
+		describe('when the user is not authorized', () => {
+			const setup = async () => {
+				const school: School = schoolFactory.buildWithId();
+
+				const course: Course = courseFactory.buildWithId();
+
+				const user: User = userFactory.buildWithId({ school, roles: [] });
+
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+
+				await em.persistAndFlush([user, school, externalTool]);
+				em.clear();
+
+				return {
+					user,
+					externalTool,
+					course,
+				};
+			};
+
+			it('should return a forbidden status', async () => {
+				const { user, externalTool, course } = await setup();
+				currentUser = mapUserToCurrentUser(user);
+
+				const response: Response = await request(app.getHttpServer()).get(
+					`/tools/${externalTool.id}/course/${course.id}/configuration`
+				);
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when tool is not hidden', () => {
+			const setup = async () => {
+				const teacherRole: Role = roleFactory.buildWithId({
+					name: RoleName.TEACHER,
+					permissions: [Permission.CONTEXT_TOOL_ADMIN],
+				});
+
+				const school: School = schoolFactory.buildWithId();
+
+				const course: Course = courseFactory.buildWithId();
+
+				const user: User = userFactory.buildWithId({ school, roles: [teacherRole] });
+
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+
+				const customParameterResponse: CustomParameterResponse[] = [
+					{
+						name: 'name',
+						displayName: 'User Friendly Name',
+						description: 'This is a mock parameter.',
+						defaultValue: 'default',
+						location: CustomParameterLocationParams.PATH,
+						scope: CustomParameterScopeTypeParams.CONTEXT,
+						type: CustomParameterTypeParams.STRING,
+						regex: 'regex',
+						regexComment: 'mockComment',
+						isOptional: false,
+					},
+				];
+
+				await em.persistAndFlush([user, school, teacherRole, externalTool]);
+				em.clear();
+
+				return {
+					user,
+					school,
+					course,
+					externalTool,
+					customParameterResponse,
+				};
+			};
+
+			it('should return a tool', async () => {
+				const { user, externalTool, customParameterResponse, course } = await setup();
+				currentUser = mapUserToCurrentUser(user);
+
+				const response: Response = await request(app.getHttpServer()).get(
+					`/tools/${externalTool.id}/course/${course.id}/configuration`
+				);
+
+				expect(response.body).toEqual({
+					id: externalTool.id,
+					name: externalTool.name,
+					logoUrl: externalTool.logoUrl,
+					version: externalTool.version,
+					parameters: customParameterResponse,
+				});
+			});
+		});
+
+		describe('when tool is hidden', () => {
+			const setup = async () => {
+				const teacherRole: Role = roleFactory.buildWithId({
+					name: RoleName.TEACHER,
+					permissions: [Permission.CONTEXT_TOOL_ADMIN],
+				});
+
+				const school: School = schoolFactory.buildWithId();
+
+				const course: Course = courseFactory.buildWithId();
+
+				const user: User = userFactory.buildWithId({ school, roles: [teacherRole] });
+
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({ isHidden: true });
+
+				await em.persistAndFlush([user, school, teacherRole, externalTool]);
+				em.clear();
+
+				return {
+					user,
+					school,
+					externalTool,
+					course,
+				};
+			};
+
+			it('should throw notFoundException', async () => {
+				const { user, externalTool, course } = await setup();
+				currentUser = mapUserToCurrentUser(user);
+
+				const response: Response = await request(app.getHttpServer()).get(
+					`/tools/${externalTool.id}/course/${course.id}/configuration`
+				);
+				expect(response.status).toEqual(HttpStatus.NOT_FOUND);
+			});
+		});
+	});
 });

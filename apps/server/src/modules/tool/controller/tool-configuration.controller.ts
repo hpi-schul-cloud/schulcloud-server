@@ -86,7 +86,30 @@ export class ToolConfigurationController {
 	): Promise<ExternalToolConfigurationTemplateResponse> {
 		const externalToolDO: ExternalToolDO = await this.externalToolConfigurationUc.getExternalToolForSchool(
 			currentUser.userId,
-			params.toolId
+			params.toolId,
+			currentUser.schoolId
+		);
+
+		const mapped: ExternalToolConfigurationTemplateResponse =
+			this.externalToolResponseMapper.mapToConfigurationTemplateResponse(externalToolDO);
+
+		return mapped;
+	}
+
+	@Get(':toolId/:context/:id/configuration')
+	@ApiUnauthorizedResponse()
+	@ApiFoundResponse({ description: 'Configuration has been found.', type: ExternalToolConfigurationTemplateResponse })
+	public async getExternalToolForContext(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ToolIdParams,
+		@Param() contextParams: ContextTypeParams,
+		@Param() idParams: IdParams
+	): Promise<ExternalToolConfigurationTemplateResponse> {
+		const externalToolDO: ExternalToolDO = await this.externalToolConfigurationUc.getExternalToolForContext(
+			currentUser.userId,
+			params.toolId,
+			idParams.id,
+			contextParams.context
 		);
 
 		const mapped: ExternalToolConfigurationTemplateResponse =
