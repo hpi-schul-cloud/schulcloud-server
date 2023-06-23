@@ -3,7 +3,7 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page, SchoolDO, System, UserLoginMigrationDO } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { schoolDOFactory, systemFactory } from '@shared/testing';
+import { schoolDOFactory, systemFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { OAuthTokenDto } from '@src/modules/oauth';
@@ -126,7 +126,7 @@ describe('UserLoginMigrationUc', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const migrations: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const migrations: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date(),

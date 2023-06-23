@@ -120,5 +120,38 @@
 			"$date": "2022-11-05T11:28:29.382Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6492d9cae9e3355c0d1d1838"
+		},
+		"userIds": [
+			{
+				"$oid": "6492d0dead0aa141f4e36440"
+			},
+			{
+				"$oid": "6492d064ad0aa141f4e363ca"
+			}
+		],
+		"teacherIds": [
+			{
+				"$oid": "6492cfa7ad0aa141f4e36354"
+			}
+		],
+		"schoolId": {
+			"$oid": "6492cc63ad0aa141f4e361d1"
+		},
+		"name": "a",
+		"gradeLevel": 7,
+		"year": {
+			"$oid": "5ebd6dc14a431f75ec9a3e78"
+		},
+		"createdAt": {
+			"$date": "2023-06-21T11:06:50.494Z"
+		},
+		"updatedAt": {
+			"$date": "2023-06-21T11:07:16.266Z"
+		},
+		"__v": 0
 	}
 ]

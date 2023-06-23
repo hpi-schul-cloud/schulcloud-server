@@ -1,18 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 import { SchoolDO, UserLoginMigrationDO } from '@shared/domain';
-import { schoolDOFactory } from '@shared/testing';
-import { UserLoginMigrationService, StartUserLoginMigrationCheckService } from '../service';
-import { StartUserLoginMigrationError } from '../error';
+import { schoolDOFactory, userLoginMigrationDOFactory } from '@shared/testing';
+import { UserLoginMigrationService, StartUserLoginMigrationValidationService } from '../service';
 import { StartUserLoginMigrationUc } from './start-user-login-migration.uc';
+import { UserLoginMigrationLoggableException } from '../error';
 
 describe('StartUserLoginMigrationUc', () => {
 	let module: TestingModule;
 	let uc: StartUserLoginMigrationUc;
 
 	let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
-	let startUserLoginMigrationCheckService: DeepMocked<StartUserLoginMigrationCheckService>;
+	let startUserLoginMigrationValidationService: DeepMocked<StartUserLoginMigrationValidationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -23,19 +23,19 @@ describe('StartUserLoginMigrationUc', () => {
 					useValue: createMock<UserLoginMigrationService>(),
 				},
 				{
-					provide: StartUserLoginMigrationCheckService,
-					useValue: createMock<StartUserLoginMigrationCheckService>(),
+					provide: StartUserLoginMigrationValidationService,
+					useValue: createMock<StartUserLoginMigrationValidationService>(),
 				},
 				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
 
 		uc = module.get(StartUserLoginMigrationUc);
 		userLoginMigrationService = module.get(UserLoginMigrationService);
-		startUserLoginMigrationCheckService = module.get(StartUserLoginMigrationCheckService);
+		startUserLoginMigrationValidationService = module.get(StartUserLoginMigrationValidationService);
 	});
 
 	afterAll(async () => {
@@ -51,7 +51,7 @@ describe('StartUserLoginMigrationUc', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date(),
@@ -59,7 +59,7 @@ describe('StartUserLoginMigrationUc', () => {
 
 				const school: SchoolDO = schoolDOFactory.buildWithId();
 
-				startUserLoginMigrationCheckService.checkPreconditions.mockResolvedValue(Promise.resolve());
+				startUserLoginMigrationValidationService.checkPreconditions.mockResolvedValue(Promise.resolve());
 				userLoginMigrationService.startMigration.mockResolvedValue(migration);
 
 				return { userId, migration, schoolId: school.id as string };
@@ -70,7 +70,7 @@ describe('StartUserLoginMigrationUc', () => {
 
 				await uc.startMigration(userId, schoolId);
 
-				expect(startUserLoginMigrationCheckService.checkPreconditions).toHaveBeenCalledWith(userId, schoolId);
+				expect(startUserLoginMigrationValidationService.checkPreconditions).toHaveBeenCalledWith(userId, schoolId);
 			});
 
 			it('should start the migration ', async () => {
@@ -94,16 +94,16 @@ describe('StartUserLoginMigrationUc', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date(),
 				});
 
 				const school: SchoolDO = schoolDOFactory.buildWithId();
-				const error: StartUserLoginMigrationError = new StartUserLoginMigrationError('');
+				const error: UserLoginMigrationLoggableException = new UserLoginMigrationLoggableException('');
 
-				startUserLoginMigrationCheckService.checkPreconditions.mockRejectedValue(error);
+				startUserLoginMigrationValidationService.checkPreconditions.mockRejectedValue(error);
 				userLoginMigrationService.startMigration.mockResolvedValue(migration);
 
 				return { userId, migration, schoolId: school.id as string };
@@ -112,7 +112,7 @@ describe('StartUserLoginMigrationUc', () => {
 			it('should throw ForbiddenException ', async () => {
 				const { userId, schoolId } = setup();
 
-				await expect(uc.startMigration(userId, schoolId)).rejects.toThrow(new StartUserLoginMigrationError(''));
+				await expect(uc.startMigration(userId, schoolId)).rejects.toThrow(new UserLoginMigrationLoggableException(''));
 			});
 		});
 	});

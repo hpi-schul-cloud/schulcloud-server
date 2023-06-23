@@ -36,6 +36,7 @@ import { VideoConferenceModule } from '@src/modules/video-conference';
 import connectRedis from 'connect-redis';
 import session from 'express-session';
 import { RedisClient } from 'redis';
+import { VideoConferenceApiModule } from '@src/modules/video-conference/video-conference-api.module';
 import { BoardApiModule, BoardModule } from '../board';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
@@ -71,6 +72,7 @@ const serverModules = [
 	ProvisioningModule,
 	RoleModule,
 	VideoConferenceModule,
+	VideoConferenceApiModule,
 	OauthProviderModule,
 	SharingApiModule,
 	ToolApiModule,
