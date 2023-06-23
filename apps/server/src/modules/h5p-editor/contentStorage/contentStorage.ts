@@ -151,11 +151,11 @@ export class ContentStorage implements IContentStorage {
 		rangeStart?: number | undefined,
 		rangeEnd?: number | undefined
 	): Promise<Readable> {
-		const exist = await this.exists(path.join(this.getContentPath(), contentId, file));
+		const filePath = path.join(this.getContentPath(), contentId, file);
+		const exist = await this.exists(filePath);
 		if (!exist) {
 			throw new Error('404: Content file missing.');
 		}
-		const filePath = path.join(this.getContentPath(), contentId, file);
 		// TODO: add bytesRange
 		const fileResponse = await this.storageClient.get(filePath);
 		return fileResponse.data;
@@ -241,7 +241,6 @@ export class ContentStorage implements IContentStorage {
 	private async exists(checkPath: string): Promise<boolean> {
 		try {
 			const file = await this.storageClient.get(checkPath);
-			file.data.destroy();
 		} catch (error) {
 			if (error instanceof NotFoundException) {
 				return false;
