@@ -7,7 +7,7 @@ import {
 
 describe('CommonCartridgeWebLinkResourceElement', () => {
 	const xmlBuilder = new Builder();
-	const porpsOfV3: ICommonCartridgeWebLinkResourceProps = {
+	const propsOfV3: ICommonCartridgeWebLinkResourceProps = {
 		type: CommonCartridgeResourceType.WEB_LINK_V3,
 		version: CommonCartridgeVersion.V_1_3_0,
 		identifier: 'web-link-v3',
@@ -26,7 +26,7 @@ describe('CommonCartridgeWebLinkResourceElement', () => {
 
 	describe('CommonCartridgeWebLinkResourceElement of version 3', () => {
 		it('should return XML content of common cartridge version 3', () => {
-			const webLinkResource = new CommonCartridgeWebLinkResourceElement(porpsOfV3, xmlBuilder);
+			const webLinkResource = new CommonCartridgeWebLinkResourceElement(propsOfV3, xmlBuilder);
 			const content = webLinkResource.content();
 			const transformed = webLinkResource.transform();
 
@@ -36,12 +36,12 @@ describe('CommonCartridgeWebLinkResourceElement', () => {
 			expect(content).toContain('http://www.imsglobal.org/profile/cc/ccv1p3/ccv1p3_imswl_v1p3.xsd');
 			expect(transformed).toEqual({
 				$: {
-					identifier: porpsOfV3.identifier,
-					type: porpsOfV3.type,
+					identifier: propsOfV3.identifier,
+					type: propsOfV3.type,
 				},
 				file: {
 					$: {
-						href: porpsOfV3.href,
+						href: propsOfV3.href,
 					},
 				},
 			});
