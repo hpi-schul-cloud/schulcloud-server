@@ -9,6 +9,7 @@ import {
 	SchoolToolConfigurationEntryResponse,
 	SchoolToolConfigurationListResponse,
 } from '../dto';
+import { AvailableToolsForContext } from '../../uc/dto/external-tool-configuration.types';
 
 describe('SchoolExternalToolResponseMapper', () => {
 	let mapper: SchoolExternalToolResponseMapper;
@@ -100,15 +101,19 @@ describe('SchoolExternalToolResponseMapper', () => {
 	});
 
 	describe('mapExternalToolDOsToSchoolToolConfigurationListResponse is called', () => {
-		describe('when mapping from ExternalToolDOs and SchoolToolids to SchoolToolConfigurationListResponse', () => {
+		describe('when mapping from ExternalToolDOs and SchoolToolIds to SchoolToolConfigurationListResponse', () => {
 			const setup = () => {
-				const externalToolDOs: ExternalToolDO[] = externalToolDOFactory.buildList(3, {
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
 					id: 'toolId',
 					name: 'toolName',
 					logoUrl: 'logoUrl',
 				});
 
-				const schoolToolIds: string[] = ['SchoolToolId', 'SchoolToolId', 'SchoolToolId'];
+				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({ id: 'SchoolToolId' });
+
+				const availableTools: AvailableToolsForContext[] = [
+					{ externalTool: externalToolDO, schoolExternalTool: schoolExternalToolDO },
+				];
 
 				const expectedResponse: SchoolToolConfigurationEntryResponse = new SchoolToolConfigurationEntryResponse(
 					{
@@ -120,19 +125,18 @@ describe('SchoolExternalToolResponseMapper', () => {
 				);
 
 				return {
-					externalToolDOs,
-					schoolToolIds,
+					availableTools,
 					expectedResponse,
 				};
 			};
 
 			it('should map from ExternalToolDOs and SchoolToolids to SchoolToolConfigurationListResponse', () => {
-				const { externalToolDOs, schoolToolIds, expectedResponse } = setup();
+				const { availableTools, expectedResponse } = setup();
 
 				const result: SchoolToolConfigurationListResponse =
-					mapper.mapExternalToolDOsToSchoolToolConfigurationListResponse(externalToolDOs, schoolToolIds);
+					mapper.mapExternalToolDOsToSchoolToolConfigurationListResponse(availableTools);
 
-				expect(result.data).toEqual(expect.arrayContaining([expectedResponse, expectedResponse, expectedResponse]));
+				expect(result.data).toEqual(expect.arrayContaining([expectedResponse]));
 			});
 		});
 	});

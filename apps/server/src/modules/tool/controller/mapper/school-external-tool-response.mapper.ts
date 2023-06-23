@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import {
 	SchoolExternalToolDO,
 	CustomParameterEntryDO,
-	ExternalToolDO,
 	CustomParameterEntry,
 	SchoolExternalToolStatus,
 } from '@shared/domain';
@@ -14,6 +13,7 @@ import {
 	SchoolToolConfigurationListResponse,
 	SchoolToolConfigurationEntryResponse,
 } from '../dto';
+import { AvailableToolsForContext } from '../../uc/dto/external-tool-configuration.types';
 
 const statusMapping: Record<SchoolExternalToolStatus, SchoolExternalToolStatusResponse> = {
 	[SchoolExternalToolStatus.LATEST]: SchoolExternalToolStatusResponse.LATEST,
@@ -44,27 +44,25 @@ export class SchoolExternalToolResponseMapper {
 	}
 
 	mapExternalToolDOsToSchoolToolConfigurationListResponse(
-		externalTools: ExternalToolDO[],
-		schoolToolIds: string[]
+		availableToolsForContext: AvailableToolsForContext[]
 	): SchoolToolConfigurationListResponse {
 		return new SchoolToolConfigurationListResponse(
-			this.mapExternalToolDOsToSchoolToolConfigurationResponses(externalTools, schoolToolIds)
+			this.mapExternalToolDOsToSchoolToolConfigurationResponses(availableToolsForContext)
 		);
 	}
 
 	private mapExternalToolDOsToSchoolToolConfigurationResponses(
-		externalTools: ExternalToolDO[],
-		schoolToolIds: string[]
+		availableToolsForContext: AvailableToolsForContext[]
 	): SchoolToolConfigurationEntryResponse[] {
-		return externalTools.map(
-			(tool: ExternalToolDO, index: number) =>
+		return availableToolsForContext.map(
+			(tool: AvailableToolsForContext) =>
 				new SchoolToolConfigurationEntryResponse(
 					{
-						id: tool.id || '',
-						name: tool.name,
-						logoUrl: tool.logoUrl,
+						id: tool.externalTool.id || '',
+						name: tool.externalTool.name,
+						logoUrl: tool.externalTool.logoUrl,
 					},
-					schoolToolIds[index]
+					tool.schoolExternalTool.id as string
 				)
 		);
 	}

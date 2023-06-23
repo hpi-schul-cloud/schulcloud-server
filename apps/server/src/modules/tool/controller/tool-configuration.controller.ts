@@ -62,18 +62,16 @@ export class ToolConfigurationController {
 		@Param() contextParams: ContextTypeParams,
 		@Param() idParams: IdParams
 	): Promise<SchoolToolConfigurationListResponse> {
-		const [availableExternalTools, availableSchoolToolIds] =
-			await this.externalToolConfigurationUc.getAvailableToolsForContext(
-				currentUser.userId,
-				currentUser.schoolId,
-				idParams.id,
-				contextParams.context
-			);
+		const availableToolsForContext = await this.externalToolConfigurationUc.getAvailableToolsForContext(
+			currentUser.userId,
+			currentUser.schoolId,
+			idParams.id,
+			contextParams.context
+		);
 
 		const mapped: SchoolToolConfigurationListResponse =
 			this.schoolExternalToolResponseMapper.mapExternalToolDOsToSchoolToolConfigurationListResponse(
-				availableExternalTools,
-				availableSchoolToolIds
+				availableToolsForContext
 			);
 
 		return mapped;
