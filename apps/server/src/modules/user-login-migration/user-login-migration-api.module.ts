@@ -11,6 +11,7 @@ import { UserLoginMigrationModule } from './user-login-migration.module';
 import { SchoolModule } from '../school';
 import { AuthorizationModule } from '../authorization';
 import { StartUserLoginMigrationUc } from './uc/start-user-login-migration.uc';
+import { RestartUserLoginMigrationUc } from './uc/restart-user-login-migration.uc';
 
 @Module({
 	imports: [
@@ -22,7 +23,7 @@ import { StartUserLoginMigrationUc } from './uc/start-user-login-migration.uc';
 		LoggerModule,
 		SchoolModule,
 	],
-	providers: [UserLoginMigrationUc, StartUserLoginMigrationUc, PageContentMapper],
+	providers: [UserLoginMigrationUc, StartUserLoginMigrationUc, RestartUserLoginMigrationUc, PageContentMapper],
 	controllers: [UserMigrationController, UserLoginMigrationController],
 })
 export class UserLoginMigrationApiModule {}
