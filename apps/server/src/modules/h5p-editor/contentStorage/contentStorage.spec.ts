@@ -723,21 +723,4 @@ describe('ContentStorage', () => {
 			});
 		});
 	});
-
-	describe('deleteCreatedFiles', () => {
-		describe('WHEN h5p and content already exists', () => {
-			it('should not throw an error', async () => {
-				const { h5pPath, contentPath, fileResponse } = setup();
-				s3ClientAdapter.get.mockResolvedValue(fileResponse);
-				expect(await service.deleteCreatedFiles(h5pPath, contentPath)).not.toEqual(new Error());
-			});
-		});
-		describe('WHEN content and h5p does not exist', () => {
-			it('should not throw an error', async () => {
-				const { h5pPath, contentPath } = setup();
-				s3ClientAdapter.get.mockRejectedValue(new NotFoundException('NoSuchKey'));
-				expect(await service.deleteCreatedFiles(h5pPath, contentPath)).not.toEqual(new Error());
-			});
-		});
-	});
 });

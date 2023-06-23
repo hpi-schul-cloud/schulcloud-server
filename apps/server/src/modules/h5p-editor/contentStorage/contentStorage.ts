@@ -33,9 +33,6 @@ export class ContentStorage implements IContentStorage {
 		const h5pPath = path.join(this.getContentPath(), contentId.toString(), 'h5p.json');
 		const contentPath = path.join(this.getContentPath(), contentId.toString(), 'content.json');
 		try {
-			const readableStreamMetadata = new Stream.Readable({ objectMode: true });
-			readableStreamMetadata._read = function test() {};
-			readableStreamMetadata.push(JSON.stringify(metadata));
 			const readableH5p = Readable.from(JSON.stringify(metadata));
 			const h5pFile: FileDto = {
 				name: 'h5p.json',
@@ -44,10 +41,6 @@ export class ContentStorage implements IContentStorage {
 			};
 			await this.storageClient.create(h5pPath, h5pFile);
 
-			const readableStreamContent = new Stream.Readable({ objectMode: true });
-			readableStreamContent._read = function test() {};
-			readableStreamContent.push(JSON.stringify(content));
-			// const contentString: string = content.toString();
 			const readableContent = Readable.from(JSON.stringify(content));
 			const contentFile: FileDto = {
 				name: 'content.json',
@@ -56,7 +49,6 @@ export class ContentStorage implements IContentStorage {
 			};
 			await this.storageClient.create(contentPath, contentFile);
 		} catch (error) {
-			// await this.deleteCreatedFiles(h5pPath, contentPath);
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 			throw new Error(`Error creating content.${error.toString()}`);
 		}
@@ -362,9 +354,6 @@ export class ContentStorage implements IContentStorage {
 		const contentIdList = {
 			contentIdList: [newContentIdList],
 		};
-		const readableStream = new Stream.Readable({ objectMode: true });
-		readableStream._read = function test() {};
-		readableStream.push(JSON.stringify(contentIdList));
 		const readable = Readable.from(contentIdList.toString());
 		const contentIdListFile: FileDto = {
 			name: 'contentidlist.json',
@@ -421,9 +410,6 @@ export class ContentStorage implements IContentStorage {
 		const fileList = {
 			contentIdList: [newFileList],
 		};
-		const readableStream = new Stream.Readable({ objectMode: true });
-		readableStream._read = function test() {};
-		readableStream.push(JSON.stringify(fileList));
 		const readable = Readable.from(fileList.toString());
 		const fileListFile: FileDto = {
 			name: 'contentfilelist.json',
@@ -437,16 +423,5 @@ export class ContentStorage implements IContentStorage {
 		const body = await streamToString(fileStream);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 		return JSON.parse(body);
-	}
-
-	async deleteCreatedFiles(h5pPath: string, contentPath: string) {
-		const h5pExistsAlready = await this.exists(h5pPath);
-		if (h5pExistsAlready) {
-			await this.storageClient.delete([h5pPath]);
-		}
-		const contentExistsAlready = await this.exists(contentPath);
-		if (contentExistsAlready) {
-			await this.storageClient.delete([contentPath]);
-		}
 	}
 }
