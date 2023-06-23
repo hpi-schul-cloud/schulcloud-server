@@ -12,7 +12,7 @@ import { Page } from '@shared/domain/domainobject/page';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
 import { UserLoginMigrationMapper } from '../mapper';
-import { UserLoginMigrationQuery } from '../uc/dto/user-login-migration-query';
+import { UserLoginMigrationQuery } from '../uc';
 import { UserLoginMigrationUc } from '../uc/user-login-migration.uc';
 import {
 	UserLoginMigrationResponse,
@@ -21,9 +21,11 @@ import {
 } from './dto';
 import { Oauth2MigrationParams } from './dto/oauth2-migration.params';
 import { StartUserLoginMigrationUc } from '../uc/start-user-login-migration.uc';
-import { ModifyUserLoginMigrationError } from '../error';
+import { UserLoginMigrationLoggableException } from '../error';
 import { RestartUserLoginMigrationUc } from '../uc/restart-user-login-migration.uc';
 import { ToggleUserLoginMigrationUc } from '../uc/toggle-user-login-migration.uc';
+import { ModifyUserLoginMigrationError } from '../error';
+
 
 @ApiTags('UserLoginMigration')
 @Controller('user-login-migrations')
@@ -33,7 +35,7 @@ export class UserLoginMigrationController {
 		private readonly userLoginMigrationUc: UserLoginMigrationUc,
 		private readonly startUserLoginMigrationUc: StartUserLoginMigrationUc,
 		private readonly restartUserLoginMigrationUc: RestartUserLoginMigrationUc,
-		private readonly toggleUserLoginMigration: ToggleUserLoginMigrationUc
+		private readonly toggleUserLoginMigrationUc: ToggleUserLoginMigrationUc
 	) {}
 
 	@Get()
@@ -69,10 +71,10 @@ export class UserLoginMigrationController {
 	@Post('start')
 	@ApiBadRequestResponse({
 		description: 'Preconditions for starting user login migration are not met',
-		type: ModifyUserLoginMigrationError,
+		type: UserLoginMigrationLoggableException,
 	})
 	@ApiOkResponse({ description: 'User login migration started', type: UserLoginMigrationResponse })
-	@ApiUnauthorizedResponse()
+	@ApiForbiddenResponse()
 	async startMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
 		const migrationDto: UserLoginMigrationDO = await this.startUserLoginMigrationUc.startMigration(
 			currentUser.userId,
@@ -88,10 +90,11 @@ export class UserLoginMigrationController {
 	@Put('restart')
 	@ApiBadRequestResponse({
 		description: 'Preconditions for starting user login migration are not met',
-		type: ModifyUserLoginMigrationError,
+		type: UserLoginMigrationLoggableException,
 	})
 	@ApiOkResponse({ description: 'User login migration started', type: UserLoginMigrationResponse })
 	@ApiUnauthorizedResponse()
+	@ApiForbiddenResponse()
 	async restartMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
 		const migrationDto: UserLoginMigrationDO = await this.restartUserLoginMigrationUc.restartMigration(
 			currentUser.userId,
@@ -123,7 +126,7 @@ export class UserLoginMigrationController {
 	@ApiOkResponse({ description: 'Toggle was set', type: UserLoginMigrationResponse })
 	@ApiUnauthorizedResponse()
 	async toggleMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
-		const migrationDto: UserLoginMigrationDO = await this.toggleUserLoginMigration.toggleMigration(
+		const migrationDto: UserLoginMigrationDO = await this.toggleUserLoginMigrationUc.toggleMigration(
 			currentUser.userId,
 			currentUser.schoolId
 		);

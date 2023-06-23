@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { SchoolDO, UserLoginMigrationDO } from '@shared/domain';
 import { SchoolService } from '@src/modules/school';
-import { ModifyUserLoginMigrationError } from '../error';
 import { CommonUserLoginMigrationService } from './common-user-login-migration.service';
+import { UserLoginMigrationLoggableException } from '../error';
 
 @Injectable()
 export class StartUserLoginMigrationValidationService {
@@ -19,7 +19,7 @@ export class StartUserLoginMigrationValidationService {
 		const existingUserLoginMigration: UserLoginMigrationDO | null =
 			await this.commonUserLoginMigrationService.findExistingUserLoginMigration(schoolId);
 
-		this.commonUserLoginMigrationService.hasNotFinishedMigrationOrThrow(existingUserLoginMigration);
+		this.hasFinishedMigrationOrThrow(existingUserLoginMigration);
 
 		this.hasAlreadyStartedMigrationOrThrow(existingUserLoginMigration);
 	}
@@ -28,14 +28,24 @@ export class StartUserLoginMigrationValidationService {
 		const schoolDo: SchoolDO = await this.schoolService.getSchoolById(schoolId);
 
 		if (!schoolDo.officialSchoolNumber) {
-			throw new ModifyUserLoginMigrationError(`The school with schoolId ${schoolId} has no official school number.`);
+			throw new UserLoginMigrationLoggableException(
+				`The school with schoolId ${schoolId} has no official school number.`
+			);
 		}
 	}
 
 	private hasAlreadyStartedMigrationOrThrow(userLoginMigration: UserLoginMigrationDO | null): void {
 		if (userLoginMigration) {
-			throw new ModifyUserLoginMigrationError(
+			throw new UserLoginMigrationLoggableException(
 				`The school with schoolId ${userLoginMigration.schoolId} already started the migration.`
+			);
+		}
+	}
+
+	private hasFinishedMigrationOrThrow(userLoginMigration: UserLoginMigrationDO | null) {
+		if (userLoginMigration?.finishedAt) {
+			throw new UserLoginMigrationLoggableException(
+				`The school with schoolId ${userLoginMigration.schoolId} already finished the migration.`
 			);
 		}
 	}

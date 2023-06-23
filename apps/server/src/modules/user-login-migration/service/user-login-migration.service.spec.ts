@@ -5,14 +5,14 @@ import { InternalServerErrorException, UnprocessableEntityException } from '@nes
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId, SchoolDO, SchoolFeatures, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo';
-import { schoolDOFactory, userDoFactory } from '@shared/testing';
+import { schoolDOFactory, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { SchoolService } from '@src/modules/school';
 import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
 import { UserLoginMigrationService } from './user-login-migration.service';
 import { SchoolMigrationService } from './school-migration.service';
-import { RestartUserLoginMigrationError } from '../error';
+import { UserLoginMigrationLoggableException } from '../error';
 
 describe('UserLoginMigrationService', () => {
 	let module: TestingModule;
@@ -803,7 +803,98 @@ describe('UserLoginMigrationService', () => {
 					startedAt: mockedDate,
 				});
 				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigrationDO);
-				schoolMigrationService.unmarkOutdatedUsers.mockResolvedValue(Promise.resolve());
+				schoolMigrationService.unmarkOutdatedUsers.mockResolvedValue();
+				userLoginMigrationRepo.save.mockResolvedValue(userLoginMigrationDO);
+
+				return {
+					schoolId,
+					targetSystemId,
+					userLoginMigrationDO,
+				};
+			};
+
+			it('should call userLoginMigrationRepo', async () => {
+				const { schoolId, userLoginMigrationDO } = setup();
+
+				await service.restartMigration(schoolId);
+
+				expect(userLoginMigrationRepo.findBySchoolId).toHaveBeenCalledWith(schoolId);
+				expect(userLoginMigrationRepo.save).toHaveBeenCalledWith(userLoginMigrationDO);
+			});
+
+			it('should call schoolMigrationService', async () => {
+				const { schoolId } = setup();
+
+				await service.restartMigration(schoolId);
+
+				expect(schoolMigrationService.unmarkOutdatedUsers).toHaveBeenCalledWith(schoolId);
+			});
+		});
+
+		describe('when migration could not be found', () => {
+			const setup = () => {
+				const schoolId: EntityId = new ObjectId().toHexString();
+
+				const targetSystemId: EntityId = new ObjectId().toHexString();
+
+				const userLoginMigrationDO: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					targetSystemId,
+					schoolId,
+					startedAt: mockedDate,
+				});
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
+
+				return {
+					schoolId,
+					targetSystemId,
+					userLoginMigrationDO,
+				};
+			};
+
+			it('should throw RestartUserLoginMigrationError ', async () => {
+				const { schoolId } = setup();
+
+				await expect(service.restartMigration(schoolId)).rejects.toThrow(
+					new RestartUserLoginMigrationError(`Migration for school with id ${schoolId} does not exist for restart.`)
+				);
+			});
+		});
+	});
+
+	describe('deleteUserLoginMigration', () => {
+		describe('when a userLoginMigration is given', () => {
+			const setup = () => {
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build();
+
+				return {
+					userLoginMigration,
+				};
+			};
+
+			it('should call userLoginMigrationRepo.delete', async () => {
+				const { userLoginMigration } = setup();
+
+				await service.deleteUserLoginMigration(userLoginMigration);
+
+				expect(userLoginMigrationRepo.delete).toHaveBeenCalledWith(userLoginMigration);
+			});
+		});
+	});
+
+	describe('restartMigration is called', () => {
+		describe('when migration restart was successfully', () => {
+			const setup = () => {
+				const schoolId: EntityId = new ObjectId().toHexString();
+
+				const targetSystemId: EntityId = new ObjectId().toHexString();
+
+				const userLoginMigrationDO: UserLoginMigrationDO = new UserLoginMigrationDO({
+					targetSystemId,
+					schoolId,
+					startedAt: mockedDate,
+				});
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigrationDO);
+				schoolMigrationService.unmarkOutdatedUsers.mockResolvedValue();
 				userLoginMigrationRepo.save.mockResolvedValue(userLoginMigrationDO);
 
 				return {
@@ -851,11 +942,13 @@ describe('UserLoginMigrationService', () => {
 				};
 			};
 
-			it('should throw RestartUserLoginMigrationError ', async () => {
+			it('should throw UserLoginMigrationLoggableException ', async () => {
 				const { schoolId } = setup();
 
 				await expect(service.restartMigration(schoolId)).rejects.toThrow(
-					new RestartUserLoginMigrationError(`Migration for school with id ${schoolId} does not exist for restart.`)
+					new UserLoginMigrationLoggableException(
+						`Migration for school with id ${schoolId} does not exist for restart.`
+					)
 				);
 			});
 		});

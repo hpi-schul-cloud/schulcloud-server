@@ -8,24 +8,18 @@ export class ContextExternalToolDO extends BaseDO {
 
 	contextRef: ContextRef;
 
-	contextToolName: string;
+	displayName?: string;
 
 	parameters: CustomParameterEntryDO[];
 
 	toolVersion: number;
 
-	createdAt?: Date;
-
-	updatedAt?: Date;
-
 	constructor(domainObject: ContextExternalToolDO) {
 		super(domainObject.id);
 		this.schoolToolRef = domainObject.schoolToolRef;
 		this.contextRef = domainObject.contextRef;
-		this.contextToolName = domainObject.contextToolName;
+		this.displayName = domainObject.displayName;
 		this.parameters = domainObject.parameters;
 		this.toolVersion = domainObject.toolVersion;
-		this.createdAt = domainObject.createdAt;
-		this.updatedAt = domainObject.updatedAt;
 	}
 }

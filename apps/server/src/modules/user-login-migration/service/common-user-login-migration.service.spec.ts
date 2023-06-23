@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { roleFactory, schoolDOFactory, setupEntities, userFactory } from '@shared/testing';
+import { roleFactory, schoolDOFactory, setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { Permission, RoleName, SchoolDO, User, UserLoginMigrationDO } from '@shared/domain';
 import { Action, AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
 import { SchoolService } from '@src/modules/school';
@@ -67,7 +67,7 @@ describe('CommonUserLoginMigrationService', () => {
 				};
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				schoolService.getSchoolById.mockResolvedValue(school);
-				authorizationService.checkPermissionByReferences.mockResolvedValue(Promise.resolve());
+				authorizationService.checkPermissionByReferences.mockResolvedValue();
 
 				return {
 					user,
@@ -105,11 +105,11 @@ describe('CommonUserLoginMigrationService', () => {
 	});
 
 	describe('findExistingUserLoginMigration is called', () => {
-		describe('when user login migration exist ', () => {
+		describe('when context, user and school are given ', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date('2022-12-17T03:24:00'),
@@ -123,20 +123,20 @@ describe('CommonUserLoginMigrationService', () => {
 				return { userId, migration, schoolId: school.id as string };
 			};
 
-			it('should return user login migration', async () => {
-				const { schoolId, migration } = setup();
+			it('should call findMigrationBySchool', async () => {
+				const { schoolId } = setup();
 
-				const result = await service.findExistingUserLoginMigration(schoolId);
+				await service.findExistingUserLoginMigration(schoolId);
 
-				expect(result).toEqual(migration);
+				expect(userLoginMigration.findMigrationBySchool).toHaveBeenCalledWith(schoolId);
 			});
 		});
 
-		describe('when user login migration does not exist ', () => {
+		describe('when could not find existing migration', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date('2022-12-17T03:24:00'),
@@ -165,7 +165,7 @@ describe('CommonUserLoginMigrationService', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date(),

@@ -24,13 +24,7 @@ import { ToggleUserLoginMigrationUc } from './uc/toggle-user-login-migration.uc'
 		LoggerModule,
 		SchoolModule,
 	],
-	providers: [
-		UserLoginMigrationUc,
-		ToggleUserLoginMigrationUc,
-		StartUserLoginMigrationUc,
-		RestartUserLoginMigrationUc,
-		PageContentMapper,
-	],
+	providers: [UserLoginMigrationUc, StartUserLoginMigrationUc, RestartUserLoginMigrationUc, ToggleUserLoginMigrationUc, PageContentMapper],
 	controllers: [UserMigrationController, UserLoginMigrationController],
 })
 export class UserLoginMigrationApiModule {}

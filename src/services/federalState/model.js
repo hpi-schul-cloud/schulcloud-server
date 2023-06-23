@@ -4,7 +4,6 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
-const { enableAuditLog } = require('../../utils/database');
 const { countySchema } = require('./countyModel');
 
 const { Schema } = mongoose;
@@ -17,8 +16,6 @@ const federalStateSchema = new Schema({
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });
-
-enableAuditLog(federalStateSchema);
 
 const federalStateModel = mongoose.model('federalstate', federalStateSchema);
 

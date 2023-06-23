@@ -2,7 +2,13 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FileRecordParentType } from '@shared/infra/rabbitmq';
-import { columnBoardFactory, columnFactory, fileElementFactory, setupEntities } from '@shared/testing';
+import {
+	columnBoardFactory,
+	columnFactory,
+	fileElementFactory,
+	taskElementFactory,
+	setupEntities,
+} from '@shared/testing';
 import { FileDto, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
 
@@ -134,6 +140,24 @@ describe(RecursiveDeleteVisitor.name, () => {
 
 				await expect(service.visitFileElementAsync(fileElement)).rejects.toThrowError(error);
 			});
+		});
+	});
+
+	describe('visitTaskElementAsync', () => {
+		const setup = () => {
+			const childTaskElement = taskElementFactory.build();
+			const taskElement = taskElementFactory.build({ children: [childTaskElement] });
+
+			return { taskElement, childTaskElement };
+		};
+
+		it('should call entity remove', async () => {
+			const { taskElement, childTaskElement } = setup();
+
+			await service.visitTaskElementAsync(taskElement);
+
+			expect(em.remove).toHaveBeenCalledWith(em.getReference(taskElement.constructor, taskElement.id));
+			expect(em.remove).toHaveBeenCalledWith(em.getReference(childTaskElement.constructor, childTaskElement.id));
 		});
 	});
 });

@@ -12,8 +12,9 @@ import {
 	SchoolMigrationService,
 	UserLoginMigrationService,
 	UserMigrationService,
-	StartUserLoginMigrationValidationService,
+	UserLoginMigrationRevertService,
 	CommonUserLoginMigrationService,
+	StartUserLoginMigrationValidationService,
 } from './service';
 
 @Module({
@@ -24,6 +25,7 @@ import {
 		MigrationCheckService,
 		UserLoginMigrationService,
 		UserLoginMigrationRepo,
+		UserLoginMigrationRevertService,
 		StartUserLoginMigrationValidationService,
 		RestartUserLoginMigrationValidationService,
 		CommonUserLoginMigrationService,
@@ -33,6 +35,7 @@ import {
 		SchoolMigrationService,
 		MigrationCheckService,
 		UserLoginMigrationService,
+		UserLoginMigrationRevertService,
 		StartUserLoginMigrationValidationService,
 		RestartUserLoginMigrationValidationService,
 		CommonUserLoginMigrationService,

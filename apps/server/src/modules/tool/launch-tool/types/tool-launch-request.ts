@@ -1,9 +1,9 @@
 import { LaunchRequestMethod } from './launch-request-method';
 
 export class ToolLaunchRequest {
-	method!: LaunchRequestMethod;
+	method: LaunchRequestMethod;
 
-	url!: string;
+	url: string;
 
 	payload: string;
 

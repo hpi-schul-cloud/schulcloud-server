@@ -804,6 +804,31 @@
 			"default": false,
 			"description": "Enable prometheus api metrics, if enabled, PROMETHEUS must be defined."
 		},
+		"FEATURE_PROMETHEUS_METRICS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Feature flag for collecting and exporting Prometheus metrics."
+		},
+		"PROMETHEUS_METRICS_ROUTE": {
+			"type": "string",
+			"default": "/metrics",
+			"description": "Route at which Prometheus metrics are exported (if enabled by the feature flag)."
+		},
+		"PROMETHEUS_METRICS_PORT": {
+			"type": "number",
+			"default": 9090,
+			"description": "Port number on which the additional server (that exports Prometheus metrics) is listening on (if enabled by the feature flag). Please remember that it must be different than the main app listening port as the Prometheus app server will run on a different port and you can't run two servers on the same port."
+		},
+		"PROMETHEUS_METRICS_COLLECT_DEFAULT_METRICS": {
+			"type": "boolean",
+			"default": true,
+			"description": "Toggle that enables/disables collecting default Prometheus client metrics (e.g. NodeJS or OS-related ones)."
+		},
+		"PROMETHEUS_METRICS_COLLECT_METRICS_ROUTE_METRICS": {
+			"type": "boolean",
+			"default": true,
+			"description": "Toggle that enables/disables collecting metrics of the metrics route itself (like metrics route calls count or response time)."
+		},
 		"FEATURE_MONGOOSE_LOGGING_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -957,6 +982,11 @@
 			"type": "string",
 			"default": "lernen.cloud@dataport.de",
 			"description": "Email to report accessibility issue"
+		},
+		"FEATURE_COLUMN_BOARD_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for activating the column board."
 		},
 		"FEATURE_COURSE_SHARE": {
 			"type": "boolean",

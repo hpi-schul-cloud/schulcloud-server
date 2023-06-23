@@ -20,7 +20,7 @@
 	"SECRET_ES_MERLIN_COUNTIES_CREDENTIALS": "[{\"countyId\":3256,\"merlinUser\":\"dummy\",\"secretMerlinKey\":\"dummy\"}]",
 	"FEATURE_ES_SEARCHABLE_ENABLED": true,
 	"FEATURE_ES_COLLECTIONS_ENABLED": true,
-	"FEATURE_FWU_CONTENT_ENABLED":true,
+	"FEATURE_FWU_CONTENT_ENABLED": true,
 	"FEATURE_S3_BUCKET_CORS": false,
 	"RABBITMQ_URI": "amqp://guest:guest@localhost",
 	"FEATURE_SYNCER_CONSUMER_ENABLE": true,
@@ -65,5 +65,8 @@
 	"TSP_SCHOOL_SYNCER": {
 		"SCHOOL_LIMIT": 10,
 		"STUDENTS_TEACHERS_CLASSES_LIMIT": 150
-	}
+	},
+	"FEATURE_VIDEOCONFERENCE_ENABLED": true,
+	"VIDEOCONFERENCE_HOST": "https://bigbluebutton.schul-cloud.org/bigbluebutton",
+	"VIDEOCONFERENCE_SALT": "ThisIsNOTaRealSaltThisIsNOTaRealSaltThisIsNOTaRealSalt1234567890"
 }

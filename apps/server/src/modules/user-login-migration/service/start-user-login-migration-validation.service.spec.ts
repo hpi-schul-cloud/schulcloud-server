@@ -2,11 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SchoolService } from '@src/modules/school';
 import { SchoolDO, User, UserLoginMigrationDO } from '@shared/domain';
-import { schoolDOFactory, setupEntities, userFactory } from '@shared/testing';
+import { schoolDOFactory, setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
-import { ModifyUserLoginMigrationError } from '../error';
 import { StartUserLoginMigrationValidationService } from './start-user-login-migration-validation.service';
 import { CommonUserLoginMigrationService } from './common-user-login-migration.service';
+import { UserLoginMigrationLoggableException } from '../error';
 
 describe('StartUserLoginMigrationValidationService', () => {
 	let module: TestingModule;
@@ -56,15 +56,15 @@ describe('StartUserLoginMigrationValidationService', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date(),
 				});
 
-				const school: SchoolDO = schoolDOFactory.buildWithId();
+				const school: SchoolDO = schoolDOFactory.buildWithId({ id: migration.id });
 
-				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
+				commonUserLoginMigrationService.ensurePermission.mockResolvedValue();
 				schoolService.getSchoolById.mockResolvedValue(school);
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(null);
 				commonUserLoginMigrationService.hasNotFinishedMigrationOrThrow.mockReturnThis();
@@ -112,7 +112,7 @@ describe('StartUserLoginMigrationValidationService', () => {
 
 				const user: User = userFactory.buildWithId();
 
-				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date(),
@@ -120,19 +120,54 @@ describe('StartUserLoginMigrationValidationService', () => {
 
 				schoolService.getSchoolById.mockResolvedValue(school);
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
-				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
-				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(migration);
+				commonUserLoginMigrationService.ensurePermission.mockResolvedValue();
+				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(null);
 
 				return { user, migration, schoolId: school.id as string };
 			};
 
-			it('should throw StartUserLoginMigrationError ', async () => {
+			it('should throw UserLoginMigrationLoggableException ', async () => {
 				const { schoolId, user } = setup();
 
 				const func = () => service.checkPreconditions(user.id, schoolId);
 
 				await expect(func()).rejects.toThrow(
-					new ModifyUserLoginMigrationError(`The school with schoolId ${schoolId} has no official school number.`)
+					new UserLoginMigrationLoggableException(`The school with schoolId ${schoolId} has no official school number.`)
+				);
+			});
+		});
+
+		describe('when migration has already finished', () => {
+			const setup = () => {
+				const userId = 'userId';
+
+				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					schoolId: 'schoolId',
+					targetSystemId: 'targetSystemId',
+					startedAt: new Date(),
+					closedAt: new Date(),
+					finishedAt: new Date(),
+				});
+
+				const school: SchoolDO = schoolDOFactory.buildWithId({ id: migration.schoolId });
+
+				authorizationService.checkPermission.mockReturnThis();
+				schoolService.getSchoolById.mockResolvedValue(school);
+				commonUserLoginMigrationService.ensurePermission.mockResolvedValue();
+				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(migration);
+
+				return { userId, migration };
+			};
+
+			it('should throw UserLoginMigrationLoggableException ', async () => {
+				const { userId, migration } = setup();
+
+				const func = () => service.checkPreconditions(userId, migration.schoolId);
+
+				await expect(func()).rejects.toThrow(
+					new UserLoginMigrationLoggableException(
+						`The school with schoolId ${migration.schoolId} already finished the migration.`
+					)
 				);
 			});
 		});
@@ -141,7 +176,7 @@ describe('StartUserLoginMigrationValidationService', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date(),
@@ -150,20 +185,20 @@ describe('StartUserLoginMigrationValidationService', () => {
 				const school: SchoolDO = schoolDOFactory.buildWithId();
 
 				authorizationService.checkPermission.mockReturnThis();
-				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
+				commonUserLoginMigrationService.ensurePermission.mockResolvedValue();
 				schoolService.getSchoolById.mockResolvedValue(school);
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(migration);
 
 				return { userId, migration };
 			};
 
-			it('should throw StartUserLoginMigrationError ', async () => {
+			it('should throw UserLoginMigrationLoggableException ', async () => {
 				const { userId, migration } = setup();
 
 				const func = () => service.checkPreconditions(userId, migration.schoolId);
 
 				await expect(func()).rejects.toThrow(
-					new ModifyUserLoginMigrationError(
+					new UserLoginMigrationLoggableException(
 						`The school with schoolId ${migration.schoolId} already started the migration.`
 					)
 				);

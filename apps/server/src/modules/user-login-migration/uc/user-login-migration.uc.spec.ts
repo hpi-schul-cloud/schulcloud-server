@@ -3,7 +3,7 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page, SchoolDO, System, UserLoginMigrationDO } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { schoolDOFactory, systemFactory } from '@shared/testing';
+import { schoolDOFactory, systemFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { OAuthTokenDto } from '@src/modules/oauth';
@@ -13,9 +13,7 @@ import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto
 import { SchoolService } from '@src/modules/school';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Oauth2MigrationParams } from '../controller/dto/oauth2-migration.params';
-import { OAuthMigrationError } from '../error';
-import { SchoolMigrationError } from '../error/school-migration.error';
-import { UserLoginMigrationError } from '../error/user-login-migration.error';
+import { OAuthMigrationError, SchoolMigrationError, UserLoginMigrationError } from '../error';
 import { PageTypes } from '../interface/page-types.enum';
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
 import { MigrationDto, PageContentDto } from '../service/dto';
@@ -128,7 +126,7 @@ describe('UserLoginMigrationUc', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const migrations: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const migrations: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date(),
