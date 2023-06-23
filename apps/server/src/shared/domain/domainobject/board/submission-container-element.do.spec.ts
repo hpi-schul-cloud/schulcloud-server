@@ -4,12 +4,12 @@ import { SubmissionContainerElement } from './submission-container-element.do';
 import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
 describe(SubmissionContainerElement.name, () => {
-	describe('when trying to add a child to a task element', () => {
+	describe('when trying to add a child to a submission container element', () => {
 		it('should throw an error ', () => {
-			const taskElement = submissionContainerElementFactory.build();
-			const taskElementChild = submissionContainerElementFactory.build();
+			const submissionContainerElement = submissionContainerElementFactory.build();
+			const submissionContainerElementChild = submissionContainerElementFactory.build();
 
-			expect(() => taskElement.addChild(taskElementChild)).toThrow();
+			expect(() => submissionContainerElement.addChild(submissionContainerElementChild)).toThrow();
 		});
 	});
 
