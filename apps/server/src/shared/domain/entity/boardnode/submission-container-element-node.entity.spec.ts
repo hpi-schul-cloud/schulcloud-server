@@ -19,7 +19,7 @@ describe(SubmissionContainerElementNode.name, () => {
 
 			const element = new SubmissionContainerElementNode(elementProps);
 
-			expect(element.type).toEqual(BoardNodeType.TASK_ELEMENT);
+			expect(element.type).toEqual(BoardNodeType.SUBMISSION_CONTAINER_ELEMENT);
 		});
 	});
 
@@ -29,7 +29,7 @@ describe(SubmissionContainerElementNode.name, () => {
 			const builder: DeepMocked<BoardDoBuilder> = createMock<BoardDoBuilder>();
 			const elementDo = submissionContainerElementFactory.build();
 
-			builder.buildTaskElement.mockReturnValue(elementDo);
+			builder.buildSubmissionContainerElement.mockReturnValue(elementDo);
 
 			return { element, builder, elementDo };
 		};
@@ -39,7 +39,7 @@ describe(SubmissionContainerElementNode.name, () => {
 
 			element.useDoBuilder(builder);
 
-			expect(builder.buildTaskElement).toHaveBeenCalledWith(element);
+			expect(builder.buildSubmissionContainerElement).toHaveBeenCalledWith(element);
 		});
 
 		it('should call the specific builder method', () => {
@@ -47,7 +47,7 @@ describe(SubmissionContainerElementNode.name, () => {
 
 			element.useDoBuilder(builder);
 
-			expect(builder.buildTaskElement).toHaveBeenCalledWith(element);
+			expect(builder.buildSubmissionContainerElement).toHaveBeenCalledWith(element);
 		});
 
 		it('should return TaskElementDo', () => {

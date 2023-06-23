@@ -5,7 +5,7 @@ import {
 	columnNodeFactory,
 	fileElementNodeFactory,
 	richTextElementNodeFactory,
-	taskElementNodeFactory,
+	submissionContainerElementNodeFactory,
 	setupEntities,
 } from '@shared/testing';
 import { BoardDoBuilderImpl } from './board-do.builder-impl';
@@ -168,19 +168,19 @@ describe(BoardDoBuilderImpl.name, () => {
 
 	describe('when building a task element', () => {
 		it('should work without descendants', () => {
-			const taskElementNode = taskElementNodeFactory.build();
+			const submissionContainerElementNode = submissionContainerElementNodeFactory.build();
 
-			const domainObject = new BoardDoBuilderImpl().buildTaskElement(taskElementNode);
+			const domainObject = new BoardDoBuilderImpl().buildSubmissionContainerElement(submissionContainerElementNode);
 
 			expect(domainObject.constructor.name).toBe('SubmissionContainerElement');
 		});
 
 		it('should throw error if taskElement is not a leaf', () => {
-			const taskElementNode = taskElementNodeFactory.buildWithId();
-			const columnNode = columnNodeFactory.buildWithId({ parent: taskElementNode });
+			const submissionContainerElementNode = submissionContainerElementNodeFactory.buildWithId();
+			const columnNode = columnNodeFactory.buildWithId({ parent: submissionContainerElementNode });
 
 			expect(() => {
-				new BoardDoBuilderImpl([columnNode]).buildTaskElement(taskElementNode);
+				new BoardDoBuilderImpl([columnNode]).buildSubmissionContainerElement(submissionContainerElementNode);
 			}).toThrowError();
 		});
 	});

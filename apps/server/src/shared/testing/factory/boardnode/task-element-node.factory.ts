@@ -2,12 +2,12 @@
 import { SubmissionContainerElementNode, SubmissionContainerNodeProps } from '@shared/domain';
 import { BaseFactory } from '../base.factory';
 
-export const taskElementNodeFactory = BaseFactory.define<SubmissionContainerElementNode, SubmissionContainerNodeProps>(
+export const submissionContainerElementNodeFactory = BaseFactory.define<
 	SubmissionContainerElementNode,
-	() => {
-		const inThreeDays = new Date(Date.now() + 259200000);
-		return {
-			dueDate: inThreeDays,
-		};
-	}
-);
+	SubmissionContainerNodeProps
+>(SubmissionContainerElementNode, () => {
+	const inThreeDays = new Date(Date.now() + 259200000);
+	return {
+		dueDate: inThreeDays,
+	};
+});
