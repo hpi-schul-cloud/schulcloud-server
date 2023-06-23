@@ -53,7 +53,7 @@ export class SubmissionContainerContentBody {
 	dueDate!: Date;
 }
 
-export class TaskElementContentBody extends ElementContentBody {
+export class SubmissionContainerElementContentBody extends ElementContentBody {
 	@ApiProperty({ type: ContentElementType.SUBMISSION_CONTAINER })
 	type!: ContentElementType.SUBMISSION_CONTAINER;
 
@@ -72,7 +72,7 @@ export class ElementContentUpdateBodyParams {
 			subTypes: [
 				{ value: FileElementContentBody, name: ContentElementType.FILE },
 				{ value: RichTextElementContentBody, name: ContentElementType.RICH_TEXT },
-				{ value: TaskElementContentBody, name: ContentElementType.SUBMISSION_CONTAINER },
+				{ value: SubmissionContainerElementContentBody, name: ContentElementType.SUBMISSION_CONTAINER },
 			],
 		},
 		keepDiscriminatorProperty: true,
@@ -81,8 +81,8 @@ export class ElementContentUpdateBodyParams {
 		oneOf: [
 			{ $ref: getSchemaPath(FileElementContentBody) },
 			{ $ref: getSchemaPath(RichTextElementContentBody) },
-			{ $ref: getSchemaPath(TaskElementContentBody) },
+			{ $ref: getSchemaPath(SubmissionContainerElementContentBody) },
 		],
 	})
-	data!: FileElementContentBody | RichTextElementContentBody | TaskElementContentBody;
+	data!: FileElementContentBody | RichTextElementContentBody | SubmissionContainerElementContentBody;
 }
