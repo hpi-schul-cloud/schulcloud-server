@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolDO, UserLoginMigrationDO } from '@shared/domain';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { schoolDOFactory, userLoginMigrationDOFactory } from '@shared/testing';
-import { UserLoginMigrationService, CommonUserLoginMigrationService } from '../service';
 import { Logger } from '@src/core/logger';
+import { UserLoginMigrationService, CommonUserLoginMigrationService } from '../service';
 import { ToggleUserLoginMigrationUc } from './toggle-user-login-migration.uc';
 
 describe('ToggleUserLoginMigrationUc', () => {
