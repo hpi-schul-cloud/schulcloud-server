@@ -242,7 +242,7 @@ export class H5PEditorUc {
 		const user = this.changeUserType(currentUser);
 
 		const newContentId = await this.h5pEditor.saveOrUpdateContentReturnMetaData(
-			undefined as unknown as string, // Lumi typings are wrong, this method accepts both string and undefined
+			undefined as unknown as string, // Lumi typings are wrong because they dont "use strict", this method actually accepts both string and undefined
 			params,
 			metadata,
 			mainLibraryUbername,
