@@ -6,7 +6,7 @@ import { BoardDoBuilder, BoardNodeType } from './types';
 const inThreeDays = new Date(Date.now() + 259200000);
 
 describe(SubmissionContainerElementNode.name, () => {
-	describe('when trying to create a task element', () => {
+	describe('when trying to create a submission container element', () => {
 		const setup = () => {
 			const elementProps = { dueDate: inThreeDays };
 			const builder: DeepMocked<BoardDoBuilder> = createMock<BoardDoBuilder>();
@@ -50,7 +50,7 @@ describe(SubmissionContainerElementNode.name, () => {
 			expect(builder.buildSubmissionContainerElement).toHaveBeenCalledWith(element);
 		});
 
-		it('should return TaskElementDo', () => {
+		it('should return ElementDo', () => {
 			const { element, builder, elementDo } = setup();
 
 			const result = element.useDoBuilder(builder);
