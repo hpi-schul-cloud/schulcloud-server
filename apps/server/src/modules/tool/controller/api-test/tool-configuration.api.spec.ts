@@ -300,7 +300,7 @@ describe('ToolSchoolController (API)', () => {
 
 				const response: Response = await request(app.getHttpServer()).get(`/tools/${externalTool.id}/configuration`);
 
-				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 			});
 		});
 
@@ -404,7 +404,7 @@ describe('ToolSchoolController (API)', () => {
 
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
-				await em.persistAndFlush([user, school, externalTool]);
+				await em.persistAndFlush([user, school, externalTool, course]);
 				em.clear();
 
 				return {
@@ -422,7 +422,7 @@ describe('ToolSchoolController (API)', () => {
 					`/tools/${externalTool.id}/course/${course.id}/configuration`
 				);
 
-				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 			});
 		});
 
@@ -456,7 +456,7 @@ describe('ToolSchoolController (API)', () => {
 					},
 				];
 
-				await em.persistAndFlush([user, school, teacherRole, externalTool]);
+				await em.persistAndFlush([user, school, teacherRole, externalTool, course]);
 				em.clear();
 
 				return {
@@ -501,7 +501,7 @@ describe('ToolSchoolController (API)', () => {
 
 				const externalTool: ExternalTool = externalToolFactory.buildWithId({ isHidden: true });
 
-				await em.persistAndFlush([user, school, teacherRole, externalTool]);
+				await em.persistAndFlush([user, school, teacherRole, externalTool, course]);
 				em.clear();
 
 				return {
