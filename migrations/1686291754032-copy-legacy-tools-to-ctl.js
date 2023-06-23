@@ -297,7 +297,7 @@ module.exports = {
 		/* eslint-disable no-await-in-loop */
 		for (const ltiTool of ltiTools) {
 			// GET TOOLTEMPLATE
-			const toolTemplate = ltiToolTemplates.filter((template) => template.name === ltiTool.name);
+			const toolTemplate = ltiToolTemplates.filter((template) => template._id === ltiTool.originTool);
 
 			// GET COURSE
 			const course = await Course.findOne({
