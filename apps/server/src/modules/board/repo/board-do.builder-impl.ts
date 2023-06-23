@@ -70,7 +70,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 		this.ensureBoardNodeType(this.getChildren(boardNode), [
 			BoardNodeType.FILE_ELEMENT,
 			BoardNodeType.RICH_TEXT_ELEMENT,
-			BoardNodeType.TASK_ELEMENT,
+			BoardNodeType.SUBMISSION_CONTAINER_ELEMENT,
 		]);
 
 		const elements = this.buildChildren<RichTextElement | SubmissionContainerElement>(boardNode);
