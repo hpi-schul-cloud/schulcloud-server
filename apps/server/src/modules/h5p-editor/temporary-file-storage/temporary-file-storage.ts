@@ -1,21 +1,16 @@
-/* eslint-disable no-await-in-loop */
-// needed for listFiles()
 import { ReadStream } from 'fs';
 import { Readable } from 'stream';
-import { mkdirSync } from 'node:fs';
-import { readFile, writeFile, access, mkdir, open, readdir, stat, rm, rmdir } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
-import { relative } from 'path';
+import { join } from 'node:path';
 import { Injectable } from '@nestjs/common';
 import { ITemporaryFile, ITemporaryFileStorage, IUser } from '@lumieducation/h5p-server';
-import { FileStats } from './file-stats';
-import { TemporaryFile } from './temporary-file';
+import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
+import { FileDto } from '@src/modules/files-storage/dto/file.dto';
+import { TemporaryFile } from './temporary-file.entity';
+import { TemporaryFileRepo } from './temporary-file.repo';
 
 @Injectable()
 export class TemporaryFileStorage implements ITemporaryFileStorage {
-	constructor(private readonly path: string) {
-		mkdirSync(path, { recursive: true });
-	}
+	constructor(private readonly repo: TemporaryFileRepo, private readonly s3Client: S3ClientAdapter) {}
 
 	private checkFilename(filename: string): void {
 		if (/^[a-zA-Z0-9/._-]+$/g.test(filename) && !filename.includes('..') && !filename.startsWith('/')) {
@@ -24,39 +19,9 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		throw new Error(`Filename contains forbidden characters or is empty: '${filename}'`);
 	}
 
-	private async *readdirFilesRecursive(dirpath: string): AsyncGenerator<string> {
-		const direntries = await readdir(dirpath, { withFileTypes: true });
-		for (const entry of direntries) {
-			const entrypath = join(dirpath, entry.name);
-			if (entry.isDirectory()) {
-				yield* this.readdirFilesRecursive(entrypath);
-			} else {
-				yield entrypath;
-			}
-		}
-	}
-
-	private async getFileInfo(filename: string, userId: string): Promise<ITemporaryFile> {
+	private async getFileInfo(filename: string, userId: string): Promise<TemporaryFile> {
 		this.checkFilename(filename);
-		this.checkFilename(userId);
-		const path = `${join(this.path, userId, filename)}.meta`;
-		const data = await readFile(path);
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		const tempFileMetadata: TemporaryFile = JSON.parse(data.toString());
-		return tempFileMetadata;
-	}
-
-	private async ensureDirExists(path: string) {
-		const parent = dirname(path);
-		if (parent && parent !== '/') {
-			await this.ensureDirExists(parent);
-		}
-		try {
-			await access(path);
-		} catch {
-			// TODO use correct error
-			await mkdir(path);
-		}
+		return this.repo.findByPath(userId, filename);
 	}
 
 	public sanitizeFilename?(filename: string): string {
@@ -67,35 +32,22 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 
 	public async deleteFile(filename: string, userId: string): Promise<void> {
 		this.checkFilename(filename);
-		this.checkFilename(userId);
-		const filepath = join(this.path, userId, filename);
-		await rm(filepath);
-		await rm(`${filepath}.meta`);
-		const dir = dirname(filename);
-		if (dir !== '') {
-			const dirpath = join(this.path, userId, dir);
-			if ((await readdir(join(this.path, userId, dir))).length === 0) {
-				await rmdir(dirpath);
-			}
-		}
+		const meta = await this.repo.findByPath(userId, filename);
+		await this.s3Client.delete([join(userId, filename)]);
+		await this.repo.delete(meta);
 	}
 
 	public async fileExists(filename: string, user: IUser): Promise<boolean> {
 		this.checkFilename(filename);
-		this.checkFilename(user.id);
 		try {
-			await access(join(this.path, user.id, filename));
+			return !!(await this.repo.findByPath(user.id, filename));
 		} catch (error) {
 			return false;
 		}
-		return true;
 	}
 
-	public async getFileStats(filename: string, user: IUser): Promise<FileStats> {
-		this.checkFilename(filename);
-		this.checkFilename(user.id);
-		const stats = await stat(join(this.path, user.id, filename));
-		return new FileStats(stats.birthtime, stats.size);
+	public async getFileStats(filename: string, user: IUser): Promise<TemporaryFile> {
+		return this.getFileInfo(filename, user.id);
 	}
 
 	public async getFileStream(
@@ -105,39 +57,23 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		rangeEnd?: number | undefined
 	): Promise<Readable> {
 		this.checkFilename(filename);
-		this.checkFilename(user.id);
-		const file = await open(join(this.path, user.id, filename)); // file is auto closed
-		const stream = file.createReadStream({
-			start: rangeStart,
-			end: rangeEnd,
-		});
-		return stream;
+		const tempFile = await this.repo.findByPath(user.id, filename);
+		const path = join(user.id, filename);
+		if (rangeStart === undefined) {
+			if (rangeEnd === undefined) {
+				return (await this.s3Client.get(path)).data;
+			}
+			rangeStart = 0;
+		} else if (rangeEnd === undefined) {
+			rangeEnd = tempFile.size - 1;
+		}
+		return (await this.s3Client.get(path, `${rangeStart}-${rangeEnd}`)).data;
 	}
 
 	public async listFiles(user?: IUser | undefined): Promise<ITemporaryFile[]> {
-		if (user) {
-			this.checkFilename(user.id);
-			await access(join(this.path, user.id));
-		}
-		const users: Array<string> = user ? [user.id] : await readdir(this.path);
-		const tempFiles: Array<ITemporaryFile> = [];
-		for (const currentUser of users) {
-			// no-await-in-loop es-lint check disabled here
-			// user by user should be okay here, otherwise there could be thousands of promises at once
-			// list ALL files is only needed for clean up job
-			const userpath = join(this.path, currentUser);
-			const userFiles: string[] = [];
-			for await (const file of this.readdirFilesRecursive(join(this.path, currentUser))) {
-				userFiles.push(relative(userpath, file));
-			}
-			const newTempFiles = await Promise.all(
-				userFiles
-					.filter((userFile) => !userFile.endsWith('.meta'))
-					.map(async (userFile) => this.getFileInfo(userFile, currentUser))
-			);
-			tempFiles.push(...newTempFiles);
-		}
-		return tempFiles;
+		// method is expected to support listing all files in database
+		// this is only needed for cleanup, so it is optimized to only return expired ones
+		return user ? this.repo.findByUser(user.id) : this.repo.findExpired();
 	}
 
 	public async saveFile(
@@ -147,19 +83,33 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		expirationTime: Date
 	): Promise<ITemporaryFile> {
 		this.checkFilename(filename);
-		this.checkFilename(user.id);
 		const now = new Date();
 		if (expirationTime < now) {
 			throw new Error('expirationTime must be in the future');
 		}
 
-		const path = join(this.path, user.id, filename);
-		await this.ensureDirExists(dirname(path));
+		const path = join(user.id, filename);
+		let tempFile: TemporaryFile | undefined;
+		try {
+			tempFile = await this.repo.findByPath(user.id, filename);
+			await this.s3Client.delete([path]);
+		} catch (err) {
+			/* does not exist */
+		}
+		await this.s3Client.create(
+			path,
+			new FileDto({ name: path, mimeType: 'application/octet-stream', data: dataStream })
+		);
 
-		await writeFile(path, dataStream);
-		const meta = new TemporaryFile(filename, user.id, expirationTime);
-		await writeFile(`${path}.meta`, JSON.stringify(meta));
+		if (tempFile === undefined) {
+			tempFile = new TemporaryFile(filename, user.id, expirationTime, new Date(), dataStream.bytesRead);
+			await this.repo.createTemporaryFile(tempFile);
+		} else {
+			tempFile.expiresAt = expirationTime;
+			tempFile.size = dataStream.bytesRead;
+			await this.repo.save(tempFile);
+		}
 
-		return meta;
+		return tempFile;
 	}
 }

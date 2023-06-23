@@ -1,113 +1,116 @@
-import { ReadStream, closeSync, existsSync, mkdirSync, openSync, readFileSync, rmSync, writeSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { Test, TestingModule } from '@nestjs/testing';
-import { IUser } from '@lumieducation/h5p-server';
+import { ReadStream } from 'fs';
+import { join } from 'node:path';
 import { Readable } from 'node:stream';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ServiceOutputTypes } from '@aws-sdk/client-s3';
+import { IUser } from '@lumieducation/h5p-server';
+import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
+import { IGetFileResponse } from '@src/modules/files-storage/interface';
+import { FileDto } from '@src/modules/files-storage/dto';
 import { TemporaryFileStorage } from './temporary-file-storage';
-import { TemporaryFile } from './temporary-file';
+import { TemporaryFile } from './temporary-file.entity';
+import { TemporaryFileRepo } from './temporary-file.repo';
 
-const testContent = 'This is fake H5P content.';
 const today = new Date();
 const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
 
 describe('TemporaryFileStorage', () => {
 	let module: TestingModule;
-	let service: TemporaryFileStorage;
-	const path = '/tmp/test_temp_file_storage';
+	let storage: TemporaryFileStorage;
+	let s3clientAdapter: DeepMocked<S3ClientAdapter>;
+	let repo: DeepMocked<TemporaryFileRepo>;
 
 	beforeAll(async () => {
-		if (existsSync(path)) {
-			rmSync(path, { recursive: true });
-		}
-		mkdirSync(path);
 		module = await Test.createTestingModule({
 			providers: [
+				TemporaryFileStorage,
 				{
-					provide: TemporaryFileStorage,
-					useValue: new TemporaryFileStorage(path),
+					provide: TemporaryFileRepo,
+					useValue: createMock<TemporaryFileRepo>(),
+				},
+				{
+					provide: S3ClientAdapter,
+					useValue: createMock<S3ClientAdapter>(),
 				},
 			],
 		}).compile();
-		service = module.get(TemporaryFileStorage);
+		storage = module.get(TemporaryFileStorage);
+		s3clientAdapter = module.get(S3ClientAdapter);
+		repo = module.get(TemporaryFileRepo);
 	});
 
 	afterAll(async () => {
 		await module.close();
-		rmSync(path, { recursive: true });
 	});
 
-	afterEach(() => {
+	beforeEach(() => {
 		jest.resetAllMocks();
 	});
 
-	const createDummyFile = (filename: string, userId: string) => {
-		const filepath = join(path, userId, filename);
-		const dir = dirname(filepath);
-		if (!existsSync(dir)) {
-			mkdirSync(dir, { recursive: true });
-		}
-
-		const file = openSync(filepath, 'w');
-		writeSync(file, Buffer.from(testContent));
-		closeSync(file);
-
-		const fileMeta = openSync(`${filepath}.meta`, 'w');
-		const meta = new TemporaryFile(filename, userId, tomorrow);
-		writeSync(fileMeta, Buffer.from(JSON.stringify(meta)));
-		closeSync(fileMeta);
-	};
+	const fileContent = (userId: string, filename: string) => `Test content of ${userId}'s ${filename}`;
 
 	const setup = () => {
-		const user: Required<IUser> = {
-			email: 'testuser@example.org',
-			id: '12342-43212',
+		const user1: Required<IUser> = {
+			email: 'user1@example.org',
+			id: '12345-12345',
 			name: 'Marla Mathe',
 			type: 'local',
 			canCreateRestricted: false,
 			canInstallRecommended: false,
 			canUpdateAndInstallLibraries: false,
 		};
-		const filename = 'abc/def.txt';
-		const filepath = join(path, user.id, filename);
-		const otherUserId = '32142-32143';
-		createDummyFile(filename, user.id);
-		createDummyFile(filename, otherUserId);
+		const filename1 = 'abc/def.txt';
+		const file1 = new TemporaryFile(filename1, user1.id, tomorrow, new Date(), fileContent(user1.id, filename1).length);
+
+		const user2: Required<IUser> = {
+			email: 'user2@example.org',
+			id: '54321-54321',
+			name: 'Mirjam Mathe',
+			type: 'local',
+			canCreateRestricted: false,
+			canInstallRecommended: false,
+			canUpdateAndInstallLibraries: false,
+		};
+		const filename2 = 'uvw/xyz.txt';
+		const file2 = new TemporaryFile(filename2, user2.id, tomorrow, new Date(), fileContent(user2.id, filename2).length);
+
 		return {
-			user,
-			otherUserId,
-			filename,
-			filepath,
+			user1,
+			user2,
+			file1,
+			file2,
 		};
 	};
 
 	it('service should be defined', () => {
-		expect(service).toBeDefined();
+		expect(storage).toBeDefined();
 	});
 
 	describe('sanitizeFilename is called', () => {
 		describe('WHEN filename is valid', () => {
 			it('should return same filename', () => {
 				const filename = 'abc/def-ghi_jkl.txt';
-				if (service.sanitizeFilename) {
-					expect(service.sanitizeFilename(filename)).toBe(filename);
+				if (storage.sanitizeFilename) {
+					expect(storage.sanitizeFilename(filename)).toBe(filename);
 				}
 			});
 		});
 		describe('WHEN filename contains invalid characters', () => {
 			it('should sanitize %', () => {
-				if (service.sanitizeFilename) {
-					expect(service.sanitizeFilename('abc%/%def%.txt')).not.toContain('%');
+				if (storage.sanitizeFilename) {
+					expect(storage.sanitizeFilename('abc%/%def%.txt')).not.toContain('%');
 				}
 			});
 			it('should sanitize µ', () => {
-				if (service.sanitizeFilename) {
-					expect(service.sanitizeFilename('gedµfwa/abc.txt')).not.toContain('µ');
+				if (storage.sanitizeFilename) {
+					expect(storage.sanitizeFilename('gedµfwa/abc.txt')).not.toContain('µ');
 				}
 			});
 			it('should crash if filename contains ..', () => {
 				expect(() => {
-					if (service.sanitizeFilename) {
-						return service.sanitizeFilename('../etc/shadow');
+					if (storage.sanitizeFilename) {
+						return storage.sanitizeFilename('../etc/shadow');
 					}
 					return null;
 				}).toThrow();
@@ -116,8 +119,8 @@ describe('TemporaryFileStorage', () => {
 		describe('WHEN filename is empty', () => {
 			it('should crash', () => {
 				expect(() => {
-					if (service.sanitizeFilename) {
-						service.sanitizeFilename('');
+					if (storage.sanitizeFilename) {
+						storage.sanitizeFilename('');
 					}
 				}).toThrow();
 			});
@@ -127,18 +130,24 @@ describe('TemporaryFileStorage', () => {
 	describe('deleteFile is called', () => {
 		describe('WHEN file exists', () => {
 			it('should delete file', async () => {
-				const { user, filename, filepath } = setup();
-				await service.deleteFile(filename, user.id);
-				const fileExists = existsSync(filepath);
-				expect(fileExists).toBe(false);
+				const { user1, file1 } = setup();
+				repo.findByPath.mockResolvedValue(file1);
+				await storage.deleteFile(file1.filename, user1.id);
+				expect(repo.delete).toHaveBeenCalled();
+				expect(s3clientAdapter.delete).toHaveBeenCalledWith([join(user1.id, file1.filename)]);
 			});
 		});
 		describe('WHEN file does not exist', () => {
 			it('should throw error', async () => {
-				const { user } = setup();
+				const { user1, file1 } = setup();
+				repo.findByPath.mockImplementation(() => {
+					throw new Error('Not found');
+				});
 				await expect(async () => {
-					await service.deleteFile('abc/nonexistingfile.txt', user.id);
+					await storage.deleteFile(file1.filename, user1.id);
 				}).rejects.toThrow();
+				expect(repo.delete).not.toHaveBeenCalled();
+				expect(s3clientAdapter.delete).not.toHaveBeenCalled();
 			});
 		});
 	});
@@ -146,14 +155,15 @@ describe('TemporaryFileStorage', () => {
 	describe('fileExists is called', () => {
 		describe('WHEN file exists', () => {
 			it('should return true', async () => {
-				const { user, filename } = setup();
-				await expect(service.fileExists(filename, user)).resolves.toBe(true);
+				const { user1, file1 } = setup();
+				repo.findByPath.mockResolvedValue(file1);
+				await expect(storage.fileExists(file1.filename, user1)).resolves.toBe(true);
 			});
 		});
 		describe('WHEN file does not exist', () => {
 			it('should return false', async () => {
-				const { user } = setup();
-				await expect(service.fileExists('abc/nonexistingfile.txt', user)).resolves.toBe(false);
+				const { user1 } = setup();
+				await expect(storage.fileExists('abc/nonexistingfile.txt', user1)).resolves.toBe(false);
 			});
 		});
 	});
@@ -161,15 +171,20 @@ describe('TemporaryFileStorage', () => {
 	describe('getFileStats is called', () => {
 		describe('WHEN file exists', () => {
 			it('should return file stats', async () => {
-				const { user, filename } = setup();
-				const filestats = await service.getFileStats(filename, user);
-				expect('size' in filestats && 'birthtime' in filestats).toBe(true);
+				const { user1, file1 } = setup();
+				repo.findByPath.mockResolvedValue(file1);
+				const filestats = await storage.getFileStats(file1.filename, user1);
+				expect(filestats.size).toBe(file1.size);
+				expect(filestats.birthtime).toBe(file1.birthtime);
 			});
 		});
 		describe('WHEN file does not exist', () => {
 			it('should throw error', async () => {
-				const { user } = setup();
-				await expect(async () => service.getFileStats('abc/nonexistingfile.txt', user)).rejects.toThrow();
+				const { user1 } = setup();
+				repo.findByPath.mockImplementation(() => {
+					throw new Error('Not found');
+				});
+				await expect(async () => storage.getFileStats('abc/nonexistingfile.txt', user1)).rejects.toThrow();
 			});
 		});
 	});
@@ -177,8 +192,18 @@ describe('TemporaryFileStorage', () => {
 	describe('getFileStream is called', () => {
 		describe('WHEN file exists and no range is given', () => {
 			it('should return readable file stream', async () => {
-				const { user, filename } = setup();
-				const stream = await service.getFileStream(filename, user);
+				const { user1, file1 } = setup();
+				const actualContent = fileContent(user1.id, file1.filename);
+				const response: Required<IGetFileResponse> = {
+					data: Readable.from(actualContent),
+					contentType: undefined,
+					contentLength: undefined,
+					contentRange: undefined,
+					etag: undefined,
+				};
+				repo.findByPath.mockResolvedValue(file1);
+				s3clientAdapter.get.mockResolvedValue(response);
+				const stream = await storage.getFileStream(file1.filename, user1);
 				let content = Buffer.alloc(0);
 				await new Promise((resolve, reject) => {
 					stream.on('data', (chunk) => {
@@ -188,13 +213,16 @@ describe('TemporaryFileStorage', () => {
 					stream.on('end', resolve);
 				});
 				expect(content).not.toBe(null);
-				expect(content.toString()).toEqual(testContent);
+				expect(content.toString()).toEqual(actualContent);
 			});
 		});
 		describe('WHEN file does not exist', () => {
 			it('should throw error', async () => {
-				const { user } = setup();
-				await expect(async () => service.getFileStream('abc/nonexistingfile.txt', user)).rejects.toThrow();
+				const { user1 } = setup();
+				repo.findByPath.mockImplementation(() => {
+					throw new Error('Not found');
+				});
+				await expect(async () => storage.getFileStream('abc/nonexistingfile.txt', user1)).rejects.toThrow();
 			});
 		});
 	});
@@ -202,20 +230,22 @@ describe('TemporaryFileStorage', () => {
 	describe('listFiles is called', () => {
 		describe('WHEN existing user is given', () => {
 			it('should return only users file', async () => {
-				const { user, filename } = setup();
-				const files = await service.listFiles(user);
+				const { user1, file1 } = setup();
+				repo.findByUser.mockResolvedValue([file1]);
+				const files = await storage.listFiles(user1);
 				expect(files.length).toBe(1);
-				expect(files[0].ownedByUserId).toBe(user.id);
-				expect(files[0].filename).toBe(filename);
+				expect(files[0].ownedByUserId).toBe(user1.id);
+				expect(files[0].filename).toBe(file1.filename);
 			});
 		});
 		describe('WHEN no user is given', () => {
 			it('should return both users files', async () => {
-				const { user, otherUserId } = setup();
-				const files = await service.listFiles();
+				const { user1, user2, file1, file2 } = setup();
+				repo.findExpired.mockResolvedValue([file1, file2]);
+				const files = await storage.listFiles();
 				expect(files.length).toBe(2);
-				expect(files[0].ownedByUserId).toBe(user.id);
-				expect(files[1].ownedByUserId).toBe(otherUserId);
+				expect(files[0].ownedByUserId).toBe(user1.id);
+				expect(files[1].ownedByUserId).toBe(user2.id);
 			});
 		});
 	});
@@ -223,30 +253,47 @@ describe('TemporaryFileStorage', () => {
 	describe('saveFile is called', () => {
 		describe('WHEN file exists', () => {
 			it('should overwrite file', async () => {
-				const { user, filename } = setup();
+				const { user1, file1 } = setup();
 				const newData = 'This is new fake H5P content.';
-				const readStream = Readable.from(newData);
-				await service.saveFile(filename, readStream as ReadStream, user, tomorrow);
-				const savedData = readFileSync(join(path, user.id, filename));
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+				const readStream = Readable.from(newData) as ReadStream;
+				repo.findByPath.mockResolvedValue(file1);
+				let savedData = Buffer.alloc(0);
+				s3clientAdapter.create.mockImplementation(async (path: string, file: FileDto) => {
+					savedData += file.data.read();
+					return Promise.resolve({} as ServiceOutputTypes);
+				});
+				await storage.saveFile(file1.filename, readStream, user1, tomorrow);
+				expect(s3clientAdapter.delete).toHaveBeenCalled();
 				expect(savedData.toString()).toBe(newData);
 			});
 		});
 		describe('WHEN file does not exist', () => {
 			it('should create new file', async () => {
-				const { user } = setup();
+				const { user1 } = setup();
 				const filename = 'newfile.txt';
-				const readStream = Readable.from(testContent);
-				await service.saveFile(filename, readStream as ReadStream, user, tomorrow);
-				const savedData = readFileSync(join(path, user.id, filename));
-				expect(savedData.toString()).toBe(testContent);
+				const newData = 'This is new fake H5P content.';
+				const readStream = Readable.from(newData) as ReadStream;
+				repo.findByPath.mockImplementation(() => {
+					throw new Error('Not found');
+				});
+				let savedData = Buffer.alloc(0);
+				s3clientAdapter.create.mockImplementation(async (path: string, file: FileDto) => {
+					savedData += file.data.read();
+					return Promise.resolve({} as ServiceOutputTypes);
+				});
+				await storage.saveFile(filename, readStream, user1, tomorrow);
+				expect(s3clientAdapter.delete).not.toHaveBeenCalled();
+				expect(savedData.toString()).toBe(newData);
 			});
 		});
 		describe('WHEN expirationTime is in the past', () => {
 			it('should throw error', async () => {
-				const { user, filename } = setup();
-				const readStream = Readable.from(testContent);
+				const { user1, file1 } = setup();
+				const newData = 'This is new fake H5P content.';
+				const readStream = Readable.from(newData) as ReadStream;
 				await expect(async () =>
-					service.saveFile(filename, readStream as ReadStream, user, new Date(2023, 0, 1))
+					storage.saveFile(file1.filename, readStream, user1, new Date(2023, 0, 1))
 				).rejects.toThrow();
 			});
 		});
