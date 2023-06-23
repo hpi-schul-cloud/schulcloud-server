@@ -14,7 +14,7 @@ export class AncestorListUrlParams {
 	@ApiProperty({
 		description: 'The type of the entity.',
 		enum: AncestorEntityType,
-		enumName: 'BreadCrumbEntityType',
+		enumName: 'AncestorEntityType',
 	})
 	@IsEnum(AncestorEntityType)
 	entityType!: AncestorEntityType;
