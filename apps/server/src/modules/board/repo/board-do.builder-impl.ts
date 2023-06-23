@@ -113,7 +113,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 		return element;
 	}
 
-	public buildTaskElement(boardNode: SubmissionContainerElementNode): SubmissionContainerElement {
+	public buildSubmissionContainerElement(boardNode: SubmissionContainerElementNode): SubmissionContainerElement {
 		this.ensureLeafNode(boardNode);
 
 		const element = new SubmissionContainerElement({

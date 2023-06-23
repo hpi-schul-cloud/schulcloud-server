@@ -15,7 +15,7 @@ export class SubmissionContainerElementNode extends BoardNode {
 	}
 
 	useDoBuilder(builder: BoardDoBuilder): AnyBoardDo {
-		const domainObject = builder.buildTaskElement(this);
+		const domainObject = builder.buildSubmissionContainerElement(this);
 
 		return domainObject;
 	}

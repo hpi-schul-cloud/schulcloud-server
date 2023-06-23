@@ -19,5 +19,5 @@ export interface BoardDoBuilder {
 	buildCard(boardNode: CardNode): Card;
 	buildFileElement(boardNode: FileElementNode): FileElement;
 	buildRichTextElement(boardNode: RichTextElementNode): RichTextElement;
-	buildTaskElement(boardNode: SubmissionContainerElementNode): SubmissionContainerElement;
+	buildSubmissionContainerElement(boardNode: SubmissionContainerElementNode): SubmissionContainerElement;
 }
