@@ -8,7 +8,7 @@ export class SubmissionContainerElementNode extends BoardNode {
 	@Property()
 	dueDate: Date;
 
-	constructor(props: TaskElementNodeProps) {
+	constructor(props: SubmissionContainerNodeProps) {
 		super(props);
 		this.type = BoardNodeType.SUBMISSION_CONTAINER_ELEMENT;
 		this.dueDate = props.dueDate;
@@ -21,6 +21,6 @@ export class SubmissionContainerElementNode extends BoardNode {
 	}
 }
 
-export interface TaskElementNodeProps extends BoardNodeProps {
+export interface SubmissionContainerNodeProps extends BoardNodeProps {
 	dueDate: Date;
 }
