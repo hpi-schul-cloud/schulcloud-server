@@ -16,22 +16,22 @@ describe(SubmissionContainerElement.name, () => {
 	describe('accept', () => {
 		it('should call the right visitor method', () => {
 			const visitor = createMock<BoardCompositeVisitor>();
-			const taskElement = submissionContainerElementFactory.build();
+			const submissionContainerElement = submissionContainerElementFactory.build();
 
-			taskElement.accept(visitor);
+			submissionContainerElement.accept(visitor);
 
-			expect(visitor.visitTaskElement).toHaveBeenCalledWith(taskElement);
+			expect(visitor.visitSubmissionContainerElement).toHaveBeenCalledWith(submissionContainerElement);
 		});
 	});
 
 	describe('acceptAsync', () => {
 		it('should call the right async visitor method', async () => {
 			const visitor = createMock<BoardCompositeVisitorAsync>();
-			const taskElement = submissionContainerElementFactory.build();
+			const submissionContainerElement = submissionContainerElementFactory.build();
 
-			await taskElement.acceptAsync(visitor);
+			await submissionContainerElement.acceptAsync(visitor);
 
-			expect(visitor.visitTaskElementAsync).toHaveBeenCalledWith(taskElement);
+			expect(visitor.visitSubmissionContainerElementAsync).toHaveBeenCalledWith(submissionContainerElement);
 		});
 	});
 });
