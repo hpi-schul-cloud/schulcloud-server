@@ -8,14 +8,13 @@ import { Page } from '@shared/domain/domainobject/page';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
-import { setupEntities, userDoFactory } from '@shared/testing';
+import { setupEntities, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
-import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration.factory';
 import { SchoolMigrationService } from './school-migration.service';
 
 describe('SchoolMigrationService', () => {
@@ -69,7 +68,7 @@ describe('SchoolMigrationService', () => {
 			const setup = () => {
 				jest.setSystemTime(new Date('2023-05-01'));
 
-				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'systemId',
 					startedAt: new Date('2023-05-01'),
@@ -95,7 +94,7 @@ describe('SchoolMigrationService', () => {
 			const setup = () => {
 				jest.setSystemTime(new Date('2023-05-03'));
 
-				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'systemId',
 					startedAt: new Date('2023-05-01'),
@@ -386,7 +385,7 @@ describe('SchoolMigrationService', () => {
 			const setup = () => {
 				const closedAt: Date = new Date('2023-05-01');
 
-				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date('2023-05-01'),
@@ -435,7 +434,7 @@ describe('SchoolMigrationService', () => {
 	describe('unmarkOutdatedUsers', () => {
 		describe('when admin restarts the migration', () => {
 			const setup = () => {
-				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date('2023-05-01'),
