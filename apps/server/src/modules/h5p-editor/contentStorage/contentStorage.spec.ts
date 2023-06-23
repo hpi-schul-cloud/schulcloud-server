@@ -552,7 +552,6 @@ describe('ContentStorage', () => {
 				s3ClientAdapter.get.mockResolvedValue(fileResponse);
 				const metadata = await service.getMetadata(contentId, user);
 				expect(metadata).toBeDefined();
-				// expect(metadata.language).toEqual('de');
 			});
 		});
 
@@ -607,7 +606,6 @@ describe('ContentStorage', () => {
 			it('should return main library from preloadedDependencies equal to 2', async () => {
 				const { library, contentIdList, user, fileResponse } = setup();
 				s3ClientAdapter.get.mockResolvedValue(fileResponse);
-				// s3ClientAdapter.get.mockResolvedValue(contentIdListResponse);
 				const result = await service.resolveDependecies(contentIdList, user, library);
 				expect(result).toBeDefined();
 				expect(result.asMainLibrary).toEqual(2);
@@ -616,7 +614,6 @@ describe('ContentStorage', () => {
 			it('should return main library from editorDependencies equal to 2', async () => {
 				const { library, contentIdList, user, fileResponse4 } = setup();
 				s3ClientAdapter.get.mockResolvedValue(fileResponse4);
-				// s3ClientAdapter.get.mockResolvedValue(contentIdListResponse);
 				const result = await service.resolveDependecies(contentIdList, user, library);
 				expect(result).toBeDefined();
 				expect(result.asMainLibrary).toEqual(2);
@@ -625,7 +622,6 @@ describe('ContentStorage', () => {
 			it('should return main library from dynamicDependencies equal to 2', async () => {
 				const { library, contentIdList, user, fileResponse5 } = setup();
 				s3ClientAdapter.get.mockResolvedValue(fileResponse5);
-				// s3ClientAdapter.get.mockResolvedValue(contentIdListResponse);
 				const result = await service.resolveDependecies(contentIdList, user, library);
 				expect(result).toBeDefined();
 				expect(result.asMainLibrary).toEqual(2);
@@ -636,7 +632,6 @@ describe('ContentStorage', () => {
 			it('should return dependencies equal to 2', async () => {
 				const { library, contentIdList, user, fileResponse2 } = setup();
 				s3ClientAdapter.get.mockResolvedValue(fileResponse2);
-				// s3ClientAdapter.get.mockResolvedValue(contentIdListResponse);
 				const result = await service.resolveDependecies(contentIdList, user, library);
 				expect(result).toBeDefined();
 				expect(result.asMainLibrary).toEqual(0);
@@ -647,7 +642,6 @@ describe('ContentStorage', () => {
 			it('should return main library and dependencies equal to 0', async () => {
 				const { library, contentIdList, user, fileResponse3 } = setup();
 				s3ClientAdapter.get.mockResolvedValue(fileResponse3);
-				// s3ClientAdapter.get.mockResolvedValue(contentIdListResponse);
 				const result = await service.resolveDependecies(contentIdList, user, library);
 				expect(result).toBeDefined();
 				expect(result.asMainLibrary).toEqual(0);
@@ -692,7 +686,6 @@ describe('ContentStorage', () => {
 				const { contentId, contentIdListResponse } = setup();
 				s3ClientAdapter.get.mockResolvedValue(contentIdListResponse);
 				expect(() => service.updateContentIdList(contentId, 'add')).not.toThrow(Error);
-				// expect(await service.updateContentIdList(contentId, 'add')).not.toEqual(new Error());
 			});
 		});
 
@@ -701,7 +694,6 @@ describe('ContentStorage', () => {
 				const { contentId, contentIdListResponse2 } = setup();
 				s3ClientAdapter.get.mockResolvedValue(contentIdListResponse2);
 				expect(() => service.updateContentIdList(contentId, 'delete')).not.toThrow(Error);
-				// expect(await service.updateContentIdList(contentId, 'delete')).not.toEqual(new Error());
 			});
 		});
 	});

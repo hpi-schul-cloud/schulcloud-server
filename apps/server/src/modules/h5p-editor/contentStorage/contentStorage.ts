@@ -56,7 +56,6 @@ export class ContentStorage implements IContentStorage {
 		return contentId;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
 	public async addFile(contentId: string, filename: string, stream: Stream, user?: IUser | undefined): Promise<void> {
 		this.checkFilename(filename);
 
@@ -165,7 +164,6 @@ export class ContentStorage implements IContentStorage {
 	public async getMetadata(contentId: string, user?: IUser | undefined): Promise<IContentMetadata> {
 		if (user !== undefined && user !== null) {
 			const fileStream = await this.getFileStream(contentId, 'h5p.json', user);
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			const metadata = (await this.getJsonData(fileStream)) as IContentMetadata;
 			return metadata;
 		}
@@ -174,9 +172,7 @@ export class ContentStorage implements IContentStorage {
 
 	public async getParameters(contentId: string, user?: IUser | undefined): Promise<unknown> {
 		if (user !== undefined && user !== null) {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			const fileStream = await this.getFileStream(contentId, 'content.json', user);
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			const jsonData = await this.getJsonData(fileStream);
 			return jsonData;
 		}
@@ -199,7 +195,6 @@ export class ContentStorage implements IContentStorage {
 		return result;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public getUserPermissions(contentId: string, user: IUser): Promise<Permission[]> {
 		const permission = <Promise<Permission[]>>(
 			(<unknown>[Permission.Delete, Permission.Download, Permission.Edit, Permission.Embed, Permission.View])
@@ -207,18 +202,14 @@ export class ContentStorage implements IContentStorage {
 		return permission;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
 	public async listContent(user?: IUser | undefined): Promise<string[]> {
 		return this.getContentIdList();
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
 	public async listFiles(contentId: string, user: IUser): Promise<string[]> {
 		const fileList = this.getFileList(contentId);
 		return fileList;
 	}
-
-	// private methods
 
 	protected async createContentId() {
 		let counter = 0;
@@ -318,11 +309,8 @@ export class ContentStorage implements IContentStorage {
 				name: '',
 				type: '',
 			};
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			const fileStream = await this.getFileStream('contentidlist', 'contentidlist.json', user);
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const contentIdList: string[] = (await this.getJsonData(fileStream)) as string[];
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			return contentIdList;
 		} catch (error) {
 			return [];
@@ -374,11 +362,8 @@ export class ContentStorage implements IContentStorage {
 				name: '',
 				type: '',
 			};
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			const fileStream = await this.getFileStream(contentId, 'contentfilelist.json', user);
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const contentIdList: string[] = (await this.getJsonData(fileStream)) as string[];
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			return contentIdList;
 		} catch (error) {
 			return [];
