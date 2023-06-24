@@ -1,53 +1,11 @@
-export const enum HealthStatuses {
-	STATUS_PASS = 'pass',
-	STATUS_FAIL = 'fail',
-}
-
-export interface HealthStatusCheckProps {
-	componentType: string;
-	componentId?: string;
-	observedValue?: string | number | object;
-	observedUnit?: string;
-	status: string;
-	time?: Date;
-	output?: string;
-}
-
-export class HealthStatusCheck {
-	componentType: string;
-
-	componentId?: string;
-
-	observedValue?: string | number | object;
-
-	observedUnit?: string;
-
-	status: string;
-
-	time?: Date;
-
-	output?: string;
-
-	constructor(props: HealthStatusCheckProps) {
-		this.componentType = props.componentType;
-		this.componentId = props.componentId;
-		this.observedValue = props.observedValue;
-		this.observedUnit = props.observedUnit;
-		this.status = props.status;
-		this.time = props.time;
-		this.output = props.output;
-	}
-}
-
-interface HealthResponseChecks {
-	[key: string]: Array<HealthStatusCheck>;
-}
+import { HealthStatusCheck } from './health-status-check.do';
+import { HealthStatuses } from './health-statuses.do';
 
 export interface HealthStatusProps {
 	status: string;
 	description?: string;
 	output?: string;
-	checks?: HealthResponseChecks;
+	checks?: Record<string, Array<HealthStatusCheck>>;
 }
 
 export class HealthStatus {
@@ -57,7 +15,7 @@ export class HealthStatus {
 
 	output?: string;
 
-	checks?: HealthResponseChecks;
+	checks?: Record<string, Array<HealthStatusCheck>>;
 
 	constructor(props: HealthStatusProps) {
 		this.status = props.status;
@@ -67,6 +25,18 @@ export class HealthStatus {
 	}
 
 	isPassed(): boolean {
+		if (this.checks !== undefined) {
+			for (const key of Object.keys(this.checks)) {
+				const checks = this.checks[key];
+
+				for (let i = 0; i < checks.length; i += 1) {
+					if (!checks[i].isPassed()) {
+						return false;
+					}
+				}
+			}
+		}
+
 		return this.status === HealthStatuses.STATUS_PASS;
 	}
 }

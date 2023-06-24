@@ -1,4 +1,5 @@
-import { HealthStatus, HealthStatuses } from '@src/modules/health/domain/health-status.do';
+import { HealthStatuses } from './health-statuses.do';
+import { HealthStatus } from './health-status.do';
 
 describe(HealthStatus.name, () => {
 	describe('isPassed', () => {
