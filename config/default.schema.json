@@ -1206,6 +1206,11 @@
 					"description": "Number of simultaneously synchronized students, teachers and classes"
 				}
 			}
+		},
+		"HEALTHCHECKS_EXCLUDE_MONGODB_READ_OP_TIME_CHECK": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle that, when enabled, excludes MongoDB read operation check from the healthchecks."
 		}
 	},
 	"required": [
