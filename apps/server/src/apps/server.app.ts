@@ -13,13 +13,14 @@ import { AccountUc } from '@src/modules/account/uc/account.uc';
 import { CollaborativeStorageUc } from '@src/modules/collaborative-storage/uc/collaborative-storage.uc';
 import { RocketChatService } from '@src/modules/rocketchat';
 import { ServerModule } from '@src/modules/server';
+import { InternalServerModule } from '@src/modules/internal-server';
 import express from 'express';
-import { join } from 'path';
 
+import { join } from 'path';
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
-import legacyAppPromise = require('../../../../src/app');
 
+import legacyAppPromise = require('../../../../src/app');
 import {
 	addPrometheusMetricsMiddlewaresIfEnabled,
 	createAndStartPrometheusMetricsAppIfEnabled,
@@ -58,6 +59,12 @@ async function bootstrap() {
 
 	await nestApp.init();
 
+	// create the internal server module on a separate express instance
+	const internalServerExpress = express();
+	const internalServerExpressAdapter = new ExpressAdapter(internalServerExpress);
+	const internalServerApp = await NestFactory.create(InternalServerModule, internalServerExpressAdapter);
+	await internalServerApp.init();
+
 	// provide NestJS mail service to feathers app
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 	feathersExpress.services['nest-mail'] = {
@@ -87,7 +94,11 @@ async function bootstrap() {
 	// exposed alias mounts
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	rootExpress.use('/api/v1', feathersExpress);
+
 	rootExpress.use('/api/v3', nestExpress);
+
+	rootExpress.use('/internal', internalServerExpress);
+
 	rootExpress.use(express.static(join(__dirname, '../static-assets')));
 
 	// logger middleware for deprecated paths
