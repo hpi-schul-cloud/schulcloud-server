@@ -403,6 +403,10 @@
 			"pattern": ".*(?<!/)$",
 			"description": "The client url (should end without a slash)."
 		},
+		"HOSTNAME": {
+			"type": "string",
+			"description": "Hostname. Should not be usually defined as it's expected to be taken from the process env."
+		},
 		"API_HOST": {
 			"type": "string",
 			"format": "uri",

@@ -3,6 +3,12 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 export class HealthConfig {
 	private static _instance: HealthConfig;
 
+	private readonly _hostname: string;
+
+	get hostname(): string {
+		return this._hostname;
+	}
+
 	private readonly _exclude_mongodb: boolean;
 
 	get excludeMongoDB(): boolean {
@@ -10,6 +16,7 @@ export class HealthConfig {
 	}
 
 	private constructor() {
+		this._hostname = Configuration.get('HOSTNAME') as string;
 		this._exclude_mongodb = Configuration.get('HEALTHCHECKS_EXCLUDE_MONGODB') as boolean;
 	}
 
