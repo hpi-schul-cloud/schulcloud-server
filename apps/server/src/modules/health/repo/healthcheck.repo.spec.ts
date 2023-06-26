@@ -3,7 +3,6 @@ import { TestingModule, Test } from '@nestjs/testing';
 
 import { cleanupCollections } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { Healthcheck } from '../domain';
 import { HealthcheckEntity } from './entity';
 import { HealthcheckRepo } from './healthcheck.repo';
 
