@@ -91,7 +91,7 @@ describe('ExternalToolUc', () => {
 			},
 		};
 		const page: Page<ExternalToolDO> = new Page<ExternalToolDO>(
-			[{ ...externalToolDO, config: oauth2ConfigWithoutExternalData }],
+			[externalToolDOFactory.build({ ...externalToolDO, config: oauth2ConfigWithoutExternalData })],
 			1
 		);
 
@@ -289,10 +289,14 @@ describe('ExternalToolUc', () => {
 				url: undefined,
 				version: 1,
 			};
-			const updatedExternalToolDO: ExternalToolDO = { ...externalToolDO, name: 'newName', url: undefined };
+			const updatedExternalToolDO: ExternalToolDO = externalToolDOFactory.build({
+				...externalToolDO,
+				name: 'newName',
+				url: undefined,
+			});
 
 			externalToolService.updateExternalTool.mockResolvedValue(updatedExternalToolDO);
-			externalToolService.findExternalToolById.mockResolvedValue(externalToolDOtoUpdate);
+			externalToolService.findExternalToolById.mockResolvedValue(new ExternalToolDO(externalToolDOtoUpdate));
 
 			return {
 				externalToolDO,
