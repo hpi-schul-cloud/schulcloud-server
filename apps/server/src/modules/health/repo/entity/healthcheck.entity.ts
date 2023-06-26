@@ -1,4 +1,4 @@
-import { Entity, PrimaryKeyType, PrimaryKey, Property } from '@mikro-orm/core';
+import { Entity, PrimaryKeyType, PrimaryKey, Property, Index } from '@mikro-orm/core';
 
 export interface HealthcheckEntityProps {
 	id: string;
@@ -13,6 +13,7 @@ export class HealthcheckEntity {
 	id!: string;
 
 	@Property()
+	@Index({ options: { expireAfterSeconds: 60 * 60 } })
 	updatedAt!: Date;
 
 	constructor(props: HealthcheckEntityProps) {
