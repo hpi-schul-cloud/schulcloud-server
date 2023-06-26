@@ -96,4 +96,37 @@ describe('UserScope', () => {
 			expect(scope.query).toEqual({});
 		});
 	});
+
+	describe('whereLastLoginSystemChangeIsBetween', () => {
+		const setup = () => {
+			const startDate: Date = new Date();
+			const endDate: Date = new Date();
+
+			return {
+				startDate,
+				endDate,
+			};
+		};
+
+		it('should return scope with added query where lastLoginSystemChange gte and lt is given', () => {
+			const { startDate, endDate } = setup();
+
+			scope.whereLastLoginSystemChangeIsBetween(startDate, endDate);
+
+			expect(scope.query).toEqual({
+				lastLoginSystemChange: {
+					$gte: startDate,
+					$lt: endDate,
+				},
+			});
+		});
+
+		it('should return scope without added whereLastLoginSystemChangeIsBetween to query', () => {
+			const { startDate } = setup();
+
+			scope.whereLastLoginSystemChangeIsBetween(startDate);
+
+			expect(scope.query).toEqual({});
+		});
+	});
 });

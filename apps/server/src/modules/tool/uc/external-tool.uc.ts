@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, IFindOptions, Permission, User, ExternalToolDO, Page } from '@shared/domain';
+import { EntityId, ExternalToolConfigDO, ExternalToolDO, IFindOptions, Page, Permission, User } from '@shared/domain';
 import { AuthorizationService } from '@src/modules/authorization';
 import { ExternalToolService, ExternalToolValidationService } from '../service';
-import { CreateExternalTool, UpdateExternalTool } from './dto';
+import { ExternalToolCreate, ExternalToolUpdate } from './dto';
 
 @Injectable()
 export class ExternalToolUc {
@@ -12,24 +12,33 @@ export class ExternalToolUc {
 		private readonly toolValidationService: ExternalToolValidationService
 	) {}
 
-	async createExternalTool(userId: EntityId, externalToolDO: CreateExternalTool): Promise<ExternalToolDO> {
-		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
-		await this.toolValidationService.validateCreate(externalToolDO);
+	async createExternalTool(userId: EntityId, externalToolDO: ExternalToolCreate): Promise<ExternalToolDO> {
+		const externalTool = new ExternalToolDO({ ...externalToolDO });
 
-		const tool: Promise<ExternalToolDO> = this.externalToolService.createExternalTool(externalToolDO);
+		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+		await this.toolValidationService.validateCreate(externalTool);
+
+		const tool: Promise<ExternalToolDO> = this.externalToolService.createExternalTool(externalTool);
+
 		return tool;
 	}
 
 	async updateExternalTool(
 		userId: EntityId,
 		toolId: string,
-		externalTool: UpdateExternalTool
+		externalTool: ExternalToolUpdate
 	): Promise<ExternalToolDO> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 		await this.toolValidationService.validateUpdate(toolId, externalTool);
 
 		const loaded: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
-		const toUpdate: ExternalToolDO = new ExternalToolDO({ ...loaded, ...externalTool, version: loaded.version });
+		const configToUpdate: ExternalToolConfigDO = { ...loaded.config, ...externalTool.config };
+		const toUpdate: ExternalToolDO = new ExternalToolDO({
+			...loaded,
+			...externalTool,
+			config: configToUpdate,
+			version: loaded.version,
+		});
 
 		const saved = await this.externalToolService.updateExternalTool(toUpdate, loaded);
 		return saved;

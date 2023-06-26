@@ -8,7 +8,7 @@ import { Page } from '@shared/domain/domainobject/page';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
-import { setupEntities, userDoFactory } from '@shared/testing';
+import { setupEntities, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
@@ -68,7 +68,7 @@ describe('SchoolMigrationService', () => {
 			const setup = () => {
 				jest.setSystemTime(new Date('2023-05-01'));
 
-				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'systemId',
 					startedAt: new Date('2023-05-01'),
@@ -94,7 +94,7 @@ describe('SchoolMigrationService', () => {
 			const setup = () => {
 				jest.setSystemTime(new Date('2023-05-03'));
 
-				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'systemId',
 					startedAt: new Date('2023-05-01'),
@@ -385,7 +385,7 @@ describe('SchoolMigrationService', () => {
 			const setup = () => {
 				const closedAt: Date = new Date('2023-05-01');
 
-				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date('2023-05-01'),
@@ -434,7 +434,7 @@ describe('SchoolMigrationService', () => {
 	describe('unmarkOutdatedUsers', () => {
 		describe('when admin restarts the migration', () => {
 			const setup = () => {
-				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date('2023-05-01'),
@@ -472,6 +472,96 @@ describe('SchoolMigrationService', () => {
 				const func = async () => service.unmarkOutdatedUsers('schoolId');
 
 				await expect(func).rejects.toThrow(UnprocessableEntityException);
+			});
+		});
+	});
+
+	describe('hasSchoolMigratedUser', () => {
+		describe('when school will be loaded', () => {
+			const setup = () => {
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build();
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
+
+				return {
+					userLoginMigration,
+				};
+			};
+
+			it('should call userLoginMigrationRepo.findBySchoolId', async () => {
+				setup();
+
+				await service.hasSchoolMigratedUser('schoolId');
+
+				expect(userLoginMigrationRepo.findBySchoolId).toHaveBeenCalledWith('schoolId');
+			});
+		});
+
+		describe('when users will be loaded', () => {
+			const setup = () => {
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build();
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
+				userService.findUsers.mockResolvedValue(new Page([userDoFactory.build()], 1));
+
+				return {
+					userLoginMigration,
+				};
+			};
+
+			it('should call userService.findUsers', async () => {
+				const { userLoginMigration } = setup();
+
+				await service.hasSchoolMigratedUser('schoolId');
+
+				expect(userService.findUsers).toHaveBeenCalledWith({
+					lastLoginSystemChangeBetweenStart: userLoginMigration.startedAt,
+					lastLoginSystemChangeBetweenEnd: userLoginMigration.closedAt,
+				});
+			});
+		});
+
+		describe('when the school has no migration', () => {
+			const setup = () => {
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
+			};
+
+			it('should return false', async () => {
+				setup();
+
+				const result = await service.hasSchoolMigratedUser('schoolId');
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when the school has migrated user', () => {
+			const setup = () => {
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build();
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
+				userService.findUsers.mockResolvedValue(new Page([userDoFactory.build()], 1));
+			};
+
+			it('should return true', async () => {
+				setup();
+
+				const result = await service.hasSchoolMigratedUser('schoolId');
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('when the school has no migrated user', () => {
+			const setup = () => {
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build();
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
+				userService.findUsers.mockResolvedValue(new Page([], 0));
+			};
+
+			it('should return false', async () => {
+				setup();
+
+				const result = await service.hasSchoolMigratedUser('schoolId');
+
+				expect(result).toBe(false);
 			});
 		});
 	});

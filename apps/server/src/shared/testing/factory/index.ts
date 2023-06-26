@@ -27,3 +27,6 @@ export * from './user.factory';
 export * from './user.do.factory';
 export * from './user-and-account.test.factory';
 export * from './domainobject';
+export * from './federal-state.factory';
+export * from './user-login-migration.factory';
+export * from './base.factory';
