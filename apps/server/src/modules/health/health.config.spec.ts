@@ -21,16 +21,25 @@ describe(HealthConfig.name, () => {
 
 		describe('should have correct default value for the', () => {
 			it("'excludeMongoDB' toggle", () => {
-				expect(HealthConfig.instance.excludeMongoDB).toBe(false);
+				expect(HealthConfig.instance.excludeMongoDB).toEqual(false);
 			});
 		});
 
 		describe('should have correct value loaded from the configuration for the', () => {
+			it("'hostname' field", () => {
+				const testHostname = 'test-hostname';
+
+				Configuration.set('HOSTNAME', testHostname);
+				HealthConfig.reload();
+
+				expect(HealthConfig.instance.hostname).toEqual(testHostname);
+			});
+
 			it("'excludeMongoDB' toggle", () => {
 				Configuration.set('HEALTHCHECKS_EXCLUDE_MONGODB', true);
 				HealthConfig.reload();
 
-				expect(HealthConfig.instance.excludeMongoDB).toBe(true);
+				expect(HealthConfig.instance.excludeMongoDB).toEqual(true);
 			});
 		});
 	});
