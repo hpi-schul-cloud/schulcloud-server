@@ -1,6 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ContentElementType } from '@shared/domain';
-import { IsEnum } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional } from 'class-validator';
 
 export class CreateContentElementBody {
 	@IsEnum(ContentElementType)
@@ -12,4 +12,14 @@ export class CreateContentElementBody {
 		enumName: 'ContentElementType',
 	})
 	type!: ContentElementType;
+
+	@IsOptional()
+	@IsNumber()
+	@ApiPropertyOptional({
+		description: 'to bring element to a specific position, default is last position',
+		type: Number,
+		required: false,
+		nullable: false,
+	})
+	toPosition?: number;
 }
