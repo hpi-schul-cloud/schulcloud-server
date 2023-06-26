@@ -5,20 +5,16 @@ import { AccountModule } from '@src/modules/account';
 import { SchoolModule } from '@src/modules/school';
 import { SystemModule } from '@src/modules/system';
 import { UserModule } from '@src/modules/user';
-import { AuthorizationModule } from '@src/modules/authorization';
 import {
 	MigrationCheckService,
-	RestartUserLoginMigrationValidationService,
 	SchoolMigrationService,
+	UserLoginMigrationRevertService,
 	UserLoginMigrationService,
 	UserMigrationService,
-	UserLoginMigrationRevertService,
-	CommonUserLoginMigrationService,
-	StartUserLoginMigrationValidationService,
 } from './service';
 
 @Module({
-	imports: [UserModule, SchoolModule, LoggerModule, AccountModule, SystemModule, AuthorizationModule],
+	imports: [UserModule, SchoolModule, LoggerModule, AccountModule, SystemModule],
 	providers: [
 		UserMigrationService,
 		SchoolMigrationService,
@@ -26,9 +22,6 @@ import {
 		UserLoginMigrationService,
 		UserLoginMigrationRepo,
 		UserLoginMigrationRevertService,
-		StartUserLoginMigrationValidationService,
-		RestartUserLoginMigrationValidationService,
-		CommonUserLoginMigrationService,
 	],
 	exports: [
 		UserMigrationService,
@@ -36,9 +29,6 @@ import {
 		MigrationCheckService,
 		UserLoginMigrationService,
 		UserLoginMigrationRevertService,
-		StartUserLoginMigrationValidationService,
-		RestartUserLoginMigrationValidationService,
-		CommonUserLoginMigrationService,
 	],
 })
 export class UserLoginMigrationModule {}

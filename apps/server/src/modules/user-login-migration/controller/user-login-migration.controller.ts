@@ -1,29 +1,36 @@
 import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
 import {
-	ApiBadRequestResponse,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
+	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiTags,
 	ApiUnauthorizedResponse,
+	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { UserLoginMigrationDO } from '@shared/domain';
-import { Page } from '@shared/domain/domainobject/page';
+import { Page, UserLoginMigrationDO } from '@shared/domain';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
+import {
+	SchoolNumberMissingLoggableException,
+	UserLoginMigrationAlreadyClosedLoggableException,
+	UserLoginMigrationGracePeriodExpiredLoggableException,
+	UserLoginMigrationNotFoundLoggableException,
+} from '../error';
 import { UserLoginMigrationMapper } from '../mapper';
-import { UserLoginMigrationQuery } from '../uc';
-import { UserLoginMigrationUc } from '../uc/user-login-migration.uc';
+import {
+	RestartUserLoginMigrationUc,
+	StartUserLoginMigrationUc,
+	ToggleUserLoginMigrationUc,
+	UserLoginMigrationQuery,
+	UserLoginMigrationUc,
+} from '../uc';
 import {
 	UserLoginMigrationResponse,
 	UserLoginMigrationSearchListResponse,
 	UserLoginMigrationSearchParams,
 } from './dto';
 import { Oauth2MigrationParams } from './dto/oauth2-migration.params';
-import { StartUserLoginMigrationUc } from '../uc/start-user-login-migration.uc';
-import { ModifyUserLoginMigrationLoggableException } from '../error';
-import { RestartUserLoginMigrationUc } from '../uc/restart-user-login-migration.uc';
-import { ToggleUserLoginMigrationUc } from '../uc/toggle-user-login-migration.uc';
 
 @ApiTags('UserLoginMigration')
 @Controller('user-login-migrations')
@@ -67,9 +74,13 @@ export class UserLoginMigrationController {
 	}
 
 	@Post('start')
-	@ApiBadRequestResponse({
-		description: 'Preconditions for starting user login migration are not met',
-		type: ModifyUserLoginMigrationLoggableException,
+	@ApiUnprocessableEntityResponse({
+		description: 'User login migration is already closed and cannot be modified',
+		type: UserLoginMigrationAlreadyClosedLoggableException,
+	})
+	@ApiUnprocessableEntityResponse({
+		description: 'School has no official school number',
+		type: SchoolNumberMissingLoggableException,
 	})
 	@ApiOkResponse({ description: 'User login migration started', type: UserLoginMigrationResponse })
 	@ApiForbiddenResponse()
@@ -86,15 +97,47 @@ export class UserLoginMigrationController {
 	}
 
 	@Put('restart')
-	@ApiBadRequestResponse({
-		description: 'Preconditions for starting user login migration are not met',
-		type: ModifyUserLoginMigrationLoggableException,
+	@ApiNotFoundResponse({
+		description: 'User login migration was not found',
+		type: UserLoginMigrationNotFoundLoggableException,
+	})
+	@ApiUnprocessableEntityResponse({
+		description: 'Grace period for changing the user login migration is expired',
+		type: UserLoginMigrationGracePeriodExpiredLoggableException,
 	})
 	@ApiOkResponse({ description: 'User login migration started', type: UserLoginMigrationResponse })
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
 	async restartMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
 		const migrationDto: UserLoginMigrationDO = await this.restartUserLoginMigrationUc.restartMigration(
+			currentUser.userId,
+			currentUser.schoolId
+		);
+
+		const migrationResponse: UserLoginMigrationResponse =
+			UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(migrationDto);
+
+		return migrationResponse;
+	}
+
+	@Put('mandatory')
+	@ApiNotFoundResponse({
+		description: 'User login migration was not found',
+		type: UserLoginMigrationNotFoundLoggableException,
+	})
+	@ApiUnprocessableEntityResponse({
+		description: 'Grace period for changing the user login migration is expired',
+		type: UserLoginMigrationGracePeriodExpiredLoggableException,
+	})
+	@ApiUnprocessableEntityResponse({
+		description: 'User login migration is already closed and cannot be modified',
+		type: UserLoginMigrationAlreadyClosedLoggableException,
+	})
+	@ApiOkResponse({ description: 'User login migration is set mandatory/optional', type: UserLoginMigrationResponse })
+	@ApiUnauthorizedResponse()
+	@ApiForbiddenResponse()
+	async setMigrationMandatory(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
+		const migrationDto: UserLoginMigrationDO = await this.toggleUserLoginMigrationUc.setMigrationMandatory(
 			currentUser.userId,
 			currentUser.schoolId
 		);
@@ -114,24 +157,5 @@ export class UserLoginMigrationController {
 		@Body() body: Oauth2MigrationParams
 	): Promise<void> {
 		await this.userLoginMigrationUc.migrate(jwt, currentUser.userId, body.systemId, body.code, body.redirectUri);
-	}
-
-	@Put('toggle')
-	@ApiBadRequestResponse({
-		description: 'Preconditions for toggle user login migration are not met',
-		type: ModifyUserLoginMigrationLoggableException,
-	})
-	@ApiOkResponse({ description: 'Toggle was set', type: UserLoginMigrationResponse })
-	@ApiUnauthorizedResponse()
-	async toggleMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
-		const migrationDto: UserLoginMigrationDO = await this.toggleUserLoginMigrationUc.toggleMigration(
-			currentUser.userId,
-			currentUser.schoolId
-		);
-
-		const migrationResponse: UserLoginMigrationResponse =
-			UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(migrationDto);
-
-		return migrationResponse;
 	}
 }

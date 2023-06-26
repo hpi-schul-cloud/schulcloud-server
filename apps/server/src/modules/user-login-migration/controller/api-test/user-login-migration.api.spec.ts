@@ -21,8 +21,8 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { UUID } from 'bson';
 import { Response } from 'supertest';
-import { Oauth2MigrationParams } from '../dto/oauth2-migration.params';
 import { UserLoginMigrationResponse } from '../dto';
+import { Oauth2MigrationParams } from '../dto/oauth2-migration.params';
 
 jest.mock('jwks-rsa', () => () => {
 	return {
@@ -825,41 +825,7 @@ describe('UserLoginMigrationController (API)', () => {
 		});
 
 		describe('when user is not authorized', () => {
-			const setup = async () => {
-				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
-				const school: School = schoolFactory.buildWithId({
-					systems: [sourceSystem],
-					officialSchoolNumber: '12345',
-				});
-
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
-					school,
-					targetSystem,
-					sourceSystem,
-					startedAt: new Date(2023, 1, 4),
-					closedAt: new Date(2023, 1, 5),
-				});
-				school.userLoginMigration = userLoginMigration;
-
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.USER_LOGIN_MIGRATION_ADMIN,
-				]);
-
-				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
-				em.clear();
-
-				const loggedInClient = await testApiClient.login(adminAccount);
-
-				return {
-					loggedInClient,
-					userLoginMigration,
-				};
-			};
-
 			it('should return unauthorized', async () => {
-				await setup();
-
 				const response: Response = await testApiClient.put(`/toggle`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
@@ -896,6 +862,7 @@ describe('UserLoginMigrationController (API)', () => {
 					userLoginMigration,
 				};
 			};
+
 			it('should return forbidden', async () => {
 				const { loggedInClient } = await setup();
 

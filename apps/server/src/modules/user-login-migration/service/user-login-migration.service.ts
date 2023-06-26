@@ -6,7 +6,6 @@ import { SchoolService } from '@src/modules/school';
 import { SystemDto, SystemService } from '@src/modules/system';
 import { UserService } from '@src/modules/user';
 import { SchoolMigrationService } from './school-migration.service';
-import { ModifyUserLoginMigrationLoggableException } from '../error';
 
 @Injectable()
 export class UserLoginMigrationService {
@@ -85,9 +84,8 @@ export class UserLoginMigrationService {
 		);
 
 		if (existingUserLoginMigrationDO === null) {
-			throw new ModifyUserLoginMigrationLoggableException(
-				`Migration for school with id ${schoolId} does not exist for restart.`,
-				schoolId
+			throw new Error( // TODO
+				`Migration for school with id ${schoolId} does not exist for restart.`
 			);
 		}
 
@@ -97,17 +95,17 @@ export class UserLoginMigrationService {
 		return updatedUserLoginMigration;
 	}
 
-	async toggleMigration(schoolId: string): Promise<UserLoginMigrationDO> {
+	async setMigrationMandatory(schoolId: string, mandatory: boolean): Promise<UserLoginMigrationDO> {
 		let userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
 
-		if (userLoginMigration === null) {
-			throw new ModifyUserLoginMigrationLoggableException(
+		if (!userLoginMigration) {
+			throw new Error( // TODO
 				`Migration for school with id ${schoolId} does not exist for toggling.`
 			);
 		}
 
-		if (!userLoginMigration.mandatorySince) {
-			userLoginMigration.mandatorySince = new Date();
+		if (mandatory) {
+			userLoginMigration.mandatorySince = userLoginMigration.mandatorySince ?? new Date();
 		} else {
 			userLoginMigration.mandatorySince = undefined;
 		}

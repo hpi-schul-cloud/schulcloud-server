@@ -1,27 +1,56 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { UserLoginMigrationDO } from '@shared/domain';
+import { Permission, SchoolDO, User, UserLoginMigrationDO } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { UserLoginMigrationService, StartUserLoginMigrationValidationService } from '../service';
-import { UserLoginMigrationLoggable } from '../loggable/user-login-migration.loggable';
+import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
+import { SchoolService } from '@src/modules/school';
+import { SchoolNumberMissingLoggableException, UserLoginMigrationAlreadyClosedLoggableException } from '../error';
+import { UserLoginMigrationStartLoggable } from '../loggable';
+import { UserLoginMigrationService } from '../service';
 
 @Injectable()
 export class StartUserLoginMigrationUc {
 	constructor(
 		private readonly userLoginMigrationService: UserLoginMigrationService,
-		private readonly startUserLoginMigrationValidationService: StartUserLoginMigrationValidationService,
+		private readonly authorizationService: AuthorizationService,
+		private readonly schoolService: SchoolService,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(StartUserLoginMigrationUc.name);
 	}
 
 	async startMigration(userId: string, schoolId: string): Promise<UserLoginMigrationDO> {
-		await this.startUserLoginMigrationValidationService.checkPreconditions(userId, schoolId);
+		await this.checkPreconditions(userId, schoolId);
 
-		const userLoginMigrationDO: UserLoginMigrationDO = await this.userLoginMigrationService.startMigration(schoolId);
-		this.logger.log(
-			new UserLoginMigrationLoggable(`The school admin started the migration for the school with id:`, schoolId, userId)
+		let userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
+			schoolId
 		);
 
-		return userLoginMigrationDO;
+		if (!userLoginMigration) {
+			userLoginMigration = await this.userLoginMigrationService.startMigration(schoolId);
+
+			this.logger.log(new UserLoginMigrationStartLoggable(userId, userLoginMigration.id as string));
+		} else if (userLoginMigration.closedAt) {
+			throw new UserLoginMigrationAlreadyClosedLoggableException(
+				userId,
+				userLoginMigration.id as string,
+				userLoginMigration.closedAt
+			);
+		} else {
+			// Do nothing, if migration is already started but not stopped.
+		}
+
+		return userLoginMigration;
+	}
+
+	async checkPreconditions(userId: string, schoolId: string): Promise<void> {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+
+		const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.USER_LOGIN_MIGRATION_ADMIN]);
+		this.authorizationService.checkPermission(user, school, context);
+
+		if (!school.officialSchoolNumber) {
+			throw new SchoolNumberMissingLoggableException(schoolId);
+		}
 	}
 }
