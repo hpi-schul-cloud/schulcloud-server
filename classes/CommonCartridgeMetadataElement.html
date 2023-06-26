@@ -218,7 +218,7 @@ import { CommonCartridgeVersion } from &#x27;./common-cartridge-enums&#x27;;
 export type ICommonCartridgeMetadataProps &#x3D; {
 	title: string;
 	copyrightOwners: string;
-	currentYear: string;
+	creationYear: string;
 	version: CommonCartridgeVersion;
 };
 
@@ -240,7 +240,7 @@ export class CommonCartridgeMetadataElement implements ICommonCartridgeElement {
 						&#x27;mnf:value&#x27;: &#x27;yes&#x27;,
 					},
 					&#x27;mnf:description&#x27;: {
-						&#x27;mnf:string&#x27;: &#x60;${this.props.currentYear} ${this.props.copyrightOwners}&#x60;,
+						&#x27;mnf:string&#x27;: &#x60;${this.props.creationYear} ${this.props.copyrightOwners}&#x60;,
 					},
 				},
 			},

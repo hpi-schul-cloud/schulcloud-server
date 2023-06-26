@@ -230,7 +230,6 @@
                                     <td>Name</td>
                                     <td>Type</td>
                                     <td>Optional</td>
-                                    <td>Default value</td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -244,8 +243,6 @@
                                         No
                                     </td>
 
-                                    <td>
-                                    </td>
 
                                 </tr>
                                 <tr>
@@ -258,8 +255,6 @@
                                         No
                                     </td>
 
-                                    <td>
-                                    </td>
 
                                 </tr>
                                 <tr>
@@ -272,9 +267,6 @@
                                         No
                                     </td>
 
-                                    <td>
-                                        <code>CommonCartridgeVersion.V_1_1_0</code>
-                                    </td>
 
                                 </tr>
                             </tbody>
@@ -315,8 +307,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="69"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:69</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="65"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:65</a></div>
                 </td>
             </tr>
 
@@ -410,8 +402,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="115"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:115</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="109"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:109</a></div>
                 </td>
             </tr>
 
@@ -484,8 +476,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="60"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:60</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="56"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:56</a></div>
                 </td>
             </tr>
 
@@ -561,8 +553,8 @@ import {
 	ICommonCartridgeOrganizationProps,
 	ICommonCartridgeResourceProps,
 	CommonCartridgeFileBuilder,
-	CommonCartridgeVersion,
 	CommonCartridgeResourceType,
+	CommonCartridgeVersion,
 } from &#x27;../common-cartridge&#x27;;
 
 @Injectable()
@@ -573,11 +565,7 @@ export class CommonCartridgeExportService {
 		private readonly taskService: TaskService
 	) {}
 
-	async exportCourse(
-		courseId: EntityId,
-		userId: EntityId,
-		version: CommonCartridgeVersion &#x3D; CommonCartridgeVersion.V_1_1_0
-	): Promise&lt;Buffer&gt; {
+	async exportCourse(courseId: EntityId, userId: EntityId, version: CommonCartridgeVersion): Promise&lt;Buffer&gt; {
 		const course &#x3D; await this.courseService.findById(courseId);
 		const [lessons] &#x3D; await this.lessonService.findByCourseIds([courseId]);
 		const builder &#x3D; new CommonCartridgeFileBuilder({
@@ -585,7 +573,7 @@ export class CommonCartridgeExportService {
 			title: course.name,
 			version,
 			copyrightOwners: this.mapCourseTeachersToCopyrightOwners(course),
-			currentYear: course.createdAt.getFullYear().toString(),
+			creationYear: course.createdAt.getFullYear().toString(),
 		});
 		lessons.forEach((lesson) &#x3D;&gt; {
 			const organizationBuilder &#x3D; builder.addOrganization(this.mapLessonToOrganization(lesson, version));
@@ -624,37 +612,35 @@ export class CommonCartridgeExportService {
 		content: IComponentProperties,
 		version: CommonCartridgeVersion
 	): ICommonCartridgeResourceProps | undefined {
+		const commonProps &#x3D; {
+			version,
+			identifier: &#x60;i${content._id as string}&#x60;,
+			href: &#x60;i${lessonId}/i${content._id as string}.xml&#x60;,
+			title: content.title,
+		};
+
 		if (content.component &#x3D;&#x3D;&#x3D; ComponentType.TEXT) {
 			return {
 				version,
-				type: CommonCartridgeResourceType.WEB_CONTENT,
 				identifier: &#x60;i${content._id as string}&#x60;,
 				href: &#x60;i${lessonId}/i${content._id as string}.html&#x60;,
 				title: content.title,
+				type: CommonCartridgeResourceType.WEB_CONTENT,
 				html: &#x60;&lt;h1&gt;${content.title}&lt;/h1&gt;&lt;p&gt;${content.content.text}&lt;/p&gt;&#x60;,
 			};
 		}
 
 		if (content.component &#x3D;&#x3D;&#x3D; ComponentType.GEOGEBRA) {
-			return {
-				version,
-				type: CommonCartridgeResourceType.WEB_LINK,
-				identifier: &#x60;i${content._id as string}&#x60;,
-				href: &#x60;i${lessonId}/i${content._id as string}.xml&#x60;,
-				title: content.title,
-				url: &#x60;https://www.geogebra.org/m/${content.content.materialId}&#x60;,
-			};
+			const url &#x3D; &#x60;https://www.geogebra.org/m/${content.content.materialId}&#x60;;
+			return version &#x3D;&#x3D;&#x3D; CommonCartridgeVersion.V_1_3_0
+				? { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V3, url }
+				: { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V1, url };
 		}
 
 		if (content.component &#x3D;&#x3D;&#x3D; ComponentType.ETHERPAD) {
-			return {
-				version,
-				type: CommonCartridgeResourceType.WEB_LINK,
-				identifier: &#x60;i${content._id as string}&#x60;,
-				href: &#x60;i${lessonId}/i${content._id as string}.xml&#x60;,
-				title: content.title,
-				url: content.content.url,
-			};
+			return version &#x3D;&#x3D;&#x3D; CommonCartridgeVersion.V_1_3_0
+				? { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V3, url: content.content.url }
+				: { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V1, url: content.content.url };
 		}
 
 		return undefined;

@@ -278,8 +278,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="64"
-                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-lti-resource.ts:64</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="81"
+                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-lti-resource.ts:81</a></div>
                 </td>
             </tr>
 
@@ -328,19 +328,15 @@ export class CommonCartridgeLtiResource implements ICommonCartridgeElement, ICom
 	}
 
 	content(): string {
-		return this.xmlBuilder.buildObject({
+		const commonObject &#x3D; {
 			cartridge_basiclti_link: {
 				$: {
-					xmlns: &#x27;/xsd/imslticc_v1p0&#x27;,
-					&#x27;xmlns:blti&#x27;: &#x27;/xsd/imsbasiclti_v1p0&#x27;,
-					&#x27;xmlns:lticm&#x27;: &#x27;/xsd/imslticm_v1p0&#x27;,
-					&#x27;xmlns:lticp&#x27;: &#x27;/xsd/imslticp_v1p0&#x27;,
+					xmlns: &#x27;&#x27;,
+					&#x27;xmlns:blti&#x27;: &#x27;&#x27;,
+					&#x27;xmlns:lticm&#x27;: &#x27;&#x27;,
+					&#x27;xmlns:lticp&#x27;: &#x27;&#x27;,
 					&#x27;xmlns:xsi&#x27;: &#x27;http://www.w3.org/2001/XMLSchema-instance&#x27;,
-					&#x27;xsi:schemaLocation&#x27;:
-						&#x27;/xsd/imslticc_v1p0 /xsd/lti/ltiv1p0/imslticc_v1p0.xsd&#x27; +
-						&#x27;/xsd/imsbasiclti_v1p0 /xsd/lti/ltiv1p0/imsbasiclti_v1p0.xsd&#x27; +
-						&#x27;/xsd/imslticm_v1p0 /xsd/lti/ltiv1p0/imslticm_v1p0.xsd&#x27; +
-						&#x27;/xsd/imslticp_v1p0 /xsd/lti/ltiv1p0/imslticp_v1p0.xsd&quot;&gt;&#x27;,
+					&#x27;xsi:schemaLocation&#x27;: &#x27;&#x27;,
 				},
 				blti: {
 					title: this.props.title,
@@ -357,15 +353,36 @@ export class CommonCartridgeLtiResource implements ICommonCartridgeElement, ICom
 							identifierref: &#x27;BLTI001_Icon&#x27;,
 						},
 					},
-					// this are optional properties
-					// custom: {},
-					// extensions: {},
-					// icon: &#x27;&#x27;,
-					// secure_icon: &#x27;&#x27;,
-					// vendor: {},
 				},
 			},
-		});
+		};
+
+		switch (this.props.version) {
+			case CommonCartridgeVersion.V_1_3_0:
+				commonObject.cartridge_basiclti_link.$.xmlns &#x3D; &#x27;http://www.imsglobal.org/xsd/imslticc_v1p3&#x27;;
+				commonObject.cartridge_basiclti_link.$[&#x27;xmlns:blti&#x27;] &#x3D; &#x27;http://www.imsglobal.org/xsd/imsbasiclti_v1p0&#x27;;
+				commonObject.cartridge_basiclti_link.$[&#x27;xmlns:lticm&#x27;] &#x3D; &#x27;http://www.imsglobal.org/xsd/imslticm_v1p0&#x27;;
+				commonObject.cartridge_basiclti_link.$[&#x27;xmlns:lticp&#x27;] &#x3D; &#x27;http://www.imsglobal.org/xsd/imslticp_v1p0&#x27;;
+				commonObject.cartridge_basiclti_link.$[&#x27;xsi:schemaLocation&#x27;] &#x3D;
+					&#x27;http://www.imsglobal.org/xsd/imslticc_v1p3 http://www.imsglobal.org/xsd/imslticc_v1p3.xsd&#x27; +
+					&#x27;http://www.imsglobal.org/xsd/imslticp_v1p0 imslticp_v1p0.xsd&#x27; +
+					&#x27;http://www.imsglobal.org/xsd/imslticm_v1p0 imslticm_v1p0.xsd&#x27; +
+					&#x27;http://www.imsglobal.org/xsd/imsbasiclti_v1p0 imsbasiclti_v1p0p1.xsd&quot;&#x27;;
+				break;
+			default:
+				commonObject.cartridge_basiclti_link.$.xmlns &#x3D; &#x27;/xsd/imslticc_v1p0&#x27;;
+				commonObject.cartridge_basiclti_link.$[&#x27;xmlns:blti&#x27;] &#x3D; &#x27;/xsd/imsbasiclti_v1p0&#x27;;
+				commonObject.cartridge_basiclti_link.$[&#x27;xmlns:lticm&#x27;] &#x3D; &#x27;/xsd/imslticm_v1p0&#x27;;
+				commonObject.cartridge_basiclti_link.$[&#x27;xmlns:lticp&#x27;] &#x3D; &#x27;/xsd/imslticp_v1p0&#x27;;
+				commonObject.cartridge_basiclti_link.$[&#x27;xsi:schemaLocation&#x27;] &#x3D;
+					&#x27;/xsd/imslticc_v1p0 /xsd/lti/ltiv1p0/imslticc_v1p0.xsd&#x27; +
+					&#x27;/xsd/imsbasiclti_v1p0 /xsd/lti/ltiv1p0/imsbasiclti_v1p0.xsd&#x27; +
+					&#x27;/xsd/imslticm_v1p0 /xsd/lti/ltiv1p0/imslticm_v1p0.xsd&#x27; +
+					&#x27;/xsd/imslticp_v1p0 /xsd/lti/ltiv1p0/imslticp_v1p0.xsd&quot;&#x27;;
+				break;
+		}
+
+		return this.xmlBuilder.buildObject(commonObject);
 	}
 
 	transform(): Record&lt;string, unknown&gt; {

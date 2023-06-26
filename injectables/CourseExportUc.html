@@ -111,7 +111,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:8</a></div>
                             </td>
                         </tr>
 
@@ -181,15 +181,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>exportCourse(courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>exportCourse(courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, version: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="13"
-                            class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:13</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="14"
+                            class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:14</a></div>
                 </td>
             </tr>
 
@@ -233,6 +233,18 @@
 
 
                                 </tr>
+                                <tr>
+                                    <td>version</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/enumerations.html#CommonCartridgeVersion" target="_self" >CommonCartridgeVersion</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -259,6 +271,7 @@
 import { EntityId, Permission } from &#x27;@shared/domain&#x27;;
 import { Action, AuthorizationService, AuthorizableReferenceType } from &#x27;@src/modules/authorization&#x27;;
 import { CommonCartridgeExportService } from &#x27;../service/common-cartridge-export.service&#x27;;
+import { CommonCartridgeVersion } from &#x27;../common-cartridge&#x27;;
 
 @Injectable()
 export class CourseExportUc {
@@ -267,12 +280,12 @@ export class CourseExportUc {
 		private readonly authorizationService: AuthorizationService
 	) {}
 
-	async exportCourse(courseId: EntityId, userId: EntityId): Promise&lt;Buffer&gt; {
+	async exportCourse(courseId: EntityId, userId: EntityId, version: CommonCartridgeVersion): Promise&lt;Buffer&gt; {
 		await this.authorizationService.checkPermissionByReferences(userId, AuthorizableReferenceType.Course, courseId, {
 			action: Action.read,
 			requiredPermissions: [Permission.COURSE_EDIT],
 		});
-		return this.courseExportService.exportCourse(courseId, userId);
+		return this.courseExportService.exportCourse(courseId, userId, version);
 	}
 }
 </code></pre>

@@ -137,7 +137,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>exportCourse(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, urlParams: <a href="../classes/CourseUrlParams.html" target="_self">CourseUrlParams</a>, response: Response)</code>
+                    <code>exportCourse(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, urlParams: <a href="../classes/CourseUrlParams.html" target="_self">CourseUrlParams</a>, queryParams: <a href="../classes/CourseQueryParams.html" target="_self">CourseQueryParams</a>, response: Response)</code>
                 </td>
             </tr>
 
@@ -188,6 +188,18 @@
                                     <td>urlParams</td>
                                     <td>
                                                 <code><a href="../classes/CourseUrlParams.html" target="_self" >CourseUrlParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>queryParams</td>
+                                    <td>
+                                                <code><a href="../classes/CourseQueryParams.html" target="_self" >CourseQueryParams</a></code>
                                     </td>
 
                                     <td>
@@ -345,8 +357,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="52"
-                            class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:52</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="53"
+                            class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:53</a></div>
                 </td>
             </tr>
 
@@ -419,7 +431,7 @@ import { Response } from &#x27;express&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { CourseUc } from &#x27;../uc/course.uc&#x27;;
 import { CourseExportUc } from &#x27;../uc/course-export.uc&#x27;;
-import { CourseMetadataListResponse, CourseUrlParams } from &#x27;./dto&#x27;;
+import { CourseMetadataListResponse, CourseUrlParams, CourseQueryParams } from &#x27;./dto&#x27;;
 import { CourseMapper } from &#x27;../mapper/course.mapper&#x27;;
 
 @ApiTags(&#x27;Courses&#x27;)
@@ -449,10 +461,11 @@ export class CourseController {
 	async exportCourse(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: CourseUrlParams,
+		@Query() queryParams: CourseQueryParams,
 		@Res({ passthrough: true }) response: Response
 	): Promise&lt;StreamableFile&gt; {
 		if (!this.configService.get&lt;boolean&gt;(&#x27;FEATURE_IMSCC_COURSE_EXPORT_ENABLED&#x27;)) throw new NotFoundException();
-		const result &#x3D; await this.courseExportUc.exportCourse(urlParams.courseId, currentUser.userId);
+		const result &#x3D; await this.courseExportUc.exportCourse(urlParams.courseId, currentUser.userId, queryParams.version);
 		response.set({
 			&#x27;Content-Type&#x27;: &#x27;application/zip&#x27;,
 			&#x27;Content-Disposition&#x27;: &#x27;attachment;&#x27;,

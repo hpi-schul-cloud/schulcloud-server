@@ -278,8 +278,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="42"
-                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-web-link-resource.ts:42</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="61"
+                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-web-link-resource.ts:61</a></div>
                 </td>
             </tr>
 
@@ -311,7 +311,7 @@ import { ICommonCartridgeFile } from &#x27;./common-cartridge-file.interface&#x2
 import { CommonCartridgeResourceType, CommonCartridgeVersion } from &#x27;./common-cartridge-enums&#x27;;
 
 export type ICommonCartridgeWebLinkResourceProps &#x3D; {
-	type: CommonCartridgeResourceType.WEB_LINK;
+	type: CommonCartridgeResourceType.WEB_LINK_V1 | CommonCartridgeResourceType.WEB_LINK_V3;
 	version: CommonCartridgeVersion;
 	identifier: string;
 	href: string;
@@ -327,23 +327,42 @@ export class CommonCartridgeWebLinkResourceElement implements ICommonCartridgeEl
 	}
 
 	content(): string {
-		return this.xmlBuilder.buildObject({
-			webLink: {
+		const commonTags &#x3D; {
+			title: this.props.title,
+			url: {
 				$: {
-					xmlns: &#x27;/xsd/imsccv1p1/imswl_v1p1&#x27;,
-					&#x27;xmlns:xsi&#x27;: &#x27;http://www.w3.org/2001/XMLSchema-instance&#x27;,
-					&#x27;xsi:schemaLocation&#x27;: &#x27;/xsd/imsccv1p1/imswl_v1p1 /profile/cc/ccv1p1/ccv1p1_imswl_v1p1.xsd&#x27;,
-				},
-				title: this.props.title,
-				url: {
-					$: {
-						href: this.props.url,
-						target: &#x27;_self&#x27;,
-						windowFeatures: &#x27;width&#x3D;100, height&#x3D;100&#x27;,
-					},
+					href: this.props.url,
+					target: &#x27;_self&#x27;,
+					windowFeatures: &#x27;width&#x3D;100, height&#x3D;100&#x27;,
 				},
 			},
-		});
+		};
+		switch (this.props.version) {
+			case CommonCartridgeVersion.V_1_3_0:
+				return this.xmlBuilder.buildObject({
+					webLink: {
+						...commonTags,
+						$: {
+							xmlns: &#x27;http://www.imsglobal.org/xsd/imsccv1p3/imswl_v1p3&#x27;,
+							&#x27;xmlns:xsi&#x27;: &#x27;http://www.w3.org/2001/XMLSchema-instance&#x27;,
+							&#x27;xsi:schemaLocation&#x27;:
+								&#x27;http://www.imsglobal.org/xsd/imsccv1p3/imswl_v1p3 http://www.imsglobal.org/profile/cc/ccv1p3/ccv1p3_imswl_v1p3.xsd&#x27;,
+						},
+					},
+				});
+			default:
+				return this.xmlBuilder.buildObject({
+					webLink: {
+						...commonTags,
+						$: {
+							xmlns: &#x27;http://www.imsglobal.org/xsd/imsccv1p1/imswl_v1p1&#x27;,
+							&#x27;xmlns:xsi&#x27;: &#x27;http://www.w3.org/2001/XMLSchema-instance&#x27;,
+							&#x27;xsi:schemaLocation&#x27;:
+								&#x27;http://www.imsglobal.org/xsd/imsccv1p1/imswl_v1p1 https://www.imsglobal.org/sites/default/files/profile/cc/ccv1p1/ccv1p1_imswl_v1p1.xsd&#x27;,
+						},
+					},
+				});
+		}
 	}
 
 	transform(): Record&lt;string, unknown&gt; {
