@@ -9,9 +9,9 @@ import { HealthcheckRepoMapper } from './healthcheck.repo.mapper';
 export class HealthcheckRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findById(id: string): Promise<Healthcheck | null> {
-		const healthcheck = await this.em.findOne(HealthcheckEntity, id);
+	async upsertById(id: string): Promise<Healthcheck> {
+		const entity = await this.em.upsert(HealthcheckEntity, { id, updatedAt: new Date() });
 
-		return HealthcheckRepoMapper.mapHealthcheckEntityToDo(healthcheck);
+		return HealthcheckRepoMapper.mapHealthcheckEntityToDo(entity);
 	}
 }

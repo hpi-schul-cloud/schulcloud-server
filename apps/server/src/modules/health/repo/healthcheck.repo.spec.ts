@@ -9,8 +9,6 @@ import { HealthcheckRepo } from './healthcheck.repo';
 
 describe(HealthcheckRepo.name, () => {
 	const testId = 'test_healthcheck_id';
-	const testUpdatedAt = new Date();
-	const testEntity = new HealthcheckEntity({ id: testId, updatedAt: testUpdatedAt });
 
 	let module: TestingModule;
 	let em: EntityManager;
@@ -37,22 +35,13 @@ describe(HealthcheckRepo.name, () => {
 		await cleanupCollections(em);
 	});
 
-	describe('findById', () => {
+	describe('upsertById', () => {
 		describe('should return', () => {
-			it('healthcheck with given Id if present in the database', async () => {
-				await em.persistAndFlush(testEntity);
-				em.clear();
-				const expectedDO = new Healthcheck(testId, testUpdatedAt);
+			it('upserted healthcheck with given ID', async () => {
+				const upsertedDO = await repo.upsertById(testId);
 
-				const foundDO = await repo.findById(testId);
-
-				expect(foundDO).toEqual(expectedDO);
-			});
-
-			it('null healthcheck if not present in the database', async () => {
-				const foundDO = await repo.findById('non_existing_healthcheck_id');
-
-				expect(foundDO).toBeNull();
+				expect(upsertedDO.id).not.toEqual('');
+				expect(upsertedDO.updatedAt).not.toEqual(new Date(0));
 			});
 		});
 	});

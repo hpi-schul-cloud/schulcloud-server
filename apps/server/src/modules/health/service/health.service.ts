@@ -7,7 +7,7 @@ import { HealthcheckRepo } from '../repo';
 export class HealthService {
 	constructor(private readonly healthcheckRepo: HealthcheckRepo) {}
 
-	async findHealthcheckById(id: string): Promise<Healthcheck | null> {
-		return this.healthcheckRepo.findById(id);
+	async upsertHealthcheckById(id: string): Promise<Healthcheck> {
+		return this.healthcheckRepo.upsertById(id);
 	}
 }

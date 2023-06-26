@@ -39,28 +39,20 @@ describe(HealthService.name, () => {
 	describe('findHealthcheckById', () => {
 		describe('should call', () => {
 			it('the proper healthcheck repository method with given ID', async () => {
-				await service.findHealthcheckById(testId);
+				await service.upsertHealthcheckById(testId);
 
-				expect(repo.findById).toHaveBeenCalledWith(testId);
+				expect(repo.upsertById).toHaveBeenCalledWith(testId);
 			});
 		});
 
 		describe('should return', () => {
-			it('the healthcheck domain object with given ID (if found in a repo)', async () => {
-				repo.findById.mockResolvedValueOnce(testDO);
+			it('the upserted healthcheck domain object with given ID', async () => {
+				repo.upsertById.mockResolvedValueOnce(testDO);
 				const expectedDO = new Healthcheck(testId, testUpdatedAt);
 
-				const foundDO = await service.findHealthcheckById(testId);
+				const foundDO = await service.upsertHealthcheckById(testId);
 
 				expect(foundDO).toEqual(expectedDO);
-			});
-
-			it('the null healthcheck domain object (if not found in a repo)', async () => {
-				repo.findById.mockResolvedValueOnce(null);
-
-				const foundDO = await service.findHealthcheckById(testId);
-
-				expect(foundDO).toBeNull();
 			});
 		});
 	});

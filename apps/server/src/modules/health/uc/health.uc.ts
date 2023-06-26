@@ -73,7 +73,7 @@ export class HealthUc {
 			// The data returned by the find operation is currently not used so it's not
 			// saved into any variable - we just want to check if the find operation has
 			// been performed successfully (in a sense that no error occurred).
-			await this.healthService.findHealthcheckById('api-db-healthcheck');
+			await this.healthService.upsertHealthcheckById('api-db-healthcheck');
 		} catch (error) {
 			// If any error occurred in the find operation execution on the database,
 			// it should be indicated as a MongoDB read operation time check failure

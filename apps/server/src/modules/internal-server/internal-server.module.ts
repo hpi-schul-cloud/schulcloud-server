@@ -12,6 +12,7 @@ import { HealthApiModule, HealthEntities } from '@src/modules/health';
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
 			entities: [...HealthEntities],
+			ensureIndexes: true,
 			// debug: true, // use it only for the local queries debugging
 		}),
 		HealthApiModule,
