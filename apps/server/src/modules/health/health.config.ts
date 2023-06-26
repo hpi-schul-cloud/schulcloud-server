@@ -10,9 +10,7 @@ export class HealthConfig {
 	}
 
 	private constructor() {
-		this._exclude_mongodb_read_op_time_check = Configuration.get(
-			'HEALTHCHECKS_EXCLUDE_MONGODB_READ_OP_TIME_CHECK'
-		) as boolean;
+		this._exclude_mongodb_read_op_time_check = Configuration.get('HEALTHCHECKS_EXCLUDE_MONGODB') as boolean;
 	}
 
 	public static get instance() {

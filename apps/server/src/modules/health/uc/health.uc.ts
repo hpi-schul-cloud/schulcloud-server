@@ -50,15 +50,15 @@ export class HealthUc {
 	}
 
 	async checkOverallHealth(): Promise<HealthStatus> {
-		// The below check allows for turning off the MongoDB dependency on the healthcheck - it
-		// shouldn't be typically used, but if this healthcheck will be used e.g. in the k8s
+		// The below check allows for turning off the MongoDB dependency on the healthcheck -
+		// it shouldn't be typically used, but if this healthcheck will be used e.g. in the k8s
 		// liveness or readiness probes and, for any reason, there would be a need to stop
 		// including MongoDB read operation time check in the overall API health checks, the
-		// HEALTHCHECKS_EXCLUDE_MONGODB_READ_OP_TIME_CHECK config var can be set to true to
-		// disable it. This way, as currently only this single MongoDB read operation time check
-		// is included in the overall API health checks, the whole health check will not perform
-		// any additional checks on any of the 3rd party services and thus will behave like the
-		// self-only API health check.
+		// HEALTHCHECKS_EXCLUDE_MONGODB config var can be set to 'true' to disable it. This way,
+		// as currently only this single MongoDB read operation time check is included in the
+		// overall API health checks, the whole health check will not perform any additional
+		// checks on any of the 3rd party services and thus will behave like the self-only API
+		// health check.
 		if (HealthConfig.instance.excludeMongoDBReadOpTimeCheck) {
 			return new HealthStatus({
 				status: HealthStatuses.STATUS_PASS,

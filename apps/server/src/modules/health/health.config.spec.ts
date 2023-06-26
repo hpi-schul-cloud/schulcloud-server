@@ -27,7 +27,7 @@ describe(HealthConfig.name, () => {
 
 		describe('should have correct value loaded from the configuration for the', () => {
 			it("'excludeMongoDBReadOpTimeCheck' toggle", () => {
-				Configuration.set('HEALTHCHECKS_EXCLUDE_MONGODB_READ_OP_TIME_CHECK', true);
+				Configuration.set('HEALTHCHECKS_EXCLUDE_MONGODB', true);
 				HealthConfig.reload();
 
 				expect(HealthConfig.instance.excludeMongoDBReadOpTimeCheck).toBe(true);

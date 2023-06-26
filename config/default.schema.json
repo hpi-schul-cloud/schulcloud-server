@@ -1207,10 +1207,10 @@
 				}
 			}
 		},
-		"HEALTHCHECKS_EXCLUDE_MONGODB_READ_OP_TIME_CHECK": {
+		"HEALTHCHECKS_EXCLUDE_MONGODB": {
 			"type": "boolean",
 			"default": false,
-			"description": "Toggle that, when enabled, excludes MongoDB read operation check from the healthchecks."
+			"description": "Toggle that, when enabled, excludes MongoDB from the healthchecks."
 		}
 	},
 	"required": [
