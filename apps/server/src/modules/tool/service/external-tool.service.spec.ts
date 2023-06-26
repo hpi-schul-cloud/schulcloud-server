@@ -177,7 +177,10 @@ describe('ExternalToolService', () => {
 				const { externalToolDO, lti11ToolConfigDO } = setup();
 				externalToolDO.config = lti11ToolConfigDO;
 				const lti11ToolConfigDOEncrypted: Lti11ToolConfigDO = { ...lti11ToolConfigDO, secret: encryptedSecret };
-				const externalToolDOEncrypted: ExternalToolDO = { ...externalToolDO, config: lti11ToolConfigDOEncrypted };
+				const externalToolDOEncrypted: ExternalToolDO = externalToolDOFactory.build({
+					...externalToolDO,
+					config: lti11ToolConfigDOEncrypted,
+				});
 
 				encryptionService.encrypt.mockReturnValue(encryptedSecret);
 				externalToolRepo.save.mockResolvedValue(externalToolDOEncrypted);
@@ -595,7 +598,10 @@ describe('ExternalToolService', () => {
 					},
 					'toolId'
 				);
-				const expected: ExternalToolDO = { ...externalToolDO, parameters: schoolParameters };
+				const expected: ExternalToolDO = externalToolDOFactory.build({
+					...externalToolDO,
+					parameters: schoolParameters,
+				});
 
 				externalToolRepo.findById.mockResolvedValue(externalToolDO);
 

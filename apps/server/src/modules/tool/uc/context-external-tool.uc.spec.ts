@@ -178,7 +178,7 @@ describe('ContextExternalToolUc', () => {
 				await uc.getContextExternalToolsForContext(userId, contextType, contextId);
 
 				expect(contextExternalToolService.ensureContextPermissions).toHaveBeenCalledWith(userId, contextExternalTool, {
-					requiredPermissions: [Permission.CONTEXT_TOOL_USER],
+					requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 					action: Action.read,
 				});
 			});
@@ -188,7 +188,7 @@ describe('ContextExternalToolUc', () => {
 
 				contextExternalToolService.ensureContextPermissions.mockRejectedValue(
 					new ForbiddenLoggableException(userId, 'contextExternalTool', {
-						requiredPermissions: [Permission.CONTEXT_TOOL_USER],
+						requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 						action: Action.read,
 					})
 				);
