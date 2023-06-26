@@ -3,14 +3,14 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 export class HealthConfig {
 	private static _instance: HealthConfig;
 
-	private readonly _exclude_mongodb_read_op_time_check: boolean;
+	private readonly _exclude_mongodb: boolean;
 
-	get excludeMongoDBReadOpTimeCheck(): boolean {
-		return this._exclude_mongodb_read_op_time_check;
+	get excludeMongoDB(): boolean {
+		return this._exclude_mongodb;
 	}
 
 	private constructor() {
-		this._exclude_mongodb_read_op_time_check = Configuration.get('HEALTHCHECKS_EXCLUDE_MONGODB') as boolean;
+		this._exclude_mongodb = Configuration.get('HEALTHCHECKS_EXCLUDE_MONGODB') as boolean;
 	}
 
 	public static get instance() {

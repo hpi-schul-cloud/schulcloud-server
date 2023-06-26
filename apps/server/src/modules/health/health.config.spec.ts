@@ -20,17 +20,17 @@ describe(HealthConfig.name, () => {
 		});
 
 		describe('should have correct default value for the', () => {
-			it("'excludeMongoDBReadOpTimeCheck' toggle", () => {
-				expect(HealthConfig.instance.excludeMongoDBReadOpTimeCheck).toBe(false);
+			it("'excludeMongoDB' toggle", () => {
+				expect(HealthConfig.instance.excludeMongoDB).toBe(false);
 			});
 		});
 
 		describe('should have correct value loaded from the configuration for the', () => {
-			it("'excludeMongoDBReadOpTimeCheck' toggle", () => {
+			it("'excludeMongoDB' toggle", () => {
 				Configuration.set('HEALTHCHECKS_EXCLUDE_MONGODB', true);
 				HealthConfig.reload();
 
-				expect(HealthConfig.instance.excludeMongoDBReadOpTimeCheck).toBe(true);
+				expect(HealthConfig.instance.excludeMongoDB).toBe(true);
 			});
 		});
 	});

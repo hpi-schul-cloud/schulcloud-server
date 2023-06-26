@@ -59,7 +59,7 @@ export class HealthUc {
 		// overall API health checks, the whole health check will not perform any additional
 		// checks on any of the 3rd party services and thus will behave like the self-only API
 		// health check.
-		if (HealthConfig.instance.excludeMongoDBReadOpTimeCheck) {
+		if (HealthConfig.instance.excludeMongoDB) {
 			return new HealthStatus({
 				status: HealthStatuses.STATUS_PASS,
 				description: overallHealthDescription,
