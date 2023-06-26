@@ -15,5 +15,9 @@ spec:
       targetPort: 3030
       protocol: TCP
       name: api
+    - port: {{ PORT_METRICS_SERVER }}
+      targetPort: 9090
+      protocol: TCP
+      name: api-metrics
   selector:
     app: api

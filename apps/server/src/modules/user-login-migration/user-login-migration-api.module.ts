@@ -8,10 +8,22 @@ import { UserMigrationController } from './controller/user-migration.controller'
 import { PageContentMapper } from './mapper/page-content.mapper';
 import { UserLoginMigrationUc } from './uc/user-login-migration.uc';
 import { UserLoginMigrationModule } from './user-login-migration.module';
+import { SchoolModule } from '../school';
+import { AuthorizationModule } from '../authorization';
+import { StartUserLoginMigrationUc } from './uc/start-user-login-migration.uc';
+import { RestartUserLoginMigrationUc } from './uc/restart-user-login-migration.uc';
 
 @Module({
-	imports: [UserLoginMigrationModule, OauthModule, ProvisioningModule, AuthenticationModule, LoggerModule],
-	providers: [UserLoginMigrationUc, PageContentMapper],
+	imports: [
+		UserLoginMigrationModule,
+		OauthModule,
+		ProvisioningModule,
+		AuthenticationModule,
+		AuthorizationModule,
+		LoggerModule,
+		SchoolModule,
+	],
+	providers: [UserLoginMigrationUc, StartUserLoginMigrationUc, RestartUserLoginMigrationUc, PageContentMapper],
 	controllers: [UserMigrationController, UserLoginMigrationController],
 })
 export class UserLoginMigrationApiModule {}

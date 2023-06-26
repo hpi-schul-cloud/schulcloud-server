@@ -116,12 +116,11 @@ describe('UserService', () => {
 
 	describe('findById', () => {
 		beforeEach(() => {
-			const userDO: UserDO = new UserDO({
+			const userDO: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.STUDENT }]).build({
 				firstName: 'firstName',
 				lastName: 'lastName',
 				email: 'email',
 				schoolId: 'schoolId',
-				roleIds: ['roleId'],
 				externalId: 'externalUserId',
 			});
 			userDORepo.findById.mockResolvedValue(userDO);
@@ -179,56 +178,30 @@ describe('UserService', () => {
 
 		it('should return only the last name when the user has a protected role', async () => {
 			// Arrange
-			const userDto: UserDto = { roleIds: [role.id], lastName: 'lastName' } as UserDto;
+			const user: UserDO = userDoFactory.withRoles([{ id: role.id, name: RoleName.STUDENT }]).buildWithId({
+				lastName: 'lastName',
+			});
 
 			// Act
-			const result: string = await service.getDisplayName(userDto);
+			const result: string = await service.getDisplayName(user);
 
 			// Assert
-			expect(result).toEqual(userDto.lastName);
-			expect(roleService.getProtectedRoles).toHaveBeenCalled();
-		});
-
-		it('should return the id when the user has a protected role and the last name is missing', async () => {
-			// Arrange
-			const userDto: UserDto = { roleIds: [role.id], id: 'id' } as UserDto;
-
-			// Act
-			const result: string = await service.getDisplayName(userDto);
-
-			// Assert
-			expect(result).toEqual(userDto.id);
+			expect(result).toEqual(user.lastName);
 			expect(roleService.getProtectedRoles).toHaveBeenCalled();
 		});
 
 		it('should return the first name and last name when the user has no protected role', async () => {
 			// Arrange
-			const userDto: UserDto = {
-				id: 'id',
+			const user: UserDO = userDoFactory.withRoles([{ id: 'unprotectedId', name: RoleName.STUDENT }]).buildWithId({
 				lastName: 'lastName',
 				firstName: 'firstName',
-			} as UserDto;
+			});
 
 			// Act
-			const result: string = await service.getDisplayName(userDto);
+			const result: string = await service.getDisplayName(user);
 
 			// Assert
-			expect(result).toEqual(`${userDto.firstName} ${userDto.lastName}`);
-			expect(roleService.getProtectedRoles).toHaveBeenCalled();
-		});
-
-		it('should return the id when the user has no protected role and last name is missing', async () => {
-			// Arrange
-			const userDto: UserDto = {
-				id: 'id',
-				firstName: 'firstName',
-			} as UserDto;
-
-			// Act
-			const result: string = await service.getDisplayName(userDto);
-
-			// Assert
-			expect(result).toEqual(userDto.id);
+			expect(result).toEqual(`${user.firstName} ${user.lastName}`);
 			expect(roleService.getProtectedRoles).toHaveBeenCalled();
 		});
 	});
@@ -257,12 +230,11 @@ describe('UserService', () => {
 	describe('save is called', () => {
 		describe('when saving a new user', () => {
 			const setup = () => {
-				const user: UserDO = new UserDO({
+				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					firstName: 'firstName',
 					lastName: 'lastName',
 					schoolId: 'schoolId',
 					email: 'email',
-					roleIds: ['roleId'],
 				});
 
 				userDORepo.save.mockResolvedValue(user);
@@ -293,12 +265,11 @@ describe('UserService', () => {
 	describe('findByExternalId is called', () => {
 		describe('when a user with this external id exists', () => {
 			it('should return the user', async () => {
-				const user: UserDO = new UserDO({
+				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					firstName: 'firstName',
 					lastName: 'lastName',
 					schoolId: 'schoolId',
 					email: 'email',
-					roleIds: ['roleId'],
 					externalId: 'externalId',
 				});
 

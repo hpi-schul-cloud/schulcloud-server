@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { BoardExternalReferenceType } from '@shared/domain';
+import { BoardExternalReferenceType, ContentElementType } from '@shared/domain';
 import {
 	cleanupCollections,
 	columnBoardNodeFactory,
@@ -27,10 +27,11 @@ class API {
 		this.app = app;
 	}
 
-	async post(columnId: string) {
+	async post(columnId: string, requestBody?: object) {
 		const response = await request(this.app.getHttpServer())
 			.post(`${baseRouteName}/${columnId}/cards`)
-			.set('Accept', 'application/json');
+			.set('Accept', 'application/json')
+			.send(requestBody);
 
 		return {
 			result: response.body as CardResponse,
@@ -85,7 +86,11 @@ describe(`card create (api)`, () => {
 		await em.persistAndFlush([columnBoardNode, columnNode]);
 		em.clear();
 
-		return { user, columnBoardNode, columnNode };
+		const createCardBodyParams = {
+			requiredEmptyElements: [ContentElementType.RICH_TEXT, ContentElementType.FILE],
+		};
+
+		return { user, columnBoardNode, columnNode, createCardBodyParams };
 	};
 
 	describe('with valid user', () => {
@@ -105,6 +110,42 @@ describe(`card create (api)`, () => {
 			const { result } = await api.post(columnNode.id);
 
 			expect(result.id).toBeDefined();
+		});
+		it('created card should contain empty text and file elements', async () => {
+			const { user, columnNode, createCardBodyParams } = await setup();
+			currentUser = mapUserToCurrentUser(user);
+
+			const expectedEmptyElements = [
+				{
+					type: 'richText',
+					content: {
+						text: '',
+					},
+				},
+				{
+					type: 'file',
+					content: {
+						caption: '',
+					},
+				},
+			];
+
+			const { result } = await api.post(columnNode.id, createCardBodyParams);
+			const { elements } = result;
+
+			expect(elements[0]).toMatchObject(expectedEmptyElements[0]);
+			expect(elements[1]).toMatchObject(expectedEmptyElements[1]);
+		});
+		it('should return status 400 as the content element is unknown', async () => {
+			const { user, columnNode } = await setup();
+			currentUser = mapUserToCurrentUser(user);
+
+			const invalidBodyParams = {
+				requiredEmptyElements: ['unknown-content-element'],
+			};
+
+			const response = await api.post(columnNode.id, invalidBodyParams);
+			expect(response.status).toEqual(400);
 		});
 	});
 

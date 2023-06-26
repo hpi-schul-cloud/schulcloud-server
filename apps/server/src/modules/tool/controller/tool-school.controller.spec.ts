@@ -13,7 +13,7 @@ import {
 	SchoolExternalToolResponse,
 	SchoolExternalToolSearchListResponse,
 	SchoolExternalToolSearchParams,
-	SchoolExternalToolStatusResponse,
+	ToolConfigurationStatusResponse,
 } from './dto';
 import { SchoolExternalToolRequestMapper } from './mapper/school-external-tool-request.mapper';
 
@@ -126,7 +126,7 @@ describe('ToolSchoolController', () => {
 								value: 'value',
 							},
 						],
-						status: SchoolExternalToolStatusResponse.LATEST,
+						status: ToolConfigurationStatusResponse.LATEST,
 					}),
 				]);
 
@@ -195,7 +195,7 @@ describe('ToolSchoolController', () => {
 					name: 'name',
 					parameters: [],
 					schoolId: 'schoolId',
-					status: SchoolExternalToolStatusResponse.LATEST,
+					status: ToolConfigurationStatusResponse.LATEST,
 					toolId: 'toolId',
 					toolVersion: 0,
 					id: 'id',

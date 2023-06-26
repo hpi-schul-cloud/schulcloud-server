@@ -13,6 +13,7 @@ import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.e
 import { BaseEntity } from './base.entity';
 import { SchoolYear } from './schoolyear.entity';
 import { System } from './system.entity';
+import { FederalState } from './federal-state.entity';
 
 export enum SchoolFeatures {
 	ROCKET_CHAT = 'rocketChat',
@@ -35,6 +36,7 @@ export interface ISchoolProperties {
 	features?: SchoolFeatures[];
 	schoolYear?: SchoolYear;
 	userLoginMigration?: UserLoginMigration;
+	federalState: FederalState;
 }
 
 @Embeddable()
@@ -95,6 +97,9 @@ export class School extends BaseEntity {
 	})
 	userLoginMigration?: UserLoginMigration;
 
+	@ManyToOne(() => FederalState, { fieldName: 'federalState', nullable: false })
+	federalState: FederalState;
+
 	constructor(props: ISchoolProperties) {
 		super();
 		if (props.externalId) {
@@ -103,9 +108,7 @@ export class School extends BaseEntity {
 		if (props.previousExternalId) {
 			this.previousExternalId = props.previousExternalId;
 		}
-		if (props.inMaintenanceSince) {
-			this.inMaintenanceSince = props.inMaintenanceSince;
-		}
+		this.inMaintenanceSince = props.inMaintenanceSince;
 		if (props.inUserMigration !== null) {
 			this.inUserMigration = props.inUserMigration;
 		}
@@ -125,5 +128,6 @@ export class School extends BaseEntity {
 		if (props.userLoginMigration) {
 			this.userLoginMigration = props.userLoginMigration;
 		}
+		this.federalState = props.federalState;
 	}
 }
