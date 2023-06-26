@@ -63,7 +63,7 @@ class ConsentVersionService {
 				schoolId,
 				data: consentDocumentData.consentData,
 				filetype: 'pdf',
-				filename: 'Datenschutzerklärung',
+				filename: 'Privacy Policy',
 			});
 		}
 		return Promise.resolve({});
