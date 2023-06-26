@@ -14,7 +14,13 @@ import {
 import { ToolLaunchController } from './launch-tool/controller/tool-launch.controller';
 import { ToolLaunchUc } from './launch-tool/uc/tool-launch.uc';
 import { ToolModule } from './tool.module';
-import { ContextExternalToolUc, ExternalToolConfigurationUc, ExternalToolUc, SchoolExternalToolUc } from './uc';
+import {
+	ContextExternalToolUc,
+	ExternalToolConfigurationUc,
+	ExternalToolUc,
+	SchoolExternalToolUc,
+	ToolReferenceUc,
+} from './uc';
 
 @Module({
 	imports: [ToolModule, UserModule, AuthorizationModule, LoggerModule, SchoolModule],
@@ -36,6 +42,7 @@ import { ContextExternalToolUc, ExternalToolConfigurationUc, ExternalToolUc, Sch
 		SchoolExternalToolRequestMapper,
 		ContextExternalToolUc,
 		ToolLaunchUc,
+		ToolReferenceUc,
 	],
 })
 export class ToolApiModule {}

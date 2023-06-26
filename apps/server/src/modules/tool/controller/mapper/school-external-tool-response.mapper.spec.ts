@@ -4,7 +4,7 @@ import { SchoolExternalToolResponseMapper } from './school-external-tool-respons
 import {
 	SchoolExternalToolResponse,
 	SchoolExternalToolSearchListResponse,
-	SchoolExternalToolStatusResponse,
+	ToolConfigurationStatusResponse,
 } from '../dto';
 
 describe('SchoolExternalToolResponseMapper', () => {
@@ -55,7 +55,7 @@ describe('SchoolExternalToolResponseMapper', () => {
 									value: do1.parameters[0].value,
 								},
 							],
-							status: SchoolExternalToolStatusResponse.LATEST,
+							status: ToolConfigurationStatusResponse.LATEST,
 						},
 						{
 							id: do2.id as string,
@@ -69,7 +69,7 @@ describe('SchoolExternalToolResponseMapper', () => {
 									value: do2.parameters[0].value,
 								},
 							],
-							status: SchoolExternalToolStatusResponse.UNKNOWN,
+							status: ToolConfigurationStatusResponse.UNKNOWN,
 						},
 					])
 				);
@@ -89,7 +89,7 @@ describe('SchoolExternalToolResponseMapper', () => {
 					expect.objectContaining({
 						id: '',
 						name: '',
-						status: SchoolExternalToolStatusResponse.UNKNOWN,
+						status: ToolConfigurationStatusResponse.UNKNOWN,
 					})
 				);
 			});
