@@ -9,6 +9,14 @@ const { connect, close } = require('../src/utils/database');
 // use your own name for your model, otherwise other migrations may fail.
 // The third parameter is the actually relevent one for what collection to write to.
 
+const customParameterEntrySchema = new Schema(
+	{
+		key: String,
+		value: String,
+	},
+	{ _id: false }
+);
+
 const LtiTool = mongoose.model(
 	'ltitool0906202311481',
 	new mongoose.Schema(
@@ -44,8 +52,6 @@ const LtiTool = mongoose.model(
 			openNewTab: { type: Boolean, required: true, default: false },
 			frontchannel_logout_uri: { type: String },
 			isHidden: { type: Boolean, required: true, default: false },
-			createdAt: { type: Date, default: Date.now },
-			updatedAt: { type: Date, default: Date.now },
 		},
 		{
 			timestamps: true,
@@ -110,8 +116,6 @@ const ExternalTool = mongoose.model(
 			isHidden: { type: Boolean, required: true },
 			openNewTab: { type: Boolean, required: true },
 			version: { type: Number, required: true },
-			createdAt: { type: Date, default: Date.now },
-			updatedAt: { type: Date, default: Date.now },
 		},
 		{
 			timestamps: true,
@@ -127,10 +131,8 @@ const SchoolExternalTool = mongoose.model(
 			_id: { type: Schema.Types.ObjectId, required: true },
 			tool: { type: Schema.Types.ObjectId, ref: 'externalTool', required: true },
 			school: { type: Schema.Types.ObjectId, required: true },
-			schoolParameters: [{ type: { key: { type: String }, value: { type: String } } }],
+			schoolParameters: [customParameterEntrySchema],
 			toolVersion: { type: Number, required: true },
-			createdAt: { type: Date, default: Date.now },
-			updatedAt: { type: Date, default: Date.now },
 		},
 		{
 			timestamps: true,
@@ -148,10 +150,8 @@ const ContextExternalTool = mongoose.model(
 			contextId: { type: Schema.Types.ObjectId, required: true },
 			contextType: { type: String, enum: ['course'], required: true },
 			contextToolName: { type: String },
-			parameters: [{ type: { key: { type: String }, value: { type: String } } }],
+			parameters: [customParameterEntrySchema],
 			toolVersion: { type: Number, required: true },
-			createdAt: { type: Date, default: Date.now },
-			updatedAt: { type: Date, default: Date.now },
 		},
 		{
 			timestamps: true,
@@ -166,6 +166,7 @@ const Course = mongoose.model(
 		{
 			_id: { type: Schema.Types.ObjectId, required: true },
 			school: { type: Schema.Types.ObjectId, required: true },
+			ltiToolIds: [{ type: Schema.Types.ObjectId, ref: 'ltiTool' }],
 		},
 		{
 			timestamps: true,
@@ -179,10 +180,6 @@ function mapToExternalToolParameter(ltiToolTemplate) {
 		return {
 			name: parameter.key,
 			displayName: parameter.key,
-			description: '',
-			default: '',
-			regex: '',
-			regexComment: '',
 			scope: 'context',
 			location: 'body',
 			type: 'string',
@@ -228,12 +225,12 @@ function toolConfigMapper(ltiToolTemplate) {
 	return toolConfig;
 }
 
-function mapToExternalTool(ltiToolTemplate) {
+function mapToExternalTool(ltiToolTemplate, ltiTool) {
 	return {
 		name: ltiToolTemplate.name,
 		url: ltiToolTemplate.url,
 		logoUrl: ltiToolTemplate.logo_url,
-		parameters: mapToExternalToolParameter(ltiToolTemplate),
+		parameters: mapToExternalToolParameter(ltiTool),
 		isHidden: ltiToolTemplate.isHidden,
 		openNewTab: ltiToolTemplate.openNewTab,
 		version: 1,
@@ -241,21 +238,20 @@ function mapToExternalTool(ltiToolTemplate) {
 	};
 }
 
-function mapToSchoolExternalTool(externalTool, ltiToolTemplate, context) {
+function mapToSchoolExternalTool(externalTool, course) {
 	return {
 		tool: externalTool._id,
-		school: context.schoolId,
-		schoolParameters: mapToCustomParameterEntry(externalTool.parameters, ltiToolTemplate.customes),
+		school: course.schoolId,
+		schoolParameters: [],
 		toolVersion: externalTool.version,
 	};
 }
 
-function mapToContextExternalTool(schoolExternalTool, externalTool, context) {
+function mapToContextExternalTool(schoolExternalTool, course) {
 	return {
 		schoolTool: schoolExternalTool._id,
-		contextId: context.id,
+		contextId: course.id,
 		contextType: 'course',
-		contextToolName: externalTool.name,
 		parameters: schoolExternalTool.parameters,
 		toolVersion: schoolExternalTool.version,
 	};
@@ -315,14 +311,13 @@ module.exports = {
 			// GET EXTERNALTOOL
 			let externalTool = await ExternalTool.findOne({
 				name: toolTemplate.name,
-				url: toolTemplate.url, // or other paramter for the query
 			})
 				.lean()
 				.exec();
 
 			// CHECK IF EXTERNALTOOL EXISTS
 			if (externalTool === undefined) {
-				externalTool = mapToExternalTool(toolTemplate);
+				externalTool = mapToExternalTool(toolTemplate, ltiTool);
 				externalTool = await ExternalTool.save(externalTool);
 			}
 
@@ -332,8 +327,6 @@ module.exports = {
 			const schoolExternalTools = await SchoolExternalTool.find({
 				school: course.schoolId,
 				tool: externalTool._id,
-				name: externalTool.name,
-				url: externalTool.url, // or other paramter for the query
 			})
 				.lean()
 				.exec();
