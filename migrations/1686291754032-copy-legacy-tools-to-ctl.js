@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 const mongoose = require('mongoose');
 // eslint-disable-next-line no-unused-vars
 const { alert, error, info } = require('../src/logger');
@@ -11,7 +12,7 @@ const { connect, close } = require('../src/utils/database');
 
 const customParameterEntrySchema = new Schema(
 	{
-		key: String,
+		name: String,
 		value: String,
 	},
 	{ _id: false }
@@ -21,15 +22,15 @@ const LtiTool = mongoose.model(
 	'ltitool0906202311481',
 	new mongoose.Schema(
 		{
-			_id: { type: Schema.Types.ObjectId, required: true },
-			name: { type: String, required: true },
-			url: { type: String, required: true },
-			key: { type: String },
-			secret: { type: String, required: true, default: 'none' },
-			logo_url: { type: String },
-			lti_message_type: { type: String },
-			lti_version: { type: String },
-			resource_link_id: { type: String },
+			_id: Schema.Types.ObjectId,
+			name: String,
+			url: String,
+			key: String,
+			secret: String,
+			logo_url: String,
+			lti_message_type: String,
+			lti_version: String,
+			resource_link_id: String,
 			roles: [
 				{
 					type: String,
@@ -39,19 +40,17 @@ const LtiTool = mongoose.model(
 			privacy_permission: {
 				type: String,
 				enum: ['anonymous', 'e-mail', 'name', 'public', 'pseudonymous'],
-				required: true,
-				default: 'anonymous',
 			},
 			customs: [{ type: { key: { type: String }, value: { type: String } } }],
-			isTemplate: { type: Boolean, required: true, default: false },
-			isLocal: { type: Boolean },
+			isTemplate: Boolean,
+			isLocal: Boolean,
 			originTool: { type: Schema.Types.ObjectId, ref: 'ltiTool' },
-			oAuthClientId: { type: String },
+			oAuthClientId: String,
 			friendlyUrl: { type: String, unique: true },
-			skipConsent: { type: Boolean },
-			openNewTab: { type: Boolean, required: true, default: false },
-			frontchannel_logout_uri: { type: String },
-			isHidden: { type: Boolean, required: true, default: false },
+			skipConsent: Boolean,
+			openNewTab: Boolean,
+			frontchannel_logout_uri: String,
+			isHidden: Boolean,
 		},
 		{
 			timestamps: true,
@@ -64,17 +63,17 @@ const ExternalTool = mongoose.model(
 	'external_tool0906202311482',
 	new mongoose.Schema(
 		{
-			_id: { type: Schema.Types.ObjectId, required: true },
+			_id: Schema.Types.ObjectId,
 			name: { type: String, unique: true },
-			url: { type: String },
-			logoUrl: { type: String },
-			config_type: { type: String, required: true },
-			config_baseUrl: { type: String, required: true },
-			config_clientId: { type: String },
-			config_skipConsent: { type: Boolean },
-			config_key: { type: String },
-			config_secret: { type: String },
-			config_resource_link_id: { type: String },
+			url: String,
+			logoUrl: String,
+			config_type: String,
+			config_baseUrl: String,
+			config_clientId: String,
+			config_skipConsent: Boolean,
+			config_key: String,
+			config_secret: String,
+			config_resource_link_id: String,
 			config_lti_message_type: {
 				type: String,
 				enum: ['basic-lti-launch-request', 'LtiResourceLinkRequest', 'LtiDeepLinkingRequest'],
@@ -82,40 +81,36 @@ const ExternalTool = mongoose.model(
 			config_privacy_permission: {
 				type: String,
 				enum: ['anonymous', 'e-mail', 'name', 'public', 'pseudonymous'],
-				default: 'anonymous',
 			},
 			parameters: [
 				{
 					type: {
-						name: { type: String, required: true },
-						displayName: { type: String, required: true },
-						description: { type: String },
-						default: { type: String },
-						regex: { type: String },
-						regexComment: { type: String },
+						name: String,
+						displayName: String,
+						description: String,
+						default: String,
+						regex: String,
+						regexComment: String,
 						scope: {
 							type: String,
 							enum: ['global', 'school', 'context'],
-							required: true,
 						},
 						location: {
 							type: String,
 							enum: ['path', 'body', 'query'],
-							required: true,
 						},
 						type: {
 							type: String,
 							enum: ['string', 'number', 'boolean', 'auto_contextid', 'auto_contextname', 'auto_schoolid'],
-							required: true,
 						},
-						isOptional: { type: Boolean, required: true },
+						isOptional: Boolean,
 					},
 				},
 			],
 
-			isHidden: { type: Boolean, required: true },
-			openNewTab: { type: Boolean, required: true },
-			version: { type: Number, required: true },
+			isHidden: Boolean,
+			openNewTab: Boolean,
+			version: Number,
 		},
 		{
 			timestamps: true,
@@ -128,11 +123,11 @@ const SchoolExternalTool = mongoose.model(
 	'school_external_tool0906202311483',
 	new mongoose.Schema(
 		{
-			_id: { type: Schema.Types.ObjectId, required: true },
-			tool: { type: Schema.Types.ObjectId, ref: 'externalTool', required: true },
-			school: { type: Schema.Types.ObjectId, required: true },
+			_id: Schema.Types.ObjectId,
+			tool: { type: Schema.Types.ObjectId, ref: 'externalTool' },
+			school: Schema.Types.ObjectId,
 			schoolParameters: [customParameterEntrySchema],
-			toolVersion: { type: Number, required: true },
+			toolVersion: Number,
 		},
 		{
 			timestamps: true,
@@ -145,13 +140,13 @@ const ContextExternalTool = mongoose.model(
 	'context_external_tool0906202311484',
 	new mongoose.Schema(
 		{
-			_id: { type: Schema.Types.ObjectId, required: true },
-			schoolTool: { type: Schema.Types.ObjectId, ref: 'schoolExternalTool', required: true },
-			contextId: { type: Schema.Types.ObjectId, required: true },
-			contextType: { type: String, enum: ['course'], required: true },
-			contextToolName: { type: String },
+			_id: Schema.Types.ObjectId,
+			schoolTool: { type: Schema.Types.ObjectId, ref: 'schoolExternalTool' },
+			contextId: Schema.Types.ObjectId,
+			contextType: { type: String, enum: ['course'] },
+			displayName: String,
 			parameters: [customParameterEntrySchema],
-			toolVersion: { type: Number, required: true },
+			toolVersion: Number,
 		},
 		{
 			timestamps: true,
@@ -164,8 +159,8 @@ const Course = mongoose.model(
 	'course0906202311485',
 	new mongoose.Schema(
 		{
-			_id: { type: Schema.Types.ObjectId, required: true },
-			school: { type: Schema.Types.ObjectId, required: true },
+			_id: Schema.Types.ObjectId,
+			school: Schema.Types.ObjectId,
 			ltiToolIds: [{ type: Schema.Types.ObjectId, ref: 'ltiTool' }],
 		},
 		{
@@ -189,10 +184,11 @@ function mapToExternalToolParameter(ltiToolTemplate) {
 }
 
 function mapToCustomParameterEntry(externalToolParameters, ltiToolCustomes) {
-	return externalToolParameters.map((parameter, index) => {
+	return externalToolParameters.map((parameter) => {
+		const value = ltiToolCustomes.find((item) => item.key === parameter.name);
 		return {
 			name: parameter.name,
-			value: ltiToolCustomes[index].value,
+			value,
 		};
 	});
 }
@@ -218,7 +214,7 @@ function toolConfigMapper(ltiToolTemplate) {
 			config_secret: ltiToolTemplate.secret,
 			config_ressource_link_id: ltiToolTemplate.ressource_link_id,
 			config_lti_message_type: ltiToolTemplate.lti_message_type,
-			config_privacy_permission: ltiToolTemplate.privacy_permission,
+			config_privacy_permission: ltiToolTemplate.privacy_permission || 'anonymous',
 		};
 	}
 
@@ -247,12 +243,12 @@ function mapToSchoolExternalTool(externalTool, course) {
 	};
 }
 
-function mapToContextExternalTool(schoolExternalTool, course) {
+function mapToContextExternalTool(ltiTool, externalTool, schoolExternalTool, course) {
 	return {
 		schoolTool: schoolExternalTool._id,
 		contextId: course.id,
 		contextType: 'course',
-		parameters: schoolExternalTool.parameters,
+		parameters: mapToCustomParameterEntry(externalTool.parameter, ltiTool.customs),
 		toolVersion: schoolExternalTool.version,
 	};
 }
@@ -290,7 +286,6 @@ module.exports = {
 			.lean()
 			.exec();
 
-		/* eslint-disable no-await-in-loop */
 		for (const ltiTool of ltiTools) {
 			// GET TOOLTEMPLATE
 			const toolTemplate = ltiToolTemplates.filter((template) => template._id === ltiTool.originTool);
@@ -321,10 +316,8 @@ module.exports = {
 				externalTool = await ExternalTool.save(externalTool);
 			}
 
-			let schoolExternalTool;
-
 			// GET SCHOOLEXTERNALTOOL
-			const schoolExternalTools = await SchoolExternalTool.find({
+			let schoolExternalTool = await SchoolExternalTool.findOne({
 				school: course.schoolId,
 				tool: externalTool._id,
 			})
@@ -332,11 +325,9 @@ module.exports = {
 				.exec();
 
 			// CHECK IF SCHOOLEXTERNALTOOL EXISTS
-			if ((schoolExternalTools || []).length === 0) {
+			if (schoolExternalTool === undefined) {
 				schoolExternalTool = mapToSchoolExternalTool(externalTool, course);
 				schoolExternalTool = await SchoolExternalTool.save(schoolExternalTool);
-			} else {
-				schoolExternalTool = schoolExternalTools.filter((tool) => tool.name === externalTool.name); // filter with more parameter?
 			}
 
 			// GET CONTEXTEXTERNALTOOL
@@ -351,7 +342,6 @@ module.exports = {
 			// CHECK IF CONTEXTEXTERNALTOOL EXISTS
 			if ((contextExternalTools || []).length === 0) {
 				const contextExternalTool = mapToContextExternalTool(schoolExternalTool, course);
-
 				await ContextExternalTool.save(contextExternalTool);
 			}
 		}
