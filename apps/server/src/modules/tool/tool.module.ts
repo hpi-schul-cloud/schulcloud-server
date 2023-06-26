@@ -21,6 +21,7 @@ import {
 } from './launch-tool/service/strategy';
 import { ToolLaunchService } from './launch-tool/service/tool-launch.service';
 import {
+	CommonToolService,
 	CommonToolValidationService,
 	ContextExternalToolService,
 	ContextExternalToolValidationService,
@@ -62,6 +63,7 @@ import { ExternalToolServiceMapper } from './service/mapper';
 		BasicToolLaunchStrategy,
 		Lti11ToolLaunchStrategy,
 		OAuth2ToolLaunchStrategy,
+		CommonToolService,
 	],
 	exports: [
 		ExternalToolService,
@@ -73,6 +75,7 @@ import { ExternalToolServiceMapper } from './service/mapper';
 		SchoolExternalToolValidationService,
 		ContextExternalToolValidationService,
 		ToolLaunchService,
+		CommonToolService,
 	],
 })
 export class ToolModule {}

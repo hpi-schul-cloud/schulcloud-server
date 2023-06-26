@@ -1,8 +1,11 @@
 import { CustomParameterEntryDO } from './custom-parameter-entry.do';
 import { BaseDO } from '../base.do';
-import { SchoolExternalToolStatus } from './school-external-tool-status';
+import { ToolConfigurationStatus } from './tool-configuration-status';
+import { ToolVersion } from './types';
 
-export class SchoolExternalToolDO extends BaseDO {
+export interface SchoolExternalToolProps {
+	id?: string;
+
 	name?: string;
 
 	toolId: string;
@@ -13,15 +16,33 @@ export class SchoolExternalToolDO extends BaseDO {
 
 	toolVersion: number;
 
-	status?: SchoolExternalToolStatus;
+	status?: ToolConfigurationStatus;
+}
 
-	constructor(domainObject: SchoolExternalToolDO) {
-		super(domainObject.id);
-		this.name = domainObject.name;
-		this.toolId = domainObject.toolId;
-		this.schoolId = domainObject.schoolId;
-		this.parameters = domainObject.parameters;
-		this.toolVersion = domainObject.toolVersion;
-		this.status = domainObject.status;
+export class SchoolExternalToolDO extends BaseDO implements ToolVersion {
+	name?: string;
+
+	toolId: string;
+
+	schoolId: string;
+
+	parameters: CustomParameterEntryDO[];
+
+	toolVersion: number;
+
+	status?: ToolConfigurationStatus;
+
+	constructor(props: SchoolExternalToolProps) {
+		super(props.id);
+		this.name = props.name;
+		this.toolId = props.toolId;
+		this.schoolId = props.schoolId;
+		this.parameters = props.parameters;
+		this.toolVersion = props.toolVersion;
+		this.status = props.status;
+	}
+
+	getVersion(): number {
+		return this.toolVersion;
 	}
 }

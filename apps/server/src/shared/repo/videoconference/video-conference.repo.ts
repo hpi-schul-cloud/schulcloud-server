@@ -3,7 +3,7 @@ import { IVideoConferenceProperties, VideoConferenceDO } from '@shared/domain';
 import { TargetModels, VideoConference } from '@shared/domain/entity/video-conference.entity';
 import { VideoConferenceScope } from '@shared/domain/interface';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
-import { EntityName } from '@mikro-orm/core';
+import { EntityName, Loaded } from '@mikro-orm/core';
 
 const TargetModelsMapping = {
 	[VideoConferenceScope.EVENT]: TargetModels.EVENTS,
@@ -25,9 +25,9 @@ export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConf
 		return new VideoConference(props);
 	}
 
-	async findByScopeId(target: string, videoConferenceScope: VideoConferenceScope): Promise<VideoConferenceDO> {
-		const entity = await this._em.findOneOrFail(VideoConference, {
-			target,
+	async findByScopeAndScopeId(scopeId: string, videoConferenceScope: VideoConferenceScope): Promise<VideoConferenceDO> {
+		const entity: Loaded<VideoConference> = await this._em.findOneOrFail(VideoConference, {
+			target: scopeId,
 			targetModel: TargetModelsMapping[videoConferenceScope],
 		});
 
