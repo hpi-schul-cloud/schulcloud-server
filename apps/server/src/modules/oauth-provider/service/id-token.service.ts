@@ -1,12 +1,10 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ExternalToolDO, PseudonymDO, Team, UserDO } from '@shared/domain';
-import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { ExternalToolDO, LtiToolDO, PseudonymDO, Team, UserDO } from '@shared/domain';
 import { TeamsRepo } from '@shared/repo';
-import { GroupNameIdTuple, IdToken } from '@src/modules/oauth-provider/interface/id-token';
-import { OauthScope } from '@src/modules/oauth-provider/interface/oauth-scope.enum';
-import { PseudonymService } from '@src/modules/pseudonym/service';
-import { UserService } from '@src/modules/user/service/user.service';
+import { PseudonymService } from '@src/modules/pseudonym';
+import { UserService } from '@src/modules/user';
+import { GroupNameIdTuple, IdToken, OauthScope } from '../interface';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
 
 @Injectable()

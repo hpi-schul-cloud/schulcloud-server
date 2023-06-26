@@ -35,7 +35,7 @@ describe('LtiToolService', () => {
 			const setup = () => {
 				const ltiTool: LtiToolDO = ltiToolDOFactory.buildWithId();
 
-				ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(ltiTool);
+				ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValueOnce(ltiTool);
 
 				return {
 					ltiTool,

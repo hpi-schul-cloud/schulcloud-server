@@ -12,36 +12,66 @@ describe('BasicToolLaunchStrategy', () => {
 	});
 
 	describe('buildToolLaunchRequestPayload', () => {
-		const setup = () => {
-			const property1: PropertyData = new PropertyData({
-				name: 'param1',
-				value: 'value1',
-				location: PropertyLocation.BODY,
-			});
+		describe('when method is GET', () => {
+			const setup = () => {
+				const property1: PropertyData = new PropertyData({
+					name: 'param1',
+					value: 'value1',
+					location: PropertyLocation.PATH,
+				});
 
-			const property2: PropertyData = new PropertyData({
-				name: 'param2',
-				value: 'value2',
-				location: PropertyLocation.BODY,
-			});
+				const property2: PropertyData = new PropertyData({
+					name: 'param2',
+					value: 'value2',
+					location: PropertyLocation.QUERY,
+				});
 
-			const property3: PropertyData = new PropertyData({
-				name: 'param2',
-				value: 'value2',
-				location: PropertyLocation.PATH,
-			});
-
-			return {
-				properties: [property1, property2, property3],
+				return {
+					properties: [property1, property2],
+				};
 			};
-		};
 
-		it('should build the tool launch request payload correctly', () => {
-			const { properties } = setup();
+			it('should return null', () => {
+				const { properties } = setup();
 
-			const payload: string | undefined = basicToolLaunchStrategy.buildToolLaunchRequestPayload('url', properties);
+				const payload: string | null = basicToolLaunchStrategy.buildToolLaunchRequestPayload('url', properties);
 
-			expect(payload).toEqual('{"param1":"value1","param2":"value2"}');
+				expect(payload).toBeNull();
+			});
+		});
+
+		describe('when method is POST', () => {
+			const setup = () => {
+				const property1: PropertyData = new PropertyData({
+					name: 'param1',
+					value: 'value1',
+					location: PropertyLocation.BODY,
+				});
+
+				const property2: PropertyData = new PropertyData({
+					name: 'param2',
+					value: 'value2',
+					location: PropertyLocation.BODY,
+				});
+
+				const property3: PropertyData = new PropertyData({
+					name: 'param3',
+					value: 'value3',
+					location: PropertyLocation.PATH,
+				});
+
+				return {
+					properties: [property1, property2, property3],
+				};
+			};
+
+			it('should build the tool launch request payload correctly', () => {
+				const { properties } = setup();
+
+				const payload: string | null = basicToolLaunchStrategy.buildToolLaunchRequestPayload('url', properties);
+
+				expect(payload).toEqual('{"param1":"value1","param2":"value2"}');
+			});
 		});
 	});
 
@@ -101,7 +131,7 @@ describe('BasicToolLaunchStrategy', () => {
 			});
 		});
 
-		describe('when no body property exists', () => {
+		describe('when a body property exists', () => {
 			const setup = () => {
 				const property1: PropertyData = new PropertyData({
 					name: 'param1',
@@ -116,8 +146,8 @@ describe('BasicToolLaunchStrategy', () => {
 				});
 
 				const property3: PropertyData = new PropertyData({
-					name: 'param2',
-					value: 'value2',
+					name: 'param3',
+					value: 'value3',
 					location: PropertyLocation.BODY,
 				});
 

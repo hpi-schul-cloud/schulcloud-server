@@ -16,8 +16,8 @@ export class OAuth2ToolLaunchStrategy extends AbstractLaunchStrategy {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public override buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string | undefined {
-		return undefined;
+	public override buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string | null {
+		return null;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars

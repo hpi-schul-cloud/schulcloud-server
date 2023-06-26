@@ -22,7 +22,7 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ExternalToolRepo, ExternalToolRepoMapper, ExternalToolSortingMapper } from '@shared/repo';
 import { cleanupCollections, externalToolFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { ExternalToolSearchQuery } from '@src/modules/tool/interface';
+import { ExternalToolSearchQuery } from '@src/modules/tool';
 
 describe('ExternalToolRepo', () => {
 	let module: TestingModule;

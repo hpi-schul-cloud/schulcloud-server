@@ -13,7 +13,7 @@ export class PseudonymService {
 		return pseudonymPromise;
 	}
 
-	public async requestPseudonym(userId: EntityId, toolId: EntityId): Promise<PseudonymDO> {
+	public async findOrCreatePseudonym(userId: EntityId, toolId: EntityId): Promise<PseudonymDO> {
 		let pseudonym: PseudonymDO | null = await this.pseudonymRepo.findByUserIdAndToolId(userId, toolId);
 
 		if (!pseudonym) {

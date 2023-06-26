@@ -18,11 +18,15 @@ export class OauthProviderLoginFlowService {
 		);
 		const ltiTool: LtiToolDO | null = await this.ltiToolService.findByClientIdAndIsLocal(clientId, true);
 
-		if (!externalTool && !ltiTool) {
-			throw new NotFoundException(`Unable to find ExternalTool or LtiTool for clientId: ${clientId}`);
+		if (externalTool) {
+			return externalTool;
 		}
 
-		return (externalTool ?? ltiTool) as ExternalToolDO | LtiToolDO;
+		if (ltiTool) {
+			return ltiTool;
+		}
+
+		throw new NotFoundException(`Unable to find ExternalTool or LtiTool for clientId: ${clientId}`);
 	}
 
 	// TODO N21-91. Magic Strings are not desireable

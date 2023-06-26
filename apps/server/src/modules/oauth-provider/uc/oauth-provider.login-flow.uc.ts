@@ -66,7 +66,7 @@ export class OauthProviderLoginFlowUc {
 			this.authorizationService.checkAllPermissions(user, [Permission.NEXTCLOUD_USER]);
 		}
 
-		const pseudonym: PseudonymDO = await this.pseudonymService.requestPseudonym(currentUserId, tool.id);
+		const pseudonym: PseudonymDO = await this.pseudonymService.findOrCreatePseudonym(currentUserId, tool.id);
 
 		const skipConsent: boolean = this.shouldSkipConsent(tool);
 

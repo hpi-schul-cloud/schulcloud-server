@@ -6,10 +6,10 @@ import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { ProviderLoginResponse, ProviderRedirectResponse } from '@shared/infra/oauth-provider/dto';
 import { externalToolDOFactory, ltiToolDOFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
-import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '@src/modules/oauth-provider/controller/dto';
-import { OauthProviderLoginFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.login-flow.uc';
-import { PseudonymService } from '@src/modules/pseudonym/service';
+import { PseudonymService } from '@src/modules/pseudonym';
+import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '../controller/dto';
 import { OauthProviderLoginFlowService } from '../service/oauth-provider.login-flow.service';
+import { OauthProviderLoginFlowUc } from './oauth-provider.login-flow.uc';
 
 describe('OauthProviderLoginFlowUc', () => {
 	let module: TestingModule;
@@ -127,7 +127,7 @@ describe('OauthProviderLoginFlowUc', () => {
 				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
 				oauthProviderLoginFlowService.isNextcloudTool.mockReturnValue(false);
-				pseudonymService.requestPseudonym.mockResolvedValue(pseudonym);
+				pseudonymService.findOrCreatePseudonym.mockResolvedValue(pseudonym);
 				oauthProviderService.acceptLoginRequest.mockResolvedValue(redirectResponse);
 
 				return {
@@ -193,7 +193,7 @@ describe('OauthProviderLoginFlowUc', () => {
 				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
 				oauthProviderLoginFlowService.isNextcloudTool.mockReturnValue(false);
-				pseudonymService.requestPseudonym.mockResolvedValue(pseudonym);
+				pseudonymService.findOrCreatePseudonym.mockResolvedValue(pseudonym);
 				oauthProviderService.acceptLoginRequest.mockResolvedValue(redirectResponse);
 
 				return {
@@ -264,7 +264,7 @@ describe('OauthProviderLoginFlowUc', () => {
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
 				oauthProviderLoginFlowService.isNextcloudTool.mockReturnValue(true);
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
-				pseudonymService.requestPseudonym.mockResolvedValue(pseudonym);
+				pseudonymService.findOrCreatePseudonym.mockResolvedValue(pseudonym);
 				oauthProviderService.acceptLoginRequest.mockResolvedValue(redirectResponse);
 
 				return {
@@ -394,7 +394,7 @@ describe('OauthProviderLoginFlowUc', () => {
 				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
 				oauthProviderLoginFlowService.isNextcloudTool.mockReturnValue(false);
-				pseudonymService.requestPseudonym.mockResolvedValue(pseudonym);
+				pseudonymService.findOrCreatePseudonym.mockResolvedValue(pseudonym);
 
 				return {
 					query,
@@ -417,7 +417,7 @@ describe('OauthProviderLoginFlowUc', () => {
 		});
 
 		describe('when the login was rejected', () => {
-			it('should reject the login request, if accept query is false', async () => {
+			const setup = () => {
 				const query: AcceptQuery = { accept: false };
 				const rejectBody: OAuthRejectableBody = {
 					error: 'error',
@@ -429,9 +429,25 @@ describe('OauthProviderLoginFlowUc', () => {
 
 				oauthProviderService.rejectLoginRequest.mockResolvedValue(redirectResponse);
 
-				const result: ProviderRedirectResponse = await uc.patchLoginRequest('userId', 'challenge', rejectBody, query);
+				return {
+					query,
+					rejectBody,
+				};
+			};
+
+			it('should call the service to reject the login request', async () => {
+				const { query, rejectBody } = setup();
+
+				await uc.patchLoginRequest('userId', 'challenge', rejectBody, query);
 
 				expect(oauthProviderService.rejectLoginRequest).toHaveBeenCalledWith('challenge', rejectBody);
+			});
+
+			it('should return a redirect response', async () => {
+				const { query, rejectBody } = setup();
+
+				const result: ProviderRedirectResponse = await uc.patchLoginRequest('userId', 'challenge', rejectBody, query);
+
 				expect(result).toStrictEqual(redirectResponse);
 			});
 		});

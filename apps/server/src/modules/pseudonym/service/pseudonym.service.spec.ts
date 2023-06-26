@@ -3,7 +3,7 @@ import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PseudonymDO } from '@shared/domain';
 import { PseudonymsRepo } from '@shared/repo';
-import { pseudonymDOFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
+import { pseudonymDOFactory } from '@shared/testing/factory';
 import { PseudonymService } from './pseudonym.service';
 
 describe('PseudonymService', () => {
@@ -36,7 +36,7 @@ describe('PseudonymService', () => {
 			const setup = () => {
 				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId();
 
-				pseudonymRepo.findByUserIdAndToolIdOrFail.mockResolvedValue(pseudonym);
+				pseudonymRepo.findByUserIdAndToolIdOrFail.mockResolvedValueOnce(pseudonym);
 
 				return {
 					pseudonym,
@@ -62,7 +62,7 @@ describe('PseudonymService', () => {
 
 		describe('when the repo throws an error', () => {
 			const setup = () => {
-				pseudonymRepo.findByUserIdAndToolIdOrFail.mockRejectedValue(new NotFoundException());
+				pseudonymRepo.findByUserIdAndToolIdOrFail.mockRejectedValueOnce(new NotFoundException());
 			};
 
 			it('should pass the error without catching', async () => {
@@ -75,12 +75,12 @@ describe('PseudonymService', () => {
 		});
 	});
 
-	describe('requestPseudonym', () => {
+	describe('findOrCreatePseudonym', () => {
 		describe('when the pseudonym exists', () => {
 			const setup = () => {
 				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId();
 
-				pseudonymRepo.findByUserIdAndToolId.mockResolvedValue(pseudonym);
+				pseudonymRepo.findByUserIdAndToolId.mockResolvedValueOnce(pseudonym);
 
 				return {
 					pseudonym,
@@ -90,7 +90,7 @@ describe('PseudonymService', () => {
 			it('should return the pseudonym', async () => {
 				const { pseudonym } = setup();
 
-				const result: PseudonymDO = await service.requestPseudonym('userId', 'toolId');
+				const result: PseudonymDO = await service.findOrCreatePseudonym('userId', 'toolId');
 
 				expect(result).toEqual(pseudonym);
 			});
@@ -100,8 +100,8 @@ describe('PseudonymService', () => {
 			const setup = () => {
 				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId();
 
-				pseudonymRepo.findByUserIdAndToolId.mockResolvedValue(null);
-				pseudonymRepo.save.mockResolvedValue(pseudonym);
+				pseudonymRepo.findByUserIdAndToolId.mockResolvedValueOnce(null);
+				pseudonymRepo.save.mockResolvedValueOnce(pseudonym);
 
 				return {
 					pseudonym,
@@ -111,7 +111,7 @@ describe('PseudonymService', () => {
 			it('should create and save a new pseudonym', async () => {
 				setup();
 
-				await service.requestPseudonym('userId', 'toolId');
+				await service.findOrCreatePseudonym('userId', 'toolId');
 
 				expect(pseudonymRepo.save).toHaveBeenCalledWith({
 					pseudonym: expect.any(String),
@@ -123,7 +123,7 @@ describe('PseudonymService', () => {
 			it('should return the pseudonym', async () => {
 				const { pseudonym } = setup();
 
-				const result: PseudonymDO = await service.requestPseudonym('userId', 'toolId');
+				const result: PseudonymDO = await service.findOrCreatePseudonym('userId', 'toolId');
 
 				expect(result).toEqual<PseudonymDO>(pseudonym);
 			});

@@ -20,9 +20,9 @@ describe('OAuth2ToolLaunchStrategy', () => {
 	describe('buildToolLaunchRequestPayload', () => {
 		describe('when always', () => {
 			it('should return undefined', () => {
-				const payload: string | undefined = strategy.buildToolLaunchRequestPayload('url', []);
+				const payload: string | null = strategy.buildToolLaunchRequestPayload('url', []);
 
-				expect(payload).toBeUndefined();
+				expect(payload).toBeNull();
 			});
 		});
 	});

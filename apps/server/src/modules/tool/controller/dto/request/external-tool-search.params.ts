@@ -2,12 +2,12 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
 
 export class ExternalToolSearchParams {
-	@ApiPropertyOptional()
+	@ApiPropertyOptional({ description: 'Name of the external tool' })
 	@IsString()
 	@IsOptional()
 	name?: string;
 
-	@ApiPropertyOptional()
+	@ApiPropertyOptional({ description: 'OAuth2 client id of the external tool' })
 	@IsString()
 	@IsOptional()
 	clientId?: string;

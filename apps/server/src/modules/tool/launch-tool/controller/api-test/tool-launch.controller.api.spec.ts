@@ -34,6 +34,7 @@ import { LaunchRequestMethod } from '../../types';
 import { ToolLaunchRequestResponse } from '../dto/tool-launch-request.response';
 import { ToolLaunchParams } from '../dto/tool-launch.params';
 
+// TODO Refactor to use api testHelpers
 describe('ToolLaunchController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
