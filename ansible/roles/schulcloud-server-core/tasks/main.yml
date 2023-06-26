@@ -1,16 +1,3 @@
-  - name: API DB healthcheck ConfigMap
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: api-db-healthcheck-configmap.yml.j2
-      apply: yes
-
-  - name: API DB healthcheck CronJob
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: api-db-healthcheck-cronjob.yml.j2
-
   - name: Service
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
