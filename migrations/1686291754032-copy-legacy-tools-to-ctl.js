@@ -170,29 +170,6 @@ const Course = mongoose.model(
 	'courses'
 );
 
-function mapToExternalToolParameter(ltiToolTemplate) {
-	return ltiToolTemplate.customs.map((parameter) => {
-		return {
-			name: parameter.key,
-			displayName: parameter.key,
-			scope: 'context',
-			location: 'body',
-			type: 'string',
-			isOptional: true,
-		};
-	});
-}
-
-function mapToCustomParameterEntry(externalToolParameters, ltiToolCustomes) {
-	return externalToolParameters.map((parameter) => {
-		const value = ltiToolCustomes.find((item) => item.key === parameter.name);
-		return {
-			name: parameter.name,
-			value,
-		};
-	});
-}
-
 function toolConfigMapper(ltiToolTemplate) {
 	let toolConfig = {
 		config_baseUrl: ltiToolTemplate.url,
@@ -221,12 +198,12 @@ function toolConfigMapper(ltiToolTemplate) {
 	return toolConfig;
 }
 
-function mapToExternalTool(ltiToolTemplate, ltiTool) {
+function mapToExternalTool(ltiToolTemplate) {
 	return {
 		name: ltiToolTemplate.name,
 		url: ltiToolTemplate.url,
 		logoUrl: ltiToolTemplate.logo_url,
-		parameters: mapToExternalToolParameter(ltiTool),
+		parameters: [],
 		isHidden: ltiToolTemplate.isHidden,
 		openNewTab: ltiToolTemplate.openNewTab,
 		version: 1,
@@ -243,14 +220,29 @@ function mapToSchoolExternalTool(externalTool, course) {
 	};
 }
 
-function mapToContextExternalTool(ltiTool, externalTool, schoolExternalTool, course) {
+function mapToContextExternalTool(schoolExternalTool, course) {
 	return {
 		schoolTool: schoolExternalTool._id,
 		contextId: course.id,
 		contextType: 'course',
-		parameters: mapToCustomParameterEntry(externalTool.parameter, ltiTool.customs),
+		parameters: [],
 		toolVersion: schoolExternalTool.version,
 	};
+}
+
+async function createExternalTool(toolTemplate) {
+	let externalTool = await ExternalTool.findOne({
+		name: { $regex: `${toolTemplate.name}` },
+	})
+		.lean()
+		.exec();
+
+	if (externalTool === undefined) {
+		externalTool = mapToExternalTool(externalTool);
+		externalTool = await ExternalTool.save(externalTool);
+	}
+
+	return externalTool;
 }
 
 // How to use more than one schema per collection on mongodb
@@ -278,6 +270,8 @@ module.exports = {
 			return;
 		}
 
+		const externalTools = ltiToolTemplates.map((toolTemplate) => createExternalTool(toolTemplate));
+
 		// FIND ALL LEGACY TOOLS
 		const ltiTools = await LtiTool.find({
 			$or: [{ name: { $regex: `Bettermarks` } }, { name: { $regex: `Nextcloud` } }],
@@ -287,9 +281,6 @@ module.exports = {
 			.exec();
 
 		for (const ltiTool of ltiTools) {
-			// GET TOOLTEMPLATE
-			const toolTemplate = ltiToolTemplates.filter((template) => template._id === ltiTool.originTool);
-
 			// GET COURSE
 			const course = await Course.findOne({
 				ltiToolIds: { $in: [ltiTool.id] },
@@ -304,17 +295,7 @@ module.exports = {
 			}
 
 			// GET EXTERNALTOOL
-			let externalTool = await ExternalTool.findOne({
-				name: toolTemplate.name,
-			})
-				.lean()
-				.exec();
-
-			// CHECK IF EXTERNALTOOL EXISTS
-			if (externalTool === undefined) {
-				externalTool = mapToExternalTool(toolTemplate, ltiTool);
-				externalTool = await ExternalTool.save(externalTool);
-			}
+			const externalTool = externalTools.find((tool) => tool.name === ltiTool.name);
 
 			// GET SCHOOLEXTERNALTOOL
 			let schoolExternalTool = await SchoolExternalTool.findOne({
