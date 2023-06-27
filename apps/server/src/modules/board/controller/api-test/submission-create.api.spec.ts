@@ -98,11 +98,12 @@ describe('submission create (api)', () => {
 	describe('with invalid user', () => {
 		it('should return 403', async () => {
 			const { taskNode } = await setup();
+
 			const invalidUser = userFactory.build();
 			await em.persistAndFlush([invalidUser]);
 			currentUser = mapUserToCurrentUser(invalidUser);
 
-			const response = await api.post(taskNode.id, {});
+			const response = await api.post(taskNode.id);
 
 			expect(response.status).toEqual(403);
 		});

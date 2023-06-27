@@ -10,7 +10,7 @@ import {
 	Post,
 	Put,
 } from '@nestjs/common';
-import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import { ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
@@ -119,15 +119,11 @@ export class ElementController {
 
 	@ApiOperation({ summary: 'Create a new submission on a submission container element.' })
 	@ApiExtraModels(SubmissionResponse)
-	@ApiResponse({
-		status: 201,
-		schema: {
-			oneOf: [{ $ref: getSchemaPath(SubmissionResponse) }],
-		},
-	})
+	@ApiResponse({ status: 201, type: SubmissionResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
+	@ApiBody({ required: false, type: CreateSubmissionBodyParams })
 	@Post(':contentElementId/submissions')
 	async createSubmission(
 		@Param() urlParams: ContentElementUrlParams,
