@@ -117,6 +117,13 @@ describe(CardUc.name, () => {
 
 				expect(elementService.create).toHaveBeenCalledWith(card, ContentElementType.RICH_TEXT);
 			});
+			it('should call the service to move the element', async () => {
+				const { user, card } = setup();
+
+				await uc.createElement(user.id, card.id, ContentElementType.RICH_TEXT, 3);
+
+				expect(elementService.move).toHaveBeenCalledWith(expect.anything(), expect.anything(), 3);
+			});
 
 			it('should return new content element', async () => {
 				const { user, card, element } = setup();
