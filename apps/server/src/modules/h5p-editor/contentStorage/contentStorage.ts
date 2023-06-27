@@ -140,7 +140,6 @@ export class ContentStorage implements IContentStorage {
 		const filePath = path.join(this.getContentPath(), contentId.toString(), file);
 		const fileResponse = this.storageClient.get(filePath);
 		const fileSize = (await fileResponse).contentLength;
-		// TODO: birthtime
 		const date = new Date('01.01.01');
 		const fileStats: IFileStats = {
 			birthtime: date,
@@ -164,7 +163,10 @@ export class ContentStorage implements IContentStorage {
 		if (!exist) {
 			throw new Error('404: Content file missing.');
 		}
-		// TODO: add bytesRange
+		if (rangeStart && rangeEnd) {
+			const fileResponse = await this.storageClient.get(filePath, `${rangeStart}-${rangeEnd}`);
+			return fileResponse.data;
+		}
 		const fileResponse = await this.storageClient.get(filePath);
 		return fileResponse.data;
 	}
