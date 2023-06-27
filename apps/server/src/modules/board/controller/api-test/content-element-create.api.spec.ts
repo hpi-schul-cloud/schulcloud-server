@@ -28,7 +28,7 @@ class API {
 		this.app = app;
 	}
 
-	async post(cardId: string, type: ContentElementType) {
+	async post(cardId: string, type: ContentElementType, toPosition?: number) {
 		const response = await request(this.app.getHttpServer())
 			.post(`${baseRouteName}/${cardId}/elements`)
 			.set('Accept', 'application/json')
@@ -116,6 +116,14 @@ describe(`content element create (api)`, () => {
 			const { result } = await api.post(cardNode.id, ContentElementType.FILE);
 
 			expect(result.type).toEqual(ContentElementType.FILE);
+		});
+		it('should throw an error if position is not a number', async () => {
+			const { user, cardNode } = await setup();
+			currentUser = mapUserToCurrentUser(user);
+
+			const { error } = await api.post(cardNode.id, ContentElementType.RICH_TEXT, 'not a number');
+
+			expect(error.code).toEqual(400);
 		});
 	});
 
