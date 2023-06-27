@@ -97,7 +97,7 @@ export class ToolContextController {
 			);
 
 		const mappedTools: ContextExternalToolResponse[] = contextExternalTools.map(
-			(tool: ContextExternalToolDO): ContextExternalToolResponse =>
+			(tool: ContextExternalTool): ContextExternalToolResponse =>
 				ContextExternalToolResponseMapper.mapContextExternalToolResponse(tool)
 		);
 
