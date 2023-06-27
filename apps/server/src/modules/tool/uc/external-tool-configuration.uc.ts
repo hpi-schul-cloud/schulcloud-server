@@ -105,14 +105,14 @@ export class ExternalToolConfigurationUc {
 		externalTools: ExternalToolDO[],
 		availableSchoolExternalTools: SchoolExternalToolDO[]
 	): AvailableToolsForContext[] {
-		const toolsWithSchoolTool: (AvailableToolsForContext | undefined)[] = availableSchoolExternalTools.map(
+		const toolsWithSchoolTool: (AvailableToolsForContext | null)[] = availableSchoolExternalTools.map(
 			(schoolExternalTool: SchoolExternalToolDO) => {
 				const externalTool: ExternalToolDO | undefined = externalTools.find(
 					(tool: ExternalToolDO) => schoolExternalTool.toolId === tool.id
 				);
 
 				if (!externalTool) {
-					return undefined;
+					return null;
 				}
 
 				return {

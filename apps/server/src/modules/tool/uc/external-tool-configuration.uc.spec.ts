@@ -155,35 +155,28 @@ describe('ExternalToolConfigurationUc', () => {
 	});
 
 	describe('getExternalToolForContext is called', () => {
-		const setupAuthorization = () => {
-			const user: User = userFactory.buildWithId();
-			const currentUser: ICurrentUser = { userId: user.id, schoolId: user.school.id } as ICurrentUser;
-
-			return {
-				user,
-				currentUser,
-			};
-		};
-		const setup = () => {
-			const externalToolId: string = new ObjectId().toHexString();
-			const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId(undefined, externalToolId);
-			const contextType: ToolContextType = ToolContextType.COURSE;
-			const contextId: string = new ObjectId().toHexString();
-
-			externalToolService.getExternalToolForScope.mockResolvedValue(externalToolDO);
-
-			return {
-				externalToolDO,
-				externalToolId,
-				contextType,
-				contextId,
-			};
-		};
-
 		describe('when the user has permission to read an external tool', () => {
+			const setup = () => {
+				const user: User = userFactory.buildWithId();
+				const currentUser: ICurrentUser = { userId: user.id, schoolId: user.school.id } as ICurrentUser;
+				const externalToolId: string = new ObjectId().toHexString();
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId(undefined, externalToolId);
+				const contextType: ToolContextType = ToolContextType.COURSE;
+				const contextId: string = new ObjectId().toHexString();
+
+				externalToolService.getExternalToolForScope.mockResolvedValue(externalToolDO);
+
+				return {
+					user,
+					currentUser,
+					externalToolId,
+					contextType,
+					contextId,
+				};
+			};
+
 			it('should successfully find the user with the permission', async () => {
-				const { currentUser, user } = setupAuthorization();
-				const { externalToolId, contextId, contextType } = setup();
+				const { currentUser, user, externalToolId, contextId, contextType } = setup();
 
 				await uc.getExternalToolForContext(currentUser.userId, externalToolId, contextId, contextType);
 
@@ -199,8 +192,7 @@ describe('ExternalToolConfigurationUc', () => {
 			});
 
 			it('should call the externalToolService', async () => {
-				const { currentUser } = setupAuthorization();
-				const { externalToolId, contextId, contextType } = setup();
+				const { currentUser, externalToolId, contextId, contextType } = setup();
 
 				await uc.getExternalToolForContext(currentUser.userId, externalToolId, contextId, contextType);
 
@@ -212,9 +204,26 @@ describe('ExternalToolConfigurationUc', () => {
 		});
 
 		describe('when the user has insufficient permission to read an external tool', () => {
+			const setup = () => {
+				const user: User = userFactory.buildWithId();
+				const currentUser: ICurrentUser = { userId: user.id, schoolId: user.school.id } as ICurrentUser;
+				const externalToolId: string = new ObjectId().toHexString();
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId(undefined, externalToolId);
+				const contextType: ToolContextType = ToolContextType.COURSE;
+				const contextId: string = new ObjectId().toHexString();
+
+				externalToolService.getExternalToolForScope.mockResolvedValue(externalToolDO);
+
+				return {
+					currentUser,
+					externalToolId,
+					contextType,
+					contextId,
+				};
+			};
+
 			it('should throw UnauthorizedException ', async () => {
-				const { currentUser } = setupAuthorization();
-				const { externalToolId, contextId, contextType } = setup();
+				const { currentUser, externalToolId, contextId, contextType } = setup();
 
 				authorizationService.checkPermissionByReferences.mockImplementation(() => {
 					throw new UnauthorizedException();
@@ -232,9 +241,27 @@ describe('ExternalToolConfigurationUc', () => {
 		});
 
 		describe('when tool is hidden', () => {
+			const setup = () => {
+				const user: User = userFactory.buildWithId();
+				const currentUser: ICurrentUser = { userId: user.id, schoolId: user.school.id } as ICurrentUser;
+				const externalToolId: string = new ObjectId().toHexString();
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId(undefined, externalToolId);
+				const contextType: ToolContextType = ToolContextType.COURSE;
+				const contextId: string = new ObjectId().toHexString();
+
+				externalToolService.getExternalToolForScope.mockResolvedValue(externalToolDO);
+
+				return {
+					currentUser,
+					externalToolDO,
+					externalToolId,
+					contextType,
+					contextId,
+				};
+			};
+
 			it(' should throw NotFoundException', async () => {
-				const { currentUser } = setupAuthorization();
-				const { externalToolId, externalToolDO, contextId, contextType } = setup();
+				const { currentUser, externalToolId, externalToolDO, contextId, contextType } = setup();
 				externalToolDO.isHidden = true;
 
 				const result = uc.getExternalToolForContext(currentUser.userId, externalToolId, contextId, contextType);

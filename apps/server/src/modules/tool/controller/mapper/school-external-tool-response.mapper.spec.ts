@@ -134,7 +134,7 @@ describe('SchoolExternalToolResponseMapper', () => {
 				const { availableTools, expectedResponse } = setup();
 
 				const result: SchoolToolConfigurationListResponse =
-					mapper.mapExternalToolDOsToSchoolToolConfigurationListResponse(availableTools);
+					SchoolExternalToolResponseMapper.mapExternalToolDOsToSchoolToolConfigurationListResponse(availableTools);
 
 				expect(result.data).toEqual(expect.arrayContaining([expectedResponse]));
 			});

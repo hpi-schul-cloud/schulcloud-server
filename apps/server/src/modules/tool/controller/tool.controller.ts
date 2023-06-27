@@ -136,7 +136,7 @@ export class ToolController {
 	@ApiOperation({ summary: 'Get Tool References' })
 	@ApiOkResponse({
 		description: 'The Tool References has been successfully fetched.',
-		type: [ToolReferenceListResponse],
+		type: ToolReferenceListResponse,
 	})
 	@ApiForbiddenResponse({ description: 'User is not allowed to access this resource.' })
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })

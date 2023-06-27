@@ -28,8 +28,7 @@ import { ExternalToolResponseMapper, SchoolExternalToolResponseMapper } from './
 export class ToolConfigurationController {
 	constructor(
 		private readonly externalToolConfigurationUc: ExternalToolConfigurationUc,
-		private readonly externalToolResponseMapper: ExternalToolResponseMapper,
-		private readonly schoolExternalToolResponseMapper: SchoolExternalToolResponseMapper
+		private readonly externalToolResponseMapper: ExternalToolResponseMapper
 	) {}
 
 	@Get('available/school/:id')
@@ -70,7 +69,7 @@ export class ToolConfigurationController {
 		);
 
 		const mapped: SchoolToolConfigurationListResponse =
-			this.schoolExternalToolResponseMapper.mapExternalToolDOsToSchoolToolConfigurationListResponse(
+			SchoolExternalToolResponseMapper.mapExternalToolDOsToSchoolToolConfigurationListResponse(
 				availableToolsForContext
 			);
 
@@ -98,6 +97,7 @@ export class ToolConfigurationController {
 
 	@Get(':toolId/:context/:id/configuration')
 	@ApiUnauthorizedResponse()
+	@ApiForbiddenResponse()
 	@ApiFoundResponse({ description: 'Configuration has been found.', type: ExternalToolConfigurationTemplateResponse })
 	public async getExternalToolForContext(
 		@CurrentUser() currentUser: ICurrentUser,

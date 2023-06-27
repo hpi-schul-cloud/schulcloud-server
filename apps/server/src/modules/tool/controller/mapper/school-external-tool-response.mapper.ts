@@ -13,7 +13,7 @@ import {
 	SchoolToolConfigurationListResponse,
 	SchoolToolConfigurationEntryResponse,
 } from '../dto';
-import { AvailableToolsForContext } from '../../uc/dto/external-tool-configuration.types';
+import { AvailableToolsForContext } from '../../uc';
 
 export const statusMapping: Record<ToolConfigurationStatus, ToolConfigurationStatusResponse> = {
 	[ToolConfigurationStatus.LATEST]: ToolConfigurationStatusResponse.LATEST,
@@ -44,7 +44,7 @@ export class SchoolExternalToolResponseMapper {
 		};
 	}
 
-	mapExternalToolDOsToSchoolToolConfigurationListResponse(
+	static mapExternalToolDOsToSchoolToolConfigurationListResponse(
 		availableToolsForContext: AvailableToolsForContext[]
 	): SchoolToolConfigurationListResponse {
 		return new SchoolToolConfigurationListResponse(
@@ -52,10 +52,10 @@ export class SchoolExternalToolResponseMapper {
 		);
 	}
 
-	private mapExternalToolDOsToSchoolToolConfigurationResponses(
+	private static mapExternalToolDOsToSchoolToolConfigurationResponses(
 		availableToolsForContext: AvailableToolsForContext[]
 	): SchoolToolConfigurationEntryResponse[] {
-		return availableToolsForContext.map(
+		const mapped = availableToolsForContext.map(
 			(tool: AvailableToolsForContext) =>
 				new SchoolToolConfigurationEntryResponse(
 					{
@@ -66,6 +66,8 @@ export class SchoolExternalToolResponseMapper {
 					tool.schoolExternalTool.id as string
 				)
 		);
+
+		return mapped;
 	}
 
 	private mapToCustomParameterEntryResponse(entries: CustomParameterEntryDO[]): CustomParameterEntryResponse[] {

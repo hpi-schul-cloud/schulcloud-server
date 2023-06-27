@@ -80,9 +80,7 @@ describe('ContextExternalToolService', () => {
 				const contextExternalTool2: ContextExternalToolDO = contextExternalToolDOFactory
 					.withSchoolExternalToolRef(schoolExternalToolId)
 					.buildWithId();
-				contextExternalToolRepo.find.mockResolvedValue([contextExternalTool1, contextExternalTool2]);
-
-				contextExternalToolRepo.find.mockResolvedValue([contextExternalTool1, contextExternalTool2]);
+				contextExternalToolRepo.find.mockResolvedValueOnce([contextExternalTool1, contextExternalTool2]);
 
 				return {
 					schoolExternalTool,
