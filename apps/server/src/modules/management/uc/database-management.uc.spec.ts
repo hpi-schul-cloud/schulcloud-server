@@ -632,12 +632,22 @@ describe('DatabaseManagementService', () => {
 	});
 
 	describe('when seeding database from factories', () => {
-		it('should return correct number of seeded collection with length', async () => {
+		it('should return correct number of seeded collections with length', async () => {
 			const collectionsSeeded = await uc.seedDatabaseCollectionsFromFactories();
 			// eslint-disable-next-line @typescript-eslint/dot-notation
 			const expectedCollectionsWithLength = generateSeedData((s) => uc['injectEnvVars'](s)).map(
 				(c) => `${c.collectionName}:${c.data.length}`
 			);
+			expect(collectionsSeeded).toStrictEqual(expectedCollectionsWithLength);
+		});
+
+		it('should return correct number of filtered seeded collections', async () => {
+			const filteredCollections = ['roles'];
+			const collectionsSeeded = await uc.seedDatabaseCollectionsFromFactories(filteredCollections);
+			// eslint-disable-next-line @typescript-eslint/dot-notation
+			const expectedCollectionsWithLength = generateSeedData((s) => uc['injectEnvVars'](s))
+				.filter((d) => filteredCollections.includes(d.collectionName))
+				.map((c) => `${c.collectionName}:${c.data.length}`);
 			expect(collectionsSeeded).toStrictEqual(expectedCollectionsWithLength);
 		});
 	});
