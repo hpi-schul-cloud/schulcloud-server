@@ -110,10 +110,23 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#restartMigration" >restartMigration</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#setMigrationMandatory" >setMigrationMandatory</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
@@ -171,8 +184,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="41"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:41</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="51"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:51</a></div>
                 </td>
             </tr>
 
@@ -264,8 +277,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="109"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:109</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="159"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:159</a></div>
                 </td>
             </tr>
 
@@ -348,6 +361,7 @@
                         <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>restartMigration</b></span>
                         <a href="#restartMigration"><span class="icon ion-ios-link"></span></a>
@@ -365,14 +379,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Put(&#x27;restart&#x27;)<br />@ApiBadRequestResponse({description: &#x27;Preconditions for starting user login migration are not met&#x27;, type: UserLoginMigrationLoggableException})<br />@ApiOkResponse({description: &#x27;User login migration started&#x27;, type: UserLoginMigrationResponse})<br />@ApiUnauthorizedResponse()<br />@ApiForbiddenResponse()<br /></code>
+                    <code>@Put(&#x27;restart&#x27;)<br />@ApiNotFoundResponse({description: &#x27;User login migration was not found&#x27;, type: UserLoginMigrationNotFoundLoggableException})<br />@ApiUnprocessableEntityResponse({description: &#x27;Grace period for changing the user login migration is expired&#x27;, type: UserLoginMigrationGracePeriodExpiredLoggableException})<br />@ApiOkResponse({description: &#x27;User login migration started&#x27;, type: UserLoginMigrationResponse})<br />@ApiUnauthorizedResponse()<br />@ApiForbiddenResponse()<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="94"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:94</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="112"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:112</a></div>
                 </td>
             </tr>
 
@@ -424,8 +438,106 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="setMigrationMandatory"></a>
+                    <span class="name">
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier">Async</span>
+                        <span ><b>setMigrationMandatory</b></span>
+                        <a href="#setMigrationMandatory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>setMigrationMandatory(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, body: <a href="../classes/UserLoginMigrationMandatoryParams.html" target="_self">UserLoginMigrationMandatoryParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Put(&#x27;mandatory&#x27;)<br />@ApiNotFoundResponse({description: &#x27;User login migration was not found&#x27;, type: UserLoginMigrationNotFoundLoggableException})<br />@ApiUnprocessableEntityResponse({description: &#x27;Grace period for changing the user login migration is expired&#x27;, type: UserLoginMigrationGracePeriodExpiredLoggableException})<br />@ApiUnprocessableEntityResponse({description: &#x27;User login migration is already closed and cannot be modified&#x27;, type: UserLoginMigrationAlreadyClosedLoggableException})<br />@ApiOkResponse({description: &#x27;User login migration is set mandatory/optional&#x27;, type: UserLoginMigrationResponse})<br />@ApiUnauthorizedResponse()<br />@ApiForbiddenResponse()<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="140"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:140</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>currentUser</td>
+                                    <td>
+                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>body</td>
+                                    <td>
+                                                <code><a href="../classes/UserLoginMigrationMandatoryParams.html" target="_self" >UserLoginMigrationMandatoryParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;UserLoginMigrationResponse&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="startMigration"></a>
                     <span class="name">
+                        <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
@@ -447,14 +559,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;start&#x27;)<br />@ApiBadRequestResponse({description: &#x27;Preconditions for starting user login migration are not met&#x27;, type: UserLoginMigrationLoggableException})<br />@ApiOkResponse({description: &#x27;User login migration started&#x27;, type: UserLoginMigrationResponse})<br />@ApiForbiddenResponse()<br /></code>
+                    <code>@Post(&#x27;start&#x27;)<br />@ApiUnprocessableEntityResponse({description: &#x27;User login migration is already closed and cannot be modified&#x27;, type: UserLoginMigrationAlreadyClosedLoggableException})<br />@ApiUnprocessableEntityResponse({description: &#x27;School has no official school number&#x27;, type: SchoolNumberMissingLoggableException})<br />@ApiOkResponse({description: &#x27;User login migration started&#x27;, type: UserLoginMigrationResponse})<br />@ApiForbiddenResponse()<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="74"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:74</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="88"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:88</a></div>
                 </td>
             </tr>
 
@@ -508,29 +620,38 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Get, Post, Put, Query } from &#x27;@nestjs/common&#x27;;
 import {
-	ApiBadRequestResponse,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
+	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiTags,
 	ApiUnauthorizedResponse,
+	ApiUnprocessableEntityResponse,
 } from &#x27;@nestjs/swagger&#x27;;
-import { UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
-import { Page } from &#x27;@shared/domain/domainobject/page&#x27;;
+import { Page, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser, JWT } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
+import {
+	SchoolNumberMissingLoggableException,
+	UserLoginMigrationAlreadyClosedLoggableException,
+	UserLoginMigrationGracePeriodExpiredLoggableException,
+	UserLoginMigrationNotFoundLoggableException,
+} from &#x27;../error&#x27;;
 import { UserLoginMigrationMapper } from &#x27;../mapper&#x27;;
-import { UserLoginMigrationQuery } from &#x27;../uc&#x27;;
-import { UserLoginMigrationUc } from &#x27;../uc/user-login-migration.uc&#x27;;
+import {
+	RestartUserLoginMigrationUc,
+	StartUserLoginMigrationUc,
+	ToggleUserLoginMigrationUc,
+	UserLoginMigrationQuery,
+	UserLoginMigrationUc,
+} from &#x27;../uc&#x27;;
 import {
 	UserLoginMigrationResponse,
 	UserLoginMigrationSearchListResponse,
 	UserLoginMigrationSearchParams,
 } from &#x27;./dto&#x27;;
 import { Oauth2MigrationParams } from &#x27;./dto/oauth2-migration.params&#x27;;
-import { StartUserLoginMigrationUc } from &#x27;../uc/start-user-login-migration.uc&#x27;;
-import { UserLoginMigrationLoggableException } from &#x27;../error&#x27;;
-import { RestartUserLoginMigrationUc } from &#x27;../uc/restart-user-login-migration.uc&#x27;;
+import { UserLoginMigrationMandatoryParams } from &#x27;./dto/request/user-login-migration-mandatory.params&#x27;;
 
 @ApiTags(&#x27;UserLoginMigration&#x27;)
 @Controller(&#x27;user-login-migrations&#x27;)
@@ -539,7 +660,8 @@ export class UserLoginMigrationController {
 	constructor(
 		private readonly userLoginMigrationUc: UserLoginMigrationUc,
 		private readonly startUserLoginMigrationUc: StartUserLoginMigrationUc,
-		private readonly restartUserLoginMigrationUc: RestartUserLoginMigrationUc
+		private readonly restartUserLoginMigrationUc: RestartUserLoginMigrationUc,
+		private readonly toggleUserLoginMigrationUc: ToggleUserLoginMigrationUc
 	) {}
 
 	@Get()
@@ -573,9 +695,13 @@ export class UserLoginMigrationController {
 	}
 
 	@Post(&#x27;start&#x27;)
-	@ApiBadRequestResponse({
-		description: &#x27;Preconditions for starting user login migration are not met&#x27;,
-		type: UserLoginMigrationLoggableException,
+	@ApiUnprocessableEntityResponse({
+		description: &#x27;User login migration is already closed and cannot be modified&#x27;,
+		type: UserLoginMigrationAlreadyClosedLoggableException,
+	})
+	@ApiUnprocessableEntityResponse({
+		description: &#x27;School has no official school number&#x27;,
+		type: SchoolNumberMissingLoggableException,
 	})
 	@ApiOkResponse({ description: &#x27;User login migration started&#x27;, type: UserLoginMigrationResponse })
 	@ApiForbiddenResponse()
@@ -592,9 +718,13 @@ export class UserLoginMigrationController {
 	}
 
 	@Put(&#x27;restart&#x27;)
-	@ApiBadRequestResponse({
-		description: &#x27;Preconditions for starting user login migration are not met&#x27;,
-		type: UserLoginMigrationLoggableException,
+	@ApiNotFoundResponse({
+		description: &#x27;User login migration was not found&#x27;,
+		type: UserLoginMigrationNotFoundLoggableException,
+	})
+	@ApiUnprocessableEntityResponse({
+		description: &#x27;Grace period for changing the user login migration is expired&#x27;,
+		type: UserLoginMigrationGracePeriodExpiredLoggableException,
 	})
 	@ApiOkResponse({ description: &#x27;User login migration started&#x27;, type: UserLoginMigrationResponse })
 	@ApiUnauthorizedResponse()
@@ -603,6 +733,38 @@ export class UserLoginMigrationController {
 		const migrationDto: UserLoginMigrationDO &#x3D; await this.restartUserLoginMigrationUc.restartMigration(
 			currentUser.userId,
 			currentUser.schoolId
+		);
+
+		const migrationResponse: UserLoginMigrationResponse &#x3D;
+			UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(migrationDto);
+
+		return migrationResponse;
+	}
+
+	@Put(&#x27;mandatory&#x27;)
+	@ApiNotFoundResponse({
+		description: &#x27;User login migration was not found&#x27;,
+		type: UserLoginMigrationNotFoundLoggableException,
+	})
+	@ApiUnprocessableEntityResponse({
+		description: &#x27;Grace period for changing the user login migration is expired&#x27;,
+		type: UserLoginMigrationGracePeriodExpiredLoggableException,
+	})
+	@ApiUnprocessableEntityResponse({
+		description: &#x27;User login migration is already closed and cannot be modified&#x27;,
+		type: UserLoginMigrationAlreadyClosedLoggableException,
+	})
+	@ApiOkResponse({ description: &#x27;User login migration is set mandatory/optional&#x27;, type: UserLoginMigrationResponse })
+	@ApiUnauthorizedResponse()
+	@ApiForbiddenResponse()
+	async setMigrationMandatory(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() body: UserLoginMigrationMandatoryParams
+	): Promise&lt;UserLoginMigrationResponse&gt; {
+		const migrationDto: UserLoginMigrationDO &#x3D; await this.toggleUserLoginMigrationUc.setMigrationMandatory(
+			currentUser.userId,
+			currentUser.schoolId,
+			body.mandatory
 		);
 
 		const migrationResponse: UserLoginMigrationResponse &#x3D;

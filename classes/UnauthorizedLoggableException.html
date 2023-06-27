@@ -240,7 +240,7 @@ export class UnauthorizedLoggableException extends UnauthorizedException impleme
 	}
 
 	getLogMessage(): ErrorLogMessage {
-		const message &#x3D; {
+		const message: ErrorLogMessage &#x3D; {
 			type: &#x27;UNAUTHORIZED_EXCEPTION&#x27;,
 			stack: this.stack,
 			data: {

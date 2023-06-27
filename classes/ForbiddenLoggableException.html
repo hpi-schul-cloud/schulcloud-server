@@ -258,7 +258,7 @@ export class ForbiddenLoggableException extends ForbiddenException implements Lo
 	}
 
 	getLogMessage(): ErrorLogMessage {
-		const message &#x3D; {
+		const message: ErrorLogMessage &#x3D; {
 			type: &#x27;FORBIDDEN_EXCEPTION&#x27;,
 			stack: this.stack,
 			data: {

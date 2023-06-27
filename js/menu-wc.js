@@ -2061,13 +2061,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/UserLoginMigrationApiModule.html" data-type="entity-link" >UserLoginMigrationApiModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-UserLoginMigrationApiModule-3f7d9a16880a4afd7d85f5d9d37b43b2aa59d3fba91a954502c919d91c13e5df86e344cd3e38ed7416978b28e6caba9ed67c25ef9f4a3e0a5941be8542a22379"' : 'data-bs-target="#xs-controllers-links-module-UserLoginMigrationApiModule-3f7d9a16880a4afd7d85f5d9d37b43b2aa59d3fba91a954502c919d91c13e5df86e344cd3e38ed7416978b28e6caba9ed67c25ef9f4a3e0a5941be8542a22379"' }>
+                                            'data-bs-target="#controllers-links-module-UserLoginMigrationApiModule-86ad738d633be21b03851c1e8c5f805e65a263cc73ccdef878111929cf7df07a98848ac85591d6a2b2a88b35bc415630016c4c321651f80affc6138ad05fc13b"' : 'data-bs-target="#xs-controllers-links-module-UserLoginMigrationApiModule-86ad738d633be21b03851c1e8c5f805e65a263cc73ccdef878111929cf7df07a98848ac85591d6a2b2a88b35bc415630016c4c321651f80affc6138ad05fc13b"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-UserLoginMigrationApiModule-3f7d9a16880a4afd7d85f5d9d37b43b2aa59d3fba91a954502c919d91c13e5df86e344cd3e38ed7416978b28e6caba9ed67c25ef9f4a3e0a5941be8542a22379"' :
-                                            'id="xs-controllers-links-module-UserLoginMigrationApiModule-3f7d9a16880a4afd7d85f5d9d37b43b2aa59d3fba91a954502c919d91c13e5df86e344cd3e38ed7416978b28e6caba9ed67c25ef9f4a3e0a5941be8542a22379"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-UserLoginMigrationApiModule-86ad738d633be21b03851c1e8c5f805e65a263cc73ccdef878111929cf7df07a98848ac85591d6a2b2a88b35bc415630016c4c321651f80affc6138ad05fc13b"' :
+                                            'id="xs-controllers-links-module-UserLoginMigrationApiModule-86ad738d633be21b03851c1e8c5f805e65a263cc73ccdef878111929cf7df07a98848ac85591d6a2b2a88b35bc415630016c4c321651f80affc6138ad05fc13b"' }>
                                             <li class="link">
                                                 <a href="controllers/UserLoginMigrationController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >UserLoginMigrationController</a>
                                             </li>
@@ -2078,13 +2078,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     </li>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-UserLoginMigrationApiModule-3f7d9a16880a4afd7d85f5d9d37b43b2aa59d3fba91a954502c919d91c13e5df86e344cd3e38ed7416978b28e6caba9ed67c25ef9f4a3e0a5941be8542a22379"' : 'data-bs-target="#xs-injectables-links-module-UserLoginMigrationApiModule-3f7d9a16880a4afd7d85f5d9d37b43b2aa59d3fba91a954502c919d91c13e5df86e344cd3e38ed7416978b28e6caba9ed67c25ef9f4a3e0a5941be8542a22379"' }>
+                                        'data-bs-target="#injectables-links-module-UserLoginMigrationApiModule-86ad738d633be21b03851c1e8c5f805e65a263cc73ccdef878111929cf7df07a98848ac85591d6a2b2a88b35bc415630016c4c321651f80affc6138ad05fc13b"' : 'data-bs-target="#xs-injectables-links-module-UserLoginMigrationApiModule-86ad738d633be21b03851c1e8c5f805e65a263cc73ccdef878111929cf7df07a98848ac85591d6a2b2a88b35bc415630016c4c321651f80affc6138ad05fc13b"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-UserLoginMigrationApiModule-3f7d9a16880a4afd7d85f5d9d37b43b2aa59d3fba91a954502c919d91c13e5df86e344cd3e38ed7416978b28e6caba9ed67c25ef9f4a3e0a5941be8542a22379"' :
-                                        'id="xs-injectables-links-module-UserLoginMigrationApiModule-3f7d9a16880a4afd7d85f5d9d37b43b2aa59d3fba91a954502c919d91c13e5df86e344cd3e38ed7416978b28e6caba9ed67c25ef9f4a3e0a5941be8542a22379"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-UserLoginMigrationApiModule-86ad738d633be21b03851c1e8c5f805e65a263cc73ccdef878111929cf7df07a98848ac85591d6a2b2a88b35bc415630016c4c321651f80affc6138ad05fc13b"' :
+                                        'id="xs-injectables-links-module-UserLoginMigrationApiModule-86ad738d633be21b03851c1e8c5f805e65a263cc73ccdef878111929cf7df07a98848ac85591d6a2b2a88b35bc415630016c4c321651f80affc6138ad05fc13b"' }>
                                         <li class="link">
                                             <a href="injectables/PageContentMapper.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >PageContentMapper</a>
                                         </li>
@@ -2093,6 +2093,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                         </li>
                                         <li class="link">
                                             <a href="injectables/StartUserLoginMigrationUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >StartUserLoginMigrationUc</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/ToggleUserLoginMigrationUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ToggleUserLoginMigrationUc</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/UserLoginMigrationUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >UserLoginMigrationUc</a>
@@ -2104,27 +2107,18 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/UserLoginMigrationModule.html" data-type="entity-link" >UserLoginMigrationModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-UserLoginMigrationModule-4111abd6f329b31733dfebd9bc01daec505dd220ceeea68d79cadad87085ceda2d8b8008f737c6064ac10fe6d88243b7aad1c3cb3b98b596c388ce45b991bd0e"' : 'data-bs-target="#xs-injectables-links-module-UserLoginMigrationModule-4111abd6f329b31733dfebd9bc01daec505dd220ceeea68d79cadad87085ceda2d8b8008f737c6064ac10fe6d88243b7aad1c3cb3b98b596c388ce45b991bd0e"' }>
+                                        'data-bs-target="#injectables-links-module-UserLoginMigrationModule-bddecb8168036cf4ee29325c86aeeca7aff9fdcfc108fed949135ad79280e83053bb595d7d288ceb27e0551572f5af0f1545149b3350e01462bc5a795a042c5c"' : 'data-bs-target="#xs-injectables-links-module-UserLoginMigrationModule-bddecb8168036cf4ee29325c86aeeca7aff9fdcfc108fed949135ad79280e83053bb595d7d288ceb27e0551572f5af0f1545149b3350e01462bc5a795a042c5c"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-UserLoginMigrationModule-4111abd6f329b31733dfebd9bc01daec505dd220ceeea68d79cadad87085ceda2d8b8008f737c6064ac10fe6d88243b7aad1c3cb3b98b596c388ce45b991bd0e"' :
-                                        'id="xs-injectables-links-module-UserLoginMigrationModule-4111abd6f329b31733dfebd9bc01daec505dd220ceeea68d79cadad87085ceda2d8b8008f737c6064ac10fe6d88243b7aad1c3cb3b98b596c388ce45b991bd0e"' }>
-                                        <li class="link">
-                                            <a href="injectables/CommonUserLoginMigrationService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >CommonUserLoginMigrationService</a>
-                                        </li>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-UserLoginMigrationModule-bddecb8168036cf4ee29325c86aeeca7aff9fdcfc108fed949135ad79280e83053bb595d7d288ceb27e0551572f5af0f1545149b3350e01462bc5a795a042c5c"' :
+                                        'id="xs-injectables-links-module-UserLoginMigrationModule-bddecb8168036cf4ee29325c86aeeca7aff9fdcfc108fed949135ad79280e83053bb595d7d288ceb27e0551572f5af0f1545149b3350e01462bc5a795a042c5c"' }>
                                         <li class="link">
                                             <a href="injectables/MigrationCheckService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >MigrationCheckService</a>
                                         </li>
                                         <li class="link">
-                                            <a href="injectables/RestartUserLoginMigrationValidationService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >RestartUserLoginMigrationValidationService</a>
-                                        </li>
-                                        <li class="link">
                                             <a href="injectables/SchoolMigrationService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchoolMigrationService</a>
-                                        </li>
-                                        <li class="link">
-                                            <a href="injectables/StartUserLoginMigrationValidationService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >StartUserLoginMigrationValidationService</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/UserLoginMigrationRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >UserLoginMigrationRepo</a>
@@ -3589,6 +3583,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/SchoolMigrationError.html" data-type="entity-link" >SchoolMigrationError</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SchoolNumberMissingLoggableException.html" data-type="entity-link" >SchoolNumberMissingLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/SchoolParams.html" data-type="entity-link" >SchoolParams</a>
                             </li>
                             <li class="link">
@@ -3916,19 +3913,28 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/UserInfoResponse.html" data-type="entity-link" >UserInfoResponse</a>
                             </li>
                             <li class="link">
+                                <a href="classes/UserLoginMigrationAlreadyClosedLoggableException.html" data-type="entity-link" >UserLoginMigrationAlreadyClosedLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/UserLoginMigrationDO.html" data-type="entity-link" >UserLoginMigrationDO</a>
                             </li>
                             <li class="link">
                                 <a href="classes/UserLoginMigrationError.html" data-type="entity-link" >UserLoginMigrationError</a>
                             </li>
                             <li class="link">
-                                <a href="classes/UserLoginMigrationLoggable.html" data-type="entity-link" >UserLoginMigrationLoggable</a>
+                                <a href="classes/UserLoginMigrationGracePeriodExpiredLoggableException.html" data-type="entity-link" >UserLoginMigrationGracePeriodExpiredLoggableException</a>
                             </li>
                             <li class="link">
-                                <a href="classes/UserLoginMigrationLoggableException.html" data-type="entity-link" >UserLoginMigrationLoggableException</a>
+                                <a href="classes/UserLoginMigrationMandatoryLoggable.html" data-type="entity-link" >UserLoginMigrationMandatoryLoggable</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/UserLoginMigrationMandatoryParams.html" data-type="entity-link" >UserLoginMigrationMandatoryParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/UserLoginMigrationMapper.html" data-type="entity-link" >UserLoginMigrationMapper</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/UserLoginMigrationNotFoundLoggableException.html" data-type="entity-link" >UserLoginMigrationNotFoundLoggableException</a>
                             </li>
                             <li class="link">
                                 <a href="classes/UserLoginMigrationResponse.html" data-type="entity-link" >UserLoginMigrationResponse</a>
@@ -3938,6 +3944,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/UserLoginMigrationSearchParams.html" data-type="entity-link" >UserLoginMigrationSearchParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/UserLoginMigrationStartLoggable.html" data-type="entity-link" >UserLoginMigrationStartLoggable</a>
                             </li>
                             <li class="link">
                                 <a href="classes/UserMapper.html" data-type="entity-link" >UserMapper</a>
@@ -4110,9 +4119,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/CommonToolValidationService.html" data-type="entity-link" >CommonToolValidationService</a>
-                                </li>
-                                <li class="link">
-                                    <a href="injectables/CommonUserLoginMigrationService.html" data-type="entity-link" >CommonUserLoginMigrationService</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/ContentElementFactory.html" data-type="entity-link" >ContentElementFactory</a>
@@ -4310,6 +4316,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/OidcProvisioningStrategy.html" data-type="entity-link" >OidcProvisioningStrategy</a>
                                 </li>
                                 <li class="link">
+                                    <a href="injectables/PageContentMapper.html" data-type="entity-link" >PageContentMapper</a>
+                                </li>
+                                <li class="link">
                                     <a href="injectables/PermissionService.html" data-type="entity-link" >PermissionService</a>
                                 </li>
                                 <li class="link">
@@ -4322,7 +4331,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/RequestLoggingInterceptor.html" data-type="entity-link" >RequestLoggingInterceptor</a>
                                 </li>
                                 <li class="link">
-                                    <a href="injectables/RestartUserLoginMigrationValidationService.html" data-type="entity-link" >RestartUserLoginMigrationValidationService</a>
+                                    <a href="injectables/RestartUserLoginMigrationUc.html" data-type="entity-link" >RestartUserLoginMigrationUc</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/RichTextCardElementRepo.html" data-type="entity-link" >RichTextCardElementRepo</a>
@@ -4388,7 +4397,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/ShareTokenUC.html" data-type="entity-link" >ShareTokenUC</a>
                                 </li>
                                 <li class="link">
-                                    <a href="injectables/StartUserLoginMigrationValidationService.html" data-type="entity-link" >StartUserLoginMigrationValidationService</a>
+                                    <a href="injectables/StartUserLoginMigrationUc.html" data-type="entity-link" >StartUserLoginMigrationUc</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/StorageProviderRepo.html" data-type="entity-link" >StorageProviderRepo</a>
@@ -4457,6 +4466,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/TimeoutInterceptor.html" data-type="entity-link" >TimeoutInterceptor</a>
                                 </li>
                                 <li class="link">
+                                    <a href="injectables/ToggleUserLoginMigrationUc.html" data-type="entity-link" >ToggleUserLoginMigrationUc</a>
+                                </li>
+                                <li class="link">
                                     <a href="injectables/TokenGenerator.html" data-type="entity-link" >TokenGenerator</a>
                                 </li>
                                 <li class="link">
@@ -4473,6 +4485,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/UserLoginMigrationService.html" data-type="entity-link" >UserLoginMigrationService</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/UserLoginMigrationUc.html" data-type="entity-link" >UserLoginMigrationUc</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/UserMigrationService.html" data-type="entity-link" >UserMigrationService</a>
