@@ -4,7 +4,9 @@ const externalSourceSchema = require('../../helper/externalSourceSchema');
 
 const { Schema } = mongoose;
 
-const COURSE_FEATURES = {};
+const COURSE_FEATURES = {
+	VIDEOCONFERENCE: 'videoconference',
+};
 // not all pros exist in new entity
 const getUserGroupSchema = (additional = {}) => {
 	const schema = {

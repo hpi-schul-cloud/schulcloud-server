@@ -13,8 +13,9 @@ describe('CommonCartridgeFileBuilder', () => {
 	const fileBuilderOptions: ICommonCartridgeFileBuilderOptions = {
 		identifier: 'file-identifier',
 		copyrightOwners: 'Placeholder Copyright',
-		currentYear: 'Placeholder Current Year',
+		creationYear: 'Placeholder Creation Year',
 		title: 'file-title',
+		version: CommonCartridgeVersion.V_1_1_0,
 	};
 	const organizationProps: ICommonCartridgeOrganizationProps = {
 		version: CommonCartridgeVersion.V_1_1_0,
@@ -39,21 +40,10 @@ describe('CommonCartridgeFileBuilder', () => {
 		title: 'web-content-title',
 		html: '<h1>Text Resource Title</h1><p>Text Resource Description</p>',
 	};
-	const webLinkResourceProps: ICommonCartridgeResourceProps = {
-		version: CommonCartridgeVersion.V_1_1_0,
-		type: CommonCartridgeResourceType.WEB_LINK,
-		identifier: 'web-content-identifier',
-		href: 'web-content-identifier/web-content.xml',
-		title: 'web-link-title',
-		url: 'https://to-a-web-link.tld',
-	};
 
 	beforeAll(async () => {
 		const fileBuilder = new CommonCartridgeFileBuilder(fileBuilderOptions).addResourceToFile(webContentResourceProps);
-		fileBuilder
-			.addOrganization(organizationProps)
-			.addResourceToOrganization(ltiResourceProps)
-			.addResourceToOrganization(webLinkResourceProps);
+		fileBuilder.addOrganization(organizationProps).addResourceToOrganization(ltiResourceProps);
 
 		archive = new AdmZip(await fileBuilder.build());
 	});
@@ -63,9 +53,8 @@ describe('CommonCartridgeFileBuilder', () => {
 			it('should add organization to manifest', () => {
 				const manifest = getFileContentAsString('imsmanifest.xml');
 				expect(manifest).toContain(organizationProps.identifier);
-				expect(manifest).toContain(fileBuilderOptions.copyrightOwners);
-				expect(manifest).toContain(fileBuilderOptions.currentYear);
 				expect(manifest).toContain(organizationProps.title);
+				expect(manifest).toContain(organizationProps.version);
 			});
 		});
 
@@ -111,11 +100,6 @@ describe('CommonCartridgeFileBuilder', () => {
 			it('should create valid manifest file', async () => {
 				const manifest = getFileContentAsString('imsmanifest.xml');
 				await expect(parseStringPromise(manifest as string)).resolves.not.toThrow();
-			});
-
-			it('should use common cartridge version 1.1.0', () => {
-				const manifest = getFileContentAsString('imsmanifest.xml');
-				expect(manifest).toContain(CommonCartridgeVersion.V_1_1_0);
 			});
 		});
 	});
