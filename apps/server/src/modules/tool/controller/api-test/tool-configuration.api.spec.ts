@@ -1,7 +1,19 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, ExternalTool, Permission, Role, RoleName, School, SchoolExternalTool, User } from '@shared/domain';
+import {
+	Course,
+	CustomParameterLocation,
+	CustomParameterScope,
+	CustomParameterType,
+	ExternalTool,
+	Permission,
+	Role,
+	RoleName,
+	School,
+	SchoolExternalTool,
+	User,
+} from '@shared/domain';
 import {
 	courseFactory,
 	externalToolFactory,
@@ -21,6 +33,7 @@ import {
 	CustomParameterScopeTypeParams,
 	CustomParameterTypeParams,
 } from '../../interface';
+import { CustomParameter } from '../../uc';
 
 describe('ToolSchoolController (API)', () => {
 	let app: INestApplication;
@@ -435,11 +448,9 @@ describe('ToolSchoolController (API)', () => {
 
 				const school: School = schoolFactory.buildWithId();
 
-				const course: Course = courseFactory.buildWithId();
-
 				const user: User = userFactory.buildWithId({ school, roles: [teacherRole] });
 
-				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+				const course: Course = courseFactory.buildWithId({ school, teachers: [user] });
 
 				const customParameterResponse: CustomParameterResponse[] = [
 					{
@@ -456,7 +467,26 @@ describe('ToolSchoolController (API)', () => {
 					},
 				];
 
-				await em.persistAndFlush([user, school, teacherRole, externalTool, course]);
+				const customParameters: CustomParameter[] = [
+					{
+						name: 'name',
+						displayName: 'User Friendly Name',
+						description: 'This is a mock parameter.',
+						default: 'default',
+						location: CustomParameterLocation.PATH,
+						scope: CustomParameterScope.CONTEXT,
+						type: CustomParameterType.STRING,
+						regex: 'regex',
+						regexComment: 'mockComment',
+						isOptional: false,
+					},
+				];
+
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({
+					parameters: customParameters,
+				});
+
+				await em.persistAndFlush([user, school, course, teacherRole, externalTool]);
 				em.clear();
 
 				return {
@@ -495,9 +525,9 @@ describe('ToolSchoolController (API)', () => {
 
 				const school: School = schoolFactory.buildWithId();
 
-				const course: Course = courseFactory.buildWithId();
-
 				const user: User = userFactory.buildWithId({ school, roles: [teacherRole] });
+
+				const course: Course = courseFactory.buildWithId({ school, teachers: [user] });
 
 				const externalTool: ExternalTool = externalToolFactory.buildWithId({ isHidden: true });
 
