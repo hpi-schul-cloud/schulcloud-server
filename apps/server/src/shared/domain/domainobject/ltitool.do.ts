@@ -1,8 +1,8 @@
-import { EntityId } from '@shared/domain/types';
 import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity/ltitool.entity';
+import { EntityId } from '@shared/domain/types';
 import { BaseDO } from './base.do';
 
-export class CustomLtiProperty {
+export class CustomLtiPropertyDO {
 	key: string;
 
 	value: string;
@@ -34,7 +34,7 @@ export class LtiToolDO extends BaseDO {
 
 	privacy_permission: LtiPrivacyPermission;
 
-	customs: CustomLtiProperty[];
+	customs: CustomLtiPropertyDO[];
 
 	isTemplate: boolean;
 
