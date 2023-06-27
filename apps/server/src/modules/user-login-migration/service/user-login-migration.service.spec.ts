@@ -954,8 +954,8 @@ describe('UserLoginMigrationService', () => {
 		});
 	});
 
-	describe('toggleMigration is called', () => {
-		describe('when migration toggle was successfully', () => {
+	describe('setMigrationMandatory is called', () => {
+		describe('when migration is set to mandatory', () => {
 			const setup = () => {
 				const schoolId: EntityId = new ObjectId().toHexString();
 
@@ -965,8 +965,9 @@ describe('UserLoginMigrationService', () => {
 					targetSystemId,
 					schoolId,
 					startedAt: mockedDate,
-					mandatorySince: mockedDate,
+					mandatorySince: undefined,
 				});
+
 				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigrationDO);
 				userLoginMigrationRepo.save.mockResolvedValue(userLoginMigrationDO);
 
@@ -982,7 +983,45 @@ describe('UserLoginMigrationService', () => {
 
 				await service.setMigrationMandatory(schoolId, true);
 
-				expect(userLoginMigrationRepo.save).toHaveBeenCalledWith(userLoginMigrationDO);
+				expect(userLoginMigrationRepo.save).toHaveBeenCalledWith({
+					...userLoginMigrationDO,
+					mandatorySince: mockedDate,
+				});
+			});
+		});
+
+		describe('when migration is set to optional', () => {
+			const setup = () => {
+				const schoolId: EntityId = new ObjectId().toHexString();
+
+				const targetSystemId: EntityId = new ObjectId().toHexString();
+
+				const userLoginMigrationDO: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					targetSystemId,
+					schoolId,
+					startedAt: mockedDate,
+					mandatorySince: mockedDate,
+				});
+
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigrationDO);
+				userLoginMigrationRepo.save.mockResolvedValue(userLoginMigrationDO);
+
+				return {
+					schoolId,
+					targetSystemId,
+					userLoginMigrationDO,
+				};
+			};
+
+			it('should call save the user login migration', async () => {
+				const { schoolId, userLoginMigrationDO } = setup();
+
+				await service.setMigrationMandatory(schoolId, false);
+
+				expect(userLoginMigrationRepo.save).toHaveBeenCalledWith({
+					...userLoginMigrationDO,
+					mandatorySince: undefined,
+				});
 			});
 		});
 
