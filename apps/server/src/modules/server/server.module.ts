@@ -18,7 +18,7 @@ import { FilesStorageClientModule } from '@src/modules/files-storage-client';
 import { LearnroomModule } from '@src/modules/learnroom';
 import { LessonApiModule } from '@src/modules/lesson';
 import { NewsModule } from '@src/modules/news';
-import { OauthProviderModule } from '@src/modules/oauth-provider';
+import { OauthProviderApiModule } from '@src/modules/oauth-provider';
 import { OauthApiModule } from '@src/modules/oauth/oauth-api.module';
 import { ProvisioningModule } from '@src/modules/provisioning';
 import { RocketChatModule } from '@src/modules/rocketchat';
@@ -73,7 +73,7 @@ const serverModules = [
 	RoleModule,
 	VideoConferenceModule,
 	VideoConferenceApiModule,
-	OauthProviderModule,
+	OauthProviderApiModule,
 	SharingApiModule,
 	ToolApiModule,
 	UserLoginMigrationApiModule,

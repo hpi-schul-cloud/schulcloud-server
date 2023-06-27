@@ -14,7 +14,11 @@ import { AuthorizationModule } from '@src/modules/authorization';
 import { PseudonymModule } from '@src/modules/pseudonym';
 import { UserModule } from '@src/modules/user';
 import { Lti11EncryptionService } from './launch-tool/service/lti11-encryption.service';
-import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy } from './launch-tool/service/strategy';
+import {
+	BasicToolLaunchStrategy,
+	Lti11ToolLaunchStrategy,
+	OAuth2ToolLaunchStrategy,
+} from './launch-tool/service/strategy';
 import { ToolLaunchService } from './launch-tool/service/tool-launch.service';
 import {
 	CommonToolService,
@@ -58,6 +62,7 @@ import { ExternalToolServiceMapper } from './service/mapper';
 		Lti11EncryptionService,
 		BasicToolLaunchStrategy,
 		Lti11ToolLaunchStrategy,
+		OAuth2ToolLaunchStrategy,
 		CommonToolService,
 	],
 	exports: [
