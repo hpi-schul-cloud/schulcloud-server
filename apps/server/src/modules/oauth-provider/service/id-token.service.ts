@@ -1,12 +1,11 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Injectable } from '@nestjs/common';
-import { PseudonymDO, Team, UserDO } from '@shared/domain';
-import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { LtiToolRepo, PseudonymsRepo, TeamsRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
-import { GroupNameIdTuple, IdToken } from '@src/modules/oauth-provider/interface/id-token';
-import { OauthScope } from '@src/modules/oauth-provider/interface/oauth-scope.enum';
-import { UserService } from '@src/modules/user/service/user.service';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ExternalToolDO, LtiToolDO, PseudonymDO, Team, UserDO } from '@shared/domain';
+import { TeamsRepo } from '@shared/repo';
+import { PseudonymService } from '@src/modules/pseudonym';
+import { UserService } from '@src/modules/user';
+import { GroupNameIdTuple, IdToken, OauthScope } from '../interface';
+import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
 
 @Injectable()
 export class IdTokenService {
@@ -15,11 +14,10 @@ export class IdTokenService {
 	protected iFrameProperties: string;
 
 	constructor(
-		private readonly pseudonymsRepo: PseudonymsRepo,
-		private readonly ltiToolRepo: LtiToolRepo,
+		private readonly oauthProviderLoginFlowService: OauthProviderLoginFlowService,
+		private readonly pseudonymService: PseudonymService,
 		private readonly teamsRepo: TeamsRepo,
-		private readonly userService: UserService,
-		private readonly logger: LegacyLogger
+		private readonly userService: UserService
 	) {
 		this.host = Configuration.get('HOST') as string;
 		this.iFrameProperties = 'title="username" style="height: 26px; width: 180px; border: none;"';
@@ -46,7 +44,7 @@ export class IdTokenService {
 		};
 	}
 
-	protected buildGroupsClaim(teams: Team[]): GroupNameIdTuple[] {
+	private buildGroupsClaim(teams: Team[]): GroupNameIdTuple[] {
 		return teams.map((team: Team): GroupNameIdTuple => {
 			return {
 				gid: team.id,
@@ -56,17 +54,17 @@ export class IdTokenService {
 	}
 
 	// TODO N21-335 How we can refactor the iframe in the id token?
-	protected async createIframeSubject(userId: string, clientId: string): Promise<string | undefined> {
-		try {
-			const ltiTool: LtiToolDO = await this.ltiToolRepo.findByClientIdAndIsLocal(clientId, true);
-			const pseudonymDO: PseudonymDO = await this.pseudonymsRepo.findByUserIdAndToolId(userId, ltiTool.id as string);
+	private async createIframeSubject(userId: string, clientId: string): Promise<string> {
+		const tool: ExternalToolDO | LtiToolDO = await this.oauthProviderLoginFlowService.findToolByClientId(clientId);
 
-			return `<iframe src="${this.host}/oauth2/username/${pseudonymDO.pseudonym}" ${this.iFrameProperties}></iframe>`;
-		} catch (err) {
-			this.logger.debug(
-				`Something went wrong for id token creation. LtiTool or Pseudonym could not be found for userId: ${userId} and clientId: ${clientId}`
+		if (!tool.id) {
+			throw new InternalServerErrorException(
+				`Something went wrong for id token creation. Tool could not be found for userId: ${userId} and clientId: ${clientId}`
 			);
-			return undefined;
 		}
+
+		const pseudonymDO: PseudonymDO = await this.pseudonymService.findByUserIdAndToolId(userId, tool.id);
+
+		return `<iframe src="${this.host}/oauth2/username/${pseudonymDO.pseudonym}" ${this.iFrameProperties}></iframe>`;
 	}
 }
