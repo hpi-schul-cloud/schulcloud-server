@@ -7,15 +7,16 @@ import { Logger } from '@src/core/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { SchoolService } from '@src/modules/school';
 import {
+	UserLoginMigrationAlreadyClosedLoggableException,
 	UserLoginMigrationGracePeriodExpiredLoggableException,
 	UserLoginMigrationNotFoundLoggableException,
 } from '../error';
 import { UserLoginMigrationService } from '../service';
-import { RestartUserLoginMigrationUc } from './restart-user-login-migration.uc';
+import { ToggleUserLoginMigrationUc } from './toggle-user-login-migration.uc';
 
-describe('RestartUserLoginMigrationUc', () => {
+describe('ToggleUserLoginMigrationUc', () => {
 	let module: TestingModule;
-	let uc: RestartUserLoginMigrationUc;
+	let uc: ToggleUserLoginMigrationUc;
 
 	let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
@@ -24,7 +25,7 @@ describe('RestartUserLoginMigrationUc', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				RestartUserLoginMigrationUc,
+				ToggleUserLoginMigrationUc,
 				{
 					provide: UserLoginMigrationService,
 					useValue: createMock<UserLoginMigrationService>(),
@@ -44,7 +45,7 @@ describe('RestartUserLoginMigrationUc', () => {
 			],
 		}).compile();
 
-		uc = module.get(RestartUserLoginMigrationUc);
+		uc = module.get(ToggleUserLoginMigrationUc);
 		userLoginMigrationService = module.get(UserLoginMigrationService);
 		authorizationService = module.get(AuthorizationService);
 		schoolService = module.get(SchoolService);
@@ -60,13 +61,13 @@ describe('RestartUserLoginMigrationUc', () => {
 		jest.clearAllMocks();
 	});
 
-	describe('restartMigration', () => {
-		describe('when an admin restarts a closed migration', () => {
+	describe('setMigrationMandatory', () => {
+		describe('when an admin sets a migration from optional to mandatory', () => {
 			const setup = () => {
-				const migrationBeforeRestart: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					closedAt: new Date(2023, 5),
+				const migrationBeforeMandatory: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId();
+				const migrationAfterMandatory: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					mandatorySince: new Date(2023, 5),
 				});
-				const migrationAfterRestart: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId();
 
 				const user: User = userFactory.buildWithId();
 
@@ -74,16 +75,16 @@ describe('RestartUserLoginMigrationUc', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
-				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(migrationBeforeRestart);
-				userLoginMigrationService.restartMigration.mockResolvedValueOnce(migrationAfterRestart);
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(migrationBeforeMandatory);
+				userLoginMigrationService.setMigrationMandatory.mockResolvedValueOnce(migrationAfterMandatory);
 
-				return { user, school, migrationAfterRestart };
+				return { user, school, migrationAfterMandatory };
 			};
 
 			it('should check permission', async () => {
 				const { user, school } = setup();
 
-				await uc.restartMigration('userId', 'schoolId');
+				await uc.setMigrationMandatory('userId', 'schoolId', true);
 
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 					user,
@@ -92,26 +93,29 @@ describe('RestartUserLoginMigrationUc', () => {
 				);
 			});
 
-			it('should call the service to restart a migration', async () => {
+			it('should call the service to set a migration mandatory', async () => {
 				setup();
 
-				await uc.restartMigration('userId', 'schoolId');
+				await uc.setMigrationMandatory('userId', 'schoolId', true);
 
-				expect(userLoginMigrationService.restartMigration).toHaveBeenCalledWith('schoolId');
+				expect(userLoginMigrationService.setMigrationMandatory).toHaveBeenCalledWith('schoolId', true);
 			});
 
 			it('should return a UserLoginMigration', async () => {
-				const { migrationAfterRestart } = setup();
+				const { migrationAfterMandatory } = setup();
 
-				const result: UserLoginMigrationDO = await uc.restartMigration('userId', 'schoolId');
+				const result: UserLoginMigrationDO = await uc.setMigrationMandatory('userId', 'schoolId', true);
 
-				expect(result).toEqual(migrationAfterRestart);
+				expect(result).toEqual(migrationAfterMandatory);
 			});
 		});
 
-		describe('when an admin restarts a running migration', () => {
+		describe('when an admin sets a migration from mandatory to optional', () => {
 			const setup = () => {
-				const runningMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId();
+				const migrationBeforeOptional: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					mandatorySince: new Date(2023, 5),
+				});
+				const migrationAfterOptional: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId();
 
 				const user: User = userFactory.buildWithId();
 
@@ -119,15 +123,16 @@ describe('RestartUserLoginMigrationUc', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
-				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(runningMigration);
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(migrationBeforeOptional);
+				userLoginMigrationService.setMigrationMandatory.mockResolvedValueOnce(migrationAfterOptional);
 
-				return { user, school, runningMigration };
+				return { user, school, migrationAfterOptional };
 			};
 
 			it('should check permission', async () => {
 				const { user, school } = setup();
 
-				await uc.restartMigration('userId', 'schoolId');
+				await uc.setMigrationMandatory('userId', 'schoolId', false);
 
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 					user,
@@ -136,20 +141,20 @@ describe('RestartUserLoginMigrationUc', () => {
 				);
 			});
 
-			it('should not call the service to restart a migration', async () => {
+			it('should call the service to set a migration optional', async () => {
 				setup();
 
-				await uc.restartMigration('userId', 'schoolId');
+				await uc.setMigrationMandatory('userId', 'schoolId', false);
 
-				expect(userLoginMigrationService.restartMigration).not.toHaveBeenCalled();
+				expect(userLoginMigrationService.setMigrationMandatory).toHaveBeenCalledWith('schoolId', false);
 			});
 
 			it('should return a UserLoginMigration', async () => {
-				const { runningMigration } = setup();
+				const { migrationAfterOptional } = setup();
 
-				const result: UserLoginMigrationDO = await uc.restartMigration('userId', 'schoolId');
+				const result: UserLoginMigrationDO = await uc.setMigrationMandatory('userId', 'schoolId', false);
 
-				expect(result).toEqual(runningMigration);
+				expect(result).toEqual(migrationAfterOptional);
 			});
 		});
 
@@ -169,7 +174,7 @@ describe('RestartUserLoginMigrationUc', () => {
 			it('should throw an exception', async () => {
 				setup();
 
-				const func = async () => uc.restartMigration('userId', 'schoolId');
+				const func = async () => uc.setMigrationMandatory('userId', 'schoolId', true);
 
 				await expect(func).rejects.toThrow(ForbiddenException);
 			});
@@ -189,7 +194,7 @@ describe('RestartUserLoginMigrationUc', () => {
 			it('should throw a UserLoginMigrationNotFoundLoggableException', async () => {
 				setup();
 
-				const func = async () => uc.restartMigration('userId', 'schoolId');
+				const func = async () => uc.setMigrationMandatory('userId', 'schoolId', true);
 
 				await expect(func).rejects.toThrow(UserLoginMigrationNotFoundLoggableException);
 			});
@@ -217,9 +222,33 @@ describe('RestartUserLoginMigrationUc', () => {
 			it('should throw a UserLoginMigrationGracePeriodExpiredLoggableException', async () => {
 				setup();
 
-				const func = async () => uc.restartMigration('userId', 'schoolId');
+				const func = async () => uc.setMigrationMandatory('userId', 'schoolId', true);
 
 				await expect(func).rejects.toThrow(UserLoginMigrationGracePeriodExpiredLoggableException);
+			});
+		});
+
+		describe('when migration is closed', () => {
+			const setup = () => {
+				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					closedAt: new Date(2023, 5),
+				});
+
+				const user: User = userFactory.buildWithId();
+
+				const school: SchoolDO = schoolDOFactory.buildWithId();
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(migration);
+			};
+
+			it('should throw a UserLoginMigrationAlreadyClosedLoggableException', async () => {
+				setup();
+
+				const func = async () => uc.setMigrationMandatory('userId', 'schoolId', true);
+
+				await expect(func).rejects.toThrow(UserLoginMigrationAlreadyClosedLoggableException);
 			});
 		});
 	});

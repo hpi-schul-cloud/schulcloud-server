@@ -1,27 +1,26 @@
-import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
+import { Injectable } from '@nestjs/common';
 import { Permission, SchoolDO, User, UserLoginMigrationDO } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { SchoolService } from '@src/modules/school';
 import {
+	UserLoginMigrationAlreadyClosedLoggableException,
 	UserLoginMigrationGracePeriodExpiredLoggableException,
 	UserLoginMigrationNotFoundLoggableException,
 } from '../error';
-import { UserLoginMigrationStartLoggable } from '../loggable';
+import { UserLoginMigrationMandatoryLoggable } from '../loggable';
 import { UserLoginMigrationService } from '../service';
 
 @Injectable()
-export class RestartUserLoginMigrationUc {
+export class ToggleUserLoginMigrationUc {
 	constructor(
 		private readonly userLoginMigrationService: UserLoginMigrationService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolService: SchoolService,
 		private readonly logger: Logger
-	) {
-		this.logger.setContext(RestartUserLoginMigrationUc.name);
-	}
+	) {}
 
-	async restartMigration(userId: string, schoolId: string): Promise<UserLoginMigrationDO> {
+	async setMigrationMandatory(userId: string, schoolId: string, mandatory: boolean): Promise<UserLoginMigrationDO> {
 		await this.checkPermission(userId, schoolId);
 
 		let userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
@@ -36,11 +35,14 @@ export class RestartUserLoginMigrationUc {
 				userLoginMigration.finishedAt
 			);
 		} else if (userLoginMigration.closedAt) {
-			userLoginMigration = await this.userLoginMigrationService.restartMigration(schoolId);
-
-			this.logger.log(new UserLoginMigrationStartLoggable(userId, schoolId));
+			throw new UserLoginMigrationAlreadyClosedLoggableException(
+				userLoginMigration.id as string,
+				userLoginMigration.closedAt
+			);
 		} else {
-			// Do nothing, if migration is already started but not stopped.
+			userLoginMigration = await this.userLoginMigrationService.setMigrationMandatory(schoolId, mandatory);
+
+			this.logger.debug(new UserLoginMigrationMandatoryLoggable(userId, userLoginMigration.id as string, mandatory));
 		}
 
 		return userLoginMigration;
