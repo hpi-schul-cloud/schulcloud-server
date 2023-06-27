@@ -101,18 +101,19 @@ export class ExternalToolConfigurationUc {
 		return availableSchoolExternalTools;
 	}
 
+	// TODO N21-refactor return null with code coverage
 	private filterForAvailableExternalTools(
 		externalTools: ExternalToolDO[],
 		availableSchoolExternalTools: SchoolExternalToolDO[]
 	): AvailableToolsForContext[] {
-		const toolsWithSchoolTool: (AvailableToolsForContext | null)[] = availableSchoolExternalTools.map(
+		const toolsWithSchoolTool: (AvailableToolsForContext | undefined)[] = availableSchoolExternalTools.map(
 			(schoolExternalTool: SchoolExternalToolDO) => {
 				const externalTool: ExternalToolDO | undefined = externalTools.find(
 					(tool: ExternalToolDO) => schoolExternalTool.toolId === tool.id
 				);
 
 				if (!externalTool) {
-					return null;
+					return undefined;
 				}
 
 				return {
