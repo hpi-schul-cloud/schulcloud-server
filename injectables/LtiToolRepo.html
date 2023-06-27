@@ -334,7 +334,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/LtiToolDO.html" target="_self" >Promise&lt;LtiToolDO&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/LtiToolDO.html" target="_self" >Promise&lt;LtiToolDO | null&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -514,7 +514,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:62</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:69</a></code>
 </div>
                 </td>
             </tr>
@@ -591,7 +591,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:36</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:43</a></code>
 </div>
                 </td>
             </tr>
@@ -1451,11 +1451,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { BaseDORepo } from &#x27;@shared/repo/base.do.repo&#x27;;
-import { EntityName, NotFoundError } from &#x27;@mikro-orm/core&#x27;;
-import { LtiToolDO } from &#x27;@shared/domain/domainobject/ltitool.do&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityName, NotFoundError } from &#x27;@mikro-orm/core&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ILtiToolProperties, LtiPrivacyPermission, LtiTool } from &#x27;@shared/domain&#x27;;
+import { LtiToolDO } from &#x27;@shared/domain/domainobject/ltitool.do&#x27;;
+import { BaseDORepo } from &#x27;@shared/repo/base.do.repo&#x27;;
 
 @Injectable()
 export class LtiToolRepo extends BaseDORepo&lt;LtiToolDO, LtiTool, ILtiToolProperties&gt; {
@@ -1481,9 +1481,16 @@ export class LtiToolRepo extends BaseDORepo&lt;LtiToolDO, LtiTool, ILtiToolPrope
 		return this.mapEntityToDO(entity);
 	}
 
-	async findByClientIdAndIsLocal(oAuthClientId: string, isLocal: boolean): Promise&lt;LtiToolDO&gt; {
-		const entity &#x3D; await this._em.findOneOrFail(LtiTool, { oAuthClientId, isLocal });
-		return this.mapEntityToDO(entity);
+	async findByClientIdAndIsLocal(oAuthClientId: string, isLocal: boolean): Promise&lt;LtiToolDO | null&gt; {
+		const entity: LtiTool | null &#x3D; await this._em.findOne(LtiTool, { oAuthClientId, isLocal });
+
+		if (!entity) {
+			return null;
+		}
+
+		const domainObject: LtiToolDO &#x3D; this.mapEntityToDO(entity);
+
+		return domainObject;
 	}
 
 	protected mapEntityToDO(entity: LtiTool): LtiToolDO {

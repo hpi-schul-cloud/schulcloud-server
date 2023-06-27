@@ -85,17 +85,13 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#getPseudonym" >getPseudonym</a>
+                                <a href="#findToolByClientId" >findToolByClientId</a>
                             </li>
                             <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
+                                    <span class="modifier">Public</span>
                                 <a href="#isNextcloudTool" >isNextcloudTool</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#validateNextcloudPermission" >validateNextcloudPermission</a>
                             </li>
                         </ul>
                     </td>
@@ -115,12 +111,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(ltiToolRepo: <a href="../injectables/LtiToolRepo.html" target="_self">LtiToolRepo</a>, pseudonymsRepo: <a href="../injectables/PseudonymsRepo.html" target="_self">PseudonymsRepo</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>)</code>
+<code>constructor(ltiToolService: <a href="../injectables/LtiToolService.html" target="_self">LtiToolService</a>, externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/oauth-provider/service/oauth-provider.login-flow.service.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/oauth-provider/service/oauth-provider.login-flow.service.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -138,10 +134,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>ltiToolRepo</td>
+                                                        <td>ltiToolService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/LtiToolRepo.html" target="_self" >LtiToolRepo</a></code>
+                                                                        <code><a href="../injectables/LtiToolService.html" target="_self" >LtiToolService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -150,22 +146,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>pseudonymsRepo</td>
+                                                        <td>externalToolService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/PseudonymsRepo.html" target="_self" >PseudonymsRepo</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>authorizationService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/AuthorizationService.html" target="_self" >AuthorizationService</a></code>
+                                                                        <code><a href="../injectables/ExternalToolService.html" target="_self" >ExternalToolService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -191,26 +175,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getPseudonym"></a>
+                    <a name="findToolByClientId"></a>
                     <span class="name">
+                        <span class="modifier">Public</span>
                         <span class="modifier">Async</span>
-                        <span ><b>getPseudonym</b></span>
-                        <a href="#getPseudonym"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>findToolByClientId</b></span>
+                        <a href="#findToolByClientId"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getPseudonym(currentUserId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, loginResponse: <a href="../interfaces/ProviderLoginResponse.html" target="_self">ProviderLoginResponse</a>)</code>
+                    <code>findToolByClientId(clientId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="17"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/oauth-provider.login-flow.service.ts:17</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="15"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/oauth-provider.login-flow.service.ts:15</a></div>
                 </td>
             </tr>
 
@@ -231,21 +216,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>currentUserId</td>
+                                    <td>clientId</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>loginResponse</td>
-                                    <td>
-                                                <code><a href="../interfaces/ProviderLoginResponse.html" target="_self" >ProviderLoginResponse</a></code>
                                     </td>
 
                                     <td>
@@ -260,7 +233,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/Pseudonym.html" target="_self" >Promise&lt;PseudonymDO&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#ExternalTool" target="_self" >Promise&lt;ExternalToolDO | LtiToolDO&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -276,8 +249,7 @@
                 <td class="col-md-4">
                     <a name="isNextcloudTool"></a>
                     <span class="name">
-                        <span class="modifier">Private</span>
-                        <span class="modifier">Async</span>
+                        <span class="modifier">Public</span>
                         <span ><b>isNextcloudTool</b></span>
                         <a href="#isNextcloudTool"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -286,86 +258,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isNextcloudTool(loginResponse: <a href="../interfaces/ProviderLoginResponse.html" target="_self">ProviderLoginResponse</a>)</code>
+                    <code>isNextcloudTool(tool: <a href="../undefineds/ExternalTool.html" target="_self">ExternalToolDO | LtiToolDO</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="31"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/oauth-provider.login-flow.service.ts:31</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>loginResponse</td>
-                                    <td>
-                                                <code><a href="../interfaces/ProviderLoginResponse.html" target="_self" >ProviderLoginResponse</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="validateNextcloudPermission"></a>
-                    <span class="name">
-                        <span class="modifier">Async</span>
-                        <span ><b>validateNextcloudPermission</b></span>
-                        <a href="#validateNextcloudPermission"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>validateNextcloudPermission(currentUserId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, loginResponse: <a href="../interfaces/ProviderLoginResponse.html" target="_self">ProviderLoginResponse</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="41"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/oauth-provider.login-flow.service.ts:41</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="33"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/oauth-provider.login-flow.service.ts:33</a></div>
                 </td>
             </tr>
 
@@ -386,21 +287,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>currentUserId</td>
+                                    <td>tool</td>
                                     <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>loginResponse</td>
-                                    <td>
-                                                <code><a href="../interfaces/ProviderLoginResponse.html" target="_self" >ProviderLoginResponse</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#ExternalTool" target="_self" >ExternalToolDO | LtiToolDO</a></code>
                                     </td>
 
                                     <td>
@@ -415,7 +304,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
 
                     </div>
                     <div class="io-description">
@@ -431,52 +320,42 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ProviderLoginResponse } from &#x27;@shared/infra/oauth-provider/dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
+import { NotFoundException } from &#x27;@nestjs/common/exceptions/not-found.exception&#x27;;
+import { ExternalToolDO } from &#x27;@shared/domain&#x27;;
 import { LtiToolDO } from &#x27;@shared/domain/domainobject/ltitool.do&#x27;;
-import { LtiToolRepo, PseudonymsRepo } from &#x27;@shared/repo&#x27;;
-import { InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
-import { Permission, PseudonymDO, User } from &#x27;@shared/domain&#x27;;
-import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
-import { AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
+import { LtiToolService } from &#x27;@src/modules/lti-tool/service&#x27;;
+import { ExternalToolService } from &#x27;@src/modules/tool/service&#x27;;
 
 @Injectable()
 export class OauthProviderLoginFlowService {
 	constructor(
-		private readonly ltiToolRepo: LtiToolRepo,
-		private readonly pseudonymsRepo: PseudonymsRepo,
-		private readonly authorizationService: AuthorizationService
+		private readonly ltiToolService: LtiToolService,
+		private readonly externalToolService: ExternalToolService
 	) {}
 
-	async getPseudonym(currentUserId: string, loginResponse: ProviderLoginResponse): Promise&lt;PseudonymDO&gt; {
-		if (!loginResponse.client.client_id) {
-			throw new InternalServerErrorException(&#x27;Could not find oAuthClientId in login response to get the pseudonym&#x27;);
+	public async findToolByClientId(clientId: string): Promise&lt;ExternalToolDO | LtiToolDO&gt; {
+		const externalTool: ExternalToolDO | null &#x3D; await this.externalToolService.findExternalToolByOAuth2ConfigClientId(
+			clientId
+		);
+		const ltiTool: LtiToolDO | null &#x3D; await this.ltiToolService.findByClientIdAndIsLocal(clientId, true);
+
+		if (externalTool) {
+			return externalTool;
 		}
 
-		const ltiToolDO: LtiToolDO &#x3D; await this.ltiToolRepo.findByClientIdAndIsLocal(loginResponse.client.client_id, true);
-		const pseudonym: PseudonymDO &#x3D; await this.pseudonymsRepo.findByUserIdAndToolId(
-			currentUserId,
-			ltiToolDO.id as string
-		);
-		return pseudonym;
+		if (ltiTool) {
+			return ltiTool;
+		}
+
+		throw new NotFoundException(&#x60;Unable to find ExternalTool or LtiTool for clientId: ${clientId}&#x60;);
 	}
 
 	// TODO N21-91. Magic Strings are not desireable
-	private async isNextcloudTool(loginResponse: ProviderLoginResponse): Promise&lt;boolean&gt; {
-		if (!loginResponse.client?.client_id) {
-			throw new InternalServerErrorException(&#x27;Could not find oAuthClientId in login response to get the LtiTool&#x27;);
-		}
+	public isNextcloudTool(tool: ExternalToolDO | LtiToolDO): boolean {
+		const isNextcloud: boolean &#x3D; tool.name &#x3D;&#x3D;&#x3D; &#x27;SchulcloudNextcloud&#x27;;
 
-		const ltiToolDO: LtiToolDO &#x3D; await this.ltiToolRepo.findByClientIdAndIsLocal(loginResponse.client.client_id, true);
-		const isNextcloud: boolean &#x3D; ltiToolDO.name &#x3D;&#x3D;&#x3D; &#x27;SchulcloudNextcloud&#x27;;
 		return isNextcloud;
-	}
-
-	async validateNextcloudPermission(currentUserId: string, loginResponse: ProviderLoginResponse): Promise&lt;void&gt; {
-		const isNextcloudTool: boolean &#x3D; await this.isNextcloudTool(loginResponse);
-		if (isNextcloudTool) {
-			const user: User &#x3D; await this.authorizationService.getUserWithPermissions(currentUserId);
-			this.authorizationService.checkAllPermissions(user, [Permission.NEXTCLOUD_USER]);
-		}
 	}
 }
 </code></pre>

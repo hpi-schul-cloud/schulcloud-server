@@ -98,6 +98,10 @@
                                 <a href="#findByUserIdAndToolId" >findByUserIdAndToolId</a>
                             </li>
                             <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findByUserIdAndToolIdOrFail" >findByUserIdAndToolIdOrFail</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Protected</span>
                                 <a href="#mapDOToEntityProperties" >mapDOToEntityProperties</a>
                             </li>
@@ -275,6 +279,89 @@
 
             <tr>
                 <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="27"
+                            class="link-to-prism">apps/server/src/shared/repo/pseudonyms/pseudonyms.repo.ts:27</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>toolId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../entitys/Pseudonym.html" target="_self" >Promise&lt;PseudonymDO | null&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findByUserIdAndToolIdOrFail"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>findByUserIdAndToolIdOrFail</b></span>
+                        <a href="#findByUserIdAndToolIdOrFail"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findByUserIdAndToolIdOrFail(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, toolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="18"
                             class="link-to-prism">apps/server/src/shared/repo/pseudonyms/pseudonyms.repo.ts:18</a></div>
                 </td>
@@ -364,7 +451,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:36</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:51</a></code>
 </div>
                 </td>
             </tr>
@@ -441,7 +528,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:27</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:42</a></code>
 </div>
                 </td>
             </tr>
@@ -1301,11 +1388,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { PseudonymDO } from &#x27;@shared/domain/domainobject/pseudonym.do&#x27;;
-import { EntityName } from &#x27;@mikro-orm/core&#x27;;
-import { EntityId, IPseudonymProperties, Pseudonym } from &#x27;@shared/domain&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityName } from &#x27;@mikro-orm/core&#x27;;
 import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { EntityId, IPseudonymProperties, Pseudonym } from &#x27;@shared/domain&#x27;;
+import { PseudonymDO } from &#x27;@shared/domain/domainobject/pseudonym.do&#x27;;
 import { BaseDORepo } from &#x27;../base.do.repo&#x27;;
 
 @Injectable()
@@ -1318,13 +1405,28 @@ export class PseudonymsRepo extends BaseDORepo&lt;PseudonymDO, Pseudonym, IPseud
 		return new Pseudonym(props);
 	}
 
-	async findByUserIdAndToolId(userId: EntityId, toolId: EntityId): Promise&lt;PseudonymDO&gt; {
-		const entity &#x3D; await this._em.findOneOrFail(Pseudonym, {
+	async findByUserIdAndToolIdOrFail(userId: EntityId, toolId: EntityId): Promise&lt;PseudonymDO&gt; {
+		const entity: Pseudonym &#x3D; await this._em.findOneOrFail(Pseudonym, {
 			userId: new ObjectId(userId),
 			toolId: new ObjectId(toolId),
 		});
 
 		return this.mapEntityToDO(entity);
+	}
+
+	async findByUserIdAndToolId(userId: EntityId, toolId: EntityId): Promise&lt;PseudonymDO | null&gt; {
+		const entity: Pseudonym | null &#x3D; await this._em.findOne(Pseudonym, {
+			userId: new ObjectId(userId),
+			toolId: new ObjectId(toolId),
+		});
+
+		if (!entity) {
+			return null;
+		}
+
+		const domainObject: PseudonymDO &#x3D; this.mapEntityToDO(entity);
+
+		return domainObject;
 	}
 
 	protected mapEntityToDO(entity: Pseudonym): PseudonymDO {

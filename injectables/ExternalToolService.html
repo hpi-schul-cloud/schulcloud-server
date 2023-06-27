@@ -723,7 +723,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findExternalTools(query: <a href="../classes/ExternalToolDO.html" target="_self">Partial&lt;ExternalToolDO&gt;</a>, options?: <a href="../classes/ExternalToolDO.html" target="_self">IFindOptions&lt;ExternalToolDO&gt;</a>)</code>
+                    <code>findExternalTools(query: <a href="../interfaces/ExternalToolSearchQuery.html" target="_self">ExternalToolSearchQuery</a>, options?: <a href="../classes/ExternalToolDO.html" target="_self">IFindOptions&lt;ExternalToolDO&gt;</a>)</code>
                 </td>
             </tr>
 
@@ -754,7 +754,7 @@
                                 <tr>
                                     <td>query</td>
                                     <td>
-                                                <code><a href="../classes/ExternalToolDO.html" target="_self" >Partial&lt;ExternalToolDO&gt;</a></code>
+                                                <code><a href="../interfaces/ExternalToolSearchQuery.html" target="_self" >ExternalToolSearchQuery</a></code>
                                     </td>
 
                                     <td>
@@ -1272,24 +1272,24 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
 import {
 	CustomParameterDO,
-	ExternalToolConfigDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
 	CustomParameterScope,
 	EntityId,
+	ExternalToolConfigDO,
+	ExternalToolDO,
 	IFindOptions,
-	SchoolExternalToolDO,
+	Lti11ToolConfigDO,
+	Oauth2ToolConfigDO,
 	Page,
+	SchoolExternalToolDO,
 } from &#x27;@shared/domain&#x27;;
-import { ProviderOauthClient } from &#x27;@shared/infra/oauth-provider/dto&#x27;;
 import { DefaultEncryptionService, IEncryptionService } from &#x27;@shared/infra/encryption&#x27;;
 import { OauthProviderService } from &#x27;@shared/infra/oauth-provider&#x27;;
+import { ProviderOauthClient } from &#x27;@shared/infra/oauth-provider/dto&#x27;;
+import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from &#x27;@shared/repo&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { ExternalToolRepo, ContextExternalToolRepo, SchoolExternalToolRepo } from &#x27;@shared/repo&#x27;;
-import { TokenEndpointAuthMethod, ToolConfigType } from &#x27;../interface&#x27;;
-import { ExternalToolServiceMapper } from &#x27;./mapper&#x27;;
+import { ExternalToolSearchQuery, TokenEndpointAuthMethod, ToolConfigType } from &#x27;../interface&#x27;;
 import { ExternalToolVersionService } from &#x27;./external-tool-version.service&#x27;;
+import { ExternalToolServiceMapper } from &#x27;./mapper&#x27;;
 
 @Injectable()
 export class ExternalToolService {
@@ -1328,7 +1328,7 @@ export class ExternalToolService {
 	}
 
 	async findExternalTools(
-		query: Partial&lt;ExternalToolDO&gt;,
+		query: ExternalToolSearchQuery,
 		options?: IFindOptions&lt;ExternalToolDO&gt;
 	): Promise&lt;Page&lt;ExternalToolDO&gt;&gt; {
 		const tools: Page&lt;ExternalToolDO&gt; &#x3D; await this.externalToolRepo.find(query, options);

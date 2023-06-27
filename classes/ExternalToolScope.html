@@ -119,6 +119,9 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                <a href="#byClientId" >byClientId</a>
+                            </li>
+                            <li>
                                 <a href="#byHidden" >byHidden</a>
                             </li>
                             <li>
@@ -266,6 +269,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="byClientId"></a>
+                    <span class="name">
+                        <span ><b>byClientId</b></span>
+                        <a href="#byClientId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>byClientId(clientId: string | undefined)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="12"
+                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.scope.ts:12</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>clientId</td>
+                                    <td>
+                                            <code>string | undefined</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/ExternalToolScope.html" target="_self" >ExternalToolScope</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="byHidden"></a>
                     <span class="name">
                         <span ><b>byHidden</b></span>
@@ -282,8 +354,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="12"
-                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.scope.ts:12</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="19"
+                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.scope.ts:19</a></div>
                 </td>
             </tr>
 
@@ -560,13 +632,20 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Scope } from &#x27;@shared/repo&#x27;;
-import { ExternalTool } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ExternalTool } from &#x27;@shared/domain&#x27;;
+import { Scope } from &#x27;@shared/repo&#x27;;
 
 export class ExternalToolScope extends Scope&lt;ExternalTool&gt; {
 	byName(name: string | undefined): ExternalToolScope {
 		if (name) {
 			this.addQuery({ name: { $re: name } });
+		}
+		return this;
+	}
+
+	byClientId(clientId: string | undefined): ExternalToolScope {
+		if (clientId) {
+			this.addQuery({ config: { clientId } });
 		}
 		return this;
 	}

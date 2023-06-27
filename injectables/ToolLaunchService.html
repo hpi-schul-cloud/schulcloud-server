@@ -129,12 +129,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>, externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, basicToolLaunchStrategy: <a href="../injectables/BasicToolLaunchStrategy.html" target="_self">BasicToolLaunchStrategy</a>, lti11ToolLaunchStrategy: <a href="../injectables/Lti11ToolLaunchStrategy.html" target="_self">Lti11ToolLaunchStrategy</a>)</code>
+<code>constructor(schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>, externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, basicToolLaunchStrategy: <a href="../injectables/BasicToolLaunchStrategy.html" target="_self">BasicToolLaunchStrategy</a>, lti11ToolLaunchStrategy: <a href="../injectables/Lti11ToolLaunchStrategy.html" target="_self">Lti11ToolLaunchStrategy</a>, oauth2ToolLaunchStrategy: <a href="../injectables/OAuth2ToolLaunchStrategy.html" target="_self">OAuth2ToolLaunchStrategy</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/tool-launch.service.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/tool-launch.service.ts:16</a></div>
                             </td>
                         </tr>
 
@@ -199,6 +199,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>oauth2ToolLaunchStrategy</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/OAuth2ToolLaunchStrategy.html" target="_self" >OAuth2ToolLaunchStrategy</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -233,8 +245,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="24"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/tool-launch.service.ts:24</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="31"
+                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/tool-launch.service.ts:31</a></div>
                 </td>
             </tr>
 
@@ -304,8 +316,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="37"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/tool-launch.service.ts:37</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="44"
+                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/tool-launch.service.ts:44</a></div>
                 </td>
             </tr>
 
@@ -388,8 +400,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="57"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/tool-launch.service.ts:57</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="64"
+                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/tool-launch.service.ts:64</a></div>
                 </td>
             </tr>
 
@@ -463,7 +475,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/tool-launch.service.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/tool-launch.service.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -482,7 +494,12 @@ import { ToolConfigType } from &#x27;../../interface&#x27;;
 import { ExternalToolService, SchoolExternalToolService } from &#x27;../../service&#x27;;
 import { ToolLaunchMapper } from &#x27;../mapper&#x27;;
 import { ToolLaunchData, ToolLaunchRequest } from &#x27;../types&#x27;;
-import { BasicToolLaunchStrategy, IToolLaunchStrategy, Lti11ToolLaunchStrategy } from &#x27;./strategy&#x27;;
+import {
+	BasicToolLaunchStrategy,
+	IToolLaunchStrategy,
+	Lti11ToolLaunchStrategy,
+	OAuth2ToolLaunchStrategy,
+} from &#x27;./strategy&#x27;;
 
 @Injectable()
 export class ToolLaunchService {
@@ -492,11 +509,13 @@ export class ToolLaunchService {
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly externalToolService: ExternalToolService,
 		private readonly basicToolLaunchStrategy: BasicToolLaunchStrategy,
-		private readonly lti11ToolLaunchStrategy: Lti11ToolLaunchStrategy
+		private readonly lti11ToolLaunchStrategy: Lti11ToolLaunchStrategy,
+		private readonly oauth2ToolLaunchStrategy: OAuth2ToolLaunchStrategy
 	) {
 		this.strategies &#x3D; new Map();
 		this.strategies.set(ToolConfigType.BASIC, basicToolLaunchStrategy);
 		this.strategies.set(ToolConfigType.LTI11, lti11ToolLaunchStrategy);
+		this.strategies.set(ToolConfigType.OAUTH2, oauth2ToolLaunchStrategy);
 	}
 
 	generateLaunchRequest(toolLaunchData: ToolLaunchData): ToolLaunchRequest {

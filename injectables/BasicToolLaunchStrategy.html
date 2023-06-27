@@ -334,7 +334,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                        <b>Returns : </b>    <code>string | null</code>
 
                     </div>
                     <div class="io-description">
@@ -1408,7 +1408,7 @@ export class BasicToolLaunchStrategy extends AbstractLaunchStrategy {
 		return Promise.resolve([]);
 	}
 
-	public override buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string {
+	public override buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string | null {
 		const bodyProperties &#x3D; properties.filter((property: PropertyData) &#x3D;&gt; property.location &#x3D;&#x3D;&#x3D; PropertyLocation.BODY);
 		const payload: Record&lt;string, string&gt; &#x3D; {};
 
@@ -1417,7 +1417,7 @@ export class BasicToolLaunchStrategy extends AbstractLaunchStrategy {
 		}
 
 		if (Object.keys(payload).length &#x3D;&#x3D;&#x3D; 0) {
-			return &#x27;&#x27;;
+			return null;
 		}
 
 		return JSON.stringify(payload);

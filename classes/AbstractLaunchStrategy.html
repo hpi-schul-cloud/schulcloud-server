@@ -779,7 +779,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                        <b>Returns : </b>    <code>string | null</code>
 
                     </div>
                     <div class="io-description">
@@ -1361,19 +1361,19 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 		config: IToolLaunchParams
 	): Promise&lt;PropertyData[]&gt;;
 
-	public abstract buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string;
+	public abstract buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string | null;
 
 	public abstract determineLaunchRequestMethod(properties: PropertyData[]): LaunchRequestMethod;
 
 	public createLaunchRequest(toolLaunchData: ToolLaunchData): ToolLaunchRequest {
 		const requestMethod: LaunchRequestMethod &#x3D; this.determineLaunchRequestMethod(toolLaunchData.properties);
 		const url: string &#x3D; this.buildUrl(toolLaunchData);
-		const payload: string &#x3D; this.buildToolLaunchRequestPayload(url, toolLaunchData.properties);
+		const payload: string | null &#x3D; this.buildToolLaunchRequestPayload(url, toolLaunchData.properties);
 
 		const toolLaunchRequest: ToolLaunchRequest &#x3D; new ToolLaunchRequest({
 			method: requestMethod,
 			url,
-			payload,
+			payload: payload ?? undefined,
 			openNewTab: toolLaunchData.openNewTab,
 		});
 

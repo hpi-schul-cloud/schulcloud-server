@@ -105,7 +105,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Protected</span>
+                                    <span class="modifier">Private</span>
                                 <a href="#buildGroupsClaim" >buildGroupsClaim</a>
                             </li>
                             <li>
@@ -113,7 +113,7 @@
                                 <a href="#createIdToken" >createIdToken</a>
                             </li>
                             <li>
-                                    <span class="modifier">Protected</span>
+                                    <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#createIframeSubject" >createIframeSubject</a>
                             </li>
@@ -135,12 +135,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(pseudonymsRepo: <a href="../injectables/PseudonymsRepo.html" target="_self">PseudonymsRepo</a>, ltiToolRepo: <a href="../injectables/LtiToolRepo.html" target="_self">LtiToolRepo</a>, teamsRepo: <a href="../injectables/TeamsRepo.html" target="_self">TeamsRepo</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
+<code>constructor(oauthProviderLoginFlowService: <a href="../injectables/OauthProviderLoginFlowService.html" target="_self">OauthProviderLoginFlowService</a>, pseudonymService: <a href="../injectables/PseudonymService.html" target="_self">PseudonymService</a>, teamsRepo: <a href="../injectables/TeamsRepo.html" target="_self">TeamsRepo</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:14</a></div>
                             </td>
                         </tr>
 
@@ -158,10 +158,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>pseudonymsRepo</td>
+                                                        <td>oauthProviderLoginFlowService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/PseudonymsRepo.html" target="_self" >PseudonymsRepo</a></code>
+                                                                        <code><a href="../injectables/OauthProviderLoginFlowService.html" target="_self" >OauthProviderLoginFlowService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -170,10 +170,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>ltiToolRepo</td>
+                                                        <td>pseudonymService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/LtiToolRepo.html" target="_self" >LtiToolRepo</a></code>
+                                                                        <code><a href="../injectables/PseudonymService.html" target="_self" >PseudonymService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -205,18 +205,6 @@
                                                     </td>
                                                     
                                                 </tr>
-                                                <tr>
-                                                        <td>logger</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -237,7 +225,7 @@
                 <td class="col-md-4">
                     <a name="buildGroupsClaim"></a>
                     <span class="name">
-                        <span class="modifier">Protected</span>
+                        <span class="modifier">Private</span>
                         <span ><b>buildGroupsClaim</b></span>
                         <a href="#buildGroupsClaim"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -253,8 +241,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="49"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:49</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="47"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:47</a></div>
                 </td>
             </tr>
 
@@ -324,8 +312,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="28"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:28</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="26"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:26</a></div>
                 </td>
             </tr>
 
@@ -403,7 +391,7 @@
                 <td class="col-md-4">
                     <a name="createIframeSubject"></a>
                     <span class="name">
-                        <span class="modifier">Protected</span>
+                        <span class="modifier">Private</span>
                         <span class="modifier">Async</span>
                         <span ><b>createIframeSubject</b></span>
                         <a href="#createIframeSubject"><span class="icon ion-ios-link"></span></a>
@@ -420,8 +408,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="59"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:59</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="57"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:57</a></div>
                 </td>
             </tr>
 
@@ -471,7 +459,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;string | undefined&gt;</code>
+                        <b>Returns : </b>    <code>Promise&lt;string&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -508,7 +496,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:12</a></div>
                         </td>
                     </tr>
 
@@ -535,7 +523,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -549,14 +537,13 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { PseudonymDO, Team, UserDO } from &#x27;@shared/domain&#x27;;
-import { LtiToolDO } from &#x27;@shared/domain/domainobject/ltitool.do&#x27;;
-import { LtiToolRepo, PseudonymsRepo, TeamsRepo } from &#x27;@shared/repo&#x27;;
-import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { GroupNameIdTuple, IdToken } from &#x27;@src/modules/oauth-provider/interface/id-token&#x27;;
-import { OauthScope } from &#x27;@src/modules/oauth-provider/interface/oauth-scope.enum&#x27;;
-import { UserService } from &#x27;@src/modules/user/service/user.service&#x27;;
+import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
+import { ExternalToolDO, LtiToolDO, PseudonymDO, Team, UserDO } from &#x27;@shared/domain&#x27;;
+import { TeamsRepo } from &#x27;@shared/repo&#x27;;
+import { PseudonymService } from &#x27;@src/modules/pseudonym&#x27;;
+import { UserService } from &#x27;@src/modules/user&#x27;;
+import { GroupNameIdTuple, IdToken, OauthScope } from &#x27;../interface&#x27;;
+import { OauthProviderLoginFlowService } from &#x27;./oauth-provider.login-flow.service&#x27;;
 
 @Injectable()
 export class IdTokenService {
@@ -565,11 +552,10 @@ export class IdTokenService {
 	protected iFrameProperties: string;
 
 	constructor(
-		private readonly pseudonymsRepo: PseudonymsRepo,
-		private readonly ltiToolRepo: LtiToolRepo,
+		private readonly oauthProviderLoginFlowService: OauthProviderLoginFlowService,
+		private readonly pseudonymService: PseudonymService,
 		private readonly teamsRepo: TeamsRepo,
-		private readonly userService: UserService,
-		private readonly logger: LegacyLogger
+		private readonly userService: UserService
 	) {
 		this.host &#x3D; Configuration.get(&#x27;HOST&#x27;) as string;
 		this.iFrameProperties &#x3D; &#x27;title&#x3D;&quot;username&quot; style&#x3D;&quot;height: 26px; width: 180px; border: none;&quot;&#x27;;
@@ -596,7 +582,7 @@ export class IdTokenService {
 		};
 	}
 
-	protected buildGroupsClaim(teams: Team[]): GroupNameIdTuple[] {
+	private buildGroupsClaim(teams: Team[]): GroupNameIdTuple[] {
 		return teams.map((team: Team): GroupNameIdTuple &#x3D;&gt; {
 			return {
 				gid: team.id,
@@ -606,18 +592,18 @@ export class IdTokenService {
 	}
 
 	// TODO N21-335 How we can refactor the iframe in the id token?
-	protected async createIframeSubject(userId: string, clientId: string): Promise&lt;string | undefined&gt; {
-		try {
-			const ltiTool: LtiToolDO &#x3D; await this.ltiToolRepo.findByClientIdAndIsLocal(clientId, true);
-			const pseudonymDO: PseudonymDO &#x3D; await this.pseudonymsRepo.findByUserIdAndToolId(userId, ltiTool.id as string);
+	private async createIframeSubject(userId: string, clientId: string): Promise&lt;string&gt; {
+		const tool: ExternalToolDO | LtiToolDO &#x3D; await this.oauthProviderLoginFlowService.findToolByClientId(clientId);
 
-			return &#x60;&lt;iframe src&#x3D;&quot;${this.host}/oauth2/username/${pseudonymDO.pseudonym}&quot; ${this.iFrameProperties}&gt;&lt;/iframe&gt;&#x60;;
-		} catch (err) {
-			this.logger.debug(
-				&#x60;Something went wrong for id token creation. LtiTool or Pseudonym could not be found for userId: ${userId} and clientId: ${clientId}&#x60;
+		if (!tool.id) {
+			throw new InternalServerErrorException(
+				&#x60;Something went wrong for id token creation. Tool could not be found for userId: ${userId} and clientId: ${clientId}&#x60;
 			);
-			return undefined;
 		}
+
+		const pseudonymDO: PseudonymDO &#x3D; await this.pseudonymService.findByUserIdAndToolId(userId, tool.id);
+
+		return &#x60;&lt;iframe src&#x3D;&quot;${this.host}/oauth2/username/${pseudonymDO.pseudonym}&quot; ${this.iFrameProperties}&gt;&lt;/iframe&gt;&#x60;;
 	}
 }
 </code></pre>

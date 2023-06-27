@@ -24,6 +24,10 @@
 <title>cluster_UserLoginMigrationModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 3337,-268 3337,-70 8,-70"/>
 </g>
+<g id="clust4" class="cluster">
+<title>cluster_UserLoginMigrationModule_exports</title>
+<polygon fill="none" stroke="black" points="369,-208 369,-260 1879,-260 1879,-208 369,-208"/>
+</g>
 <g id="clust6" class="cluster">
 <title>cluster_UserLoginMigrationModule_providers</title>
 <polygon fill="none" stroke="black" points="759,-78 759,-130 3329,-130 3329,-78 759,-78"/>
@@ -31,10 +35,6 @@
 <g id="clust3" class="cluster">
 <title>cluster_UserLoginMigrationModule_imports</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 751,-130 751,-78 16,-78"/>
-</g>
-<g id="clust4" class="cluster">
-<title>cluster_UserLoginMigrationModule_exports</title>
-<polygon fill="none" stroke="black" points="369,-208 369,-260 1879,-260 1879,-208 369,-208"/>
 </g>
 <!-- AccountModule -->
 <g id="node1" class="node">

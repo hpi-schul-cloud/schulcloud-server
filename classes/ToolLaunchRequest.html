@@ -95,6 +95,7 @@
                                 <a href="#openNewTab" >openNewTab</a>
                             </li>
                             <li>
+                                    <span class="modifier">Optional</span>
                                 <a href="#payload" >payload</a>
                             </li>
                             <li>
@@ -225,6 +226,7 @@
                 <td class="col-md-4">
                     <a name="payload"></a>
                     <span class="name">
+                            <span class="modifier">Optional</span>
                         <span ><b>payload</b></span>
                         <a href="#payload"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -290,7 +292,7 @@ export class ToolLaunchRequest {
 
 	url: string;
 
-	payload: string;
+	payload?: string;
 
 	openNewTab: boolean;
 
