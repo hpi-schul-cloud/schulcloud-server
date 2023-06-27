@@ -170,6 +170,22 @@ const Course = mongoose.model(
 	'courses'
 );
 
+const Pseudonym = mongoose.model(
+	'course0906202311486',
+	new mongoose.Schema(
+		{
+			_id: Schema.Types.ObjectId,
+			pseudonym: String,
+			toolId: Schema.Types.ObjectId,
+			userId: Schema.Types.ObjectId,
+		},
+		{
+			timestamps: true,
+		}
+	),
+	'courses'
+);
+
 function toolConfigMapper(ltiToolTemplate) {
 	let toolConfig = {
 		config_baseUrl: ltiToolTemplate.url,
@@ -230,6 +246,26 @@ function mapToContextExternalTool(schoolExternalTool, course) {
 	};
 }
 
+function mapPseudonyms(pseudonym, externalTool) {
+	return {
+		pseudonym: pseudonym.pseudonym,
+		toolId: externalTool._id,
+		userId: pseudonym.userId,
+	};
+}
+
+async function createPseudonyms(toolTemplate, externalTool) {
+	let pseudonyms = Pseudonym.find({
+		toolId: toolTemplate._id,
+	})
+		.lean()
+		.exec();
+
+	pseudonyms = pseudonyms.map((pseudonym) => mapPseudonyms(pseudonym, externalTool));
+
+	await Pseudonym.insertMany(pseudonyms);
+}
+
 async function createExternalTool(toolTemplate) {
 	let externalTool = await ExternalTool.findOne({
 		name: { $regex: `${toolTemplate.name}` },
@@ -242,7 +278,42 @@ async function createExternalTool(toolTemplate) {
 		externalTool = await ExternalTool.save(externalTool);
 	}
 
+	createPseudonyms(toolTemplate, externalTool);
+
 	return externalTool;
+}
+
+async function createSchoolExternalTool(externalTool, course) {
+	let schoolExternalTool = await SchoolExternalTool.findOne({
+		school: course.schoolId,
+		tool: externalTool._id,
+	})
+		.lean()
+		.exec();
+
+	// CHECK IF SCHOOLEXTERNALTOOL EXISTS
+	if (schoolExternalTool === undefined) {
+		schoolExternalTool = mapToSchoolExternalTool(externalTool, course);
+		schoolExternalTool = await SchoolExternalTool.save(schoolExternalTool);
+	}
+
+	return schoolExternalTool;
+}
+
+async function createContextExternalTool(schoolExternalTool, course) {
+	const contextExternalTools = await ContextExternalTool.find({
+		schoolTool: schoolExternalTool.id,
+		contextId: course.Id,
+		contextType: 'course',
+	})
+		.lean()
+		.exec();
+
+	// CHECK IF CONTEXTEXTERNALTOOL EXISTS
+	if ((contextExternalTools || []).length === 0) {
+		const contextExternalTool = mapToContextExternalTool(schoolExternalTool, course);
+		await ContextExternalTool.save(contextExternalTool);
+	}
 }
 
 // How to use more than one schema per collection on mongodb
@@ -270,6 +341,7 @@ module.exports = {
 			return;
 		}
 
+		// FIND EXTERNAL TOOLS
 		const externalTools = ltiToolTemplates.map((toolTemplate) => createExternalTool(toolTemplate));
 
 		// FIND ALL LEGACY TOOLS
@@ -298,33 +370,10 @@ module.exports = {
 			const externalTool = externalTools.find((tool) => tool.name === ltiTool.name);
 
 			// GET SCHOOLEXTERNALTOOL
-			let schoolExternalTool = await SchoolExternalTool.findOne({
-				school: course.schoolId,
-				tool: externalTool._id,
-			})
-				.lean()
-				.exec();
+			const schoolExternalTool = createSchoolExternalTool(externalTool, course);
 
-			// CHECK IF SCHOOLEXTERNALTOOL EXISTS
-			if (schoolExternalTool === undefined) {
-				schoolExternalTool = mapToSchoolExternalTool(externalTool, course);
-				schoolExternalTool = await SchoolExternalTool.save(schoolExternalTool);
-			}
-
-			// GET CONTEXTEXTERNALTOOL
-			const contextExternalTools = await ContextExternalTool.find({
-				schoolTool: schoolExternalTool.id,
-				contextId: course.Id,
-				contextType: 'course',
-			})
-				.lean()
-				.exec();
-
-			// CHECK IF CONTEXTEXTERNALTOOL EXISTS
-			if ((contextExternalTools || []).length === 0) {
-				const contextExternalTool = mapToContextExternalTool(schoolExternalTool, course);
-				await ContextExternalTool.save(contextExternalTool);
-			}
+			// CREATE CONTEXTEXTERNALTOOL
+			createContextExternalTool(schoolExternalTool, course);
 		}
 
 		await close();
