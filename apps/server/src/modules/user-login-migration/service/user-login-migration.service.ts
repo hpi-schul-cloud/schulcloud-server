@@ -5,6 +5,7 @@ import { UserLoginMigrationRepo } from '@shared/repo';
 import { SchoolService } from '@src/modules/school';
 import { SystemDto, SystemService } from '@src/modules/system';
 import { UserService } from '@src/modules/user';
+import { UserLoginMigrationNotFoundLoggableException } from '../error';
 import { SchoolMigrationService } from './school-migration.service';
 
 @Injectable()
@@ -79,17 +80,16 @@ export class UserLoginMigrationService {
 	}
 
 	async restartMigration(schoolId: string): Promise<UserLoginMigrationDO> {
-		const existingUserLoginMigrationDO: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(
+		const existingUserLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(
 			schoolId
 		);
 
-		if (existingUserLoginMigrationDO === null) {
-			throw new Error( // TODO
-				`Migration for school with id ${schoolId} does not exist for restart.`
-			);
+		if (!existingUserLoginMigration) {
+			throw new UserLoginMigrationNotFoundLoggableException(schoolId);
 		}
 
-		const updatedUserLoginMigration = await this.updateExistingMigration(existingUserLoginMigrationDO);
+		const updatedUserLoginMigration = await this.updateExistingMigration(existingUserLoginMigration);
+
 		await this.schoolMigrationService.unmarkOutdatedUsers(schoolId);
 
 		return updatedUserLoginMigration;
@@ -99,9 +99,7 @@ export class UserLoginMigrationService {
 		let userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
 
 		if (!userLoginMigration) {
-			throw new Error( // TODO
-				`Migration for school with id ${schoolId} does not exist for toggling.`
-			);
+			throw new UserLoginMigrationNotFoundLoggableException(schoolId);
 		}
 
 		if (mandatory) {

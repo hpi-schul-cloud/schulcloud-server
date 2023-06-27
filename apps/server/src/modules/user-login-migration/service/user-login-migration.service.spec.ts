@@ -10,7 +10,7 @@ import { SchoolService } from '@src/modules/school';
 import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
-import { ModifyUserLoginMigrationLoggableException } from '../error';
+import { UserLoginMigrationNotFoundLoggableException } from '../error';
 import { SchoolMigrationService } from './school-migration.service';
 import { UserLoginMigrationService } from './user-login-migration.service';
 
@@ -857,11 +857,7 @@ describe('UserLoginMigrationService', () => {
 
 				const func = async () => service.restartMigration(schoolId);
 
-				await expect(func).rejects.toThrow(
-					new ModifyUserLoginMigrationLoggableException(
-						`Migration for school with id ${schoolId} does not exist for restart.`
-					)
-				);
+				await expect(func).rejects.toThrow(UserLoginMigrationNotFoundLoggableException);
 			});
 		});
 	});
@@ -938,6 +934,7 @@ describe('UserLoginMigrationService', () => {
 					schoolId,
 					startedAt: mockedDate,
 				});
+
 				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
 
 				return {
@@ -950,11 +947,9 @@ describe('UserLoginMigrationService', () => {
 			it('should throw UserLoginMigrationLoggableException ', async () => {
 				const { schoolId } = setup();
 
-				await expect(service.restartMigration(schoolId)).rejects.toThrow(
-					new ModifyUserLoginMigrationLoggableException(
-						`Migration for school with id ${schoolId} does not exist for restart.`
-					)
-				);
+				const func = async () => service.restartMigration(schoolId);
+
+				await expect(func).rejects.toThrow(UserLoginMigrationNotFoundLoggableException);
 			});
 		});
 	});
@@ -985,7 +980,7 @@ describe('UserLoginMigrationService', () => {
 			it('should call save the user login migration', async () => {
 				const { schoolId, userLoginMigrationDO } = setup();
 
-				await service.setMigrationMandatory(schoolId);
+				await service.setMigrationMandatory(schoolId, true);
 
 				expect(userLoginMigrationRepo.save).toHaveBeenCalledWith(userLoginMigrationDO);
 			});
@@ -1014,13 +1009,9 @@ describe('UserLoginMigrationService', () => {
 			it('should throw UserLoginMigrationLoggableException ', async () => {
 				const { schoolId } = setup();
 
-				const func = async () => service.setMigrationMandatory(schoolId);
+				const func = async () => service.setMigrationMandatory(schoolId, true);
 
-				await expect(func).rejects.toThrow(
-					new ModifyUserLoginMigrationLoggableException(
-						`Migration for school with id ${schoolId} does not exist for toggling.`
-					)
-				);
+				await expect(func).rejects.toThrow(UserLoginMigrationNotFoundLoggableException);
 			});
 		});
 	});

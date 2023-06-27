@@ -31,7 +31,6 @@ export class StartUserLoginMigrationUc {
 			this.logger.log(new UserLoginMigrationStartLoggable(userId, userLoginMigration.id as string));
 		} else if (userLoginMigration.closedAt) {
 			throw new UserLoginMigrationAlreadyClosedLoggableException(
-				userId,
 				userLoginMigration.id as string,
 				userLoginMigration.closedAt
 			);

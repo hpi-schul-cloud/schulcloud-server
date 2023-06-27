@@ -6,11 +6,7 @@ export class UserLoginMigrationGracePeriodExpiredLoggableException
 	extends UnprocessableEntityException
 	implements Loggable
 {
-	constructor(
-		private readonly userId: EntityId,
-		private readonly userLoginMigrationId: EntityId,
-		private readonly finishedAt: Date
-	) {
+	constructor(private readonly userLoginMigrationId: EntityId, private readonly finishedAt: Date) {
 		super();
 	}
 
@@ -18,8 +14,8 @@ export class UserLoginMigrationGracePeriodExpiredLoggableException
 		return {
 			type: 'USER_LOGIN_MIGRATION_GRACE_PERIOD_EXPIRED',
 			message: 'The grace period after finishing the user login migration has expired. It cannot be restarted.',
+			stack: this.stack,
 			data: {
-				userId: this.userId,
 				userLoginMigrationId: this.userLoginMigrationId,
 				finishedAt: this.finishedAt.toISOString(),
 			},

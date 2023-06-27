@@ -28,16 +28,14 @@ export class ToggleUserLoginMigrationUc {
 		);
 
 		if (!userLoginMigration) {
-			throw new UserLoginMigrationNotFoundLoggableException(userId, schoolId);
+			throw new UserLoginMigrationNotFoundLoggableException(schoolId);
 		} else if (userLoginMigration.finishedAt && Date.now() >= userLoginMigration.finishedAt.getTime()) {
 			throw new UserLoginMigrationGracePeriodExpiredLoggableException(
-				userId,
 				userLoginMigration.id as string,
 				userLoginMigration.finishedAt
 			);
 		} else if (userLoginMigration.closedAt) {
 			throw new UserLoginMigrationAlreadyClosedLoggableException(
-				userId,
 				userLoginMigration.id as string,
 				userLoginMigration.closedAt
 			);

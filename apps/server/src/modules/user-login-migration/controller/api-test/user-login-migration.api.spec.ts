@@ -151,7 +151,7 @@ describe('UserLoginMigrationController (API)', () => {
 				};
 			};
 
-			it('should return the Status CREATED ', async () => {
+			it('should return the Status CREATED', async () => {
 				const { loggedInClient } = await setup();
 
 				const response: Response = await loggedInClient.post(`/start`);
@@ -222,16 +222,16 @@ describe('UserLoginMigrationController (API)', () => {
 				};
 			};
 
-			it('should return bad request ', async () => {
-				const { loggedInClient, adminUser } = await setup();
+			it('should return the Status CREATED', async () => {
+				const { loggedInClient } = await setup();
 
-				const response: Response = await loggedInClient.post(`/start`).query({ userId: adminUser.id });
+				const response: Response = await loggedInClient.post(`/start`);
 
-				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+				expect(response.status).toEqual(HttpStatus.CREATED);
 			});
 		});
 
-		describe('when migration already finished', () => {
+		describe('when migration already closed', () => {
 			const setup = async () => {
 				const date: Date = new Date(2023, 5, 4);
 				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
@@ -247,6 +247,7 @@ describe('UserLoginMigrationController (API)', () => {
 					sourceSystem,
 					startedAt: date,
 					mandatorySince: date,
+					closedAt: date,
 					finishedAt: date,
 				});
 
@@ -264,12 +265,12 @@ describe('UserLoginMigrationController (API)', () => {
 				};
 			};
 
-			it('should return bad request ', async () => {
-				const { loggedInClient, adminUser } = await setup();
+			it('should return unprocessable entity', async () => {
+				const { loggedInClient } = await setup();
 
-				const response: Response = await loggedInClient.post(`/start`).query({ userId: adminUser.id });
+				const response: Response = await loggedInClient.post(`/start`);
 
-				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+				expect(response.status).toEqual(HttpStatus.UNPROCESSABLE_ENTITY);
 			});
 		});
 
@@ -295,12 +296,12 @@ describe('UserLoginMigrationController (API)', () => {
 				};
 			};
 
-			it('should return a bad request ', async () => {
-				const { loggedInClient, adminUser } = await setup();
+			it('should return a unprocessable entity', async () => {
+				const { loggedInClient } = await setup();
 
-				const response: Response = await loggedInClient.post(`/start`).query({ userId: adminUser.id });
+				const response: Response = await loggedInClient.post(`/start`);
 
-				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+				expect(response.status).toEqual(HttpStatus.UNPROCESSABLE_ENTITY);
 			});
 		});
 	});
@@ -538,17 +539,17 @@ describe('UserLoginMigrationController (API)', () => {
 			};
 
 			it('should return the Status OK ', async () => {
-				const { loggedInClient, adminUser } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response: Response = await loggedInClient.put(`/restart`).query({ userId: adminUser.id });
+				const response: Response = await loggedInClient.put(`/restart`);
 
 				expect(response.status).toEqual(HttpStatus.OK);
 			});
 
 			it('should return the response ', async () => {
-				const { loggedInClient, adminUser } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response: Response = await loggedInClient.put(`/restart`).query({ userId: adminUser.id });
+				const response: Response = await loggedInClient.put(`/restart`);
 
 				expect(response.body).toHaveProperty('startedAt');
 				expect(response.body).not.toHaveProperty('closedAt');
@@ -618,12 +619,12 @@ describe('UserLoginMigrationController (API)', () => {
 				};
 			};
 
-			it('should return bad request ', async () => {
+			it('should return OK', async () => {
 				const { loggedInClient } = await setup();
 
 				const response: Response = await loggedInClient.put(`/restart`);
 
-				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+				expect(response.status).toEqual(HttpStatus.OK);
 			});
 		});
 
@@ -661,50 +662,18 @@ describe('UserLoginMigrationController (API)', () => {
 				};
 			};
 
-			it('should return bad request ', async () => {
+			it('should return unprocessable entity', async () => {
 				const { loggedInClient } = await setup();
 
 				const response: Response = await loggedInClient.put(`/restart`);
 
-				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
-			});
-		});
-
-		describe('when official school number is not set', () => {
-			const setup = async () => {
-				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
-				const school: School = schoolFactory.buildWithId({
-					systems: [sourceSystem],
-				});
-
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.USER_LOGIN_MIGRATION_ADMIN,
-				]);
-
-				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser]);
-				em.clear();
-
-				const loggedInClient = await testApiClient.login(adminAccount);
-
-				return {
-					loggedInClient,
-					adminUser,
-				};
-			};
-
-			it('should return a bad request ', async () => {
-				const { loggedInClient, adminUser } = await setup();
-
-				const response: Response = await loggedInClient.put(`/restart`).query({ userId: adminUser.id });
-
-				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+				expect(response.status).toEqual(HttpStatus.UNPROCESSABLE_ENTITY);
 			});
 		});
 	});
 
-	describe('[PUT] /toggle', () => {
-		describe('when migration is optional', () => {
+	describe('[PUT] /mandatory', () => {
+		describe('when migration is set from optional to mandatory', () => {
 			const setup = async () => {
 				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
 				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
@@ -718,7 +687,6 @@ describe('UserLoginMigrationController (API)', () => {
 					targetSystem,
 					sourceSystem,
 					startedAt: new Date(2023, 1, 4),
-					closedAt: new Date(2023, 1, 5),
 					mandatorySince: undefined,
 				});
 				school.userLoginMigration = userLoginMigration;
@@ -741,14 +709,14 @@ describe('UserLoginMigrationController (API)', () => {
 			it('it should set migration to mandatory', async () => {
 				const { loggedInClient } = await setup();
 
-				const response: Response = await loggedInClient.put(`/toggle`);
+				const response: Response = await loggedInClient.put('/mandatory', { mandatory: true });
 
 				const responseBody = response.body as UserLoginMigrationResponse;
 				expect(responseBody.mandatorySince).toBeDefined();
 			});
 		});
 
-		describe('when migration is mandatory', () => {
+		describe('when migration is set from mandatory to optional', () => {
 			const setup = async () => {
 				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
 				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
@@ -785,7 +753,7 @@ describe('UserLoginMigrationController (API)', () => {
 			it('it should set migration to optional', async () => {
 				const { loggedInClient } = await setup();
 
-				const response: Response = await loggedInClient.put(`/toggle`);
+				const response: Response = await loggedInClient.put('/mandatory', { mandatory: false });
 
 				const responseBody = response.body as UserLoginMigrationResponse;
 				expect(responseBody.mandatorySince).toBeUndefined();
@@ -815,18 +783,60 @@ describe('UserLoginMigrationController (API)', () => {
 				};
 			};
 
-			it('should return a bad request', async () => {
+			it('should return a not found', async () => {
 				const { loggedInClient } = await setup();
 
-				const response: Response = await loggedInClient.put(`/toggle`);
+				const response: Response = await loggedInClient.put('/mandatory', { mandatory: true });
 
-				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+				expect(response.status).toEqual(HttpStatus.NOT_FOUND);
+			});
+		});
+
+		describe('when the migration is closed', () => {
+			const setup = async () => {
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
+
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: new Date(2023, 1, 4),
+					closedAt: new Date(2023, 1, 5),
+				});
+				school.userLoginMigration = userLoginMigration;
+
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+					userLoginMigration,
+				};
+			};
+
+			it('should return unprocessable entity', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.put('/mandatory', { mandatory: true });
+
+				expect(response.status).toEqual(HttpStatus.UNPROCESSABLE_ENTITY);
 			});
 		});
 
 		describe('when user is not authorized', () => {
 			it('should return unauthorized', async () => {
-				const response: Response = await testApiClient.put(`/toggle`);
+				const response: Response = await testApiClient.put('/mandatory', { mandatory: true });
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -866,7 +876,7 @@ describe('UserLoginMigrationController (API)', () => {
 			it('should return forbidden', async () => {
 				const { loggedInClient } = await setup();
 
-				const response: Response = await loggedInClient.put(`/toggle`);
+				const response: Response = await loggedInClient.put('/mandatory', { mandatory: true });
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 			});

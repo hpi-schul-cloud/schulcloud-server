@@ -31,6 +31,7 @@ import {
 	UserLoginMigrationSearchParams,
 } from './dto';
 import { Oauth2MigrationParams } from './dto/oauth2-migration.params';
+import { UserLoginMigrationMandatoryParams } from './dto/request/user-login-migration-mandatory.params';
 
 @ApiTags('UserLoginMigration')
 @Controller('user-login-migrations')
@@ -136,10 +137,14 @@ export class UserLoginMigrationController {
 	@ApiOkResponse({ description: 'User login migration is set mandatory/optional', type: UserLoginMigrationResponse })
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
-	async setMigrationMandatory(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
+	async setMigrationMandatory(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() body: UserLoginMigrationMandatoryParams
+	): Promise<UserLoginMigrationResponse> {
 		const migrationDto: UserLoginMigrationDO = await this.toggleUserLoginMigrationUc.setMigrationMandatory(
 			currentUser.userId,
-			currentUser.schoolId
+			currentUser.schoolId,
+			body.mandatory
 		);
 
 		const migrationResponse: UserLoginMigrationResponse =

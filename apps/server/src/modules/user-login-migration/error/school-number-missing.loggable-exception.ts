@@ -11,6 +11,7 @@ export class SchoolNumberMissingLoggableException extends UnprocessableEntityExc
 		return {
 			type: 'SCHOOL_NUMBER_MISSING',
 			message: 'The school is missing a official school number.',
+			stack: this.stack,
 			data: {
 				schoolId: this.schoolId,
 			},
