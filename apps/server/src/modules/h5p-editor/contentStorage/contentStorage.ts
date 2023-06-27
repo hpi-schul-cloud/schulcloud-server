@@ -38,7 +38,6 @@ export class ContentStorage implements IContentStorage {
 				metadata.defaultLanguage = metadata.language;
 			}
 			const contentMetadata = new ContentMetadata(contentId, metadata);
-			// TODO: add h5p.json as filename?
 			await this.repo.createContentMetadata(contentMetadata);
 
 			const readableContent = Readable.from(JSON.stringify(content));
