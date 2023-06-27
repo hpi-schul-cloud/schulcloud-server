@@ -1,9 +1,0 @@
-galaxy_info:
-  role_name: schulcloud-server-ldap
-  author: Schul-Cloud Verbund
-  description: ldap role for the schulcloud-server
-  company: Schul-Cloud Verbund
-  license: license (AGPLv3)
-  min_ansible_version: 2.8
-  galaxy_tags: []
-dependencies: []

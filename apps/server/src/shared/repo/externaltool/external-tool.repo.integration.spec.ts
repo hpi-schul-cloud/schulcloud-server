@@ -2,26 +2,27 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
+	BasicToolConfigDO,
+	CustomParameterDO,
 	CustomParameterLocation,
 	CustomParameterScope,
 	CustomParameterType,
 	ExternalTool,
+	ExternalToolDO,
 	IFindOptions,
+	Lti11ToolConfigDO,
 	LtiMessageType,
 	LtiPrivacyPermission,
+	Oauth2ToolConfigDO,
+	Page,
 	SortOrder,
 	ToolConfigType,
-	Page,
-	BasicToolConfigDO,
-	CustomParameterDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
 } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { ExternalToolSortingMapper, ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo';
+import { ExternalToolRepo, ExternalToolRepoMapper, ExternalToolSortingMapper } from '@shared/repo';
 import { cleanupCollections, externalToolFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
+import { ExternalToolSearchQuery } from '@src/modules/tool';
 
 describe('ExternalToolRepo', () => {
 	let module: TestingModule;
@@ -72,7 +73,7 @@ describe('ExternalToolRepo', () => {
 		await em.persistAndFlush([externalTool, externalOauthTool, externalOauthTool2, externalLti11Tool]);
 		em.clear();
 
-		const queryExternalToolDO: Partial<ExternalToolDO> = { name: 'external-tool-*' };
+		const queryExternalToolDO: ExternalToolSearchQuery = { name: 'external-tool-*' };
 
 		return {
 			externalTool,

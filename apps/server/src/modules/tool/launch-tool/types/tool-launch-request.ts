@@ -5,7 +5,7 @@ export class ToolLaunchRequest {
 
 	url: string;
 
-	payload: string;
+	payload?: string;
 
 	openNewTab: boolean;
 

@@ -21,6 +21,26 @@ describe('ExternalToolScope', () => {
 		});
 	});
 
+	describe('byClientId', () => {
+		describe('when a clientId is defined', () => {
+			it('should return scope with clientId query', () => {
+				const param = 'Client1';
+
+				scope.byClientId(param);
+
+				expect(scope.query).toEqual({ config: { clientId: param } });
+			});
+		});
+
+		describe('when no clientId is defined', () => {
+			it('should return scope without clientId query', () => {
+				scope.byClientId(undefined);
+
+				expect(scope.query).toEqual({});
+			});
+		});
+	});
+
 	describe('byHidden', () => {
 		it('should return scope with added isHidden to query', () => {
 			const param = true;
