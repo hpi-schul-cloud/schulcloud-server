@@ -274,8 +274,7 @@ async function createPseudonyms(toolTemplate, externalTool) {
 	);
 
 	missingPseudonyms = missingPseudonyms.map((pseudonym) => mapPseudonyms(pseudonym, externalTool));
-
-	await Pseudonym.insertMany(missingPseudonyms);
+	await Pseudonym.insertMany(missingPseudonyms).exec();
 }
 
 async function createExternalTool(toolTemplate) {
@@ -287,7 +286,7 @@ async function createExternalTool(toolTemplate) {
 
 	if (externalTool === undefined) {
 		externalTool = mapToExternalTool(externalTool);
-		externalTool = await ExternalTool.save(externalTool);
+		externalTool = await ExternalTool.save(externalTool).exec();
 	}
 
 	createPseudonyms(toolTemplate, externalTool);
@@ -306,7 +305,7 @@ async function createSchoolExternalTool(externalTool, course) {
 	// CHECK IF SCHOOLEXTERNALTOOL EXISTS
 	if (schoolExternalTool === undefined) {
 		schoolExternalTool = mapToSchoolExternalTool(externalTool, course);
-		schoolExternalTool = await SchoolExternalTool.save(schoolExternalTool);
+		schoolExternalTool = await SchoolExternalTool.save(schoolExternalTool).exec();
 	}
 
 	return schoolExternalTool;
@@ -324,7 +323,7 @@ async function createContextExternalTool(schoolExternalTool, course) {
 	// CHECK IF CONTEXTEXTERNALTOOL EXISTS
 	if ((contextExternalTools || []).length === 0) {
 		const contextExternalTool = mapToContextExternalTool(schoolExternalTool, course);
-		await ContextExternalTool.save(contextExternalTool);
+		await ContextExternalTool.save(contextExternalTool).exec();
 	}
 }
 
