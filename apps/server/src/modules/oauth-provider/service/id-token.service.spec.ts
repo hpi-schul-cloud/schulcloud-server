@@ -1,51 +1,36 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PseudonymDO, Team, UserDO } from '@shared/domain';
-import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { LtiToolRepo, PseudonymsRepo, TeamsRepo } from '@shared/repo';
-import { setupEntities, userDoFactory } from '@shared/testing';
+import { ExternalToolDO, PseudonymDO, Team, UserDO } from '@shared/domain';
+import { TeamsRepo } from '@shared/repo';
+import { externalToolDOFactory, setupEntities, userDoFactory } from '@shared/testing';
+import { pseudonymDOFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
 import { teamFactory } from '@shared/testing/factory/team.factory';
-import { LegacyLogger } from '@src/core/logger';
-import { GroupNameIdTuple, IdToken } from '@src/modules/oauth-provider/interface/id-token';
+import { IdToken } from '@src/modules/oauth-provider/interface/id-token';
 import { OauthScope } from '@src/modules/oauth-provider/interface/oauth-scope.enum';
 import { IdTokenService } from '@src/modules/oauth-provider/service/id-token.service';
+import { PseudonymService } from '@src/modules/pseudonym/service';
 import { UserService } from '@src/modules/user/service/user.service';
-import { ObjectId } from 'bson';
-
-class IdTokenServiceSpec extends IdTokenService {
-	buildGroupsClaimSpec(teams: Team[]): GroupNameIdTuple[] {
-		return super.buildGroupsClaim(teams);
-	}
-
-	async createIframeSubjectSpec(userId: string, clientId: string): Promise<string | undefined> {
-		return super.createIframeSubject(userId, clientId);
-	}
-
-	getIframePropertiesSpec(): string {
-		return this.iFrameProperties;
-	}
-}
+import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
+import resetAllMocks = jest.resetAllMocks;
 
 describe('IdTokenService', () => {
 	let module: TestingModule;
-	let idTokenService: IdTokenServiceSpec;
-	let pseudonymRepo: DeepMocked<PseudonymsRepo>;
-	let ltiToolRepo: DeepMocked<LtiToolRepo>;
+	let service: IdTokenService;
+
+	let oauthProviderLoginFlowService: DeepMocked<OauthProviderLoginFlowService>;
+	let pseudonymService: DeepMocked<PseudonymService>;
 	let teamsRepo: DeepMocked<TeamsRepo>;
 	let userService: DeepMocked<UserService>;
 
-	const userId = new ObjectId().toHexString();
-	const clientId = 'clientId';
-	const host = 'http://host';
-	let ltiToolDo: LtiToolDO;
-	let pseudonymDo: PseudonymDO;
+	const hostUrl = 'https://host.de';
 
 	beforeAll(async () => {
 		jest.spyOn(Configuration, 'get').mockImplementation((key: string) => {
 			switch (key) {
 				case 'HOST':
-					return host;
+					return hostUrl;
 				default:
 					return null;
 			}
@@ -53,14 +38,14 @@ describe('IdTokenService', () => {
 
 		module = await Test.createTestingModule({
 			providers: [
-				IdTokenServiceSpec,
+				IdTokenService,
 				{
-					provide: PseudonymsRepo,
-					useValue: createMock<PseudonymsRepo>(),
+					provide: OauthProviderLoginFlowService,
+					useValue: createMock<OauthProviderLoginFlowService>(),
 				},
 				{
-					provide: LtiToolRepo,
-					useValue: createMock<LtiToolRepo>(),
+					provide: PseudonymService,
+					useValue: createMock<PseudonymService>(),
 				},
 				{
 					provide: TeamsRepo,
@@ -70,18 +55,16 @@ describe('IdTokenService', () => {
 					provide: UserService,
 					useValue: createMock<UserService>(),
 				},
-				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
-				},
 			],
 		}).compile();
 
-		idTokenService = module.get(IdTokenServiceSpec);
-		pseudonymRepo = module.get(PseudonymsRepo);
-		ltiToolRepo = module.get(LtiToolRepo);
+		service = module.get(IdTokenService);
+
+		oauthProviderLoginFlowService = module.get(OauthProviderLoginFlowService);
+		pseudonymService = module.get(PseudonymService);
 		teamsRepo = module.get(TeamsRepo);
 		userService = module.get(UserService);
+
 		await setupEntities();
 	});
 
@@ -89,173 +72,201 @@ describe('IdTokenService', () => {
 		await module.close();
 	});
 
-	beforeEach(() => {
-		ltiToolDo = { id: 'ltiToolId' } as LtiToolDO;
-		pseudonymDo = { pseudonym: 'Pseudonym' } as PseudonymDO;
-	});
-
 	afterEach(() => {
-		jest.resetAllMocks();
+		resetAllMocks();
 	});
 
 	describe('createIdToken', () => {
-		let user: UserDO;
-		let scopes: string[];
+		describe('when scopes are empty', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.buildWithId({ schoolId: 'schoolId' });
 
-		beforeEach(() => {
-			user = userDoFactory.buildWithId({ email: 'email', schoolId: 'schoolId' }, userId);
-			scopes = ['openid', 'offline', 'profile', 'email', 'groups'];
-			userService.findById.mockResolvedValue(user);
-		});
+				const displayName = 'display name';
 
-		it('should call teamsRepo if scopes contains groups', async () => {
-			await idTokenService.createIdToken(userId, scopes, clientId);
+				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
 
-			expect(teamsRepo.findByUserId).toHaveBeenCalledWith(userId);
-		});
+				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId({ pseudonym: 'pseudonym' });
 
-		it('should not call teamsRepo if scopes does not contain groups', async () => {
-			scopes = scopes.filter((scope: string) => scope !== OauthScope.GROUPS);
-
-			await idTokenService.createIdToken(userId, scopes, clientId);
-
-			expect(teamsRepo.findByUserId).not.toHaveBeenCalled();
-		});
-
-		describe('tests id token and scopes', () => {
-			let teams: Team[];
-			let expectedName: string;
-
-			beforeEach(() => {
-				teams = [teamFactory.buildWithId()];
-				expectedName = 'Max Mustermann';
-				teamsRepo.findByUserId.mockResolvedValue(teams);
-				ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(ltiToolDo);
-				pseudonymRepo.findByUserIdAndToolId.mockResolvedValue(pseudonymDo);
 				userService.findById.mockResolvedValue(user);
-				userService.getDisplayName.mockResolvedValue(expectedName);
+				userService.getDisplayName.mockResolvedValue(displayName);
+				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
+				pseudonymService.findByUserIdAndToolId.mockResolvedValue(pseudonym);
+
+				return {
+					user,
+					displayName,
+					tool,
+					pseudonym,
+				};
+			};
+
+			it('should return the correct id token', async () => {
+				const { user } = setup();
+
+				const result: IdToken = await service.createIdToken('userId', [], 'clientId');
+
+				expect(result).toEqual<IdToken>({
+					iframe:
+						'<iframe src="https://host.de/oauth2/username/pseudonym" title="username" style="height: 26px; width: 180px; border: none;"></iframe>',
+					schoolId: user.schoolId,
+				});
 			});
+		});
 
-			it('should return a full id token', async () => {
-				const result: IdToken = await idTokenService.createIdToken(userId, scopes, clientId);
+		describe('when scopes contain groups', () => {
+			const setup = () => {
+				const team: Team = teamFactory.buildWithId();
 
-				expect(result.iframe).toBeDefined();
-				expect(result.email).toEqual(user.email);
-				expect(result.name).toEqual(expectedName);
-				expect(result.userId).toEqual(user.id);
-				expect(result.schoolId).toEqual(user.schoolId);
-				expect(result.groups).toEqual(
-					expect.objectContaining<GroupNameIdTuple[]>([
+				const user: UserDO = userDoFactory.buildWithId({ schoolId: 'schoolId' });
+
+				const displayName = 'display name';
+
+				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
+
+				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId({ pseudonym: 'pseudonym' });
+
+				teamsRepo.findByUserId.mockResolvedValue([team]);
+				userService.findById.mockResolvedValue(user);
+				userService.getDisplayName.mockResolvedValue(displayName);
+				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
+				pseudonymService.findByUserIdAndToolId.mockResolvedValue(pseudonym);
+
+				return {
+					team,
+					user,
+					displayName,
+					tool,
+					pseudonym,
+				};
+			};
+
+			it('should return the correct id token', async () => {
+				const { user, team } = setup();
+
+				const result: IdToken = await service.createIdToken('userId', [OauthScope.GROUPS], 'clientId');
+
+				expect(result).toEqual<IdToken>({
+					iframe:
+						'<iframe src="https://host.de/oauth2/username/pseudonym" title="username" style="height: 26px; width: 180px; border: none;"></iframe>',
+					schoolId: user.schoolId,
+					groups: [
 						{
-							gid: teams[0].id,
-							displayName: teams[0].name,
+							gid: team.id,
+							displayName: team.name,
 						},
-					])
+					],
+				});
+			});
+		});
+
+		describe('when scopes contain email', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.buildWithId({ schoolId: 'schoolId' });
+
+				const displayName = 'display name';
+
+				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
+
+				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId({ pseudonym: 'pseudonym' });
+
+				userService.findById.mockResolvedValue(user);
+				userService.getDisplayName.mockResolvedValue(displayName);
+				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
+				pseudonymService.findByUserIdAndToolId.mockResolvedValue(pseudonym);
+
+				return {
+					user,
+					displayName,
+					tool,
+					pseudonym,
+				};
+			};
+
+			it('should return the correct id token', async () => {
+				const { user } = setup();
+
+				const result: IdToken = await service.createIdToken('userId', [OauthScope.EMAIL], 'clientId');
+
+				expect(result).toEqual<IdToken>({
+					iframe:
+						'<iframe src="https://host.de/oauth2/username/pseudonym" title="username" style="height: 26px; width: 180px; border: none;"></iframe>',
+					schoolId: user.schoolId,
+					email: user.email,
+				});
+			});
+		});
+
+		describe('when scopes contain profile', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.buildWithId({ schoolId: 'schoolId' });
+
+				const displayName = 'display name';
+
+				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
+
+				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId({ pseudonym: 'pseudonym' });
+
+				userService.findById.mockResolvedValue(user);
+				userService.getDisplayName.mockResolvedValue(displayName);
+				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
+				pseudonymService.findByUserIdAndToolId.mockResolvedValue(pseudonym);
+
+				return {
+					user,
+					displayName,
+					tool,
+					pseudonym,
+				};
+			};
+
+			it('should return the correct id token', async () => {
+				const { user, displayName } = setup();
+
+				const result: IdToken = await service.createIdToken('userId', [OauthScope.PROFILE], 'clientId');
+
+				expect(result).toEqual<IdToken>({
+					iframe:
+						'<iframe src="https://host.de/oauth2/username/pseudonym" title="username" style="height: 26px; width: 180px; border: none;"></iframe>',
+					schoolId: user.schoolId,
+					name: displayName,
+					userId: user.id,
+				});
+			});
+		});
+
+		describe('when the tool has no id', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.buildWithId({ schoolId: 'schoolId' });
+
+				const displayName = 'display name';
+
+				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config().build({ id: undefined });
+
+				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId({ pseudonym: 'pseudonym' });
+
+				userService.findById.mockResolvedValue(user);
+				userService.getDisplayName.mockResolvedValue(displayName);
+				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
+
+				return {
+					user,
+					displayName,
+					tool,
+					pseudonym,
+				};
+			};
+
+			it('should throw an InternalServerErrorException', async () => {
+				setup();
+
+				const func = async () => service.createIdToken('userId', [OauthScope.PROFILE], 'clientId');
+
+				await expect(func).rejects.toThrow(
+					new InternalServerErrorException(
+						'Something went wrong for id token creation. Tool could not be found for userId: userId and clientId: clientId'
+					)
 				);
-
-				expect(userService.getDisplayName).toHaveBeenCalledWith(user);
 			});
-
-			it('iframe should be undefined if iframe cant be build', async () => {
-				ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(Promise.reject());
-
-				const result: IdToken = await idTokenService.createIdToken(userId, scopes, clientId);
-
-				expect(result.iframe).toBeUndefined();
-			});
-
-			it('email should be undefined if scope is missing', async () => {
-				scopes = scopes.filter((scope: string) => scope !== OauthScope.EMAIL);
-
-				const result: IdToken = await idTokenService.createIdToken(userId, scopes, clientId);
-
-				expect(result.email).toBeUndefined();
-			});
-
-			it('name should be undefined if scope is missing', async () => {
-				scopes = scopes.filter((scope: string) => scope !== OauthScope.PROFILE);
-
-				const result: IdToken = await idTokenService.createIdToken(userId, scopes, clientId);
-
-				expect(result.name).toBeUndefined();
-			});
-
-			it('userId should be undefined if scope is missing', async () => {
-				scopes = scopes.filter((scope: string) => scope !== OauthScope.PROFILE);
-
-				const result: IdToken = await idTokenService.createIdToken(userId, scopes, clientId);
-
-				expect(result.userId).toBeUndefined();
-			});
-
-			it('groups should be undefined if scope is missing', async () => {
-				scopes = scopes.filter((scope: string) => scope !== OauthScope.GROUPS);
-
-				const result: IdToken = await idTokenService.createIdToken(userId, scopes, clientId);
-
-				expect(result.groups).toBeUndefined();
-			});
-		});
-	});
-
-	describe('createIframeSubject', () => {
-		it('should create and return iframe string', async () => {
-			ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(ltiToolDo);
-			pseudonymRepo.findByUserIdAndToolId.mockResolvedValue(pseudonymDo);
-
-			const result = await idTokenService.createIframeSubjectSpec(userId, clientId);
-
-			const expectedResult = `<iframe src="${host}/oauth2/username/${
-				pseudonymDo.pseudonym
-			}" ${idTokenService.getIframePropertiesSpec()}></iframe>`;
-			expect(result).toEqual(expectedResult);
-
-			expect(ltiToolRepo.findByClientIdAndIsLocal).toHaveBeenCalledWith(clientId, true);
-			expect(pseudonymRepo.findByUserIdAndToolId).toHaveBeenCalledWith(userId, ltiToolDo.id);
-		});
-
-		it('should return undefined if ltiTool can not be found', async () => {
-			ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(Promise.reject());
-
-			const result = await idTokenService.createIframeSubjectSpec(userId, clientId);
-
-			expect(result).toBeUndefined();
-
-			expect(ltiToolRepo.findByClientIdAndIsLocal).toHaveBeenCalledWith(clientId, true);
-			expect(pseudonymRepo.findByUserIdAndToolId).not.toHaveBeenCalled();
-		});
-
-		it('should return undefined if pseudonym can not be found', async () => {
-			ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(ltiToolDo);
-			pseudonymRepo.findByUserIdAndToolId.mockResolvedValue(Promise.reject());
-
-			const result = await idTokenService.createIframeSubjectSpec(userId, clientId);
-
-			expect(result).toBeUndefined();
-
-			expect(ltiToolRepo.findByClientIdAndIsLocal).toHaveBeenCalledWith(clientId, true);
-			expect(pseudonymRepo.findByUserIdAndToolId).toHaveBeenCalledWith(userId, ltiToolDo.id);
-		});
-	});
-
-	describe('buildGroupsClaim', () => {
-		it('should create and return a groups', () => {
-			const team1: Team = teamFactory.buildWithId();
-			const team2: Team = teamFactory.buildWithId();
-			const teams: Team[] = [team1, team2];
-
-			const result: GroupNameIdTuple[] = idTokenService.buildGroupsClaimSpec(teams);
-
-			expect(result).toEqual<GroupNameIdTuple[]>([
-				{ gid: team1.id, displayName: team1.name },
-				{ gid: team2.id, displayName: team2.name },
-			]);
-		});
-
-		it('should return an empty array', () => {
-			const result = idTokenService.buildGroupsClaimSpec([]);
-
-			expect(result.length === 0).toBeTruthy();
 		});
 	});
 });

@@ -1,18 +1,25 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ForbiddenException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Permission, SchoolDO, User, UserLoginMigrationDO } from '@shared/domain';
+import { schoolDOFactory, setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { SchoolDO, UserLoginMigrationDO } from '@shared/domain';
-import { schoolDOFactory, userLoginMigrationDOFactory } from '@shared/testing';
-import { UserLoginMigrationService, RestartUserLoginMigrationValidationService } from '../service';
+import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
+import { SchoolService } from '@src/modules/school';
+import {
+	UserLoginMigrationGracePeriodExpiredLoggableException,
+	UserLoginMigrationNotFoundLoggableException,
+} from '../error';
+import { UserLoginMigrationService } from '../service';
 import { RestartUserLoginMigrationUc } from './restart-user-login-migration.uc';
-import { UserLoginMigrationLoggableException } from '../error';
 
 describe('RestartUserLoginMigrationUc', () => {
 	let module: TestingModule;
 	let uc: RestartUserLoginMigrationUc;
 
 	let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
-	let restartUserLoginMigrationValidationService: DeepMocked<RestartUserLoginMigrationValidationService>;
+	let authorizationService: DeepMocked<AuthorizationService>;
+	let schoolService: DeepMocked<SchoolService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -23,8 +30,12 @@ describe('RestartUserLoginMigrationUc', () => {
 					useValue: createMock<UserLoginMigrationService>(),
 				},
 				{
-					provide: RestartUserLoginMigrationValidationService,
-					useValue: createMock<RestartUserLoginMigrationValidationService>(),
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
+				},
+				{
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
 				},
 				{
 					provide: Logger,
@@ -35,7 +46,10 @@ describe('RestartUserLoginMigrationUc', () => {
 
 		uc = module.get(RestartUserLoginMigrationUc);
 		userLoginMigrationService = module.get(UserLoginMigrationService);
-		restartUserLoginMigrationValidationService = module.get(RestartUserLoginMigrationValidationService);
+		authorizationService = module.get(AuthorizationService);
+		schoolService = module.get(SchoolService);
+
+		await setupEntities();
 	});
 
 	afterAll(async () => {
@@ -47,76 +61,165 @@ describe('RestartUserLoginMigrationUc', () => {
 	});
 
 	describe('restartMigration', () => {
-		describe('when admin restarted migration successfully', () => {
+		describe('when an admin restarts a closed migration', () => {
 			const setup = () => {
-				const userId = 'userId';
-
-				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					schoolId: 'schoolId',
-					targetSystemId: 'targetSystemId',
-					startedAt: new Date(),
-					closedAt: new Date(),
-					finishedAt: new Date(),
+				const migrationBeforeRestart: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					closedAt: new Date(2023, 5),
 				});
+				const migrationAfterRestart: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId();
+
+				const user: User = userFactory.buildWithId();
 
 				const school: SchoolDO = schoolDOFactory.buildWithId();
 
-				restartUserLoginMigrationValidationService.checkPreconditions.mockResolvedValue(Promise.resolve());
-				userLoginMigrationService.restartMigration.mockResolvedValue(migration);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(migrationBeforeRestart);
+				userLoginMigrationService.restartMigration.mockResolvedValueOnce(migrationAfterRestart);
 
-				return { userId, migration, schoolId: school.id as string };
+				return { user, school, migrationAfterRestart };
 			};
 
-			it('should check preconditions', async () => {
-				const { userId, schoolId } = setup();
+			it('should check permission', async () => {
+				const { user, school } = setup();
 
-				await uc.restartMigration(userId, schoolId);
+				await uc.restartMigration('userId', 'schoolId');
 
-				expect(restartUserLoginMigrationValidationService.checkPreconditions).toHaveBeenCalledWith(userId, schoolId);
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
+					user,
+					school,
+					AuthorizationContextBuilder.write([Permission.USER_LOGIN_MIGRATION_ADMIN])
+				);
 			});
 
-			it('should restart the migration ', async () => {
-				const { userId, schoolId } = setup();
+			it('should call the service to restart a migration', async () => {
+				setup();
 
-				await uc.restartMigration(userId, schoolId);
+				await uc.restartMigration('userId', 'schoolId');
 
-				expect(userLoginMigrationService.restartMigration).toHaveBeenCalledWith(schoolId);
+				expect(userLoginMigrationService.restartMigration).toHaveBeenCalledWith('schoolId');
 			});
 
-			it('should return a UserLoginMigrationDO', async () => {
-				const { userId, schoolId, migration } = setup();
+			it('should return a UserLoginMigration', async () => {
+				const { migrationAfterRestart } = setup();
 
-				const result: UserLoginMigrationDO = await uc.restartMigration(userId, schoolId);
+				const result: UserLoginMigrationDO = await uc.restartMigration('userId', 'schoolId');
 
-				expect(result).toEqual(migration);
+				expect(result).toEqual(migrationAfterRestart);
 			});
 		});
 
-		describe('when preconditions are not met', () => {
+		describe('when an admin restarts a running migration', () => {
 			const setup = () => {
-				const userId = 'userId';
+				const runningMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId();
 
-				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					schoolId: 'schoolId',
-					targetSystemId: 'targetSystemId',
-					startedAt: new Date(),
-				});
+				const user: User = userFactory.buildWithId();
 
 				const school: SchoolDO = schoolDOFactory.buildWithId();
-				const error: UserLoginMigrationLoggableException = new UserLoginMigrationLoggableException('');
 
-				restartUserLoginMigrationValidationService.checkPreconditions.mockRejectedValue(error);
-				userLoginMigrationService.restartMigration.mockResolvedValue(migration);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(runningMigration);
 
-				return { userId, migration, schoolId: school.id as string };
+				return { user, school, runningMigration };
 			};
 
-			it('should throw ForbiddenException ', async () => {
-				const { userId, schoolId } = setup();
+			it('should check permission', async () => {
+				const { user, school } = setup();
 
-				await expect(uc.restartMigration(userId, schoolId)).rejects.toThrow(
-					new UserLoginMigrationLoggableException('')
+				await uc.restartMigration('userId', 'schoolId');
+
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
+					user,
+					school,
+					AuthorizationContextBuilder.write([Permission.USER_LOGIN_MIGRATION_ADMIN])
 				);
+			});
+
+			it('should not call the service to restart a migration', async () => {
+				setup();
+
+				await uc.restartMigration('userId', 'schoolId');
+
+				expect(userLoginMigrationService.restartMigration).not.toHaveBeenCalled();
+			});
+
+			it('should return a UserLoginMigration', async () => {
+				const { runningMigration } = setup();
+
+				const result: UserLoginMigrationDO = await uc.restartMigration('userId', 'schoolId');
+
+				expect(result).toEqual(runningMigration);
+			});
+		});
+
+		describe('when the user does not have enough permission', () => {
+			const setup = () => {
+				const user: User = userFactory.buildWithId();
+
+				const school: SchoolDO = schoolDOFactory.buildWithId();
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				authorizationService.checkPermission.mockImplementationOnce(() => {
+					throw new ForbiddenException();
+				});
+			};
+
+			it('should throw an exception', async () => {
+				setup();
+
+				const func = async () => uc.restartMigration('userId', 'schoolId');
+
+				await expect(func).rejects.toThrow(ForbiddenException);
+			});
+		});
+
+		describe('when there is no migration yet', () => {
+			const setup = () => {
+				const user: User = userFactory.buildWithId();
+
+				const school: SchoolDO = schoolDOFactory.buildWithId();
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(null);
+			};
+
+			it('should throw a UserLoginMigrationNotFoundLoggableException', async () => {
+				setup();
+
+				const func = async () => uc.restartMigration('userId', 'schoolId');
+
+				await expect(func).rejects.toThrow(UserLoginMigrationNotFoundLoggableException);
+			});
+		});
+
+		describe('when the grace period for restarting a migration has expired', () => {
+			const setup = () => {
+				jest.useFakeTimers();
+				jest.setSystemTime(new Date(2023, 6));
+
+				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					closedAt: new Date(2023, 5),
+					finishedAt: new Date(2023, 5),
+				});
+
+				const user: User = userFactory.buildWithId();
+
+				const school: SchoolDO = schoolDOFactory.buildWithId();
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(migration);
+			};
+
+			it('should throw a UserLoginMigrationGracePeriodExpiredLoggableException', async () => {
+				setup();
+
+				const func = async () => uc.restartMigration('userId', 'schoolId');
+
+				await expect(func).rejects.toThrow(UserLoginMigrationGracePeriodExpiredLoggableException);
 			});
 		});
 	});

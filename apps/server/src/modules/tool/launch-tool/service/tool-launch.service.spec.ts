@@ -11,7 +11,12 @@ import {
 } from '@shared/testing';
 import { ExternalToolService, SchoolExternalToolService } from '../../service';
 import { LaunchRequestMethod, ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
-import { BasicToolLaunchStrategy, IToolLaunchParams, Lti11ToolLaunchStrategy } from './strategy';
+import {
+	BasicToolLaunchStrategy,
+	IToolLaunchParams,
+	Lti11ToolLaunchStrategy,
+	OAuth2ToolLaunchStrategy,
+} from './strategy';
 import { ToolLaunchService } from './tool-launch.service';
 
 describe('ToolLaunchService', () => {
@@ -41,6 +46,10 @@ describe('ToolLaunchService', () => {
 				{
 					provide: Lti11ToolLaunchStrategy,
 					useValue: createMock<Lti11ToolLaunchStrategy>(),
+				},
+				{
+					provide: OAuth2ToolLaunchStrategy,
+					useValue: createMock<OAuth2ToolLaunchStrategy>(),
 				},
 			],
 		}).compile();
