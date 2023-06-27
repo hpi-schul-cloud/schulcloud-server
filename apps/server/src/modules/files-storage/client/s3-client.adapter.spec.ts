@@ -208,7 +208,7 @@ describe('S3ClientAdapter', () => {
 				};
 
 				const restoreMocks = () => {
-					// Set of undefined works as mock restore
+					// @ts-expect-error Set of undefined works as mock restore
 					client.config.endpoint = undefined;
 				};
 
@@ -244,7 +244,7 @@ describe('S3ClientAdapter', () => {
 					uploadDoneMock.mockRestore();
 					createBucketMock.mockRestore();
 					createSpy.mockRestore();
-					// Set of undefined works as mock restore
+					// @ts-expect-error Set of undefined works as mock restore
 					client.config.endpoint = undefined;
 				};
 
