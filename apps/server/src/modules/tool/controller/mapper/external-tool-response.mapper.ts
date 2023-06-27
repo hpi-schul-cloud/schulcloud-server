@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '@shared/domain';
+import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolReference } from '@shared/domain';
 import {
 	BasicToolConfigDO,
 	CustomParameterDO,
@@ -7,6 +6,7 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/tool';
+import { Injectable } from '@nestjs/common';
 import {
 	CustomParameterLocationParams,
 	CustomParameterScopeTypeParams,
@@ -21,7 +21,9 @@ import {
 	Oauth2ToolConfigResponse,
 	ToolConfigurationEntryResponse,
 	ToolConfigurationListResponse,
+	ToolReferenceResponse,
 } from '../dto';
+import { statusMapping } from './school-external-tool-response.mapper';
 
 const scopeMapping: Record<CustomParameterScope, CustomParameterScopeTypeParams> = {
 	[CustomParameterScope.GLOBAL]: CustomParameterScopeTypeParams.GLOBAL,
@@ -46,7 +48,7 @@ const typeMapping: Record<CustomParameterType, CustomParameterTypeParams> = {
 
 @Injectable()
 export class ExternalToolResponseMapper {
-	mapToResponse(externalToolDO: ExternalToolDO): ExternalToolResponse {
+	mapToExternalToolResponse(externalToolDO: ExternalToolDO): ExternalToolResponse {
 		let mappedConfig: BasicToolConfigResponse | Lti11ToolConfigResponse | Oauth2ToolConfigResponse;
 		if (externalToolDO.config instanceof BasicToolConfigDO) {
 			mappedConfig = this.mapBasicToolConfigDOToResponse(externalToolDO.config);
@@ -61,7 +63,7 @@ export class ExternalToolResponseMapper {
 		);
 
 		return new ExternalToolResponse({
-			id: externalToolDO.id || '',
+			id: externalToolDO.id ?? '',
 			name: externalToolDO.name,
 			url: externalToolDO.url,
 			logoUrl: externalToolDO.logoUrl,
@@ -112,7 +114,7 @@ export class ExternalToolResponseMapper {
 		return externalTools.map(
 			(tool: ExternalToolDO) =>
 				new ToolConfigurationEntryResponse({
-					id: tool.id || '',
+					id: tool.id ?? '',
 					name: tool.name,
 					logoUrl: tool.logoUrl,
 				})
@@ -125,11 +127,31 @@ export class ExternalToolResponseMapper {
 		);
 
 		return new ExternalToolConfigurationTemplateResponse({
-			id: externalToolDO.id || '',
+			id: externalToolDO.id ?? '',
 			name: externalToolDO.name,
 			logoUrl: externalToolDO.logoUrl,
 			parameters: mappedCustomParameter,
 			version: externalToolDO.version,
 		});
+	}
+
+	mapToToolReferenceResponses(toolReferences: ToolReference[]): ToolReferenceResponse[] {
+		const toolReferenceResponses: ToolReferenceResponse[] = toolReferences.map((toolReference: ToolReference) =>
+			this.mapToToolReferenceResponse(toolReference)
+		);
+
+		return toolReferenceResponses;
+	}
+
+	private mapToToolReferenceResponse(toolReference: ToolReference): ToolReferenceResponse {
+		const response = new ToolReferenceResponse({
+			contextToolId: toolReference.contextToolId,
+			displayName: toolReference.displayName,
+			logoUrl: toolReference.logoUrl,
+			openInNewTab: toolReference.openInNewTab,
+			status: statusMapping[toolReference.status],
+		});
+
+		return response;
 	}
 }

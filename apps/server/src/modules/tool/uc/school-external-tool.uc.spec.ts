@@ -238,7 +238,7 @@ describe('SchoolExternalToolUc', () => {
 	describe('updateSchoolExternalTool is called', () => {
 		const setupUpdate = () => {
 			const { tool, user } = setup();
-			const updatedTool: SchoolExternalToolDO = { ...tool };
+			const updatedTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({ ...tool });
 			updatedTool.parameters[0].value = 'updatedValue';
 
 			schoolExternalToolService.saveSchoolExternalTool.mockResolvedValue(updatedTool);

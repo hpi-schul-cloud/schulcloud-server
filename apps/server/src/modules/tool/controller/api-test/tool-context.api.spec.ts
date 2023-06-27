@@ -267,7 +267,7 @@ describe('ToolContextController (API)', () => {
 		const setup = async () => {
 			const userRole: Role = roleFactory.build({
 				name: RoleName.USER,
-				permissions: [Permission.CONTEXT_TOOL_USER],
+				permissions: [Permission.CONTEXT_TOOL_ADMIN],
 			});
 
 			const school: School = schoolFactory.buildWithId();
