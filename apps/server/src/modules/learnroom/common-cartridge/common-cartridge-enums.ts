@@ -6,5 +6,6 @@ export enum CommonCartridgeVersion {
 export enum CommonCartridgeResourceType {
 	LTI = 'imsbasiclti_xmlv1p0',
 	WEB_CONTENT = 'webcontent',
-	WEB_LINK = 'imswl_xmlv1p1',
+	WEB_LINK_V1 = 'imswl_xmlv1p1',
+	WEB_LINK_V3 = 'imswl_xmlv1p3',
 }

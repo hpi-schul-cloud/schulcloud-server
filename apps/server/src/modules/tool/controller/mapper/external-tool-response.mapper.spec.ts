@@ -25,8 +25,8 @@ import {
 	Oauth2ToolConfigResponse,
 	ToolConfigurationEntryResponse,
 	ToolConfigurationListResponse,
+	ExternalToolConfigurationTemplateResponse,
 } from '../dto';
-import { ExternalToolConfigurationTemplateResponse } from '../dto/response/external-tool-configuration-template.response';
 import { ExternalToolResponseMapper } from './external-tool-response.mapper';
 
 describe('ExternalToolResponseMapper', () => {
@@ -119,7 +119,7 @@ describe('ExternalToolResponseMapper', () => {
 				externalToolDO.config = basicToolConfigDO;
 				externalToolResponse.config = basicToolConfigResponse;
 
-				const result: ExternalToolResponse = mapper.mapToResponse(externalToolDO);
+				const result: ExternalToolResponse = mapper.mapToExternalToolResponse(externalToolDO);
 
 				expect(result).toEqual(externalToolResponse);
 			});
@@ -162,7 +162,7 @@ describe('ExternalToolResponseMapper', () => {
 				externalToolDO.config = oauth2ToolConfigDO;
 				externalToolResponse.config = oauth2ToolConfigResponse;
 
-				const result: ExternalToolResponse = mapper.mapToResponse(externalToolDO);
+				const result: ExternalToolResponse = mapper.mapToExternalToolResponse(externalToolDO);
 
 				expect(result).toEqual(externalToolResponse);
 			});
@@ -195,7 +195,7 @@ describe('ExternalToolResponseMapper', () => {
 				externalToolDO.config = lti11ToolConfigDO;
 				externalToolResponse.config = lti11ToolConfigResponse;
 
-				const result: ExternalToolResponse = mapper.mapToResponse(externalToolDO);
+				const result: ExternalToolResponse = mapper.mapToExternalToolResponse(externalToolDO);
 
 				expect(result).toEqual(externalToolResponse);
 			});

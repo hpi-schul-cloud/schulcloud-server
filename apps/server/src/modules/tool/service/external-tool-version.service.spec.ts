@@ -28,7 +28,7 @@ describe('ExternalToolVersionService', () => {
 				version: 1,
 			})
 			.build();
-		const newTool: ExternalToolDO = { ...oldTool, parameters: [{ ...param1 }] };
+		const newTool: ExternalToolDO = externalToolDOFactory.build({ ...oldTool, parameters: [{ ...param1 }] });
 
 		return {
 			oldTool,
