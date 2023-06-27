@@ -255,15 +255,27 @@ function mapPseudonyms(pseudonym, externalTool) {
 }
 
 async function createPseudonyms(toolTemplate, externalTool) {
-	let pseudonyms = Pseudonym.find({
+	const pseudonymsLegacyTools = Pseudonym.find({
 		toolId: toolTemplate._id,
 	})
 		.lean()
 		.exec();
 
-	pseudonyms = pseudonyms.map((pseudonym) => mapPseudonyms(pseudonym, externalTool));
+	const pseudonymsCTLTools = Pseudonym.find({
+		toolId: externalTool._id,
+	})
+		.lean()
+		.exec();
 
-	await Pseudonym.insertMany(pseudonyms);
+	// FILTER EXISTING PSEUDONYM
+	let missingPseudonyms = pseudonymsLegacyTools.filter(
+		(pseudonymsLegacyTool) =>
+			!pseudonymsCTLTools.some((pseudonymsCTLTool) => pseudonymsCTLTool.userId === pseudonymsLegacyTool.userId)
+	);
+
+	missingPseudonyms = missingPseudonyms.map((pseudonym) => mapPseudonyms(pseudonym, externalTool));
+
+	await Pseudonym.insertMany(missingPseudonyms);
 }
 
 async function createExternalTool(toolTemplate) {
