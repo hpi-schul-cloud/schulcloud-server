@@ -7,6 +7,7 @@ import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { LessonService } from '@src/modules/lesson/service';
 import { TaskService } from '@src/modules/task/service/task.service';
 import AdmZip from 'adm-zip';
+import { CommonCartridgeVersion } from '../common-cartridge';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;
@@ -77,9 +78,7 @@ describe('CommonCartridgeExportService', () => {
 	});
 
 	describe('exportCourse', () => {
-		let archive: AdmZip;
-
-		beforeAll(async () => {
+		const setupExport = async (version: CommonCartridgeVersion) => {
 			const [lesson] = lessons;
 			const textContent = { text: 'Some random text' } as IComponentTextProperties;
 			const lessonContent: IComponentProperties = {
@@ -94,43 +93,99 @@ describe('CommonCartridgeExportService', () => {
 			courseServiceMock.findById.mockResolvedValueOnce(course);
 			lessonServiceMock.findByCourseIds.mockResolvedValueOnce([lessons, lessons.length]);
 			taskServiceMock.findBySingleParent.mockResolvedValueOnce([tasks, tasks.length]);
-			archive = new AdmZip(await courseExportService.exportCourse(course.id, ''));
-		});
+			const archive = new AdmZip(await courseExportService.exportCourse(course.id, '', version));
+			return archive;
+		};
 
-		it('should create manifest file', () => {
-			expect(archive.getEntry('imsmanifest.xml')).toBeDefined();
-		});
+		describe('When Common Cartridge version 1.1', () => {
+			let archive: AdmZip;
 
-		it('should add title to manifest file', () => {
-			expect(archive.getEntry('imsmanifest.xml')?.getData().toString()).toContain(course.name);
-		});
+			beforeAll(async () => {
+				archive = await setupExport(CommonCartridgeVersion.V_1_1_0);
+			});
 
-		it('should add lessons as organization items to manifest file', () => {
-			const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
-			lessons.forEach((lesson) => {
-				expect(manifest).toContain(lesson.name);
+			it('should create manifest file', () => {
+				expect(archive.getEntry('imsmanifest.xml')).toBeDefined();
+			});
+
+			it('should add title to manifest file', () => {
+				expect(archive.getEntry('imsmanifest.xml')?.getData().toString()).toContain(course.name);
+			});
+
+			it('should add lessons as organization items to manifest file', () => {
+				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+				lessons.forEach((lesson) => {
+					expect(manifest).toContain(lesson.name);
+				});
+			});
+
+			it('should add lesson text content to manifest file', () => {
+				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+				expect(manifest).toContain(lessons[0].contents[0].title);
+			});
+
+			it('should add copyright information to manifest file', () => {
+				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+				expect(manifest).toContain(course.teachers[0].firstName);
+				expect(manifest).toContain(course.teachers[0].lastName);
+				expect(manifest).toContain(course.teachers[1].firstName);
+				expect(manifest).toContain(course.teachers[1].lastName);
+				expect(manifest).toContain(course.createdAt.getFullYear().toString());
+			});
+			// TODO: will be done in EW-526: https://ticketsystem.dbildungscloud.de/browse/EW-526
+			// it('should add tasks as assignments', () => {
+			// 	const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+			// 	tasks.forEach((task) => {
+			// 		expect(manifest).toContain(`i${task.id}`);
+			// 	});
+			// });
+
+			it('should add version 1 information to manifest file', () => {
+				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+				expect(manifest).toContain(CommonCartridgeVersion.V_1_1_0);
 			});
 		});
 
-		it('should add lesson text content to manifest file', () => {
-			const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
-			expect(manifest).toContain(lessons[0].contents[0].title);
-		});
+		describe('When Common Cartridge version 1.3', () => {
+			let archive: AdmZip;
 
-		it('should add copyright information to manifest file', () => {
-			const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
-			expect(manifest).toContain(course.teachers[0].firstName);
-			expect(manifest).toContain(course.teachers[0].lastName);
-			expect(manifest).toContain(course.teachers[1].firstName);
-			expect(manifest).toContain(course.teachers[1].lastName);
-			expect(manifest).toContain(course.createdAt.getFullYear().toString());
+			beforeAll(async () => {
+				archive = await setupExport(CommonCartridgeVersion.V_1_3_0);
+			});
+
+			it('should create manifest file', () => {
+				expect(archive.getEntry('imsmanifest.xml')).toBeDefined();
+			});
+
+			it('should add title to manifest file', () => {
+				expect(archive.getEntry('imsmanifest.xml')?.getData().toString()).toContain(course.name);
+			});
+
+			it('should add lessons as organization items to manifest file', () => {
+				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+				lessons.forEach((lesson) => {
+					expect(manifest).toContain(lesson.name);
+				});
+			});
+
+			it('should add lesson text content to manifest file', () => {
+				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+				expect(manifest).toContain(lessons[0].contents[0].title);
+			});
+
+			it('should add copyright information to manifest file', () => {
+				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+				expect(manifest).toContain(course.teachers[0].firstName);
+				expect(manifest).toContain(course.teachers[0].lastName);
+				expect(manifest).toContain(course.teachers[1].firstName);
+				expect(manifest).toContain(course.teachers[1].lastName);
+				expect(manifest).toContain(course.createdAt.getFullYear().toString());
+			});
+
+			it('should add version 3 information to manifest file', () => {
+				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+				expect(manifest).toContain(CommonCartridgeVersion.V_1_3_0);
+			});
 		});
-		// TODO: will be done in EW-526: https://ticketsystem.dbildungscloud.de/browse/EW-526
-		// it('should add tasks as assignments', () => {
-		// 	const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
-		// 	tasks.forEach((task) => {
-		// 		expect(manifest).toContain(`i${task.id}`);
-		// 	});
-		// });
 	});
 });

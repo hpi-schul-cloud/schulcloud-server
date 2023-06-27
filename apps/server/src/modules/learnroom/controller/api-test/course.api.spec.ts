@@ -1,6 +1,5 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
 import { cleanupCollections, courseFactory, UserAndAccountTestFactory, TestApiClient } from '@shared/testing';
@@ -187,24 +186,28 @@ describe('Course Controller (API)', () => {
 			const teacherUnkownToCourse = createTeacher();
 			const course = courseFactory.build({
 				name: 'course #1',
+				teachers: [teacher.user],
 				students: [student1.user, student2.user],
 			});
 
 			return { course, teacher, teacherUnkownToCourse, substitutionTeacher, student1 };
 		};
 		it('should find course export', async () => {
-			if (!Configuration.get('FEATURE_IMSCC_COURSE_EXPORT_ENABLED')) return;
-			const { student1, course } = setup();
-
-			await em.persistAndFlush(course);
+			const { teacher, course } = setup();
+			await em.persistAndFlush([teacher.account, teacher.user, course]);
 			em.clear();
+			const version = { version: '1.1.0' };
 
-			const loggedInClient = await testApiClient.login(student1.account);
-			const response = await loggedInClient.get(`${course.id}/export`);
+			const loggedInClient = await testApiClient.login(teacher.account);
+			const response = await loggedInClient.get(`${course.id}/export`).query(version);
 
 			expect(response.statusCode).toEqual(200);
-			const courseResponse = response.body as CourseResponse;
-			expect(courseResponse).toBeDefined();
+			const file = response.body as StreamableFile;
+			expect(file).toBeDefined();
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			expect(response.header['content-type']).toBe('application/zip');
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			expect(response.header['content-disposition']).toBe('attachment;');
 		});
 	});
 });
