@@ -16,10 +16,12 @@ import {
 import path from 'path';
 import { FileDto } from '@src/modules/files-storage/dto';
 import { S3ClientAdapter } from '../../files-storage/client/s3-client.adapter';
+import { ContentMetadataRepo } from './contentMetadata.repo';
+import { ContentMetadata } from './contentMetadata.entity';
 
 @Injectable()
 export class ContentStorage implements IContentStorage {
-	constructor(private readonly storageClient: S3ClientAdapter) {}
+	constructor(private readonly repo: ContentMetadataRepo, private readonly storageClient: S3ClientAdapter) {}
 
 	public async addContent(
 		metadata: IContentMetadata,
@@ -30,16 +32,14 @@ export class ContentStorage implements IContentStorage {
 		if (contentId === null || contentId === undefined) {
 			contentId = await this.createContentId();
 		}
-		const h5pPath = path.join(this.getContentPath(), contentId.toString(), 'h5p.json');
 		const contentPath = path.join(this.getContentPath(), contentId.toString(), 'content.json');
 		try {
-			const readableH5p = Readable.from(JSON.stringify(metadata));
-			const h5pFile: FileDto = {
-				name: 'h5p.json',
-				data: readableH5p,
-				mimeType: 'json',
-			};
-			await this.storageClient.create(h5pPath, h5pFile);
+			if (!metadata.defaultLanguage) {
+				metadata.defaultLanguage = metadata.language;
+			}
+			const contentMetadata = new ContentMetadata(contentId, metadata);
+			// TODO: add h5p.json as filename?
+			await this.repo.createContentMetadata(contentMetadata);
 
 			const readableContent = Readable.from(JSON.stringify(content));
 			const contentFile: FileDto = {
@@ -52,7 +52,6 @@ export class ContentStorage implements IContentStorage {
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 			throw new Error(`Error creating content.${error.toString()}`);
 		}
-		await this.updateContentIdList(contentId.toString(), 'add');
 		return contentId;
 	}
 
@@ -74,12 +73,22 @@ export class ContentStorage implements IContentStorage {
 		await this.updateFileList(contentId, filename, 'add');
 	}
 
-	public contentExists(contentId: string): Promise<boolean> {
+	public async contentExists(contentId: string): Promise<boolean> {
 		if (contentId === '' || contentId === undefined) {
 			throw new Error('ContentId is empty or undefined.');
 		}
-		const exist = this.exists(path.join(this.getContentPath(), contentId.toString(), 'h5p.json'));
-		return exist;
+		const exist = await this.exists(path.join(this.getContentPath(), contentId.toString(), 'content.json'));
+		if (!exist) {
+			return false;
+		}
+		try {
+			const file = await this.repo.findById(contentId);
+		} catch (error) {
+			if (error) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public async deleteContent(contentId: string, user?: IUser | undefined): Promise<void> {
@@ -89,18 +98,18 @@ export class ContentStorage implements IContentStorage {
 				const deletePromise = fileList.map((file) => this.deleteFile(contentId, file));
 				await Promise.allSettled(deletePromise);
 			}
+			const contentMetadata = await this.repo.findById(contentId);
 			await Promise.allSettled([
-				this.deleteFile(contentId, 'h5p.json'),
 				this.deleteFile(contentId, 'content.json'),
+				this.repo.delete(contentMetadata),
 				this.deleteFile(contentId, 'contentfilelist.json'),
 			]);
 		} catch (error) {
 			if (error) {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-				throw new Error(error.toString());
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/restrict-template-expressions
+				throw new Error(`Error deleting content.${error.toString()}`);
 			}
 		}
-		await this.updateContentIdList(contentId, 'delete');
 	}
 
 	public async deleteFile(contentId: string, filename: string, user?: IUser | undefined): Promise<void> {
@@ -163,8 +172,8 @@ export class ContentStorage implements IContentStorage {
 
 	public async getMetadata(contentId: string, user?: IUser | undefined): Promise<IContentMetadata> {
 		if (user !== undefined && user !== null) {
-			const fileStream = await this.getFileStream(contentId, 'h5p.json', user);
-			const metadata = (await this.getJsonData(fileStream)) as IContentMetadata;
+			const contentMetadata = await this.repo.findById(contentId);
+			const metadata: IContentMetadata = contentMetadata;
 			return metadata;
 		}
 		throw new Error('Could not get Metadata');
@@ -203,7 +212,12 @@ export class ContentStorage implements IContentStorage {
 	}
 
 	public async listContent(user?: IUser | undefined): Promise<string[]> {
-		return this.getContentIdList();
+		const contentMetadataList = await this.repo.getAllMetadata();
+		const contentList: string[] = [];
+		contentMetadataList.forEach((contentMetadata) => {
+			contentList.push(contentMetadata.contentId);
+		});
+		return contentList;
 	}
 
 	public async listFiles(contentId: string, user: IUser): Promise<string[]> {
@@ -291,63 +305,17 @@ export class ContentStorage implements IContentStorage {
 
 	private checkFilename(filename: string): void {
 		filename = filename.split('.').slice(0, -1).join('.');
-		if (/^[a-zA-Z0-9/._-]*$/.test(filename) && !filename.includes('..') && !filename.startsWith('/')) {
+		if (
+			/^[a-zA-Z0-9/._-]*$/.test(filename) &&
+			!filename.includes('..') &&
+			!filename.startsWith('/') &&
+			!(filename === 'content.json') &&
+			!(filename === 'h5p.json') &&
+			!(filename === 'contentfilelist.json')
+		) {
 			return;
 		}
 		throw new Error(`Filename contains forbidden characters ${filename}`);
-	}
-
-	private async getContentIdList(): Promise<string[]> {
-		try {
-			const user: IUser = {
-				canCreateRestricted: false,
-				canInstallRecommended: false,
-				canUpdateAndInstallLibraries: false,
-				email: '',
-				id: '',
-				name: '',
-				type: '',
-			};
-			const fileStream = await this.getFileStream('contentidlist', 'contentidlist.json', user);
-			const contentIdList: string[] = (await this.getJsonData(fileStream)) as string[];
-			return contentIdList;
-		} catch (error) {
-			return [];
-		}
-	}
-
-	async updateContentIdList(contentId: string, operation: string) {
-		const contentIdListArray = await this.getContentIdList();
-		let newContentIdList: string[] = [];
-		if (operation === 'add') {
-			if (contentIdListArray.length === 0) {
-				newContentIdList.push(contentId);
-			} else {
-				contentIdListArray.push(contentId);
-				newContentIdList = contentIdListArray;
-				await this.deleteFile('contentidlist', 'contentidlist.json');
-			}
-		} else if (operation === 'delete') {
-			if (contentIdListArray.length === 1) {
-				await this.deleteFile('contentidlist', 'contentidlist.json');
-				return;
-			}
-			const index = contentIdListArray.indexOf(contentId);
-			contentIdListArray.splice(index, 1);
-			newContentIdList = contentIdListArray;
-		}
-
-		const contentIdListPath = path.join(this.getContentPath(), 'contentidlist.json');
-		const contentIdList = {
-			contentIdList: [newContentIdList],
-		};
-		const readable = Readable.from(contentIdList.toString());
-		const contentIdListFile: FileDto = {
-			name: 'contentidlist.json',
-			data: readable,
-			mimeType: 'json',
-		};
-		await this.storageClient.create(contentIdListPath, contentIdListFile);
 	}
 
 	private async getFileList(contentId: string) {

@@ -1,15 +1,12 @@
 import { Entity, Property } from '@mikro-orm/core';
-import { IContentMetadata, IFileStats, ILibraryName } from '@lumieducation/h5p-server';
+import { IContentMetadata, ILibraryName } from '@lumieducation/h5p-server';
 import { BaseEntity } from '@shared/domain';
 import { IContentAuthor, IContentChange } from '@lumieducation/h5p-server/build/src/types';
 
-@Entity({ tableName: 'h5p-editor-temp-file' })
-export class ContentMetadata extends BaseEntity implements IContentMetadata, IFileStats {
+@Entity({ tableName: 'h5p-editor-content-metadata' })
+export class ContentMetadata extends BaseEntity implements IContentMetadata {
 	@Property()
-	birthtime: Date;
-
-	@Property()
-	size: number;
+	contentId: string;
 
 	@Property()
 	embedTypes: ('iframe' | 'div')[];
@@ -32,108 +29,82 @@ export class ContentMetadata extends BaseEntity implements IContentMetadata, IFi
 	@Property()
 	preloadedDependencies: ILibraryName[];
 
-	@Property()
-	dynamicDependencies?: ILibraryName[] | undefined;
+	@Property({ nullable: true })
+	dynamicDependencies?: ILibraryName[];
 
-	@Property()
-	editorDependencies?: ILibraryName[] | undefined;
+	@Property({ nullable: true })
+	editorDependencies?: ILibraryName[];
 
-	@Property()
-	h?: string | undefined;
+	@Property({ nullable: true })
+	h?: string;
 
-	@Property()
-	metaDescription?: string | undefined;
+	@Property({ nullable: true })
+	metaDescription?: string;
 
-	@Property()
-	metaKeywords?: string | undefined;
+	@Property({ nullable: true })
+	metaKeywords?: string;
 
-	@Property()
-	w?: string | undefined;
+	@Property({ nullable: true })
+	w?: string;
 
-	@Property()
-	a11yTitle?: string | undefined;
+	@Property({ nullable: true })
+	a11yTitle?: string;
 
-	@Property()
-	licenseVersion?: string | undefined;
+	@Property({ nullable: true })
+	licenseVersion?: string;
 
-	@Property()
-	yearFrom?: string | undefined;
+	@Property({ nullable: true })
+	yearFrom?: string;
 
-	@Property()
-	yearTo?: string | undefined;
+	@Property({ nullable: true })
+	yearTo?: string;
 
-	@Property()
-	source?: string | undefined;
+	@Property({ nullable: true })
+	source?: string;
 
-	@Property()
-	authors?: IContentAuthor[] | undefined;
+	@Property({ nullable: true })
+	authors?: IContentAuthor[];
 
-	@Property()
-	licenseExtras?: string | undefined;
+	@Property({ nullable: true })
+	licenseExtras?: string;
 
-	@Property()
-	changes?: IContentChange[] | undefined;
+	@Property({ nullable: true })
+	changes?: IContentChange[];
 
-	@Property()
-	authorComments?: string | undefined;
+	@Property({ nullable: true })
+	authorComments?: string;
 
-	@Property()
-	contentType?: string | undefined;
+	@Property({ nullable: true })
+	contentType?: string;
 
-	constructor(
-		birthtime: Date,
-		size: number,
-		embedTypes: ('iframe' | 'div')[],
-		language: string,
-		mainLibrary: string,
-		defaultLanguage: string,
-		license: string,
-		title: string,
-		preloadedDependencies: ILibraryName[],
-		dynamicDependencies?: ILibraryName[] | undefined,
-		editorDependencies?: ILibraryName[] | undefined,
-		h?: string | undefined,
-		metaDescription?: string | undefined,
-		metaKeywords?: string | undefined,
-		w?: string | undefined,
-		a11yTitle?: string | undefined,
-		licenseVersion?: string | undefined,
-		yearFrom?: string | undefined,
-		yearTo?: string | undefined,
-		source?: string | undefined,
-		authors?: IContentAuthor[] | undefined,
-		licenseExtras?: string | undefined,
-		changes?: IContentChange[] | undefined,
-		authorComments?: string | undefined,
-		contentType?: string | undefined
-	) {
+	constructor(contentId: string, metadata: IContentMetadata) {
 		super();
-		this.birthtime = birthtime;
-		this.size = size;
 
-		this.embedTypes = embedTypes;
-		this.language = language;
-		this.mainLibrary = mainLibrary;
-		this.defaultLanguage = defaultLanguage;
-		this.license = license;
-		this.title = title;
-		this.preloadedDependencies = preloadedDependencies;
+		this.contentId = contentId;
 
-		this.dynamicDependencies = dynamicDependencies;
-		this.editorDependencies = editorDependencies;
-		this.h = h;
-		this.metaDescription = metaDescription;
-		this.metaKeywords = metaKeywords;
-		this.w = w;
-		this.a11yTitle = a11yTitle;
-		this.licenseVersion = licenseVersion;
-		this.yearFrom = yearFrom;
-		this.yearTo = yearTo;
-		this.source = source;
-		this.authors = authors;
-		this.licenseExtras = licenseExtras;
-		this.changes = changes;
-		this.authorComments = authorComments;
-		this.contentType = contentType;
+		this.embedTypes = metadata.embedTypes;
+		this.language = metadata.language;
+		this.mainLibrary = metadata.mainLibrary;
+		this.defaultLanguage = metadata.defaultLanguage;
+		this.license = metadata.license;
+		this.title = metadata.title;
+		this.preloadedDependencies = metadata.preloadedDependencies;
+
+		if (metadata.dynamicDependencies) this.dynamicDependencies = metadata.dynamicDependencies;
+		if (metadata.editorDependencies) this.editorDependencies = metadata.editorDependencies;
+		if (metadata.h) this.h = metadata.h;
+		if (metadata.metaDescription) this.metaDescription = metadata.metaDescription;
+		if (metadata.metaKeywords) this.metaKeywords = metadata.metaKeywords;
+		if (metadata.w) this.w = metadata.w;
+		if (metadata.a11yTitle) this.a11yTitle = metadata.a11yTitle;
+		if (metadata.licenseVersion) this.licenseVersion = metadata.licenseVersion;
+		if (metadata.yearFrom) this.yearFrom = metadata.yearFrom;
+		if (metadata.yearTo) this.yearTo = metadata.yearTo;
+		if (metadata.source) this.source = metadata.source;
+		if (metadata.authors) this.authors = metadata.authors;
+		if (metadata.licenseExtras) this.licenseExtras = metadata.licenseExtras;
+		if (metadata.changes) this.changes = metadata.changes;
+		if (metadata.authorComments) this.authorComments = metadata.authorComments;
+		if (metadata.contentType) this.contentType = metadata.contentType;
 	}
 }
