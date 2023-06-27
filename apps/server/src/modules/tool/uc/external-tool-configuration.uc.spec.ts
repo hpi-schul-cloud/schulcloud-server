@@ -505,5 +505,28 @@ describe('ExternalToolConfigurationUc', () => {
 				]);
 			});
 		});
+
+		describe('when there are no available tools', () => {
+			const setup = () => {
+				externalToolService.findExternalTools.mockResolvedValue(new Page<ExternalToolDO>([], 0));
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([]);
+				contextExternalToolService.findContextExternalTools.mockResolvedValue([]);
+
+				return {};
+			};
+
+			it('should return empty array', async () => {
+				setup();
+
+				const availableTools = await uc.getAvailableToolsForContext(
+					'userId',
+					'schoolId',
+					'contextId',
+					ToolContextType.COURSE
+				);
+
+				expect(availableTools).toEqual([]);
+			});
+		});
 	});
 });
