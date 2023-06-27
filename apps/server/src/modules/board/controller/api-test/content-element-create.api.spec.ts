@@ -32,7 +32,7 @@ class API {
 		const response = await request(this.app.getHttpServer())
 			.post(`${baseRouteName}/${cardId}/elements`)
 			.set('Accept', 'application/json')
-			.send({ type });
+			.send({ type, toPosition });
 
 		return {
 			result: response.body as AnyContentElementResponse,
