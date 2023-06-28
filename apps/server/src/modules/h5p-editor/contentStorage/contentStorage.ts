@@ -13,7 +13,6 @@ import {
 	Permission,
 	streamToString,
 } from '@lumieducation/h5p-server';
-import path from 'path';
 import { FileDto } from '@src/modules/files-storage/dto';
 import { S3ClientAdapter } from '../../files-storage/client/s3-client.adapter';
 import { ContentMetadataRepo } from './contentMetadata.repo';
@@ -32,7 +31,7 @@ export class ContentStorage implements IContentStorage {
 		if (contentId === null || contentId === undefined) {
 			contentId = await this.createContentId();
 		}
-		const contentPath = path.join(this.getContentPath(), contentId.toString(), 'content.json');
+		const contentPath = this.createPath(contentId, 'content.json');
 		try {
 			if (!metadata.defaultLanguage) {
 				metadata.defaultLanguage = metadata.language;
@@ -57,12 +56,7 @@ export class ContentStorage implements IContentStorage {
 	public async addFile(contentId: string, filename: string, stream: Stream, user?: IUser | undefined): Promise<void> {
 		this.checkFilename(filename);
 
-		const contentPath = path.join(this.getContentPath(), contentId.toString());
-		const contentExists = await this.exists(contentPath);
-		if (!contentExists) {
-			throw new Error('404: Content not Found at addFile.');
-		}
-		const fullPath = path.join(this.getContentPath(), contentId.toString(), filename);
+		const fullPath = this.createPath(contentId.toString(), filename);
 		const file: FileDto = {
 			name: filename,
 			data: stream as Readable,
@@ -76,7 +70,7 @@ export class ContentStorage implements IContentStorage {
 		if (contentId === '' || contentId === undefined) {
 			throw new Error('ContentId is empty or undefined.');
 		}
-		const exist = await this.exists(path.join(this.getContentPath(), contentId.toString(), 'content.json'));
+		const exist = await this.exists(this.createPath(contentId.toString(), 'content.json'));
 		if (!exist) {
 			return false;
 		}
@@ -113,7 +107,7 @@ export class ContentStorage implements IContentStorage {
 
 	public async deleteFile(contentId: string, filename: string, user?: IUser | undefined): Promise<void> {
 		this.checkFilename(filename);
-		const filePath = path.join(this.getContentPath(), contentId.toString(), filename);
+		const filePath = this.createPath(contentId.toString(), filename);
 		const fileExists = await this.exists(filePath);
 		if (!fileExists) {
 			throw new Error('404: Content not Found at deleteFile.');
@@ -129,7 +123,7 @@ export class ContentStorage implements IContentStorage {
 		if (contentId === '' || contentId === undefined) {
 			throw new Error('ContentId is empty or undefined.');
 		}
-		const exist = this.exists(path.join(this.getContentPath(), contentId.toString(), filename));
+		const exist = this.exists(this.createPath(contentId.toString(), filename));
 		return exist;
 	}
 
@@ -137,7 +131,7 @@ export class ContentStorage implements IContentStorage {
 		if (!(await this.fileExists(contentId, file))) {
 			throw new Error('404: Content does not found to get file stats.');
 		}
-		const filePath = path.join(this.getContentPath(), contentId.toString(), file);
+		const filePath = this.createPath(contentId.toString(), file);
 		const fileResponse = this.storageClient.get(filePath);
 		const fileSize = (await fileResponse).contentLength;
 		const date = new Date('01.01.01');
@@ -148,7 +142,7 @@ export class ContentStorage implements IContentStorage {
 		if (fileSize) {
 			fileStats.size = fileSize;
 		}
-		return <Promise<IFileStats>>(<unknown>fileStats);
+		return fileStats;
 	}
 
 	public async getFileStream(
@@ -158,12 +152,12 @@ export class ContentStorage implements IContentStorage {
 		rangeStart?: number | undefined,
 		rangeEnd?: number | undefined
 	): Promise<Readable> {
-		const filePath = path.join(this.getContentPath(), contentId, file);
+		const filePath = this.createPath(contentId, file);
 		const exist = await this.exists(filePath);
 		if (!exist) {
 			throw new Error('404: Content file missing.');
 		}
-		if (rangeStart && rangeEnd) {
+		if (rangeStart !== undefined && rangeEnd !== undefined) {
 			const fileResponse = await this.storageClient.get(filePath, `${rangeStart}-${rangeEnd}`);
 			return fileResponse.data;
 		}
@@ -206,10 +200,9 @@ export class ContentStorage implements IContentStorage {
 	}
 
 	public getUserPermissions(contentId: string, user: IUser): Promise<Permission[]> {
-		const permission = <Promise<Permission[]>>(
-			(<unknown>[Permission.Delete, Permission.Download, Permission.Edit, Permission.Embed, Permission.View])
-		);
-		return permission;
+		const permission = [Permission.Delete, Permission.Download, Permission.Edit, Permission.Embed, Permission.View];
+
+		return Promise.resolve(permission);
 	}
 
 	public async listContent(user?: IUser | undefined): Promise<string[]> {
@@ -359,7 +352,7 @@ export class ContentStorage implements IContentStorage {
 			newFileList = fileListArray;
 		}
 
-		const fileListPath = path.join(this.getContentPath(), 'contentfilelist.json');
+		const fileListPath = this.createPath(this.getContentPath(), 'contentfilelist.json');
 		const fileList = {
 			contentIdList: [newFileList],
 		};
@@ -376,5 +369,14 @@ export class ContentStorage implements IContentStorage {
 		const body = await streamToString(fileStream);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 		return JSON.parse(body);
+	}
+
+	private createPath(contendId: string, filename: string): string {
+		if (!contendId || !filename) {
+			throw new Error('COULD_NOT_CREATE_PATH');
+		}
+
+		const path = [this.getContentPath(), contendId, filename].join('/');
+		return path;
 	}
 }
