@@ -72,25 +72,24 @@ describe(`content element create (api)`, () => {
 		await app.close();
 	});
 
-	const setup = async () => {
-		await cleanupCollections(em);
-		const user = userFactory.build();
-		const course = courseFactory.build({ teachers: [user] });
-		await em.persistAndFlush([user, course]);
-
-		const columnBoardNode = columnBoardNodeFactory.buildWithId({
-			context: { id: course.id, type: BoardExternalReferenceType.Course },
-		});
-		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-		const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
-
-		await em.persistAndFlush([user, columnBoardNode, columnNode, cardNode]);
-		em.clear();
-
-		return { user, columnBoardNode, columnNode, cardNode };
-	};
-
 	describe('with valid user', () => {
+		const setup = async () => {
+			await cleanupCollections(em);
+			const user = userFactory.build();
+			const course = courseFactory.build({ teachers: [user] });
+			await em.persistAndFlush([user, course]);
+
+			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+				context: { id: course.id, type: BoardExternalReferenceType.Course },
+			});
+			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+
+			await em.persistAndFlush([user, columnBoardNode, columnNode, cardNode]);
+			em.clear();
+
+			return { user, columnBoardNode, columnNode, cardNode };
+		};
 		it('should return status 201', async () => {
 			const { user, cardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
@@ -128,11 +127,23 @@ describe(`content element create (api)`, () => {
 	});
 
 	describe('with invalid user', () => {
-		it('should return status 403', async () => {
-			const { cardNode } = await setup();
-
+		const setup = async () => {
+			await cleanupCollections(em);
 			const invalidUser = userFactory.build();
 			await em.persistAndFlush([invalidUser]);
+
+			const columnBoardNode = columnBoardNodeFactory.buildWithId({});
+			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+
+			await em.persistAndFlush([invalidUser, columnBoardNode, columnNode, cardNode]);
+			em.clear();
+
+			return { invalidUser, columnBoardNode, columnNode, cardNode };
+		};
+		it('should return status 403', async () => {
+			const { cardNode, invalidUser } = await setup();
+
 			currentUser = mapUserToCurrentUser(invalidUser);
 
 			const response = await api.post(cardNode.id, ContentElementType.RICH_TEXT);
