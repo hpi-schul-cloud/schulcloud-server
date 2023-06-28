@@ -98,14 +98,17 @@ const setup = () => {
 	};
 
 	const fileList = ['123.json', 'test.png'];
-	const readableList = createReadableBuffer(JSON.stringify(fileList));
-	const fileListResponse: IGetFileResponse = {
-		data: readableList,
-		contentType: 'json',
-		contentLength: 123,
-		contentRange: '768934898',
-		etag: 'etag',
+
+	const fileListResponseFactory = (): IGetFileResponse => {
+		return {
+			data: createReadableBuffer(JSON.stringify(fileList)),
+			contentType: 'json',
+			contentLength: 123,
+			contentRange: '768934898',
+			etag: 'etag',
+		};
 	};
+	const fileListResponse = fileListResponseFactory();
 
 	const fileList2 = ['123.json'];
 	const readableList2 = createReadableBuffer(JSON.stringify(fileList2));
@@ -192,6 +195,7 @@ const setup = () => {
 		fileResponse,
 		fileListResponse,
 		fileListResponse2,
+		fileListResponseFactory,
 		fileList,
 		h5pPath,
 		library,
@@ -378,10 +382,8 @@ describe('ContentStorage', () => {
 				expect(await service.deleteContent(contentId)).not.toBeInstanceOf(Error);
 			});
 			it('should delete existing fileList', async () => {
-				const { contentId, fileListResponse } = setup();
-				s3ClientAdapter.get.mockResolvedValue(fileListResponse);
-				s3ClientAdapter.delete.mockResolvedValue({ $metadata: {} });
-				contentMetadataRepo.delete.mockResolvedValue();
+				const { contentId, fileListResponseFactory } = setup();
+				s3ClientAdapter.get.mockImplementation(() => Promise.resolve(fileListResponseFactory()));
 				expect(await service.deleteContent(contentId)).not.toBeInstanceOf(Error);
 			});
 		});
