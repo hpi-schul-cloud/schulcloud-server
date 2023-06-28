@@ -10,6 +10,12 @@ import { ContentMetadataRepo } from './contentMetadata.repo';
 import { ContentMetadata } from './contentMetadata.entity';
 
 const setup = () => {
+	function createReadableBuffer(content: string) {
+		const buffer = Buffer.from(content);
+		const readable = Readable.from(buffer);
+		return readable;
+	}
+
 	const dir = './apps/server/src/modules/h5p-editor/contentStorage/testContentStorage/';
 
 	const library: ILibraryName = {
@@ -82,7 +88,7 @@ const setup = () => {
 		title: 'Test123',
 	};
 
-	const readable = Readable.from(JSON.stringify(metadata));
+	const readable = createReadableBuffer(JSON.stringify(metadata));
 	const fileResponse: IGetFileResponse = {
 		data: readable,
 		contentType: 'json',
@@ -92,7 +98,7 @@ const setup = () => {
 	};
 
 	const fileList = ['123.json', 'test.png'];
-	const readableList = Readable.from(fileList);
+	const readableList = createReadableBuffer(JSON.stringify(fileList));
 	const fileListResponse: IGetFileResponse = {
 		data: readableList,
 		contentType: 'json',
@@ -102,7 +108,7 @@ const setup = () => {
 	};
 
 	const fileList2 = ['123.json'];
-	const readableList2 = Readable.from(JSON.stringify(fileList2));
+	const readableList2 = createReadableBuffer(JSON.stringify(fileList2));
 	const fileListResponse2: IGetFileResponse = {
 		data: readableList2,
 		contentType: 'json',
@@ -112,7 +118,7 @@ const setup = () => {
 	};
 
 	const contentIdList = ['123456', '0987656'];
-	const readableIdList = Readable.from(JSON.stringify(contentIdList));
+	const readableIdList = createReadableBuffer(JSON.stringify(contentIdList));
 	const contentIdListResponse: IGetFileResponse = {
 		data: readableIdList,
 		contentType: 'json',
@@ -122,7 +128,7 @@ const setup = () => {
 	};
 
 	const contentIdList2 = ['123456'];
-	const readableIdList2 = Readable.from(JSON.stringify(contentIdList2));
+	const readableIdList2 = createReadableBuffer(JSON.stringify(contentIdList2));
 	const contentIdListResponse2: IGetFileResponse = {
 		data: readableIdList2,
 		contentType: 'json',
@@ -374,6 +380,8 @@ describe('ContentStorage', () => {
 			it('should delete existing fileList', async () => {
 				const { contentId, fileListResponse } = setup();
 				s3ClientAdapter.get.mockResolvedValue(fileListResponse);
+				s3ClientAdapter.delete.mockResolvedValue({ $metadata: {} });
+				contentMetadataRepo.delete.mockResolvedValue();
 				expect(await service.deleteContent(contentId)).not.toBeInstanceOf(Error);
 			});
 		});
