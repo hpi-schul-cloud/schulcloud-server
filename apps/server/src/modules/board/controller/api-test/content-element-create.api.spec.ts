@@ -132,9 +132,12 @@ describe(`content element create (api)`, () => {
 		const setup = async () => {
 			await cleanupCollections(em);
 			const invalidUser = userFactory.build();
-			await em.persistAndFlush([invalidUser]);
+			const course = courseFactory.build({});
+			await em.persistAndFlush([invalidUser, course]);
 
-			const columnBoardNode = columnBoardNodeFactory.buildWithId({});
+			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+				context: { id: course.id, type: BoardExternalReferenceType.Course },
+			});
 			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
 
