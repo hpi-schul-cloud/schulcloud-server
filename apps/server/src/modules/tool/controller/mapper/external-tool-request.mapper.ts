@@ -10,6 +10,7 @@ import {
 	CustomParameterLocationParams,
 	CustomParameterScopeTypeParams,
 	CustomParameterTypeParams,
+	ExternalToolSearchQuery,
 } from '../../interface';
 import {
 	BasicToolConfig,
@@ -167,8 +168,12 @@ export class ExternalToolRequestMapper {
 		return result;
 	}
 
-	mapExternalToolFilterQueryToDO(params: ExternalToolSearchParams): Partial<ExternalToolDO> {
-		const queryDO: Partial<ExternalToolDO> = { name: params.name };
-		return queryDO;
+	mapExternalToolFilterQueryToExternalToolSearchQuery(params: ExternalToolSearchParams): ExternalToolSearchQuery {
+		const searchQuery: ExternalToolSearchQuery = {
+			name: params.name,
+			clientId: params.clientId,
+		};
+
+		return searchQuery;
 	}
 }

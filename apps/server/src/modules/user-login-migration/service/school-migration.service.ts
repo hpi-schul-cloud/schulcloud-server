@@ -5,7 +5,7 @@ import { UserLoginMigrationRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
-import { OAuthMigrationError } from '@src/modules/user-login-migration';
+import { OAuthMigrationError } from '../error';
 
 @Injectable()
 export class SchoolMigrationService {

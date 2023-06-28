@@ -1,5 +1,8 @@
+import { ContextExternalToolDO, ExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
+import { contextExternalToolDOFactory, externalToolDOFactory, schoolExternalToolDOFactory } from '@shared/testing';
 import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
 import { BasicToolLaunchStrategy } from './basic-tool-launch.strategy';
+import { IToolLaunchParams } from './tool-launch-params.interface';
 
 describe('BasicToolLaunchStrategy', () => {
 	let basicToolLaunchStrategy: BasicToolLaunchStrategy;
@@ -9,36 +12,93 @@ describe('BasicToolLaunchStrategy', () => {
 	});
 
 	describe('buildToolLaunchRequestPayload', () => {
-		const setup = () => {
-			const property1: PropertyData = new PropertyData({
-				name: 'param1',
-				value: 'value1',
-				location: PropertyLocation.BODY,
-			});
+		describe('when method is GET', () => {
+			const setup = () => {
+				const property1: PropertyData = new PropertyData({
+					name: 'param1',
+					value: 'value1',
+					location: PropertyLocation.PATH,
+				});
 
-			const property2: PropertyData = new PropertyData({
-				name: 'param2',
-				value: 'value2',
-				location: PropertyLocation.BODY,
-			});
+				const property2: PropertyData = new PropertyData({
+					name: 'param2',
+					value: 'value2',
+					location: PropertyLocation.QUERY,
+				});
 
-			const property3: PropertyData = new PropertyData({
-				name: 'param2',
-				value: 'value2',
-				location: PropertyLocation.PATH,
-			});
-
-			return {
-				properties: [property1, property2, property3],
+				return {
+					properties: [property1, property2],
+				};
 			};
+
+			it('should return null', () => {
+				const { properties } = setup();
+
+				const payload: string | null = basicToolLaunchStrategy.buildToolLaunchRequestPayload('url', properties);
+
+				expect(payload).toBeNull();
+			});
+		});
+
+		describe('when method is POST', () => {
+			const setup = () => {
+				const property1: PropertyData = new PropertyData({
+					name: 'param1',
+					value: 'value1',
+					location: PropertyLocation.BODY,
+				});
+
+				const property2: PropertyData = new PropertyData({
+					name: 'param2',
+					value: 'value2',
+					location: PropertyLocation.BODY,
+				});
+
+				const property3: PropertyData = new PropertyData({
+					name: 'param3',
+					value: 'value3',
+					location: PropertyLocation.PATH,
+				});
+
+				return {
+					properties: [property1, property2, property3],
+				};
+			};
+
+			it('should build the tool launch request payload correctly', () => {
+				const { properties } = setup();
+
+				const payload: string | null = basicToolLaunchStrategy.buildToolLaunchRequestPayload('url', properties);
+
+				expect(payload).toEqual('{"param1":"value1","param2":"value2"}');
+			});
+		});
+	});
+
+	describe('buildToolLaunchDataFromConcreteConfig', () => {
+		const setup = () => {
+			const externalToolDO: ExternalToolDO = externalToolDOFactory.build();
+			const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build();
+			const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build();
+
+			const data: IToolLaunchParams = {
+				contextExternalToolDO,
+				schoolExternalToolDO,
+				externalToolDO,
+			};
+
+			return { data };
 		};
 
-		it('should build the tool launch request payload correctly', () => {
-			const { properties } = setup();
+		it('should build the tool launch data from the basic tool config correctly', async () => {
+			const { data } = setup();
 
-			const payload: string = basicToolLaunchStrategy.buildToolLaunchRequestPayload('url', properties);
+			const result: PropertyData[] = await basicToolLaunchStrategy.buildToolLaunchDataFromConcreteConfig(
+				'userId',
+				data
+			);
 
-			expect(payload).toEqual('{"param1":"value1","param2":"value2"}');
+			expect(result).toEqual([]);
 		});
 	});
 
@@ -71,7 +131,7 @@ describe('BasicToolLaunchStrategy', () => {
 			});
 		});
 
-		describe('when no body property exists', () => {
+		describe('when a body property exists', () => {
 			const setup = () => {
 				const property1: PropertyData = new PropertyData({
 					name: 'param1',
@@ -86,8 +146,8 @@ describe('BasicToolLaunchStrategy', () => {
 				});
 
 				const property3: PropertyData = new PropertyData({
-					name: 'param2',
-					value: 'value2',
+					name: 'param3',
+					value: 'value3',
 					location: PropertyLocation.BODY,
 				});
 
