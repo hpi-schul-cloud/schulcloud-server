@@ -10,7 +10,10 @@ import {
 	SchoolExternalToolResponse,
 	CustomParameterEntryResponse,
 	ToolConfigurationStatusResponse,
+	SchoolToolConfigurationListResponse,
+	SchoolToolConfigurationEntryResponse,
 } from '../dto';
+import { AvailableToolsForContext } from '../../uc';
 
 export const statusMapping: Record<ToolConfigurationStatus, ToolConfigurationStatusResponse> = {
 	[ToolConfigurationStatus.LATEST]: ToolConfigurationStatusResponse.LATEST,
@@ -39,6 +42,32 @@ export class SchoolExternalToolResponseMapper {
 				? statusMapping[schoolExternalToolDO.status]
 				: ToolConfigurationStatusResponse.UNKNOWN,
 		};
+	}
+
+	static mapExternalToolDOsToSchoolToolConfigurationListResponse(
+		availableToolsForContext: AvailableToolsForContext[]
+	): SchoolToolConfigurationListResponse {
+		return new SchoolToolConfigurationListResponse(
+			this.mapExternalToolDOsToSchoolToolConfigurationResponses(availableToolsForContext)
+		);
+	}
+
+	private static mapExternalToolDOsToSchoolToolConfigurationResponses(
+		availableToolsForContext: AvailableToolsForContext[]
+	): SchoolToolConfigurationEntryResponse[] {
+		const mapped = availableToolsForContext.map(
+			(tool: AvailableToolsForContext) =>
+				new SchoolToolConfigurationEntryResponse(
+					{
+						id: tool.externalTool.id || '',
+						name: tool.externalTool.name,
+						logoUrl: tool.externalTool.logoUrl,
+					},
+					tool.schoolExternalTool.id as string
+				)
+		);
+
+		return mapped;
 	}
 
 	private mapToCustomParameterEntryResponse(entries: CustomParameterEntryDO[]): CustomParameterEntryResponse[] {
