@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { EntityName, NotFoundError } from '@mikro-orm/core';
-import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { Injectable } from '@nestjs/common';
 import { ILtiToolProperties, LtiPrivacyPermission, LtiTool } from '@shared/domain';
+import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { BaseDORepo } from '@shared/repo/base.do.repo';
 
 @Injectable()
 export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperties> {
@@ -28,9 +28,16 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 		return this.mapEntityToDO(entity);
 	}
 
-	async findByClientIdAndIsLocal(oAuthClientId: string, isLocal: boolean): Promise<LtiToolDO> {
-		const entity = await this._em.findOneOrFail(LtiTool, { oAuthClientId, isLocal });
-		return this.mapEntityToDO(entity);
+	async findByClientIdAndIsLocal(oAuthClientId: string, isLocal: boolean): Promise<LtiToolDO | null> {
+		const entity: LtiTool | null = await this._em.findOne(LtiTool, { oAuthClientId, isLocal });
+
+		if (!entity) {
+			return null;
+		}
+
+		const domainObject: LtiToolDO = this.mapEntityToDO(entity);
+
+		return domainObject;
 	}
 
 	protected mapEntityToDO(entity: LtiTool): LtiToolDO {

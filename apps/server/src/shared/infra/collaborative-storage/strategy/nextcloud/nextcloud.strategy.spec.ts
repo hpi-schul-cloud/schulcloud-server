@@ -11,6 +11,7 @@ import { LtiToolRepo } from '@shared/repo/ltitool/index';
 import { setupEntities, userFactory } from '@shared/testing/index';
 import { LegacyLogger } from '@src/core/logger';
 import { TeamDto, TeamUserDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
+import { ExternalToolService } from '../../../../../modules/tool/service';
 
 class NextcloudStrategySpec extends NextcloudStrategy {
 	static specGenerateGroupId(dto: TeamRolePermissionsDto): string {
@@ -60,6 +61,10 @@ describe('NextCloud Adapter Strategy', () => {
 				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
+				},
+				{
+					provide: ExternalToolService,
+					useValue: createMock<ExternalToolService>(),
 				},
 			],
 		}).compile();
@@ -169,7 +174,7 @@ describe('NextCloud Adapter Strategy', () => {
 			const folderId = 1;
 
 			client.getNameWithPrefix.mockReturnValue(groupdId);
-			pseudonymsRepo.findByUserIdAndToolId.mockRejectedValueOnce(undefined);
+			pseudonymsRepo.findByUserIdAndToolIdOrFail.mockRejectedValueOnce(undefined);
 			client.findGroupFolderIdForGroupId.mockResolvedValue(folderId);
 
 			await strategy.createTeam(teamDto);
@@ -205,7 +210,7 @@ describe('NextCloud Adapter Strategy', () => {
 			const groupId = 'groupId';
 			client.getNameWithPrefix.mockReturnValue(groupId);
 			client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
-			pseudonymsRepo.findByUserIdAndToolId.mockRejectedValueOnce(undefined);
+			pseudonymsRepo.findByUserIdAndToolIdOrFail.mockRejectedValueOnce(undefined);
 			client.findGroupFolderIdForGroupId.mockResolvedValueOnce(folderId);
 
 			await strategy.updateTeam(teamDto);
@@ -253,14 +258,14 @@ describe('NextCloud Adapter Strategy', () => {
 
 		it('should add one user to group in nextcloud if added in sc team', async () => {
 			client.getGroupUsers.mockResolvedValue([]);
-			pseudonymsRepo.findByUserIdAndToolId.mockResolvedValue(pseudonymDo);
+			pseudonymsRepo.findByUserIdAndToolIdOrFail.mockResolvedValue(pseudonymDo);
 			client.getNameWithPrefix.mockReturnValue(nextCloudUserId);
 
 			await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
 
 			expect(client.getGroupUsers).toHaveBeenCalledWith(groupId);
 			expect(ltiToolRepo.findByName).toHaveBeenCalledWith(nextcloudTool.name);
-			expect(pseudonymsRepo.findByUserIdAndToolId).toHaveBeenCalledWith(teamUsers[0].userId, pseudonymDo.toolId);
+			expect(pseudonymsRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(teamUsers[0].userId, pseudonymDo.toolId);
 			expect(client.getNameWithPrefix).toHaveBeenCalledWith(pseudonymDo.pseudonym);
 			expect(client.removeUserFromGroup).not.toHaveBeenCalled();
 			expect(client.addUserToGroup).toHaveBeenCalledWith(nextCloudUserId, groupId);
@@ -273,7 +278,7 @@ describe('NextCloud Adapter Strategy', () => {
 			await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
 
 			expect(client.getGroupUsers).toHaveBeenCalledWith(groupId);
-			expect(pseudonymsRepo.findByUserIdAndToolId).not.toHaveBeenCalled();
+			expect(pseudonymsRepo.findByUserIdAndToolIdOrFail).not.toHaveBeenCalled();
 			expect(client.getNameWithPrefix).not.toHaveBeenCalled();
 			expect(client.removeUserFromGroup).toHaveBeenCalledWith(nextCloudUserId, groupId);
 			expect(client.addUserToGroup).not.toHaveBeenCalled();
@@ -286,7 +291,7 @@ describe('NextCloud Adapter Strategy', () => {
 			];
 
 			client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
-			pseudonymsRepo.findByUserIdAndToolId.mockResolvedValueOnce(pseudonymDo).mockRejectedValueOnce(undefined);
+			pseudonymsRepo.findByUserIdAndToolIdOrFail.mockResolvedValueOnce(pseudonymDo).mockRejectedValueOnce(undefined);
 			client.getNameWithPrefix.mockReturnValue(nextCloudUserId);
 
 			await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
@@ -299,7 +304,7 @@ describe('NextCloud Adapter Strategy', () => {
 			const nextcloudTool2: LtiToolDO = { ...nextcloudTool };
 			client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
 			ltiToolRepo.findByName.mockResolvedValue([nextcloudTool, nextcloudTool2]);
-			pseudonymsRepo.findByUserIdAndToolId.mockResolvedValue(pseudonymDo);
+			pseudonymsRepo.findByUserIdAndToolIdOrFail.mockResolvedValue(pseudonymDo);
 			await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
 
 			expect(logger.warn).toHaveBeenCalled();

@@ -7,3 +7,4 @@ export * from './lti-role.enum';
 export * from './token-endpoint-auth-method.enum';
 export * from './tool-config-type.enum';
 export * from './tool-context-type.enum';
+export * from './external-tool-search-query';

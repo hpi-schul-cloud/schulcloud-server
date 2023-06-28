@@ -356,7 +356,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId();
 
 				userService.findById.mockResolvedValue(user);
-				pseudonymService.findByUserIdAndToolId.mockResolvedValue(pseudonym);
+				pseudonymService.findOrCreatePseudonym.mockResolvedValue(pseudonym);
 
 				return {
 					data,
@@ -465,7 +465,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 			it('should return a OAuth1 signed payload', () => {
 				const { properties, signedPayload } = setup();
 
-				const payload: string = strategy.buildToolLaunchRequestPayload('url', properties);
+				const payload: string | null = strategy.buildToolLaunchRequestPayload('url', properties);
 
 				expect(payload).toEqual(JSON.stringify(signedPayload));
 			});
