@@ -272,7 +272,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({nullable: true, required: false, description: &#x27;The url of the logo of the tool&#x27;})<br />
+                            @ApiPropertyOptional({nullable: false, required: false, description: &#x27;The url of the logo of the tool&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -369,14 +369,14 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
 import { ToolConfigurationStatusResponse } from &#x27;./tool-configuration-status.response&#x27;;
 
 export class ToolReferenceResponse {
 	@ApiProperty({ nullable: false, required: true, description: &#x27;The id of the tool in the context&#x27; })
 	contextToolId: string;
 
-	@ApiProperty({ nullable: true, required: false, description: &#x27;The url of the logo of the tool&#x27; })
+	@ApiPropertyOptional({ nullable: false, required: false, description: &#x27;The url of the logo of the tool&#x27; })
 	logoUrl?: string;
 
 	@ApiProperty({ nullable: false, required: true, description: &#x27;The display name of the tool&#x27; })

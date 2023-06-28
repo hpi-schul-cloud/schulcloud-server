@@ -121,7 +121,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/shared/domain/entity/federal-state.entity.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/shared/domain/entity/federal-state.entity.ts:14</a></div>
                             </td>
                         </tr>
 
@@ -183,7 +183,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/shared/domain/entity/federal-state.entity.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/shared/domain/entity/federal-state.entity.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -209,7 +209,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">apps/server/src/shared/domain/entity/federal-state.entity.ts:21</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/shared/domain/entity/federal-state.entity.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -235,7 +235,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/shared/domain/entity/federal-state.entity.ts:19</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">apps/server/src/shared/domain/entity/federal-state.entity.ts:21</a></div>
                         </td>
                     </tr>
 
@@ -262,6 +262,8 @@ export interface IFederalStateProperties {
 	abbreviation: string;
 	logoUrl: string;
 	counties?: County[];
+	createdAt: Date;
+	updatedAt: Date;
 }
 
 @Embeddable()
@@ -298,6 +300,8 @@ export class FederalState extends BaseEntityWithTimestamps {
 		this.name &#x3D; props.name;
 		this.abbreviation &#x3D; props.abbreviation;
 		this.logoUrl &#x3D; props.logoUrl;
+		this.updatedAt &#x3D; props.updatedAt;
+		this.createdAt &#x3D; props.createdAt;
 	}
 }
 </code></pre>
