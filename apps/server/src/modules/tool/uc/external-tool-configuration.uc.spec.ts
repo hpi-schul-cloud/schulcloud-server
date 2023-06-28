@@ -508,8 +508,18 @@ describe('ExternalToolConfigurationUc', () => {
 
 		describe('when there are no available tools', () => {
 			const setup = () => {
-				externalToolService.findExternalTools.mockResolvedValue(new Page<ExternalToolDO>([], 0));
-				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([]);
+				const toolWithoutSchoolTool: ExternalToolDO = externalToolDOFactory.buildWithId(
+					{ isHidden: false },
+					'noSchoolTool'
+				);
+
+				const unusedSchoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+					id: 'unusedSchoolExternalTool',
+					toolId: 'unusedToolId',
+				});
+
+				externalToolService.findExternalTools.mockResolvedValue(new Page<ExternalToolDO>([toolWithoutSchoolTool], 1));
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([unusedSchoolExternalTool]);
 				contextExternalToolService.findContextExternalTools.mockResolvedValue([]);
 
 				return {};
