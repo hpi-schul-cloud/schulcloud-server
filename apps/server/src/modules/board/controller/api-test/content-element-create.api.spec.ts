@@ -88,7 +88,9 @@ describe(`content element create (api)`, () => {
 			await em.persistAndFlush([user, columnBoardNode, columnNode, cardNode]);
 			em.clear();
 
-			return { user, columnBoardNode, columnNode, cardNode };
+			const stringParameter = 'not a number';
+
+			return { user, columnBoardNode, columnNode, cardNode, stringParameter };
 		};
 		it('should return status 201', async () => {
 			const { user, cardNode } = await setup();
@@ -117,10 +119,10 @@ describe(`content element create (api)`, () => {
 			expect(result.type).toEqual(ContentElementType.FILE);
 		});
 		it('should throw an error if position is not a number', async () => {
-			const { user, cardNode } = await setup();
+			const { user, cardNode, stringParameter } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const { error } = await api.post(cardNode.id, ContentElementType.RICH_TEXT, 'not a number' as unknown as number);
+			const { error } = await api.post(cardNode.id, ContentElementType.RICH_TEXT, stringParameter as unknown as number);
 
 			expect(error.code).toEqual(400);
 		});
