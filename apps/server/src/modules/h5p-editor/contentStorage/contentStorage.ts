@@ -36,7 +36,7 @@ export class ContentStorage implements IContentStorage {
 			if (!metadata.defaultLanguage) {
 				metadata.defaultLanguage = metadata.language;
 			}
-			const contentMetadata = new ContentMetadata(contentId, metadata);
+			const contentMetadata = new ContentMetadata({ contentId, metadata });
 			await this.repo.createContentMetadata(contentMetadata);
 
 			const readableContent = Readable.from(JSON.stringify(content));

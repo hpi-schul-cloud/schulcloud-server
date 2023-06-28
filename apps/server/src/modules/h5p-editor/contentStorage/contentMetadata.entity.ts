@@ -77,7 +77,7 @@ export class ContentMetadata extends BaseEntity implements IContentMetadata {
 	@Property({ nullable: true })
 	contentType?: string;
 
-	constructor(contentId: string, metadata: IContentMetadata) {
+	constructor({ contentId, metadata }: { contentId: string; metadata: IContentMetadata }) {
 		super();
 
 		this.contentId = contentId;

@@ -157,12 +157,12 @@ const setup = () => {
 	const contentId2 = '6789';
 	const notExistingContentId = '987mn';
 
-	const contentMetadata = new ContentMetadata(contentId, metadata);
-	const contentMetadata1 = new ContentMetadata(contentId, metadata);
-	const contentMetadata2 = new ContentMetadata(contentId, metadata2);
-	const contentMetadata3 = new ContentMetadata(contentId, metadata3);
-	const contentMetadata4 = new ContentMetadata(contentId, metadata4Editor);
-	const contentMetadata5 = new ContentMetadata(contentId, metadata5Dynamic);
+	const contentMetadata = new ContentMetadata({ contentId, metadata });
+	const contentMetadata1 = new ContentMetadata({ contentId, metadata });
+	const contentMetadata2 = new ContentMetadata({ contentId, metadata: metadata2 });
+	const contentMetadata3 = new ContentMetadata({ contentId, metadata: metadata3 });
+	const contentMetadata4 = new ContentMetadata({ contentId, metadata: metadata4Editor });
+	const contentMetadata5 = new ContentMetadata({ contentId, metadata: metadata5Dynamic });
 
 	const filename1 = 'testFile1.json';
 	const notExistingFilename = 'testFile987.json';
