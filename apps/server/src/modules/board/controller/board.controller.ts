@@ -5,7 +5,6 @@ import {
 	ForbiddenException,
 	Get,
 	HttpCode,
-	InternalServerErrorException,
 	NotFoundException,
 	Param,
 	Patch,
@@ -31,7 +30,6 @@ export class BoardController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
-	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Get(':boardId')
 	async getBoardSkeleton(
 		@Param() urlParams: BoardUrlParams,
@@ -49,7 +47,6 @@ export class BoardController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
-	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Get(':boardId/context')
 	async getBoardContext(
 		@Param() urlParams: BoardUrlParams,
@@ -67,7 +64,6 @@ export class BoardController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
-	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@HttpCode(204)
 	@Patch(':boardId/title')
 	async updateBoardTitle(
@@ -83,7 +79,6 @@ export class BoardController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
-	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@HttpCode(204)
 	@Delete(':boardId')
 	async deleteBoard(@Param() urlParams: BoardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<void> {
@@ -95,7 +90,6 @@ export class BoardController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
-	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Post(':boardId/columns')
 	async createColumn(
 		@Param() urlParams: BoardUrlParams,
