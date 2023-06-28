@@ -121,7 +121,7 @@ describe(`content element create (api)`, () => {
 			const { user, cardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const { error } = await api.post(cardNode.id, ContentElementType.RICH_TEXT, 'not a number');
+			const { error } = await api.post(cardNode.id, ContentElementType.RICH_TEXT, 'not a number' as unknown as number);
 
 			expect(error.code).toEqual(400);
 		});
