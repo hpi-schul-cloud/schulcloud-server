@@ -580,7 +580,7 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;/references/:contextType/:contextId&#x27;)<br />@ApiOperation({summary: &#x27;Get Tool References&#x27;})<br />@ApiOkResponse({description: &#x27;The Tool References has been successfully fetched.&#x27;, type: undefined})<br />@ApiForbiddenResponse({description: &#x27;User is not allowed to access this resource.&#x27;})<br />@ApiUnauthorizedResponse({description: &#x27;User is not logged in.&#x27;})<br /></code>
+                    <code>@Get(&#x27;/references/:contextType/:contextId&#x27;)<br />@ApiOperation({summary: &#x27;Get Tool References&#x27;})<br />@ApiOkResponse({description: &#x27;The Tool References has been successfully fetched.&#x27;, type: ToolReferenceListResponse})<br />@ApiForbiddenResponse({description: &#x27;User is not allowed to access this resource.&#x27;})<br />@ApiUnauthorizedResponse({description: &#x27;User is not logged in.&#x27;})<br /></code>
                 </td>
             </tr>
 
@@ -898,7 +898,7 @@ export class ToolController {
 	@ApiOperation({ summary: &#x27;Get Tool References&#x27; })
 	@ApiOkResponse({
 		description: &#x27;The Tool References has been successfully fetched.&#x27;,
-		type: [ToolReferenceListResponse],
+		type: ToolReferenceListResponse,
 	})
 	@ApiForbiddenResponse({ description: &#x27;User is not allowed to access this resource.&#x27; })
 	@ApiUnauthorizedResponse({ description: &#x27;User is not logged in.&#x27; })

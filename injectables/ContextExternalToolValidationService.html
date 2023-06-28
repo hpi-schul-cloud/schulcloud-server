@@ -322,7 +322,11 @@ export class ContextExternalToolValidationService {
 	}
 
 	private async checkDuplicateInContext(contextExternalTool: ContextExternalTool) {
-		const duplicate: ContextExternalToolDO[] &#x3D; await this.contextExternalToolRepo.find(contextExternalTool);
+		const duplicate: ContextExternalToolDO[] &#x3D; await this.contextExternalToolRepo.find({
+			schoolToolRef: contextExternalTool.schoolToolRef,
+			context: contextExternalTool.contextRef,
+		});
+
 		if (duplicate.length &gt; 0) {
 			throw new UnprocessableEntityException(&#x27;Tool is already assigned.&#x27;);
 		}

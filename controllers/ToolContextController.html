@@ -355,7 +355,7 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;:contextType/:contextId&#x27;)<br />@ApiBearerAuth()<br />@ApiForbiddenResponse()<br />@ApiUnauthorizedResponse()<br />@ApiOkResponse({description: &#x27;Returns a list of ContextExternalTools for the given context&#x27;, type: undefined})<br />@ApiOperation({summary: &#x27;Returns a list of ContextExternalTools for the given context&#x27;})<br /></code>
+                    <code>@Get(&#x27;:contextType/:contextId&#x27;)<br />@ApiBearerAuth()<br />@ApiForbiddenResponse()<br />@ApiUnauthorizedResponse()<br />@ApiOkResponse({description: &#x27;Returns a list of ContextExternalTools for the given context&#x27;, type: ContextExternalToolSearchListResponse})<br />@ApiOperation({summary: &#x27;Returns a list of ContextExternalTools for the given context&#x27;})<br /></code>
                 </td>
             </tr>
 
@@ -510,7 +510,7 @@ export class ToolContextController {
 	@ApiUnauthorizedResponse()
 	@ApiOkResponse({
 		description: &#x27;Returns a list of ContextExternalTools for the given context&#x27;,
-		type: [ContextExternalToolSearchListResponse],
+		type: ContextExternalToolSearchListResponse,
 	})
 	@ApiOperation({ summary: &#x27;Returns a list of ContextExternalTools for the given context&#x27; })
 	async getContextExternalToolsForContext(
