@@ -171,7 +171,7 @@ const Course = mongoose.model(
 );
 
 const Pseudonym = mongoose.model(
-	'course0906202311486',
+	'pseudonym0906202311486',
 	new mongoose.Schema(
 		{
 			_id: Schema.Types.ObjectId,
@@ -183,7 +183,7 @@ const Pseudonym = mongoose.model(
 			timestamps: true,
 		}
 	),
-	'courses'
+	'pseudonyms'
 );
 
 function toolConfigMapper(ltiToolTemplate) {
@@ -230,7 +230,7 @@ function mapToExternalTool(ltiToolTemplate) {
 function mapToSchoolExternalTool(externalTool, course) {
 	return {
 		tool: externalTool._id,
-		school: course.schoolId,
+		school: course.school,
 		schoolParameters: [],
 		toolVersion: externalTool.version,
 	};
@@ -274,6 +274,7 @@ async function createPseudonyms(toolTemplate, externalTool) {
 	);
 
 	missingPseudonyms = missingPseudonyms.map((pseudonym) => mapPseudonyms(pseudonym, externalTool));
+
 	await Pseudonym.insertMany(missingPseudonyms).exec();
 }
 
@@ -313,8 +314,8 @@ async function createSchoolExternalTool(externalTool, course) {
 
 async function createContextExternalTool(schoolExternalTool, course) {
 	const contextExternalTools = await ContextExternalTool.find({
-		schoolTool: schoolExternalTool.id,
-		contextId: course.Id,
+		schoolTool: schoolExternalTool._id,
+		contextId: course.id,
 		contextType: 'course',
 	})
 		.lean()
@@ -366,7 +367,7 @@ module.exports = {
 		for (const ltiTool of ltiTools) {
 			// GET COURSE
 			const course = await Course.findOne({
-				ltiToolIds: { $in: [ltiTool.id] },
+				ltiToolIds: { $in: [ltiTool._id] },
 			})
 				.lean()
 				.exec();
