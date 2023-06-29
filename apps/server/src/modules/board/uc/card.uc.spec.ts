@@ -6,7 +6,6 @@ import { cardFactory, richTextElementFactory } from '@shared/testing/factory/dom
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { ObjectId } from 'bson';
-import exp from 'constants';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { CardService } from '../service/card.service';
 import { CardUc } from './card.uc';
