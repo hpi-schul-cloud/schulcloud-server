@@ -1,12 +1,12 @@
 import { Controller, Get, HttpStatus, Res } from '@nestjs/common';
 import { Response } from 'express';
 
-import { HealthUc } from '../uc';
+import { HealthUC } from '../uc';
 import { HealthStatusResponse, HealthStatusResponseMapper } from './dto';
 
 @Controller('health')
 export class HealthController {
-	constructor(private readonly healthUc: HealthUc) {}
+	constructor(private readonly healthUc: HealthUC) {}
 
 	private readonly contentTypeApplicationHealthJSON = 'application/health+json';
 

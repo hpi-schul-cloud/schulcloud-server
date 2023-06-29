@@ -26,7 +26,7 @@ function hasMessage(error: unknown): error is { message: string } {
 }
 
 @Injectable()
-export class HealthUc {
+export class HealthUC {
 	constructor(private readonly healthService: HealthService) {}
 
 	checkSelfHealth(): HealthStatus {
