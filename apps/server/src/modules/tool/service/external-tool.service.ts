@@ -1,24 +1,24 @@
 import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
 	CustomParameterDO,
-	ExternalToolConfigDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
 	CustomParameterScope,
 	EntityId,
+	ExternalToolConfigDO,
+	ExternalToolDO,
 	IFindOptions,
-	SchoolExternalToolDO,
+	Lti11ToolConfigDO,
+	Oauth2ToolConfigDO,
 	Page,
+	SchoolExternalToolDO,
 } from '@shared/domain';
-import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
+import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
+import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { ExternalToolRepo, ContextExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
-import { TokenEndpointAuthMethod, ToolConfigType } from '../interface';
-import { ExternalToolServiceMapper } from './mapper';
+import { ExternalToolSearchQuery, TokenEndpointAuthMethod, ToolConfigType } from '../interface';
 import { ExternalToolVersionService } from './external-tool-version.service';
+import { ExternalToolServiceMapper } from './mapper';
 
 @Injectable()
 export class ExternalToolService {
@@ -57,7 +57,7 @@ export class ExternalToolService {
 	}
 
 	async findExternalTools(
-		query: Partial<ExternalToolDO>,
+		query: ExternalToolSearchQuery,
 		options?: IFindOptions<ExternalToolDO>
 	): Promise<Page<ExternalToolDO>> {
 		const tools: Page<ExternalToolDO> = await this.externalToolRepo.find(query, options);

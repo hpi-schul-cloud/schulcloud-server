@@ -1,8 +1,8 @@
-import { PseudonymDO } from '@shared/domain/domainobject/pseudonym.do';
 import { EntityName } from '@mikro-orm/core';
-import { EntityId, IPseudonymProperties, Pseudonym } from '@shared/domain';
-import { Injectable } from '@nestjs/common';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Injectable } from '@nestjs/common';
+import { EntityId, IPseudonymProperties, Pseudonym } from '@shared/domain';
+import { PseudonymDO } from '@shared/domain/domainobject/pseudonym.do';
 import { BaseDORepo } from '../base.do.repo';
 
 @Injectable()
@@ -15,13 +15,28 @@ export class PseudonymsRepo extends BaseDORepo<PseudonymDO, Pseudonym, IPseudony
 		return new Pseudonym(props);
 	}
 
-	async findByUserIdAndToolId(userId: EntityId, toolId: EntityId): Promise<PseudonymDO> {
-		const entity = await this._em.findOneOrFail(Pseudonym, {
+	async findByUserIdAndToolIdOrFail(userId: EntityId, toolId: EntityId): Promise<PseudonymDO> {
+		const entity: Pseudonym = await this._em.findOneOrFail(Pseudonym, {
 			userId: new ObjectId(userId),
 			toolId: new ObjectId(toolId),
 		});
 
 		return this.mapEntityToDO(entity);
+	}
+
+	async findByUserIdAndToolId(userId: EntityId, toolId: EntityId): Promise<PseudonymDO | null> {
+		const entity: Pseudonym | null = await this._em.findOne(Pseudonym, {
+			userId: new ObjectId(userId),
+			toolId: new ObjectId(toolId),
+		});
+
+		if (!entity) {
+			return null;
+		}
+
+		const domainObject: PseudonymDO = this.mapEntityToDO(entity);
+
+		return domainObject;
 	}
 
 	protected mapEntityToDO(entity: Pseudonym): PseudonymDO {

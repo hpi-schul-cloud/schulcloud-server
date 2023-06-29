@@ -17,6 +17,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate, ToolReferenceUc } from '../uc';
+import { ExternalToolSearchQuery } from '../interface';
 import {
 	ContextExternalToolContextParams,
 	ExternalToolCreateParams,
@@ -72,7 +73,8 @@ export class ToolController {
 	): Promise<ExternalToolSearchListResponse> {
 		const options: IFindOptions<ExternalToolDO> = { pagination };
 		options.order = this.externalToolDOMapper.mapSortingQueryToDomain(sortingQuery);
-		const query: Partial<ExternalToolDO> = this.externalToolDOMapper.mapExternalToolFilterQueryToDO(filterQuery);
+		const query: ExternalToolSearchQuery =
+			this.externalToolDOMapper.mapExternalToolFilterQueryToExternalToolSearchQuery(filterQuery);
 
 		const tools: Page<ExternalToolDO> = await this.externalToolUc.findExternalTool(currentUser.userId, query, options);
 
@@ -136,7 +138,7 @@ export class ToolController {
 	@ApiOperation({ summary: 'Get Tool References' })
 	@ApiOkResponse({
 		description: 'The Tool References has been successfully fetched.',
-		type: [ToolReferenceListResponse],
+		type: ToolReferenceListResponse,
 	})
 	@ApiForbiddenResponse({ description: 'User is not allowed to access this resource.' })
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
