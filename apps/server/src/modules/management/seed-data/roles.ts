@@ -413,7 +413,7 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 		permissions: [],
 	},
 };
-const roleOrder = [
+export const roleOrder = [
 	'user',
 	'administrator',
 	'superhero',
@@ -432,13 +432,13 @@ const roleOrder = [
 	'expert',
 ];
 
-export function generateRole() {
+export function generateRole(localRoleSeedData?: { [key: string | RoleName]: SeedRoleProperties }) {
 	// cache the results for later use
 	const rolesByName = {} as Record<RoleName, Role>;
 
 	// create the roles in order
 	return roleOrder.map((roleName) => {
-		const partial = roleSeedData[roleName];
+		const partial = (localRoleSeedData ?? roleSeedData)[roleName];
 		if (!partial) {
 			throw new Error(`Role ${roleName} not found`);
 		}
