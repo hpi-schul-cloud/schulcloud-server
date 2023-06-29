@@ -118,6 +118,16 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
+                                <a href="#getBoardContext" >getBoardContext</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
                                 <a href="#getBoardSkeleton" >getBoardSkeleton</a>
                             </li>
                             <li>
@@ -183,8 +193,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="76"
-                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:76</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="94"
+                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:94</a></div>
                 </td>
             </tr>
 
@@ -274,14 +284,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@ApiOperation({summary: &#x27;Delete a single board.&#x27;})<br />@ApiResponse({status: 204})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@HttpCode(204)<br />@Delete(&#x27;:boardId&#x27;)<br /></code>
+                    <code>@ApiOperation({summary: &#x27;Delete a board.&#x27;})<br />@ApiResponse({status: 204})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@HttpCode(204)<br />@Delete(&#x27;:boardId&#x27;)<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="66"
-                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:66</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="84"
+                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:84</a></div>
                 </td>
             </tr>
 
@@ -345,6 +355,102 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getBoardContext"></a>
+                    <span class="name">
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier">Async</span>
+                        <span ><b>getBoardContext</b></span>
+                        <a href="#getBoardContext"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getBoardContext(urlParams: <a href="../classes/BoardUrlParams.html" target="_self">BoardUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@ApiOperation({summary: &#x27;Get the context of a board.&#x27;})<br />@ApiResponse({status: 200, type: BoardContextResponse})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@Get(&#x27;:boardId/context&#x27;)<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="51"
+                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:51</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>urlParams</td>
+                                    <td>
+                                                <code><a href="../classes/BoardUrlParams.html" target="_self" >BoardUrlParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>currentUser</td>
+                                    <td>
+                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/BoardContextResponse.html" target="_self" >Promise&lt;BoardContextResponse&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getBoardSkeleton"></a>
                     <span class="name">
                         <span class="modifier"></span>
@@ -370,14 +476,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@ApiOperation({summary: &#x27;Get the skeleton of a a single board.&#x27;})<br />@ApiResponse({status: 200, type: BoardResponse})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@Get(&#x27;:boardId&#x27;)<br /></code>
+                    <code>@ApiOperation({summary: &#x27;Get the skeleton of a a board.&#x27;})<br />@ApiResponse({status: 200, type: BoardResponse})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@Get(&#x27;:boardId&#x27;)<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="33"
-                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:33</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="34"
+                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:34</a></div>
                 </td>
             </tr>
 
@@ -467,14 +573,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@ApiOperation({summary: &#x27;Update the title of a single board.&#x27;})<br />@ApiResponse({status: 204})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@HttpCode(204)<br />@Patch(&#x27;:boardId/title&#x27;)<br /></code>
+                    <code>@ApiOperation({summary: &#x27;Update the title of a board.&#x27;})<br />@ApiResponse({status: 204})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@HttpCode(204)<br />@Patch(&#x27;:boardId/title&#x27;)<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="51"
-                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:51</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="69"
+                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:69</a></div>
                 </td>
             </tr>
 
@@ -568,6 +674,7 @@ import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { BoardUc } from &#x27;../uc&#x27;;
 import { BoardResponse, BoardUrlParams, ColumnResponse, RenameBodyParams } from &#x27;./dto&#x27;;
+import { BoardContextResponse } from &#x27;./dto/board/board-context.reponse&#x27;;
 import { BoardResponseMapper, ColumnResponseMapper } from &#x27;./mapper&#x27;;
 
 @ApiTags(&#x27;Board&#x27;)
@@ -576,7 +683,7 @@ import { BoardResponseMapper, ColumnResponseMapper } from &#x27;./mapper&#x27;;
 export class BoardController {
 	constructor(private readonly boardUc: BoardUc) {}
 
-	@ApiOperation({ summary: &#x27;Get the skeleton of a a single board.&#x27; })
+	@ApiOperation({ summary: &#x27;Get the skeleton of a a board.&#x27; })
 	@ApiResponse({ status: 200, type: BoardResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
@@ -593,7 +700,24 @@ export class BoardController {
 		return response;
 	}
 
-	@ApiOperation({ summary: &#x27;Update the title of a single board.&#x27; })
+	@ApiOperation({ summary: &#x27;Get the context of a board.&#x27; })
+	@ApiResponse({ status: 200, type: BoardContextResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Get(&#x27;:boardId/context&#x27;)
+	async getBoardContext(
+		@Param() urlParams: BoardUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise&lt;BoardContextResponse&gt; {
+		const boardContext &#x3D; await this.boardUc.findBoardContext(currentUser.userId, urlParams.boardId);
+
+		const response &#x3D; new BoardContextResponse(boardContext);
+
+		return response;
+	}
+
+	@ApiOperation({ summary: &#x27;Update the title of a board.&#x27; })
 	@ApiResponse({ status: 204 })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
@@ -608,7 +732,7 @@ export class BoardController {
 		await this.boardUc.updateBoardTitle(currentUser.userId, urlParams.boardId, bodyParams.title);
 	}
 
-	@ApiOperation({ summary: &#x27;Delete a single board.&#x27; })
+	@ApiOperation({ summary: &#x27;Delete a board.&#x27; })
 	@ApiResponse({ status: 204 })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
