@@ -7,12 +7,12 @@ metadata:
     app: tldraw
   annotations:
     prometheus.io/scrape: 'true'
-    prometheus.io/port: '3333'
+    prometheus.io/port: '3344'
 spec:
   type: ClusterIP
   ports:
     - port: {{ PORT_TLDRAW }}
-      targetPort: 3333
+      targetPort: 3344
       protocol: TCP
       name: api-h5p
   selector:

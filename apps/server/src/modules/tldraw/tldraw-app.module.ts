@@ -2,13 +2,14 @@ import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { Course, User } from '@shared/domain';
+import { Course, User, School, CourseGroup, SchoolYear } from '@shared/domain';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { AuthenticationModule } from '../authentication/authentication.module';
 import { config } from './tldraw.config';
+import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq';
 import { TldrawGateway } from '@src/modules/tldraw/gateway';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
@@ -20,6 +21,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 const imports = [
 	AuthenticationModule,
 	AuthorizationModule,
+	RabbitMQWrapperModule,
 	CoreModule,
 	MikroOrmModule.forRoot({
 		...defaultMikroOrmOptions,
@@ -28,7 +30,7 @@ const imports = [
 		clientUrl: DB_URL,
 		password: DB_PASSWORD,
 		user: DB_USERNAME,
-		entities: [User, Course],
+		entities: [User, Course, School, CourseGroup, SchoolYear],
 
 		// debug: true, // use it for locally debugging of querys
 	}),
@@ -39,4 +41,4 @@ const imports = [
 	imports,
 	providers: [Logger, TldrawGateway],
 })
-export class TldrawModule {}
+export class TldrawAppModule {}

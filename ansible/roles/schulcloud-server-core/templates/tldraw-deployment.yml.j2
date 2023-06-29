@@ -32,7 +32,7 @@ spec:
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 3333
+        - containerPort: 3344
           name: tldraw
           protocol: TCP
         envFrom:
@@ -44,7 +44,7 @@ spec:
         readinessProbe:
           httpGet:
             path: api/v3/docs
-            port: 3333
+            port: 3344
           timeoutSeconds: 4
           failureThreshold: 3
           periodSeconds: 5
@@ -52,14 +52,14 @@ spec:
         livenessProbe:
           httpGet:
             path: api/v3/docs
-            port: 3333
+            port: 3344
           timeoutSeconds: 4
           failureThreshold: 3
           periodSeconds: 15
         startupProbe:
           httpGet:
             path: api/v3/docs
-            port: 3333
+            port: 3344
           timeoutSeconds: 4
           failureThreshold:  36
           periodSeconds: 5
