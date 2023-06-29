@@ -105,7 +105,7 @@
 		"@lumieducation/h5p-server": "^9.2.0",
 		"@mikro-orm/core": "^5.5.3",
 		"@mikro-orm/mongodb": "^5.5.3",
-		"@mikro-orm/nestjs": "^5.1.5",
+		"@mikro-orm/nestjs": "^5.1.8",
 		"@nestjs/axios": "^0.1.0",
 		"@nestjs/common": "^9.2.1",
 		"@nestjs/config": "^2.2.0",
