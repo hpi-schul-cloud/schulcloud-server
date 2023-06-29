@@ -27,10 +27,8 @@ export class HealthStatus {
 	isPassed(): boolean {
 		if (this.checks !== undefined) {
 			for (const key of Object.keys(this.checks)) {
-				const checks = this.checks[key];
-
-				for (let i = 0; i < checks.length; i += 1) {
-					if (!checks[i].isPassed()) {
+				for (const check of this.checks[key]) {
+					if (!check.isPassed()) {
 						return false;
 					}
 				}
