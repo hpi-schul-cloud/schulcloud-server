@@ -61,6 +61,10 @@ describe(CardUc.name, () => {
 		await module.close();
 	});
 
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
 	describe('findCards', () => {
 		describe('when finding many cards', () => {
 			const setup = () => {
@@ -99,7 +103,6 @@ describe(CardUc.name, () => {
 
 				cardService.findById.mockResolvedValueOnce(card);
 				elementService.create.mockResolvedValueOnce(element);
-				elementService.move.mockClear();
 
 				return { user, card, element };
 			};
