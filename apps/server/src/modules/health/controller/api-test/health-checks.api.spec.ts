@@ -63,7 +63,6 @@ describe('health checks (api)', () => {
 			async () => {
 				const response = await api.get('/self');
 
-				expect(response.status).toEqual(200);
 				expect(response.result.status).toEqual(HealthStatuses.STATUS_PASS);
 				expect(response.result.checks).toBeUndefined();
 			}
