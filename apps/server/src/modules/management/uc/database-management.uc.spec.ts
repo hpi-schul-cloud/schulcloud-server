@@ -652,7 +652,6 @@ describe('DatabaseManagementService', () => {
 		});
 
 		it('should call dropCollectionIfExists if collection is present', async () => {
-			// jest.spyOn(uc, 'dropCollectionIfExists');
 			dbService.collectionExists.mockReturnValue(Promise.resolve(true));
 			const collectionsSeeded = await uc.seedDatabaseCollectionsFromFactories();
 			// eslint-disable-next-line @typescript-eslint/dot-notation
