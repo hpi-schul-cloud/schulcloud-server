@@ -1,11 +1,11 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ToolConfigurationStatusResponse } from './tool-configuration-status.response';
 
 export class ToolReferenceResponse {
 	@ApiProperty({ nullable: false, required: true, description: 'The id of the tool in the context' })
 	contextToolId: string;
 
-	@ApiProperty({ nullable: true, required: false, description: 'The url of the logo of the tool' })
+	@ApiPropertyOptional({ nullable: false, required: false, description: 'The url of the logo of the tool' })
 	logoUrl?: string;
 
 	@ApiProperty({ nullable: false, required: true, description: 'The display name of the tool' })

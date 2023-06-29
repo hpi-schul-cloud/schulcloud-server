@@ -24,6 +24,9 @@ export class ContextExternalToolResponse {
 	@ApiProperty()
 	toolVersion: number;
 
+	@ApiPropertyOptional()
+	logoUrl?: string;
+
 	constructor(response: ContextExternalToolResponse) {
 		this.id = response.id;
 		this.schoolToolId = response.schoolToolId;
@@ -32,5 +35,6 @@ export class ContextExternalToolResponse {
 		this.displayName = response.displayName;
 		this.parameters = response.parameters;
 		this.toolVersion = response.toolVersion;
+		this.logoUrl = response.logoUrl;
 	}
 }
