@@ -15,7 +15,7 @@ import { setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { ObjectId } from 'mongodb';
 import { BsonConverter } from '../converter/bson.converter';
-import { generateSeedData } from '../seed-data';
+import { generateSeedData } from '../seed-data/generateSeedData';
 import { DatabaseManagementUc } from './database-management.uc';
 
 describe('DatabaseManagementService', () => {

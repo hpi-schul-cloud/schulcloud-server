@@ -9,7 +9,7 @@ import { FileSystemAdapter } from '@shared/infra/file-system';
 import { LegacyLogger } from '@src/core/logger';
 import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
-import { generateSeedData } from '../seed-data';
+import { generateSeedData } from '../seed-data/generateSeedData';
 
 export interface ICollectionFilePath {
 	filePath: string;

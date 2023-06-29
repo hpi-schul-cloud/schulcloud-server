@@ -1,5 +1,5 @@
 import { setupEntities } from '@shared/testing';
-import { generateSeedData } from '.';
+import { generateSeedData } from './generateSeedData';
 import * as roleModule from './roles';
 
 describe('Seed Data generation', () => {
