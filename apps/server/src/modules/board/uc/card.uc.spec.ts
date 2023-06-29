@@ -6,6 +6,7 @@ import { cardFactory, richTextElementFactory } from '@shared/testing/factory/dom
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { ObjectId } from 'bson';
+import exp from 'constants';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { CardService } from '../service/card.service';
 import { CardUc } from './card.uc';
@@ -98,6 +99,7 @@ describe(CardUc.name, () => {
 
 				cardService.findById.mockResolvedValueOnce(card);
 				elementService.create.mockResolvedValueOnce(element);
+				elementService.move.mockClear();
 
 				return { user, card, element };
 			};
@@ -126,11 +128,10 @@ describe(CardUc.name, () => {
 			});
 			it('should not call the service to move the element if position is not a number', async () => {
 				const { user, card } = setup();
-				jest.spyOn(elementService, 'move');
 
 				await uc.createElement(user.id, card.id, ContentElementType.RICH_TEXT, 'not a number' as unknown as number);
 
-				expect(elementService.move).toHaveBeenCalledTimes(0);
+				expect(elementService.move).not.toHaveBeenCalled();
 			});
 
 			it('should return new content element', async () => {
