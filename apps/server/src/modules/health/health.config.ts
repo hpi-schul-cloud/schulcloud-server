@@ -16,7 +16,7 @@ export class HealthConfig {
 	}
 
 	private constructor() {
-		this._hostname = Configuration.get('HOSTNAME') as string;
+		this._hostname = Configuration.has('HOSTNAME') ? (Configuration.get('HOSTNAME') as string) : '';
 		this._exclude_mongodb = Configuration.get('HEALTHCHECKS_EXCLUDE_MONGODB') as boolean;
 	}
 
