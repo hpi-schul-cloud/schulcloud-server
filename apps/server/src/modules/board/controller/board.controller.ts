@@ -16,6 +16,7 @@ import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { BoardUc } from '../uc';
 import { BoardResponse, BoardUrlParams, ColumnResponse, RenameBodyParams } from './dto';
+import { BoardContextResponse } from './dto/board/board-context.reponse';
 import { BoardResponseMapper, ColumnResponseMapper } from './mapper';
 
 @ApiTags('Board')
@@ -24,7 +25,7 @@ import { BoardResponseMapper, ColumnResponseMapper } from './mapper';
 export class BoardController {
 	constructor(private readonly boardUc: BoardUc) {}
 
-	@ApiOperation({ summary: 'Get the skeleton of a a single board.' })
+	@ApiOperation({ summary: 'Get the skeleton of a a board.' })
 	@ApiResponse({ status: 200, type: BoardResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
@@ -41,7 +42,24 @@ export class BoardController {
 		return response;
 	}
 
-	@ApiOperation({ summary: 'Update the title of a single board.' })
+	@ApiOperation({ summary: 'Get the context of a board.' })
+	@ApiResponse({ status: 200, type: BoardContextResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Get(':boardId/context')
+	async getBoardContext(
+		@Param() urlParams: BoardUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<BoardContextResponse> {
+		const boardContext = await this.boardUc.findBoardContext(currentUser.userId, urlParams.boardId);
+
+		const response = new BoardContextResponse(boardContext);
+
+		return response;
+	}
+
+	@ApiOperation({ summary: 'Update the title of a board.' })
 	@ApiResponse({ status: 204 })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
@@ -56,7 +74,7 @@ export class BoardController {
 		await this.boardUc.updateBoardTitle(currentUser.userId, urlParams.boardId, bodyParams.title);
 	}
 
-	@ApiOperation({ summary: 'Delete a single board.' })
+	@ApiOperation({ summary: 'Delete a board.' })
 	@ApiResponse({ status: 204 })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
