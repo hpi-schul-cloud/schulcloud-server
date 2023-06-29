@@ -6,6 +6,8 @@ export interface IFederalStateProperties {
 	abbreviation: string;
 	logoUrl: string;
 	counties?: County[];
+	createdAt: Date;
+	updatedAt: Date;
 }
 
 @Embeddable()
@@ -42,5 +44,7 @@ export class FederalState extends BaseEntityWithTimestamps {
 		this.name = props.name;
 		this.abbreviation = props.abbreviation;
 		this.logoUrl = props.logoUrl;
+		this.updatedAt = props.updatedAt;
+		this.createdAt = props.createdAt;
 	}
 }

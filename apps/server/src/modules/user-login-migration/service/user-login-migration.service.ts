@@ -5,8 +5,8 @@ import { UserLoginMigrationRepo } from '@shared/repo';
 import { SchoolService } from '@src/modules/school';
 import { SystemDto, SystemService } from '@src/modules/system';
 import { UserService } from '@src/modules/user';
+import { UserLoginMigrationNotFoundLoggableException } from '../error';
 import { SchoolMigrationService } from './school-migration.service';
-import { UserLoginMigrationLoggableException } from '../error';
 
 @Injectable()
 export class UserLoginMigrationService {
@@ -80,21 +80,37 @@ export class UserLoginMigrationService {
 	}
 
 	async restartMigration(schoolId: string): Promise<UserLoginMigrationDO> {
-		const existingUserLoginMigrationDO: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(
+		const existingUserLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(
 			schoolId
 		);
 
-		if (existingUserLoginMigrationDO === null) {
-			throw new UserLoginMigrationLoggableException(
-				`Migration for school with id ${schoolId} does not exist for restart.`,
-				schoolId
-			);
+		if (!existingUserLoginMigration) {
+			throw new UserLoginMigrationNotFoundLoggableException(schoolId);
 		}
 
-		const updatedUserLoginMigration = await this.updateExistingMigration(existingUserLoginMigrationDO);
+		const updatedUserLoginMigration = await this.updateExistingMigration(existingUserLoginMigration);
+
 		await this.schoolMigrationService.unmarkOutdatedUsers(schoolId);
 
 		return updatedUserLoginMigration;
+	}
+
+	async setMigrationMandatory(schoolId: string, mandatory: boolean): Promise<UserLoginMigrationDO> {
+		let userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
+
+		if (!userLoginMigration) {
+			throw new UserLoginMigrationNotFoundLoggableException(schoolId);
+		}
+
+		if (mandatory) {
+			userLoginMigration.mandatorySince = userLoginMigration.mandatorySince ?? new Date();
+		} else {
+			userLoginMigration.mandatorySince = undefined;
+		}
+
+		userLoginMigration = await this.userLoginMigrationRepo.save(userLoginMigration);
+
+		return userLoginMigration;
 	}
 
 	private async createNewMigration(school: SchoolDO): Promise<UserLoginMigrationDO> {

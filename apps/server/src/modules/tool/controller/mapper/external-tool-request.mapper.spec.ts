@@ -19,6 +19,7 @@ import {
 	CustomParameterLocationParams,
 	CustomParameterScopeTypeParams,
 	CustomParameterTypeParams,
+	ExternalToolSearchQuery,
 	LtiMessageType,
 	LtiPrivacyPermission,
 	TokenEndpointAuthMethod,
@@ -346,15 +347,16 @@ describe('ExternalToolRequestMapper', () => {
 		});
 	});
 
-	describe('mapExternalToolFilterQueryToDO', () => {
-		it('should map params to partial do', () => {
+	describe('mapExternalToolFilterQueryToExternalToolSearchQuery', () => {
+		it('should map params to a search query', () => {
 			const params: ExternalToolSearchParams = {
 				name: 'name',
+				clientId: 'clientId',
 			};
 
-			const doPartial = mapper.mapExternalToolFilterQueryToDO(params);
+			const result: ExternalToolSearchQuery = mapper.mapExternalToolFilterQueryToExternalToolSearchQuery(params);
 
-			expect(doPartial).toEqual(expect.objectContaining(params));
+			expect(result).toEqual(params);
 		});
 	});
 });

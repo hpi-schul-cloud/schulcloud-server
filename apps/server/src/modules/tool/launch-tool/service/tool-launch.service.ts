@@ -4,7 +4,12 @@ import { ToolConfigType } from '../../interface';
 import { ExternalToolService, SchoolExternalToolService } from '../../service';
 import { ToolLaunchMapper } from '../mapper';
 import { ToolLaunchData, ToolLaunchRequest } from '../types';
-import { BasicToolLaunchStrategy, IToolLaunchStrategy, Lti11ToolLaunchStrategy } from './strategy';
+import {
+	BasicToolLaunchStrategy,
+	IToolLaunchStrategy,
+	Lti11ToolLaunchStrategy,
+	OAuth2ToolLaunchStrategy,
+} from './strategy';
 
 @Injectable()
 export class ToolLaunchService {
@@ -14,11 +19,13 @@ export class ToolLaunchService {
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly externalToolService: ExternalToolService,
 		private readonly basicToolLaunchStrategy: BasicToolLaunchStrategy,
-		private readonly lti11ToolLaunchStrategy: Lti11ToolLaunchStrategy
+		private readonly lti11ToolLaunchStrategy: Lti11ToolLaunchStrategy,
+		private readonly oauth2ToolLaunchStrategy: OAuth2ToolLaunchStrategy
 	) {
 		this.strategies = new Map();
 		this.strategies.set(ToolConfigType.BASIC, basicToolLaunchStrategy);
 		this.strategies.set(ToolConfigType.LTI11, lti11ToolLaunchStrategy);
+		this.strategies.set(ToolConfigType.OAUTH2, oauth2ToolLaunchStrategy);
 	}
 
 	generateLaunchRequest(toolLaunchData: ToolLaunchData): ToolLaunchRequest {

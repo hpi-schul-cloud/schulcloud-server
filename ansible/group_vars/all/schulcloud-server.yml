@@ -1,2 +1,2 @@
 ---
-SCHULCLOUD_SERVER_IMAGE: schulcloud/schulcloud-server
+SCHULCLOUD_SERVER_IMAGE: quay.io/schulcloudverbund/schulcloud-server
