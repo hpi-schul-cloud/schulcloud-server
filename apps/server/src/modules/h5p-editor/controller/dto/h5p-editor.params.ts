@@ -8,6 +8,7 @@ export class GetH5PContentParams {
 	@Matches('([a-z]+-[a-z]+)')
 	@IsString()
 	@SanitizeHtml()
+	@IsOptional()
 	language?: string;
 
 	@ApiProperty()
@@ -23,6 +24,7 @@ export class GetH5PEditorParams {
 	@Matches('([A-Z0-9a-z]+)')
 	@IsString()
 	@SanitizeHtml()
+	@IsOptional()
 	contentId?: string;
 }
 
