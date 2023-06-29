@@ -19,5 +19,7 @@ export const federalStateFactory = BaseFactory.define<FederalState, IFederalStat
 				antaresKey: '02002',
 			}),
 		],
+		createdAt: new Date(2020, 1),
+		updatedAt: new Date(2020, 1),
 	};
 });

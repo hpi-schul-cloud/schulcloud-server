@@ -2,7 +2,7 @@ import { County, IFederalStateProperties } from '@shared/domain/entity/federal-s
 import { federalStateFactory } from '@shared/testing/factory/federal-state.factory';
 import { DeepPartial } from 'fishery';
 
-type SeedFederalStateProperties = Omit<IFederalStateProperties, 'counties'> & {
+type SeedFederalStateProperties = Omit<IFederalStateProperties, 'counties' | 'createdAt' | 'updatedAt'> & {
 	id: string;
 	counties?: (County & { id: string })[];
 	createdAt?: string;
