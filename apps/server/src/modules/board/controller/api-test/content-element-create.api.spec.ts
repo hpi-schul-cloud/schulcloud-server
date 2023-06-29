@@ -116,11 +116,19 @@ describe(`content element create (api)`, () => {
 
 			expect(result.type).toEqual(ContentElementType.FILE);
 		});
-		it('should throw an error if position is not a number', async () => {
+		it('should throw an error if to position is not a number', async () => {
 			const { user, cardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
 			const { error } = await api.post(cardNode.id, ContentElementType.RICH_TEXT, 'not a number' as unknown as number);
+
+			expect(error.code).toEqual(400);
+		});
+		it('should throw an error if to position is a negative number', async () => {
+			const { user, cardNode } = await setup();
+			currentUser = mapUserToCurrentUser(user);
+
+			const { error } = await api.post(cardNode.id, ContentElementType.RICH_TEXT, -1);
 
 			expect(error.code).toEqual(400);
 		});

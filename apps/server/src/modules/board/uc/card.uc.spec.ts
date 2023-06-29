@@ -124,6 +124,14 @@ describe(CardUc.name, () => {
 
 				expect(elementService.move).toHaveBeenCalledWith(element, card, 3);
 			});
+			it('should not call the service to move the element if position is not a number', async () => {
+				const { user, card } = setup();
+				jest.spyOn(elementService, 'move');
+
+				await uc.createElement(user.id, card.id, ContentElementType.RICH_TEXT, 'not a number' as unknown as number);
+
+				expect(elementService.move).toHaveBeenCalledTimes(0);
+			});
 
 			it('should return new content element', async () => {
 				const { user, card, element } = setup();

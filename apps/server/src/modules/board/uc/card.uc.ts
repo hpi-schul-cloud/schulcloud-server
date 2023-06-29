@@ -48,7 +48,7 @@ export class CardUc {
 		await this.checkPermission(userId, card, Action.write);
 
 		const element = await this.elementService.create(card, type);
-		if (toPosition !== undefined) {
+		if (toPosition !== undefined && typeof toPosition === 'number') {
 			await this.elementService.move(element, card, toPosition);
 		}
 
