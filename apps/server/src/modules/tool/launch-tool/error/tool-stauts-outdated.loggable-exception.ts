@@ -4,7 +4,7 @@ import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from
 
 export class ToolStatusOutdatedLoggableException extends BadRequestException implements Loggable {
 	constructor(private readonly userId: EntityId, private readonly toolId: EntityId) {
-		super({});
+		super();
 	}
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
