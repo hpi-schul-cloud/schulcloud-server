@@ -95,6 +95,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#getToolLaunchRequest" >getToolLaunchRequest</a>
                             </li>
@@ -126,6 +127,7 @@
                         <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>getToolLaunchRequest</b></span>
                         <a href="#getToolLaunchRequest"><span class="icon ion-ios-link"></span></a>
@@ -143,14 +145,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;context/:contextExternalToolId/launch&#x27;)<br />@ApiOperation({summary: &#x27;Get tool launch request for a context external tool id&#x27;})<br />@ApiOkResponse({description: &#x27;Tool launch request&#x27;, type: ToolLaunchRequestResponse})<br />@ApiUnauthorizedResponse({description: &#x27;Unauthorized&#x27;})<br />@ApiForbiddenResponse({description: &#x27;Forbidden&#x27;})<br /></code>
+                    <code>@Get(&#x27;context/:contextExternalToolId/launch&#x27;)<br />@ApiOperation({summary: &#x27;Get tool launch request for a context external tool id&#x27;})<br />@ApiOkResponse({description: &#x27;Tool launch request&#x27;, type: ToolLaunchRequestResponse})<br />@ApiUnauthorizedResponse({description: &#x27;Unauthorized&#x27;})<br />@ApiForbiddenResponse({description: &#x27;Forbidden&#x27;})<br />@ApiBadRequestResponse({description: &#x27;Outdated tools cannot be launched&#x27;})<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="22"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/controller/tool-launch.controller.ts:22</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="30"
+                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/controller/tool-launch.controller.ts:30</a></div>
                 </td>
             </tr>
 
@@ -215,7 +217,14 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Get, Param } from &#x27;@nestjs/common&#x27;;
-import { ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from &#x27;@nestjs/swagger&#x27;;
+import {
+	ApiBadRequestResponse,
+	ApiForbiddenResponse,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+	ApiUnauthorizedResponse,
+} from &#x27;@nestjs/swagger&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { ToolLaunchUc } from &#x27;../uc/tool-launch.uc&#x27;;
@@ -235,6 +244,7 @@ export class ToolLaunchController {
 	@ApiOkResponse({ description: &#x27;Tool launch request&#x27;, type: ToolLaunchRequestResponse })
 	@ApiUnauthorizedResponse({ description: &#x27;Unauthorized&#x27; })
 	@ApiForbiddenResponse({ description: &#x27;Forbidden&#x27; })
+	@ApiBadRequestResponse({ description: &#x27;Outdated tools cannot be launched&#x27; })
 	async getToolLaunchRequest(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolLaunchParams

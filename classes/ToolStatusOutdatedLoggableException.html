@@ -28,7 +28,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content injectable">
+               <div class="content class">
                    <div class="content-data">
 
 
@@ -38,9 +38,13 @@
 
 
 
+
+
+
+
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >ToolLaunchUc</li>
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >ToolStatusOutdatedLoggableException</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -64,11 +68,24 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/launch-tool/uc/tool-launch.uc.ts</code>
+            <code>apps/server/src/modules/tool/launch-tool/error/tool-status-outdated.loggable-exception.ts</code>
         </p>
 
 
 
+            <p class="comment">
+                <h3>Extends</h3>
+            </p>
+            <p class="comment">
+                    <code>BadRequestException</code>
+            </p>
+
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
+            </p>
 
 
             <section data-compodoc="block-index">
@@ -85,8 +102,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#getToolLaunchRequest" >getToolLaunchRequest</a>
+                                <a href="#getLogMessage" >getLogMessage</a>
                             </li>
                         </ul>
                     </td>
@@ -106,12 +122,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(toolLaunchService: <a href="../injectables/ToolLaunchService.html" target="_self">ToolLaunchService</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>)</code>
+<code>constructor(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, toolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/tool/launch-tool/uc/tool-launch.uc.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/tool/launch-tool/error/tool-status-outdated.loggable-exception.ts:5</a></div>
                             </td>
                         </tr>
 
@@ -129,10 +145,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>toolLaunchService</td>
+                                                        <td>userId</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/ToolLaunchService.html" target="_self" >ToolLaunchService</a></code>
+                                                                        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -141,10 +157,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>contextExternalToolService</td>
+                                                        <td>toolId</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/ContextExternalToolService.html" target="_self" >ContextExternalToolService</a></code>
+                                                                        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -161,6 +177,7 @@
         </table>
 </section>
 
+
             <section data-compodoc="block-methods">
     
     <h3 id="methods">
@@ -170,26 +187,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getToolLaunchRequest"></a>
+                    <a name="getLogMessage"></a>
                     <span class="name">
-                        <span class="modifier">Async</span>
-                        <span ><b>getToolLaunchRequest</b></span>
-                        <a href="#getToolLaunchRequest"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getLogMessage</b></span>
+                        <a href="#getLogMessage"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getToolLaunchRequest(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextExternalToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+<code>getLogMessage()</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="15"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/uc/tool-launch.uc.ts:15</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="10"
+                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/error/tool-status-outdated.loggable-exception.ts:10</a></div>
                 </td>
             </tr>
 
@@ -198,52 +213,8 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>userId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
+                        <b>Returns : </b>        <code><a href="../classes/ValidationError.html" target="_self" >LogMessage | ErrorLogMessage | ValidationErrorLogMessage</a></code>
 
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>contextExternalToolId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/ToolLaunchRequest.html" target="_self" >Promise&lt;ToolLaunchRequest&gt;</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
                     </div>
                 </td>
             </tr>
@@ -251,47 +222,38 @@
     </table>
 </section>
 
+
+
+
+
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { ContextExternalToolDO, EntityId, Permission } from &#x27;@shared/domain&#x27;;
-import { Action } from &#x27;@src/modules/authorization&#x27;;
-import { ContextExternalToolService } from &#x27;../../service&#x27;;
-import { ToolLaunchService } from &#x27;../service&#x27;;
-import { ToolLaunchData, ToolLaunchRequest } from &#x27;../types&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException } from &#x27;@nestjs/common&#x27;;
+import { EntityId } from &#x27;@shared/domain&#x27;;
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
 
-@Injectable()
-export class ToolLaunchUc {
-	constructor(
-		private readonly toolLaunchService: ToolLaunchService,
-		private readonly contextExternalToolService: ContextExternalToolService
-	) {}
+export class ToolStatusOutdatedLoggableException extends BadRequestException implements Loggable {
+	constructor(private readonly userId: EntityId, private readonly toolId: EntityId) {
+		super();
+	}
 
-	async getToolLaunchRequest(userId: EntityId, contextExternalToolId: EntityId): Promise&lt;ToolLaunchRequest&gt; {
-		const contextExternalToolDO: ContextExternalToolDO &#x3D;
-			await this.contextExternalToolService.getContextExternalToolById(contextExternalToolId);
-
-		await this.contextExternalToolService.ensureContextPermissions(userId, contextExternalToolDO, {
-			requiredPermissions: [Permission.CONTEXT_TOOL_USER],
-			action: Action.read,
-		});
-
-		const toolLaunchData: ToolLaunchData &#x3D; await this.toolLaunchService.getLaunchData(userId, contextExternalToolDO);
-		const launchRequest: ToolLaunchRequest &#x3D; this.toolLaunchService.generateLaunchRequest(toolLaunchData);
-
-		return launchRequest;
+	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+		return {
+			type: &#x27;TOOL_STATUS_OUTDATED&#x27;,
+			message: &#x27;The status of the tool is outdated and cannot be launched by the user.&#x27;,
+			stack: this.stack,
+			data: {
+				userId: this.userId,
+				toolId: this.toolId,
+			},
+		};
 	}
 }
 </code></pre>
     </div>
-
 </div>
-
-
-
-
 
 
 
@@ -326,8 +288,8 @@ export class ToolLaunchUc {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'ToolLaunchUc.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'ToolStatusOutdatedLoggableException.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

@@ -712,13 +712,12 @@ import { LoggerModule } from &#x27;@src/core/logger&#x27;;
 import { AuthorizationModule } from &#x27;@src/modules/authorization&#x27;;
 import { PseudonymModule } from &#x27;@src/modules/pseudonym&#x27;;
 import { UserModule } from &#x27;@src/modules/user&#x27;;
-import { Lti11EncryptionService } from &#x27;./launch-tool/service/lti11-encryption.service&#x27;;
+import { Lti11EncryptionService, ToolLaunchService } from &#x27;./launch-tool/service&#x27;;
 import {
 	BasicToolLaunchStrategy,
 	Lti11ToolLaunchStrategy,
 	OAuth2ToolLaunchStrategy,
 } from &#x27;./launch-tool/service/strategy&#x27;;
-import { ToolLaunchService } from &#x27;./launch-tool/service/tool-launch.service&#x27;;
 import {
 	CommonToolService,
 	CommonToolValidationService,
@@ -729,8 +728,8 @@ import {
 	ExternalToolVersionService,
 	SchoolExternalToolService,
 	SchoolExternalToolValidationService,
+	ExternalToolServiceMapper,
 } from &#x27;./service&#x27;;
-import { ExternalToolServiceMapper } from &#x27;./service/mapper&#x27;;
 
 @Module({
 	imports: [
