@@ -3,7 +3,7 @@ import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserLoginMigrationDO } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
+import { schoolDOFactory, userLoginMigrationDOFactory } from '@shared/testing/factory';
 import { AuthorizationService } from '@src/modules/authorization';
 import { SchoolService } from '@src/modules/school/service/school.service';
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
@@ -12,7 +12,6 @@ import {
 	UserLoginMigrationRevertService,
 	UserLoginMigrationService,
 } from '@src/modules/user-login-migration';
-import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration.factory';
 import { OauthMigrationDto } from './dto/oauth-migration.dto';
 
 describe('SchoolUc', () => {
@@ -105,6 +104,7 @@ describe('SchoolUc', () => {
 					});
 					const updatedUserLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
 						targetSystemId: userLoginMigration.targetSystemId,
+						closedAt: new Date(2023, 5),
 					});
 
 					userLoginMigrationService.findMigrationBySchool.mockResolvedValue(userLoginMigration);
@@ -135,6 +135,7 @@ describe('SchoolUc', () => {
 					});
 					const updatedUserLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
 						targetSystemId: userLoginMigration.targetSystemId,
+						closedAt: new Date(2023, 5),
 					});
 
 					userLoginMigrationService.findMigrationBySchool.mockResolvedValue(userLoginMigration);

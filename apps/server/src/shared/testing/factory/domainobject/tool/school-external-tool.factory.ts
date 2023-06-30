@@ -1,8 +1,13 @@
 import { DeepPartial } from 'fishery';
-import { CustomParameterEntryDO, SchoolExternalToolStatus, SchoolExternalToolDO } from '@shared/domain';
+import {
+	CustomParameterEntryDO,
+	SchoolExternalToolDO,
+	SchoolExternalToolProps,
+	ToolConfigurationStatus,
+} from '@shared/domain';
 import { DoBaseFactory } from '../do-base.factory';
 
-class SchoolExternalToolDOFactory extends DoBaseFactory<SchoolExternalToolDO, SchoolExternalToolDO> {
+class SchoolExternalToolDOFactory extends DoBaseFactory<SchoolExternalToolDO, SchoolExternalToolProps> {
 	withSchoolId(schoolId: string): this {
 		const params: DeepPartial<SchoolExternalToolDO> = {
 			schoolId,
@@ -23,6 +28,6 @@ export const schoolExternalToolDOFactory = SchoolExternalToolDOFactory.define(Sc
 			}),
 		],
 		toolId: 'toolId',
-		status: SchoolExternalToolStatus.LATEST,
+		status: ToolConfigurationStatus.LATEST,
 	};
 });

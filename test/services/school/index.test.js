@@ -424,7 +424,7 @@ describe('school service', () => {
 			const params = await testObjects.generateRequestParamsFromUser(admin);
 
 			try {
-				await app.service('/schools').patch(school._id, { officialSchoolNumber: 'foo' }, params);
+				await app.service('/schools').patch(school._id, { officialSchoolNumber: 'no_school.number *' }, params);
 			} catch (err) {
 				expect(err).to.not.equal(undefined);
 				expect(err.message).to.include('School number is incorrect');

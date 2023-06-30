@@ -8,22 +8,19 @@ import { UserModule } from '@src/modules/user';
 import {
 	MigrationCheckService,
 	SchoolMigrationService,
+	UserLoginMigrationRevertService,
 	UserLoginMigrationService,
 	UserMigrationService,
-	StartUserLoginMigrationCheckService,
-	UserLoginMigrationRevertService,
 } from './service';
-import { AuthorizationModule } from '../authorization';
 
 @Module({
-	imports: [UserModule, SchoolModule, LoggerModule, AccountModule, SystemModule, AuthorizationModule],
+	imports: [UserModule, SchoolModule, LoggerModule, AccountModule, SystemModule],
 	providers: [
 		UserMigrationService,
 		SchoolMigrationService,
 		MigrationCheckService,
 		UserLoginMigrationService,
 		UserLoginMigrationRepo,
-		StartUserLoginMigrationCheckService,
 		UserLoginMigrationRevertService,
 	],
 	exports: [
@@ -31,7 +28,6 @@ import { AuthorizationModule } from '../authorization';
 		SchoolMigrationService,
 		MigrationCheckService,
 		UserLoginMigrationService,
-		StartUserLoginMigrationCheckService,
 		UserLoginMigrationRevertService,
 	],
 })

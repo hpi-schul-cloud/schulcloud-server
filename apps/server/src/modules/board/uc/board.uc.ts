@@ -1,5 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { AnyBoardDo, Card, Column, ColumnBoard, EntityId } from '@shared/domain';
+import {
+	AnyBoardDo,
+	BoardExternalReference,
+	Card,
+	Column,
+	ColumnBoard,
+	ContentElementType,
+	EntityId,
+} from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { Action } from '@src/modules/authorization/types/action.enum';
@@ -26,6 +34,15 @@ export class BoardUc {
 		await this.checkPermission(userId, board, Action.read);
 
 		return board;
+	}
+
+	async findBoardContext(userId: EntityId, boardId: EntityId): Promise<BoardExternalReference> {
+		this.logger.debug({ action: 'findBoardContext', userId, boardId });
+
+		const board = await this.columnBoardService.findById(boardId);
+		await this.checkPermission(userId, board, Action.read);
+
+		return board.context;
 	}
 
 	async deleteBoard(userId: EntityId, boardId: EntityId): Promise<void> {
@@ -91,13 +108,13 @@ export class BoardUc {
 		await this.columnService.updateTitle(column, title);
 	}
 
-	async createCard(userId: EntityId, columnId: EntityId): Promise<Card> {
+	async createCard(userId: EntityId, columnId: EntityId, requiredEmptyElements?: ContentElementType[]): Promise<Card> {
 		this.logger.debug({ action: 'createCard', userId, columnId });
 
 		const column = await this.columnService.findById(columnId);
 		await this.checkPermission(userId, column, Action.read);
 
-		const card = await this.cardService.create(column);
+		const card = await this.cardService.create(column, requiredEmptyElements);
 
 		return card;
 	}

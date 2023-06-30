@@ -29,12 +29,13 @@ export class SchoolExternalToolUc {
 		userId: EntityId,
 		schoolExternalTool: SchoolExternalTool
 	): Promise<SchoolExternalToolDO> {
-		await this.ensureSchoolPermission(userId, schoolExternalTool.schoolId);
+		const schoolExternalToolDO = new SchoolExternalToolDO({ ...schoolExternalTool });
 
-		await this.schoolExternalToolValidationService.validate(schoolExternalTool);
+		await this.ensureSchoolPermission(userId, schoolExternalTool.schoolId);
+		await this.schoolExternalToolValidationService.validate(schoolExternalToolDO);
 
 		const createdSchoolExternalTool: SchoolExternalToolDO = await this.schoolExternalToolService.saveSchoolExternalTool(
-			schoolExternalTool
+			schoolExternalToolDO
 		);
 
 		return createdSchoolExternalTool;
@@ -70,8 +71,10 @@ export class SchoolExternalToolUc {
 		schoolExternalToolId: string,
 		schoolExternalTool: SchoolExternalTool
 	): Promise<SchoolExternalToolDO> {
+		const schoolExternalToolDO = new SchoolExternalToolDO({ ...schoolExternalTool });
+
 		await this.ensureSchoolExternalToolPermission(userId, schoolExternalToolId);
-		await this.schoolExternalToolValidationService.validate(schoolExternalTool);
+		await this.schoolExternalToolValidationService.validate(schoolExternalToolDO);
 
 		const updated: SchoolExternalToolDO = new SchoolExternalToolDO({
 			...schoolExternalTool,
