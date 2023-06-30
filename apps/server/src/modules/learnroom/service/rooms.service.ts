@@ -89,7 +89,7 @@ export class RoomsService {
 			const text3 = await this.contentElementService.create(card, ContentElementType.RICH_TEXT);
 			const content3 = new RichTextContentBody();
 			content3.inputFormat = InputFormat.RICH_TEXT_CK5;
-			content3.text = `<p>Wir freuen uns sehr über <strong>Feedback</strong> zum Board unter <a href="${feedbacklink}">folgendem Link</a></p>`;
+			content3.text = `<p>Wir freuen uns sehr über <strong>Feedback</strong> zum Board unter <a href="${feedbacklink}">folgendem Link</a>.</p>`;
 			await this.contentElementService.update(text3, content3);
 		}
 		return columnBoard;
