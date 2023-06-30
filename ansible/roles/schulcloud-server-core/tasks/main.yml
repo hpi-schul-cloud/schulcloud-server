@@ -90,3 +90,9 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: amqp-files-deployment.yml.j2
+
+  - name: TlDrawServerDeployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: tldraw-deployment.yml.j2
