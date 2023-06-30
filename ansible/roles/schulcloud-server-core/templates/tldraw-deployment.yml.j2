@@ -41,28 +41,6 @@ spec:
         - secretRef:
             name: api-secret
         command: ['npm', 'run', 'nest:start:tldraw:prod']
-        readinessProbe:
-          httpGet:
-            path: api/v3/docs
-            port: 3344
-          timeoutSeconds: 4
-          failureThreshold: 3
-          periodSeconds: 5
-        # liveless if unsatisfactory reply
-        livenessProbe:
-          httpGet:
-            path: api/v3/docs
-            port: 3344
-          timeoutSeconds: 4
-          failureThreshold: 3
-          periodSeconds: 15
-        startupProbe:
-          httpGet:
-            path: api/v3/docs
-            port: 3344
-          timeoutSeconds: 4
-          failureThreshold:  36
-          periodSeconds: 5
         resources:
           limits:
             cpu: {{ TLDRAW_EDITOR_CPU_LIMITS|default("2000m", true) }}
