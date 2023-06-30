@@ -60,9 +60,9 @@ describe(CardUc.name, () => {
 		await module.close();
 	});
 
-	// afterEach(() => {
-	// 	jest.resetAllMocks();
-	// });
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
 
 	describe('findCards', () => {
 		describe('when finding many cards', () => {
@@ -96,7 +96,6 @@ describe(CardUc.name, () => {
 	describe('createElement', () => {
 		describe('when creating a content element', () => {
 			const setup = () => {
-				jest.resetAllMocks();
 				const user = userFactory.build();
 				const card = cardFactory.build();
 				const element = richTextElementFactory.build();
