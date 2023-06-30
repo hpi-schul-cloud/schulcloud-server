@@ -1,1 +1,1 @@
-export * from './tool-stauts-outdated.loggable-exception';
+export * from './tool-status-outdated.loggable-exception';
