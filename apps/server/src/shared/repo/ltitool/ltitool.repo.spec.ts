@@ -1,15 +1,15 @@
-import { EntityManager } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections } from '@shared/testing';
 import { createMock } from '@golevelup/ts-jest';
-import { LegacyLogger } from '@src/core/logger';
 import { NotFoundError } from '@mikro-orm/core';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { Test, TestingModule } from '@nestjs/testing';
 import { ILtiToolProperties, LtiTool } from '@shared/domain';
-import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity/ltitool.entity';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity/ltitool.entity';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { LtiToolRepo } from '@shared/repo/ltitool/ltitool.repo';
+import { cleanupCollections } from '@shared/testing';
 import { ltiToolFactory } from '@shared/testing/factory/ltitool.factory';
+import { LegacyLogger } from '@src/core/logger';
 
 class LtiToolRepoSpec extends LtiToolRepo {
 	mapEntityToDOSpec(entity: LtiTool): LtiToolDO {
@@ -107,29 +107,34 @@ describe('LtiTool Repo', () => {
 	});
 
 	describe('findByClientIdAndIsLocal', () => {
-		it('should find a ltiTool by clientId and local flag', async () => {
-			const entity: LtiTool = ltiToolFactory.buildWithId();
-			await em.persistAndFlush(entity);
+		describe('when the tool exists', () => {
+			const setup = async () => {
+				const clientId = 'clientId';
+				const ltiTool: LtiTool = ltiToolFactory.buildWithId({ oAuthClientId: clientId });
 
-			const result = await repo.findByClientIdAndIsLocal(entity.oAuthClientId as string, entity.isLocal as boolean);
+				await em.persistAndFlush(ltiTool);
 
-			expect(result.id).toEqual(entity.id);
-			expect(result.oAuthClientId).toEqual(entity.oAuthClientId);
-			expect(result.isLocal).toEqual(entity.isLocal);
+				return {
+					clientId,
+					ltiTool,
+				};
+			};
+
+			it('should return the tool', async () => {
+				const { ltiTool, clientId } = await setup();
+
+				const result: LtiToolDO | null = await repo.findByClientIdAndIsLocal(clientId, true);
+
+				expect(result?.id).toEqual(ltiTool.id);
+			});
 		});
 
-		it('should not find a ltiTool by clientId and the local flag is false', async () => {
-			const entity: LtiTool = ltiToolFactory.withLocal(false).buildWithId();
-			await em.persistAndFlush(entity);
+		describe('when no tool exists', () => {
+			it('should return the tool', async () => {
+				const result: LtiToolDO | null = await repo.findByClientIdAndIsLocal(new ObjectId().toHexString(), true);
 
-			const result = await repo.findByClientIdAndIsLocal(entity.oAuthClientId as string, entity.isLocal as boolean);
-
-			expect(result.isLocal).toEqual(entity.isLocal);
-		});
-
-		it('should throw an error if the ltitool was not found', async () => {
-			const entity: LtiTool = ltiToolFactory.buildWithId();
-			await expect(repo.findByName(entity.name)).rejects.toThrow(NotFoundError);
+				expect(result).toBeNull();
+			});
 		});
 	});
 

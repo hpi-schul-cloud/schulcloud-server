@@ -1,27 +1,28 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ExternalToolRepo, ContextExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
+import { UnprocessableEntityException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { CustomParameterScope, IFindOptions, Page, SchoolExternalToolDO, SortOrder } from '@shared/domain';
 import {
 	CustomParameterDO,
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/tool';
-import { CustomParameterScope, IFindOptions, SortOrder, Page, SchoolExternalToolDO } from '@shared/domain';
+import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
+import { OauthProviderService } from '@shared/infra/oauth-provider';
+import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
+import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import {
 	customParameterDOFactory,
 	externalToolDOFactory,
 	lti11ToolConfigDOFactory,
 	oauth2ToolConfigDOFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { OauthProviderService } from '@shared/infra/oauth-provider';
-import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
-import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
-import { UnprocessableEntityException } from '@nestjs/common';
 import { LegacyLogger } from '@src/core/logger';
+import { ExternalToolSearchQuery } from '../interface';
+import { ExternalToolVersionService } from './external-tool-version.service';
 import { ExternalToolService } from './external-tool.service';
 import { ExternalToolServiceMapper } from './mapper';
-import { ExternalToolVersionService } from './external-tool-version.service';
 
 describe('ExternalToolService', () => {
 	let module: TestingModule;
@@ -177,7 +178,10 @@ describe('ExternalToolService', () => {
 				const { externalToolDO, lti11ToolConfigDO } = setup();
 				externalToolDO.config = lti11ToolConfigDO;
 				const lti11ToolConfigDOEncrypted: Lti11ToolConfigDO = { ...lti11ToolConfigDO, secret: encryptedSecret };
-				const externalToolDOEncrypted: ExternalToolDO = { ...externalToolDO, config: lti11ToolConfigDOEncrypted };
+				const externalToolDOEncrypted: ExternalToolDO = externalToolDOFactory.build({
+					...externalToolDO,
+					config: lti11ToolConfigDOEncrypted,
+				});
 
 				encryptionService.encrypt.mockReturnValue(encryptedSecret);
 				externalToolRepo.save.mockResolvedValue(externalToolDOEncrypted);
@@ -215,8 +219,7 @@ describe('ExternalToolService', () => {
 		const setupFind = () => {
 			const { externalToolDO } = setup();
 			const page = new Page<ExternalToolDO>([externalToolDO], 1);
-			const query: Partial<ExternalToolDO> = {
-				id: 'toolId',
+			const query: ExternalToolSearchQuery = {
 				name: 'toolName',
 			};
 			const options: IFindOptions<ExternalToolDO> = {
@@ -595,7 +598,10 @@ describe('ExternalToolService', () => {
 					},
 					'toolId'
 				);
-				const expected: ExternalToolDO = { ...externalToolDO, parameters: schoolParameters };
+				const expected: ExternalToolDO = externalToolDOFactory.build({
+					...externalToolDO,
+					parameters: schoolParameters,
+				});
 
 				externalToolRepo.findById.mockResolvedValue(externalToolDO);
 

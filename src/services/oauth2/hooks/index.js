@@ -1,6 +1,7 @@
 /* eslint-disable promise/no-nesting */
 const { authenticate } = require('@feathersjs/authentication');
 
+const { NotFound } = require('@feathersjs/errors');
 const { Forbidden, MethodNotAllowed } = require('../../../errors');
 const globalHooks = require('../../../hooks');
 const Hydra = require('../hydra');
@@ -20,8 +21,15 @@ const setSubject = (hook) => {
 				isLocal: true,
 			},
 		})
-		.then((tools) =>
-			hook.app
+		.then((tools) => {
+			if (!Array.isArray(tools.data) || tools.data.length !== 1) {
+				throw new NotFound(
+					`Unable to find a singular LtiTool with client_id ${hook.params.loginRequest.client.client_id} for login request. ` +
+						'If you are trying to use a CTL-Tool, please use the v3+ endpoints.'
+				);
+			}
+
+			return hook.app
 				.service('pseudonym')
 				.find({
 					query: {
@@ -34,8 +42,8 @@ const setSubject = (hook) => {
 					if (!hook.data) hook.data = {};
 					hook.data.subject = hook.params.account.userId;
 					hook.data.force_subject_identifier = pseudonym;
-				})
-		);
+				});
+		});
 };
 
 const setIdToken = (hook) => {
@@ -79,10 +87,12 @@ const setIdToken = (hook) => {
 						userId: scope.includes('profile') ? user._id : undefined,
 						schoolId: user.schoolId,
 						groups: scope.includes('groups')
-							? userTeams.data.map((team) => ({
-									gid: team._id,
-									displayName: team.name,
-							  }))
+							? userTeams.data.map((team) => {
+									return {
+										gid: team._id,
+										displayName: team.name,
+									};
+							  })
 							: undefined,
 					},
 				};

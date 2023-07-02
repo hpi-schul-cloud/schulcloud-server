@@ -7,7 +7,7 @@ import { ALL_ENTITIES } from '@shared/domain';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MailModule } from '@shared/infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
-import { REDIS_CLIENT, RedisModule } from '@shared/infra/redis';
+import { RedisModule, REDIS_CLIENT } from '@shared/infra/redis';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LegacyLogger, LoggerModule } from '@src/core/logger';
@@ -18,7 +18,7 @@ import { FilesStorageClientModule } from '@src/modules/files-storage-client';
 import { LearnroomModule } from '@src/modules/learnroom';
 import { LessonApiModule } from '@src/modules/lesson';
 import { NewsModule } from '@src/modules/news';
-import { OauthProviderModule } from '@src/modules/oauth-provider';
+import { OauthProviderApiModule } from '@src/modules/oauth-provider';
 import { OauthApiModule } from '@src/modules/oauth/oauth-api.module';
 import { ProvisioningModule } from '@src/modules/provisioning';
 import { RocketChatModule } from '@src/modules/rocketchat';
@@ -33,6 +33,7 @@ import { ImportUserModule } from '@src/modules/user-import';
 import { UserLoginMigrationApiModule } from '@src/modules/user-login-migration/user-login-migration-api.module';
 import { UserApiModule } from '@src/modules/user/user-api.module';
 import { VideoConferenceModule } from '@src/modules/video-conference';
+import { VideoConferenceApiModule } from '@src/modules/video-conference/video-conference-api.module';
 import connectRedis from 'connect-redis';
 import session from 'express-session';
 import { RedisClient } from 'redis';
@@ -71,7 +72,8 @@ const serverModules = [
 	ProvisioningModule,
 	RoleModule,
 	VideoConferenceModule,
-	OauthProviderModule,
+	VideoConferenceApiModule,
+	OauthProviderApiModule,
 	SharingApiModule,
 	ToolApiModule,
 	UserLoginMigrationApiModule,
