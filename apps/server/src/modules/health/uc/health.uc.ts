@@ -75,13 +75,7 @@ export class HealthUC {
 
 			const endTime = performance.now();
 
-			let errorMessage: string;
-
-			if (hasMessage(error)) {
-				errorMessage = error.message;
-			} else {
-				errorMessage = JSON.stringify(error);
-			}
+			const errorMessage = hasMessage(error) ? error.message : JSON.stringify(error);
 
 			return new HealthStatus({
 				status: HealthStatuses.STATUS_FAIL,
