@@ -10,12 +10,12 @@ export const federalStateFactory = BaseFactory.define<FederalState, IFederalStat
 		counties: [
 			new County({
 				name: 'Hamburg-Mitte',
-				countyId: '02000',
+				countyId: 2000,
 				antaresKey: '02000',
 			}),
 			new County({
 				name: 'Altona',
-				countyId: '02002',
+				countyId: 2002,
 				antaresKey: '02002',
 			}),
 		],

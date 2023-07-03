@@ -1,11 +1,11 @@
 /* istanbul ignore file */
-import { IUserProperties, Role, Permission, RoleName, User } from '@shared/domain';
+import { IUserProperties, Permission, Role, RoleName, User } from '@shared/domain';
 import { DeepPartial } from 'fishery';
 import _ from 'lodash';
+import { adminPermissions, studentPermissions, teacherPermissions, userPermissions } from '../user-role-permissions';
 import { BaseFactory } from './base.factory';
 import { roleFactory } from './role.factory';
 import { schoolFactory } from './school.factory';
-import { adminPermissions, studentPermissions, teacherPermissions, userPermissions } from '../user-role-permissions';
 
 class UserFactory extends BaseFactory<User, IUserProperties> {
 	withRoleByName(name: RoleName): this {
