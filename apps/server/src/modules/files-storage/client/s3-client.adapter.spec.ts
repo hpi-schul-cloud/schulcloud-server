@@ -431,6 +431,26 @@ describe('S3ClientAdapter', () => {
 		});
 	});
 
+	describe('head', () => {
+		const setup = () => {
+			const { pathToFile } = createParameter();
+
+			return { pathToFile };
+		};
+
+		it('should call send() of client with head object', async () => {
+			const { pathToFile } = setup();
+
+			await service.head(pathToFile);
+
+			expect(client.send).toBeCalledWith(
+				expect.objectContaining({
+					input: { Bucket: 'test-bucket', Key: pathToFile },
+				})
+			);
+		});
+	});
+
 	describe('list', () => {
 		const setup = () => {
 			const prefix = 'test/';

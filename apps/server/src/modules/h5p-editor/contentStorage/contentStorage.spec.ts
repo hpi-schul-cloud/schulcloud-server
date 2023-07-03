@@ -458,8 +458,9 @@ describe('ContentStorage', () => {
 	describe('getFileStats', () => {
 		describe('WHEN file exists', () => {
 			it('should return fileStats', async () => {
-				const { contentId, filename1, user, fileResponse } = setup();
-				s3ClientAdapter.get.mockResolvedValue(fileResponse);
+				const { contentId, filename1, user } = setup();
+				// @ts-expect-error should expect error
+				s3ClientAdapter.head.mockResolvedValue({ ContentLength: 100, LastModified: new Date() });
 				const fileStats = await service.getFileStats(contentId, filename1, user);
 				expect(fileStats).toBeDefined();
 				expect(typeof fileStats).toBe('object');

@@ -4,6 +4,7 @@ import {
 	CreateBucketCommand,
 	DeleteObjectsCommand,
 	GetObjectCommand,
+	HeadObjectCommand,
 	ListObjectsV2Command,
 	ListObjectsV2CommandOutput,
 	S3Client,
@@ -216,6 +217,17 @@ export class S3ClientAdapter implements IStorageClient {
 		} catch (err) {
 			throw new InternalServerErrorException(err, 'S3ClientAdapter:list');
 		}
+	}
+
+	public async head(path: string) {
+		this.logger.log({ action: 'head', params: { path, bucket: this.config.bucket } });
+
+		const req = new HeadObjectCommand({
+			Bucket: this.config.bucket,
+			Key: path,
+		});
+
+		return this.client.send(req);
 	}
 
 	/* istanbul ignore next */

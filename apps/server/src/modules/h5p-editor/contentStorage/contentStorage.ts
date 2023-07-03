@@ -105,13 +105,18 @@ export class ContentStorage implements IContentStorage {
 
 	public async getFileStats(contentId: string, file: string, user: IUser): Promise<IFileStats> {
 		const filePath = this.getFilePath(contentId, file);
-		const fileResponse = await this.storageClient.get(filePath);
+		const { ContentLength, LastModified } = await this.storageClient.head(filePath);
 
-		const fileSize = fileResponse.contentLength ?? 0;
-		const date = new Date('01.01.01');
+		if (ContentLength === undefined || LastModified === undefined) {
+			throw new InternalServerErrorException(
+				{ ContentLength, LastModified },
+				'ContentStorage:getFileStats ContentLength or LastModified are undefined'
+			);
+		}
+
 		const fileStats: IFileStats = {
-			birthtime: date,
-			size: fileSize,
+			birthtime: LastModified,
+			size: ContentLength,
 		};
 
 		return fileStats;
