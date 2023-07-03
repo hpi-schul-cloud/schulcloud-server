@@ -430,4 +430,146 @@ describe('S3ClientAdapter', () => {
 			await expect(service.copy(undefined)).rejects.toThrowError(InternalServerErrorException);
 		});
 	});
+
+	describe('list', () => {
+		const setup = () => {
+			const prefix = 'test/';
+
+			const keys = Array.from(Array(2500).keys()).map((n) => `KEY-${n}`);
+			const responseContents = keys.map((key) => {
+				return {
+					Key: `${prefix}${key}`,
+				};
+			});
+
+			return { prefix, keys, responseContents };
+		};
+
+		afterEach(() => {
+			client.send.mockClear();
+		});
+
+		it('should call send() of client', async () => {
+			const { prefix, keys, responseContents } = setup();
+
+			// @ts-expect-error should run into error
+			client.send.mockResolvedValue({
+				IsTruncated: false,
+				Contents: responseContents,
+			});
+
+			const resultKeys = await service.list(prefix);
+
+			expect(resultKeys).toEqual(keys);
+
+			expect(client.send).toBeCalledWith(
+				expect.objectContaining({
+					input: {
+						Bucket: 'test-bucket',
+						Prefix: prefix,
+						ContinuationToken: undefined,
+						MaxKeys: 1000,
+					},
+				})
+			);
+		});
+
+		it('should truncate result when max is given', async () => {
+			const { prefix, keys, responseContents } = setup();
+
+			// @ts-expect-error should run into error
+			client.send.mockResolvedValue({
+				IsTruncated: false,
+				Contents: responseContents,
+			});
+
+			const resultKeys = await service.list(prefix, 500);
+
+			expect(resultKeys).toEqual(keys.slice(0, 500));
+
+			expect(client.send).toBeCalledWith(
+				expect.objectContaining({
+					input: {
+						Bucket: 'test-bucket',
+						Prefix: prefix,
+						ContinuationToken: undefined,
+						MaxKeys: 500,
+					},
+				})
+			);
+		});
+
+		it('should call send() multiple times', async () => {
+			const { prefix, responseContents, keys } = setup();
+
+			client.send
+				// @ts-expect-error should run into error
+				.mockResolvedValueOnce({
+					IsTruncated: true,
+					NextContinuationToken: '1',
+					Contents: responseContents.slice(0, 1000),
+				})
+				// @ts-expect-error should run into error
+				.mockResolvedValueOnce({
+					IsTruncated: true,
+					NextContinuationToken: '2',
+					Contents: responseContents.slice(1000, 2000),
+				})
+				// @ts-expect-error should run into error
+				.mockResolvedValueOnce({
+					Contents: responseContents.slice(2000),
+				});
+
+			const resultKeys = await service.list(prefix);
+
+			expect(resultKeys).toEqual(keys);
+
+			expect(client.send).toHaveBeenNthCalledWith(
+				1,
+				expect.objectContaining({
+					input: {
+						Bucket: 'test-bucket',
+						Prefix: prefix,
+						ContinuationToken: undefined,
+						MaxKeys: 1000,
+					},
+				})
+			);
+
+			expect(client.send).toHaveBeenNthCalledWith(
+				2,
+				expect.objectContaining({
+					input: {
+						Bucket: 'test-bucket',
+						Prefix: prefix,
+						ContinuationToken: '1',
+						MaxKeys: 1000,
+					},
+				})
+			);
+
+			expect(client.send).toHaveBeenNthCalledWith(
+				3,
+				expect.objectContaining({
+					input: {
+						Bucket: 'test-bucket',
+						Prefix: prefix,
+						ContinuationToken: '2',
+						MaxKeys: 1000,
+					},
+				})
+			);
+		});
+
+		it('should throw error', async () => {
+			const { prefix } = setup();
+
+			// @ts-expect-error should run into error
+			client.send.mockRejectedValue(new Error());
+
+			const listPromise = service.list(prefix);
+
+			await expect(listPromise).rejects.toThrow();
+		});
+	});
 });

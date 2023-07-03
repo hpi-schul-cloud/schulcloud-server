@@ -1,15 +1,21 @@
-import { Entity, Property } from '@mikro-orm/core';
+import { Embeddable, Embedded, Entity, JsonType, Property } from '@mikro-orm/core';
 import { IContentMetadata, ILibraryName } from '@lumieducation/h5p-server';
 import { BaseEntity } from '@shared/domain';
 import { IContentAuthor, IContentChange } from '@lumieducation/h5p-server/build/src/types';
 
-@Entity({ tableName: 'h5p-editor-content-metadata' })
-export class ContentMetadata extends BaseEntity implements IContentMetadata {
-	@Property()
-	contentId: string;
+@Embeddable()
+export class ContentMetadata implements IContentMetadata {
+	@Property({ nullable: true })
+	dynamicDependencies?: ILibraryName[];
+
+	@Property({ nullable: true })
+	editorDependencies?: ILibraryName[];
 
 	@Property()
 	embedTypes: ('iframe' | 'div')[];
+
+	@Property({ nullable: true })
+	h?: string;
 
 	@Property()
 	language: string;
@@ -17,38 +23,26 @@ export class ContentMetadata extends BaseEntity implements IContentMetadata {
 	@Property()
 	mainLibrary: string;
 
-	@Property()
-	defaultLanguage: string;
-
-	@Property()
-	license: string;
-
-	@Property()
-	title: string;
-
-	@Property()
-	preloadedDependencies: ILibraryName[];
-
-	@Property({ nullable: true })
-	dynamicDependencies?: ILibraryName[];
-
-	@Property({ nullable: true })
-	editorDependencies?: ILibraryName[];
-
-	@Property({ nullable: true })
-	h?: string;
-
 	@Property({ nullable: true })
 	metaDescription?: string;
 
 	@Property({ nullable: true })
 	metaKeywords?: string;
 
+	@Property()
+	preloadedDependencies: ILibraryName[];
+
 	@Property({ nullable: true })
 	w?: string;
 
+	@Property()
+	defaultLanguage: string;
+
 	@Property({ nullable: true })
 	a11yTitle?: string;
+
+	@Property()
+	license: string;
 
 	@Property({ nullable: true })
 	licenseVersion?: string;
@@ -61,6 +55,9 @@ export class ContentMetadata extends BaseEntity implements IContentMetadata {
 
 	@Property({ nullable: true })
 	source?: string;
+
+	@Property()
+	title: string;
 
 	@Property({ nullable: true })
 	authors?: IContentAuthor[];
@@ -77,11 +74,7 @@ export class ContentMetadata extends BaseEntity implements IContentMetadata {
 	@Property({ nullable: true })
 	contentType?: string;
 
-	constructor({ contentId, metadata }: { contentId: string; metadata: IContentMetadata }) {
-		super();
-
-		this.contentId = contentId;
-
+	constructor(metadata: IContentMetadata) {
 		this.embedTypes = metadata.embedTypes;
 		this.language = metadata.language;
 		this.mainLibrary = metadata.mainLibrary;
@@ -106,5 +99,21 @@ export class ContentMetadata extends BaseEntity implements IContentMetadata {
 		if (metadata.changes) this.changes = metadata.changes;
 		if (metadata.authorComments) this.authorComments = metadata.authorComments;
 		if (metadata.contentType) this.contentType = metadata.contentType;
+	}
+}
+
+@Entity({ tableName: 'h5p-editor-content' })
+export class H5PContent extends BaseEntity {
+	@Embedded(() => ContentMetadata)
+	metadata: ContentMetadata;
+
+	@Property({ type: JsonType })
+	content: unknown;
+
+	constructor({ metadata, content }: { metadata: ContentMetadata; content: unknown }) {
+		super();
+
+		this.metadata = metadata;
+		this.content = content;
 	}
 }

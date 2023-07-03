@@ -1,13 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { IContentMetadata, ILibraryName, IUser } from '@lumieducation/h5p-server';
-import { Readable, Stream } from 'stream';
-import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { IContentMetadata, ILibraryName, IUser } from '@lumieducation/h5p-server';
 import { NotFoundException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 import { IGetFileResponse } from '@src/modules/files-storage/interface';
+import { Readable } from 'stream';
 import { ContentStorage } from './contentStorage';
-import { ContentMetadataRepo } from './contentMetadata.repo';
-import { ContentMetadata } from './contentMetadata.entity';
+import { H5PContent } from './h5p-content.entity';
+import { H5PContentRepo } from './h5p-content.repo';
 
 const setup = () => {
 	function createReadableBuffer(content: string) {
@@ -151,18 +151,17 @@ const setup = () => {
 		name: 'User Test',
 		type: '',
 	};
-	const stream: Stream = new Stream();
+	const stream = Readable.from('{}');
 
-	const contentId = '2345';
-	const contentId2 = '6789';
+	const contentId = '1234';
+	const contentId2 = '5678';
 	const notExistingContentId = '987mn';
 
-	const contentMetadata = new ContentMetadata({ contentId, metadata });
-	const contentMetadata1 = new ContentMetadata({ contentId, metadata });
-	const contentMetadata2 = new ContentMetadata({ contentId, metadata: metadata2 });
-	const contentMetadata3 = new ContentMetadata({ contentId, metadata: metadata3 });
-	const contentMetadata4 = new ContentMetadata({ contentId, metadata: metadata4Editor });
-	const contentMetadata5 = new ContentMetadata({ contentId, metadata: metadata5Dynamic });
+	const h5pContent = new H5PContent({ metadata, content: {} });
+	const h5pContent2 = new H5PContent({ metadata: metadata2, content: {} });
+	const h5pContent3 = new H5PContent({ metadata: metadata3, content: {} });
+	const h5pContent4 = new H5PContent({ metadata: metadata4Editor, content: {} });
+	const h5pContent5 = new H5PContent({ metadata: metadata5Dynamic, content: {} });
 
 	const filename1 = 'testFile1.json';
 	const notExistingFilename = 'testFile987.json';
@@ -181,12 +180,11 @@ const setup = () => {
 		contentIdList,
 		contentIdListResponse,
 		contentIdListResponse2,
-		contentMetadata,
-		contentMetadata1,
-		contentMetadata2,
-		contentMetadata3,
-		contentMetadata4,
-		contentMetadata5,
+		h5pContent,
+		h5pContent2,
+		h5pContent3,
+		h5pContent4,
+		h5pContent5,
 		contentPath,
 		dir,
 		emptyContentId,
@@ -214,7 +212,7 @@ describe('ContentStorage', () => {
 	let module: TestingModule;
 	let service: ContentStorage;
 	let s3ClientAdapter: DeepMocked<S3ClientAdapter>;
-	let contentMetadataRepo: DeepMocked<ContentMetadataRepo>;
+	let contentRepo: DeepMocked<H5PContentRepo>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -225,14 +223,14 @@ describe('ContentStorage', () => {
 					useValue: createMock<S3ClientAdapter>(),
 				},
 				{
-					provide: ContentMetadataRepo,
-					useValue: createMock<ContentMetadataRepo>(),
+					provide: H5PContentRepo,
+					useValue: createMock<H5PContentRepo>(),
 				},
 			],
 		}).compile();
 		service = module.get(ContentStorage);
 		s3ClientAdapter = module.get(S3ClientAdapter);
-		contentMetadataRepo = module.get(ContentMetadataRepo);
+		contentRepo = module.get(H5PContentRepo);
 	});
 
 	afterAll(async () => {
@@ -249,12 +247,11 @@ describe('ContentStorage', () => {
 
 	describe('addContent', () => {
 		describe('WHEN content is created successfully', () => {
-			it('should return contentId', async () => {
+			it('should save content', async () => {
 				const { metadata, content, user } = setup();
-				s3ClientAdapter.get.mockRejectedValue(new NotFoundException('NoSuchKey'));
-				const contentID = await service.addContent(metadata, content, user);
-				expect(contentID).toBeDefined();
-				expect(typeof contentID).toBe('string');
+				await service.addContent(metadata, content, user);
+
+				expect(contentRepo.createContent).toHaveBeenCalledWith(expect.objectContaining({ metadata, content }));
 			});
 		});
 		describe('WHEN contentId is empty', () => {
@@ -358,7 +355,7 @@ describe('ContentStorage', () => {
 		describe('WHEN content does not exist', () => {
 			it('should return false', async () => {
 				const { notExistingContentId } = setup();
-				s3ClientAdapter.get.mockRejectedValue(new NotFoundException('NoSuchKey'));
+				contentRepo.findById.mockRejectedValue(new NotFoundException());
 				const contentExists = await service.contentExists(notExistingContentId);
 				expect(contentExists).toEqual(false);
 			});
@@ -379,11 +376,6 @@ describe('ContentStorage', () => {
 		describe('WHEN content is deleted successfully', () => {
 			it('should delete existing content', async () => {
 				const { contentId } = setup();
-				expect(await service.deleteContent(contentId)).not.toBeInstanceOf(Error);
-			});
-			it('should delete existing fileList', async () => {
-				const { contentId, fileListResponseFactory } = setup();
-				s3ClientAdapter.get.mockImplementation(() => Promise.resolve(fileListResponseFactory()));
 				expect(await service.deleteContent(contentId)).not.toBeInstanceOf(Error);
 			});
 		});
@@ -436,7 +428,8 @@ describe('ContentStorage', () => {
 	describe('fileExists', () => {
 		describe('WHEN file exists', () => {
 			it('should return true', async () => {
-				const { contentId, filename1 } = setup();
+				const { contentId, filename1, fileResponse } = setup();
+				s3ClientAdapter.get.mockResolvedValue(fileResponse);
 				const fileExists = await service.fileExists(contentId, filename1);
 				expect(fileExists).toEqual(true);
 			});
@@ -516,8 +509,8 @@ describe('ContentStorage', () => {
 	describe('getMetadata', () => {
 		describe('WHEN file exists', () => {
 			it('should return metadata', async () => {
-				const { contentId, user, contentMetadata } = setup();
-				contentMetadataRepo.findById.mockResolvedValueOnce(contentMetadata);
+				const { contentId, user, h5pContent } = setup();
+				contentRepo.findById.mockResolvedValueOnce(h5pContent);
 				const metadata = await service.getMetadata(contentId, user);
 				expect(metadata).toBeDefined();
 			});
@@ -538,9 +531,9 @@ describe('ContentStorage', () => {
 	describe('getParameters', () => {
 		describe('WHEN user and content is defined', () => {
 			it('should return parameters', async () => {
-				const { contentId, user, fileResponse } = setup();
-				s3ClientAdapter.get.mockResolvedValue(fileResponse);
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { contentId, user, h5pContent } = setup();
+				contentRepo.findById.mockResolvedValue(h5pContent);
+
 				const parameters = await service.getParameters(contentId, user);
 				expect(parameters).toBeDefined();
 			});
@@ -572,24 +565,24 @@ describe('ContentStorage', () => {
 	describe('resolveDependecies', () => {
 		describe('WHEN file exists and has main library', () => {
 			it('should return main library from preloadedDependencies equal to 2', async () => {
-				const { library, contentIdList, user, contentMetadata1 } = setup();
-				contentMetadataRepo.findById.mockResolvedValue(contentMetadata1);
+				const { library, contentIdList, user, h5pContent } = setup();
+				contentRepo.findById.mockResolvedValue(h5pContent);
 				const result = await service.resolveDependecies(contentIdList, user, library);
 				expect(result).toBeDefined();
 				expect(result.asMainLibrary).toEqual(2);
 				expect(result.asDependency).toEqual(0);
 			});
 			it('should return main library from editorDependencies equal to 2', async () => {
-				const { library, contentIdList, user, contentMetadata4 } = setup();
-				contentMetadataRepo.findById.mockResolvedValue(contentMetadata4);
+				const { library, contentIdList, user, h5pContent4 } = setup();
+				contentRepo.findById.mockResolvedValue(h5pContent4);
 				const result = await service.resolveDependecies(contentIdList, user, library);
 				expect(result).toBeDefined();
 				expect(result.asMainLibrary).toEqual(2);
 				expect(result.asDependency).toEqual(0);
 			});
 			it('should return main library from dynamicDependencies equal to 2', async () => {
-				const { library, contentIdList, user, contentMetadata5 } = setup();
-				contentMetadataRepo.findById.mockResolvedValue(contentMetadata5);
+				const { library, contentIdList, user, h5pContent5 } = setup();
+				contentRepo.findById.mockResolvedValue(h5pContent5);
 				const result = await service.resolveDependecies(contentIdList, user, library);
 				expect(result).toBeDefined();
 				expect(result.asMainLibrary).toEqual(2);
@@ -598,8 +591,8 @@ describe('ContentStorage', () => {
 		});
 		describe('WHEN file exists and has dependency', () => {
 			it('should return dependencies equal to 2', async () => {
-				const { library, contentIdList, user, contentMetadata2 } = setup();
-				contentMetadataRepo.findById.mockResolvedValue(contentMetadata2);
+				const { library, contentIdList, user, h5pContent2 } = setup();
+				contentRepo.findById.mockResolvedValue(h5pContent2);
 				const result = await service.resolveDependecies(contentIdList, user, library);
 				expect(result).toBeDefined();
 				expect(result.asMainLibrary).toEqual(0);
@@ -608,8 +601,8 @@ describe('ContentStorage', () => {
 		});
 		describe('WHEN file exists and has no main library and dependecies', () => {
 			it('should return main library and dependencies equal to 0', async () => {
-				const { library, contentIdList, user, contentMetadata3 } = setup();
-				contentMetadataRepo.findById.mockResolvedValue(contentMetadata3);
+				const { library, contentIdList, user, h5pContent3 } = setup();
+				contentRepo.findById.mockResolvedValue(h5pContent3);
 				const result = await service.resolveDependecies(contentIdList, user, library);
 				expect(result).toBeDefined();
 				expect(result.asMainLibrary).toEqual(0);
@@ -637,31 +630,13 @@ describe('ContentStorage', () => {
 	describe('listFiles', () => {
 		describe('WHEN content has files', () => {
 			it('should return a list of files from the content', async () => {
-				const { contentId, user, fileListResponse, fileList } = setup();
-				s3ClientAdapter.get.mockResolvedValue(fileListResponse);
+				const { contentId, user, fileList } = setup();
+				s3ClientAdapter.list.mockResolvedValue(fileList);
 				const contentFileList = await service.listFiles(contentId, user);
 				expect(contentFileList).toBeDefined();
 				expect(contentFileList.length).toBe(2);
 				expect(contentFileList[0]).toEqual(fileList[0]);
 				expect(contentFileList[1]).toEqual(fileList[1]);
-			});
-		});
-	});
-
-	describe('updateFileList', () => {
-		describe('WHEN adding filenames', () => {
-			it('should not throw an error', async () => {
-				const { contentId, fileListResponse, filename1 } = setup();
-				s3ClientAdapter.get.mockResolvedValue(fileListResponse);
-				expect(await service.updateFileList(contentId, filename1, 'add')).not.toEqual(new Error());
-			});
-		});
-
-		describe('WHEN deleteing filenames', () => {
-			it('should not throw an error', async () => {
-				const { contentId, fileListResponse2, filename1 } = setup();
-				s3ClientAdapter.get.mockResolvedValue(fileListResponse2);
-				expect(await service.updateFileList(contentId, filename1, 'delete')).not.toEqual(new Error());
 			});
 		});
 	});

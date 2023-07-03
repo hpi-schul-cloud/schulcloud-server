@@ -4,6 +4,8 @@ import {
 	CreateBucketCommand,
 	DeleteObjectsCommand,
 	GetObjectCommand,
+	ListObjectsV2Command,
+	ListObjectsV2CommandOutput,
 	S3Client,
 	ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
@@ -181,6 +183,39 @@ export class S3ClientAdapter implements IStorageClient {
 		});
 
 		return this.client.send(req);
+	}
+
+	public async list(prefix: string, maxKeys = Infinity) {
+		this.logger.log({ action: 'list', params: { prefix, bucket: this.config.bucket } });
+
+		try {
+			let files: string[] = [];
+			let ret: ListObjectsV2CommandOutput | undefined;
+
+			do {
+				const req = new ListObjectsV2Command({
+					Bucket: this.config.bucket,
+					Prefix: prefix,
+					ContinuationToken: ret?.NextContinuationToken,
+					MaxKeys: Math.min(maxKeys - files.length, 1000),
+				});
+
+				// Iterations are dependent on each other
+				// eslint-disable-next-line no-await-in-loop
+				ret = await this.client.send(req);
+
+				const returnedFiles =
+					ret?.Contents?.filter((o) => o.Key)
+						.map((o) => o.Key as string) // Can not be undefined because of filter above
+						.map((key) => key.substring(prefix.length)) ?? [];
+
+				files = files.concat(returnedFiles);
+			} while (ret?.IsTruncated && ret.NextContinuationToken && files.length < maxKeys);
+
+			return files.slice(0, maxKeys);
+		} catch (err) {
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:list');
+		}
 	}
 
 	/* istanbul ignore next */

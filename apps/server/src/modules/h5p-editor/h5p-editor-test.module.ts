@@ -20,7 +20,7 @@ import { H5PAjaxEndpointService, H5PEditorService, H5PPlayerService } from './se
 import { TemporaryFileStorage } from './temporary-file-storage/temporary-file-storage';
 import { H5PEditorUc } from './uc/h5p.uc';
 import { S3ClientAdapter } from '../files-storage/client/s3-client.adapter';
-import { ContentMetadataRepo } from './contentStorage/contentMetadata.repo';
+import { H5PContentRepo } from './contentStorage/h5p-content.repo';
 
 const storages = [
 	ContentStorage,
@@ -45,7 +45,7 @@ const providers = [
 	H5PEditorService,
 	H5PAjaxEndpointService,
 	S3ClientAdapter,
-	ContentMetadataRepo,
+	H5PContentRepo,
 	...storages,
 ];
 

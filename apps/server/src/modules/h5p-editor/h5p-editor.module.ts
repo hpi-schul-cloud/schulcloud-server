@@ -24,8 +24,8 @@ import { ContentStorage } from './contentStorage/contentStorage';
 import { LibraryStorage } from './libraryStorage/libraryStorage';
 import { TemporaryFileStorage } from './temporary-file-storage/temporary-file-storage';
 import { S3ClientAdapter } from '../files-storage/client/s3-client.adapter';
-import { ContentMetadataRepo } from './contentStorage/contentMetadata.repo';
-import { ContentMetadata } from './contentStorage/contentMetadata.entity';
+import { H5PContentRepo } from './contentStorage/h5p-content.repo';
+import { H5PContent } from './contentStorage/h5p-content.entity';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -51,7 +51,7 @@ const imports = [
 		clientUrl: DB_URL,
 		password: DB_PASSWORD,
 		user: DB_USERNAME,
-		entities: [User, Account, ContentMetadata, Role, School, System, SchoolYear],
+		entities: [User, Account, H5PContent, Role, School, System, SchoolYear],
 
 		// debug: true, // use it for locally debugging of querys
 	}),
@@ -86,7 +86,7 @@ const providers = [
 	H5PEditorService,
 	S3ClientAdapter,
 	H5PPlayerService,
-	ContentMetadataRepo,
+	H5PContentRepo,
 	H5PAjaxEndpointService,
 	...storages,
 ];
