@@ -11,8 +11,13 @@ import { Page } from '@shared/domain/domainobject/page';
 import { ExternalToolDO } from '@shared/domain/domainobject/tool';
 import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import { ToolContextType } from '../interface';
-import { ContextExternalToolService, ExternalToolService, SchoolExternalToolService } from '../service';
-import { ContextTypeMapper } from '../service/mapper';
+import {
+	ContextExternalToolService,
+	ContextTypeMapper,
+	ExternalToolService,
+	SchoolExternalToolService,
+} from '../service';
+import { AvailableToolsForContext } from './dto/external-tool-configuration.types';
 
 @Injectable()
 export class ExternalToolConfigurationUc {
@@ -48,7 +53,7 @@ export class ExternalToolConfigurationUc {
 		schoolId: EntityId,
 		contextId: EntityId,
 		contextType: ToolContextType
-	): Promise<ExternalToolDO[]> {
+	): Promise<AvailableToolsForContext[]> {
 		await this.ensureContextPermission(userId, contextId, contextType);
 
 		const [externalTools, schoolExternalTools, contextExternalToolsInUse]: [
@@ -61,61 +66,66 @@ export class ExternalToolConfigurationUc {
 				schoolId,
 			}),
 			this.contextExternalToolService.findContextExternalTools({
-				context: {
-					id: contextId,
-					type: contextType,
-				},
+				context: { id: contextId, type: contextType },
 			}),
 		]);
 
-		const schoolExternalToolsInUse: SchoolExternalToolDO[] = this.filterForSchoolExternalToolsInUse(
+		const availableSchoolExternalTools: SchoolExternalToolDO[] = this.filterForAvailableSchoolExternalTools(
 			schoolExternalTools,
 			contextExternalToolsInUse
 		);
 
-		const toolIdsInUse: EntityId[] = schoolExternalToolsInUse.map(
-			(schoolExternalTool: SchoolExternalToolDO): EntityId => schoolExternalTool.toolId
-		);
-
-		const availableTools: ExternalToolDO[] = this.filterForAvailableExternalTools(
+		const availableToolsForContext: AvailableToolsForContext[] = this.filterForAvailableExternalTools(
 			externalTools.data,
-			schoolExternalTools,
-			toolIdsInUse
+			availableSchoolExternalTools
 		);
 
-		return availableTools;
+		return availableToolsForContext;
 	}
 
-	private filterForSchoolExternalToolsInUse(
+	private filterForAvailableSchoolExternalTools(
 		schoolExternalTools: SchoolExternalToolDO[],
 		contextExternalToolsInUse: ContextExternalToolDO[]
 	): SchoolExternalToolDO[] {
-		const schoolExternalToolsInUse: SchoolExternalToolDO[] = schoolExternalTools.filter(
+		const availableSchoolExternalTools: SchoolExternalToolDO[] = schoolExternalTools.filter(
 			(schoolExternalTool: SchoolExternalToolDO): boolean => {
 				const hasContextExternalTool: boolean = contextExternalToolsInUse.some(
 					(contextExternalTool: ContextExternalToolDO) =>
 						contextExternalTool.schoolToolRef.schoolToolId === schoolExternalTool.id
 				);
 
-				return hasContextExternalTool;
+				return !hasContextExternalTool;
 			}
 		);
 
-		return schoolExternalToolsInUse;
+		return availableSchoolExternalTools;
 	}
 
+	// TODO N21-refactor return null with code coverage
 	private filterForAvailableExternalTools(
 		externalTools: ExternalToolDO[],
-		schoolExternalTools: SchoolExternalToolDO[],
-		toolIdsInUse: EntityId[]
-	): ExternalToolDO[] {
-		const availableTools: ExternalToolDO[] = externalTools.filter((tool: ExternalToolDO): boolean => {
-			const hasSchoolExternalTool: boolean = schoolExternalTools.some(
-				(schoolExternalTool: SchoolExternalToolDO): boolean => schoolExternalTool.toolId === tool.id
-			);
+		availableSchoolExternalTools: SchoolExternalToolDO[]
+	): AvailableToolsForContext[] {
+		const toolsWithSchoolTool: (AvailableToolsForContext | null)[] = availableSchoolExternalTools.map(
+			(schoolExternalTool: SchoolExternalToolDO) => {
+				const externalTool: ExternalToolDO | undefined = externalTools.find(
+					(tool: ExternalToolDO) => schoolExternalTool.toolId === tool.id
+				);
 
-			return !tool.isHidden && !!tool.id && !toolIdsInUse.includes(tool.id) && hasSchoolExternalTool;
-		});
+				if (!externalTool) {
+					return null;
+				}
+
+				return {
+					externalTool,
+					schoolExternalTool,
+				};
+			}
+		);
+
+		const availableTools: AvailableToolsForContext[] = toolsWithSchoolTool.filter(
+			(toolRef): toolRef is AvailableToolsForContext => !!toolRef && !toolRef.externalTool.isHidden
+		);
 
 		return availableTools;
 	}
@@ -126,10 +136,28 @@ export class ExternalToolConfigurationUc {
 		schoolId: EntityId
 	): Promise<ExternalToolDO> {
 		await this.ensureSchoolPermission(userId, schoolId);
-
 		const externalToolDO: ExternalToolDO = await this.externalToolService.getExternalToolForScope(
 			externalToolId,
 			CustomParameterScope.SCHOOL
+		);
+
+		if (externalToolDO.isHidden) {
+			throw new NotFoundException('Could not find the Tool Template');
+		}
+
+		return externalToolDO;
+	}
+
+	public async getExternalToolForContext(
+		userId: EntityId,
+		externalToolId: EntityId,
+		contextId: string,
+		contextType: ToolContextType
+	): Promise<ExternalToolDO> {
+		await this.ensureContextPermission(userId, contextId, contextType);
+		const externalToolDO: ExternalToolDO = await this.externalToolService.getExternalToolForScope(
+			externalToolId,
+			CustomParameterScope.CONTEXT
 		);
 
 		if (externalToolDO.isHidden) {

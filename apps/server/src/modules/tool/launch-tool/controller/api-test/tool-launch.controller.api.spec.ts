@@ -1,7 +1,6 @@
-import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
+import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Request } from 'express';
 import {
 	ContextExternalTool,
 	ContextExternalToolType,
@@ -26,14 +25,16 @@ import {
 	schoolFactory,
 	userFactory,
 } from '@shared/testing';
-import request, { Response } from 'supertest';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ICurrentUser } from '@src/modules/authentication';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server';
-import { ToolLaunchParams } from '../dto/tool-launch.params';
-import { ToolLaunchRequestResponse } from '../dto/tool-launch-request.response';
+import { Request } from 'express';
+import request, { Response } from 'supertest';
 import { LaunchRequestMethod } from '../../types';
+import { ToolLaunchRequestResponse } from '../dto/tool-launch-request.response';
+import { ToolLaunchParams } from '../dto/tool-launch.params';
 
+// TODO Refactor to use api testHelpers
 describe('ToolLaunchController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
@@ -84,6 +85,7 @@ describe('ToolLaunchController (API)', () => {
 
 				const externalTool: ExternalTool = externalToolFactory.buildWithId({
 					config: basicToolConfigDOFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
+					version: 0,
 				});
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
 					tool: externalTool,
@@ -114,9 +116,51 @@ describe('ToolLaunchController (API)', () => {
 				expect(body).toEqual<ToolLaunchRequestResponse>({
 					method: LaunchRequestMethod.GET,
 					url: 'https://mockurl.de/',
-					payload: '',
 					openNewTab: true,
 				});
+			});
+		});
+
+		describe('when user wants to launch an outdated tool', () => {
+			const setup = async () => {
+				const role: Role = roleFactory.buildWithId({ permissions: [Permission.CONTEXT_TOOL_USER] });
+				const school: School = schoolFactory.buildWithId();
+				const user: User = userFactory.buildWithId({ roles: [role], school });
+				const course: Course = courseFactory.buildWithId({ school, teachers: [user] });
+				currentUser = mapUserToCurrentUser(user);
+
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({
+					config: basicToolConfigDOFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
+					version: 1,
+				});
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+					tool: externalTool,
+					school,
+					toolVersion: 0,
+				});
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+					schoolTool: schoolExternalTool,
+					contextId: course.id,
+					contextType: ContextExternalToolType.COURSE,
+					toolVersion: 0,
+				});
+
+				const params: ToolLaunchParams = { contextExternalToolId: contextExternalTool.id };
+
+				await em.persistAndFlush([school, user, course, externalTool, schoolExternalTool, contextExternalTool]);
+				em.clear();
+
+				return { params };
+			};
+
+			it('should return a bad request', async () => {
+				const { params } = await setup();
+
+				const response: Response = await request(app.getHttpServer()).get(
+					`${BASE_URL}/${params.contextExternalToolId}/launch`
+				);
+
+				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 			});
 		});
 

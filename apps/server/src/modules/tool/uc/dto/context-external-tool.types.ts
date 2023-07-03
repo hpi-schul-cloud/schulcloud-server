@@ -1,7 +1,7 @@
-import { ContextExternalToolDO } from '@shared/domain/domainobject/tool/context-external-tool.do';
+import { ContextExternalToolProps } from '@shared/domain/domainobject/tool/context-external-tool.do';
 import { ContextRef, SchoolExternalToolRefDO } from '@shared/domain';
 
-export type ContextExternalTool = ContextExternalToolDO;
+export type ContextExternalTool = ContextExternalToolProps;
 
 export type ContextExternalToolQuery = {
 	id?: string;

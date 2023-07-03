@@ -44,11 +44,14 @@ describe('SchoolExternalToolValidationService', () => {
 		externalToolDoMock?: Partial<ExternalToolDO>,
 		schoolExternalToolDoMock?: Partial<SchoolExternalToolDO>
 	) => {
-		const schoolExternalToolDO: SchoolExternalToolDO = {
+		const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
 			...schoolExternalToolDOFactory.buildWithId(),
 			...schoolExternalToolDoMock,
-		};
-		const externalToolDO: ExternalToolDO = { ...externalToolDOFactory.buildWithId(), ...externalToolDoMock };
+		});
+		const externalToolDO: ExternalToolDO = new ExternalToolDO({
+			...externalToolDOFactory.buildWithId(),
+			...externalToolDoMock,
+		});
 		externalToolService.findExternalToolById.mockResolvedValue(externalToolDO);
 		const schoolExternalToolId = schoolExternalToolDO.id as string;
 		return {
