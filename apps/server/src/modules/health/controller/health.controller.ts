@@ -24,12 +24,9 @@ export class HealthController {
 		res.contentType(this.contentTypeApplicationHealthJSON);
 
 		const healthStatus = await this.healthUc.checkOverallHealth();
+		const httpStatus = healthStatus.isPassed() ? HttpStatus.OK : HttpStatus.INTERNAL_SERVER_ERROR;
 
-		if (healthStatus.isPassed()) {
-			res.status(HttpStatus.OK);
-		} else {
-			res.status(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		res.status(httpStatus);
 
 		return HealthStatusResponseMapper.mapToResponse(healthStatus);
 	}
