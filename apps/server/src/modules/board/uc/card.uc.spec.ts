@@ -48,9 +48,7 @@ describe(CardUc.name, () => {
 		uc = module.get(CardUc);
 		authorizationService = module.get(AuthorizationService);
 		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
-		boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-			new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
-		);
+
 		cardService = module.get(CardService);
 		elementService = module.get(ContentElementService);
 		await setupEntities();
@@ -60,9 +58,9 @@ describe(CardUc.name, () => {
 		await module.close();
 	});
 
-	// afterEach(() => {
-	// 	jest.resetAllMocks();
-	// });
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
 
 	describe('findCards', () => {
 		describe('when finding many cards', () => {
@@ -70,6 +68,10 @@ describe(CardUc.name, () => {
 				const user = userFactory.build();
 				const cards = cardFactory.buildList(3);
 				const cardIds = cards.map((c) => c.id);
+
+				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
+					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
+				);
 
 				return { user, cards, cardIds };
 			};
@@ -96,13 +98,16 @@ describe(CardUc.name, () => {
 	describe('createElement', () => {
 		describe('when creating a content element', () => {
 			const setup = () => {
-				jest.resetAllMocks();
 				const user = userFactory.build();
 				const card = cardFactory.build();
 				const element = richTextElementFactory.build();
 
 				cardService.findById.mockResolvedValueOnce(card);
 				elementService.create.mockResolvedValueOnce(element);
+
+				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
+					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
+				);
 
 				return { user, card, element };
 			};
@@ -153,6 +158,10 @@ describe(CardUc.name, () => {
 				const user = userFactory.build();
 				const element = richTextElementFactory.build();
 				const card = cardFactory.build();
+
+				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
+					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
+				);
 
 				return { user, card, element };
 			};
