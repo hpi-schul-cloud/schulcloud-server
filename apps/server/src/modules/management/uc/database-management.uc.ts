@@ -1,15 +1,15 @@
-/* eslint-disable no-await-in-loop */
-
-import { Inject, Injectable } from '@nestjs/common';
-import { orderBy } from 'lodash';
-import { FileSystemAdapter } from '@shared/infra/file-system';
-import { DatabaseManagementService } from '@shared/infra/database';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from '@shared/infra/encryption';
-import { StorageProvider, System } from '@shared/domain';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { StorageProvider, System } from '@shared/domain';
+import { DatabaseManagementService } from '@shared/infra/database';
+import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from '@shared/infra/encryption';
+import { FileSystemAdapter } from '@shared/infra/file-system';
 import { LegacyLogger } from '@src/core/logger';
+import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
+import { generateSeedData } from '../seed-data/generateSeedData';
 
 export interface ICollectionFilePath {
 	filePath: string;
@@ -34,6 +34,7 @@ export class DatabaseManagementUc {
 		private bsonConverter: BsonConverter,
 		private readonly configService: ConfigService,
 		private readonly logger: LegacyLogger,
+		private em: EntityManager,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService,
 		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: IEncryptionService
 	) {
@@ -143,6 +144,41 @@ export class DatabaseManagementUc {
 		}
 
 		return allCollectionsWithFilePaths;
+	}
+
+	private async dropCollectionIfExists(collectionName: string) {
+		const collectionExists = await this.databaseManagementService.collectionExists(collectionName);
+		if (collectionExists) {
+			// clear existing documents, if collection exists
+			await this.databaseManagementService.clearCollection(collectionName);
+		} else {
+			// create collection
+			await this.databaseManagementService.createCollection(collectionName);
+		}
+	}
+
+	async seedDatabaseCollectionsFromFactories(collections?: string[]): Promise<string[]> {
+		const promises = generateSeedData((s: string) => this.injectEnvVars(s))
+			.filter((data) => {
+				if (collections && collections.length > 0) {
+					return collections.includes(data.collectionName);
+				}
+				return true;
+			})
+			.map(async ({ collectionName, data }) => {
+				if (collectionName === systemsCollectionName) {
+					this.encryptSecretsInSystems(data as System[]);
+				}
+				await this.dropCollectionIfExists(collectionName);
+
+				await this.em.persistAndFlush(data);
+
+				return `${collectionName}:${data.length}`;
+			});
+
+		const seededCollectionsWithAmount = await Promise.all(promises);
+
+		return seededCollectionsWithAmount;
 	}
 
 	/**
