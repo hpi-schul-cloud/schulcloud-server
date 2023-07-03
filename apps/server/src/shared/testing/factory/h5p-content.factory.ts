@@ -5,7 +5,14 @@ class H5PContentFactory extends BaseFactory<H5PContent, { metadata: ContentMetad
 
 export const h5pContentFactory = H5PContentFactory.define(H5PContent, ({ sequence }) => {
 	return {
-		content: {},
+		content: {
+			[`field${sequence}`]: sequence,
+			dateField: new Date(sequence),
+			thisObjectHasNoStructure: true,
+			nested: {
+				works: true,
+			},
+		},
 		metadata: new ContentMetadata({
 			defaultLanguage: 'de-de',
 			embedTypes: ['iframe'],
