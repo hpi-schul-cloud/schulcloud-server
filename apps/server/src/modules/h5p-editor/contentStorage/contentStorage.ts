@@ -53,6 +53,10 @@ export class ContentStorage implements IContentStorage {
 	public async addFile(contentId: string, filename: string, stream: Readable, user?: IUser): Promise<void> {
 		this.checkFilename(filename);
 
+		if (!(await this.contentExists(contentId))) {
+			throw new NotFoundException('The content does not exist');
+		}
+
 		const fullPath = this.getFilePath(contentId, filename);
 		const file: FileDto = {
 			name: filename,
@@ -247,7 +251,7 @@ export class ContentStorage implements IContentStorage {
 			throw new Error('COULD_NOT_CREATE_PATH');
 		}
 
-		const path = `/h5p/${contentId}/`;
+		const path = `h5p/${contentId}/`;
 		return path;
 	}
 
