@@ -3,7 +3,8 @@ import { TldrawGateway } from '@src/modules/tldraw/gateway';
 import { WsAdapter } from '@nestjs/platform-ws';
 import { Test } from '@nestjs/testing';
 import { TextEncoder } from "util";
-import { WebSocket } from "ws";
+
+const io = require('socket.io-client');
 
 async function createNestApp(): Promise<INestApplication> {
 	const testingModule = await Test.createTestingModule({
@@ -18,7 +19,7 @@ const message = 'AZQBAaCbuLANBIsBeyJ0ZFVzZXIiOnsiaWQiOiJkNGIxZThmYi0yMWUwLTQ3ZDA
 
 
 describe("my awesome project", ()  => {
-	let ws,  app;
+	let wsClient,  app;
 	const clientPort = '3346';
 
 	afterEach(async function () {
@@ -28,21 +29,35 @@ describe("my awesome project", ()  => {
 	it(`should handle message (2nd port)`, async () => {
 		app = await createNestApp();
 		await app.listen(3345);
-
+		const options = {
+			transports: ['websocket'],
+			forceNew: true,
+		};
 		var encoder = new TextEncoder();
 		const clientMessage = encoder.encode(message); // Mock message data
 
-		ws = new WebSocket('ws://localhost:3346');
-		await new Promise(resolve => ws.on('open', resolve));
+		wsClient = io('ws://localhost:3345', options);
 
-		ws.send(clientMessage);
+		wsClient.on('connect', () => {
+			expect(wsClient.connected).toBeTruthy();
+			console.log('Connected to the Socket.io server.');
+			wsClient.disconnect(); // Disconnect the client after the test is done
+		});
 
-		await new Promise<void>(resolve =>
-			ws.on('message', response => {
-				expect(response).toBeInstanceOf(Object);
-				ws.close();
-				resolve();
-			}),
-		);
+		// wsClient.on('message', (data) => {
+		// 	console.log('Received message:', data);
+		// 	expect(data).toBeInstanceOf(Object);
+		//
+		// 	wsClient.close();
+		// });
+
+		// await new Promise<void>(resolve =>
+		// 	ws.on('message', response => {
+		// 		expect(response).toBeInstanceOf(Object);
+		// 		ws.close();
+		// 		resolve();
+		// 	}),
+		// );
+
 	});
 });

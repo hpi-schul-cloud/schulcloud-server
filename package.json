@@ -206,6 +206,7 @@
 		"sanitize-html": "^2.1.0",
 		"serve-favicon": "^2.3.2",
 		"service": "^0.1.4",
+		"socket.io-client": "^4.7.1",
 		"socketio-file-upload": "^0.7.0",
 		"source-map-support": "^0.5.19",
 		"strip-bom": "^4.0.0",

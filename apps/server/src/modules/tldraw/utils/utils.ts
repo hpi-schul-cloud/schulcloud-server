@@ -16,8 +16,10 @@ const isCallbackSet = require('./callback').isCallbackSet;
 const CALLBACK_DEBOUNCE_WAIT = 2000;
 const CALLBACK_DEBOUNCE_MAXWAIT = 10000;
 
-const wsReadyStateConnecting = 'connecting';
-const wsReadyStateOpen = 'open';
+// const wsReadyStateConnecting = 'connecting';
+const wsReadyStateConnecting = 0;
+// const wsReadyStateOpen = 'open';
+const wsReadyStateOpen = 1;
 
 // disable gc when using snapshots!
 const gcEnabled = process.env.GC !== 'false' && process.env.GC !== '0';
@@ -50,6 +52,8 @@ exports.docs = docs;
 const messageSync = 0;
 const messageAwareness = 1;
 // const messageAuth = 2
+
+const pingTimeout = 30000
 
 /**
  * @param {Uint8Array} update
@@ -182,7 +186,8 @@ export const closeConn = (doc, ws) => {
 			docs.delete(doc.name);
 		}
 	}
-	ws.server.sockets.sockets.get(ws.id)?.disconnect();
+	// ws.server.sockets.sockets.get(ws.id)?.disconnect();
+	ws.close();
 };
 
 /**
@@ -191,7 +196,11 @@ export const closeConn = (doc, ws) => {
  * @param {Uint8Array} message
  */
 const send = (doc: WSSharedDoc, conn, message) => {
-	if (conn.client.conn.readyState !== wsReadyStateConnecting && conn.client.conn.readyState !== wsReadyStateOpen) {
+	// if (conn.client.conn.readyState !== wsReadyStateConnecting && conn.client.conn.readyState !== wsReadyStateOpen) {
+	// 	closeConn(doc, conn);
+	// }
+
+	if (conn.readyState !== wsReadyStateConnecting && conn.readyState !== wsReadyStateOpen) {
 		closeConn(doc, conn);
 	}
 	try {
@@ -205,18 +214,56 @@ const send = (doc: WSSharedDoc, conn, message) => {
 
 /**
  * @param {any} ws
- * @param {any} doc
+ * @param {string} docName
  */
-exports.setupWSConnection = (ws, doc) => {
-	const encoder = encoding.createEncoder();
-	encoding.writeVarUint(encoder, messageSync);
-	syncProtocol.writeSyncStep1(encoder, doc);
-	send(doc, ws, encoding.toUint8Array(encoder));
-	const awarenessStates = doc.awareness.getStates();
-	if (awarenessStates.size > 0) {
+exports.setupWSConnection = (ws, docName = 'GLOBAL') => {
+	ws.binaryType = 'arraybuffer';
+	var fs = require('fs');
+	// get doc, initialize if it does not exist yet
+	const doc = getYDoc(docName, true)
+	doc.conns.set(ws, new Set())
+
+	// listen and reply to events
+	ws.on('message', message => {
+		messageHandler(ws, doc, new Uint8Array(message));
+	});
+
+	// Check if connection is still alive
+	let pongReceived = true
+	const pingInterval = setInterval(() => {
+		if (!pongReceived) {
+			if (doc.conns.has(ws)) {
+				closeConn(doc, ws);
+			}
+			clearInterval(pingInterval)
+		} else if (doc.conns.has(ws)) {
+			pongReceived = false;
+			try {
+				ws.ping()
+			} catch (e) {
+				closeConn(doc, ws);
+				clearInterval(pingInterval);
+			}
+		}
+	}, pingTimeout)
+	ws.on('close', () => {
+		closeConn(doc, ws);
+		clearInterval(pingInterval);
+	})
+	ws.on('pong', () => {
+		pongReceived = true;
+	})
+	{
 		const encoder = encoding.createEncoder();
-		encoding.writeVarUint(encoder, messageAwareness);
-		encoding.writeVarUint8Array(encoder, awarenessProtocol.encodeAwarenessUpdate(doc.awareness, Array.from(awarenessStates.keys())));
+		encoding.writeVarUint(encoder, messageSync);
+		syncProtocol.writeSyncStep1(encoder, doc);
 		send(doc, ws, encoding.toUint8Array(encoder));
+		const awarenessStates = doc.awareness.getStates();
+		if (awarenessStates.size > 0) {
+			const encoder = encoding.createEncoder()
+			encoding.writeVarUint(encoder, messageAwareness)
+			encoding.writeVarUint8Array(encoder, awarenessProtocol.encodeAwarenessUpdate(doc.awareness, Array.from(awarenessStates.keys())))
+			send(doc, ws, encoding.toUint8Array(encoder))
+		}
 	}
 };

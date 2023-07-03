@@ -3,27 +3,27 @@ import {
 	WebSocketServer,
 	OnGatewayInit,
 	OnGatewayConnection,
-	SubscribeMessage, MessageBody, ConnectedSocket, OnGatewayDisconnect
+	OnGatewayDisconnect
 } from '@nestjs/websockets';
-import { Server } from 'socket.io';
+import { Server } from 'ws';
 import * as Y from 'yjs';
 import * as MongodbPersistence from 'y-mongodb-provider';
-import { closeConn, getYDoc, messageHandler, WSSharedDoc } from '@src/modules/tldraw/utils/utils';
+import { closeConn, getYDoc, WSSharedDoc } from '@src/modules/tldraw/utils/utils';
 const setupWSConnection = require('./../utils/utils');
 const connectionString = 'mongodb://127.0.0.1:27017/myproject';
 
-@WebSocketGateway()
+@WebSocketGateway(3345)
 export class TldrawGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
-	server!: any;
+	server!: Server;
 	doc: WSSharedDoc = {};
 
-	handleConnection(client: any, ...args: any[]) {
+	handleConnection(client: any, request) {
 		client.binaryType = 'arraybuffer';
-		const docName = client.handshake.query['roomName'] ?? 'GLOBAL';
+		const docName =  request.url.slice(1).split('?')[0];
 		this.doc = getYDoc(docName, true);
 		this.doc.conns.set(client, new Set());
-		setupWSConnection.setupWSConnection(client, this.doc);
+		setupWSConnection.setupWSConnection(client, docName);
 	}
 
 	handleDisconnect(client: any): any {
@@ -60,13 +60,4 @@ export class TldrawGateway implements OnGatewayInit, OnGatewayConnection, OnGate
 			}
 		});
 	}
-
-	@SubscribeMessage('message')
-	handleMessage(
-		@MessageBody() data: ArrayBufferLike,
-		@ConnectedSocket() client: any
-	) {
-		messageHandler(client, this.doc, new Uint8Array(data));
-	}
-
 }
