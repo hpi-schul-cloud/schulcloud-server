@@ -2,15 +2,15 @@ import { ContentElementType, SubmissionContainerElement } from '@shared/domain';
 import { SubmissionContainerElementContent, SubmissionContainerElementResponse, TimestampsResponse } from '../dto';
 import { BaseResponseMapper } from './base-mapper.interface';
 
-export class SubmissionContentElementResponseMapper implements BaseResponseMapper {
-	private static instance: SubmissionContentElementResponseMapper;
+export class SubmissionContainerContentElementResponseMapper implements BaseResponseMapper {
+	private static instance: SubmissionContainerContentElementResponseMapper;
 
-	public static getInstance(): SubmissionContentElementResponseMapper {
-		if (!SubmissionContentElementResponseMapper.instance) {
-			SubmissionContentElementResponseMapper.instance = new SubmissionContentElementResponseMapper();
+	public static getInstance(): SubmissionContainerContentElementResponseMapper {
+		if (!SubmissionContainerContentElementResponseMapper.instance) {
+			SubmissionContainerContentElementResponseMapper.instance = new SubmissionContainerContentElementResponseMapper();
 		}
 
-		return SubmissionContentElementResponseMapper.instance;
+		return SubmissionContainerContentElementResponseMapper.instance;
 	}
 
 	mapToResponse(element: SubmissionContainerElement): SubmissionContainerElementResponse {
