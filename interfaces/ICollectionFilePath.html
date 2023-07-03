@@ -183,16 +183,18 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
-import { orderBy } from &#x27;lodash&#x27;;
-import { FileSystemAdapter } from &#x27;@shared/infra/file-system&#x27;;
-import { DatabaseManagementService } from &#x27;@shared/infra/database&#x27;;
-import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
-import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from &#x27;@shared/infra/encryption&#x27;;
-import { StorageProvider, System } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
+import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
+import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
+import { StorageProvider, System } from &#x27;@shared/domain&#x27;;
+import { DatabaseManagementService } from &#x27;@shared/infra/database&#x27;;
+import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from &#x27;@shared/infra/encryption&#x27;;
+import { FileSystemAdapter } from &#x27;@shared/infra/file-system&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
+import { orderBy } from &#x27;lodash&#x27;;
 import { BsonConverter } from &#x27;../converter/bson.converter&#x27;;
+import { generateSeedData } from &#x27;../seed-data/generateSeedData&#x27;;
 
 export interface ICollectionFilePath {
 	filePath: string;
@@ -217,6 +219,7 @@ export class DatabaseManagementUc {
 		private bsonConverter: BsonConverter,
 		private readonly configService: ConfigService,
 		private readonly logger: LegacyLogger,
+		private em: EntityManager,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService,
 		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: IEncryptionService
 	) {
@@ -326,6 +329,41 @@ export class DatabaseManagementUc {
 		}
 
 		return allCollectionsWithFilePaths;
+	}
+
+	private async dropCollectionIfExists(collectionName: string) {
+		const collectionExists &#x3D; await this.databaseManagementService.collectionExists(collectionName);
+		if (collectionExists) {
+			// clear existing documents, if collection exists
+			await this.databaseManagementService.clearCollection(collectionName);
+		} else {
+			// create collection
+			await this.databaseManagementService.createCollection(collectionName);
+		}
+	}
+
+	async seedDatabaseCollectionsFromFactories(collections?: string[]): Promise&lt;string[]&gt; {
+		const promises &#x3D; generateSeedData((s: string) &#x3D;&gt; this.injectEnvVars(s))
+			.filter((data) &#x3D;&gt; {
+				if (collections &amp;&amp; collections.length &gt; 0) {
+					return collections.includes(data.collectionName);
+				}
+				return true;
+			})
+			.map(async ({ collectionName, data }) &#x3D;&gt; {
+				if (collectionName &#x3D;&#x3D;&#x3D; systemsCollectionName) {
+					this.encryptSecretsInSystems(data as System[]);
+				}
+				await this.dropCollectionIfExists(collectionName);
+
+				await this.em.persistAndFlush(data);
+
+				return &#x60;${collectionName}:${data.length}&#x60;;
+			});
+
+		const seededCollectionsWithAmount &#x3D; await Promise.all(promises);
+
+		return seededCollectionsWithAmount;
 	}
 
 	/**

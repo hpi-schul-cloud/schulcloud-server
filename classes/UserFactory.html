@@ -1594,13 +1594,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IUserProperties, Role, Permission, RoleName, User } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IUserProperties, Permission, Role, RoleName, User } from &#x27;@shared/domain&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
 import _ from &#x27;lodash&#x27;;
+import { adminPermissions, studentPermissions, teacherPermissions, userPermissions } from &#x27;../user-role-permissions&#x27;;
 import { BaseFactory } from &#x27;./base.factory&#x27;;
 import { roleFactory } from &#x27;./role.factory&#x27;;
 import { schoolFactory } from &#x27;./school.factory&#x27;;
-import { adminPermissions, studentPermissions, teacherPermissions, userPermissions } from &#x27;../user-role-permissions&#x27;;
 
 class UserFactory extends BaseFactory&lt;User, IUserProperties&gt; {
 	withRoleByName(name: RoleName): this {

@@ -127,7 +127,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/management/console/database-management.console.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/management/console/database-management.console.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -213,8 +213,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="49"
-                            class="link-to-prism">apps/server/src/modules/management/console/database-management.console.ts:49</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="58"
+                            class="link-to-prism">apps/server/src/modules/management/console/database-management.console.ts:58</a></div>
                 </td>
             </tr>
 
@@ -292,8 +292,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="25"
-                            class="link-to-prism">apps/server/src/modules/management/console/database-management.console.ts:25</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="31"
+                            class="link-to-prism">apps/server/src/modules/management/console/database-management.console.ts:31</a></div>
                 </td>
             </tr>
 
@@ -371,8 +371,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="63"
-                            class="link-to-prism">apps/server/src/modules/management/console/database-management.console.ts:63</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="72"
+                            class="link-to-prism">apps/server/src/modules/management/console/database-management.console.ts:72</a></div>
                 </td>
             </tr>
 
@@ -398,13 +398,14 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Command, Console } from &#x27;nestjs-console&#x27;;
-import { ConsoleWriterService } from &#x27;@shared/infra/console/console-writer/console-writer.service&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ConsoleWriterService } from &#x27;@shared/infra/console/console-writer/console-writer.service&#x27;;
+import { Command, Console } from &#x27;nestjs-console&#x27;;
 import { DatabaseManagementUc } from &#x27;../uc/database-management.uc&#x27;;
 
 interface Options {
 	collection?: string;
 	override?: boolean;
+	onlyfactories?: boolean;
 }
 
 @Console({ command: &#x27;database&#x27;, description: &#x27;database setup console&#x27; })
@@ -419,12 +420,20 @@ export class DatabaseManagementConsole {
 				required: false,
 				description: &#x27;filter for a single &lt;collection&gt;&#x27;,
 			},
+			{
+				flags: &#x27;-o, --onlyfactories&#x27;,
+				required: false,
+				description: &#x27;seed from factories only&#x27;,
+			},
 		],
 		description: &#x27;reset database collections with seed data from filesystem&#x27;,
 	})
 	async seedCollections(options: Options): Promise&lt;string[]&gt; {
 		const filter &#x3D; options?.collection ? [options.collection] : undefined;
-		const collections &#x3D; await this.databaseManagementUc.seedDatabaseCollectionsFromFileSystem(filter);
+
+		const collections &#x3D; options.onlyfactories
+			? await this.databaseManagementUc.seedDatabaseCollectionsFromFactories(filter)
+			: await this.databaseManagementUc.seedDatabaseCollectionsFromFileSystem(filter);
 		const report &#x3D; JSON.stringify(collections);
 		this.consoleWriter.info(report);
 		return collections;

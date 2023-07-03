@@ -106,6 +106,11 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#dropCollectionIfExists" >dropCollectionIfExists</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#encryptSecrets" >encryptSecrets</a>
                             </li>
                             <li>
@@ -161,6 +166,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#seedDatabaseCollectionsFromFactories" >seedDatabaseCollectionsFromFactories</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#seedDatabaseCollectionsFromFileSystem" >seedDatabaseCollectionsFromFileSystem</a>
                             </li>
                             <li>
@@ -199,7 +208,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(fileSystemAdapter: <a href="../injectables/FileSystemAdapter.html" target="_self">FileSystemAdapter</a>, databaseManagementService: <a href="../injectables/DatabaseManagementService.html" target="_self">DatabaseManagementService</a>, bsonConverter: <a href="../injectables/BsonConverter.html" target="_self">BsonConverter</a>, configService: ConfigService, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, defaultEncryptionService: <a href="../interfaces/IEncryptionService.html" target="_self">IEncryptionService</a>, ldapEncryptionService: <a href="../interfaces/IEncryptionService.html" target="_self">IEncryptionService</a>)</code>
+<code>constructor(fileSystemAdapter: <a href="../injectables/FileSystemAdapter.html" target="_self">FileSystemAdapter</a>, databaseManagementService: <a href="../injectables/DatabaseManagementService.html" target="_self">DatabaseManagementService</a>, bsonConverter: <a href="../injectables/BsonConverter.html" target="_self">BsonConverter</a>, configService: ConfigService, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, em: EntityManager, defaultEncryptionService: <a href="../interfaces/IEncryptionService.html" target="_self">IEncryptionService</a>, ldapEncryptionService: <a href="../interfaces/IEncryptionService.html" target="_self">IEncryptionService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -282,6 +291,18 @@
                                                     
                                                 </tr>
                                                 <tr>
+                                                        <td>em</td>
+                                                  
+                                                        <td>
+                                                                    <code>EntityManager</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
                                                         <td>defaultEncryptionService</td>
                                                   
                                                         <td>
@@ -342,8 +363,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="250"
-                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:250</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="286"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:286</a></div>
                 </td>
             </tr>
 
@@ -354,6 +375,78 @@
                     <div class="io-description">
                         <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="dropCollectionIfExists"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>dropCollectionIfExists</b></span>
+                        <a href="#dropCollectionIfExists"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>dropCollectionIfExists(collectionName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="149"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:149</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>collectionName</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
                     </div>
                 </td>
             </tr>
@@ -381,8 +474,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="313"
-                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:313</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="349"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:349</a></div>
                 </td>
             </tr>
 
@@ -464,8 +557,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="319"
-                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:319</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="355"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:355</a></div>
                 </td>
             </tr>
 
@@ -535,8 +628,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="210"
-                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:210</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="246"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:246</a></div>
                 </td>
             </tr>
 
@@ -631,8 +724,8 @@ The behaviour should match $ mongoexport</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="54"
-                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:54</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="55"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:55</a></div>
                 </td>
             </tr>
 
@@ -672,8 +765,8 @@ The behaviour should match $ mongoexport</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="62"
-                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:62</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="63"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:63</a></div>
                 </td>
             </tr>
 
@@ -745,8 +838,8 @@ The behaviour should match $ mongoexport</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="291"
-                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:291</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="327"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:327</a></div>
                 </td>
             </tr>
 
@@ -817,8 +910,8 @@ The behaviour should match $ mongoexport</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="79"
-                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:79</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="80"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:80</a></div>
                 </td>
             </tr>
 
@@ -891,8 +984,8 @@ The behaviour should match $ mongoexport</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="94"
-                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:94</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="95"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:95</a></div>
                 </td>
             </tr>
 
@@ -958,15 +1051,15 @@ The behaviour should match $ mongoexport</p>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>loadCollectionsAvailableFromSourceAndFilterByCollectionNames(source: "files" | "database", folder: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, collectionNameFilter?: string[])</code>
+                    <code>loadCollectionsAvailableFromSourceAndFilterByCollectionNames(source: <a href="../SystemPartial[]s/data.html" target="_self">&quot;files&quot; | &quot;database&quot;</a>, folder: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, collectionNameFilter?: string[])</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="111"
-                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:111</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="112"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:112</a></div>
                 </td>
             </tr>
 
@@ -991,7 +1084,7 @@ The behaviour should match $ mongoexport</p>
                                 <tr>
                                     <td>source</td>
                                     <td>
-                                            <code>&quot;files&quot; | &quot;database&quot;</code>
+                                                <code><a href="../miscellaneous/variables.html#data" target="_self" >&quot;files&quot; | &quot;database&quot;</a></code>
                                     </td>
 
                                     <td>
@@ -1063,8 +1156,8 @@ The behaviour should match $ mongoexport</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="341"
-                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:341</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="377"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:377</a></div>
                 </td>
             </tr>
 
@@ -1150,8 +1243,8 @@ Currently this affects system and storageproviders collections.</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="350"
-                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:350</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="386"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:386</a></div>
                 </td>
             </tr>
 
@@ -1221,8 +1314,8 @@ Currently this affects system and storageproviders collections.</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="357"
-                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:357</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="393"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:393</a></div>
                 </td>
             </tr>
 
@@ -1292,8 +1385,8 @@ Currently this affects system and storageproviders collections.</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="301"
-                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:301</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="337"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:337</a></div>
                 </td>
             </tr>
 
@@ -1345,6 +1438,77 @@ Currently this affects system and storageproviders collections.</p>
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="seedDatabaseCollectionsFromFactories"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>seedDatabaseCollectionsFromFactories</b></span>
+                        <a href="#seedDatabaseCollectionsFromFactories"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>seedDatabaseCollectionsFromFactories(collections?: string[])</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="160"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:160</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>collections</td>
+                                    <td>
+                                            <code>string[]</code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;string[]&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="seedDatabaseCollectionsFromFileSystem"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -1363,8 +1527,8 @@ Currently this affects system and storageproviders collections.</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="154"
-                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:154</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="190"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:190</a></div>
                 </td>
             </tr>
 
@@ -1443,8 +1607,8 @@ The behaviour should match $ mongoimport</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="245"
-                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:245</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="281"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:281</a></div>
                 </td>
             </tr>
 
@@ -1528,7 +1692,7 @@ The behaviour should match $ mongoimport</p>
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="46" class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:46</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:47</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -1550,16 +1714,18 @@ The behaviour should match $ mongoimport</p>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
-import { orderBy } from &#x27;lodash&#x27;;
-import { FileSystemAdapter } from &#x27;@shared/infra/file-system&#x27;;
-import { DatabaseManagementService } from &#x27;@shared/infra/database&#x27;;
-import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
-import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from &#x27;@shared/infra/encryption&#x27;;
-import { StorageProvider, System } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
+import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
+import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
+import { StorageProvider, System } from &#x27;@shared/domain&#x27;;
+import { DatabaseManagementService } from &#x27;@shared/infra/database&#x27;;
+import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from &#x27;@shared/infra/encryption&#x27;;
+import { FileSystemAdapter } from &#x27;@shared/infra/file-system&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
+import { orderBy } from &#x27;lodash&#x27;;
 import { BsonConverter } from &#x27;../converter/bson.converter&#x27;;
+import { generateSeedData } from &#x27;../seed-data/generateSeedData&#x27;;
 
 export interface ICollectionFilePath {
 	filePath: string;
@@ -1584,6 +1750,7 @@ export class DatabaseManagementUc {
 		private bsonConverter: BsonConverter,
 		private readonly configService: ConfigService,
 		private readonly logger: LegacyLogger,
+		private em: EntityManager,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService,
 		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: IEncryptionService
 	) {
@@ -1693,6 +1860,41 @@ export class DatabaseManagementUc {
 		}
 
 		return allCollectionsWithFilePaths;
+	}
+
+	private async dropCollectionIfExists(collectionName: string) {
+		const collectionExists &#x3D; await this.databaseManagementService.collectionExists(collectionName);
+		if (collectionExists) {
+			// clear existing documents, if collection exists
+			await this.databaseManagementService.clearCollection(collectionName);
+		} else {
+			// create collection
+			await this.databaseManagementService.createCollection(collectionName);
+		}
+	}
+
+	async seedDatabaseCollectionsFromFactories(collections?: string[]): Promise&lt;string[]&gt; {
+		const promises &#x3D; generateSeedData((s: string) &#x3D;&gt; this.injectEnvVars(s))
+			.filter((data) &#x3D;&gt; {
+				if (collections &amp;&amp; collections.length &gt; 0) {
+					return collections.includes(data.collectionName);
+				}
+				return true;
+			})
+			.map(async ({ collectionName, data }) &#x3D;&gt; {
+				if (collectionName &#x3D;&#x3D;&#x3D; systemsCollectionName) {
+					this.encryptSecretsInSystems(data as System[]);
+				}
+				await this.dropCollectionIfExists(collectionName);
+
+				await this.em.persistAndFlush(data);
+
+				return &#x60;${collectionName}:${data.length}&#x60;;
+			});
+
+		const seededCollectionsWithAmount &#x3D; await Promise.all(promises);
+
+		return seededCollectionsWithAmount;
 	}
 
 	/**
