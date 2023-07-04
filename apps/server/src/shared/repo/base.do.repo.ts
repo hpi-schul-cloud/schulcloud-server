@@ -1,7 +1,7 @@
 import { EntityName, FilterQuery } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BaseDO, BaseEntity, baseEntityProperties, EntityId } from '@shared/domain';
+import { BaseDO, BaseEntity, baseEntityProperties, BaseEntityWithTimestamps, EntityId } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 
 @Injectable()
@@ -55,7 +55,7 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
 		const fetchedEntity: E = await this._em.findOneOrFail(this.entityName, {
 			id: domainObject.id,
 		} as FilterQuery<E>);
-		const updated: E = this._em.assign(fetchedEntity, newEntity);
+		const updated: E = this._em.assign(fetchedEntity, newEntity, { updateByPrimaryKey: false });
 		this.logger.debug(`Updated entity with id ${updated.id}`);
 		return updated;
 	}
