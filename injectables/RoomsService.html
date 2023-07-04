@@ -561,12 +561,32 @@ export class RoomsService {
 		const columnBoard &#x3D; await this.columnBoardService.create(courseReference);
 		const column &#x3D; await this.columnService.create(columnBoard);
 		const card &#x3D; await this.cardService.create(column);
-		await this.cardService.updateTitle(card, &#x27;Willkommen&#x27;);
-		const text &#x3D; await this.contentElementService.create(card, ContentElementType.RICH_TEXT);
-		const content &#x3D; new RichTextContentBody();
-		content.inputFormat &#x3D; InputFormat.RICH_TEXT_CK5;
-		content.text &#x3D; &#x27;&lt;p&gt;Dieses Board ist ein neues Feature und kann hier getestet werden&lt;/p&gt;&#x27;;
-		await this.contentElementService.update(text, content);
+		await this.cardService.updateTitle(card, &#x27;Willkommen auf dem neuen Spalten-Board! 🥳&#x27;);
+
+		const text1 &#x3D; await this.contentElementService.create(card, ContentElementType.RICH_TEXT);
+		const content1 &#x3D; new RichTextContentBody();
+		content1.inputFormat &#x3D; InputFormat.RICH_TEXT_CK5;
+		content1.text &#x3D;
+			&#x27;&lt;p&gt;Wir erweitern das Board kontinuierlich um wichtige Funktionen. &lt;strong&gt;Der aktuelle Stand kann hier getestet werden. &lt;/strong&gt;&lt;/p&gt;&#x27;;
+		await this.contentElementService.update(text1, content1);
+
+		if (Configuration.has(&#x27;COLUMN_BOARD_HELP_LINK&#x27;)) {
+			const helplink &#x3D; Configuration.get(&#x27;COLUMN_BOARD_HELP_LINK&#x27;) as string;
+			const text2 &#x3D; await this.contentElementService.create(card, ContentElementType.RICH_TEXT);
+			const content2 &#x3D; new RichTextContentBody();
+			content2.inputFormat &#x3D; InputFormat.RICH_TEXT_CK5;
+			content2.text &#x3D; &#x60;&lt;p&gt;&lt;strong&gt; Wichtige Informationen&lt;/strong&gt; zu Berechtigungen und Informationen zum Einsatz des Boards sind im &lt;a href&#x3D;&quot;${helplink}&quot;&gt;Hilfebereich&lt;/a&gt; zusammengefasst.&lt;/p&gt;&#x60;;
+			await this.contentElementService.update(text2, content2);
+		}
+
+		if (Configuration.has(&#x27;COLUMN_BOARD_FEEDBACK_LINK&#x27;)) {
+			const feedbacklink &#x3D; Configuration.get(&#x27;COLUMN_BOARD_FEEDBACK_LINK&#x27;) as string;
+			const text3 &#x3D; await this.contentElementService.create(card, ContentElementType.RICH_TEXT);
+			const content3 &#x3D; new RichTextContentBody();
+			content3.inputFormat &#x3D; InputFormat.RICH_TEXT_CK5;
+			content3.text &#x3D; &#x60;&lt;p&gt;Wir freuen uns sehr über &lt;strong&gt;Feedback&lt;/strong&gt; zum Board unter &lt;a href&#x3D;&quot;${feedbacklink}&quot;&gt;folgendem Link&lt;/a&gt;.&lt;/p&gt;&#x60;;
+			await this.contentElementService.update(text3, content3);
+		}
 		return columnBoard;
 	}
 }
