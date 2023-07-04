@@ -16,9 +16,7 @@ const isCallbackSet = require('./callback').isCallbackSet;
 const CALLBACK_DEBOUNCE_WAIT = 2000;
 const CALLBACK_DEBOUNCE_MAXWAIT = 10000;
 
-// const wsReadyStateConnecting = 'connecting';
 const wsReadyStateConnecting = 0;
-// const wsReadyStateOpen = 'open';
 const wsReadyStateOpen = 1;
 
 // disable gc when using snapshots!
@@ -196,10 +194,6 @@ export const closeConn = (doc, ws) => {
  * @param {Uint8Array} message
  */
 const send = (doc: WSSharedDoc, conn, message) => {
-	// if (conn.client.conn.readyState !== wsReadyStateConnecting && conn.client.conn.readyState !== wsReadyStateOpen) {
-	// 	closeConn(doc, conn);
-	// }
-
 	if (conn.readyState !== wsReadyStateConnecting && conn.readyState !== wsReadyStateOpen) {
 		closeConn(doc, conn);
 	}
