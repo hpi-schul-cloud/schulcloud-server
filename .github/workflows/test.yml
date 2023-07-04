@@ -88,14 +88,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
-        with:
-          args: >
-            -Dsonar.sources=.
-            -Dsonar.organization=schulcloud-verbund
-            -Dsonar.projectKey=hpi-schul-cloud_schulcloud-server
-            -Dsonar.exclusions=**/*.js
-            -Dsonar.cpd.exclusions=**/controller/dto/*.ts,**/*.spec.ts,**/seed-data/*.ts
-            -Dsonar.javascript.lcov.reportPaths=merged-lcov.info
   nest_lint:
     runs-on: ubuntu-latest
     timeout-minutes: 5
