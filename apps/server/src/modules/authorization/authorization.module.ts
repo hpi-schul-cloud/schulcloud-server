@@ -23,7 +23,7 @@ import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
 
 @Module({
-	imports: [FeathersModule, LoggerModule, SchoolModule, forwardRef(() => ToolModule), BoardModule],
+	imports: [FeathersModule, LoggerModule, SchoolModule, forwardRef(() => ToolModule), forwardRef(() => BoardModule)],
 	providers: [
 		FeathersAuthorizationService,
 		FeathersAuthProvider,
