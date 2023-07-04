@@ -24,10 +24,6 @@
 <title>cluster_LearnroomModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 4978,-268 4978,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_LearnroomModule_exports</title>
-<polygon fill="none" stroke="black" points="2122,-208 2122,-260 2389,-260 2389,-208 2122,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_LearnroomModule_providers</title>
 <polygon fill="none" stroke="black" points="839,-78 839,-130 4970,-130 4970,-78 839,-78"/>
@@ -35,6 +31,10 @@
 <g id="clust3" class="cluster">
 <title>cluster_LearnroomModule_imports</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 831,-130 831,-78 16,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_LearnroomModule_exports</title>
+<polygon fill="none" stroke="black" points="2122,-208 2122,-260 2389,-260 2389,-208 2122,-208"/>
 </g>
 <!-- AuthorizationModule -->
 <g id="node1" class="node">
