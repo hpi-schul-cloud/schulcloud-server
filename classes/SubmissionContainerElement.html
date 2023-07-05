@@ -44,7 +44,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >TaskElement</li>
+  <li class="breadcrumb-item" >SubmissionContainerElement</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -68,7 +68,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/domainobject/board/task-element.do.ts</code>
+            <code>apps/server/src/shared/domain/domainobject/board/submission-container-element.do.ts</code>
         </p>
 
 
@@ -232,7 +232,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:17</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:18</a></code>
 </div>
                 </td>
             </tr>
@@ -309,7 +309,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:21</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:22</a></code>
 </div>
                 </td>
             </tr>
@@ -384,7 +384,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:13</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:14</a></code>
 </div>
                 </td>
             </tr>
@@ -709,7 +709,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/task-element.do.ts:5</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/submission-container-element.do.ts:6</a></div>
                                 </td>
                             </tr>
 
@@ -720,7 +720,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/task-element.do.ts:9</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/submission-container-element.do.ts:10</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -770,7 +770,8 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BoardComposite, BoardCompositeProps } from &#x27;./board-composite.do&#x27;;
 import type { BoardCompositeVisitor, BoardCompositeVisitorAsync } from &#x27;./types&#x27;;
 
-export class TaskElement extends BoardComposite&lt;TaskElementProps&gt; {
+// todo: to be renamed
+export class SubmissionContainerElement extends BoardComposite&lt;SubmissionContainerElementProps&gt; {
 	get dueDate(): Date {
 		return this.props.dueDate;
 	}
@@ -784,15 +785,15 @@ export class TaskElement extends BoardComposite&lt;TaskElementProps&gt; {
 	}
 
 	accept(visitor: BoardCompositeVisitor): void {
-		visitor.visitTaskElement(this);
+		visitor.visitSubmissionContainerElement(this);
 	}
 
 	async acceptAsync(visitor: BoardCompositeVisitorAsync): Promise&lt;void&gt; {
-		await visitor.visitTaskElementAsync(this);
+		await visitor.visitSubmissionContainerElementAsync(this);
 	}
 }
 
-export interface TaskElementProps extends BoardCompositeProps {
+export interface SubmissionContainerElementProps extends BoardCompositeProps {
 	dueDate: Date;
 }
 </code></pre>
@@ -833,7 +834,7 @@ export interface TaskElementProps extends BoardCompositeProps {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'TaskElement.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'SubmissionContainerElement.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

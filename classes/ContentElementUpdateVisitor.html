@@ -131,7 +131,7 @@
                                 <a href="#visitRichTextElement" >visitRichTextElement</a>
                             </li>
                             <li>
-                                <a href="#visitTaskElement" >visitTaskElement</a>
+                                <a href="#visitSubmissionContainerElement" >visitSubmissionContainerElement</a>
                             </li>
                         </ul>
                     </td>
@@ -654,16 +654,16 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="visitTaskElement"></a>
+                    <a name="visitSubmissionContainerElement"></a>
                     <span class="name">
-                        <span ><b>visitTaskElement</b></span>
-                        <a href="#visitTaskElement"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>visitSubmissionContainerElement</b></span>
+                        <a href="#visitSubmissionContainerElement"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>visitTaskElement(taskElement: <a href="../classes/TaskElement.html" target="_self">TaskElement</a>)</code>
+<code>visitSubmissionContainerElement(submissionContainerElement: <a href="../classes/SubmissionContainerElement.html" target="_self">SubmissionContainerElement</a>)</code>
                 </td>
             </tr>
 
@@ -692,9 +692,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>taskElement</td>
+                                    <td>submissionContainerElement</td>
                                     <td>
-                                                <code><a href="../classes/TaskElement.html" target="_self" >TaskElement</a></code>
+                                                <code><a href="../classes/SubmissionContainerElement.html" target="_self" >SubmissionContainerElement</a></code>
                                     </td>
 
                                     <td>
@@ -738,11 +738,11 @@ import {
 	ColumnBoard,
 	FileElement,
 	RichTextElement,
-	TaskElement,
+	SubmissionContainerElement,
 } from &#x27;@shared/domain&#x27;;
-import { FileContentBody, RichTextContentBody, TaskContentBody } from &#x27;../controller/dto&#x27;;
+import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from &#x27;../controller/dto&#x27;;
 
-type ContentType &#x3D; FileContentBody | RichTextContentBody | TaskContentBody;
+type ContentType &#x3D; FileContentBody | RichTextContentBody | SubmissionContainerContentBody;
 
 export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 	private readonly content: ContentType;
@@ -780,11 +780,11 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 		}
 	}
 
-	visitTaskElement(taskElement: TaskElement): void {
-		if (this.content instanceof TaskContentBody) {
-			taskElement.dueDate &#x3D; this.content.dueDate;
+	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void {
+		if (this.content instanceof SubmissionContainerContentBody) {
+			submissionContainerElement.dueDate &#x3D; this.content.dueDate;
 		} else {
-			this.throwNotHandled(taskElement);
+			this.throwNotHandled(submissionContainerElement);
 		}
 	}
 

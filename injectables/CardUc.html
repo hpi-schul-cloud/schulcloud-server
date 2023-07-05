@@ -405,7 +405,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;FileElement | RichTextElement | TaskElement&gt;</code>
+                        <b>Returns : </b>    <code>Promise&lt;FileElement | RichTextElement | SubmissionContainerElement&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -806,7 +806,7 @@ import {
 	EntityId,
 	FileElement,
 	RichTextElement,
-	TaskElement,
+	SubmissionContainerElement,
 } from &#x27;@shared/domain&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { AuthorizationService } from &#x27;@src/modules/authorization/authorization.service&#x27;;
@@ -840,7 +840,7 @@ export class CardUc {
 		userId: EntityId,
 		cardId: EntityId,
 		type: ContentElementType
-	): Promise&lt;FileElement | RichTextElement | TaskElement&gt; {
+	): Promise&lt;FileElement | RichTextElement | SubmissionContainerElement&gt; {
 		this.logger.debug({ action: &#x27;createElement&#x27;, userId, cardId, type });
 
 		const card &#x3D; await this.cardService.findById(cardId);

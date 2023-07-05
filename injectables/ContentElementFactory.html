@@ -97,7 +97,7 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#buildTask" >buildTask</a>
+                                <a href="#buildSubmissionContainer" >buildSubmissionContainer</a>
                             </li>
                         </ul>
                     </td>
@@ -268,18 +268,18 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="buildTask"></a>
+                    <a name="buildSubmissionContainer"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
-                        <span ><b>buildTask</b></span>
-                        <a href="#buildTask"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>buildSubmissionContainer</b></span>
+                        <a href="#buildSubmissionContainer"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>buildTask()</code>
+                    <code>buildSubmissionContainer()</code>
                 </td>
             </tr>
 
@@ -314,7 +314,7 @@ import { InputFormat } from &#x27;@shared/domain/types&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
 import { FileElement } from &#x27;./file-element.do&#x27;;
 import { RichTextElement } from &#x27;./rich-text-element.do&#x27;;
-import { TaskElement } from &#x27;./task-element.do&#x27;;
+import { SubmissionContainerElement } from &#x27;./submission-container-element.do&#x27;;
 import { AnyContentElementDo } from &#x27;./types/any-content-element-do&#x27;;
 import { ContentElementType } from &#x27;./types/content-elements.enum&#x27;;
 
@@ -330,8 +330,8 @@ export class ContentElementFactory {
 			case ContentElementType.RICH_TEXT:
 				element &#x3D; this.buildRichText();
 				break;
-			case ContentElementType.TASK:
-				element &#x3D; this.buildTask();
+			case ContentElementType.SUBMISSION_CONTAINER:
+				element &#x3D; this.buildSubmissionContainer();
 				break;
 			default:
 				break;
@@ -369,8 +369,8 @@ export class ContentElementFactory {
 		return element;
 	}
 
-	private buildTask() {
-		const element &#x3D; new TaskElement({
+	private buildSubmissionContainer() {
+		const element &#x3D; new SubmissionContainerElement({
 			id: new ObjectId().toHexString(),
 			dueDate: new Date(),
 			children: [],

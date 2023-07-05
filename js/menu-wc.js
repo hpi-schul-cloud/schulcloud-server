@@ -2433,6 +2433,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="entities/Submission.html" data-type="entity-link" >Submission</a>
                                 </li>
                                 <li class="link">
+                                    <a href="entities/SubmissionContainerElementNode.html" data-type="entity-link" >SubmissionContainerElementNode</a>
+                                </li>
+                                <li class="link">
                                     <a href="entities/System.html" data-type="entity-link" >System</a>
                                 </li>
                                 <li class="link">
@@ -2443,9 +2446,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="entities/TaskCard.html" data-type="entity-link" >TaskCard</a>
-                                </li>
-                                <li class="link">
-                                    <a href="entities/TaskElementNode.html" data-type="entity-link" >TaskElementNode</a>
                                 </li>
                                 <li class="link">
                                     <a href="entities/Team.html" data-type="entity-link" >Team</a>
@@ -3682,6 +3682,24 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/Submission.html" data-type="entity-link" >Submission</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SubmissionContainerContentBody.html" data-type="entity-link" >SubmissionContainerContentBody</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SubmissionContainerElement.html" data-type="entity-link" >SubmissionContainerElement</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SubmissionContainerElementContent.html" data-type="entity-link" >SubmissionContainerElementContent</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SubmissionContainerElementContentBody.html" data-type="entity-link" >SubmissionContainerElementContentBody</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SubmissionContainerElementResponse.html" data-type="entity-link" >SubmissionContainerElementResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SubmissionContainerElementResponseMapper.html" data-type="entity-link" >SubmissionContainerElementResponseMapper</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/SubmissionFactory.html" data-type="entity-link" >SubmissionFactory</a>
                             </li>
                             <li class="link">
@@ -3751,28 +3769,10 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/TaskCardUrlParams.html" data-type="entity-link" >TaskCardUrlParams</a>
                             </li>
                             <li class="link">
-                                <a href="classes/TaskContentBody.html" data-type="entity-link" >TaskContentBody</a>
-                            </li>
-                            <li class="link">
                                 <a href="classes/TaskCopyApiParams.html" data-type="entity-link" >TaskCopyApiParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/TaskCreateParams.html" data-type="entity-link" >TaskCreateParams</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/TaskElement.html" data-type="entity-link" >TaskElement</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/TaskElementContent.html" data-type="entity-link" >TaskElementContent</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/TaskElementContentBody.html" data-type="entity-link" >TaskElementContentBody</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/TaskElementResponse.html" data-type="entity-link" >TaskElementResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/TaskElementResponseMapper.html" data-type="entity-link" >TaskElementResponseMapper</a>
                             </li>
                             <li class="link">
                                 <a href="classes/TaskFactory.html" data-type="entity-link" >TaskFactory</a>
@@ -5112,13 +5112,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/ShareTokenInfoDto.html" data-type="entity-link" >ShareTokenInfoDto</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/SubmissionContainerElementProps.html" data-type="entity-link" >SubmissionContainerElementProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/SubmissionContainerNodeProps.html" data-type="entity-link" >SubmissionContainerNodeProps</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/SuccessfulRes.html" data-type="entity-link" >SuccessfulRes</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/TaskElementNodeProps.html" data-type="entity-link" >TaskElementNodeProps</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/TaskElementProps.html" data-type="entity-link" >TaskElementProps</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/ToolVersion.html" data-type="entity-link" >ToolVersion</a>

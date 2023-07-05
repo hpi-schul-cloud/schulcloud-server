@@ -151,7 +151,7 @@
                         <i>Default value : </i><code>[
 		FileElementResponseMapper.getInstance(),
 		RichTextElementResponseMapper.getInstance(),
-		TaskElementResponseMapper.getInstance(),
+		SubmissionContainerElementResponseMapper.getInstance(),
 	]</code>
                     </td>
                 </tr>
@@ -258,13 +258,13 @@ import { AnyContentElementResponse } from &#x27;../dto&#x27;;
 import { BaseResponseMapper } from &#x27;./base-mapper.interface&#x27;;
 import { FileElementResponseMapper } from &#x27;./file-element-response.mapper&#x27;;
 import { RichTextElementResponseMapper } from &#x27;./rich-text-element-response.mapper&#x27;;
-import { TaskElementResponseMapper } from &#x27;./task-element-response.mapper&#x27;;
+import { SubmissionContainerElementResponseMapper } from &#x27;./submission-container-element-response.mapper&#x27;;
 
 export class ContentElementResponseFactory {
 	private static mappers: BaseResponseMapper[] &#x3D; [
 		FileElementResponseMapper.getInstance(),
 		RichTextElementResponseMapper.getInstance(),
-		TaskElementResponseMapper.getInstance(),
+		SubmissionContainerElementResponseMapper.getInstance(),
 	];
 
 	static mapToResponse(element: AnyBoardDo): AnyContentElementResponse {

@@ -306,7 +306,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateElementContent(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, elementId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, content: FileContentBody | RichTextContentBody | TaskContentBody)</code>
+                    <code>updateElementContent(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, elementId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, content: FileContentBody | RichTextContentBody | SubmissionContainerContentBody)</code>
                 </td>
             </tr>
 
@@ -361,7 +361,7 @@
                                 <tr>
                                     <td>content</td>
                                     <td>
-                                            <code>FileContentBody | RichTextContentBody | TaskContentBody</code>
+                                            <code>FileContentBody | RichTextContentBody | SubmissionContainerContentBody</code>
                                     </td>
 
                                     <td>
@@ -397,7 +397,7 @@ import { AnyBoardDo, EntityId } from &#x27;@shared/domain&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
 import { Action } from &#x27;@src/modules/authorization/types/action.enum&#x27;;
-import { FileContentBody, RichTextContentBody, TaskContentBody } from &#x27;../controller/dto&#x27;;
+import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from &#x27;../controller/dto&#x27;;
 import { BoardDoAuthorizableService, ContentElementService } from &#x27;../service&#x27;;
 
 @Injectable()
@@ -415,7 +415,7 @@ export class ElementUc {
 	async updateElementContent(
 		userId: EntityId,
 		elementId: EntityId,
-		content: FileContentBody | RichTextContentBody | TaskContentBody
+		content: FileContentBody | RichTextContentBody | SubmissionContainerContentBody
 	) {
 		const element &#x3D; await this.elementService.findById(elementId);
 

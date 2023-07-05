@@ -47,7 +47,7 @@
   <li class="breadcrumb-item">Interfaces</li>
   <li class="breadcrumb-item"
   >
-  TaskElementNodeProps</li>
+  SubmissionContainerNodeProps</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -71,7 +71,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/entity/boardnode/task-element-node.entity.ts</code>
+            <code>apps/server/src/shared/domain/entity/boardnode/submission-container-element-node.entity.ts</code>
         </p>
 
 
@@ -155,25 +155,25 @@ import { AnyBoardDo } from &#x27;../../domainobject&#x27;;
 import { BoardNode, BoardNodeProps } from &#x27;./boardnode.entity&#x27;;
 import { BoardDoBuilder, BoardNodeType } from &#x27;./types&#x27;;
 
-@Entity({ discriminatorValue: BoardNodeType.TASK_ELEMENT })
-export class TaskElementNode extends BoardNode {
+@Entity({ discriminatorValue: BoardNodeType.SUBMISSION_CONTAINER_ELEMENT })
+export class SubmissionContainerElementNode extends BoardNode {
 	@Property()
 	dueDate: Date;
 
-	constructor(props: TaskElementNodeProps) {
+	constructor(props: SubmissionContainerNodeProps) {
 		super(props);
-		this.type &#x3D; BoardNodeType.TASK_ELEMENT;
+		this.type &#x3D; BoardNodeType.SUBMISSION_CONTAINER_ELEMENT;
 		this.dueDate &#x3D; props.dueDate;
 	}
 
 	useDoBuilder(builder: BoardDoBuilder): AnyBoardDo {
-		const domainObject &#x3D; builder.buildTaskElement(this);
+		const domainObject &#x3D; builder.buildSubmissionContainerElement(this);
 
 		return domainObject;
 	}
 }
 
-export interface TaskElementNodeProps extends BoardNodeProps {
+export interface SubmissionContainerNodeProps extends BoardNodeProps {
 	dueDate: Date;
 }
 </code></pre>
@@ -213,7 +213,7 @@ export interface TaskElementNodeProps extends BoardNodeProps {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
-            var COMPODOC_CURRENT_PAGE_URL = 'TaskElementNodeProps.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'SubmissionContainerNodeProps.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

@@ -120,9 +120,9 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#visitTaskElement" 
+                                    <a href="#visitSubmissionContainerElement" 
 >
-                                        visitTaskElement
+                                        visitSubmissionContainerElement
                                     </a>
                                 </li>
                             </ul>
@@ -486,16 +486,16 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="visitTaskElement"></a>
+                    <a name="visitSubmissionContainerElement"></a>
                     <span class="name">
-                        <span ><b>visitTaskElement</b></span>
-                        <a href="#visitTaskElement"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>visitSubmissionContainerElement</b></span>
+                        <a href="#visitSubmissionContainerElement"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>visitTaskElement(taskElement: <a href="../classes/TaskElement.html" target="_self">TaskElement</a>)</code>
+<code>visitSubmissionContainerElement(submissionContainerElement: <a href="../classes/SubmissionContainerElement.html" target="_self">SubmissionContainerElement</a>)</code>
                 </td>
             </tr>
 
@@ -524,9 +524,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>taskElement</td>
+                                    <td>submissionContainerElement</td>
                                     <td>
-                                                <code><a href="../classes/TaskElement.html" target="_self" >TaskElement</a></code>
+                                                <code><a href="../classes/SubmissionContainerElement.html" target="_self" >SubmissionContainerElement</a></code>
                                     </td>
 
                                     <td>
@@ -562,7 +562,7 @@ import type { ColumnBoard } from &#x27;../column-board.do&#x27;;
 import type { Column } from &#x27;../column.do&#x27;;
 import type { FileElement } from &#x27;../file-element.do&#x27;;
 import { RichTextElement } from &#x27;../rich-text-element.do&#x27;;
-import { TaskElement } from &#x27;../task-element.do&#x27;;
+import { SubmissionContainerElement } from &#x27;../submission-container-element.do&#x27;;
 
 export interface BoardCompositeVisitor {
 	visitColumnBoard(columnBoard: ColumnBoard): void;
@@ -570,7 +570,7 @@ export interface BoardCompositeVisitor {
 	visitCard(card: Card): void;
 	visitFileElement(fileElement: FileElement): void;
 	visitRichTextElement(richTextElement: RichTextElement): void;
-	visitTaskElement(taskElement: TaskElement): void;
+	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void;
 }
 
 export interface BoardCompositeVisitorAsync {
@@ -579,7 +579,7 @@ export interface BoardCompositeVisitorAsync {
 	visitCardAsync(card: Card): Promise&lt;void&gt;;
 	visitFileElementAsync(fileElement: FileElement): Promise&lt;void&gt;;
 	visitRichTextElementAsync(richTextElement: RichTextElement): Promise&lt;void&gt;;
-	visitTaskElementAsync(taskElement: TaskElement): Promise&lt;void&gt;;
+	visitSubmissionContainerElementAsync(submissionContainerElement: SubmissionContainerElement): Promise&lt;void&gt;;
 }
 </code></pre>
     </div>

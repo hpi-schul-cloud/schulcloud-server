@@ -120,9 +120,9 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#buildTaskElement" 
+                                    <a href="#buildSubmissionContainerElement" 
 >
-                                        buildTaskElement
+                                        buildSubmissionContainerElement
                                     </a>
                                 </li>
                             </ul>
@@ -157,8 +157,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="12"
-                            class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/types/board-do.builder.ts:12</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="19"
+                            class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/types/board-do.builder.ts:19</a></div>
                 </td>
             </tr>
 
@@ -226,8 +226,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="11"
-                            class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/types/board-do.builder.ts:11</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="18"
+                            class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/types/board-do.builder.ts:18</a></div>
                 </td>
             </tr>
 
@@ -295,8 +295,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="10"
-                            class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/types/board-do.builder.ts:10</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="17"
+                            class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/types/board-do.builder.ts:17</a></div>
                 </td>
             </tr>
 
@@ -364,8 +364,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="13"
-                            class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/types/board-do.builder.ts:13</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="20"
+                            class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/types/board-do.builder.ts:20</a></div>
                 </td>
             </tr>
 
@@ -433,8 +433,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="14"
-                            class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/types/board-do.builder.ts:14</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="21"
+                            class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/types/board-do.builder.ts:21</a></div>
                 </td>
             </tr>
 
@@ -486,24 +486,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="buildTaskElement"></a>
+                    <a name="buildSubmissionContainerElement"></a>
                     <span class="name">
-                        <span ><b>buildTaskElement</b></span>
-                        <a href="#buildTaskElement"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>buildSubmissionContainerElement</b></span>
+                        <a href="#buildSubmissionContainerElement"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>buildTaskElement(boardNode: <a href="../entitys/TaskElementNode.html" target="_self">TaskElementNode</a>)</code>
+<code>buildSubmissionContainerElement(boardNode: <a href="../entitys/SubmissionContainerElementNode.html" target="_self">SubmissionContainerElementNode</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="15"
-                            class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/types/board-do.builder.ts:15</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="22"
+                            class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/types/board-do.builder.ts:22</a></div>
                 </td>
             </tr>
 
@@ -526,7 +526,7 @@
                                 <tr>
                                     <td>boardNode</td>
                                     <td>
-                                                <code><a href="../entitys/TaskElementNode.html" target="_self" >TaskElementNode</a></code>
+                                                <code><a href="../entitys/SubmissionContainerElementNode.html" target="_self" >SubmissionContainerElementNode</a></code>
                                     </td>
 
                                     <td>
@@ -541,7 +541,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/TaskElement.html" target="_self" >TaskElement</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/SubmissionContainerElement.html" target="_self" >SubmissionContainerElement</a></code>
 
                     </div>
                     <div class="io-description">
@@ -557,13 +557,20 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { Card, Column, ColumnBoard, FileElement, RichTextElement, TaskElement } from &#x27;../../../domainobject&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type {
+	Card,
+	Column,
+	ColumnBoard,
+	FileElement,
+	RichTextElement,
+	SubmissionContainerElement,
+} from &#x27;../../../domainobject&#x27;;
 import type { CardNode } from &#x27;../card-node.entity&#x27;;
 import type { ColumnBoardNode } from &#x27;../column-board-node.entity&#x27;;
 import type { ColumnNode } from &#x27;../column-node.entity&#x27;;
 import type { FileElementNode } from &#x27;../file-element-node.entity&#x27;;
 import type { RichTextElementNode } from &#x27;../rich-text-element-node.entity&#x27;;
-import type { TaskElementNode } from &#x27;../task-element-node.entity&#x27;;
+import type { SubmissionContainerElementNode } from &#x27;../submission-container-element-node.entity&#x27;;
 
 export interface BoardDoBuilder {
 	buildColumnBoard(boardNode: ColumnBoardNode): ColumnBoard;
@@ -571,7 +578,7 @@ export interface BoardDoBuilder {
 	buildCard(boardNode: CardNode): Card;
 	buildFileElement(boardNode: FileElementNode): FileElement;
 	buildRichTextElement(boardNode: RichTextElementNode): RichTextElement;
-	buildTaskElement(boardNode: TaskElementNode): TaskElement;
+	buildSubmissionContainerElement(boardNode: SubmissionContainerElementNode): SubmissionContainerElement;
 }
 </code></pre>
     </div>

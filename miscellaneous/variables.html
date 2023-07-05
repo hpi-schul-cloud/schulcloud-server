@@ -607,6 +607,12 @@
                             <a href="#studentPermissions" title="apps/server/src/shared/testing/user-role-permissions.ts" ><b>studentPermissions</b>&nbsp;&nbsp;&nbsp;(apps/.../user-role-permissions.ts)</a>
                         </li>
                         <li>
+                            <a href="#submissionContainerElementFactory" title="apps/server/src/shared/testing/factory/domainobject/board/task-element.do.factory.ts" ><b>submissionContainerElementFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../task-element.do.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#submissionContainerElementNodeFactory" title="apps/server/src/shared/testing/factory/boardnode/task-element-node.factory.ts" ><b>submissionContainerElementNodeFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../task-element-node.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#submissionFactory" title="apps/server/src/shared/testing/factory/submission.factory.ts" ><b>submissionFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../submission.factory.ts)</a>
                         </li>
                         <li>
@@ -626,12 +632,6 @@
                         </li>
                         <li>
                             <a href="#taskCardFactory" title="apps/server/src/shared/testing/factory/task-card.factory.ts" ><b>taskCardFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../task-card.factory.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#taskElementFactory" title="apps/server/src/shared/testing/factory/domainobject/board/task-element.do.factory.ts" ><b>taskElementFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../task-element.do.factory.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#taskElementNodeFactory" title="apps/server/src/shared/testing/factory/boardnode/task-element-node.factory.ts" ><b>taskElementNodeFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../task-element-node.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#taskFactory" title="apps/server/src/shared/testing/factory/task.factory.ts" ><b>taskFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../task.factory.ts)</a>
@@ -1333,7 +1333,7 @@
 	ColumnNode,
 	FileElementNode,
 	RichTextElementNode,
-	TaskElementNode,
+	SubmissionContainerElementNode,
 	Course,
 	ContextExternalTool,
 	CourseGroup,
@@ -5486,7 +5486,10 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>(element: AnyBoardDo): element is AnyContentElementDo &#x3D;&gt; {
-	const result &#x3D; element instanceof FileElement || element instanceof RichTextElement || element instanceof TaskElement;
+	const result &#x3D;
+		element instanceof FileElement ||
+		element instanceof RichTextElement ||
+		element instanceof SubmissionContainerElement;
 
 	return result;
 }</code>
@@ -8080,6 +8083,73 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/shared/testing/factory/domainobject/board/task-element.do.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="submissionContainerElementFactory"></a>
+                    <span class="name">
+                        <span ><b>submissionContainerElementFactory</b></span>
+                        <a href="#submissionContainerElementFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;
+	SubmissionContainerElement,
+	SubmissionContainerElementProps
+&gt;(SubmissionContainerElement, ({ sequence }) &#x3D;&gt; {
+	const inThreeDays &#x3D; new Date(Date.now() + 259200000);
+	return {
+		id: new ObjectId().toHexString(),
+		title: &#x60;element #${sequence}&#x60;,
+		children: [],
+		dueDate: inThreeDays,
+		createdAt: new Date(),
+		updatedAt: new Date(),
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/boardnode/task-element-node.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="submissionContainerElementNodeFactory"></a>
+                    <span class="name">
+                        <span ><b>submissionContainerElementNodeFactory</b></span>
+                        <a href="#submissionContainerElementNodeFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;
+	SubmissionContainerElementNode,
+	SubmissionContainerNodeProps
+&gt;(SubmissionContainerElementNode, () &#x3D;&gt; {
+	const inThreeDays &#x3D; new Date(Date.now() + 259200000);
+	return {
+		dueDate: inThreeDays,
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/shared/testing/factory/submission.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -8235,67 +8305,6 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		dueDate: inTwoDays,
 		title: &#x27;Task Card Title&#x27;,
 		course,
-	};
-})</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
-    <h3>apps/server/src/shared/testing/factory/domainobject/board/task-element.do.factory.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="taskElementFactory"></a>
-                    <span class="name">
-                        <span ><b>taskElementFactory</b></span>
-                        <a href="#taskElementFactory"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;TaskElement, TaskElementProps&gt;(TaskElement, ({ sequence }) &#x3D;&gt; {
-	const inThreeDays &#x3D; new Date(Date.now() + 259200000);
-	return {
-		id: new ObjectId().toHexString(),
-		title: &#x60;element #${sequence}&#x60;,
-		children: [],
-		dueDate: inThreeDays,
-		createdAt: new Date(),
-		updatedAt: new Date(),
-	};
-})</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
-    <h3>apps/server/src/shared/testing/factory/boardnode/task-element-node.factory.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="taskElementNodeFactory"></a>
-                    <span class="name">
-                        <span ><b>taskElementNodeFactory</b></span>
-                        <a href="#taskElementNodeFactory"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;TaskElementNode, TaskElementNodeProps&gt;(TaskElementNode, () &#x3D;&gt; {
-	const inThreeDays &#x3D; new Date(Date.now() + 259200000);
-	return {
-		dueDate: inThreeDays,
 	};
 })</code>
                     </td>

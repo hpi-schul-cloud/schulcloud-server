@@ -47,7 +47,7 @@
   <li class="breadcrumb-item">Interfaces</li>
   <li class="breadcrumb-item"
   >
-  TaskElementProps</li>
+  SubmissionContainerElementProps</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -71,7 +71,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/domainobject/board/task-element.do.ts</code>
+            <code>apps/server/src/shared/domain/domainobject/board/submission-container-element.do.ts</code>
         </p>
 
 
@@ -153,7 +153,8 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BoardComposite, BoardCompositeProps } from &#x27;./board-composite.do&#x27;;
 import type { BoardCompositeVisitor, BoardCompositeVisitorAsync } from &#x27;./types&#x27;;
 
-export class TaskElement extends BoardComposite&lt;TaskElementProps&gt; {
+// todo: to be renamed
+export class SubmissionContainerElement extends BoardComposite&lt;SubmissionContainerElementProps&gt; {
 	get dueDate(): Date {
 		return this.props.dueDate;
 	}
@@ -167,15 +168,15 @@ export class TaskElement extends BoardComposite&lt;TaskElementProps&gt; {
 	}
 
 	accept(visitor: BoardCompositeVisitor): void {
-		visitor.visitTaskElement(this);
+		visitor.visitSubmissionContainerElement(this);
 	}
 
 	async acceptAsync(visitor: BoardCompositeVisitorAsync): Promise&lt;void&gt; {
-		await visitor.visitTaskElementAsync(this);
+		await visitor.visitSubmissionContainerElementAsync(this);
 	}
 }
 
-export interface TaskElementProps extends BoardCompositeProps {
+export interface SubmissionContainerElementProps extends BoardCompositeProps {
 	dueDate: Date;
 }
 </code></pre>
@@ -215,7 +216,7 @@ export interface TaskElementProps extends BoardCompositeProps {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
-            var COMPODOC_CURRENT_PAGE_URL = 'TaskElementProps.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'SubmissionContainerElementProps.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

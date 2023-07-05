@@ -139,7 +139,7 @@
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
-                                <a href="#buildTaskElement" >buildTaskElement</a>
+                                <a href="#buildSubmissionContainerElement" >buildSubmissionContainerElement</a>
                             </li>
                             <li>
                                 <a href="#ensureBoardNodeType" >ensureBoardNodeType</a>
@@ -770,18 +770,18 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="buildTaskElement"></a>
+                    <a name="buildSubmissionContainerElement"></a>
                     <span class="name">
                         <span class="modifier">Public</span>
-                        <span ><b>buildTaskElement</b></span>
-                        <a href="#buildTaskElement"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>buildSubmissionContainerElement</b></span>
+                        <a href="#buildSubmissionContainerElement"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>buildTaskElement(boardNode: <a href="../entitys/TaskElementNode.html" target="_self">TaskElementNode</a>)</code>
+                    <code>buildSubmissionContainerElement(boardNode: <a href="../entitys/SubmissionContainerElementNode.html" target="_self">SubmissionContainerElementNode</a>)</code>
                 </td>
             </tr>
 
@@ -812,7 +812,7 @@
                                 <tr>
                                     <td>boardNode</td>
                                     <td>
-                                                <code><a href="../entitys/TaskElementNode.html" target="_self" >TaskElementNode</a></code>
+                                                <code><a href="../entitys/SubmissionContainerElementNode.html" target="_self" >SubmissionContainerElementNode</a></code>
                                     </td>
 
                                     <td>
@@ -827,7 +827,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/TaskElement.html" target="_self" >TaskElement</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/SubmissionContainerElement.html" target="_self" >SubmissionContainerElement</a></code>
 
                     </div>
                     <div class="io-description">
@@ -1075,7 +1075,7 @@ import type {
 	ColumnNode,
 	FileElementNode,
 	RichTextElementNode,
-	TaskElementNode,
+	SubmissionContainerElementNode,
 } from &#x27;@shared/domain&#x27;;
 import {
 	AnyBoardDo,
@@ -1085,7 +1085,7 @@ import {
 	ColumnBoard,
 	FileElement,
 	RichTextElement,
-	TaskElement,
+	SubmissionContainerElement,
 } from &#x27;@shared/domain&#x27;;
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
@@ -1138,10 +1138,10 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 		this.ensureBoardNodeType(this.getChildren(boardNode), [
 			BoardNodeType.FILE_ELEMENT,
 			BoardNodeType.RICH_TEXT_ELEMENT,
-			BoardNodeType.TASK_ELEMENT,
+			BoardNodeType.SUBMISSION_CONTAINER_ELEMENT,
 		]);
 
-		const elements &#x3D; this.buildChildren&lt;RichTextElement | TaskElement&gt;(boardNode);
+		const elements &#x3D; this.buildChildren&lt;RichTextElement | SubmissionContainerElement&gt;(boardNode);
 
 		const card &#x3D; new Card({
 			id: boardNode.id,
@@ -1181,10 +1181,10 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 		return element;
 	}
 
-	public buildTaskElement(boardNode: TaskElementNode): TaskElement {
+	public buildSubmissionContainerElement(boardNode: SubmissionContainerElementNode): SubmissionContainerElement {
 		this.ensureLeafNode(boardNode);
 
-		const element &#x3D; new TaskElement({
+		const element &#x3D; new SubmissionContainerElement({
 			id: boardNode.id,
 			dueDate: boardNode.dueDate,
 			children: [],
