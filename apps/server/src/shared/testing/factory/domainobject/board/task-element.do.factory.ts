@@ -1,9 +1,12 @@
 /* istanbul ignore file */
-import { TaskElement, TaskElementProps } from '@shared/domain';
+import { SubmissionContainerElement, SubmissionContainerElementProps } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { BaseFactory } from '../../base.factory';
 
-export const taskElementFactory = BaseFactory.define<TaskElement, TaskElementProps>(TaskElement, ({ sequence }) => {
+export const submissionContainerElementFactory = BaseFactory.define<
+	SubmissionContainerElement,
+	SubmissionContainerElementProps
+>(SubmissionContainerElement, ({ sequence }) => {
 	const inThreeDays = new Date(Date.now() + 259200000);
 	return {
 		id: new ObjectId().toHexString(),

@@ -1,15 +1,15 @@
 import { NotImplementedException } from '@nestjs/common';
-import { fileElementFactory, richTextElementFactory, taskElementFactory } from '@shared/testing';
-import { FileElementResponse, RichTextElementResponse, TaskElementResponse } from '../dto';
+import { fileElementFactory, richTextElementFactory, submissionContainerElementFactory } from '@shared/testing';
+import { FileElementResponse, RichTextElementResponse, SubmissionContainerElementResponse } from '../dto';
 import { ContentElementResponseFactory } from './content-element-response.factory';
 
 describe(ContentElementResponseFactory.name, () => {
 	const setup = () => {
 		const fileElement = fileElementFactory.build();
 		const richTextElement = richTextElementFactory.build();
-		const taskElement = taskElementFactory.build();
+		const submissionContainerElement = submissionContainerElementFactory.build();
 
-		return { fileElement, richTextElement, taskElement };
+		return { fileElement, richTextElement, submissionContainerElement };
 	};
 
 	it('should return instance of FileElementResponse', () => {
@@ -28,12 +28,12 @@ describe(ContentElementResponseFactory.name, () => {
 		expect(result).toBeInstanceOf(RichTextElementResponse);
 	});
 
-	it('should return instance of TaskElementResponse', () => {
-		const { taskElement } = setup();
+	it('should return instance of SubmissionContainerElementResponse', () => {
+		const { submissionContainerElement } = setup();
 
-		const result = ContentElementResponseFactory.mapToResponse(taskElement);
+		const result = ContentElementResponseFactory.mapToResponse(submissionContainerElement);
 
-		expect(result).toBeInstanceOf(TaskElementResponse);
+		expect(result).toBeInstanceOf(SubmissionContainerElementResponse);
 	});
 
 	it('should throw NotImplementedException', () => {

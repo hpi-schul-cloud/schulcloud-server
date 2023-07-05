@@ -3,7 +3,7 @@ import { AnyBoardDo, EntityId } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Action } from '@src/modules/authorization/types/action.enum';
-import { FileContentBody, RichTextContentBody, TaskContentBody } from '../controller/dto';
+import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from '../controller/dto';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
 
 @Injectable()
@@ -21,7 +21,7 @@ export class ElementUc {
 	async updateElementContent(
 		userId: EntityId,
 		elementId: EntityId,
-		content: FileContentBody | RichTextContentBody | TaskContentBody
+		content: FileContentBody | RichTextContentBody | SubmissionContainerContentBody
 	) {
 		const element = await this.elementService.findById(elementId);
 
