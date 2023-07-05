@@ -123,7 +123,7 @@ export class ElementController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
-	@ApiBody({ required: false, type: CreateSubmissionBodyParams })
+	@ApiBody({ required: true, type: CreateSubmissionBodyParams })
 	@Post(':contentElementId/submissions')
 	async createSubmission(
 		@Param() urlParams: ContentElementUrlParams,

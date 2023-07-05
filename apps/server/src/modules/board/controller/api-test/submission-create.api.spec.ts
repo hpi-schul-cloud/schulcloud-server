@@ -102,8 +102,7 @@ describe('submission create (api)', () => {
 			const invalidUser = userFactory.build();
 			await em.persistAndFlush([invalidUser]);
 			currentUser = mapUserToCurrentUser(invalidUser);
-
-			const response = await api.post(taskNode.id);
+			const response = await api.post(taskNode.id, { completed: false });
 
 			expect(response.status).toEqual(403);
 		});
