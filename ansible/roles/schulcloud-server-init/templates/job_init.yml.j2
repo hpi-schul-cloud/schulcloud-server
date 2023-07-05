@@ -28,7 +28,7 @@ spec:
         args: ['cp /update.sh /update.run.sh && chmod +x /update.run.sh &&./update.run.sh']
         resources:
           limits:
-            cpu: {{ API_CPU_LIMITS|default("2800m", true) }}
+            cpu: {{ API_CPU_LIMITS|default("3000m", true) }}
             memory: {{ API_MEMORY_LIMITS|default("1Gi", true) }}
           requests:
             cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
