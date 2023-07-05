@@ -3,7 +3,7 @@ import { InputFormat } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { FileElement } from './file-element.do';
 import { RichTextElement } from './rich-text-element.do';
-import { TaskElement } from './task-element.do';
+import { SubmissionContainerElement } from './submission-container-element.do';
 import { AnyContentElementDo } from './types/any-content-element-do';
 import { ContentElementType } from './types/content-elements.enum';
 
@@ -19,8 +19,8 @@ export class ContentElementFactory {
 			case ContentElementType.RICH_TEXT:
 				element = this.buildRichText();
 				break;
-			case ContentElementType.TASK:
-				element = this.buildTask();
+			case ContentElementType.SUBMISSION_CONTAINER:
+				element = this.buildSubmissionContainer();
 				break;
 			default:
 				break;
@@ -58,8 +58,8 @@ export class ContentElementFactory {
 		return element;
 	}
 
-	private buildTask() {
-		const element = new TaskElement({
+	private buildSubmissionContainer() {
+		const element = new SubmissionContainerElement({
 			id: new ObjectId().toHexString(),
 			dueDate: new Date(),
 			children: [],
