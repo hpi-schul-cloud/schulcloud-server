@@ -992,6 +992,15 @@
 			"default": false,
 			"description": "Toggle for activating the column board."
 		},
+		"COLUMN_BOARD_HELP_LINK": {
+			"type": "string",
+			"default": "https://docs.dbildungscloud.de/pages/viewpage.action?pageId=270827606",
+			"description": "link to userfacing documentation of the column board feature"
+		},
+		"COLUMN_BOARD_FEEDBACK_LINK": {
+			"type": "string",
+			"description": "link to a page that gathers feedback about the column board feature"
+		},
 		"FEATURE_COURSE_SHARE": {
 			"type": "boolean",
 			"default": false,
