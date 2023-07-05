@@ -324,12 +324,12 @@
 		"FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "Enables the Identity Management (ErWIn IDM) as account storage. If activated, all account CRUD operations are mirrored into Keycloak. Prerequisite to set FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED flag."
+			"description": "Enables the Identity Management (ErWIn IDM) as account storage. If activated, account related create, update and delete operations are mirrored into Keycloak. Prerequisite to set FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED flag."
 		},
 		"FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "Enables the login via Keycloak with the Identity Management (ErWIn IDM) for users managed by dBildungscloud. If activated, Keycloak will be used as the primary source for dBildungscloud login."
+			"description": "Enables the login via Keycloak with the Identity Management (ErWIn IDM) for users managed by dBildungscloud. If activated, Keycloak will be used as the primary source to read for the dBildungscloud login."
 		},
 		"IDENTITY_MANAGEMENT": {
 			"type": "object",
