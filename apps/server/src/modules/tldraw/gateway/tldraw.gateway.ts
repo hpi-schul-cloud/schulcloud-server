@@ -9,8 +9,27 @@ import { Server } from 'ws';
 import * as Y from 'yjs';
 import * as MongodbPersistence from 'y-mongodb-provider';
 import { closeConn, getYDoc, WSSharedDoc } from '@src/modules/tldraw/utils/utils';
+
 const setupWSConnection = require('./../utils/utils');
-const connectionString = 'mongodb://127.0.0.1:27017/myproject';
+let connectionString = '';
+
+const ENVIRONMENTS = {
+	DEVELOPMENT: 'development',
+	TEST: 'test',
+	PRODUCTION: 'production',
+	MIGRATION: 'migration',
+};
+
+const { NODE_ENV = ENVIRONMENTS.DEVELOPMENT } = process.env;
+
+switch (NODE_ENV) {
+	case ENVIRONMENTS.TEST:
+		connectionString = 'mongodb://127.0.0.1:27017/tldraw-test';
+		break;
+	default:
+		connectionString = 'mongodb://127.0.0.1:27017/tldraw';
+}
+
 
 @WebSocketGateway(3345)
 export class TldrawGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -19,6 +38,7 @@ export class TldrawGateway implements OnGatewayInit, OnGatewayConnection, OnGate
 	doc: WSSharedDoc = {};
 
 	handleConnection(client: any, request) {
+		console.log('oin conn');
 		client.binaryType = 'arraybuffer';
 		const docName =  request.url.slice(1).split('?')[0];
 		this.doc = getYDoc(docName, true);

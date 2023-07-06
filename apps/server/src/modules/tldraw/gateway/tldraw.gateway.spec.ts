@@ -1,29 +1,45 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TldrawGateway } from './tldraw.gateway';
-import { TextEncoder } from 'util';
+import { TldrawGateway } from '../gateway';
+import { createMock } from '@golevelup/ts-jest';
+import { WebsocketProvider } from 'y-websocket';
+import * as Y from 'yjs'
 
-const message = 'AZQBAaCbuLANBIsBeyJ0ZFVzZXIiOnsiaWQiOiJkNGIxZThmYi0yMWUwLTQ3ZDAtMDI0YS0zZGEwYjMzNjQ3MjIiLCJjb2xvciI6IiNGMDRGODgiLCJwb2ludCI6WzAsMF0sInNlbGVjdGVkSWRzIjpbXSwiYWN0aXZlU2hhcGVzIjpbXSwic2Vzc2lvbiI6ZmFsc2V9fQ==';
+describe('TldrawGateway', () => {
+	let gateway: TldrawGateway;
+	let clientSocket: WebsocketProvider;
+	let app;
+	let address;
+	let doc;
 
-describe('TlDrawConnection', () => {
-	let tldrawGateway: TldrawGateway;
 	beforeEach(async () => {
-		const moduleFixture: TestingModule = await Test.createTestingModule({
-			providers: [TldrawGateway],
+		const module: TestingModule = await Test.createTestingModule({
+			providers: [
+				{
+					provide: TldrawGateway,
+					useValue: createMock<TldrawGateway>()
+				}],
 		}).compile();
-
-		tldrawGateway = moduleFixture.get<TldrawGateway>(TldrawGateway);
+		app = module.createNestApplication();
+		await app.init();
+		address = app.getHttpServer().listen().address();
+		gateway = module.get<TldrawGateway>(TldrawGateway);
+		doc = new Y.Doc()
+		clientSocket = new WebsocketProvider(`ws://localhost:${address.port}`, 'testRommname', doc, { WebSocketPolyfill: require('ws') })
 	});
 
-	it('should handle message method', () => {
-		var encoder = new TextEncoder();
-		const data = encoder.encode(message); // Mock message data
-		const client = { client: { conn: {readyState: 'open' } }, send(data, err){} };
-		tldrawGateway.doc = {}; // Mock doc object
+	afterEach(async function () {
+		await app.close();
+		await clientSocket.disconnect();
+	});
 
-		const messageHandlerSpy = jest.spyOn(tldrawGateway, 'handleMessage');
-		tldrawGateway.handleMessage(data, client);
+	it('should be defined', () => {
+		expect(gateway).toBeDefined();
+	});
 
-		expect(messageHandlerSpy).toHaveBeenCalledWith(data, client);
+	it('should handle connection', () => {
+		const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
+		const message = { text: 'Hello, world!' };
+		gateway.handleConnection(clientSocket, message);
+		expect(handleConnectionSpy).toHaveBeenCalledWith(clientSocket, message);
 	});
 });
-

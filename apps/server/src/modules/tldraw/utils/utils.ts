@@ -193,7 +193,7 @@ export const closeConn = (doc, ws) => {
  * @param {any} conn
  * @param {Uint8Array} message
  */
-const send = (doc: WSSharedDoc, conn, message) => {
+export const send = (doc: WSSharedDoc, conn, message) => {
 	if (conn.readyState !== wsReadyStateConnecting && conn.readyState !== wsReadyStateOpen) {
 		closeConn(doc, conn);
 	}
@@ -251,7 +251,7 @@ exports.setupWSConnection = (ws, docName = 'GLOBAL') => {
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, messageSync);
 		syncProtocol.writeSyncStep1(encoder, doc);
-		send(doc, ws, encoding.toUint8Array(encoder));
+	 	send(doc, ws, encoding.toUint8Array(encoder));
 		const awarenessStates = doc.awareness.getStates();
 		if (awarenessStates.size > 0) {
 			const encoder = encoding.createEncoder()
