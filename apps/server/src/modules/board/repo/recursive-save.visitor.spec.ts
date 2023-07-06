@@ -7,7 +7,7 @@ import {
 	ColumnNode,
 	FileElementNode,
 	RichTextElementNode,
-	TaskElementNode,
+	SubmissionContainerElementNode,
 } from '@shared/domain';
 import {
 	cardFactory,
@@ -16,7 +16,7 @@ import {
 	columnFactory,
 	fileElementFactory,
 	richTextElementFactory,
-	taskElementFactory,
+	submissionContainerElementFactory,
 } from '@shared/testing';
 import { BoardNodeRepo } from './board-node.repo';
 import { RecursiveSaveVisitor } from './recursive-save.visitor';
@@ -144,17 +144,17 @@ describe(RecursiveSaveVisitor.name, () => {
 		});
 	});
 
-	describe('when visiting a task element composite', () => {
+	describe('when visiting a submission container element composite', () => {
 		it('should create or update the node', () => {
-			const taskElement = taskElementFactory.build();
+			const submissionContainerElement = submissionContainerElementFactory.build();
 			jest.spyOn(visitor, 'createOrUpdateBoardNode');
 
-			visitor.visitTaskElement(taskElement);
+			visitor.visitSubmissionContainerElement(submissionContainerElement);
 
-			const expectedNode: Partial<TaskElementNode> = {
-				id: taskElement.id,
-				type: BoardNodeType.TASK_ELEMENT,
-				dueDate: taskElement.dueDate,
+			const expectedNode: Partial<SubmissionContainerElementNode> = {
+				id: submissionContainerElement.id,
+				type: BoardNodeType.SUBMISSION_CONTAINER_ELEMENT,
+				dueDate: submissionContainerElement.dueDate,
 			};
 			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
 		});

@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReference, BoardExternalReferenceType, EntityId } from '@shared/domain';
@@ -18,12 +19,14 @@ describe('rooms service', () => {
 	let boardRepo: DeepMocked<BoardRepo>;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
 	let columnBoardTargetService: DeepMocked<ColumnBoardTargetService>;
+	let configBefore: IConfig;
 
 	afterAll(async () => {
 		await module.close();
 	});
 
 	beforeAll(async () => {
+		configBefore = Configuration.toObject({ plainSecrets: true });
 		await setupEntities();
 		module = await Test.createTestingModule({
 			imports: [],
@@ -71,12 +74,9 @@ describe('rooms service', () => {
 		columnBoardTargetService = module.get(ColumnBoardTargetService);
 	});
 
-	beforeEach(() => {
-		Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', 'true');
-	});
-
 	afterEach(() => {
 		jest.clearAllMocks();
+		Configuration.reset(configBefore);
 	});
 
 	describe('updateBoard', () => {
@@ -161,9 +161,15 @@ describe('rooms service', () => {
 			};
 
 			describe('when ColumnBoard-feature is enabled', () => {
+				const setupWithEnvVariables = () => {
+					Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', 'true');
+
+					return setup();
+				};
+
 				describe('when no column board exists for the board', () => {
 					it('should create one', async () => {
-						const { user, boardWithoutColumnBoard: board } = setup();
+						const { user, boardWithoutColumnBoard: board } = setupWithEnvVariables();
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
@@ -176,7 +182,7 @@ describe('rooms service', () => {
 
 				describe('when a colum board exists for the board', () => {
 					it('should not create one', async () => {
-						const { user, boardWithColumnBoard: board } = setup();
+						const { user, boardWithColumnBoard: board } = setupWithEnvVariables();
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
@@ -185,7 +191,7 @@ describe('rooms service', () => {
 				});
 
 				it('should use the service to find or create targets', async () => {
-					const { user, boardWithColumnBoard: board, columnBoardId } = setup();
+					const { user, boardWithColumnBoard: board, columnBoardId } = setupWithEnvVariables();
 
 					await roomsService.updateBoard(board, board.course.id, user.id);
 
@@ -193,11 +199,60 @@ describe('rooms service', () => {
 				});
 			});
 
+			describe('when ColumnBoard-feature and COLUMN_BOARD_HELP_LINK is enabled', () => {
+				const setupWithEnvVariables = () => {
+					Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', 'true');
+					Configuration.set('COLUMN_BOARD_HELP_LINK', 'www.google.com');
+
+					return setup();
+				};
+
+				describe('when no column board exists for the board', () => {
+					it('should create one', async () => {
+						const { user, boardWithoutColumnBoard: board } = setupWithEnvVariables();
+
+						await roomsService.updateBoard(board, board.course.id, user.id);
+
+						expect(columnBoardService.create).toBeCalledWith<BoardExternalReference[]>({
+							type: BoardExternalReferenceType.Course,
+							id: board.course.id,
+						});
+					});
+				});
+			});
+
+			describe('when ColumnBoard-feature and COLUMN_BOARD_FEEDBACK_LINK is enabled', () => {
+				const setupWithEnvVariables = () => {
+					Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', 'true');
+					Configuration.set('COLUMN_BOARD_FEEDBACK_LINK', 'www.twitter.com');
+
+					return setup();
+				};
+
+				describe('when no column board exists for the board', () => {
+					it('should create one', async () => {
+						const { user, boardWithoutColumnBoard: board } = setupWithEnvVariables();
+
+						await roomsService.updateBoard(board, board.course.id, user.id);
+
+						expect(columnBoardService.create).toBeCalledWith<BoardExternalReference[]>({
+							type: BoardExternalReferenceType.Course,
+							id: board.course.id,
+						});
+					});
+				});
+			});
+
 			describe('when ColumnBoard-feature is disabled', () => {
+				const setupWithEnvVariables = () => {
+					Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', 'false');
+
+					return setup();
+				};
+
 				describe('when no column board exists for the board', () => {
 					it('should NOT create one', async () => {
-						const { user, boardWithoutColumnBoard: board } = setup();
-						Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', 'false');
+						const { user, boardWithoutColumnBoard: board } = setupWithEnvVariables();
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
@@ -206,8 +261,7 @@ describe('rooms service', () => {
 				});
 
 				it('should NOT use the service to find or create targets', async () => {
-					const { user, boardWithColumnBoard: board } = setup();
-					Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', 'false');
+					const { user, boardWithColumnBoard: board } = setupWithEnvVariables();
 
 					await roomsService.updateBoard(board, board.course.id, user.id);
 
