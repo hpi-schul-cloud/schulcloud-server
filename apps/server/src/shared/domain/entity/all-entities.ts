@@ -6,7 +6,7 @@ import {
 	ColumnNode,
 	FileElementNode,
 	RichTextElementNode,
-	TaskElementNode,
+	SubmissionContainerElementNode,
 } from './boardnode';
 import { BoardNode } from './boardnode/boardnode.entity';
 import { CardElement, RichTextCardElement } from './card-element.entity';
@@ -55,7 +55,7 @@ export const ALL_ENTITIES = [
 	ColumnNode,
 	FileElementNode,
 	RichTextElementNode,
-	TaskElementNode,
+	SubmissionContainerElementNode,
 	Course,
 	ContextExternalTool,
 	CourseGroup,
