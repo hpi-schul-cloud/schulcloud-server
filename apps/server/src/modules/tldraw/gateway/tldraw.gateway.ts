@@ -38,7 +38,6 @@ export class TldrawGateway implements OnGatewayInit, OnGatewayConnection, OnGate
 	doc: WSSharedDoc = {};
 
 	handleConnection(client: any, request) {
-		console.log('oin conn');
 		client.binaryType = 'arraybuffer';
 		const docName =  request.url.slice(1).split('?')[0];
 		this.doc = getYDoc(docName, true);
