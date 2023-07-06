@@ -79,7 +79,7 @@ export class UserMigrationService {
 		return url.toString();
 	}
 
-	async getPageContent(pageType: PageTypes, sourceId: string, targetId: string): Promise<PageContentDto> {
+	async getPageContent(jwt: string, pageType: PageTypes, sourceId: string, targetId: string): Promise<PageContentDto> {
 		const sourceSystem: SystemDto = await this.systemService.findById(sourceId);
 		const targetSystem: SystemDto = await this.systemService.findById(targetId);
 
@@ -96,6 +96,16 @@ export class UserMigrationService {
 				return content;
 			}
 			case PageTypes.START_FROM_SOURCE_SYSTEM: {
+				if (sourceSystem.provisioningStrategy === 'iserv') {
+					const logoutUrl: string = this.getLogoutUrl(sourceSystem, jwt, pageType);
+
+					const content: PageContentDto = new PageContentDto({
+						proceedButtonUrl: targetSystemLoginUrl.toString(),
+						cancelButtonUrl: logoutUrl,
+					});
+					return content;
+				}
+
 				const content: PageContentDto = new PageContentDto({
 					proceedButtonUrl: targetSystemLoginUrl.toString(),
 					cancelButtonUrl: this.dashboardUrl,
@@ -103,6 +113,16 @@ export class UserMigrationService {
 				return content;
 			}
 			case PageTypes.START_FROM_SOURCE_SYSTEM_MANDATORY: {
+				if (sourceSystem.provisioningStrategy === 'iserv') {
+					const logoutUrl: string = this.getLogoutUrl(sourceSystem, jwt, pageType);
+
+					const content: PageContentDto = new PageContentDto({
+						proceedButtonUrl: targetSystemLoginUrl.toString(),
+						cancelButtonUrl: logoutUrl,
+					});
+					return content;
+				}
+
 				const content: PageContentDto = new PageContentDto({
 					proceedButtonUrl: targetSystemLoginUrl.toString(),
 					cancelButtonUrl: this.logoutUrl,
@@ -207,5 +227,24 @@ export class UserMigrationService {
 		}
 
 		return loginUrl.toString();
+	}
+
+	private getLogoutUrl(system: SystemDto, jwt: string, pageType: PageTypes): string {
+		if (!system.oauthConfig || !system.id) {
+			throw new UnprocessableEntityException(`System ${system?.id || 'unknown'} has no oauth config`);
+		}
+
+		const { logoutEndpoint } = system.oauthConfig;
+		let postLogoutRedirect: string;
+
+		if (pageType === PageTypes.START_FROM_SOURCE_SYSTEM) {
+			postLogoutRedirect = this.dashboardUrl;
+		} else {
+			postLogoutRedirect = this.logoutUrl;
+		}
+
+		const logoutUrl = `${logoutEndpoint}?post_logout_redirect_uri=${postLogoutRedirect}&id_token_hint=${jwt}`;
+
+		return logoutUrl;
 	}
 }

@@ -24,8 +24,14 @@ export class UserLoginMigrationUc {
 		private readonly logger: LegacyLogger
 	) {}
 
-	async getPageContent(pageType: PageTypes, sourceSystem: string, targetSystem: string): Promise<PageContentDto> {
+	async getPageContent(
+		jwt: string,
+		pageType: PageTypes,
+		sourceSystem: string,
+		targetSystem: string
+	): Promise<PageContentDto> {
 		const content: PageContentDto = await this.userMigrationService.getPageContent(
+			jwt,
 			pageType,
 			sourceSystem,
 			targetSystem
