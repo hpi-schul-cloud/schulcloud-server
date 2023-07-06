@@ -84,11 +84,14 @@ describe('SchoolRepo', () => {
 			name: 'test',
 			schoolYear,
 			previousExternalId: 'someId',
-			userLoginMigration: userLoginMigrationFactory.build(),
 		});
 		school.permissions = new SchoolRoles();
 		school.permissions.teacher = new SchoolRolePermission();
 		school.permissions.teacher.STUDENT_LIST = true;
+
+		const userLoginMigration = userLoginMigrationFactory.build();
+		userLoginMigration.school = school;
+		school.userLoginMigration = userLoginMigration;
 
 		await em.persistAndFlush([school]);
 
