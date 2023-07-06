@@ -119,6 +119,10 @@ describe('submission create (api)', () => {
 		});
 	});
 
+	// TODO: add test cases
+	// student not part of the course should not be able to create submission
+	// student part of the course should be able to create submission
+
 	describe('with invalid user', () => {
 		it('should return 403', async () => {
 			const { taskNode } = await setup();
