@@ -12,7 +12,9 @@ export class SubmissionBoardNode extends BoardNode {
 	completed!: boolean;
 
 	@Index()
-	@Property()
+	@Property({
+		comment: 'The user whos submission this is. Usually the student submitting the work.',
+	})
 	userId!: EntityId;
 
 	constructor(props: SubmissionBoardNodeProps) {
