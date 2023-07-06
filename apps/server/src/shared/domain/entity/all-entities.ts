@@ -6,21 +6,23 @@ import {
 	ColumnNode,
 	FileElementNode,
 	RichTextElementNode,
-	TaskElementNode,
+	SubmissionBoardNode,
 	SubmissionSubElementNode,
+	TaskElementNode,
 } from './boardnode';
 import { BoardNode } from './boardnode/boardnode.entity';
 import { CardElement, RichTextCardElement } from './card-element.entity';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
+import { FederalState } from './federal-state.entity';
 import { File } from './file.entity';
 import { ImportUser } from './import-user.entity';
 import {
 	Board,
 	BoardElement,
-	ColumnboardBoardElement,
 	ColumnBoardTarget,
+	ColumnboardBoardElement,
 	LessonBoardElement,
 	TaskBoardElement,
 } from './legacy-board';
@@ -42,7 +44,6 @@ import { ContextExternalTool, ExternalTool, SchoolExternalTool } from './tools';
 import { UserLoginMigration } from './user-login-migration.entity';
 import { User } from './user.entity';
 import { VideoConference } from './video-conference.entity';
-import { FederalState } from './federal-state.entity';
 
 export const ALL_ENTITIES = [
 	Account,
@@ -58,6 +59,7 @@ export const ALL_ENTITIES = [
 	RichTextElementNode,
 	TaskElementNode,
 	SubmissionSubElementNode,
+	SubmissionBoardNode,
 	Course,
 	ContextExternalTool,
 	CourseGroup,

@@ -21,11 +21,8 @@ export class Card extends BoardComposite<CardProps> {
 		this.props.height = height;
 	}
 
-	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
-		const allowed =
-			domainObject instanceof FileElement ||
-			domainObject instanceof RichTextElement ||
-			domainObject instanceof TaskElement;
+	isAllowedAsChild(child: AnyBoardDo): boolean {
+		const allowed = child instanceof FileElement || child instanceof RichTextElement || child instanceof TaskElement;
 		return allowed;
 	}
 

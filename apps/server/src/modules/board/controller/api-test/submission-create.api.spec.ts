@@ -95,6 +95,17 @@ describe('submission create (api)', () => {
 		return { user, columnBoardNode, columnNode, cardNode, taskNode };
 	};
 
+	describe('with valid user', () => {
+		it('should return status 201', async () => {
+			const { user, taskNode } = await setup();
+			currentUser = mapUserToCurrentUser(user);
+
+			const response = await api.post(taskNode.id, { completed: false });
+
+			expect(response.status).toEqual(201);
+		});
+	});
+
 	describe('with invalid user', () => {
 		it('should return 403', async () => {
 			const { taskNode } = await setup();

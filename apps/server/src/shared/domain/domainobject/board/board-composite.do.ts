@@ -30,6 +30,7 @@ export abstract class BoardComposite<T extends BoardCompositeProps> extends Doma
 		this.children.splice(position, 0, child);
 	}
 
+	// NOTE: should rename this function -> canAddChild(child: AnyBoardDo): boolean
 	abstract isAllowedAsChild(domainObject: AnyBoardDo): boolean;
 
 	removeChild(child: AnyBoardDo): void {
