@@ -2,8 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { ContentElementType } from '@shared/domain';
 import { TimestampsResponse } from '../timestamps.response';
 
-export class TaskElementContent {
-	constructor({ dueDate }: TaskElementContent) {
+export class SubmissionContainerElementContent {
+	constructor({ dueDate }: SubmissionContainerElementContent) {
 		this.dueDate = dueDate;
 	}
 
@@ -11,8 +11,8 @@ export class TaskElementContent {
 	dueDate: Date;
 }
 
-export class TaskElementResponse {
-	constructor({ id, content, timestamps, type }: TaskElementResponse) {
+export class SubmissionContainerElementResponse {
+	constructor({ id, content, timestamps, type }: SubmissionContainerElementResponse) {
 		this.id = id;
 		this.content = content;
 		this.timestamps = timestamps;
@@ -23,10 +23,10 @@ export class TaskElementResponse {
 	id: string;
 
 	@ApiProperty({ enum: ContentElementType, enumName: 'ContentElementType' })
-	type: ContentElementType.TASK;
+	type: ContentElementType.SUBMISSION_CONTAINER;
 
 	@ApiProperty()
-	content: TaskElementContent;
+	content: SubmissionContainerElementContent;
 
 	@ApiProperty()
 	timestamps: TimestampsResponse;

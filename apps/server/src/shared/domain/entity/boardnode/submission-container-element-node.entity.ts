@@ -3,24 +3,24 @@ import { AnyBoardDo } from '../../domainobject';
 import { BoardNode, BoardNodeProps } from './boardnode.entity';
 import { BoardDoBuilder, BoardNodeType } from './types';
 
-@Entity({ discriminatorValue: BoardNodeType.TASK_ELEMENT })
-export class TaskElementNode extends BoardNode {
+@Entity({ discriminatorValue: BoardNodeType.SUBMISSION_CONTAINER_ELEMENT })
+export class SubmissionContainerElementNode extends BoardNode {
 	@Property()
 	dueDate: Date;
 
-	constructor(props: TaskElementNodeProps) {
+	constructor(props: SubmissionContainerNodeProps) {
 		super(props);
-		this.type = BoardNodeType.TASK_ELEMENT;
+		this.type = BoardNodeType.SUBMISSION_CONTAINER_ELEMENT;
 		this.dueDate = props.dueDate;
 	}
 
 	useDoBuilder(builder: BoardDoBuilder): AnyBoardDo {
-		const domainObject = builder.buildTaskElement(this);
+		const domainObject = builder.buildSubmissionContainerElement(this);
 
 		return domainObject;
 	}
 }
 
-export interface TaskElementNodeProps extends BoardNodeProps {
+export interface SubmissionContainerNodeProps extends BoardNodeProps {
 	dueDate: Date;
 }
