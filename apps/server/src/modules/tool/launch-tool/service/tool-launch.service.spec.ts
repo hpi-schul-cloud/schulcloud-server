@@ -1,7 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BasicToolConfigDO, ExternalToolDO, SchoolExternalToolDO, ToolConfigType } from '@shared/domain';
+import {
+	BasicToolConfigDO,
+	ExternalToolDO,
+	SchoolExternalToolDO,
+	ToolConfigType,
+	ToolConfigurationStatus,
+} from '@shared/domain';
 import { ContextExternalToolDO } from '@shared/domain/domainobject/tool/context-external-tool.do';
 import {
 	basicToolConfigDOFactory,
@@ -9,7 +15,7 @@ import {
 	externalToolDOFactory,
 	schoolExternalToolDOFactory,
 } from '@shared/testing';
-import { ExternalToolService, SchoolExternalToolService } from '../../service';
+import { CommonToolService, ExternalToolService, SchoolExternalToolService } from '../../service';
 import { LaunchRequestMethod, ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import {
 	BasicToolLaunchStrategy,
@@ -18,6 +24,7 @@ import {
 	OAuth2ToolLaunchStrategy,
 } from './strategy';
 import { ToolLaunchService } from './tool-launch.service';
+import { ToolStatusOutdatedLoggableException } from '../error';
 
 describe('ToolLaunchService', () => {
 	let module: TestingModule;
@@ -26,6 +33,7 @@ describe('ToolLaunchService', () => {
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let basicToolLaunchStrategy: DeepMocked<BasicToolLaunchStrategy>;
+	let commonToolService: DeepMocked<CommonToolService>;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
@@ -51,6 +59,10 @@ describe('ToolLaunchService', () => {
 					provide: OAuth2ToolLaunchStrategy,
 					useValue: createMock<OAuth2ToolLaunchStrategy>(),
 				},
+				{
+					provide: CommonToolService,
+					useValue: createMock<CommonToolService>(),
+				},
 			],
 		}).compile();
 
@@ -58,6 +70,7 @@ describe('ToolLaunchService', () => {
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		externalToolService = module.get(ExternalToolService);
 		basicToolLaunchStrategy = module.get(BasicToolLaunchStrategy);
+		commonToolService = module.get(CommonToolService);
 	});
 
 	afterAll(async () => {
@@ -96,6 +109,7 @@ describe('ToolLaunchService', () => {
 				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValue(schoolExternalToolDO);
 				externalToolService.findExternalToolById.mockResolvedValue(externalToolDO);
 				basicToolLaunchStrategy.createLaunchData.mockResolvedValue(launchDataDO);
+				commonToolService.determineToolConfigurationStatus.mockReturnValueOnce(ToolConfigurationStatus.LATEST);
 
 				return {
 					launchDataDO,
@@ -155,6 +169,7 @@ describe('ToolLaunchService', () => {
 
 				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValue(schoolExternalToolDO);
 				externalToolService.findExternalToolById.mockResolvedValue(externalToolDO);
+				commonToolService.determineToolConfigurationStatus.mockReturnValueOnce(ToolConfigurationStatus.LATEST);
 
 				return {
 					launchParams,
@@ -193,6 +208,54 @@ describe('ToolLaunchService', () => {
 				}
 
 				expect(externalToolService.findExternalToolById).toHaveBeenCalledWith(launchParams.schoolExternalToolDO.toolId);
+			});
+		});
+
+		describe('when tool configuration status is not LATEST', () => {
+			const setup = () => {
+				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
+				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory
+					.withSchoolExternalToolRef(schoolExternalToolDO.id as string)
+					.build();
+				const basicToolConfigDO: BasicToolConfigDO = basicToolConfigDOFactory.build();
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
+					config: basicToolConfigDO,
+				});
+
+				const launchDataDO: ToolLaunchData = new ToolLaunchData({
+					type: ToolLaunchDataType.BASIC,
+					baseUrl: 'https://www.basic-baseurl.com/',
+					properties: [],
+					openNewTab: false,
+				});
+
+				const launchParams: IToolLaunchParams = {
+					externalToolDO,
+					schoolExternalToolDO,
+					contextExternalToolDO,
+				};
+
+				const userId = 'userId';
+
+				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValue(schoolExternalToolDO);
+				externalToolService.findExternalToolById.mockResolvedValue(externalToolDO);
+				basicToolLaunchStrategy.createLaunchData.mockResolvedValue(launchDataDO);
+				commonToolService.determineToolConfigurationStatus.mockReturnValueOnce(ToolConfigurationStatus.OUTDATED);
+
+				return {
+					launchDataDO,
+					launchParams,
+					userId,
+					contextExternalToolId: contextExternalToolDO.id as string,
+				};
+			};
+
+			it('should throw ToolStatusOutdatedLoggableException', async () => {
+				const { launchParams, userId, contextExternalToolId } = setup();
+
+				const func = () => service.getLaunchData(userId, launchParams.contextExternalToolDO);
+
+				await expect(func).rejects.toThrow(new ToolStatusOutdatedLoggableException(userId, contextExternalToolId));
 			});
 		});
 	});

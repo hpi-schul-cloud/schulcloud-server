@@ -66,12 +66,32 @@ export class RoomsService {
 		const columnBoard = await this.columnBoardService.create(courseReference);
 		const column = await this.columnService.create(columnBoard);
 		const card = await this.cardService.create(column);
-		await this.cardService.updateTitle(card, 'Willkommen');
-		const text = await this.contentElementService.create(card, ContentElementType.RICH_TEXT);
-		const content = new RichTextContentBody();
-		content.inputFormat = InputFormat.RICH_TEXT_CK5;
-		content.text = '<p>Dieses Board ist ein neues Feature und kann hier getestet werden</p>';
-		await this.contentElementService.update(text, content);
+		await this.cardService.updateTitle(card, 'Willkommen auf dem neuen Spalten-Board! 🥳');
+
+		const text1 = await this.contentElementService.create(card, ContentElementType.RICH_TEXT);
+		const content1 = new RichTextContentBody();
+		content1.inputFormat = InputFormat.RICH_TEXT_CK5;
+		content1.text =
+			'<p>Wir erweitern das Board kontinuierlich um wichtige Funktionen. <strong>Der aktuelle Stand kann hier getestet werden. </strong></p>';
+		await this.contentElementService.update(text1, content1);
+
+		if (Configuration.has('COLUMN_BOARD_HELP_LINK')) {
+			const helplink = Configuration.get('COLUMN_BOARD_HELP_LINK') as string;
+			const text2 = await this.contentElementService.create(card, ContentElementType.RICH_TEXT);
+			const content2 = new RichTextContentBody();
+			content2.inputFormat = InputFormat.RICH_TEXT_CK5;
+			content2.text = `<p><strong> Wichtige Informationen</strong> zu Berechtigungen und Informationen zum Einsatz des Boards sind im <a href="${helplink}">Hilfebereich</a> zusammengefasst.</p>`;
+			await this.contentElementService.update(text2, content2);
+		}
+
+		if (Configuration.has('COLUMN_BOARD_FEEDBACK_LINK')) {
+			const feedbacklink = Configuration.get('COLUMN_BOARD_FEEDBACK_LINK') as string;
+			const text3 = await this.contentElementService.create(card, ContentElementType.RICH_TEXT);
+			const content3 = new RichTextContentBody();
+			content3.inputFormat = InputFormat.RICH_TEXT_CK5;
+			content3.text = `<p>Wir freuen uns sehr über <strong>Feedback</strong> zum Board unter <a href="${feedbacklink}">folgendem Link</a>.</p>`;
+			await this.contentElementService.update(text3, content3);
+		}
 		return columnBoard;
 	}
 }
