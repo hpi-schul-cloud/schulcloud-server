@@ -8,12 +8,20 @@ import {
 	ColumnController,
 	ElementController,
 	SubElementController,
+	SubmissionBoardController,
 } from './controller';
 import { BoardUc, CardUc, ElementUc, SubElementUc } from './uc';
 
 @Module({
 	imports: [BoardModule, LoggerModule, forwardRef(() => AuthorizationModule)],
-	controllers: [BoardController, ColumnController, CardController, ElementController, SubElementController],
+	controllers: [
+		BoardController,
+		ColumnController,
+		CardController,
+		ElementController,
+		SubElementController,
+		SubmissionBoardController,
+	],
 	providers: [BoardUc, CardUc, ElementUc, SubElementUc],
 })
 export class BoardApiModule {}
