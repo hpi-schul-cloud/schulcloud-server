@@ -104,6 +104,19 @@ describe('submission create (api)', () => {
 
 			expect(response.status).toEqual(201);
 		});
+
+		it('should return created submission', async () => {
+			const { user, taskNode } = await setup();
+			currentUser = mapUserToCurrentUser(user);
+
+			const response = await api.post(taskNode.id, { completed: false });
+
+			expect(response.result.completed).toBe(false);
+			expect(response.result.id).toBeDefined();
+			expect(response.result.timestamps.createdAt).toBeDefined();
+			expect(response.result.timestamps.lastUpdatedAt).toBeDefined();
+			expect(response.result.userId).toBe(user.id);
+		});
 	});
 
 	describe('with invalid user', () => {
