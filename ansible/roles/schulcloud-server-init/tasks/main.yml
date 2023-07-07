@@ -70,7 +70,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: job_init.yml.j2
-    when: WITH_SCHULCLOUD_INIT and init_job_exists
+    when: WITH_SCHULCLOUD_INIT and init_job_exists.stderr != ""
 
   - name: Remove Init Job
     kubernetes.core.k8s:
