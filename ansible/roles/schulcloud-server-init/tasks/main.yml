@@ -50,12 +50,23 @@
       name: mgmt-svc
     when: not WITH_SCHULCLOUD_INIT
 
+  - name: Check Init Job
+    kubernetes.core.k8s_info:
+      kind: Job
+      api_version: batch/v1
+      label_selectors:
+      - job-name = api-init-job
+      field_selectors:
+      - status.phase = succeeded
+    register: init_job_exists
+    ignore_errors: yes
+
   - name: Init Job
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: job_init.yml.j2
-    when: WITH_SCHULCLOUD_INIT
+    when: WITH_SCHULCLOUD_INIT and not init_job_exists
 
   - name: Remove Init Job
     kubernetes.core.k8s:
