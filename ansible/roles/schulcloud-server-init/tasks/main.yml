@@ -51,6 +51,7 @@
     when: not WITH_SCHULCLOUD_INIT
 
   - name: Check Init Job
+    debugger: always
     kubernetes.core.k8s_info:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
@@ -64,11 +65,12 @@
     ignore_errors: yes
 
   - name: Init Job
+    debugger: always
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: job_init.yml.j2
-    when: WITH_SCHULCLOUD_INIT and init_job_exists.resources is undefined
+    when: WITH_SCHULCLOUD_INIT and init_job_exists
 
   - name: Remove Init Job
     kubernetes.core.k8s:
