@@ -52,6 +52,8 @@
 
   - name: Check Init Job
     kubernetes.core.k8s_info:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
       kind: Job
       api_version: batch/v1
       label_selectors:
