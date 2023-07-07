@@ -88,10 +88,7 @@ describe('SchoolRepo', () => {
 		school.permissions = new SchoolRoles();
 		school.permissions.teacher = new SchoolRolePermission();
 		school.permissions.teacher.STUDENT_LIST = true;
-
-		const userLoginMigration = userLoginMigrationFactory.build();
-		userLoginMigration.school = school;
-		school.userLoginMigration = userLoginMigration;
+		school.userLoginMigration = userLoginMigrationFactory.build({ school });
 
 		await em.persistAndFlush([school]);
 
