@@ -7,9 +7,10 @@ import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Account, Role, School, SchoolYear, System, User } from '@shared/domain';
 import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq';
+import { S3Client } from '@aws-sdk/client-s3';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger, Logger } from '@src/core/logger';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { AuthorizationModule } from '@src/modules/authorization';
 
@@ -23,6 +24,10 @@ import { H5PEditorUc } from './uc/h5p.uc';
 import { ContentStorage } from './contentStorage/contentStorage';
 import { LibraryStorage } from './libraryStorage/libraryStorage';
 import { TemporaryFileStorage } from './temporary-file-storage/temporary-file-storage';
+import { TemporaryFileRepo } from './temporary-file-storage/temporary-file.repo';
+import { S3ClientAdapter } from '../files-storage/client/s3-client.adapter';
+import { S3Config } from '../files-storage/interface';
+import { s3ConfigTempFiles } from './s3-config';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -30,11 +35,19 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		new NotFoundException(`The requested ${entityName}: ${where} has not been found.`),
 };
 
-const storages = [
-	{ provide: ContentStorage, useValue: new ContentStorage(path.join(os.tmpdir(), '/h5p_content')) },
-	{ provide: LibraryStorage, useValue: new LibraryStorage(path.join(os.tmpdir(), '/h5p_libraries')) },
-	{ provide: TemporaryFileStorage, useValue: new TemporaryFileStorage(path.join(os.tmpdir(), '/h5p_temporary')) },
-];
+export function createS3ClientAdapter(s3config: S3Config, legacyLogger: LegacyLogger) {
+	const s3Client = new S3Client({
+		region: s3config.region,
+		credentials: {
+			accessKeyId: s3config.accessKeyId,
+			secretAccessKey: s3config.secretAccessKey,
+		},
+		endpoint: s3config.endpoint,
+		forcePathStyle: true,
+		tls: true,
+	});
+	return new S3ClientAdapter(s3Client, s3config, legacyLogger);
+}
 
 const imports = [
 	AuthenticationModule,
@@ -57,7 +70,27 @@ const imports = [
 
 const controllers = [H5PEditorController];
 
-const providers = [Logger, H5PEditorUc, H5PEditorService, H5PPlayerService, H5PAjaxEndpointService, ...storages];
+const providers = [
+	Logger,
+	S3ClientAdapter,
+	H5PEditorUc,
+	H5PEditorService,
+	H5PPlayerService,
+	H5PAjaxEndpointService,
+	TemporaryFileStorage,
+	{ provide: ContentStorage, useValue: new ContentStorage(path.join(os.tmpdir(), '/h5p_content')) },
+	{ provide: LibraryStorage, useValue: new LibraryStorage(path.join(os.tmpdir(), '/h5p_libraries')) },
+	{
+		provide: 'S3ClientAdapter_TempFiles',
+		useFactory: createS3ClientAdapter,
+		inject: ['S3Config_TempFiles', LegacyLogger],
+	},
+	TemporaryFileRepo,
+	{
+		provide: 'S3Config_TempFiles',
+		useValue: s3ConfigTempFiles,
+	},
+];
 
 @Module({
 	imports,
