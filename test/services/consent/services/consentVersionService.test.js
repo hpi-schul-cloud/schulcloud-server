@@ -191,4 +191,155 @@ describe('consentVersionService tests', () => {
 			}
 		});
 	});
+
+	describe('REMOVE endpoint', () => {
+		it('Superhero user of a school should be able to remove a consent version', async () => {
+			const usersSchool = await testObjects.createTestSchool();
+
+			const user = await testObjects.createTestUser({ roles: ['superhero'], schoolId: usersSchool._id });
+			const params = await generateRequestParamsFromUser(user);
+
+			const base64File = await testObjects.createTestBase64File({ schoolId: usersSchool._id });
+			const consentVersion = await testObjects.createTestConsentVersion({
+				consentDataId: base64File._id,
+				schoolId: usersSchool._id,
+			});
+
+			const consentResult = await consentVersionService.remove(consentVersion._id, params);
+			const base64FilesResult = await app.service('base64Files').find({ query: { _id: base64File._id } });
+
+			expect(consentResult).to.not.be.undefined;
+			expect(base64FilesResult.data).to.be.empty;
+		});
+
+		it('Administrator user of a school should be able to remove a consent version', async () => {
+			const usersSchool = await testObjects.createTestSchool();
+
+			const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId: usersSchool._id });
+			const params = await generateRequestParamsFromUser(user);
+
+			const base64File = await testObjects.createTestBase64File({ schoolId: usersSchool._id });
+			const consentVersion = await testObjects.createTestConsentVersion({
+				consentDataId: base64File._id,
+				schoolId: usersSchool._id,
+			});
+
+			const consentResult = await consentVersionService.remove(consentVersion._id, params);
+			const base64FilesResult = await app.service('base64Files').find({ query: { _id: base64File._id } });
+
+			expect(consentResult).to.not.be.undefined;
+			expect(base64FilesResult.data).to.be.empty;
+		});
+
+		it('Teacher user of a school should NOT be able to remove a consent version', async () => {
+			const usersSchool = await testObjects.createTestSchool();
+
+			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: usersSchool._id });
+			const params = await generateRequestParamsFromUser(user);
+
+			const base64File = await testObjects.createTestBase64File({ schoolId: usersSchool._id });
+			const consentVersion = await testObjects.createTestConsentVersion({
+				consentDataId: base64File._id,
+				schoolId: usersSchool._id,
+			});
+
+			try {
+				await consentVersionService.remove(consentVersion._id, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(403);
+				expect(err.message).to.equal("You don't have one of the permissions: SCHOOL_EDIT.");
+			}
+		});
+
+		it('Student user of a school should NOT be able to remove a consent version', async () => {
+			const usersSchool = await testObjects.createTestSchool();
+
+			const user = await testObjects.createTestUser({ roles: ['student'], schoolId: usersSchool._id });
+			const params = await generateRequestParamsFromUser(user);
+
+			const base64File = await testObjects.createTestBase64File({ schoolId: usersSchool._id });
+			const consentVersion = await testObjects.createTestConsentVersion({
+				consentDataId: base64File._id,
+				schoolId: usersSchool._id,
+			});
+
+			try {
+				await consentVersionService.remove(consentVersion._id, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(403);
+				expect(err.message).to.equal("You don't have one of the permissions: SCHOOL_EDIT.");
+			}
+		});
+
+		it('Superhero user of a different school should be able to remove a consent version', async () => {
+			const usersSchool = await testObjects.createTestSchool();
+			const user = await testObjects.createTestUser({ roles: ['superhero'], schoolId: usersSchool._id });
+			const params = await generateRequestParamsFromUser(user);
+
+			const otherSchool = await testObjects.createTestSchool();
+
+			const base64File = await testObjects.createTestBase64File({ schoolId: otherSchool._id });
+			const consentVersion = await testObjects.createTestConsentVersion({
+				consentDataId: base64File._id,
+				schoolId: otherSchool._id,
+			});
+
+			const consentResult = await consentVersionService.remove(consentVersion._id, params);
+			const base64FilesResult = await app.service('base64Files').find({ query: { _id: base64File._id } });
+
+			expect(consentResult).to.not.be.undefined;
+			expect(base64FilesResult.data).to.be.empty;
+		});
+
+		it('Administrator of a different school should NOT be able to remove a consent version', async () => {
+			const usersSchool = await testObjects.createTestSchool();
+			const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId: usersSchool._id });
+			const params = await generateRequestParamsFromUser(user);
+
+			const otherSchool = await testObjects.createTestSchool();
+
+			const base64File = await testObjects.createTestBase64File({ schoolId: otherSchool._id });
+			const consentVersion = await testObjects.createTestConsentVersion({
+				consentDataId: base64File._id,
+				schoolId: otherSchool._id,
+			});
+
+			try {
+				await consentVersionService.remove(consentVersion._id, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(404);
+				expect(err.message).to.equal(`no record found for id '${consentVersion._id}'`);
+			}
+		});
+
+		it('Logged-out Superhero of a school should NOT be able to remove a consent version', async () => {
+			const usersSchool = await testObjects.createTestSchool();
+
+			const user = await testObjects.createTestUser({ roles: ['superhero'], schoolId: usersSchool._id });
+			const params = await generateRequestParamsFromUser(user);
+
+			const base64File = await testObjects.createTestBase64File({ schoolId: usersSchool._id });
+			const consentVersion = await testObjects.createTestConsentVersion({
+				consentDataId: base64File._id,
+				schoolId: usersSchool._id,
+			});
+
+			delete params.authentication;
+
+			try {
+				await consentVersionService.remove(consentVersion._id, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(401);
+				expect(err.message).to.equal('Not authenticated');
+			}
+		});
+	});
 });
