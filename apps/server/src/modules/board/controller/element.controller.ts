@@ -20,7 +20,7 @@ import {
 	ElementContentUpdateBodyParams,
 	FileElementContentBody,
 	RichTextElementContentBody,
-	TaskElementContentBody,
+	SubmissionContainerElementContentBody,
 } from './dto/element/element-content-update.body.params';
 
 @ApiTags('Board Element')
@@ -50,7 +50,7 @@ export class ElementController {
 	}
 
 	@ApiOperation({ summary: 'Update a single content element.' })
-	@ApiExtraModels(FileElementContentBody, RichTextElementContentBody, TaskElementContentBody)
+	@ApiExtraModels(FileElementContentBody, RichTextElementContentBody, SubmissionContainerElementContentBody)
 	@ApiResponse({ status: 204 })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
