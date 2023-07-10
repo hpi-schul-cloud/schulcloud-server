@@ -7,7 +7,7 @@ exports.before = {
 	create: [iff(isProvider('external'), disallow())],
 	update: [disallow()],
 	patch: [disallow()],
-	remove: [disallow()],
+	remove: [iff(isProvider('external'), disallow())],
 };
 
 exports.after = {
