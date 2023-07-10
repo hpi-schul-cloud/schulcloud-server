@@ -17,7 +17,7 @@ import { CardUc } from '../uc';
 import { ElementUc } from '../uc/element.uc';
 import { ContentElementUrlParams, MoveContentElementBody } from './dto';
 import {
-	ElementContentUpdateBodyParams,
+	UpdateElementContentBodyParams,
 	FileElementContentBody,
 	RichTextElementContentBody,
 	SubmissionContainerElementContentBody,
@@ -59,7 +59,7 @@ export class ElementController {
 	@Patch(':contentElementId/content')
 	async updateElement(
 		@Param() urlParams: ContentElementUrlParams,
-		@Body() bodyParams: ElementContentUpdateBodyParams,
+		@Body() bodyParams: UpdateElementContentBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.elementUc.updateElementContent(currentUser.userId, urlParams.contentElementId, bodyParams.data.content);
