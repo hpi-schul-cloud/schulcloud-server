@@ -21,6 +21,7 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 	const {
 		accounts,
 		activation,
+		base64Files,
 		classes,
 		consents,
 		consentVersion,
@@ -52,6 +53,7 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 			[
 				accounts,
 				activation,
+				base64Files,
 				users,
 				consents,
 				consentVersion,
@@ -91,6 +93,7 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 	const info = () => ({
 		accounts: accounts.info,
 		activation: activation.info,
+		base64Files: base64Files.info,
 		classes: classes.info,
 		courseGroups: courseGroups.info,
 		courses: courses.info,
@@ -145,6 +148,7 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 	return {
 		createTestAccount: accounts.create,
 		createTestActivation: activation.create,
+		createTestBase64File: base64Files.create,
 		createTestClass: classes.create,
 		createTestConsent: consents.create,
 		createTestConsentVersion: consentVersion.create,
