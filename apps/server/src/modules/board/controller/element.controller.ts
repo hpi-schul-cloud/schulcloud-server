@@ -21,7 +21,7 @@ import {
 	FileElementContentBody,
 	RichTextElementContentBody,
 	SubmissionContainerElementContentBody,
-} from './dto/element/element-content-update.body.params';
+} from './dto/element/update-element-content.body.params';
 
 @ApiTags('Board Element')
 @Authenticate('jwt')
