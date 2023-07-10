@@ -1382,7 +1382,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 
 	async findAccountsByUsername(username: string, options?: SearchOptions): Promise&lt;Counted&lt;IAccount[]&gt;&gt; {
 		const kc &#x3D; await this.kcAdminClient.callKcAdminClient();
-		const total &#x3D; await kc.users.count({ username, exact: options?.exact });
+		const total &#x3D; await kc.users.count({ username });
 		const results &#x3D; await kc.users.find({
 			username,
 			exact: options?.exact,
