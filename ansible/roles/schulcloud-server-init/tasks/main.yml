@@ -51,7 +51,6 @@
     when: not WITH_SCHULCLOUD_INIT
 
   - name: Check Init Job
-    debugger: always
     kubernetes.core.k8s_info:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
@@ -62,7 +61,6 @@
     ignore_errors: yes
 
   - name: Init Job
-    debugger: always
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
