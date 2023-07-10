@@ -57,10 +57,7 @@
       namespace: "{{ NAMESPACE }}"
       kind: Job
       api_version: batch/v1
-      label_selectors:
-      - job-name = api-init-job
-      field_selectors:
-      - status.phase = succeeded
+      name: api-init-job
     register: init_job_exists
     ignore_errors: yes
 
@@ -70,7 +67,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: job_init.yml.j2
-    when: WITH_SCHULCLOUD_INIT and init_job_exists.stderr != ""
+    when: WITH_SCHULCLOUD_INIT and init_job_exists.resources|length == 0
 
   - name: Remove Init Job
     kubernetes.core.k8s:
