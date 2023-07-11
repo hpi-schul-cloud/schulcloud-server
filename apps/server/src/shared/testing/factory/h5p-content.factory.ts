@@ -18,7 +18,7 @@ export const h5pContentFactory = H5PContentFactory.define(H5PContent, ({ sequenc
 			embedTypes: ['iframe'],
 			language: 'de-de',
 			license: `License #${sequence}`,
-			mainLibrary: `License-${sequence}.0`,
+			mainLibrary: `Library-${sequence}.0`,
 			preloadedDependencies: [],
 			title: `Title #${sequence}`,
 		}),

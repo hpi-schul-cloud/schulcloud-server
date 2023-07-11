@@ -83,22 +83,22 @@ export class ContentMetadata implements IContentMetadata {
 		this.title = metadata.title;
 		this.preloadedDependencies = metadata.preloadedDependencies;
 
-		if (metadata.dynamicDependencies) this.dynamicDependencies = metadata.dynamicDependencies;
-		if (metadata.editorDependencies) this.editorDependencies = metadata.editorDependencies;
-		if (metadata.h) this.h = metadata.h;
-		if (metadata.metaDescription) this.metaDescription = metadata.metaDescription;
-		if (metadata.metaKeywords) this.metaKeywords = metadata.metaKeywords;
-		if (metadata.w) this.w = metadata.w;
-		if (metadata.a11yTitle) this.a11yTitle = metadata.a11yTitle;
-		if (metadata.licenseVersion) this.licenseVersion = metadata.licenseVersion;
-		if (metadata.yearFrom) this.yearFrom = metadata.yearFrom;
-		if (metadata.yearTo) this.yearTo = metadata.yearTo;
-		if (metadata.source) this.source = metadata.source;
-		if (metadata.authors) this.authors = metadata.authors;
-		if (metadata.licenseExtras) this.licenseExtras = metadata.licenseExtras;
-		if (metadata.changes) this.changes = metadata.changes;
-		if (metadata.authorComments) this.authorComments = metadata.authorComments;
-		if (metadata.contentType) this.contentType = metadata.contentType;
+		this.dynamicDependencies = metadata.dynamicDependencies;
+		this.editorDependencies = metadata.editorDependencies;
+		this.h = metadata.h;
+		this.metaDescription = metadata.metaDescription;
+		this.metaKeywords = metadata.metaKeywords;
+		this.w = metadata.w;
+		this.a11yTitle = metadata.a11yTitle;
+		this.licenseVersion = metadata.licenseVersion;
+		this.yearFrom = metadata.yearFrom;
+		this.yearTo = metadata.yearTo;
+		this.source = metadata.source;
+		this.authors = metadata.authors;
+		this.licenseExtras = metadata.licenseExtras;
+		this.changes = metadata.changes;
+		this.authorComments = metadata.authorComments;
+		this.contentType = metadata.contentType;
 	}
 }
 
