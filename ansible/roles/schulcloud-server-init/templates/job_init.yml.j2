@@ -26,6 +26,13 @@ spec:
           subPath: update.sh
         command: ['/bin/sh','-c']
         args: ['cp /update.sh /update.run.sh && chmod +x /update.run.sh &&./update.run.sh']
+        resources:
+          limits:
+            cpu: "3000m"
+            memory: "1Gi"
+          requests:
+            cpu: "100m"
+            memory: "150Mi"
       volumes:
       - name: script
         configMap:
