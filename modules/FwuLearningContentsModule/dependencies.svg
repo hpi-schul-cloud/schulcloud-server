@@ -24,103 +24,103 @@
 <title>cluster_FwuLearningContentsModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-195 1160,-195 1160,-70 8,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_FwuLearningContentsModule_providers</title>
-<polygon fill="none" stroke="black" points="748,-78 748,-130 1152,-130 1152,-78 748,-78"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_FwuLearningContentsModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 740,-130 740,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="428,-78 428,-130 1152,-130 1152,-78 428,-78"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_FwuLearningContentsModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 420,-130 420,-78 16,-78"/>
 </g>
 <!-- AuthenticationModule -->
 <g id="node1" class="node">
 <title>AuthenticationModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="732.25,-122 729.25,-126 708.25,-126 705.25,-122 589.75,-122 589.75,-86 732.25,-86 732.25,-122"/>
-<text text-anchor="middle" x="661" y="-99.8" font-family="Times,serif" font-size="14.00">AuthenticationModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1144.25,-122 1141.25,-126 1120.25,-126 1117.25,-122 1001.75,-122 1001.75,-86 1144.25,-86 1144.25,-122"/>
+<text text-anchor="middle" x="1073" y="-99.8" font-family="Times,serif" font-size="14.00">AuthenticationModule</text>
 </g>
 <!-- FwuLearningContentsModule -->
 <g id="node6" class="node">
 <title>FwuLearningContentsModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="595.25,-187 592.25,-191 571.25,-191 568.25,-187 410.75,-187 410.75,-151 595.25,-151 595.25,-187"/>
-<text text-anchor="middle" x="503" y="-164.8" font-family="Times,serif" font-size="14.00">FwuLearningContentsModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="731.25,-187 728.25,-191 707.25,-191 704.25,-187 546.75,-187 546.75,-151 731.25,-151 731.25,-187"/>
+<text text-anchor="middle" x="639" y="-164.8" font-family="Times,serif" font-size="14.00">FwuLearningContentsModule</text>
 </g>
 <!-- AuthenticationModule&#45;&gt;FwuLearningContentsModule -->
 <g id="edge1" class="edge">
 <title>AuthenticationModule&#45;&gt;FwuLearningContentsModule</title>
-<path fill="none" stroke="black" d="M589.55,-104C584.08,-104 580.64,-104 580.64,-104 580.64,-104 580.64,-140.89 580.64,-140.89"/>
-<polygon fill="black" stroke="black" points="577.14,-140.89 580.64,-150.89 584.14,-140.89 577.14,-140.89"/>
+<path fill="none" stroke="black" d="M1073,-122.28C1073,-143.32 1073,-175 1073,-175 1073,-175 741.31,-175 741.31,-175"/>
+<polygon fill="black" stroke="black" points="741.31,-171.5 731.31,-175 741.31,-178.5 741.31,-171.5"/>
 </g>
 <!-- AuthorizationModule -->
 <g id="node2" class="node">
 <title>AuthorizationModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="571.81,-122 568.81,-126 547.81,-126 544.81,-122 434.19,-122 434.19,-86 571.81,-86 571.81,-122"/>
-<text text-anchor="middle" x="503" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="983.81,-122 980.81,-126 959.81,-126 956.81,-122 846.19,-122 846.19,-86 983.81,-86 983.81,-122"/>
+<text text-anchor="middle" x="915" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
 </g>
 <!-- AuthorizationModule&#45;&gt;FwuLearningContentsModule -->
 <g id="edge2" class="edge">
 <title>AuthorizationModule&#45;&gt;FwuLearningContentsModule</title>
-<path fill="none" stroke="black" d="M503,-122.11C503,-122.11 503,-140.99 503,-140.99"/>
-<polygon fill="black" stroke="black" points="499.5,-140.99 503,-150.99 506.5,-140.99 499.5,-140.99"/>
+<path fill="none" stroke="black" d="M915,-122.02C915,-139.37 915,-163 915,-163 915,-163 741.29,-163 741.29,-163"/>
+<polygon fill="black" stroke="black" points="741.29,-159.5 731.29,-163 741.29,-166.5 741.29,-159.5"/>
 </g>
 <!-- CoreModule -->
 <g id="node3" class="node">
 <title>CoreModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="416.26,-122 413.26,-126 392.26,-126 389.26,-122 329.74,-122 329.74,-86 416.26,-86 416.26,-122"/>
-<text text-anchor="middle" x="373" y="-99.8" font-family="Times,serif" font-size="14.00">CoreModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="828.26,-122 825.26,-126 804.26,-126 801.26,-122 741.74,-122 741.74,-86 828.26,-86 828.26,-122"/>
+<text text-anchor="middle" x="785" y="-99.8" font-family="Times,serif" font-size="14.00">CoreModule</text>
 </g>
 <!-- CoreModule&#45;&gt;FwuLearningContentsModule -->
 <g id="edge3" class="edge">
 <title>CoreModule&#45;&gt;FwuLearningContentsModule</title>
-<path fill="none" stroke="black" d="M416.72,-104C421.88,-104 425.36,-104 425.36,-104 425.36,-104 425.36,-140.89 425.36,-140.89"/>
-<polygon fill="black" stroke="black" points="421.86,-140.89 425.36,-150.89 428.86,-140.89 421.86,-140.89"/>
+<path fill="none" stroke="black" d="M741.56,-104C733.56,-104 727.68,-104 727.68,-104 727.68,-104 727.68,-140.89 727.68,-140.89"/>
+<polygon fill="black" stroke="black" points="724.18,-140.89 727.68,-150.89 731.18,-140.89 724.18,-140.89"/>
 </g>
 <!-- FilesStorageAMQPModule -->
 <g id="node4" class="node">
 <title>FilesStorageAMQPModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="311.98,-122 308.98,-126 287.98,-126 284.98,-122 142.02,-122 142.02,-86 311.98,-86 311.98,-122"/>
-<text text-anchor="middle" x="227" y="-99.8" font-family="Times,serif" font-size="14.00">FilesStorageAMQPModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="723.98,-122 720.98,-126 699.98,-126 696.98,-122 554.02,-122 554.02,-86 723.98,-86 723.98,-122"/>
+<text text-anchor="middle" x="639" y="-99.8" font-family="Times,serif" font-size="14.00">FilesStorageAMQPModule</text>
 </g>
 <!-- FilesStorageAMQPModule&#45;&gt;FwuLearningContentsModule -->
 <g id="edge4" class="edge">
 <title>FilesStorageAMQPModule&#45;&gt;FwuLearningContentsModule</title>
-<path fill="none" stroke="black" d="M227,-122.02C227,-139.37 227,-163 227,-163 227,-163 400.71,-163 400.71,-163"/>
-<polygon fill="black" stroke="black" points="400.71,-166.5 410.71,-163 400.71,-159.5 400.71,-166.5"/>
+<path fill="none" stroke="black" d="M639,-122.11C639,-122.11 639,-140.99 639,-140.99"/>
+<polygon fill="black" stroke="black" points="635.5,-140.99 639,-150.99 642.5,-140.99 635.5,-140.99"/>
 </g>
 <!-- LoggerModule -->
 <g id="node5" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="123.98,-122 120.98,-126 99.98,-126 96.98,-122 24.02,-122 24.02,-86 123.98,-86 123.98,-122"/>
-<text text-anchor="middle" x="74" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="535.98,-122 532.98,-126 511.98,-126 508.98,-122 436.02,-122 436.02,-86 535.98,-86 535.98,-122"/>
+<text text-anchor="middle" x="486" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;FwuLearningContentsModule -->
 <g id="edge5" class="edge">
 <title>LoggerModule&#45;&gt;FwuLearningContentsModule</title>
-<path fill="none" stroke="black" d="M74,-122.28C74,-143.32 74,-175 74,-175 74,-175 400.71,-175 400.71,-175"/>
-<polygon fill="black" stroke="black" points="400.71,-178.5 410.71,-175 400.71,-171.5 400.71,-178.5"/>
+<path fill="none" stroke="black" d="M536.04,-104C544.35,-104 550.32,-104 550.32,-104 550.32,-104 550.32,-140.89 550.32,-140.89"/>
+<polygon fill="black" stroke="black" points="546.82,-140.89 550.32,-150.89 553.82,-140.89 546.82,-140.89"/>
 </g>
 <!-- FwuLearningContentsUc -->
 <g id="node7" class="node">
 <title>FwuLearningContentsUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="1035" cy="-104" rx="108.81" ry="18"/>
-<text text-anchor="middle" x="1035" y="-99.8" font-family="Times,serif" font-size="14.00">FwuLearningContentsUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="303" cy="-104" rx="108.81" ry="18"/>
+<text text-anchor="middle" x="303" y="-99.8" font-family="Times,serif" font-size="14.00">FwuLearningContentsUc</text>
 </g>
 <!-- FwuLearningContentsUc&#45;&gt;FwuLearningContentsModule -->
 <g id="edge6" class="edge">
 <title>FwuLearningContentsUc&#45;&gt;FwuLearningContentsModule</title>
-<path fill="none" stroke="black" d="M1035,-122.28C1035,-143.32 1035,-175 1035,-175 1035,-175 605.36,-175 605.36,-175"/>
-<polygon fill="black" stroke="black" points="605.36,-171.5 595.36,-175 605.36,-178.5 605.36,-171.5"/>
+<path fill="none" stroke="black" d="M303,-122.02C303,-139.37 303,-163 303,-163 303,-163 536.74,-163 536.74,-163"/>
+<polygon fill="black" stroke="black" points="536.74,-166.5 546.74,-163 536.74,-159.5 536.74,-166.5"/>
 </g>
 <!-- S3ClientAdapter -->
 <g id="node8" class="node">
 <title>S3ClientAdapter</title>
-<ellipse fill="#fdb462" stroke="black" cx="832" cy="-104" rx="75.88" ry="18"/>
-<text text-anchor="middle" x="832" y="-99.8" font-family="Times,serif" font-size="14.00">S3ClientAdapter</text>
+<ellipse fill="#fdb462" stroke="black" cx="100" cy="-104" rx="75.88" ry="18"/>
+<text text-anchor="middle" x="100" y="-99.8" font-family="Times,serif" font-size="14.00">S3ClientAdapter</text>
 </g>
 <!-- S3ClientAdapter&#45;&gt;FwuLearningContentsModule -->
 <g id="edge7" class="edge">
 <title>S3ClientAdapter&#45;&gt;FwuLearningContentsModule</title>
-<path fill="none" stroke="black" d="M832,-122.02C832,-139.37 832,-163 832,-163 832,-163 605.52,-163 605.52,-163"/>
-<polygon fill="black" stroke="black" points="605.52,-159.5 595.52,-163 605.52,-166.5 605.52,-159.5"/>
+<path fill="none" stroke="black" d="M100,-122.28C100,-143.32 100,-175 100,-175 100,-175 536.65,-175 536.65,-175"/>
+<polygon fill="black" stroke="black" points="536.65,-178.5 546.65,-175 536.65,-171.5 536.65,-178.5"/>
 </g>
 </g>
 </svg>
