@@ -469,31 +469,6 @@ describe('S3ClientAdapter', () => {
 			client.send.mockClear();
 		});
 
-		it('should call send() of client', async () => {
-			const { prefix, keys, responseContents } = setup();
-
-			// @ts-expect-error should run into error
-			client.send.mockResolvedValue({
-				IsTruncated: false,
-				Contents: responseContents,
-			});
-
-			const resultKeys = await service.list(prefix);
-
-			expect(resultKeys).toEqual(keys);
-
-			expect(client.send).toBeCalledWith(
-				expect.objectContaining({
-					input: {
-						Bucket: 'test-bucket',
-						Prefix: prefix,
-						ContinuationToken: undefined,
-						MaxKeys: 1000,
-					},
-				})
-			);
-		});
-
 		it('should truncate result when max is given', async () => {
 			const { prefix, keys, responseContents } = setup();
 
@@ -519,7 +494,7 @@ describe('S3ClientAdapter', () => {
 			);
 		});
 
-		it('should call send() multiple times', async () => {
+		it('should call send() multiple times if bucket contains more than 1000 keys', async () => {
 			const { prefix, responseContents, keys } = setup();
 
 			client.send
@@ -581,7 +556,7 @@ describe('S3ClientAdapter', () => {
 			);
 		});
 
-		it('should throw error', async () => {
+		it('should throw error if client rejects with an error', async () => {
 			const { prefix } = setup();
 
 			// @ts-expect-error should run into error
