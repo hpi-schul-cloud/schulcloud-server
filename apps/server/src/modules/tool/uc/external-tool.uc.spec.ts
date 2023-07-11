@@ -11,6 +11,7 @@ import {
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { AuthorizationService } from '@src/modules';
 import { ICurrentUser } from '@src/modules/authentication';
+import { ExternalToolSearchQuery } from '../interface';
 import { ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolUpdate } from './dto';
 import { ExternalToolUc } from './external-tool.uc';
@@ -76,8 +77,7 @@ describe('ExternalToolUc', () => {
 		const externalToolDO: ExternalToolDO = externalToolDOFactory.withCustomParameters(1).buildWithId();
 		const oauth2ConfigWithoutExternalData: Oauth2ToolConfigDO = oauth2ToolConfigDOFactory.build();
 
-		const query: Partial<ExternalToolDO> = {
-			id: externalToolDO.id,
+		const query: ExternalToolSearchQuery = {
 			name: externalToolDO.name,
 		};
 		const options: IFindOptions<ExternalToolDO> = {
@@ -91,7 +91,7 @@ describe('ExternalToolUc', () => {
 			},
 		};
 		const page: Page<ExternalToolDO> = new Page<ExternalToolDO>(
-			[{ ...externalToolDO, config: oauth2ConfigWithoutExternalData }],
+			[externalToolDOFactory.build({ ...externalToolDO, config: oauth2ConfigWithoutExternalData })],
 			1
 		);
 
@@ -289,10 +289,14 @@ describe('ExternalToolUc', () => {
 				url: undefined,
 				version: 1,
 			};
-			const updatedExternalToolDO: ExternalToolDO = { ...externalToolDO, name: 'newName', url: undefined };
+			const updatedExternalToolDO: ExternalToolDO = externalToolDOFactory.build({
+				...externalToolDO,
+				name: 'newName',
+				url: undefined,
+			});
 
 			externalToolService.updateExternalTool.mockResolvedValue(updatedExternalToolDO);
-			externalToolService.findExternalToolById.mockResolvedValue(externalToolDOtoUpdate);
+			externalToolService.findExternalToolById.mockResolvedValue(new ExternalToolDO(externalToolDOtoUpdate));
 
 			return {
 				externalToolDO,

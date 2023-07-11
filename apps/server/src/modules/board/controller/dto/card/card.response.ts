@@ -4,7 +4,7 @@ import {
 	AnyContentElementResponse,
 	FileElementResponse,
 	RichTextElementResponse,
-	TaskElementResponse,
+	SubmissionContainerElementResponse,
 } from '../element';
 import { TimestampsResponse } from '../timestamps.response';
 import { VisibilitySettingsResponse } from './visibility-settings.response';
@@ -38,7 +38,7 @@ export class CardResponse {
 			oneOf: [
 				{ $ref: getSchemaPath(FileElementResponse) },
 				{ $ref: getSchemaPath(RichTextElementResponse) },
-				{ $ref: getSchemaPath(TaskElementResponse) },
+				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 			],
 		},
 	})

@@ -25,7 +25,10 @@ export class CommonCartridgeResourceItemElement implements ICommonCartridgeEleme
 			this.inner = new CommonCartridgeLtiResource(props, xmlBuilder);
 		} else if (props.type === CommonCartridgeResourceType.WEB_CONTENT) {
 			this.inner = new CommonCartridgeWebContentResource(props);
-		} else if (props.type === CommonCartridgeResourceType.WEB_LINK) {
+		} else if (
+			props.type === CommonCartridgeResourceType.WEB_LINK_V1 ||
+			props.type === CommonCartridgeResourceType.WEB_LINK_V3
+		) {
 			this.inner = new CommonCartridgeWebLinkResourceElement(props, xmlBuilder);
 		} else {
 			throw new Error('Resource type is unknown!');

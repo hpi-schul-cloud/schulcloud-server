@@ -27,7 +27,7 @@ import {
 	MoveCardBodyParams,
 	RenameBodyParams,
 	RichTextElementResponse,
-	TaskElementResponse,
+	SubmissionContainerElementResponse,
 } from './dto';
 import { SetHeightBodyParams } from './dto/board/set-height.body.params';
 import { CardResponseMapper, ContentElementResponseFactory } from './mapper';
@@ -114,14 +114,14 @@ export class CardController {
 	}
 
 	@ApiOperation({ summary: 'Create a new element on a card.' })
-	@ApiExtraModels(FileElementResponse, RichTextElementResponse, TaskElementResponse)
+	@ApiExtraModels(FileElementResponse, RichTextElementResponse, SubmissionContainerElementResponse)
 	@ApiResponse({
 		status: 201,
 		schema: {
 			oneOf: [
 				{ $ref: getSchemaPath(FileElementResponse) },
 				{ $ref: getSchemaPath(RichTextElementResponse) },
-				{ $ref: getSchemaPath(TaskElementResponse) },
+				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 			],
 		},
 	})

@@ -19,7 +19,9 @@ export class ContextExternalToolUc {
 		userId: EntityId,
 		contextExternalTool: ContextExternalTool
 	): Promise<ContextExternalToolDO> {
-		await this.contextExternalToolService.ensureContextPermissions(userId, contextExternalTool, {
+		const contextExternalToolDO = new ContextExternalToolDO(contextExternalTool);
+
+		await this.contextExternalToolService.ensureContextPermissions(userId, contextExternalToolDO, {
 			requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 			action: Action.write,
 		});
@@ -27,7 +29,7 @@ export class ContextExternalToolUc {
 		await this.contextExternalToolValidationService.validate(contextExternalTool);
 
 		const createdTool: ContextExternalToolDO = await this.contextExternalToolService.createContextExternalTool(
-			contextExternalTool
+			contextExternalToolDO
 		);
 
 		return createdTool;
@@ -64,7 +66,7 @@ export class ContextExternalToolUc {
 		const toolPromises = tools.map(async (tool) => {
 			try {
 				await this.contextExternalToolService.ensureContextPermissions(userId, tool, {
-					requiredPermissions: [Permission.CONTEXT_TOOL_USER],
+					requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 					action: Action.read,
 				});
 

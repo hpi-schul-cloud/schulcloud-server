@@ -29,7 +29,7 @@ import {
 	ElementContentUpdateBodyParams,
 	FileElementContentBody,
 	RichTextElementContentBody,
-	TaskElementContentBody,
+	SubmissionContainerElementContentBody,
 } from './dto/element/element-content-update.body.params';
 import { SubmissionResponseMapper } from './mapper';
 import { SubmissionSubElementResponseMapper } from './mapper/submission-subelement-response.mapper';
@@ -61,7 +61,7 @@ export class ElementController {
 	}
 
 	@ApiOperation({ summary: 'Update a single content element.' })
-	@ApiExtraModels(FileElementContentBody, RichTextElementContentBody, TaskElementContentBody)
+	@ApiExtraModels(FileElementContentBody, RichTextElementContentBody, SubmissionContainerElementContentBody)
 	@ApiResponse({ status: 204 })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })

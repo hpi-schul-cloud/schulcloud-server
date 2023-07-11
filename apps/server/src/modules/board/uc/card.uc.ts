@@ -6,7 +6,7 @@ import {
 	EntityId,
 	FileElement,
 	RichTextElement,
-	TaskElement,
+	SubmissionContainerElement,
 } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
@@ -40,7 +40,7 @@ export class CardUc {
 		userId: EntityId,
 		cardId: EntityId,
 		type: ContentElementType
-	): Promise<FileElement | RichTextElement | TaskElement> {
+	): Promise<FileElement | RichTextElement | SubmissionContainerElement> {
 		this.logger.debug({ action: 'createElement', userId, cardId, type });
 
 		const card = await this.cardService.findById(cardId);

@@ -118,13 +118,13 @@ describe(`content element create (api)`, () => {
 			expect(result.type).toEqual(ContentElementType.FILE);
 		});
 
-		it('should return the created content element of type TASK', async () => {
+		it('should return the created content element of type SubmissionContainer', async () => {
 			const { user, cardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const { result } = await api.post(cardNode.id, ContentElementType.TASK);
+			const { result } = await api.post(cardNode.id, ContentElementType.SUBMISSION_CONTAINER);
 
-			expect(result.type).toEqual(ContentElementType.TASK);
+			expect(result.type).toEqual(ContentElementType.SUBMISSION_CONTAINER);
 		});
 	});
 

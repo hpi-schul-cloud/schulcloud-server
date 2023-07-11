@@ -11,7 +11,7 @@ import {
 	courseFactory,
 	mapUserToCurrentUser,
 	submissionBoardNodeFactory,
-	taskElementNodeFactory,
+	submissionContainerElementNodeFactory,
 	userFactory,
 } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
@@ -90,12 +90,25 @@ describe('submission create (api)', () => {
 
 		const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
 
-		const taskNode = taskElementNodeFactory.buildWithId({ parent: cardNode });
+		const submissionContainerNode = submissionContainerElementNodeFactory.buildWithId({ parent: cardNode });
 
-		const submissionNode1 = submissionBoardNodeFactory.buildWithId({ parent: taskNode, userId: student1.id });
-		const submissionNode2 = submissionBoardNodeFactory.buildWithId({ parent: taskNode, userId: student2.id });
+		const submissionNode1 = submissionBoardNodeFactory.buildWithId({
+			parent: submissionContainerNode,
+			userId: student1.id,
+		});
+		const submissionNode2 = submissionBoardNodeFactory.buildWithId({
+			parent: submissionContainerNode,
+			userId: student2.id,
+		});
 
-		await em.persistAndFlush([columnBoardNode, columnNode, cardNode, taskNode, submissionNode1, submissionNode2]);
+		await em.persistAndFlush([
+			columnBoardNode,
+			columnNode,
+			cardNode,
+			submissionContainerNode,
+			submissionNode1,
+			submissionNode2,
+		]);
 		em.clear();
 
 		return {
@@ -105,7 +118,7 @@ describe('submission create (api)', () => {
 			columnBoardNode,
 			columnNode,
 			cardNode,
-			taskNode,
+			submissionContainerNode,
 			submissionNode1,
 			submissionNode2,
 		};

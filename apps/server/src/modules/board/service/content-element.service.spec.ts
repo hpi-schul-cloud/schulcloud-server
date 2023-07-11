@@ -7,9 +7,9 @@ import {
 	cardFactory,
 	fileElementFactory,
 	richTextElementFactory,
-	taskElementFactory,
+	submissionContainerElementFactory,
 } from '@shared/testing/factory/domainobject';
-import { FileContentBody, RichTextContentBody, TaskContentBody } from '../controller/dto';
+import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementService } from './content-element.service';
@@ -227,33 +227,33 @@ describe(ContentElementService.name, () => {
 			});
 		});
 
-		describe('when element is a task element', () => {
+		describe('when element is a submission container element', () => {
 			const setup = () => {
-				const taskElement = taskElementFactory.build();
+				const submissionContainerElement = submissionContainerElementFactory.build();
 
-				const content = new TaskContentBody();
+				const content = new SubmissionContainerContentBody();
 				content.dueDate = new Date();
 
 				const card = cardFactory.build();
 				boardDoRepo.findParentOfId.mockResolvedValue(card);
 
-				return { taskElement, content, card };
+				return { submissionContainerElement, content, card };
 			};
 
 			it('should update the element', async () => {
-				const { taskElement, content } = setup();
+				const { submissionContainerElement, content } = setup();
 
-				await service.update(taskElement, content);
+				await service.update(submissionContainerElement, content);
 
-				expect(taskElement.dueDate).toEqual(content.dueDate);
+				expect(submissionContainerElement.dueDate).toEqual(content.dueDate);
 			});
 
 			it('should persist the element', async () => {
-				const { taskElement, content, card } = setup();
+				const { submissionContainerElement, content, card } = setup();
 
-				await service.update(taskElement, content);
+				await service.update(submissionContainerElement, content);
 
-				expect(boardDoRepo.save).toHaveBeenCalledWith(taskElement, card);
+				expect(boardDoRepo.save).toHaveBeenCalledWith(submissionContainerElement, card);
 			});
 		});
 	});

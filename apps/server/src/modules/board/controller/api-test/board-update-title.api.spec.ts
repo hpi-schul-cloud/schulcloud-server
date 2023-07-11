@@ -39,8 +39,6 @@ describe(`board update title (api)`, () => {
 
 	describe('with valid user', () => {
 		const setup = async () => {
-			await cleanupCollections(em);
-
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
 			const course = courseFactory.build({ teachers: [teacherUser] });
@@ -95,8 +93,6 @@ describe(`board update title (api)`, () => {
 
 	describe('with invalid user', () => {
 		const setup = async () => {
-			await cleanupCollections(em);
-
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
 			const course = courseFactory.build({ students: [studentUser] });

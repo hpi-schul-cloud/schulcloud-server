@@ -8,12 +8,12 @@ import {
 	FileElement,
 	RichTextElement,
 	SubmissionBoard,
+	SubmissionContainerElement,
 	SubmissionSubElement,
-	TaskElement,
 } from '@shared/domain';
-import { FileContentBody, RichTextContentBody, TaskContentBody } from '../controller/dto';
+import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from '../controller/dto';
 
-type ContentType = FileContentBody | RichTextContentBody | TaskContentBody;
+type ContentType = FileContentBody | RichTextContentBody | SubmissionContainerContentBody;
 
 export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 	private readonly content: ContentType;
@@ -51,11 +51,11 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 		}
 	}
 
-	visitTaskElement(taskElement: TaskElement): void {
-		if (this.content instanceof TaskContentBody) {
-			taskElement.dueDate = this.content.dueDate;
+	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void {
+		if (this.content instanceof SubmissionContainerContentBody) {
+			submissionContainerElement.dueDate = this.content.dueDate;
 		} else {
-			this.throwNotHandled(taskElement);
+			this.throwNotHandled(submissionContainerElement);
 		}
 	}
 

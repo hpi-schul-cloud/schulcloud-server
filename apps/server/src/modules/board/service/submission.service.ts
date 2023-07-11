@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { EntityId, SubmissionBoard, TaskElement } from '@shared/domain';
+import { EntityId, SubmissionBoard, SubmissionContainerElement } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
@@ -18,7 +18,7 @@ export class SubmissionBoardService {
 		return element;
 	}
 
-	async create(userId: EntityId, taskElement: TaskElement): Promise<SubmissionBoard> {
+	async create(userId: EntityId, submissionContainer: SubmissionContainerElement): Promise<SubmissionBoard> {
 		const submission = new SubmissionBoard({
 			id: new ObjectId().toHexString(),
 			createdAt: new Date(),
@@ -27,9 +27,9 @@ export class SubmissionBoardService {
 			userId,
 		});
 
-		taskElement.addChild(submission);
+		submissionContainer.addChild(submission);
 
-		await this.boardDoRepo.save(taskElement.children, taskElement);
+		await this.boardDoRepo.save(submissionContainer.children, submissionContainer);
 
 		return submission;
 	}

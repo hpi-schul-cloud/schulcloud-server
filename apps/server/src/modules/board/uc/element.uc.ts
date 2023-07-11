@@ -4,16 +4,16 @@ import {
 	ContentSubElementType,
 	EntityId,
 	SubmissionBoard,
+	SubmissionContainerElement,
 	SubmissionSubElement,
-	TaskElement,
 } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Action } from '@src/modules/authorization/types/action.enum';
-import { FileContentBody, RichTextContentBody, TaskContentBody } from '../controller/dto';
-import { BoardDoAuthorizableService, ContentElementService, ContentSubElementService } from '../service';
 import { SubmissionBoardService } from '../service/submission.service';
 // import { SubmissionSubElementContentBody } from './';
+import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from '../controller/dto';
+import { BoardDoAuthorizableService, ContentElementService, ContentSubElementService } from '../service';
 
 @Injectable()
 export class ElementUc {
@@ -32,7 +32,7 @@ export class ElementUc {
 	async updateElementContent(
 		userId: EntityId,
 		elementId: EntityId,
-		content: FileContentBody | RichTextContentBody | TaskContentBody
+		content: FileContentBody | RichTextContentBody | SubmissionContainerContentBody
 	) {
 		const element = await this.elementService.findById(elementId);
 
@@ -80,7 +80,7 @@ export class ElementUc {
 
 	async createSubmissionBoard(userId: EntityId, contentElementId: EntityId): Promise<SubmissionBoard> {
 		const element = await this.elementService.findById(contentElementId);
-		if (!(element instanceof TaskElement))
+		if (!(element instanceof SubmissionContainerElement))
 			throw new HttpException('Cannot create submission for non-task element', HttpStatus.UNPROCESSABLE_ENTITY);
 
 		// TODO

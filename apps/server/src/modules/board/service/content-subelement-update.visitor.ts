@@ -7,8 +7,8 @@ import {
 	FileElement,
 	RichTextElement,
 	SubmissionBoard,
+	SubmissionContainerElement,
 	SubmissionSubElement,
-	TaskElement,
 } from '@shared/domain';
 import { SubmissionContentBody } from '../controller/dto';
 
@@ -42,8 +42,8 @@ export class ContentSubElementUpdateVisitor implements BoardCompositeVisitor {
 		this.throwNotHandled(richTextElement);
 	}
 
-	visitTaskElement(taskElement: TaskElement): void {
-		this.throwNotHandled(taskElement);
+	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void {
+		this.throwNotHandled(submissionContainerElement);
 	}
 
 	visitSubmission(submission: SubmissionBoard): void {

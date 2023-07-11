@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, ExternalToolConfigDO, ExternalToolDO, IFindOptions, Page, Permission, User } from '@shared/domain';
 import { AuthorizationService } from '@src/modules/authorization';
+import { ExternalToolSearchQuery } from '../interface';
 import { ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
 
@@ -13,10 +14,13 @@ export class ExternalToolUc {
 	) {}
 
 	async createExternalTool(userId: EntityId, externalToolDO: ExternalToolCreate): Promise<ExternalToolDO> {
-		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
-		await this.toolValidationService.validateCreate(externalToolDO);
+		const externalTool = new ExternalToolDO({ ...externalToolDO });
 
-		const tool: Promise<ExternalToolDO> = this.externalToolService.createExternalTool(externalToolDO);
+		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+		await this.toolValidationService.validateCreate(externalTool);
+
+		const tool: Promise<ExternalToolDO> = this.externalToolService.createExternalTool(externalTool);
+
 		return tool;
 	}
 
@@ -43,7 +47,7 @@ export class ExternalToolUc {
 
 	async findExternalTool(
 		userId: EntityId,
-		query: Partial<ExternalToolDO>,
+		query: ExternalToolSearchQuery,
 		options: IFindOptions<ExternalToolDO>
 	): Promise<Page<ExternalToolDO>> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);

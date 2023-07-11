@@ -1,10 +1,23 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ContextExternalToolDO, EntityId, ExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
+import {
+	ContextExternalToolDO,
+	EntityId,
+	ExternalToolDO,
+	SchoolExternalToolDO,
+	ToolConfigurationStatus,
+} from '@shared/domain';
 import { ToolConfigType } from '../../interface';
 import { ExternalToolService, SchoolExternalToolService } from '../../service';
+import { CommonToolService } from '../../service/common-tool.service';
 import { ToolLaunchMapper } from '../mapper';
 import { ToolLaunchData, ToolLaunchRequest } from '../types';
-import { BasicToolLaunchStrategy, IToolLaunchStrategy, Lti11ToolLaunchStrategy } from './strategy';
+import {
+	BasicToolLaunchStrategy,
+	IToolLaunchStrategy,
+	Lti11ToolLaunchStrategy,
+	OAuth2ToolLaunchStrategy,
+} from './strategy';
+import { ToolStatusOutdatedLoggableException } from '../error';
 
 @Injectable()
 export class ToolLaunchService {
@@ -14,11 +27,14 @@ export class ToolLaunchService {
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly externalToolService: ExternalToolService,
 		private readonly basicToolLaunchStrategy: BasicToolLaunchStrategy,
-		private readonly lti11ToolLaunchStrategy: Lti11ToolLaunchStrategy
+		private readonly lti11ToolLaunchStrategy: Lti11ToolLaunchStrategy,
+		private readonly oauth2ToolLaunchStrategy: OAuth2ToolLaunchStrategy,
+		private readonly commonToolService: CommonToolService
 	) {
 		this.strategies = new Map();
 		this.strategies.set(ToolConfigType.BASIC, basicToolLaunchStrategy);
 		this.strategies.set(ToolConfigType.LTI11, lti11ToolLaunchStrategy);
+		this.strategies.set(ToolConfigType.OAUTH2, oauth2ToolLaunchStrategy);
 	}
 
 	generateLaunchRequest(toolLaunchData: ToolLaunchData): ToolLaunchRequest {
@@ -38,6 +54,8 @@ export class ToolLaunchService {
 		const schoolExternalToolId: EntityId = contextExternalToolDO.schoolToolRef.schoolToolId;
 
 		const { externalToolDO, schoolExternalToolDO } = await this.loadToolHierarchy(schoolExternalToolId);
+
+		this.isToolStatusLatestOrThrow(userId, externalToolDO, schoolExternalToolDO, contextExternalToolDO);
 
 		const strategy: IToolLaunchStrategy | undefined = this.strategies.get(externalToolDO.config.type);
 
@@ -69,5 +87,21 @@ export class ToolLaunchService {
 			schoolExternalToolDO,
 			externalToolDO,
 		};
+	}
+
+	private isToolStatusLatestOrThrow(
+		userId: EntityId,
+		externalToolDO: ExternalToolDO,
+		schoolExternalToolDO: SchoolExternalToolDO,
+		contextExternalToolDO: ContextExternalToolDO
+	): void {
+		const status: ToolConfigurationStatus = this.commonToolService.determineToolConfigurationStatus(
+			externalToolDO,
+			schoolExternalToolDO,
+			contextExternalToolDO
+		);
+		if (status !== ToolConfigurationStatus.LATEST) {
+			throw new ToolStatusOutdatedLoggableException(userId, contextExternalToolDO.id ?? '');
+		}
 	}
 }

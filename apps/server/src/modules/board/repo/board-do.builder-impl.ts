@@ -8,8 +8,8 @@ import type {
 	FileElementNode,
 	RichTextElementNode,
 	SubmissionBoardNode,
+	SubmissionContainerElementNode,
 	SubmissionSubElementNode,
-	TaskElementNode,
 } from '@shared/domain';
 import {
 	AnyBoardDo,
@@ -20,8 +20,8 @@ import {
 	FileElement,
 	RichTextElement,
 	SubmissionBoard,
+	SubmissionContainerElement,
 	SubmissionSubElement,
-	TaskElement,
 } from '@shared/domain';
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
@@ -74,10 +74,10 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 		this.ensureBoardNodeType(this.getChildren(boardNode), [
 			BoardNodeType.FILE_ELEMENT,
 			BoardNodeType.RICH_TEXT_ELEMENT,
-			BoardNodeType.TASK_ELEMENT,
+			BoardNodeType.SUBMISSION_CONTAINER_ELEMENT,
 		]);
 
-		const elements = this.buildChildren<RichTextElement | TaskElement>(boardNode);
+		const elements = this.buildChildren<RichTextElement | SubmissionContainerElement>(boardNode);
 
 		const card = new Card({
 			id: boardNode.id,
@@ -117,12 +117,12 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 		return element;
 	}
 
-	public buildTaskElement(boardNode: TaskElementNode): TaskElement {
+	public buildSubmissionContainerElement(boardNode: SubmissionContainerElementNode): SubmissionContainerElement {
 		this.ensureBoardNodeType(this.getChildren(boardNode), [BoardNodeType.SUBMISSION_BOARD]);
 
-		const elements = this.buildChildren<SubmissionSubElement>(boardNode);
+		const elements = this.buildChildren<SubmissionBoard>(boardNode);
 
-		const element = new TaskElement({
+		const element = new SubmissionContainerElement({
 			id: boardNode.id,
 			dueDate: boardNode.dueDate,
 			children: elements,

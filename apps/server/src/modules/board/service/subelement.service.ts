@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
+	AnyContentElementDo,
 	AnyContentSubElementDo,
 	ContentSubElementFactory,
 	ContentSubElementType,
 	EntityId,
 	isAnyContentSubElement,
-	AnyContentElementDo,
 } from '@shared/domain';
 import { SubmissionContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';
@@ -43,13 +43,16 @@ export class ContentSubElementService {
 		return subElement;
 	}
 
+	// TODO: remove
 	async delete(element: AnyContentSubElementDo): Promise<void> {
 		await this.boardDoService.deleteWithDescendants(element);
 	}
 
+	// TODO: remove
 	async update(element: AnyContentSubElementDo, content: SubmissionContentBody): Promise<void> {
 		const updater = new ContentSubElementUpdateVisitor(content);
-		element.accept(updater);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+		element.accept(updater as any);
 		const parent = await this.boardDoRepo.findParentOfId(element.id);
 		await this.boardDoRepo.save(element, parent);
 	}

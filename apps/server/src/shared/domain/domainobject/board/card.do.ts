@@ -1,7 +1,7 @@
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import { FileElement } from './file-element.do';
 import { RichTextElement } from './rich-text-element.do';
-import { TaskElement } from './task-element.do';
+import { SubmissionContainerElement } from './submission-container-element.do';
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
 export class Card extends BoardComposite<CardProps> {
@@ -21,8 +21,11 @@ export class Card extends BoardComposite<CardProps> {
 		this.props.height = height;
 	}
 
-	isAllowedAsChild(child: AnyBoardDo): boolean {
-		const allowed = child instanceof FileElement || child instanceof RichTextElement || child instanceof TaskElement;
+	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
+		const allowed =
+			domainObject instanceof FileElement ||
+			domainObject instanceof RichTextElement ||
+			domainObject instanceof SubmissionContainerElement;
 		return allowed;
 	}
 

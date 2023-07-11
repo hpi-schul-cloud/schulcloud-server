@@ -10,7 +10,7 @@ import {
 	columnNodeFactory,
 	courseFactory,
 	mapUserToCurrentUser,
-	taskElementNodeFactory,
+	submissionContainerElementNodeFactory,
 	userFactory,
 } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
@@ -87,29 +87,29 @@ describe('submission create (api)', () => {
 
 		const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
 
-		const taskNode = taskElementNodeFactory.buildWithId({ parent: cardNode });
+		const submissionContainerNode = submissionContainerElementNodeFactory.buildWithId({ parent: cardNode });
 
-		await em.persistAndFlush([columnBoardNode, columnNode, cardNode, taskNode]);
+		await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode]);
 		em.clear();
 
-		return { user, columnBoardNode, columnNode, cardNode, taskNode };
+		return { user, columnBoardNode, columnNode, cardNode, submissionContainerNode };
 	};
 
 	describe('with valid user', () => {
 		it('should return status 201', async () => {
-			const { user, taskNode } = await setup();
+			const { user, submissionContainerNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await api.post(taskNode.id, { completed: false });
+			const response = await api.post(submissionContainerNode.id, { completed: false });
 
 			expect(response.status).toEqual(201);
 		});
 
 		it('should return created submission', async () => {
-			const { user, taskNode } = await setup();
+			const { user, submissionContainerNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await api.post(taskNode.id, { completed: false });
+			const response = await api.post(submissionContainerNode.id, { completed: false });
 
 			expect(response.result.completed).toBe(false);
 			expect(response.result.id).toBeDefined();
@@ -127,12 +127,12 @@ describe('submission create (api)', () => {
 
 	describe('with invalid user', () => {
 		it('should return 403', async () => {
-			const { taskNode } = await setup();
+			const { submissionContainerNode } = await setup();
 
 			const invalidUser = userFactory.build();
 			await em.persistAndFlush([invalidUser]);
 			currentUser = mapUserToCurrentUser(invalidUser);
-			const response = await api.post(taskNode.id, { completed: false });
+			const response = await api.post(submissionContainerNode.id, { completed: false });
 
 			expect(response.status).toEqual(403);
 		});

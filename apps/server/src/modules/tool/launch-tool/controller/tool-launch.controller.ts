@@ -1,5 +1,12 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {
+	ApiBadRequestResponse,
+	ApiForbiddenResponse,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+	ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ToolLaunchUc } from '../uc/tool-launch.uc';
@@ -19,6 +26,7 @@ export class ToolLaunchController {
 	@ApiOkResponse({ description: 'Tool launch request', type: ToolLaunchRequestResponse })
 	@ApiUnauthorizedResponse({ description: 'Unauthorized' })
 	@ApiForbiddenResponse({ description: 'Forbidden' })
+	@ApiBadRequestResponse({ description: 'Outdated tools cannot be launched' })
 	async getToolLaunchRequest(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolLaunchParams

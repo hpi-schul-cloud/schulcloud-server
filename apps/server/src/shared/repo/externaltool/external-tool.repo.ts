@@ -6,13 +6,14 @@ import {
 	IExternalToolProperties,
 	IFindOptions,
 	IPagination,
+	Page,
 	SortOrder,
 	ToolConfigType,
-	Page,
 } from '@shared/domain';
 import { ExternalToolDO } from '@shared/domain/domainobject/tool';
 import { BaseDORepo, Scope } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
+import { ExternalToolSearchQuery } from '@src/modules/tool/interface';
 import { ExternalToolSortingMapper } from './external-tool-sorting.mapper';
 import { ExternalToolRepoMapper } from './external-tool.repo.mapper';
 import { ExternalToolScope } from './external-tool.scope';
@@ -63,11 +64,12 @@ export class ExternalToolRepo extends BaseDORepo<ExternalToolDO, ExternalTool, I
 		return null;
 	}
 
-	async find(query: Partial<ExternalTool>, options?: IFindOptions<ExternalToolDO>): Promise<Page<ExternalToolDO>> {
+	async find(query: ExternalToolSearchQuery, options?: IFindOptions<ExternalToolDO>): Promise<Page<ExternalToolDO>> {
 		const pagination: IPagination = options?.pagination || {};
 		const order: QueryOrderMap<ExternalTool> = this.sortingMapper.mapDOSortOrderToQueryOrder(options?.order || {});
 		const scope: Scope<ExternalTool> = new ExternalToolScope()
 			.byName(query.name)
+			.byClientId(query.clientId)
 			.byHidden(query.isHidden)
 			.allowEmptyQuery(true);
 

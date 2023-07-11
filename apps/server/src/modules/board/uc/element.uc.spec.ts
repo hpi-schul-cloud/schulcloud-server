@@ -5,7 +5,12 @@ import { fileElementFactory, richTextElementFactory, setupEntities, userFactory 
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { ObjectId } from 'bson';
-import { BoardDoAuthorizableService, ContentElementService } from '../service';
+import {
+	BoardDoAuthorizableService,
+	ContentElementService,
+	ContentSubElementService,
+	SubmissionBoardService,
+} from '../service';
 import { ElementUc } from './element.uc';
 
 describe(ElementUc.name, () => {
@@ -30,6 +35,14 @@ describe(ElementUc.name, () => {
 				{
 					provide: ContentElementService,
 					useValue: createMock<ContentElementService>(),
+				},
+				{
+					provide: ContentSubElementService,
+					useValue: createMock<ContentSubElementService>(),
+				},
+				{
+					provide: SubmissionBoardService,
+					useValue: createMock<SubmissionBoardService>(),
 				},
 				{
 					provide: Logger,
