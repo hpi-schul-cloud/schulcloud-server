@@ -39,7 +39,8 @@ export class CardUc {
 	async createElement(
 		userId: EntityId,
 		cardId: EntityId,
-		type: ContentElementType
+		type: ContentElementType,
+		toPosition?: number
 	): Promise<FileElement | RichTextElement | SubmissionContainerElement> {
 		this.logger.debug({ action: 'createElement', userId, cardId, type });
 
@@ -47,6 +48,9 @@ export class CardUc {
 		await this.checkPermission(userId, card, Action.write);
 
 		const element = await this.elementService.create(card, type);
+		if (toPosition !== undefined && typeof toPosition === 'number') {
+			await this.elementService.move(element, card, toPosition);
+		}
 
 		return element;
 	}

@@ -129,8 +129,8 @@ export class CardController {
 		@Body() bodyParams: CreateContentElementBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<AnyContentElementResponse> {
-		const { type } = bodyParams;
-		const element = await this.cardUc.createElement(currentUser.userId, urlParams.cardId, type);
+		const { type, toPosition } = bodyParams;
+		const element = await this.cardUc.createElement(currentUser.userId, urlParams.cardId, type, toPosition);
 		const response = ContentElementResponseFactory.mapToResponse(element);
 
 		return response;
