@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { BoardExternalReferenceType } from '@shared/domain';
+import { BoardExternalReferenceType, SubmissionBoardNode } from '@shared/domain';
 import {
 	cardNodeFactory,
 	cleanupCollections,
@@ -106,12 +106,14 @@ describe('submission create (api)', () => {
 
 	describe('with invalid user', () => {
 		it('should return 403', async () => {
-			const { submissionNode } = await setup();
+			const { submissionNode, cardNode } = await setup();
 			const invalidUser = userFactory.build();
 			await em.persistAndFlush([invalidUser]);
 			currentUser = mapUserToCurrentUser(invalidUser);
 			const response = await api.delete(submissionNode.id);
+			const sub = await em.findOne(SubmissionBoardNode, { id: cardNode.id });
 			expect(response.status).toEqual(403);
+			expect(sub).toBeDefined();
 		});
 	});
 });

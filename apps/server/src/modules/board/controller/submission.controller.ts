@@ -16,7 +16,6 @@ export class SubmissionBoardController {
 		@Param() urlParams: ContentElementUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		console.log('--------------------', currentUser);
-		await this.elementUc.deleteSubElement(currentUser.userId, urlParams.contentElementId);
+		await this.elementUc.deleteSubmissionBoard(currentUser.userId, urlParams.contentElementId);
 	}
 }
