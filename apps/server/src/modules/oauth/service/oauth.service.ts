@@ -105,7 +105,7 @@ export class OAuthService {
 			await this.provisioningService.provisionData(data);
 		}
 
-		const user: UserDO = await this.findFindUserAfterProvisioningOrThrow(externalUserId, systemId);
+		const user: UserDO = await this.findUserAfterProvisioningOrThrow(externalUserId, systemId);
 
 		// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
 		const redirect: string = await this.getPostLoginRedirectUrl(
@@ -135,8 +135,7 @@ export class OAuthService {
 	 * @private
 	 * @async
 	 */
-	// TODO: test it
-	private async findFindUserAfterProvisioningOrThrow(externalUserId: string, systemId: string): Promise<UserDO> {
+	private async findUserAfterProvisioningOrThrow(externalUserId: string, systemId: string): Promise<UserDO> {
 		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
 		if (!user) {
 			throw new UserNotFoundInUnprovisionedSchoolLoggableException(externalUserId, systemId);
