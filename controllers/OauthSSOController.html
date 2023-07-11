@@ -163,7 +163,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>errorHandler(error, session: <a href="../undefineds/ISession.html" target="_self">ISession</a>, res: Response)</code>
+                    <code>errorHandler(error, session: <a href="../undefineds/ISession.html" target="_self">ISession</a>, res: Response, provider?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -226,6 +226,18 @@
 
 
                                 </tr>
+                                <tr>
+                                    <td>provider</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -272,8 +284,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="104"
-                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:104</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="108"
+                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:108</a></div>
                 </td>
             </tr>
 
@@ -388,8 +400,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="158"
-                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:158</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="162"
+                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:162</a></div>
                 </td>
             </tr>
 
@@ -482,8 +494,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="189"
-                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:189</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="193"
+                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:193</a></div>
                 </td>
             </tr>
 
@@ -601,8 +613,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="62"
-                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:62</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="66"
+                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:66</a></div>
                 </td>
             </tr>
 
@@ -728,8 +740,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="168"
-                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:168</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="172"
+                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:172</a></div>
                 </td>
             </tr>
 
@@ -823,8 +835,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="89"
-                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:89</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="93"
+                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:93</a></div>
                 </td>
             </tr>
 
@@ -914,8 +926,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="125"
-                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:125</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="129"
+                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:129</a></div>
                 </td>
             </tr>
 
@@ -1038,7 +1050,7 @@ export class OauthSSOController {
 		this.clientUrl &#x3D; Configuration.get(&#x27;HOST&#x27;) as string;
 	}
 
-	private errorHandler(error: unknown, session: ISession, res: Response) {
+	private errorHandler(error: unknown, session: ISession, res: Response, provider?: string) {
 		this.logger.error(error);
 		const ssoError: OAuthSSOError &#x3D; error instanceof OAuthSSOError ? error : new OAuthSSOError();
 
@@ -1048,6 +1060,10 @@ export class OauthSSOController {
 
 		const errorRedirect: URL &#x3D; new URL(&#x27;/login&#x27;, this.clientUrl);
 		errorRedirect.searchParams.append(&#x27;error&#x27;, ssoError.errorcode);
+
+		if (provider) {
+			errorRedirect.searchParams.append(&#x27;provider&#x27;, provider);
+		}
 
 		res.redirect(errorRedirect.toString());
 	}
@@ -1142,7 +1158,7 @@ export class OauthSSOController {
 
 			res.redirect(oauthProcessDto.redirect);
 		} catch (error) {
-			this.errorHandler(error, session, res);
+			this.errorHandler(error, session, res, oauthLoginState.provider);
 		}
 	}
 
