@@ -652,14 +652,4 @@ describe('OAuthService', () => {
 			});
 		});
 	});
-
-	describe('createErrorRedirect is called', () => {
-		it('should return redirect with errorCode', () => {
-			const expectedErrorCode = 'ERROR_CODE';
-
-			const redirect = service.createErrorRedirect(expectedErrorCode);
-
-			expect(redirect).toEqual(`${hostUri}/login?error=${expectedErrorCode}`);
-		});
-	});
 });

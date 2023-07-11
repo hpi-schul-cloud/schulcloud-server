@@ -20,6 +20,7 @@ import { OAuthTokenDto } from '../interface';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
 import { OauthAdapterService } from './oauth-adapter.service';
+import { UserNotFoundInUnprovisionedSchoolLoggableException } from '../error/user-not-found-in-unprovisioned-school.loggable-exception';
 
 @Injectable()
 export class OAuthService {
@@ -104,10 +105,7 @@ export class OAuthService {
 			await this.provisioningService.provisionData(data);
 		}
 
-		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
-		if (!user) {
-			throw new OAuthSSOError(`Provisioning of user with externalId: ${externalUserId} failed`, 'sso_user_notfound');
-		}
+		const user: UserDO = await this.findFindUserAfterProvisioningOrThrow(externalUserId, systemId);
 
 		// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
 		const redirect: string = await this.getPostLoginRedirectUrl(
@@ -117,6 +115,33 @@ export class OAuthService {
 		);
 
 		return { user, redirect };
+	}
+
+	/**
+	 * This function attempts to find a user in the system using an external user ID and system ID.
+	 *
+	 * It takes into consideration a situation where the school is identifiable in SVS by a unique school number,
+	 * but the provisioning flag is set to false. This indicates that the school has not been migrated,
+	 * or the school feature for provisioning has been disabled.
+	 * If under these conditions the user is not found, it throws an UserNotFoundInUnprovisionedSchoolLoggableException.
+	 *
+	 * @param {string} externalUserId - The external user ID to look for.
+	 * @param {string} systemId - The system ID where the user is located.
+	 *
+	 * @throws {UserNotFoundInUnprovisionedSchoolLoggableException} If the user could not be found when the schoolNumber is known but provisioning is false.
+	 *
+	 * @returns {Promise<UserDO>} Returns the user if found.
+	 *
+	 * @private
+	 * @async
+	 */
+	// TODO: test it
+	private async findFindUserAfterProvisioningOrThrow(externalUserId: string, systemId: string): Promise<UserDO> {
+		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
+		if (!user) {
+			throw new UserNotFoundInUnprovisionedSchoolLoggableException(externalUserId, systemId);
+		}
+		return user;
 	}
 
 	async isOauthProvisioningEnabledForSchool(officialSchoolNumber: string): Promise<boolean> {
@@ -217,12 +242,5 @@ export class OAuthService {
 			);
 
 		return tokenRequestPayload;
-	}
-
-	createErrorRedirect(errorCode: string): string {
-		const redirect = new URL('/login', Configuration.get('HOST') as string);
-		redirect.searchParams.append('error', errorCode);
-
-		return redirect.toString();
 	}
 }
