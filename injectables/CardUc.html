@@ -247,8 +247,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="80"
-                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:80</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="84"
+                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:84</a></div>
                 </td>
             </tr>
 
@@ -335,7 +335,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createElement(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, cardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, type: <a href="../undefineds/ContentElementType.html" target="_self">ContentElementType</a>)</code>
+                    <code>createElement(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, cardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, type: <a href="../undefineds/ContentElementType.html" target="_self">ContentElementType</a>, toPosition?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
@@ -399,6 +399,18 @@
 
 
                                 </tr>
+                                <tr>
+                                    <td>toPosition</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -437,8 +449,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="54"
-                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:54</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="58"
+                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:58</a></div>
                 </td>
             </tr>
 
@@ -521,8 +533,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="88"
-                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:88</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="92"
+                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:92</a></div>
                 </td>
             </tr>
 
@@ -707,8 +719,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="63"
-                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:63</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="67"
+                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:67</a></div>
                 </td>
             </tr>
 
@@ -839,7 +851,8 @@ export class CardUc {
 	async createElement(
 		userId: EntityId,
 		cardId: EntityId,
-		type: ContentElementType
+		type: ContentElementType,
+		toPosition?: number
 	): Promise&lt;FileElement | RichTextElement | SubmissionContainerElement&gt; {
 		this.logger.debug({ action: &#x27;createElement&#x27;, userId, cardId, type });
 
@@ -847,6 +860,9 @@ export class CardUc {
 		await this.checkPermission(userId, card, Action.write);
 
 		const element &#x3D; await this.elementService.create(card, type);
+		if (toPosition !&#x3D;&#x3D; undefined &amp;&amp; typeof toPosition &#x3D;&#x3D;&#x3D; &#x27;number&#x27;) {
+			await this.elementService.move(element, card, toPosition);
+		}
 
 		return element;
 	}
