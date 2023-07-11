@@ -9,11 +9,6 @@ export class H5PContentRepo extends BaseRepo<H5PContent> {
 		return H5PContent;
 	}
 
-	async createContent(content: H5PContent): Promise<void> {
-		const contentEm = this.create(content);
-		return this.save(contentEm);
-	}
-
 	async deleteContent(content: H5PContent): Promise<void> {
 		return this.delete(content);
 	}

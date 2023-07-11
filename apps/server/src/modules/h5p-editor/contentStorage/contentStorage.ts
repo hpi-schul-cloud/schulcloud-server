@@ -38,11 +38,11 @@ export class ContentStorage implements IContentStorage {
 				h5pContent = await this.repo.findById(contentId);
 				h5pContent.metadata = metadata;
 				h5pContent.content = content;
-				await this.repo.save(h5pContent);
 			} else {
 				h5pContent = new H5PContent({ metadata, content });
-				await this.repo.createContent(h5pContent);
 			}
+
+			await this.repo.save(h5pContent);
 
 			return h5pContent.id;
 		} catch (error) {
@@ -126,17 +126,21 @@ export class ContentStorage implements IContentStorage {
 		contentId: string,
 		file: string,
 		user: IUser,
-		rangeStart?: number,
+		rangeStart = 0,
 		rangeEnd?: number
 	): Promise<Readable> {
 		const filePath = this.getFilePath(contentId, file);
 
-		if (rangeStart !== undefined && rangeEnd !== undefined) {
-			const fileResponse = await this.storageClient.get(filePath, `${rangeStart}-${rangeEnd}`);
-			return fileResponse.data;
+		let range: string;
+		if (rangeEnd === undefined) {
+			// Open ended range
+			range = `${rangeStart}-`;
+		} else {
+			// Closed range
+			range = `${rangeStart}-${rangeEnd}`;
 		}
 
-		const fileResponse = await this.storageClient.get(filePath);
+		const fileResponse = await this.storageClient.get(filePath, range);
 		return fileResponse.data;
 	}
 
@@ -167,9 +171,9 @@ export class ContentStorage implements IContentStorage {
 	}
 
 	public getUserPermissions(contentId: string, user: IUser): Promise<Permission[]> {
-		const permission = [Permission.Delete, Permission.Download, Permission.Edit, Permission.Embed, Permission.View];
+		const permissions = [Permission.Delete, Permission.Download, Permission.Edit, Permission.Embed, Permission.View];
 
-		return Promise.resolve(permission);
+		return Promise.resolve(permissions);
 	}
 
 	public async listContent(user?: IUser): Promise<string[]> {
@@ -218,7 +222,7 @@ export class ContentStorage implements IContentStorage {
 		return false;
 	}
 
-	async resolveDependecies(contentIds: string[], user: IUser, library: ILibraryName) {
+	private async resolveDependecies(contentIds: string[], user: IUser, library: ILibraryName) {
 		let asDependency = 0;
 		let asMainLibrary = 0;
 
