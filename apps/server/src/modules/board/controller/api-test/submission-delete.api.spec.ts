@@ -21,7 +21,7 @@ import { Request } from 'express';
 import request from 'supertest';
 import { SubmissionResponse } from '../dto/submission';
 
-const baseRouteName = '/elements';
+const baseRouteName = '/elements/submissions';
 
 class API {
 	app: INestApplication;
@@ -32,7 +32,7 @@ class API {
 
 	async delete(submissionId: string) {
 		const response = await request(this.app.getHttpServer())
-			.delete(`${baseRouteName}/submissions/${submissionId}`)
+			.delete(`${baseRouteName}/${submissionId}`)
 			.set('Accept', 'application/json')
 			.send();
 

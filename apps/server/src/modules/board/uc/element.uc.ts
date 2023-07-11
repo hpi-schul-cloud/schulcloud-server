@@ -66,6 +66,7 @@ export class ElementUc {
 		return subElement;
 	}
 
+	// TODO: remove this
 	async deleteSubElement(userId: EntityId, elementId: EntityId): Promise<void> {
 		// this.logger.debug({ action: 'deleteSubElement', userId, elementId });
 
@@ -77,7 +78,7 @@ export class ElementUc {
 		await this.subElementService.delete(subElement);
 	}
 
-	async createSubmission(userId: EntityId, contentElementId: EntityId): Promise<SubmissionBoard> {
+	async createSubmissionBoard(userId: EntityId, contentElementId: EntityId): Promise<SubmissionBoard> {
 		const element = await this.elementService.findById(contentElementId);
 		if (!(element instanceof TaskElement))
 			throw new HttpException('Cannot create submission for non-task element', HttpStatus.UNPROCESSABLE_ENTITY);
@@ -89,5 +90,13 @@ export class ElementUc {
 		const subElement = await this.submissionBoardService.create(userId, element);
 
 		return subElement;
+	}
+
+	async deleteSubmissionBoard(userId: EntityId, submissionId: EntityId): Promise<void> {
+		const submission = await this.submissionBoardService.findById(submissionId);
+
+		await this.checkPermission(userId, submission, Action.read);
+
+		await this.submissionBoardService.delete(submission);
 	}
 }

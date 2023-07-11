@@ -2,10 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { EntityId, SubmissionBoard, TaskElement } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
+import { BoardDoService } from './board-do.service';
 
 @Injectable()
 export class SubmissionBoardService {
-	constructor(private readonly boardDoRepo: BoardDoRepo) {}
+	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
 
 	async findById(id: EntityId): Promise<SubmissionBoard> {
 		const element = await this.boardDoRepo.findById(id);
@@ -31,5 +32,9 @@ export class SubmissionBoardService {
 		await this.boardDoRepo.save(taskElement.children, taskElement);
 
 		return submission;
+	}
+
+	async delete(submission: SubmissionBoard): Promise<void> {
+		await this.boardDoService.deleteWithDescendants(submission);
 	}
 }

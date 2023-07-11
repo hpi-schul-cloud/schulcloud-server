@@ -132,7 +132,7 @@ export class ElementController {
 	): Promise<SubmissionResponse> {
 		// const { type } = bodyParams;
 		// TODO current user as userId
-		const submission = await this.elementUc.createSubmission(currentUser.userId, urlParams.contentElementId);
+		const submission = await this.elementUc.createSubmissionBoard(currentUser.userId, urlParams.contentElementId);
 		const mapper = SubmissionResponseMapper.getInstance();
 		const response = mapper.mapToResponse(submission);
 
