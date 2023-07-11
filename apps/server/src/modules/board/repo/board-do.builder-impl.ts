@@ -118,7 +118,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 	}
 
 	public buildTaskElement(boardNode: TaskElementNode): TaskElement {
-		this.ensureBoardNodeType(this.getChildren(boardNode), [BoardNodeType.SUBMISSION_SUBELEMENT]);
+		this.ensureBoardNodeType(this.getChildren(boardNode), [BoardNodeType.SUBMISSION_BOARD]);
 
 		const elements = this.buildChildren<SubmissionSubElement>(boardNode);
 

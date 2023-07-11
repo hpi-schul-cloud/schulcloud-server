@@ -117,6 +117,8 @@ describe('submission create (api)', () => {
 			expect(response.result.timestamps.lastUpdatedAt).toBeDefined();
 			expect(response.result.userId).toBe(user.id);
 		});
+
+		// TODO: must fail if user wants to create more than one submission
 	});
 
 	// TODO: add test cases

@@ -77,9 +77,10 @@ describe('submission create (api)', () => {
 	const setup = async () => {
 		await cleanupCollections(em);
 		const teacher = userFactory.build();
-		const student = userFactory.build();
-		const course = courseFactory.build({ teachers: [teacher], students: [student] });
-		await em.persistAndFlush([teacher, student, course]);
+		const student1 = userFactory.build();
+		const student2 = userFactory.build();
+		const course = courseFactory.build({ teachers: [teacher], students: [student1, student2] });
+		await em.persistAndFlush([teacher, student1, student2, course]);
 
 		const columnBoardNode = columnBoardNodeFactory.buildWithId({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -91,26 +92,48 @@ describe('submission create (api)', () => {
 
 		const taskNode = taskElementNodeFactory.buildWithId({ parent: cardNode });
 
-		const submissionNode = submissionBoardNodeFactory.buildWithId({ parent: taskNode, userId: student.id });
+		const submissionNode1 = submissionBoardNodeFactory.buildWithId({ parent: taskNode, userId: student1.id });
+		const submissionNode2 = submissionBoardNodeFactory.buildWithId({ parent: taskNode, userId: student2.id });
 
-		await em.persistAndFlush([columnBoardNode, columnNode, cardNode, taskNode, submissionNode]);
+		await em.persistAndFlush([columnBoardNode, columnNode, cardNode, taskNode, submissionNode1, submissionNode2]);
 		em.clear();
 
-		return { teacher, student, columnBoardNode, columnNode, cardNode, taskNode, submissionNode };
+		return {
+			teacher,
+			student1,
+			student2,
+			columnBoardNode,
+			columnNode,
+			cardNode,
+			taskNode,
+			submissionNode1,
+			submissionNode2,
+		};
 	};
 
 	describe('with valid user', () => {});
 
 	// TODO: add test cases
+	it('should return status 204 when teacher', async () => {
+		const { submissionNode1, teacher } = await setup();
+		currentUser = mapUserToCurrentUser(teacher);
+
+		const response = await api.delete(submissionNode1.id);
+
+		expect(response.status).toEqual(204);
+	});
+	//	it('should actually delete element', async () => {
+	// no sibling deleted
+
 	// student can't delete submissions
 
 	describe('with invalid user', () => {
 		it('should return 403', async () => {
-			const { submissionNode, cardNode } = await setup();
+			const { submissionNode1, cardNode } = await setup();
 			const invalidUser = userFactory.build();
 			await em.persistAndFlush([invalidUser]);
 			currentUser = mapUserToCurrentUser(invalidUser);
-			const response = await api.delete(submissionNode.id);
+			const response = await api.delete(submissionNode1.id);
 			const sub = await em.findOne(SubmissionBoardNode, { id: cardNode.id });
 			expect(response.status).toEqual(403);
 			expect(sub).toBeDefined();
