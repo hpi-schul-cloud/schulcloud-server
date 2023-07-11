@@ -47,19 +47,19 @@ export class RichTextElementContentBody extends ElementContentBody {
 	content!: RichTextContentBody;
 }
 
-export class TaskContentBody {
+export class SubmissionContainerContentBody {
 	@IsDate()
 	@ApiProperty()
 	dueDate!: Date;
 }
 
-export class TaskElementContentBody extends ElementContentBody {
-	@ApiProperty({ type: ContentElementType.TASK })
-	type!: ContentElementType.TASK;
+export class SubmissionContainerElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: ContentElementType.SUBMISSION_CONTAINER })
+	type!: ContentElementType.SUBMISSION_CONTAINER;
 
 	@ValidateNested()
 	@ApiProperty()
-	content!: TaskContentBody;
+	content!: SubmissionContainerContentBody;
 }
 
 export type AnyElementContentBody = RichTextElementContentBody | FileContentBody;
@@ -72,7 +72,7 @@ export class ElementContentUpdateBodyParams {
 			subTypes: [
 				{ value: FileElementContentBody, name: ContentElementType.FILE },
 				{ value: RichTextElementContentBody, name: ContentElementType.RICH_TEXT },
-				{ value: TaskElementContentBody, name: ContentElementType.TASK },
+				{ value: SubmissionContainerElementContentBody, name: ContentElementType.SUBMISSION_CONTAINER },
 			],
 		},
 		keepDiscriminatorProperty: true,
@@ -81,8 +81,8 @@ export class ElementContentUpdateBodyParams {
 		oneOf: [
 			{ $ref: getSchemaPath(FileElementContentBody) },
 			{ $ref: getSchemaPath(RichTextElementContentBody) },
-			{ $ref: getSchemaPath(TaskElementContentBody) },
+			{ $ref: getSchemaPath(SubmissionContainerElementContentBody) },
 		],
 	})
-	data!: FileElementContentBody | RichTextElementContentBody | TaskElementContentBody;
+	data!: FileElementContentBody | RichTextElementContentBody | SubmissionContainerElementContentBody;
 }

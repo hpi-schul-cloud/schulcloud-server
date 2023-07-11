@@ -1,12 +1,12 @@
 let createdVersionIds = [];
 
 const createTestConsentVersion =
-	(appPromise) =>
+	(appPromise, opt) =>
 	async ({
 		consentTypes = ['privacy', 'termsOfUse'],
 		consentText = 'This is a test consent',
-		consentDataId = undefined,
-		schoolId = undefined,
+		consentDataId = opt.consentDataId,
+		schoolId = opt.schoolId,
 		publishedAt = new Date(),
 		title = 'test consent',
 		manualCleanup = false,
