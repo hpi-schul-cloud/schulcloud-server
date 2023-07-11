@@ -94,7 +94,7 @@ export class ElementUc {
 
 	async deleteSubmissionBoard(userId: EntityId, submissionId: EntityId): Promise<void> {
 		const submission = await this.submissionBoardService.findById(submissionId);
-		await this.checkPermission(userId, submission, Action.read);
+		await this.checkPermission(userId, submission, Action.write);
 		await this.submissionBoardService.delete(submission);
 	}
 }

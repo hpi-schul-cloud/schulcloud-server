@@ -111,21 +111,43 @@ describe('submission create (api)', () => {
 		};
 	};
 
-	describe('with valid user', () => {});
+	describe('with valid user', () => {
+		it('should return status 204 when teacher', async () => {
+			const { submissionNode1, teacher } = await setup();
+			currentUser = mapUserToCurrentUser(teacher);
 
-	// TODO: add test cases
-	it('should return status 204 when teacher', async () => {
-		const { submissionNode1, teacher } = await setup();
-		currentUser = mapUserToCurrentUser(teacher);
+			const response = await api.delete(submissionNode1.id);
 
-		const response = await api.delete(submissionNode1.id);
+			expect(response.status).toEqual(204);
+		});
 
-		expect(response.status).toEqual(204);
+		it('should actually delete submission board', async () => {
+			const { submissionNode1, teacher } = await setup();
+			currentUser = mapUserToCurrentUser(teacher);
+
+			await api.delete(submissionNode1.id);
+			await expect(em.findOneOrFail(SubmissionBoardNode, submissionNode1.id)).rejects.toThrow();
+		});
+
+		it('should not delete siblings', async () => {
+			const { submissionNode1, submissionNode2, teacher } = await setup();
+			currentUser = mapUserToCurrentUser(teacher);
+
+			await api.delete(submissionNode1.id);
+
+			const siblingFromDb = await em.findOneOrFail(SubmissionBoardNode, submissionNode2.id);
+			expect(siblingFromDb).toBeDefined();
+		});
+
+		it('should return status 403 when student', async () => {
+			const { submissionNode1, student1 } = await setup();
+			currentUser = mapUserToCurrentUser(student1);
+
+			const response = await api.delete(submissionNode1.id);
+
+			expect(response.status).toEqual(403);
+		});
 	});
-	//	it('should actually delete element', async () => {
-	// no sibling deleted
-
-	// student can't delete submissions
 
 	describe('with invalid user', () => {
 		it('should return 403', async () => {
