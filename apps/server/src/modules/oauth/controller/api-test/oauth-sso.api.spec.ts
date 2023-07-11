@@ -4,6 +4,8 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, EntityId, School, System, User } from '@shared/domain';
 import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import {
 	accountFactory,
 	cleanupCollections,
@@ -12,19 +14,17 @@ import {
 	systemFactory,
 	userFactory,
 } from '@shared/testing';
+import { JwtTestFactory } from '@shared/testing/factory/jwt.test.factory';
 import { userLoginMigrationFactory } from '@shared/testing/factory/user-login-migration.factory';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { SanisResponse, SanisRole } from '@src/modules/provisioning';
 import { ServerTestModule } from '@src/modules/server';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { UUID } from 'bson';
 import { Request } from 'express';
 import request, { Response } from 'supertest';
-import { UUID } from 'bson';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SanisResponse, SanisRole } from '@src/modules/provisioning';
-import { JwtTestFactory } from '@shared/testing/factory/jwt.test.factory';
-import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { SSOAuthenticationError } from '../../interface/sso-authentication-error.enum';
 import { OauthTokenResponse } from '../../service/dto';
 import { AuthorizationParams, SSOLoginQuery } from '../dto';
@@ -235,7 +235,10 @@ describe('OAuth SSO Controller (API)', () => {
 					.set('Cookie', cookies)
 					.query(query)
 					.expect(302)
-					.expect('Location', `${clientUrl}/login?error=access_denied`);
+					.expect(
+						'Location',
+						`${clientUrl}/login?error=access_denied&provider=${system.oauthConfig?.provider as string}`
+					);
 			});
 		});
 
@@ -252,7 +255,10 @@ describe('OAuth SSO Controller (API)', () => {
 					.set('Cookie', cookies)
 					.query(query)
 					.expect(302)
-					.expect('Location', `${clientUrl}/login?error=sso_auth_code_step`);
+					.expect(
+						'Location',
+						`${clientUrl}/login?error=sso_auth_code_step&provider=${system.oauthConfig?.provider as string}`
+					);
 			});
 		});
 	});
