@@ -1,4 +1,4 @@
-import { EntityName, FilterQuery } from '@mikro-orm/core';
+import { EntityData, EntityName, FilterQuery, wrap } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BaseDO, BaseEntity, baseEntityProperties, EntityId } from '@shared/domain';
@@ -50,12 +50,14 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
 	private async updateEntity(domainObject: DO): Promise<E> {
 		const newEntity: E = this.createNewEntityFromDO(domainObject);
 
-		this.removeProtectedEntityFields(newEntity);
-
 		const fetchedEntity: E = await this._em.findOneOrFail(this.entityName, {
 			id: domainObject.id,
 		} as FilterQuery<E>);
-		const updated: E = this._em.assign(fetchedEntity, newEntity, { updateByPrimaryKey: false });
+
+		const newEntityData = wrap(newEntity).toPOJO() as EntityData<E>;
+		this.removeProtectedEntityFields(newEntityData);
+
+		const updated: E = this._em.assign(fetchedEntity, newEntityData, { updateByPrimaryKey: false });
 		this.logger.debug(`Updated entity with id ${updated.id}`);
 		return updated;
 	}
@@ -74,7 +76,7 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
 	/**
 	 * Ignore base entity properties when updating entity
 	 */
-	private removeProtectedEntityFields(entity: E) {
+	private removeProtectedEntityFields(entity: EntityData<E>) {
 		Object.keys(entity).forEach((key) => {
 			if (baseEntityProperties.includes(key)) {
 				delete entity[key];
