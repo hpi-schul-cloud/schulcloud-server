@@ -73,43 +73,42 @@ describe('submission create (api)', () => {
 		await app.close();
 	});
 
-	const setup = async () => {
-		await cleanupCollections(em);
-		const user = userFactory.build();
-		const course = courseFactory.build({ teachers: [user] });
-		await em.persistAndFlush([user, course]);
-
-		const columnBoardNode = columnBoardNodeFactory.buildWithId({
-			context: { id: course.id, type: BoardExternalReferenceType.Course },
-		});
-
-		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-
-		const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
-
-		const taskNode = submissionContainerElementNodeFactory.buildWithId({ parent: cardNode });
-
-		await em.persistAndFlush([columnBoardNode, columnNode, cardNode, taskNode]);
-		em.clear();
-
-		return { user, columnBoardNode, columnNode, cardNode, taskNode };
-	};
-
 	describe('with valid user', () => {
+		const setup = async () => {
+			await cleanupCollections(em);
+			const user = userFactory.build();
+			const course = courseFactory.build({ teachers: [user] });
+			await em.persistAndFlush([user, course]);
+
+			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+				context: { id: course.id, type: BoardExternalReferenceType.Course },
+			});
+
+			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+
+			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+
+			const submissionContainerNode = submissionContainerElementNodeFactory.buildWithId({ parent: cardNode });
+
+			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode]);
+			em.clear();
+
+			return { user, columnBoardNode, columnNode, cardNode, submissionContainerNode };
+		};
 		it('should return status 201', async () => {
-			const { user, taskNode } = await setup();
+			const { user, submissionContainerNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await api.post(taskNode.id, { completed: false });
+			const response = await api.post(submissionContainerNode.id, { completed: false });
 
 			expect(response.status).toEqual(201);
 		});
 
 		it('should return created submission', async () => {
-			const { user, taskNode } = await setup();
+			const { user, submissionContainerNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await api.post(taskNode.id, { completed: false });
+			const response = await api.post(submissionContainerNode.id, { completed: false });
 
 			expect(response.result.completed).toBe(false);
 			expect(response.result.id).toBeDefined();
@@ -127,13 +126,34 @@ describe('submission create (api)', () => {
 	// each student can only have a single submission-item in a given submission-container
 
 	describe('with invalid user', () => {
+		const setup = async () => {
+			await cleanupCollections(em);
+			const user = userFactory.build();
+			const course = courseFactory.build({ teachers: [user] });
+			await em.persistAndFlush([user, course]);
+
+			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+				context: { id: course.id, type: BoardExternalReferenceType.Course },
+			});
+
+			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+
+			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+
+			const submissionContainerNode = submissionContainerElementNodeFactory.buildWithId({ parent: cardNode });
+
+			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode]);
+			em.clear();
+
+			return { user, columnBoardNode, columnNode, cardNode, submissionContainerNode };
+		};
 		it('should return 403', async () => {
-			const { taskNode } = await setup();
+			const { submissionContainerNode } = await setup();
 
 			const invalidUser = userFactory.build();
 			await em.persistAndFlush([invalidUser]);
 			currentUser = mapUserToCurrentUser(invalidUser);
-			const response = await api.post(taskNode.id, { completed: false });
+			const response = await api.post(submissionContainerNode.id, { completed: false });
 
 			expect(response.status).toEqual(403);
 		});

@@ -101,7 +101,7 @@ export class ElementController {
 	): Promise<SubmissionItemResponse> {
 		// const { type } = bodyParams;
 		// TODO current user as userId
-		// TODO: create body is checked or not
+		// TODO create body is checked or not
 		const submission = await this.elementUc.createSubmissionItem(currentUser.userId, urlParams.contentElementId);
 		const mapper = SubmissionItemResponseMapper.getInstance();
 		const response = mapper.mapToResponse(submission);
