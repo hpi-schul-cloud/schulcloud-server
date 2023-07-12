@@ -33,15 +33,31 @@ export class ElementUc {
 	}
 
 	async createSubmissionItem(userId: EntityId, contentElementId: EntityId): Promise<SubmissionItem> {
-		const element = await this.elementService.findById(contentElementId);
-		if (!(element instanceof SubmissionContainerElement))
+		const submissionContainer = (await this.elementService.findById(contentElementId)) as SubmissionContainerElement;
+
+		if (!(submissionContainer instanceof SubmissionContainerElement))
 			throw new HttpException(
 				'Cannot create submission-item for non submission-container-element',
 				HttpStatus.UNPROCESSABLE_ENTITY
 			);
-		await this.checkPermission(userId, element, Action.read);
 
-		const subElement = await this.submissionItemService.create(userId, element);
+		if (!submissionContainer.children.every((child) => child instanceof SubmissionItem))
+			throw new HttpException(
+				'Children of submission-container-element must be of type submission-item',
+				HttpStatus.UNPROCESSABLE_ENTITY
+			);
+
+		const userIds = submissionContainer.children.flatMap((item) => (item as SubmissionItem).userId);
+		if (userIds.includes(userId)) {
+			throw new HttpException(
+				'User is not allowed to have multiple submission-items per submission-container-element',
+				HttpStatus.NOT_ACCEPTABLE
+			);
+		}
+
+		await this.checkPermission(userId, submissionContainer, Action.write);
+
+		const subElement = await this.submissionItemService.create(userId, submissionContainer);
 
 		return subElement;
 	}

@@ -73,7 +73,7 @@ describe('submission create (api)', () => {
 		await app.close();
 	});
 
-	describe('with valid user', () => {
+	describe('with valid teacher user', () => {
 		const setup = async () => {
 			await cleanupCollections(em);
 			const user = userFactory.build();
@@ -117,13 +117,49 @@ describe('submission create (api)', () => {
 			expect(response.result.userId).toBe(user.id);
 		});
 
-		// TODO: must fail if user wants to create more than one submission
+		it('should fail when user wants to create more than one submission-item', async () => {
+			const { user, submissionContainerNode } = await setup();
+			currentUser = mapUserToCurrentUser(user);
+
+			const response = await api.post(submissionContainerNode.id, { completed: false });
+			expect(response.status).toBe(201);
+			const response2 = await api.post(submissionContainerNode.id, { completed: false });
+			expect(response2.status).toBe(406);
+		});
 	});
 
-	// TODO: add test cases
-	// student not part of the course should not be able to create submission
-	// student part of the course should be able to create submission
-	// each student can only have a single submission-item in a given submission-container
+	describe('with valid student user', () => {
+		const setup = async () => {
+			await cleanupCollections(em);
+			const student = userFactory.build();
+			const course = courseFactory.build({ students: [student] });
+			await em.persistAndFlush([student, course]);
+
+			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+				context: { id: course.id, type: BoardExternalReferenceType.Course },
+			});
+
+			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+
+			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+
+			const submissionContainerNode = submissionContainerElementNodeFactory.buildWithId({ parent: cardNode });
+
+			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode]);
+			em.clear();
+
+			return { student, columnBoardNode, columnNode, cardNode, submissionContainerNode };
+		};
+
+		it('should return status 403', async () => {
+			const { student, submissionContainerNode } = await setup();
+			currentUser = mapUserToCurrentUser(student);
+
+			const response = await api.post(submissionContainerNode.id, { completed: false });
+
+			expect(response.status).toEqual(403);
+		});
+	});
 
 	describe('with invalid user', () => {
 		const setup = async () => {
