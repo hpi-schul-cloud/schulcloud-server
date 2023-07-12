@@ -30,6 +30,16 @@ export class ElementUc {
 		await this.elementService.update(element, content);
 	}
 
+	// 	async createSubmissionBoard(userId: EntityId, contentElementId: EntityId): Promise<SubmissionBoard> {
+	// 		const element = await this.elementService.findById(contentElementId);
+	// 		if (!(element instanceof TaskElement))
+	// 			throw new HttpException('Cannot create submission for non-task element', HttpStatus.UNPROCESSABLE_ENTITY);
+	// Expand All
+	// 	@@ -90,4 +91,10 @@ export class ElementUc {
+
+	// 		return subElement;
+	// 	}
+
 	private async checkPermission(userId: EntityId, boardDo: AnyBoardDo, action: Action): Promise<void> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(boardDo);
