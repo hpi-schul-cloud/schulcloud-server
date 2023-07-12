@@ -1,5 +1,6 @@
+import path from 'node:path';
+import type { Readable } from 'stream';
 import {
-	InstalledLibrary,
 	LibraryName,
 	type IAdditionalLibraryMetadata,
 	type IFileStats,
@@ -9,43 +10,17 @@ import {
 	type ILibraryStorage,
 } from '@lumieducation/h5p-server';
 import { Injectable } from '@nestjs/common';
-
-import fsSync, { constants as FSConstants } from 'node:fs';
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import type { Readable } from 'stream';
+import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
+import { FileDto } from '@src/modules/files-storage/dto';
+import { FileMetadata, InstalledLibrary } from './library.entity';
+import { LibraryRepo } from './library.repo';
 
 @Injectable()
 export class LibraryStorage implements ILibraryStorage {
 	/**
-	 * @param libraryDirectory Path of the directory in which the libraries are stored. Will be created if it does not exist.
+	 * @param
 	 */
-	public constructor(private libraryDirectory: string) {
-		fsSync.mkdirSync(libraryDirectory, { recursive: true });
-	}
-
-	/**
-	 * Returns the directory of the library.
-	 * @param library
-	 * @returns the absolute path to the library directory
-	 */
-	private getDirectoryPath(library: ILibraryName): string {
-		const uberName = LibraryName.toUberName(library);
-		const directoryPath = path.join(this.libraryDirectory, uberName);
-		return directoryPath;
-	}
-
-	/**
-	 * Returns the path of the file from the library.
-	 * @param library
-	 * @param filename
-	 * @returns the absolute path to the file
-	 */
-	private getFilePath(library: ILibraryName, filename: string): string {
-		const uberName = LibraryName.toUberName(library);
-		const filePath = path.join(this.libraryDirectory, uberName, filename);
-		return filePath;
-	}
+	constructor(private readonly libraryRepo: LibraryRepo, private readonly s3Client: S3ClientAdapter) {}
 
 	/**
 	 * Checks if the filename is absolute or traverses outside the directory.
@@ -59,17 +34,15 @@ export class LibraryStorage implements ILibraryStorage {
 	}
 
 	/**
-	 * Checks if the path can be accessed
-	 * @param filePath
-	 * @param options file access constant
+	 * Returns the path of the file from the library.
+	 * @param library
+	 * @param filename
+	 * @returns the absolute path to the file
 	 */
-	private async pathAccessible(filePath: string, options = FSConstants.F_OK) {
-		try {
-			await fs.access(filePath, options);
-			return true;
-		} catch (err) {
-			return false;
-		}
+	private getFilePath(library: ILibraryName, filename: string): string {
+		const uberName = LibraryName.toUberName(library);
+		const filePath = path.join(uberName, filename);
+		return filePath;
 	}
 
 	/**
@@ -79,16 +52,38 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param dataStream
 	 * @returns true if successful
 	 */
-	public async addFile(library: ILibraryName, filename: string, dataStream: Readable): Promise<boolean> {
-		this.checkFilename(filename);
+	public async addFile(libraryName: ILibraryName, filename: string, dataStream: Readable): Promise<boolean> {
+		this.checkFilename(filename); // TODO: do this everywhere?
 
-		if (!(await this.isInstalled(library))) {
-			throw new Error(`Could not add file to library ${LibraryName.toUberName(library)}`);
+		const library = await this.libraryRepo.findOneByNameAndVersionOrFail(
+			libraryName.machineName,
+			libraryName.majorVersion,
+			libraryName.minorVersion
+		);
+
+		if (await this.fileExists(libraryName, filename)) {
+			return false;
 		}
 
-		const fullPath = this.getFilePath(library, filename);
-		await fs.mkdir(path.dirname(fullPath), { recursive: true });
-		await fs.writeFile(fullPath, dataStream);
+		let size = 0;
+		const filepath = this.getFilePath(libraryName, filename);
+
+		try {
+			await this.s3Client.create(
+				filepath,
+				new FileDto({
+					name: filepath,
+					mimeType: 'application/octet-stream',
+					data: dataStream,
+				})
+			);
+			size = (await this.s3Client.get(filepath)).contentLength ?? 0;
+		} catch (error) {
+			return false;
+		}
+
+		library.files.push({ name: filename, birthtime: new Date(), size });
+		await this.libraryRepo.save(library);
 
 		return true;
 	}
@@ -99,60 +94,72 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param restricted
 	 * @returns The newly created library object
 	 */
-	public async addLibrary(libraryMetadata: ILibraryMetadata, restricted: boolean): Promise<IInstalledLibrary> {
+	public async addLibrary(libMeta: ILibraryMetadata, restricted: boolean): Promise<IInstalledLibrary> {
+		const existingLibrary = await this.libraryRepo.findByNameAndExactVersion(
+			libMeta.machineName,
+			libMeta.majorVersion,
+			libMeta.minorVersion,
+			libMeta.patchVersion
+		);
+
+		if (existingLibrary !== null) {
+			throw new Error("Can't add library because it already exists");
+		}
+
 		const library = new InstalledLibrary(
-			libraryMetadata.machineName,
-			libraryMetadata.majorVersion,
-			libraryMetadata.minorVersion,
-			libraryMetadata.patchVersion,
+			libMeta.machineName,
+			libMeta.majorVersion,
+			libMeta.minorVersion,
+			libMeta.patchVersion,
 			restricted
 		);
 
-		const libraryPath = this.getDirectoryPath(library);
+		await this.libraryRepo.createLibrary(library);
 
-		if (await this.pathAccessible(libraryPath)) {
-			throw new Error(`Can't add library because it already exists`);
-		}
-
-		try {
-			await fs.mkdir(libraryPath, { recursive: true });
-
-			const libraryMetadataPath = this.getFilePath(library, 'library.json');
-			await fs.writeFile(libraryMetadataPath, JSON.stringify(libraryMetadata, undefined, 2));
-			return library;
-		} catch (error) {
-			await fs.rm(libraryPath, { recursive: true, force: true });
-			throw error;
-		}
+		return library;
 	}
 
 	/**
 	 * Removes all files of a library, but keeps the metadata
 	 * @param library
 	 */
-	public async clearFiles(library: ILibraryName): Promise<void> {
-		if (!(await this.isInstalled(library))) {
-			throw new Error("Can't clear library files, because it is not installed");
-		}
+	public async clearFiles(libraryName: ILibraryName): Promise<void> {
+		const library = await this.libraryRepo.findOneByNameAndVersionOrFail(
+			libraryName.machineName,
+			libraryName.majorVersion,
+			libraryName.minorVersion
+		);
 
-		const fullLibraryPath = this.getDirectoryPath(library);
-		const files = (await fs.readdir(fullLibraryPath)).filter((file) => file !== 'library.json');
-
-		await Promise.all(files.map((entry) => fs.rm(this.getFilePath(library, entry), { recursive: true, force: true })));
+		await this.s3Client.delete(library.files.map((file) => this.getFilePath(library, file.name)));
 	}
 
 	/**
 	 * Deletes metadata and all files of the library
 	 * @param library
 	 */
-	public async deleteLibrary(library: ILibraryName): Promise<void> {
-		const libPath = this.getDirectoryPath(library);
+	public async deleteLibrary(libraryName: ILibraryName): Promise<void> {
+		const library = await this.libraryRepo.findOneByNameAndVersionOrFail(
+			libraryName.machineName,
+			libraryName.majorVersion,
+			libraryName.minorVersion
+		);
 
-		if (!(await this.pathAccessible(libPath))) {
-			throw new Error("Can't delete library, because it is not installed");
+		await this.s3Client.delete(library.files.map((file) => this.getFilePath(library, file.name)));
+		await this.libraryRepo.delete(library);
+	}
+
+	public async getFileMetadata(libraryName: ILibraryName, filename: string): Promise<FileMetadata> {
+		const library = await this.libraryRepo.findOneByNameAndVersionOrFail(
+			libraryName.machineName,
+			libraryName.majorVersion,
+			libraryName.minorVersion
+		);
+		for (const file of library.files) {
+			if (file.name === filename) {
+				return file;
+			}
 		}
-
-		await fs.rm(libPath, { recursive: true, force: true });
+		throw new Error('File does not exist');
 	}
 
 	/**
@@ -161,10 +168,13 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param filename
 	 * @returns true if the file exists, false otherwise
 	 */
-	public async fileExists(library: ILibraryName, filename: string): Promise<boolean> {
-		this.checkFilename(filename);
-
-		return this.pathAccessible(this.getFilePath(library, filename));
+	public async fileExists(libraryName: ILibraryName, filename: string): Promise<boolean> {
+		try {
+			await this.getFileMetadata(libraryName, filename);
+			return true;
+		} catch (error) {
+			return false;
+		}
 	}
 
 	/**
@@ -172,23 +182,19 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @returns an object with ubernames as key.
 	 */
 	public async getAllDependentsCount(): Promise<{ [ubername: string]: number }> {
-		const installedLibraries = await this.getInstalledLibraryNames();
-		const librariesMetadata = await Promise.all(installedLibraries.map((lib) => this.getLibrary(lib)));
-
-		const librariesMetadataMap = new Map(
-			installedLibraries.map((library, idx) => [LibraryName.toUberName(library), librariesMetadata[idx]])
-		);
+		const libraries = await this.libraryRepo.getAll();
+		const libraryMap = new Map(libraries.map((library) => [LibraryName.toUberName(library), library]));
 
 		// Remove circular dependencies
-		for (const libraryMetadata of librariesMetadata) {
-			for (const dependency of libraryMetadata.editorDependencies ?? []) {
+		for (const library of libraries) {
+			for (const dependency of library.editorDependencies ?? []) {
 				const ubername = LibraryName.toUberName(dependency);
 
-				const dependencyMetadata = librariesMetadataMap.get(ubername);
+				const dependencyMetadata = libraryMap.get(ubername);
 
 				if (dependencyMetadata?.preloadedDependencies) {
 					const index = dependencyMetadata.preloadedDependencies.findIndex((libName) =>
-						LibraryName.equal(libName, libraryMetadata)
+						LibraryName.equal(libName, library)
 					);
 
 					if (index >= 0) {
@@ -200,8 +206,8 @@ export class LibraryStorage implements ILibraryStorage {
 
 		// Count dependencies
 		const dependencies: { [ubername: string]: number } = {};
-		for (const libraryData of librariesMetadata) {
-			const { preloadedDependencies = [], editorDependencies = [], dynamicDependencies = [] } = libraryData;
+		for (const library of libraries) {
+			const { preloadedDependencies = [], editorDependencies = [], dynamicDependencies = [] } = library;
 
 			for (const dependency of preloadedDependencies.concat(editorDependencies, dynamicDependencies)) {
 				const ubername = LibraryName.toUberName(dependency);
@@ -227,9 +233,7 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param library
 	 * @param file
 	 */
-	public async getFileAsJson(library: ILibraryName, file: 'library.json'): Promise<ILibraryMetadata>;
-	public async getFileAsJson(library: ILibraryName, file: string): Promise<unknown>;
-	public async getFileAsJson(library: ILibraryName, file: string): Promise<unknown> {
+	public async getFileAsJson(library: ILibraryName, file: string): Promise<any> {
 		const content = await this.getFileAsString(library, file);
 		return JSON.parse(content) as unknown;
 	}
@@ -240,8 +244,12 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param file
 	 */
 	public async getFileAsString(library: ILibraryName, file: string): Promise<string> {
-		const contents = await fs.readFile(this.getFilePath(library, file), 'utf-8');
-		return contents;
+		const response = await this.s3Client.get(this.getFilePath(library, file));
+		const chunks: Buffer[] = [];
+		for await (const chunk of response.data) {
+			chunks.push(Buffer.from(chunk as Buffer));
+		}
+		return Buffer.concat(chunks).toString('utf-8');
 	}
 
 	/**
@@ -249,13 +257,8 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param library
 	 * @param file
 	 */
-	public async getFileStats(library: ILibraryName, file: string): Promise<IFileStats> {
-		if (!(await this.fileExists(library, file))) {
-			throw new Error('The requested file does not exist');
-		}
-
-		const stats = fs.stat(this.getFilePath(library, file));
-		return stats;
+	public async getFileStats(libraryName: ILibraryName, file: string): Promise<IFileStats> {
+		return this.getFileMetadata(libraryName, file);
 	}
 
 	/**
@@ -263,9 +266,9 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param library
 	 * @param file
 	 */
-	public getFileStream(library: ILibraryName, file: string): Promise<Readable> {
-		const readStream = fsSync.createReadStream(this.getFilePath(library, file));
-		return Promise.resolve(readStream);
+	public async getFileStream(library: ILibraryName, file: string): Promise<Readable> {
+		const response = await this.s3Client.get(this.getFilePath(library, file));
+		return response.data;
 	}
 
 	/**
@@ -273,27 +276,31 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param machineName (optional) only return libraries that have this machine name
 	 */
 	public async getInstalledLibraryNames(machineName?: string): Promise<ILibraryName[]> {
-		const nameRegex = /^([\w.]+)-(\d+)\.(\d+)$/i; // abc-12.34
-		const libDirEntries = await fs.readdir(this.libraryDirectory);
-
-		const libraries = libDirEntries
-			.filter((name) => nameRegex.test(name))
-			.map((name) => LibraryName.fromUberName(name))
-			.filter((lib) => !machineName || lib.machineName === machineName);
-
-		return libraries;
+		if (machineName) {
+			return this.libraryRepo.findByName(machineName);
+		}
+		return this.libraryRepo.getAll();
 	}
 
 	/**
 	 * Lists all languages supported by a library
 	 * @param library
 	 */
-	public async getLanguages(library: ILibraryName): Promise<string[]> {
-		const languageDirEntries = await fs.readdir(this.getFilePath(library, 'language'));
+	public async getLanguages(libraryName: ILibraryName): Promise<string[]> {
+		const library = await this.libraryRepo.findOneByNameAndVersionOrFail(
+			libraryName.machineName,
+			libraryName.majorVersion,
+			libraryName.minorVersion
+		);
 
-		const languages = languageDirEntries
-			.filter((file) => path.extname(file) === '.json')
-			.map((file) => path.basename(file, '.json'));
+		const prefix = this.getFilePath(library, 'language');
+
+		const languages: string[] = [];
+		for (const file of library.files) {
+			if (file.name.startsWith(prefix) && file.name.endsWith('.json')) {
+				languages.push(path.basename(file.name, '.json'));
+			}
+		}
 
 		return languages;
 	}
@@ -302,23 +309,25 @@ export class LibraryStorage implements ILibraryStorage {
 	 * Returns the library metadata
 	 * @param library
 	 */
-	public async getLibrary(library: ILibraryName): Promise<IInstalledLibrary> {
-		if (!(await this.isInstalled(library))) {
-			throw new Error('The requested library does not exist');
-		}
-
-		const libraryMetadata = await this.getFileAsJson(library, 'library.json');
-		const installedLibrary = InstalledLibrary.fromMetadata(libraryMetadata);
-
-		return installedLibrary;
+	public async getLibrary(library: ILibraryName): Promise<InstalledLibrary> {
+		return this.libraryRepo.findOneByNameAndVersionOrFail(
+			library.machineName,
+			library.majorVersion,
+			library.minorVersion
+		);
 	}
 
 	/**
 	 * Checks if a library is installed
 	 * @param library
 	 */
-	public async isInstalled(library: ILibraryName): Promise<boolean> {
-		return this.pathAccessible(this.getFilePath(library, 'library.json'));
+	public async isInstalled(libraryName: ILibraryName): Promise<boolean> {
+		const library = await this.libraryRepo.findNewestByNameAndVersion(
+			libraryName.machineName,
+			libraryName.majorVersion,
+			libraryName.minorVersion
+		);
+		return library !== null;
 	}
 
 	/**
@@ -337,28 +346,13 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param library
 	 * @returns an array of filenames
 	 */
-	public async listFiles(library: ILibraryName): Promise<string[]> {
-		const libPath = this.getDirectoryPath(library);
-
-		// Returns an async iterator
-		async function* getAllFiles(filepath: string): AsyncGenerator<string> {
-			const entries = await fs.readdir(filepath, { withFileTypes: true });
-
-			for (const file of entries) {
-				if (file.isDirectory()) {
-					yield* getAllFiles(path.join(filepath, file.name));
-				} else {
-					yield path.join(filepath, file.name);
-				}
-			}
-		}
-
-		const files: string[] = [];
-		for await (const file of getAllFiles(libPath)) {
-			files.push(file);
-		}
-
-		return files;
+	public async listFiles(libraryName: ILibraryName): Promise<string[]> {
+		const library = await this.libraryRepo.findOneByNameAndVersionOrFail(
+			libraryName.machineName,
+			libraryName.majorVersion,
+			libraryName.minorVersion
+		);
+		return library.files.map((file) => file.name);
 	}
 
 	/**
@@ -367,15 +361,15 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param additionalMetadata
 	 */
 	public async updateAdditionalMetadata(
-		library: ILibraryName,
+		libraryName: ILibraryName,
 		additionalMetadata: Partial<IAdditionalLibraryMetadata>
 	): Promise<boolean> {
-		const libraryMetadata = await this.getLibrary(library);
+		const library = await this.getLibrary(libraryName);
 
 		let dirty = false;
 		for (const [property, value] of Object.entries(additionalMetadata)) {
-			if (value !== libraryMetadata[property]) {
-				libraryMetadata[property] = value;
+			if (value !== library[property]) {
+				library[property] = value;
 				dirty = true;
 			}
 		}
@@ -385,29 +379,33 @@ export class LibraryStorage implements ILibraryStorage {
 			return false;
 		}
 
-		try {
-			await fs.writeFile(this.getFilePath(library, 'library.json'), JSON.stringify(libraryMetadata, undefined, 2));
-			return true;
-		} catch (error) {
-			throw new Error('Could not update metadata');
-		}
+		await this.libraryRepo.save(library);
+
+		return true;
 	}
 
 	/**
 	 * Updates the library metadata
 	 * @param libraryMetadata
 	 */
-	async updateLibrary(libraryMetadata: ILibraryMetadata): Promise<IInstalledLibrary> {
-		const libPath = this.getDirectoryPath(libraryMetadata);
-
-		if (!(await this.pathAccessible(libPath))) {
-			throw new Error('Library is not installed');
+	async updateLibrary(library: ILibraryMetadata): Promise<IInstalledLibrary> {
+		const existingLibrary = await this.libraryRepo.findOneByNameAndVersionOrFail(
+			library.machineName,
+			library.majorVersion,
+			library.minorVersion
+		);
+		let dirty = false;
+		for (const [property, value] of Object.entries(library)) {
+			if (property !== '_id' && value !== existingLibrary[property]) {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				existingLibrary[property] = value;
+				dirty = true;
+			}
+		}
+		if (dirty) {
+			await this.libraryRepo.save(existingLibrary);
 		}
 
-		const libraryJsonPath = this.getFilePath(libraryMetadata, 'library.json');
-		await fs.writeFile(libraryJsonPath, JSON.stringify(libraryMetadata, undefined, 2));
-
-		const newLibrary = InstalledLibrary.fromMetadata(libraryMetadata);
-		return newLibrary;
+		return existingLibrary;
 	}
 }
