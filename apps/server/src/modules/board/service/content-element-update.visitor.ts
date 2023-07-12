@@ -58,7 +58,6 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 		}
 	}
 
-	// TODO: add test
 	visitSubmissionItem(submission: SubmissionItem): void {
 		this.throwNotHandled(submission);
 	}
