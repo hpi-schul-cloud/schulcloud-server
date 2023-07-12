@@ -45,7 +45,7 @@ export class OauthSSOController {
 		this.clientUrl = Configuration.get('HOST') as string;
 	}
 
-	private errorHandler(error: unknown, session: ISession, res: Response) {
+	private errorHandler(error: unknown, session: ISession, res: Response, provider?: string) {
 		this.logger.error(error);
 		const ssoError: OAuthSSOError = error instanceof OAuthSSOError ? error : new OAuthSSOError();
 
@@ -55,6 +55,10 @@ export class OauthSSOController {
 
 		const errorRedirect: URL = new URL('/login', this.clientUrl);
 		errorRedirect.searchParams.append('error', ssoError.errorcode);
+
+		if (provider) {
+			errorRedirect.searchParams.append('provider', provider);
+		}
 
 		res.redirect(errorRedirect.toString());
 	}
@@ -149,7 +153,7 @@ export class OauthSSOController {
 
 			res.redirect(oauthProcessDto.redirect);
 		} catch (error) {
-			this.errorHandler(error, session, res);
+			this.errorHandler(error, session, res, oauthLoginState.provider);
 		}
 	}
 
