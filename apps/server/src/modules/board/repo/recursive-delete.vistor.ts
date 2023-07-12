@@ -53,7 +53,6 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 		await this.visitChildrenAsync(submissionContainerElement);
 	}
 
-	// TODO: add test
 	async visitSubmissionItemAsync(submission: SubmissionItem): Promise<void> {
 		this.deleteNode(submission);
 		await this.visitChildrenAsync(submission);
