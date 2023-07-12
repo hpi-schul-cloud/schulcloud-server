@@ -7,21 +7,28 @@ import {
 	NotFoundException,
 	Param,
 	Patch,
+	Post,
 	Put,
 } from '@nestjs/common';
-import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { CardUc } from '../uc';
 import { ElementUc } from '../uc/element.uc';
-import { ContentElementUrlParams, MoveContentElementBody } from './dto';
+import {
+	ContentElementUrlParams,
+	CreateSubmissionItemBodyParams,
+	MoveContentElementBody,
+	SubmissionItemResponse,
+} from './dto';
 import {
 	ElementContentUpdateBodyParams,
 	FileElementContentBody,
 	RichTextElementContentBody,
 	SubmissionContainerElementContentBody,
 } from './dto/element/element-content-update.body.params';
+import { SubmissionItemResponseMapper } from './mapper';
 
 @ApiTags('Board Element')
 @Authenticate('jwt')
@@ -77,5 +84,28 @@ export class ElementController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.cardUc.deleteElement(currentUser.userId, urlParams.contentElementId);
+	}
+
+	@ApiOperation({ summary: 'Create a new submission item in a submission container element.' })
+	@ApiExtraModels(SubmissionItemResponse)
+	@ApiResponse({ status: 201, type: SubmissionItemResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@ApiBody({ required: true, type: CreateSubmissionItemBodyParams })
+	@Post(':contentElementId/submissions')
+	async createSubmission(
+		@Param() urlParams: ContentElementUrlParams,
+		@Body() bodyParams: CreateSubmissionItemBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<SubmissionItemResponse> {
+		// const { type } = bodyParams;
+		// TODO current user as userId
+		// TODO: create body is checked or not
+		const submission = await this.elementUc.createSubmissionItem(currentUser.userId, urlParams.contentElementId);
+		const mapper = SubmissionItemResponseMapper.getInstance();
+		const response = mapper.mapToResponse(submission);
+
+		return response;
 	}
 }

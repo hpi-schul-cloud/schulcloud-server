@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean } from 'class-validator';
 
-export class CreateSubmissionBodyParams {
+export class CreateSubmissionItemBodyParams {
 	@IsBoolean()
 	@ApiProperty({
 		description: 'Boolean indicating whether the submission is completed.',
