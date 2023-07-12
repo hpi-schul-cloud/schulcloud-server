@@ -10,6 +10,7 @@ import {
 	FileElement,
 	RichTextElement,
 	SubmissionContainerElement,
+	SubmissionItem,
 } from '@shared/domain';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 
@@ -50,6 +51,12 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 	async visitSubmissionContainerElementAsync(submissionContainerElement: SubmissionContainerElement): Promise<void> {
 		this.deleteNode(submissionContainerElement);
 		await this.visitChildrenAsync(submissionContainerElement);
+	}
+
+	// TODO: add test
+	async visitSubmissionItemAsync(submission: SubmissionItem): Promise<void> {
+		this.deleteNode(submission);
+		await this.visitChildrenAsync(submission);
 	}
 
 	deleteNode(domainObject: AnyBoardDo): void {

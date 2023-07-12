@@ -17,6 +17,8 @@ import {
 	RichTextElementNode,
 	SubmissionContainerElement,
 	SubmissionContainerElementNode,
+	SubmissionItem,
+	SubmissionItemNode,
 } from '@shared/domain';
 import { BoardNodeRepo } from './board-node.repo';
 
@@ -129,6 +131,21 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 
 		this.createOrUpdateBoardNode(boardNode);
 		this.visitChildren(submissionContainerElement, boardNode);
+	}
+
+	// TODO: add test
+	visitSubmissionItem(submission: SubmissionItem): void {
+		const parentData = this.parentsMap.get(submission.id);
+		const boardNode = new SubmissionItemNode({
+			id: submission.id,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+			completed: submission.completed,
+			userId: submission.userId,
+		});
+
+		this.createOrUpdateBoardNode(boardNode);
+		this.visitChildren(submission, boardNode);
 	}
 
 	visitChildren(parent: AnyBoardDo, parentNode: BoardNode) {
