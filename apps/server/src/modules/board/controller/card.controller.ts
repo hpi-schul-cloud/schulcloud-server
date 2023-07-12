@@ -26,6 +26,7 @@ import {
 	FileElementResponse,
 	MoveCardBodyParams,
 	RenameBodyParams,
+	SubmissionContainerElementResponse,
 } from './dto';
 import { SetHeightBodyParams } from './dto/board/set-height.body.params';
 import { RichTextElementResponse } from './dto/element/rich-text-element.response';
@@ -117,7 +118,11 @@ export class CardController {
 	@ApiResponse({
 		status: 201,
 		schema: {
-			oneOf: [{ $ref: getSchemaPath(RichTextElementResponse) }, { $ref: getSchemaPath(FileElementResponse) }],
+			oneOf: [
+				{ $ref: getSchemaPath(RichTextElementResponse) },
+				{ $ref: getSchemaPath(FileElementResponse) },
+				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
+			],
 		},
 	})
 	@ApiResponse({ status: 400, type: ApiValidationError })
