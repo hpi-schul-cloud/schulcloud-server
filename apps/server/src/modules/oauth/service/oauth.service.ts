@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { OauthConfig, SchoolFeatures } from '@shared/domain';
+import { EntityId, OauthConfig, SchoolFeatures } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
@@ -14,13 +14,11 @@ import { SystemDto } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
 import { MigrationCheckService, UserMigrationService } from '@src/modules/user-login-migration';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { OAuthSSOError } from '../error/oauth-sso.error';
-import { SSOErrorCode } from '../error/sso-error-code.enum';
+import { OAuthSSOError, SSOErrorCode, UserNotFoundAfterProvisioningLoggableException } from '../error';
 import { OAuthTokenDto } from '../interface';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
 import { OauthAdapterService } from './oauth-adapter.service';
-import { UserNotFoundInUnprovisionedSchoolLoggableException } from '../error/user-not-found-in-unprovisioned-school.loggable-exception';
 
 @Injectable()
 export class OAuthService {
@@ -105,7 +103,7 @@ export class OAuthService {
 			await this.provisioningService.provisionData(data);
 		}
 
-		const user: UserDO = await this.findUserAfterProvisioningOrThrow(externalUserId, systemId);
+		const user: UserDO = await this.findUserAfterProvisioningOrThrow(externalUserId, systemId, officialSchoolNumber);
 
 		// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
 		const redirect: string = await this.getPostLoginRedirectUrl(
@@ -117,29 +115,19 @@ export class OAuthService {
 		return { user, redirect };
 	}
 
-	/**
-	 * This function attempts to find a user in the system using an external user ID and system ID.
-	 *
-	 * It takes into consideration a situation where the school is identifiable in SVS by a unique school number,
-	 * but the provisioning flag is set to false. This indicates that the school has not been migrated,
-	 * or the school feature for provisioning has been disabled.
-	 * If under these conditions the user is not found, it throws an UserNotFoundInUnprovisionedSchoolLoggableException.
-	 *
-	 * @param {string} externalUserId - The external user ID to look for.
-	 * @param {string} systemId - The system ID where the user is located.
-	 *
-	 * @throws {UserNotFoundInUnprovisionedSchoolLoggableException} If the user could not be found when the schoolNumber is known but provisioning is false.
-	 *
-	 * @returns {Promise<UserDO>} Returns the user if found.
-	 *
-	 * @private
-	 * @async
-	 */
-	private async findUserAfterProvisioningOrThrow(externalUserId: string, systemId: string): Promise<UserDO> {
+	private async findUserAfterProvisioningOrThrow(
+		externalUserId: string,
+		systemId: EntityId,
+		officialSchoolNumber?: string
+	): Promise<UserDO> {
 		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
+
 		if (!user) {
-			throw new UserNotFoundInUnprovisionedSchoolLoggableException(externalUserId, systemId);
+			// This can happen, when OAuth2 provisioning is disabled, because the school doesn't have the feature.
+			// OAuth2 provisioning is disabled for schools that don't have migrated, yet.
+			throw new UserNotFoundAfterProvisioningLoggableException(externalUserId, systemId, officialSchoolNumber);
 		}
+
 		return user;
 	}
 
