@@ -133,7 +133,6 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 		this.visitChildren(submissionContainerElement, boardNode);
 	}
 
-	// TODO: add test
 	visitSubmissionItem(submission: SubmissionItem): void {
 		const parentData = this.parentsMap.get(submission.id);
 		const boardNode = new SubmissionItemNode({
