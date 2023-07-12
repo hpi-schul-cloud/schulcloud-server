@@ -1215,6 +1215,41 @@
 					"description": "Number of simultaneously synchronized students, teachers and classes"
 				}
 			}
+		},
+		"FEATURE_TLDRAW_CALLBACK_URL": {
+			"type": "string",
+			"default": "",
+			"description": "callback URL for tldraw communication "
+		},
+		"FEATURE_TLDRAW_CALLBACK_TIMEOUT": {
+			"type": "number",
+			"default": 5000,
+			"description": "callback timeout for tldraw communication "
+		},
+		"FEATURE_TLDRAW_CALLBACK_OBJ": {
+			"type": "string",
+			"default": "",
+			"description": "callback object for tldraw communication "
+		},
+		"FEATURE_TLDRAW_CALLBACK_DEBOUNCE_WAIT": {
+			"type": "number",
+			"default": 2000,
+			"description": "time for waiting between calls for tldraw"
+		},
+		"FEATURE_TLDRAW_CALLBACK_DEBOUNCE_MAX_WAIT": {
+			"type": "number",
+			"default": 10000,
+			"description": "Max time for waiting between calls for tldraw"
+		},
+		"FEATURE_TLDRAW_PING_TIMEOUT": {
+			"type": "number",
+			"default": 30000,
+			"description": "Max time for waiting between calls for tldraw"
+		},
+		"FEATURE_TLDRAW_GC_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "If tldraw garbage collector should be enabled"
 		}
 	},
 	"required": [

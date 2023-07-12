@@ -3,14 +3,16 @@ import { Test } from '@nestjs/testing';
 import WebSocket from 'ws';
 import { TldrawGateway } from '../tldraw.gateway';
 import { TextEncoder } from 'util';
-import * as Utils from "../../utils/utils"
+import * as Utils from '../../utils/utils';
+import { INestApplication } from '@nestjs/common';
 
 const message = 'AZQBAaCbuLANBIsBeyJ0ZFVzZXIiOnsiaWQiOiJkNGIxZThmYi0yMWUwLTQ3ZDAtMDI0Y' +
 	'S0zZGEwYjMzNjQ3MjIiLCJjb2xvciI6IiNGMDRGODgiLCJwb2ludCI6WzAsMF0sInNlbGVjdGVkSWRzIjpbXSwiYWN' +
 	'0aXZlU2hhcGVzIjpbXSwic2Vzc2lvbiI6ZmFsc2V9fQ==';
 
 describe('WebSocketGateway (WsAdapter)', () => {
-	let ws, app;
+	let ws: WebSocket;
+	let app: INestApplication;
 	let gateway: TldrawGateway;
 	let utilsSpy;
 
@@ -46,7 +48,6 @@ describe('WebSocketGateway (WsAdapter)', () => {
 
 		expect(messageHandlerSpy).toHaveBeenCalled();
 		expect(messageHandlerSpy).toHaveBeenCalledTimes(1);
-
 	});
 
 	it(`should handle connection and data transfer2`, async () => {
@@ -63,5 +64,4 @@ describe('WebSocketGateway (WsAdapter)', () => {
 		expect(utilsSpy).toHaveBeenCalledTimes(1);
 		ws.close();
 	});
-
 });

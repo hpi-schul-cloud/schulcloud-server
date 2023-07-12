@@ -8,10 +8,9 @@ import {
 import { Server } from 'ws';
 import * as Y from 'yjs';
 import * as MongodbPersistence from 'y-mongodb-provider';
-import { closeConn, getYDoc, WSSharedDoc } from '@src/modules/tldraw/utils/utils';
+import { closeConn, WSSharedDoc, setupWSConnection, setPersistence } from '@src/modules/tldraw/utils/utils';
 
-const setupWSConnection = require('./../utils/utils');
-let connectionString = '';
+let connectionString: string;
 
 const ENVIRONMENTS = {
 	DEVELOPMENT: 'development',
@@ -35,14 +34,11 @@ switch (NODE_ENV) {
 export class TldrawGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	server!: Server;
-	doc: WSSharedDoc = {};
+	doc: WSSharedDoc | undefined;
 
 	handleConnection(client: any, request) {
-		client.binaryType = 'arraybuffer';
 		const docName =  request.url.slice(1).split('?')[0];
-		this.doc = getYDoc(docName, true);
-		this.doc.conns.set(client, new Set());
-		setupWSConnection.setupWSConnection(client, docName);
+		setupWSConnection(client, docName);
 	}
 
 	handleDisconnect(client: any): any {
@@ -56,7 +52,7 @@ export class TldrawGateway implements OnGatewayInit, OnGatewayConnection, OnGate
 			multipleCollections: false
 		});
 
-		setupWSConnection.setPersistence({
+		setPersistence({
 			bindState: async (docName, ydoc) => {
 				const persistedYdoc = await mdb.getYDoc(docName);
 				const persistedStateVector = Y.encodeStateVector(persistedYdoc);
