@@ -5,7 +5,6 @@ import { BoardNode, BoardNodeProps } from './boardnode.entity';
 import { BoardDoBuilder, BoardNodeType } from './types';
 // import { User } from '../user.entity';
 // import {ObjectId} from "@mikro-orm/mongodb";
-// TODO: add spec file
 
 @Entity({ discriminatorValue: BoardNodeType.SUBMISSION_ITEM })
 export class SubmissionItemNode extends BoardNode {
