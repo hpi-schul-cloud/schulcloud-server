@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { OauthConfig, SchoolFeatures } from '@shared/domain';
+import { EntityId, OauthConfig, SchoolFeatures } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
@@ -14,8 +14,7 @@ import { SystemDto } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
 import { MigrationCheckService, UserMigrationService } from '@src/modules/user-login-migration';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { OAuthSSOError } from '../error/oauth-sso.error';
-import { SSOErrorCode } from '../error/sso-error-code.enum';
+import { OAuthSSOError, SSOErrorCode, UserNotFoundAfterProvisioningLoggableException } from '../error';
 import { OAuthTokenDto } from '../interface';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
@@ -104,10 +103,7 @@ export class OAuthService {
 			await this.provisioningService.provisionData(data);
 		}
 
-		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
-		if (!user) {
-			throw new OAuthSSOError(`Provisioning of user with externalId: ${externalUserId} failed`, 'sso_user_notfound');
-		}
+		const user: UserDO = await this.findUserAfterProvisioningOrThrow(externalUserId, systemId, officialSchoolNumber);
 
 		// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
 		const redirect: string = await this.getPostLoginRedirectUrl(
@@ -117,6 +113,22 @@ export class OAuthService {
 		);
 
 		return { user, redirect };
+	}
+
+	private async findUserAfterProvisioningOrThrow(
+		externalUserId: string,
+		systemId: EntityId,
+		officialSchoolNumber?: string
+	): Promise<UserDO> {
+		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
+
+		if (!user) {
+			// This can happen, when OAuth2 provisioning is disabled, because the school doesn't have the feature.
+			// OAuth2 provisioning is disabled for schools that don't have migrated, yet.
+			throw new UserNotFoundAfterProvisioningLoggableException(externalUserId, systemId, officialSchoolNumber);
+		}
+
+		return user;
 	}
 
 	async isOauthProvisioningEnabledForSchool(officialSchoolNumber: string): Promise<boolean> {
@@ -217,12 +229,5 @@ export class OAuthService {
 			);
 
 		return tokenRequestPayload;
-	}
-
-	createErrorRedirect(errorCode: string): string {
-		const redirect = new URL('/login', Configuration.get('HOST') as string);
-		redirect.searchParams.append('error', errorCode);
-
-		return redirect.toString();
 	}
 }
