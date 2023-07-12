@@ -3,7 +3,7 @@ import { EntityId, SubmissionContainerElement, SubmissionItem } from '@shared/do
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
-// TODO: add spec
+
 @Injectable()
 export class SubmissionItemService {
 	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
