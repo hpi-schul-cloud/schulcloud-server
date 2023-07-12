@@ -3979,6 +3979,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/UserMigrationResponse.html" data-type="entity-link" >UserMigrationResponse</a>
                             </li>
                             <li class="link">
+                                <a href="classes/UserNotFoundAfterProvisioningLoggableException.html" data-type="entity-link" >UserNotFoundAfterProvisioningLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/UserParams.html" data-type="entity-link" >UserParams</a>
                             </li>
                             <li class="link">

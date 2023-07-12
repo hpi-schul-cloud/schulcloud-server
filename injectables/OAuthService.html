@@ -93,7 +93,9 @@
                                 <a href="#buildTokenRequestPayload" >buildTokenRequestPayload</a>
                             </li>
                             <li>
-                                <a href="#createErrorRedirect" >createErrorRedirect</a>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#findUserAfterProvisioningOrThrow" >findUserAfterProvisioningOrThrow</a>
                             </li>
                             <li>
                                 <a href="#getAuthenticationUrl" >getAuthenticationUrl</a>
@@ -144,7 +146,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/oauth/service/oauth.service.ts:25</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/oauth/service/oauth.service.ts:24</a></div>
                             </td>
                         </tr>
 
@@ -305,8 +307,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="40"
-                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth.service.ts:40</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth.service.ts:39</a></div>
                 </td>
             </tr>
 
@@ -412,8 +414,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="204"
-                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth.service.ts:204</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="216"
+                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth.service.ts:216</a></div>
                 </td>
             </tr>
 
@@ -489,24 +491,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="createErrorRedirect"></a>
+                    <a name="findUserAfterProvisioningOrThrow"></a>
                     <span class="name">
-                        <span ><b>createErrorRedirect</b></span>
-                        <a href="#createErrorRedirect"><span class="icon ion-ios-link"></span></a>
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>findUserAfterProvisioningOrThrow</b></span>
+                        <a href="#findUserAfterProvisioningOrThrow"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>createErrorRedirect(errorCode: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findUserAfterProvisioningOrThrow(externalUserId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, systemId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, officialSchoolNumber?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="222"
-                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth.service.ts:222</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="118"
+                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth.service.ts:118</a></div>
                 </td>
             </tr>
 
@@ -527,7 +532,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>errorCode</td>
+                                    <td>externalUserId</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                     </td>
@@ -538,13 +543,37 @@
 
 
                                 </tr>
+                                <tr>
+                                    <td>systemId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>officialSchoolNumber</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                        <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;UserDO&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -574,8 +603,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="179"
-                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth.service.ts:179</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="191"
+                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth.service.ts:191</a></div>
                 </td>
             </tr>
 
@@ -669,8 +698,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="159"
-                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth.service.ts:159</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="171"
+                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth.service.ts:171</a></div>
                 </td>
             </tr>
 
@@ -762,8 +791,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="195"
-                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth.service.ts:195</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="207"
+                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth.service.ts:207</a></div>
                 </td>
             </tr>
 
@@ -833,8 +862,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="122"
-                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth.service.ts:122</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="134"
+                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth.service.ts:134</a></div>
                 </td>
             </tr>
 
@@ -904,8 +933,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="66"
-                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth.service.ts:66</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="65"
+                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth.service.ts:65</a></div>
                 </td>
             </tr>
 
@@ -1011,8 +1040,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="132"
-                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth.service.ts:132</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="144"
+                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth.service.ts:144</a></div>
                 </td>
             </tr>
 
@@ -1106,8 +1135,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="144"
-                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth.service.ts:144</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="156"
+                            class="link-to-prism">apps/server/src/modules/oauth/service/oauth.service.ts:156</a></div>
                 </td>
             </tr>
 
@@ -1176,7 +1205,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
 import { Inject } from &#x27;@nestjs/common&#x27;;
 import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
-import { OauthConfig, SchoolFeatures } from &#x27;@shared/domain&#x27;;
+import { EntityId, OauthConfig, SchoolFeatures } from &#x27;@shared/domain&#x27;;
 import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
 import { UserDO } from &#x27;@shared/domain/domainobject/user.do&#x27;;
 import { DefaultEncryptionService, IEncryptionService } from &#x27;@shared/infra/encryption&#x27;;
@@ -1189,8 +1218,7 @@ import { SystemDto } from &#x27;@src/modules/system/service&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
 import { MigrationCheckService, UserMigrationService } from &#x27;@src/modules/user-login-migration&#x27;;
 import jwt, { JwtPayload } from &#x27;jsonwebtoken&#x27;;
-import { OAuthSSOError } from &#x27;../error/oauth-sso.error&#x27;;
-import { SSOErrorCode } from &#x27;../error/sso-error-code.enum&#x27;;
+import { OAuthSSOError, SSOErrorCode, UserNotFoundAfterProvisioningLoggableException } from &#x27;../error&#x27;;
 import { OAuthTokenDto } from &#x27;../interface&#x27;;
 import { TokenRequestMapper } from &#x27;../mapper/token-request.mapper&#x27;;
 import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from &#x27;./dto&#x27;;
@@ -1279,10 +1307,7 @@ export class OAuthService {
 			await this.provisioningService.provisionData(data);
 		}
 
-		const user: UserDO | null &#x3D; await this.userService.findByExternalId(externalUserId, systemId);
-		if (!user) {
-			throw new OAuthSSOError(&#x60;Provisioning of user with externalId: ${externalUserId} failed&#x60;, &#x27;sso_user_notfound&#x27;);
-		}
+		const user: UserDO &#x3D; await this.findUserAfterProvisioningOrThrow(externalUserId, systemId, officialSchoolNumber);
 
 		// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
 		const redirect: string &#x3D; await this.getPostLoginRedirectUrl(
@@ -1292,6 +1317,22 @@ export class OAuthService {
 		);
 
 		return { user, redirect };
+	}
+
+	private async findUserAfterProvisioningOrThrow(
+		externalUserId: string,
+		systemId: EntityId,
+		officialSchoolNumber?: string
+	): Promise&lt;UserDO&gt; {
+		const user: UserDO | null &#x3D; await this.userService.findByExternalId(externalUserId, systemId);
+
+		if (!user) {
+			// This can happen, when OAuth2 provisioning is disabled, because the school doesn&#x27;t have the feature.
+			// OAuth2 provisioning is disabled for schools that don&#x27;t have migrated, yet.
+			throw new UserNotFoundAfterProvisioningLoggableException(externalUserId, systemId, officialSchoolNumber);
+		}
+
+		return user;
 	}
 
 	async isOauthProvisioningEnabledForSchool(officialSchoolNumber: string): Promise&lt;boolean&gt; {
@@ -1392,13 +1433,6 @@ export class OAuthService {
 			);
 
 		return tokenRequestPayload;
-	}
-
-	createErrorRedirect(errorCode: string): string {
-		const redirect &#x3D; new URL(&#x27;/login&#x27;, Configuration.get(&#x27;HOST&#x27;) as string);
-		redirect.searchParams.append(&#x27;error&#x27;, errorCode);
-
-		return redirect.toString();
 	}
 }
 </code></pre>

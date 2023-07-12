@@ -44,7 +44,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >OAuthSSOError</li>
+  <li class="breadcrumb-item" >UserNotFoundAfterProvisioningLoggableException</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -68,7 +68,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/oauth/error/oauth-sso.error.ts</code>
+            <code>apps/server/src/modules/oauth/error/user-not-found-after-provisioning.loggable-exception.ts</code>
         </p>
 
 
@@ -77,9 +77,15 @@
                 <h3>Extends</h3>
             </p>
             <p class="comment">
-                    <code>InternalServerErrorException</code>
+                        <code><a href="../classes/OAuthSSOError.html" target="_self" >OAuthSSOError</a></code>
             </p>
 
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
+            </p>
 
 
             <section data-compodoc="block-index">
@@ -114,6 +120,20 @@
                     </td>
                 </tr>
 
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#getLogMessage" >getLogMessage</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
 
 
 
@@ -129,12 +149,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(message?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, errorcode?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+<code>constructor(externalUserId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, systemId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, officialSchoolNumber?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/oauth/error/oauth-sso.error.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/oauth/error/user-not-found-after-provisioning.loggable-exception.ts:5</a></div>
                             </td>
                         </tr>
 
@@ -152,19 +172,31 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>message</td>
+                                                        <td>externalUserId</td>
                                                   
                                                         <td>
                                                                         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                                         </td>
                                                   
                                                     <td>
-                                                            Yes
+                                                            No
                                                     </td>
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>errorcode</td>
+                                                        <td>systemId</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>officialSchoolNumber</td>
                                                   
                                                         <td>
                                                                         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
@@ -212,9 +244,16 @@
                         <i>Default value : </i><code>SSOErrorCode.SSO_OAUTH_LOGIN_FAILED</code>
                     </td>
                 </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../classes/OAuthSSOError.html" target="_self" >OAuthSSOError</a></code>
+</div>
+                            </td>
+                        </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/oauth/error/oauth-sso.error.ts:11</a></div>
+                                <div class="io-line">Defined in         <code><a href="../classes/OAuthSSOError.html#source" target="_self" >OAuthSSOError:11</a></code>
+</div>
                         </td>
                     </tr>
 
@@ -244,9 +283,16 @@
                         <i>Default value : </i><code>&#x27;Error in SSO Oauth Process.&#x27;</code>
                     </td>
                 </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../classes/OAuthSSOError.html" target="_self" >OAuthSSOError</a></code>
+</div>
+                            </td>
+                        </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/oauth/error/oauth-sso.error.ts:9</a></div>
+                                <div class="io-line">Defined in         <code><a href="../classes/OAuthSSOError.html#source" target="_self" >OAuthSSOError:9</a></code>
+</div>
                         </td>
                     </tr>
 
@@ -271,9 +317,16 @@
 
                     </td>
                 </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../classes/OAuthSSOError.html" target="_self" >OAuthSSOError</a></code>
+</div>
+                            </td>
+                        </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/oauth/error/oauth-sso.error.ts:7</a></div>
+                                <div class="io-line">Defined in         <code><a href="../classes/OAuthSSOError.html#source" target="_self" >OAuthSSOError:7</a></code>
+</div>
                         </td>
                     </tr>
 
@@ -298,9 +351,16 @@
 
                     </td>
                 </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../classes/OAuthSSOError.html" target="_self" >OAuthSSOError</a></code>
+</div>
+                            </td>
+                        </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/oauth/error/oauth-sso.error.ts:5</a></div>
+                                <div class="io-line">Defined in         <code><a href="../classes/OAuthSSOError.html#source" target="_self" >OAuthSSOError:5</a></code>
+</div>
                         </td>
                     </tr>
 
@@ -309,7 +369,49 @@
     </table>
 </section>
 
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getLogMessage"></a>
+                    <span class="name">
+                        <span ><b>getLogMessage</b></span>
+                        <a href="#getLogMessage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getLogMessage()</code>
+                </td>
+            </tr>
 
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="17"
+                            class="link-to-prism">apps/server/src/modules/oauth/error/user-not-found-after-provisioning.loggable-exception.ts:17</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/ValidationError.html" target="_self" >LogMessage | ErrorLogMessage | ValidationErrorLogMessage</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
 
 
 
@@ -319,22 +421,32 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
-import { SSOErrorCode } from &#x27;./sso-error-code.enum&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain&#x27;;
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
+import { OAuthSSOError } from &#x27;./oauth-sso.error&#x27;;
 
-export class OAuthSSOError extends InternalServerErrorException {
-	readonly message: string;
+export class UserNotFoundAfterProvisioningLoggableException extends OAuthSSOError implements Loggable {
+	constructor(
+		private readonly externalUserId: string,
+		private readonly systemId: EntityId,
+		private readonly officialSchoolNumber?: string
+	) {
+		super(
+			&#x27;Unable to find user after provisioning. The feature for OAuth2 provisioning might be disabled for this school.&#x27;,
+			&#x27;sso_user_not_found_after_provisioning&#x27;
+		);
+	}
 
-	readonly errorcode: string;
-
-	readonly DEFAULT_MESSAGE: string &#x3D; &#x27;Error in SSO Oauth Process.&#x27;;
-
-	readonly DEFAULT_ERRORCODE: string &#x3D; SSOErrorCode.SSO_OAUTH_LOGIN_FAILED;
-
-	constructor(message?: string, errorcode?: string) {
-		super(message);
-		this.message &#x3D; message || this.DEFAULT_MESSAGE;
-		this.errorcode &#x3D; errorcode || this.DEFAULT_ERRORCODE;
+	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+		return {
+			message: this.message,
+			stack: this.stack,
+			data: {
+				externalUserId: this.externalUserId,
+				systemId: this.systemId,
+				officialSchoolNumber: this.officialSchoolNumber,
+			},
+		};
 	}
 }
 </code></pre>
@@ -375,7 +487,7 @@ export class OAuthSSOError extends InternalServerErrorException {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'OAuthSSOError.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'UserNotFoundAfterProvisioningLoggableException.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 
