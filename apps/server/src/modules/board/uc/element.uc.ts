@@ -47,8 +47,8 @@ export class ElementUc {
 				HttpStatus.UNPROCESSABLE_ENTITY
 			);
 
-		const userIds = submissionContainer.children.flatMap((item) => (item as SubmissionItem).userId);
-		if (userIds.includes(userId)) {
+		const userExists = submissionContainer.children.find((item) => (item as SubmissionItem).userId === userId);
+		if (userExists) {
 			throw new HttpException(
 				'User is not allowed to have multiple submission-items per submission-container-element',
 				HttpStatus.NOT_ACCEPTABLE
