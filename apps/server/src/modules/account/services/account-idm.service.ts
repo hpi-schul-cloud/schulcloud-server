@@ -7,6 +7,7 @@ import { AccountIdmToDtoMapper } from '../mapper';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountDto, AccountSaveDto } from './dto';
 import { AccountLookupService } from './account-lookup.service';
+import { LegacyLogger } from '@src/core/logger';
 
 @Injectable()
 export class AccountServiceIdm extends AbstractAccountService {
@@ -14,7 +15,8 @@ export class AccountServiceIdm extends AbstractAccountService {
 		private readonly identityManager: IdentityManagementService,
 		private readonly accountIdmToDtoMapper: AccountIdmToDtoMapper,
 		private readonly accountLookupService: AccountLookupService,
-		private readonly idmOauthService: IdentityManagementOauthService
+		private readonly idmOauthService: IdentityManagementOauthService,
+		private readonly logger: LegacyLogger
 	) {
 		super();
 	}
@@ -96,6 +98,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 			try {
 				idmId = await this.getIdmAccountId(accountDto.id);
 			} catch {
+				this.logger.log(`Account ID ${accountDto.id} could not be resolved. Creating new account and ID ...`);
 				idmId = undefined;
 			}
 			if (idmId) {
