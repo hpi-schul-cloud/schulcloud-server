@@ -518,8 +518,6 @@ describe('UserLoginMigrationController (API)', () => {
 					targetSystem,
 					sourceSystem,
 					startedAt: new Date(2023, 5, 4),
-					closedAt: new Date(2023, 5, 20),
-					finishedAt: new Date(2055, 5, 4),
 				});
 				school.userLoginMigration = userLoginMigration;
 
