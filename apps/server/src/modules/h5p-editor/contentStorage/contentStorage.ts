@@ -23,14 +23,10 @@ export class ContentStorage implements IContentStorage {
 
 	public async addContent(
 		metadata: IContentMetadata,
-		content: string | undefined,
+		content: unknown,
 		user: IUser,
 		contentId?: ContentId | undefined
 	): Promise<ContentId> {
-		if (!metadata.defaultLanguage) {
-			metadata.defaultLanguage = metadata.language;
-		}
-
 		try {
 			let h5pContent: H5PContent;
 
@@ -95,7 +91,7 @@ export class ContentStorage implements IContentStorage {
 		await this.storageClient.delete([filePath]);
 	}
 
-	public fileExists(contentId: string, filename: string): Promise<boolean> {
+	public async fileExists(contentId: string, filename: string): Promise<boolean> {
 		this.checkFilename(filename);
 
 		const filePath = this.getFilePath(contentId, filename);
@@ -184,6 +180,10 @@ export class ContentStorage implements IContentStorage {
 	}
 
 	public async listFiles(contentId: string, user?: IUser): Promise<string[]> {
+		if (!(await this.contentExists(contentId))) {
+			throw new NotFoundException('Content could not be found');
+		}
+
 		const prefix = this.getContentPath(contentId);
 		const files = await this.storageClient.list(prefix);
 		return files;
@@ -191,14 +191,14 @@ export class ContentStorage implements IContentStorage {
 
 	private async exists(checkPath: string): Promise<boolean> {
 		try {
-			const file = await this.storageClient.get(checkPath);
-			file.data.destroy();
-		} catch (error) {
-			if (error instanceof NotFoundException) {
+			await this.storageClient.head(checkPath);
+		} catch (err) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			if (err.message && err.message === 'NoSuchKey') {
 				return false;
 			}
 
-			throw new InternalServerErrorException(error, 'ContentStorage:exists');
+			throw new InternalServerErrorException(err, 'ContentStorage:exists');
 		}
 
 		return true;
@@ -250,11 +250,6 @@ export class ContentStorage implements IContentStorage {
 		throw new Error(`Filename contains forbidden characters ${filename}`);
 	}
 
-	private async getJsonData(fileStream: Readable): Promise<unknown> {
-		const body = await streamToString(fileStream);
-		return JSON.parse(body) as unknown;
-	}
-
 	private getContentPath(contentId: string): string {
 		if (!contentId) {
 			throw new Error('COULD_NOT_CREATE_PATH');
@@ -264,12 +259,12 @@ export class ContentStorage implements IContentStorage {
 		return path;
 	}
 
-	private getFilePath(contendId: string, filename: string): string {
-		if (!contendId || !filename) {
+	private getFilePath(contentId: string, filename: string): string {
+		if (!contentId || !filename) {
 			throw new Error('COULD_NOT_CREATE_PATH');
 		}
 
-		const path = `${this.getContentPath(contendId)}${filename}`;
+		const path = `${this.getContentPath(contentId)}${filename}`;
 		return path;
 	}
 }
