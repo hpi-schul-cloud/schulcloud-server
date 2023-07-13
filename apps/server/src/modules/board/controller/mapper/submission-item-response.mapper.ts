@@ -22,8 +22,4 @@ export class SubmissionItemResponseMapper {
 
 		return result;
 	}
-
-	canMap(element: SubmissionItem): boolean {
-		return element instanceof SubmissionItem;
-	}
 }
