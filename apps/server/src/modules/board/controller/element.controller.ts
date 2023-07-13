@@ -23,11 +23,11 @@ import {
 	SubmissionItemResponse,
 } from './dto';
 import {
-	ElementContentUpdateBodyParams,
 	FileElementContentBody,
 	RichTextElementContentBody,
 	SubmissionContainerElementContentBody,
-} from './dto/element/element-content-update.body.params';
+	UpdateElementContentBodyParams,
+} from './dto/element/update-element-content.body.params';
 import { SubmissionItemResponseMapper } from './mapper';
 
 @ApiTags('Board Element')
@@ -66,7 +66,7 @@ export class ElementController {
 	@Patch(':contentElementId/content')
 	async updateElement(
 		@Param() urlParams: ContentElementUrlParams,
-		@Body() bodyParams: ElementContentUpdateBodyParams,
+		@Body() bodyParams: UpdateElementContentBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.elementUc.updateElementContent(currentUser.userId, urlParams.contentElementId, bodyParams.data.content);

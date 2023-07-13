@@ -22,7 +22,7 @@ import {
 	CardIdsParams,
 	CardListResponse,
 	CardUrlParams,
-	CreateContentElementBody,
+	CreateContentElementBodyParams,
 	FileElementResponse,
 	MoveCardBodyParams,
 	RenameBodyParams,
@@ -131,7 +131,7 @@ export class CardController {
 	@Post(':cardId/elements')
 	async createElement(
 		@Param() urlParams: CardUrlParams, // TODO add type-property ?
-		@Body() bodyParams: CreateContentElementBody,
+		@Body() bodyParams: CreateContentElementBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<AnyContentElementResponse> {
 		const { type, toPosition } = bodyParams;
