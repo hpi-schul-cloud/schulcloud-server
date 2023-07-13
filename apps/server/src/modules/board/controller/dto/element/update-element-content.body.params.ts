@@ -64,7 +64,7 @@ export class SubmissionContainerElementContentBody extends ElementContentBody {
 
 export type AnyElementContentBody = RichTextElementContentBody | FileContentBody;
 
-export class ElementContentUpdateBodyParams {
+export class UpdateElementContentBodyParams {
 	@ValidateNested()
 	@Type(() => ElementContentBody, {
 		discriminator: {
