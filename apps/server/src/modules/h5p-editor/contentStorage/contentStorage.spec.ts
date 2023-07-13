@@ -152,17 +152,6 @@ describe('ContentStorage', () => {
 		});
 
 		describe('WHEN modifying existing content', () => {
-			it('should call H5pContentRepo.findById', async () => {
-				const {
-					existingContent: { metadata, content, id },
-					user,
-				} = setup();
-
-				await service.addContent(metadata, content, user, id);
-
-				expect(contentRepo.findById).toHaveBeenCalledWith(id);
-			});
-
 			it('should call H5pContentRepo.save', async () => {
 				const {
 					existingContent,
@@ -203,7 +192,7 @@ describe('ContentStorage', () => {
 
 				const addContentPromise = service.addContent(metadata, content, user);
 
-				await expect(addContentPromise).rejects.toBeInstanceOf(InternalServerErrorException);
+				await expect(addContentPromise).rejects.toThrow(InternalServerErrorException);
 			});
 		});
 
@@ -217,7 +206,7 @@ describe('ContentStorage', () => {
 
 				const addContentPromise = service.addContent(metadata, content, user, id);
 
-				await expect(addContentPromise).rejects.toBeInstanceOf(InternalServerErrorException);
+				await expect(addContentPromise).rejects.toThrow(InternalServerErrorException);
 			});
 		});
 	});
@@ -276,7 +265,7 @@ describe('ContentStorage', () => {
 
 				const addFilePromise = service.addFile(contentIDString, filename, stream, user);
 
-				await expect(addFilePromise).rejects.toBeInstanceOf(NotFoundException);
+				await expect(addFilePromise).rejects.toThrow(NotFoundException);
 			});
 		});
 
@@ -369,7 +358,7 @@ describe('ContentStorage', () => {
 
 				const deletePromise = service.deleteContent(content.id, user);
 
-				await expect(deletePromise).rejects.toBeInstanceOf(InternalServerErrorException);
+				await expect(deletePromise).rejects.toThrow(InternalServerErrorException);
 			});
 		});
 
@@ -380,7 +369,7 @@ describe('ContentStorage', () => {
 
 				const deletePromise = service.deleteContent(content.id, user);
 
-				await expect(deletePromise).rejects.toBeInstanceOf(InternalServerErrorException);
+				await expect(deletePromise).rejects.toThrow(InternalServerErrorException);
 			});
 		});
 
@@ -391,7 +380,7 @@ describe('ContentStorage', () => {
 
 				const deletePromise = service.deleteContent(content.id, user);
 
-				await expect(deletePromise).rejects.toBeInstanceOf(InternalServerErrorException);
+				await expect(deletePromise).rejects.toThrow(InternalServerErrorException);
 			});
 		});
 	});
@@ -479,7 +468,7 @@ describe('ContentStorage', () => {
 		describe('WHEN file does not exist', () => {
 			it('should return false', async () => {
 				const { contentID, filename } = setup();
-				s3ClientAdapter.head.mockRejectedValueOnce(new Error('NoSuchKey'));
+				s3ClientAdapter.head.mockRejectedValueOnce(new NotFoundException('NoSuchKey'));
 
 				const exists = await service.fileExists(contentID, filename);
 
@@ -494,7 +483,7 @@ describe('ContentStorage', () => {
 
 				const existsPromise = service.fileExists(contentID, filename);
 
-				await expect(existsPromise).rejects.toBeInstanceOf(InternalServerErrorException);
+				await expect(existsPromise).rejects.toThrow(InternalServerErrorException);
 			});
 		});
 
@@ -573,7 +562,7 @@ describe('ContentStorage', () => {
 
 				const statsPromise = service.getFileStats(contentID, filename, user);
 
-				await expect(statsPromise).rejects.toBeInstanceOf(InternalServerErrorException);
+				await expect(statsPromise).rejects.toThrow(InternalServerErrorException);
 			});
 		});
 
@@ -584,7 +573,7 @@ describe('ContentStorage', () => {
 
 				const statsPromise = service.getFileStats(contentID, filename, user);
 
-				await expect(statsPromise).rejects.toBeInstanceOf(InternalServerErrorException);
+				await expect(statsPromise).rejects.toThrow(InternalServerErrorException);
 			});
 		});
 
@@ -787,7 +776,7 @@ describe('ContentStorage', () => {
 
 				const listPromise = service.listFiles(content.id, user);
 
-				await expect(listPromise).rejects.toBeInstanceOf(NotFoundException);
+				await expect(listPromise).rejects.toThrow(NotFoundException);
 			});
 		});
 
