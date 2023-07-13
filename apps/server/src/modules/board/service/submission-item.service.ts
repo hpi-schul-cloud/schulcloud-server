@@ -33,8 +33,4 @@ export class SubmissionItemService {
 
 		return submissionItem;
 	}
-
-	async delete(submission: SubmissionItem): Promise<void> {
-		await this.boardDoService.deleteWithDescendants(submission);
-	}
 }
