@@ -1,9 +1,8 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { H5PAjaxEndpoint, H5pError } from '@lumieducation/h5p-server';
+import { H5PAjaxEndpoint, H5PEditor, H5PPlayer, H5pError } from '@lumieducation/h5p-server';
 import { HttpException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
-import { H5PEditorTestModule } from '../h5p-editor-test.module';
 import { H5PEditorUc } from './h5p.uc';
 
 describe('H5P Ajax', () => {
@@ -13,11 +12,22 @@ describe('H5P Ajax', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [H5PEditorTestModule],
-		})
-			.overrideProvider(H5PAjaxEndpoint)
-			.useValue(createMock<H5PAjaxEndpoint>())
-			.compile();
+			providers: [
+				H5PEditorUc,
+				{
+					provide: H5PEditor,
+					useValue: createMock<H5PEditor>(),
+				},
+				{
+					provide: H5PPlayer,
+					useValue: createMock<H5PPlayer>(),
+				},
+				{
+					provide: H5PAjaxEndpoint,
+					useValue: createMock<H5PAjaxEndpoint>(),
+				},
+			],
+		}).compile();
 
 		uc = module.get(H5PEditorUc);
 		ajaxEndpoint = module.get(H5PAjaxEndpoint);

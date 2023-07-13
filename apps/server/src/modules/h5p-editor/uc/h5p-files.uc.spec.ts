@@ -4,13 +4,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { Request } from 'express';
 import { Readable } from 'stream';
-
-import { H5PEditorTestModule } from '../h5p-editor-test.module';
 import { H5PEditorUc } from './h5p.uc';
-
 import { ContentStorage } from '../contentStorage/contentStorage';
 import { LibraryStorage } from '../libraryStorage/libraryStorage';
 import { TemporaryFileStorage } from '../temporary-file-storage/temporary-file-storage';
+import { H5PAjaxEndpointService, H5PEditorService, H5PPlayerService } from '../service';
 
 describe('H5P Files', () => {
 	let module: TestingModule;
@@ -21,15 +19,25 @@ describe('H5P Files', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [H5PEditorTestModule],
-		})
-			.overrideProvider(ContentStorage)
-			.useValue(createMock<ContentStorage>())
-			.overrideProvider(LibraryStorage)
-			.useValue(createMock<LibraryStorage>())
-			.overrideProvider(TemporaryFileStorage)
-			.useValue(createMock<TemporaryFileStorage>())
-			.compile();
+			providers: [
+				H5PEditorUc,
+				H5PEditorService,
+				H5PPlayerService,
+				H5PAjaxEndpointService,
+				{
+					provide: ContentStorage,
+					useValue: createMock<ContentStorage>(),
+				},
+				{
+					provide: LibraryStorage,
+					useValue: createMock<LibraryStorage>(),
+				},
+				{
+					provide: TemporaryFileStorage,
+					useValue: createMock<TemporaryFileStorage>(),
+				},
+			],
+		}).compile();
 
 		uc = module.get(H5PEditorUc);
 		contentStorage = module.get(ContentStorage);

@@ -1,9 +1,9 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { H5PEditor, H5PPlayer } from '@lumieducation/h5p-server';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
-import { H5PPlayer } from '@lumieducation/h5p-server';
-import { H5PEditorTestModule } from '../h5p-editor-test.module';
+import { H5PAjaxEndpointService } from '../service';
 import { H5PEditorUc } from './h5p.uc';
 
 const setup = () => {
@@ -27,11 +27,19 @@ describe('get H5P player', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [H5PEditorTestModule],
-		})
-			.overrideProvider(H5PPlayer)
-			.useValue(createMock<H5PPlayer>())
-			.compile();
+			providers: [
+				H5PEditorUc,
+				H5PAjaxEndpointService,
+				{
+					provide: H5PEditor,
+					useValue: createMock<H5PEditor>(),
+				},
+				{
+					provide: H5PPlayer,
+					useValue: createMock<H5PPlayer>(),
+				},
+			],
+		}).compile();
 
 		uc = module.get(H5PEditorUc);
 		h5pPlayer = module.get(H5PPlayer);
