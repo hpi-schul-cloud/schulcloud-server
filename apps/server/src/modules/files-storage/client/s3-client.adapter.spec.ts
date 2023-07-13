@@ -438,16 +438,30 @@ describe('S3ClientAdapter', () => {
 			return { pathToFile };
 		};
 
-		it('should call send() of client with head object', async () => {
-			const { pathToFile } = setup();
+		describe('when file exists', () => {
+			it('should call send() of client with head object', async () => {
+				const { pathToFile } = setup();
 
-			await service.head(pathToFile);
+				await service.head(pathToFile);
 
-			expect(client.send).toBeCalledWith(
-				expect.objectContaining({
-					input: { Bucket: 'test-bucket', Key: pathToFile },
-				})
-			);
+				expect(client.send).toBeCalledWith(
+					expect.objectContaining({
+						input: { Bucket: 'test-bucket', Key: pathToFile },
+					})
+				);
+			});
+		});
+
+		describe('when file does not exist', () => {
+			it('should throw NotFoundException', async () => {
+				const { pathToFile } = setup();
+				// @ts-expect-error mock expects "never"
+				client.send.mockRejectedValueOnce(new Error('NoSuchKey'));
+
+				const headPromise = service.head(pathToFile);
+
+				await expect(headPromise).rejects.toBeInstanceOf(NotFoundException);
+			});
 		});
 	});
 
@@ -475,7 +489,7 @@ describe('S3ClientAdapter', () => {
 			// @ts-expect-error should run into error
 			client.send.mockResolvedValue({
 				IsTruncated: false,
-				Contents: responseContents,
+				Contents: responseContents.slice(0, 500),
 			});
 
 			const resultKeys = await service.list(prefix, 500);
@@ -526,7 +540,6 @@ describe('S3ClientAdapter', () => {
 						Bucket: 'test-bucket',
 						Prefix: prefix,
 						ContinuationToken: undefined,
-						MaxKeys: 1000,
 					},
 				})
 			);
@@ -538,7 +551,6 @@ describe('S3ClientAdapter', () => {
 						Bucket: 'test-bucket',
 						Prefix: prefix,
 						ContinuationToken: '1',
-						MaxKeys: 1000,
 					},
 				})
 			);
@@ -550,7 +562,6 @@ describe('S3ClientAdapter', () => {
 						Bucket: 'test-bucket',
 						Prefix: prefix,
 						ContinuationToken: '2',
-						MaxKeys: 1000,
 					},
 				})
 			);

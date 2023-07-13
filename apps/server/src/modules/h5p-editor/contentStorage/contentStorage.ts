@@ -193,8 +193,7 @@ export class ContentStorage implements IContentStorage {
 		try {
 			await this.storageClient.head(checkPath);
 		} catch (err) {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (err.message && err.message === 'NoSuchKey') {
+			if (err instanceof NotFoundException) {
 				return false;
 			}
 

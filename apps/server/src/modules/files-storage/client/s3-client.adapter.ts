@@ -220,14 +220,25 @@ export class S3ClientAdapter implements IStorageClient {
 	}
 
 	public async head(path: string) {
-		this.logger.log({ action: 'head', params: { path, bucket: this.config.bucket } });
+		try {
+			this.logger.log({ action: 'head', params: { path, bucket: this.config.bucket } });
 
-		const req = new HeadObjectCommand({
-			Bucket: this.config.bucket,
-			Key: path,
-		});
+			const req = new HeadObjectCommand({
+				Bucket: this.config.bucket,
+				Key: path,
+			});
 
-		return this.client.send(req);
+			const headResponse = await this.client.send(req);
+
+			return headResponse;
+		} catch (err) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			if (err.message && err.message === 'NoSuchKey') {
+				this.logger.log(`could not find the file for head with id ${path}`);
+				throw new NotFoundException('NoSuchKey');
+			}
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:head');
+		}
 	}
 
 	/* istanbul ignore next */
