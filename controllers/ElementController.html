@@ -369,7 +369,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateElement(urlParams: <a href="../classes/ContentElementUrlParams.html" target="_self">ContentElementUrlParams</a>, bodyParams: <a href="../classes/ElementContentUpdateBodyParams.html" target="_self">ElementContentUpdateBodyParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                    <code>updateElement(urlParams: <a href="../classes/ContentElementUrlParams.html" target="_self">ContentElementUrlParams</a>, bodyParams: <a href="../classes/UpdateElementContentBodyParams.html" target="_self">UpdateElementContentBodyParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
                 </td>
             </tr>
 
@@ -419,7 +419,7 @@
                                 <tr>
                                     <td>bodyParams</td>
                                     <td>
-                                                <code><a href="../classes/ElementContentUpdateBodyParams.html" target="_self" >ElementContentUpdateBodyParams</a></code>
+                                                <code><a href="../classes/UpdateElementContentBodyParams.html" target="_self" >UpdateElementContentBodyParams</a></code>
                                     </td>
 
                                     <td>
@@ -479,11 +479,11 @@ import { CardUc } from &#x27;../uc&#x27;;
 import { ElementUc } from &#x27;../uc/element.uc&#x27;;
 import { ContentElementUrlParams, MoveContentElementBody } from &#x27;./dto&#x27;;
 import {
-	ElementContentUpdateBodyParams,
+	UpdateElementContentBodyParams,
 	FileElementContentBody,
 	RichTextElementContentBody,
 	SubmissionContainerElementContentBody,
-} from &#x27;./dto/element/element-content-update.body.params&#x27;;
+} from &#x27;./dto/element/update-element-content.body.params&#x27;;
 
 @ApiTags(&#x27;Board Element&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
@@ -521,7 +521,7 @@ export class ElementController {
 	@Patch(&#x27;:contentElementId/content&#x27;)
 	async updateElement(
 		@Param() urlParams: ContentElementUrlParams,
-		@Body() bodyParams: ElementContentUpdateBodyParams,
+		@Body() bodyParams: UpdateElementContentBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise&lt;void&gt; {
 		await this.elementUc.updateElementContent(currentUser.userId, urlParams.contentElementId, bodyParams.data.content);

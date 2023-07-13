@@ -192,7 +192,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createElement(urlParams: <a href="../classes/CardUrlParams.html" target="_self">CardUrlParams</a>, bodyParams: <a href="../classes/CreateContentElementBody.html" target="_self">CreateContentElementBody</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                    <code>createElement(urlParams: <a href="../classes/CardUrlParams.html" target="_self">CardUrlParams</a>, bodyParams: <a href="../classes/CreateContentElementBodyParams.html" target="_self">CreateContentElementBodyParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
                 </td>
             </tr>
 
@@ -242,7 +242,7 @@
                                 <tr>
                                     <td>bodyParams</td>
                                     <td>
-                                                <code><a href="../classes/CreateContentElementBody.html" target="_self" >CreateContentElementBody</a></code>
+                                                <code><a href="../classes/CreateContentElementBodyParams.html" target="_self" >CreateContentElementBodyParams</a></code>
                                     </td>
 
                                     <td>
@@ -826,7 +826,7 @@ import {
 	CardIdsParams,
 	CardListResponse,
 	CardUrlParams,
-	CreateContentElementBody,
+	CreateContentElementBodyParams,
 	FileElementResponse,
 	MoveCardBodyParams,
 	RenameBodyParams,
@@ -930,7 +930,7 @@ export class CardController {
 	@Post(&#x27;:cardId/elements&#x27;)
 	async createElement(
 		@Param() urlParams: CardUrlParams, // TODO add type-property ?
-		@Body() bodyParams: CreateContentElementBody,
+		@Body() bodyParams: CreateContentElementBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise&lt;AnyContentElementResponse&gt; {
 		const { type, toPosition } &#x3D; bodyParams;

@@ -2857,7 +2857,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/CreateCardBodyParams.html" data-type="entity-link" >CreateCardBodyParams</a>
                             </li>
                             <li class="link">
-                                <a href="classes/CreateContentElementBody.html" data-type="entity-link" >CreateContentElementBody</a>
+                                <a href="classes/CreateContentElementBodyParams.html" data-type="entity-link" >CreateContentElementBodyParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/CreateNewsParams.html" data-type="entity-link" >CreateNewsParams</a>
@@ -2930,9 +2930,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/ElementContentBody.html" data-type="entity-link" >ElementContentBody</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/ElementContentUpdateBodyParams.html" data-type="entity-link" >ElementContentUpdateBodyParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/EntityNotFoundError.html" data-type="entity-link" >EntityNotFoundError</a>
@@ -3887,6 +3884,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/UnauthorizedLoggableException.html" data-type="entity-link" >UnauthorizedLoggableException</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/UpdateElementContentBodyParams.html" data-type="entity-link" >UpdateElementContentBodyParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/UpdateFlagParams.html" data-type="entity-link" >UpdateFlagParams</a>
