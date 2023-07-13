@@ -6,6 +6,7 @@ import {
 	richTextElementFactory,
 	setupEntities,
 	submissionContainerElementFactory,
+	submissionItemFactory,
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
@@ -136,7 +137,9 @@ describe(ElementUc.name, () => {
 			it('should throw', async () => {
 				const { fileElement, user } = setup();
 
-				await expect(uc.createSubmissionItem(user.id, fileElement.id)).rejects.toThrow();
+				await expect(uc.createSubmissionItem(user.id, fileElement.id)).rejects.toThrowError(
+					'Cannot create submission-item for non submission-container-element'
+				);
 			});
 		});
 
@@ -147,7 +150,7 @@ describe(ElementUc.name, () => {
 
 				const submissionContainer = submissionContainerElementFactory.build({ children: [fileElement] });
 
-				const elementSpy = elementService.findById.mockResolvedValue(fileElement);
+				const elementSpy = elementService.findById.mockResolvedValue(submissionContainer);
 
 				return { submissionContainer, fileElement, user, elementSpy };
 			};
@@ -155,7 +158,30 @@ describe(ElementUc.name, () => {
 			it('should throw', async () => {
 				const { submissionContainer, user } = setup();
 
-				await expect(uc.createSubmissionItem(user.id, submissionContainer.id)).rejects.toThrow();
+				await expect(uc.createSubmissionItem(user.id, submissionContainer.id)).rejects.toThrowError(
+					'Children of submission-container-element must be of type submission-item'
+				);
+			});
+		});
+
+		describe('with user already has a submission-item in the submission-container-element set', () => {
+			const setup = () => {
+				const user = userFactory.build();
+
+				const submissionItem = submissionItemFactory.build({ userId: user.id });
+				const submissionContainer = submissionContainerElementFactory.build({ children: [submissionItem] });
+
+				const elementSpy = elementService.findById.mockResolvedValue(submissionContainer);
+
+				return { submissionContainer, submissionItem, user, elementSpy };
+			};
+
+			it('should throw', async () => {
+				const { submissionContainer, user } = setup();
+
+				await expect(uc.createSubmissionItem(user.id, submissionContainer.id)).rejects.toThrowError(
+					'User is not allowed to have multiple submission-items per submission-container-element'
+				);
 			});
 		});
 	});
