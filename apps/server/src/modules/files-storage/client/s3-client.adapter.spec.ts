@@ -455,7 +455,7 @@ describe('S3ClientAdapter', () => {
 		describe('when file does not exist', () => {
 			it('should throw NotFoundException', async () => {
 				const { pathToFile } = setup();
-				// @ts-expect-error mock expects "never"
+				// @ts-expect-error ignore parameter type of mock function
 				client.send.mockRejectedValueOnce(new Error('NoSuchKey'));
 
 				const headPromise = service.head(pathToFile);
@@ -486,7 +486,7 @@ describe('S3ClientAdapter', () => {
 		it('should truncate result when max is given', async () => {
 			const { prefix, keys, responseContents } = setup();
 
-			// @ts-expect-error should run into error
+			// @ts-expect-error ignore parameter type of mock function
 			client.send.mockResolvedValue({
 				IsTruncated: false,
 				Contents: responseContents.slice(0, 500),
@@ -512,19 +512,19 @@ describe('S3ClientAdapter', () => {
 			const { prefix, responseContents, keys } = setup();
 
 			client.send
-				// @ts-expect-error should run into error
+				// @ts-expect-error ignore parameter type of mock function
 				.mockResolvedValueOnce({
 					IsTruncated: true,
 					NextContinuationToken: '1',
 					Contents: responseContents.slice(0, 1000),
 				})
-				// @ts-expect-error should run into error
+				// @ts-expect-error ignore parameter type of mock function
 				.mockResolvedValueOnce({
 					IsTruncated: true,
 					NextContinuationToken: '2',
 					Contents: responseContents.slice(1000, 2000),
 				})
-				// @ts-expect-error should run into error
+				// @ts-expect-error ignore parameter type of mock function
 				.mockResolvedValueOnce({
 					Contents: responseContents.slice(2000),
 				});
@@ -570,7 +570,7 @@ describe('S3ClientAdapter', () => {
 		it('should throw error if client rejects with an error', async () => {
 			const { prefix } = setup();
 
-			// @ts-expect-error should run into error
+			// @ts-expect-error ignore parameter type of mock function
 			client.send.mockRejectedValue(new Error());
 
 			const listPromise = service.list(prefix);
