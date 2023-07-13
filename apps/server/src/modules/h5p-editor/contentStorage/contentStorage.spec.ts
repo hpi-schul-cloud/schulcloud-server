@@ -847,26 +847,26 @@ describe('ContentStorage', () => {
 			return { libraryName, findByIdMock, contents, expectedUsage };
 		};
 
-			it('should return the number of times the library is used', async () => {
-				const { libraryName, contents, findByIdMock, expectedUsage } = setup();
-				contentRepo.findById.mockImplementation(findByIdMock); // Will be called multiple times
-				contentRepo.getAllContents.mockResolvedValueOnce(contents);
+		it('should return the number of times the library is used', async () => {
+			const { libraryName, contents, findByIdMock, expectedUsage } = setup();
+			contentRepo.findById.mockImplementation(findByIdMock); // Will be called multiple times
+			contentRepo.getAllContents.mockResolvedValueOnce(contents);
 
-				const test = await service.getUsage(libraryName);
+			const test = await service.getUsage(libraryName);
 
-				expect(test).toEqual(expectedUsage);
-			});
+			expect(test).toEqual(expectedUsage);
+		});
 	});
 
 	describe('getUserPermissions (currently unused)', () => {
-			it('should return array of permissions', async () => {
-				const user = helpers.createUser();
+		it('should return array of permissions', async () => {
+			const user = helpers.createUser();
 
-				// This method is currently unused and will be changed later
-				const permissions = await service.getUserPermissions('id', user);
+			// This method is currently unused and will be changed later
+			const permissions = await service.getUserPermissions('id', user);
 
-				expect(permissions.length).toBeGreaterThan(0);
-			});
+			expect(permissions.length).toBeGreaterThan(0);
+		});
 	});
 
 	describe('private methods', () => {
