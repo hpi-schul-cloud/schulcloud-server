@@ -1,7 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardDoAuthorizable, InputFormat } from '@shared/domain';
-import { fileElementFactory, richTextElementFactory, setupEntities, userFactory } from '@shared/testing';
+import {
+	fileElementFactory,
+	richTextElementFactory,
+	setupEntities,
+	submissionContainerElementFactory,
+	userFactory,
+} from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { ObjectId } from 'bson';
@@ -112,6 +118,48 @@ describe(ElementUc.name, () => {
 				await uc.updateElementContent(user.id, fileElement.id, content);
 
 				expect(elementService.update).toHaveBeenCalledWith(fileElement, content);
+			});
+		});
+	});
+
+	describe('createSubmissionItem', () => {
+		describe('with non SubmissionContainerElement parent', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const fileElement = fileElementFactory.build();
+
+				const elementSpy = elementService.findById.mockResolvedValue(fileElement);
+
+				return { fileElement, user, elementSpy };
+			};
+
+			it('should throw', () => {
+				const { fileElement, user } = setup();
+
+				expect(async () => {
+					await uc.createSubmissionItem(user.id, fileElement.id);
+				}).toThrow();
+			});
+		});
+
+		describe('with non SubmissionContainerElement containing non SubmissionItem children', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const fileElement = fileElementFactory.build();
+
+				const submissionContainer = submissionContainerElementFactory.build({ children: [fileElement] });
+
+				const elementSpy = elementService.findById.mockResolvedValue(fileElement);
+
+				return { submissionContainer, fileElement, user, elementSpy };
+			};
+
+			it('should throw', () => {
+				const { submissionContainer, user } = setup();
+
+				expect(async () => {
+					await uc.createSubmissionItem(user.id, submissionContainer.id);
+				}).toThrow();
 			});
 		});
 	});
