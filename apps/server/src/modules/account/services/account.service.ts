@@ -70,8 +70,9 @@ export class AccountService extends AbstractAccountService {
 		};
 		const idmAccount = await this.executeIdmMethod(async () => {
 			this.logger.debug(`Saving account with accountID ${ret.id} ...`);
-			await this.accountIdm.save(newAccount);
+			const account = await this.accountIdm.save(newAccount);
 			this.logger.debug(`Saved account with accountID ${ret.id}`);
+			return account;
 		});
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
@@ -114,8 +115,9 @@ export class AccountService extends AbstractAccountService {
 		const ret = await this.accountDb.updateUsername(accountId, username);
 		const idmAccount = await this.executeIdmMethod(async () => {
 			this.logger.debug(`Updating username for account with accountID ${accountId} ...`);
-			await this.accountIdm.updateUsername(accountId, username);
+			const account = await this.accountIdm.updateUsername(accountId, username);
 			this.logger.debug(`Updated username for account with accountID ${accountId}`);
+			return account;
 		});
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
@@ -124,8 +126,9 @@ export class AccountService extends AbstractAccountService {
 		const ret = await this.accountDb.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
 		const idmAccount = await this.executeIdmMethod(async () => {
 			this.logger.debug(`Updating last tried failed login for account with accountID ${accountId} ...`);
-			await this.accountIdm.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
+			const account = await this.accountIdm.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
 			this.logger.debug(`Updated last tried failed login for account with accountID ${accountId}`);
+			return account;
 		});
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
@@ -134,8 +137,9 @@ export class AccountService extends AbstractAccountService {
 		const ret = await this.accountDb.updatePassword(accountId, password);
 		const idmAccount = await this.executeIdmMethod(async () => {
 			this.logger.debug(`Updating password for account with accountID ${accountId} ...`);
-			await this.accountIdm.updatePassword(accountId, password);
+			const account = await this.accountIdm.updatePassword(accountId, password);
 			this.logger.debug(`Updated password for account with accountID ${accountId}`);
+			return account;
 		});
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
