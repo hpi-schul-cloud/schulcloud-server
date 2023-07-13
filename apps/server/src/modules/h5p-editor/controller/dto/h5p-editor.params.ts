@@ -11,8 +11,7 @@ export class GetH5PContentParams {
 
 	@ApiProperty()
 	@IsMongoId()
-	@IsOptional()
-	contentId?: string;
+	contentId!: string;
 }
 
 export class PostH5PContentParams {
