@@ -3,15 +3,13 @@ import { EntityId } from '@shared/domain';
 import { AnyBoardDo } from '../../domainobject';
 import { BoardNode, BoardNodeProps } from './boardnode.entity';
 import { BoardDoBuilder, BoardNodeType } from './types';
-// import { User } from '../user.entity';
-// import {ObjectId} from "@mikro-orm/mongodb";
 
 @Entity({ discriminatorValue: BoardNodeType.SUBMISSION_ITEM })
 export class SubmissionItemNode extends BoardNode {
 	@Property()
 	completed!: boolean;
 
-	// @Index() // NOTE: if enabled tests in management fails with ERROR [ExceptionsHandler] Failed to create indexes
+	// @Index() // TODO if enabled tests in management fails with ERROR [ExceptionsHandler] Failed to create indexes
 	@Property({
 		comment: 'The user whos submission this is. Usually the student submitting the work.',
 	})
