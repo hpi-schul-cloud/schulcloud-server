@@ -133,12 +133,10 @@ describe(ElementUc.name, () => {
 				return { fileElement, user, elementSpy };
 			};
 
-			it('should throw', () => {
+			it('should throw', async () => {
 				const { fileElement, user } = setup();
 
-				expect(async () => {
-					await uc.createSubmissionItem(user.id, fileElement.id);
-				}).toThrow();
+				await expect(uc.createSubmissionItem(user.id, fileElement.id)).rejects.toThrow();
 			});
 		});
 
@@ -154,12 +152,10 @@ describe(ElementUc.name, () => {
 				return { submissionContainer, fileElement, user, elementSpy };
 			};
 
-			it('should throw', () => {
+			it('should throw', async () => {
 				const { submissionContainer, user } = setup();
 
-				expect(async () => {
-					await uc.createSubmissionItem(user.id, submissionContainer.id);
-				}).toThrow();
+				await expect(uc.createSubmissionItem(user.id, submissionContainer.id)).rejects.toThrow();
 			});
 		});
 	});
