@@ -99,9 +99,6 @@ export class ElementController {
 		@Body() bodyParams: CreateSubmissionItemBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<SubmissionItemResponse> {
-		// const { type } = bodyParams;
-		// TODO current user as userId
-		// TODO create body has completed data or not
 		const submission = await this.elementUc.createSubmissionItem(currentUser.userId, urlParams.contentElementId);
 		submission.userId = currentUser.userId;
 		submission.completed = false;

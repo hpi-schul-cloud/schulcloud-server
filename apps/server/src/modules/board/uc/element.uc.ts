@@ -57,7 +57,7 @@ export class ElementUc {
 
 		await this.checkPermission(userId, submissionContainer, Action.write);
 
-		const subElement = await this.submissionItemService.create(userId, submissionContainer);
+		const subElement = await this.submissionItemService.create(userId, submissionContainer, { completed: false });
 
 		return subElement;
 	}

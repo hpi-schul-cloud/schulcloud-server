@@ -18,12 +18,16 @@ export class SubmissionItemService {
 		return element;
 	}
 
-	async create(userId: EntityId, submissionContainer: SubmissionContainerElement): Promise<SubmissionItem> {
+	async create(
+		userId: EntityId,
+		submissionContainer: SubmissionContainerElement,
+		payload: { completed: boolean }
+	): Promise<SubmissionItem> {
 		const submissionItem = new SubmissionItem({
 			id: new ObjectId().toHexString(),
 			createdAt: new Date(),
 			updatedAt: new Date(),
-			completed: false,
+			completed: payload.completed,
 			userId,
 		});
 
