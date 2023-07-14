@@ -1,4 +1,4 @@
-import { EntityName } from '@mikro-orm/core';
+import { EntityData, EntityName } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId, IPseudonymProperties, Pseudonym } from '@shared/domain';
@@ -37,6 +37,15 @@ export class PseudonymsRepo extends BaseDORepo<PseudonymDO, Pseudonym, IPseudony
 		const domainObject: PseudonymDO = this.mapEntityToDO(entity);
 
 		return domainObject;
+	}
+
+	protected entityData(entity: Pseudonym): EntityData<Pseudonym> {
+		return {
+			id: entity.id,
+			pseudonym: entity.pseudonym,
+			toolId: entity.toolId,
+			userId: entity.userId,
+		};
 	}
 
 	protected mapEntityToDO(entity: Pseudonym): PseudonymDO {
