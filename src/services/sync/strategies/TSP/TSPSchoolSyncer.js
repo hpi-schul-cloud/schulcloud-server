@@ -14,7 +14,6 @@ const { switchSchool, getInvalidatedUuid } = require('./SchoolChange');
 const SYNCER_TARGET = 'tsp-school';
 const schoolLimit = pLimit(Configuration.get('TSP_SCHOOL_SYNCER__SCHOOL_LIMIT'));
 const limit = pLimit(Configuration.get('TSP_SCHOOL_SYNCER__STUDENTS_TEACHERS_CLASSES_LIMIT'));
-const lastSyncedAtEnabled = Configuration.get('FEATURE_SYNC_LAST_SYNCED_AT_ENABLED') === true;
 
 /**
  * Used to sync one or more schools from the TSP to the Schul-Cloud instance.
@@ -52,6 +51,9 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 */
 	constructor(app, stats, logger, config) {
 		super(app, stats, logger);
+
+		this.lastSyncedAtEnabled = Configuration.get('FEATURE_SYNC_LAST_SYNCED_AT_ENABLED') === true;
+
 		this.stats = Object.assign(this.stats, {
 			users: {
 				teachers: {
@@ -69,7 +71,6 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			},
 		});
 		this.config = this.normalizeConfig(config);
-
 		this.api = new TspApi();
 
 		// caches for currentYear and federalState as they need async initialization
@@ -371,7 +372,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			// If the feature flag is enabled, add the last synced at field
 			// to the user options (for the updated user document) to set
 			// the last sync date value to the current date.
-			if (lastSyncedAtEnabled) {
+			if (this.lastSyncedAtEnabled) {
 				userUpdateObject.lastSyncedAt = new Date();
 			}
 
@@ -428,7 +429,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			// If the feature flag is enabled, add the last synced at field
 			// to the user options (for the newly created user document) to
 			// set the last sync date value to the current date.
-			if (lastSyncedAtEnabled) {
+			if (this.lastSyncedAtEnabled) {
 				userOptions.lastSyncedAt = new Date();
 			}
 
@@ -503,7 +504,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			// If the feature flag is enabled, add the last synced at field
 			// to the user options (for the updated user document) to set
 			// the last sync date value to the current date.
-			if (lastSyncedAtEnabled) {
+			if (this.lastSyncedAtEnabled) {
 				userUpdateObject.lastSyncedAt = new Date();
 			}
 
@@ -561,7 +562,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			// If the feature flag is enabled, add the last synced at field
 			// to the user options (for the newly created user document) to
 			// set the last sync date value to the current date.
-			if (lastSyncedAtEnabled) {
+			if (this.lastSyncedAtEnabled) {
 				userOptions.lastSyncedAt = new Date();
 			}
 
