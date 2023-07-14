@@ -2,7 +2,6 @@ import { EntityManager } from '@mikro-orm/core';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, Permission, RoleName, User } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
 import { accountFactory, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import {
 	AccountByIdBodyParams,
@@ -11,6 +10,8 @@ import {
 	PatchMyAccountParams,
 	PatchMyPasswordParams,
 } from '@src/modules/account/controller/dto';
+import { ICurrentUser } from '@src/modules/authentication';
+// HINT: general todo to not get JwtAuthGuard from within the module
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
@@ -38,6 +39,7 @@ describe('Account Controller (API)', () => {
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
 
 	const setup = async () => {
+		// TODO: revisit test structure. setup for each functional situation, return values instead of global variables
 		const school = schoolFactory.buildWithId();
 
 		const adminRoles = roleFactory.build({
@@ -69,12 +71,15 @@ describe('Account Controller (API)', () => {
 		em.persist([adminUser, teacherUser, studentUser, superheroUser]);
 		em.persist([adminAccount, teacherAccount, studentAccount, superheroAccount]);
 		await em.flush();
+
+		// TODO: return {adminAccount, teacherAccount, ...}
 	};
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		})
+			// TODO: We need to remove this old hack, use the new api helper insteads
 			.overrideGuard(JwtAuthGuard)
 			.useValue({
 				canActivate(context: ExecutionContext) {

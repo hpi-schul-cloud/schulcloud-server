@@ -2,6 +2,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Counted, EntityId } from '@shared/domain';
 import { AccountDto, AccountSaveDto } from './dto';
 
+// TODO: split functions which are only needed for feathers
+
 export abstract class AbstractAccountService {
 	abstract findById(id: EntityId): Promise<AccountDto>;
 
@@ -11,6 +13,7 @@ export abstract class AbstractAccountService {
 
 	abstract findByUserIdOrFail(userId: EntityId): Promise<AccountDto>;
 
+	// HINT: it would be preferable to use entityId here. Needs to be checked if this is blocked by lecacy code
 	abstract findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<AccountDto | null>;
 
 	abstract save(accountDto: AccountSaveDto): Promise<AccountDto>;

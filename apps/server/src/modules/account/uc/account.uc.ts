@@ -8,6 +8,7 @@ import {
 } from '@shared/common/error';
 import { Account, EntityId, Permission, PermissionService, Role, RoleName, School, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
+// TODO: module internals should be imported with relative paths
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 
@@ -42,6 +43,14 @@ export class AccountUc {
 		private readonly configService: ConfigService<IAccountConfig, true>
 	) {}
 
+	/* HINT: there is a lot of logic here that would belong into service layer,
+	but since that wasnt decided when this code was written this work is not prioritised right now
+
+	Also this is mostly directly ported feathers code, that needs a general refactoring/rewrite pass
+
+	also it should use the new authorisation service
+	*/
+
 	/**
 	 * This method processes the request on the GET account search endpoint from the account controller.
 	 *
@@ -55,7 +64,9 @@ export class AccountUc {
 		const limit = query.limit ?? 10;
 		const executingUser = await this.userRepo.findById(currentUser.userId, true);
 
+		// HINT: this can be extracted
 		if (query.type === AccountSearchType.USERNAME) {
+			// HINT: even superheroes should in the future be permission based
 			if (!(await this.isSuperhero(currentUser))) {
 				throw new ForbiddenOperationError('Current user is not authorized to search for accounts.');
 			}
@@ -72,8 +83,10 @@ export class AccountUc {
 			}
 			const account = await this.accountService.findByUserId(query.value);
 			if (account) {
+				// HINT: skip and limit should be from the query
 				return new AccountSearchListResponse([AccountResponseMapper.mapToResponse(account)], 1, 0, 1);
 			}
+			// HINT: skip and limit should be from the query
 			return new AccountSearchListResponse([], 0, 0, 0);
 		}
 
@@ -93,7 +106,7 @@ export class AccountUc {
 			throw new ForbiddenOperationError('Current user is not authorized to search for accounts.');
 		}
 		const account = await this.accountService.findById(params.id);
-		return AccountResponseMapper.mapToResponse(account);
+		return AccountResponseMapper.mapToResponse(account); // TODO: mapping should be done in controller
 	}
 
 	async saveAccount(dto: AccountSaveDto): Promise<void> {
@@ -162,6 +175,8 @@ export class AccountUc {
 				throw new EntityNotFoundError(Account.name);
 			}
 		}
+		// TODO: mapping from domain to api dto should be a responsability of the controller
+
 		return AccountResponseMapper.mapToResponse(targetAccount);
 	}
 
@@ -300,6 +315,7 @@ export class AccountUc {
 		}
 	}
 
+	// TODO: remove
 	/**
 	 *
 	 * @deprecated this is for legacy login strategies only. Login strategies in Nest.js should use {@link AuthenticationService}

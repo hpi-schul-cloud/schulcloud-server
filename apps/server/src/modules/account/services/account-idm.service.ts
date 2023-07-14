@@ -2,11 +2,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { Counted, EntityId, IAccount, IAccountUpdate } from '@shared/domain';
-import { IdentityManagementService, IdentityManagementOauthService } from '@shared/infra/identity-management';
+import { IdentityManagementOauthService, IdentityManagementService } from '@shared/infra/identity-management';
 import { AccountIdmToDtoMapper } from '../mapper';
+import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountDto, AccountSaveDto } from './dto';
-import { AccountLookupService } from './account-lookup.service';
 
 @Injectable()
 export class AccountServiceIdm extends AbstractAccountService {
@@ -25,6 +25,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		return account;
 	}
 
+	// TODO: this needs a better solution. probably needs followup meeting to come up with something
 	async findMultipleByUserId(userIds: EntityId[]): Promise<AccountDto[]> {
 		const results = new Array<IAccount>();
 		for (const userId of userIds) {
@@ -32,6 +33,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 				// eslint-disable-next-line no-await-in-loop
 				results.push(await this.identityManager.findAccountByFctIntId(userId));
 			} catch {
+				// TODO: dont simply forget errors. maybe use a filter instead?
 				// ignore entry
 			}
 		}
@@ -44,12 +46,14 @@ export class AccountServiceIdm extends AbstractAccountService {
 			const result = await this.identityManager.findAccountByFctIntId(userId);
 			return this.accountIdmToDtoMapper.mapToDto(result);
 		} catch {
+			// TODO: dont simply forget errors
 			return null;
 		}
 	}
 
 	async findByUserIdOrFail(userId: EntityId): Promise<AccountDto> {
 		try {
+			// TODO: reuse code here?
 			const result = await this.identityManager.findAccountByFctIntId(userId);
 			return this.accountIdmToDtoMapper.mapToDto(result);
 		} catch {
@@ -91,11 +95,15 @@ export class AccountServiceIdm extends AbstractAccountService {
 			attRefFunctionalIntId: accountDto.userId,
 			attRefFunctionalExtId: accountDto.systemId,
 		};
+		// TODO: probably do some method extraction here
 		if (accountDto.id) {
 			let idmId: string | undefined;
+			// TODO: extract into a method that hides the trycatch
 			try {
 				idmId = await this.getIdmAccountId(accountDto.id);
 			} catch {
+				// TODO: logging
+				// HINT: does the method even need to throw?
 				idmId = undefined;
 			}
 			if (idmId) {

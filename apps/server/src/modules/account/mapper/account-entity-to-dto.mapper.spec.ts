@@ -14,7 +14,10 @@ describe('AccountEntityToDtoMapper', () => {
 	});
 
 	describe('mapToDto', () => {
+		// TODO: describe(when... it(should...)
+		// TODO: use setup function
 		it('should map all fields', () => {
+			// TODO: use Account factory instead
 			const testEntity: Account = {
 				_id: new ObjectId(),
 				id: 'id',
@@ -32,6 +35,7 @@ describe('AccountEntityToDtoMapper', () => {
 			};
 			const ret = AccountEntityToDtoMapper.mapToDto(testEntity);
 
+			// TODO: compare with object instead, to have only a single expect()
 			expect(ret.id).toBe(testEntity.id);
 			expect(ret.createdAt).toEqual(testEntity.createdAt);
 			expect(ret.updatedAt).toEqual(testEntity.createdAt);
@@ -47,6 +51,7 @@ describe('AccountEntityToDtoMapper', () => {
 		});
 
 		it('should ignore missing ids', () => {
+			// TODO: use Account factory instead
 			const testEntity: Account = {
 				_id: new ObjectId(),
 				id: 'id',

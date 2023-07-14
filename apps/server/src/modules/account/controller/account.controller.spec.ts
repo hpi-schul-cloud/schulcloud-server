@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AccountController } from './account.controller';
 import { AccountUc } from '../uc/account.uc';
+import { AccountController } from './account.controller';
 
+// TODO: delete this file
 describe('account.controller', () => {
 	let module: TestingModule;
 	let controller: AccountController;

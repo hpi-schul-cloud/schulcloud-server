@@ -1,13 +1,15 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import bcrypt from 'bcryptjs';
 import { EntityNotFoundError } from '@shared/common';
 import { Account, Counted, EntityId } from '@shared/domain';
-import { AccountRepo } from '../repo/account.repo';
+import bcrypt from 'bcryptjs';
 import { AccountEntityToDtoMapper } from '../mapper';
-import { AccountDto, AccountSaveDto } from './dto';
-import { AbstractAccountService } from './account.service.abstract';
+import { AccountRepo } from '../repo/account.repo';
 import { AccountLookupService } from './account-lookup.service';
+import { AbstractAccountService } from './account.service.abstract';
+import { AccountDto, AccountSaveDto } from './dto';
+
+// HINT: do more empty lines :)
 
 @Injectable()
 export class AccountServiceDb extends AbstractAccountService {
@@ -32,6 +34,7 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	async findByUserIdOrFail(userId: EntityId): Promise<AccountDto> {
+		// TODO: use a findOneorFail in the background -> then the custom error will no longer be needed
 		const accountEntity = await this.accountRepo.findByUserId(userId);
 		if (!accountEntity) {
 			throw new EntityNotFoundError('Account');
@@ -46,6 +49,8 @@ export class AccountServiceDb extends AbstractAccountService {
 
 	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
 		let account: Account;
+		// HINT: mapping could be done by a mapper (though this whole file is subject to be removed in the future)
+		// HINT: today we have logic to map back into unit work in the baseDO
 		if (accountDto.id) {
 			const internalId = await this.getInternalId(accountDto.id);
 			account = await this.accountRepo.findById(internalId);
@@ -75,7 +80,7 @@ export class AccountServiceDb extends AbstractAccountService {
 				credentialHash: accountDto.credentialHash,
 			});
 
-			await this.accountRepo.save(account);
+			await this.accountRepo.save(account); // HINT: this can be done once in the end
 		}
 		return AccountEntityToDtoMapper.mapToDto(account);
 	}
@@ -128,7 +133,7 @@ export class AccountServiceDb extends AbstractAccountService {
 		if (!account.password) {
 			return Promise.resolve(false);
 		}
-		return bcrypt.compare(comparePassword, account.password);
+		return bcrypt.compare(comparePassword, account.password); // hint: first get result, then return seperately
 	}
 
 	private async getInternalId(id: EntityId | ObjectId): Promise<ObjectId> {
