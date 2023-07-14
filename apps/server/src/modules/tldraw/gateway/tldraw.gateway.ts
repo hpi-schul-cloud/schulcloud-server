@@ -3,12 +3,11 @@ import {
 	WebSocketServer,
 	OnGatewayInit,
 	OnGatewayConnection,
-	OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server } from 'ws';
 import * as Y from 'yjs';
 import * as MongodbPersistence from 'y-mongodb-provider';
-import { closeConn, WSSharedDoc, setupWSConnection, setPersistence } from '@src/modules/tldraw/utils/utils';
+import { WSSharedDoc, setupWSConnection, setPersistence } from '@src/modules/tldraw/utils/utils';
 
 let connectionString: string;
 
@@ -31,7 +30,7 @@ switch (NODE_ENV) {
 
 
 @WebSocketGateway(3345)
-export class TldrawGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+export class TldrawGateway implements OnGatewayInit, OnGatewayConnection {
 	@WebSocketServer()
 	server!: Server;
 	doc: WSSharedDoc | undefined;
@@ -39,10 +38,6 @@ export class TldrawGateway implements OnGatewayInit, OnGatewayConnection, OnGate
 	handleConnection(client: any, request) {
 		const docName =  request.url.slice(1).split('?')[0];
 		setupWSConnection(client, docName);
-	}
-
-	handleDisconnect(client: any): any {
-		closeConn(this.doc, client);
 	}
 
 	afterInit(server: Server) {
