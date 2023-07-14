@@ -16,6 +16,10 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
 
 	protected abstract mapDOToEntityProperties(entityDO: DO): P;
 
+	protected entityData(entity: E): EntityData<E> {
+		return wrap(entity).toPOJO() as EntityData<E>;
+	}
+
 	async save(entityDo: DO): Promise<DO> {
 		const savedDos: DO[] = await this.saveAll([entityDo]);
 		return savedDos[0];
@@ -54,7 +58,7 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
 			id: domainObject.id,
 		} as FilterQuery<E>);
 
-		const newEntityData = wrap(newEntity).toPOJO() as EntityData<E>;
+		const newEntityData = this.entityData(newEntity);
 		this.removeProtectedEntityFields(newEntityData);
 
 		const updated: E = this._em.assign(fetchedEntity, newEntityData, { updateByPrimaryKey: false });
