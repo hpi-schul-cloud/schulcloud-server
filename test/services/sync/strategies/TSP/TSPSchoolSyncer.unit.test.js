@@ -30,6 +30,11 @@ describe('TSPSchoolSyncer', () => {
 		lehrerNachname: testTSPTeacherLastName,
 	};
 
+	// The following four consts are set to undefined because their values are
+	// not needed in the unit tests written for the new TSPSchoolSyncer methods.
+	// However, please change them according to the needs when there will appear
+	// a need to write some tests also for any of the old syncer methods that
+	// make any use of its internal components.
 	const testApp = undefined;
 	const testStats = undefined;
 	const testLogger = undefined;
@@ -79,7 +84,7 @@ describe('TSPSchoolSyncer', () => {
 			return { teacherUpdateObject };
 		};
 
-		it("an empty object if feature flag is disabled and nothing has changed in the teacher's data", () => {
+		it("an empty object if feature flag has been disabled and nothing has changed in the teacher's data", () => {
 			const { teacherUpdateObject } = setup(false, {
 				namePrefix: testTSPTeacherTitle,
 				firstName: testTSPTeacherFirstName,
@@ -89,7 +94,7 @@ describe('TSPSchoolSyncer', () => {
 			assert.deepEqual(teacherUpdateObject, {});
 		});
 
-		it("valid object with just a valid lastSyncedAt field if feature flag is enabled and nothing has changed in the teacher's data", () => {
+		it("valid object with just a valid lastSyncedAt field if feature flag has been enabled and nothing has changed in the teacher's data", () => {
 			const { teacherUpdateObject } = setup(true, {
 				namePrefix: testTSPTeacherTitle,
 				firstName: testTSPTeacherFirstName,
@@ -102,7 +107,7 @@ describe('TSPSchoolSyncer', () => {
 		});
 
 		describe("valid object with changed fields if anything has changed in the teacher's data", () => {
-			it('and with valid lastSyncedAt field if feature flag is enabled', () => {
+			it('and with valid lastSyncedAt field if feature flag has been enabled', () => {
 				const testTeacherTitle = 'D.Sc.';
 				const { teacherUpdateObject } = setup(true, {
 					namePrefix: testTeacherTitle,
@@ -117,7 +122,7 @@ describe('TSPSchoolSyncer', () => {
 				expect(teacherUpdateObject.lastSyncedAt).to.be.at.most(new Date());
 			});
 
-			it('but without lastSyncedAt field if feature flag is disabled', () => {
+			it('but without lastSyncedAt field if feature flag has been disabled', () => {
 				const { teacherUpdateObject } = setup(false, {
 					firstName: testUserFirstName,
 					lastName: testUserLastName,
@@ -176,7 +181,7 @@ describe('TSPSchoolSyncer', () => {
 			return { studentUpdateObject };
 		};
 
-		it("an empty object if feature flag is disabled and nothing has changed in the student's data", () => {
+		it("an empty object if feature flag has been disabled and nothing has changed in the student's data", () => {
 			const { studentUpdateObject } = setup(false, {
 				firstName: testTSPStudentFirstName,
 				lastName: testTSPStudentLastName,
@@ -185,7 +190,7 @@ describe('TSPSchoolSyncer', () => {
 			assert.deepEqual(studentUpdateObject, {});
 		});
 
-		it("valid object with just a valid lastSyncedAt field if feature flag is enabled and nothing has changed in the student's data", () => {
+		it("valid object with just a valid lastSyncedAt field if feature flag has been enabled and nothing has changed in the student's data", () => {
 			const { studentUpdateObject } = setup(true, {
 				firstName: testTSPStudentFirstName,
 				lastName: testTSPStudentLastName,
@@ -197,7 +202,7 @@ describe('TSPSchoolSyncer', () => {
 		});
 
 		describe("valid object with changed fields if anything has changed in the student's data", () => {
-			it('and with valid lastSyncedAt field if feature flag is enabled', () => {
+			it('and with valid lastSyncedAt field if feature flag has been enabled', () => {
 				const { studentUpdateObject } = setup(true, {
 					firstName: testUserFirstName,
 					lastName: testUserLastName,
@@ -209,7 +214,7 @@ describe('TSPSchoolSyncer', () => {
 				expect(studentUpdateObject.lastSyncedAt).to.be.at.most(new Date());
 			});
 
-			it('but without lastSyncedAt field if feature flag is disabled', () => {
+			it('but without lastSyncedAt field if feature flag has been disabled', () => {
 				const { studentUpdateObject } = setup(false, {
 					firstName: testUserFirstName,
 					lastName: testUserLastName,

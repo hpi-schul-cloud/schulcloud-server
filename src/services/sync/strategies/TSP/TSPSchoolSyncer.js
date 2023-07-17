@@ -420,7 +420,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		};
 
 		// If the feature flag is enabled, add the last synced at field
-		// (with value set to the current date) to the teacher create object.
+		// (with value set to the current date) to the teacher's create object.
 		if (this.lastSyncedAtEnabled) {
 			createObject.lastSyncedAt = new Date();
 		}
@@ -560,7 +560,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		};
 
 		// If the feature flag is enabled, add the last synced at field
-		// (with value set to the current date) to the student create object.
+		// (with value set to the current date) to the student's create object.
 		if (this.lastSyncedAtEnabled) {
 			createObject.lastSyncedAt = new Date();
 		}
