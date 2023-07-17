@@ -346,6 +346,30 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		return this.createTeacher(tspTeacher, school, systemId);
 	}
 
+	prepareTeacherUpdateObject(user, tspTeacher) {
+		const updateObject = {};
+
+		// Check if anything has changed on the TSP side regarding teacher's data
+		// and, if yes, set all the current data in the teacher's update object.
+		const equal =
+			(user.namePrefix === tspTeacher.lehrerTitel || (!user.namePrefix && !tspTeacher.namePrefix)) &&
+			user.firstName === tspTeacher.lehrerVorname &&
+			user.lastName === tspTeacher.lehrerNachname;
+		if (!equal) {
+			updateObject.namePrefix = tspTeacher.lehrerTitel;
+			updateObject.firstName = tspTeacher.lehrerVorname;
+			updateObject.lastName = tspTeacher.lehrerNachname;
+		}
+
+		// If the feature flag is enabled, add the last synced at field
+		// (with value set to the current date) to the teacher's update object.
+		if (this.lastSyncedAtEnabled) {
+			updateObject.lastSyncedAt = new Date();
+		}
+
+		return updateObject;
+	}
+
 	/**
 	 * Patches a Schul-Cloud user based on information from a TSP teacher object
 	 * @param {User} user the current user
@@ -355,38 +379,19 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 */
 	async updateTeacher(user, tspTeacher) {
 		try {
-			const userUpdateObject = {};
+			const updateObject = this.prepareTeacherUpdateObject(user, tspTeacher);
 
-			// Check if anything has changed on the TSP side regarding user data
-			// and, if yes, set all the current data in the user update object.
-			const equal =
-				(user.namePrefix === tspTeacher.lehrerTitel || (!user.namePrefix && !tspTeacher.namePrefix)) &&
-				user.firstName === tspTeacher.lehrerVorname &&
-				user.lastName === tspTeacher.lehrerNachname;
-			if (!equal) {
-				userUpdateObject.namePrefix = tspTeacher.lehrerTitel;
-				userUpdateObject.firstName = tspTeacher.lehrerVorname;
-				userUpdateObject.lastName = tspTeacher.lehrerNachname;
-			}
-
-			// If the feature flag is enabled, add the last synced at field
-			// to the user options (for the updated user document) to set
-			// the last sync date value to the current date.
-			if (this.lastSyncedAtEnabled) {
-				userUpdateObject.lastSyncedAt = new Date();
-			}
-
-			// Check if the user update object is empty which would mean that both:
+			// Check if the teacher's update object is empty which would mean that both:
 			//   1. no data has been changed on the TSP side;
 			//   2. "last synced at" feature flag is disabled.
-			// If any of these two is not true, the user object will be updated.
-			if (_.isEmpty(userUpdateObject)) {
+			// If any of these two is not true, the teacher's object will be updated.
+			if (_.isEmpty(updateObject)) {
 				this.stats.users.teachers.unchanged += 1;
 
 				return user;
 			}
 
-			const teacher = await this.app.service('users').patch(user._id, userUpdateObject);
+			const teacher = await this.app.service('users').patch(user._id, updateObject);
 
 			this.stats.users.teachers.updated += 1;
 
@@ -404,6 +409,25 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		}
 	}
 
+	prepareTeacherCreateObject(schoolId, tspTeacher) {
+		const createObject = {
+			namePrefix: tspTeacher.lehrerTitel,
+			firstName: tspTeacher.lehrerVorname,
+			lastName: tspTeacher.lehrerNachname,
+			schoolId,
+			source: ENTITY_SOURCE,
+			sourceOptions: { [SOURCE_ID_ATTRIBUTE]: tspTeacher.lehrerUid },
+		};
+
+		// If the feature flag is enabled, add the last synced at field
+		// (with value set to the current date) to the teacher create object.
+		if (this.lastSyncedAtEnabled) {
+			createObject.lastSyncedAt = new Date();
+		}
+
+		return createObject;
+	}
+
 	/**
 	 * Create a Schul-Cloud user based on a TSP teacher object
 	 * @param {Object} tspTeacher TSP teacher object
@@ -414,26 +438,9 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 */
 	async createTeacher(tspTeacher, school, systemId) {
 		try {
-			const sourceOptions = {};
-			sourceOptions[SOURCE_ID_ATTRIBUTE] = tspTeacher.lehrerUid;
+			const createObject = this.prepareTeacherCreateObject(school._id, tspTeacher);
 
-			const userOptions = {
-				namePrefix: tspTeacher.lehrerTitel,
-				firstName: tspTeacher.lehrerVorname,
-				lastName: tspTeacher.lehrerNachname,
-				schoolId: school._id,
-				source: ENTITY_SOURCE,
-				sourceOptions,
-			};
-
-			// If the feature flag is enabled, add the last synced at field
-			// to the user options (for the newly created user document) to
-			// set the last sync date value to the current date.
-			if (this.lastSyncedAtEnabled) {
-				userOptions.lastSyncedAt = new Date();
-			}
-
-			const teacher = await createUserAndAccount(this.app, userOptions, 'teacher', systemId);
+			const teacher = await createUserAndAccount(this.app, createObject, 'teacher', systemId);
 
 			this.stats.users.teachers.created += 1;
 
@@ -482,6 +489,26 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		return this.createStudent(tspStudent, school, systemId);
 	}
 
+	prepareStudentUpdateObject(user, tspStudent) {
+		const updateObject = {};
+
+		// Check if anything has changed on the TSP side regarding student's data
+		// and, if yes, set all the current data in the student's update object.
+		const equal = user.firstName === tspStudent.schuelerVorname && user.lastName === tspStudent.schuelerNachname;
+		if (!equal) {
+			updateObject.firstName = tspStudent.schuelerVorname;
+			updateObject.lastName = tspStudent.schuelerNachname;
+		}
+
+		// If the feature flag is enabled, add the last synced at field
+		// (with value set to the current date) to the student's update object.
+		if (this.lastSyncedAtEnabled) {
+			updateObject.lastSyncedAt = new Date();
+		}
+
+		return updateObject;
+	}
+
 	/**
 	 * Patches a Schul-Cloud user based on information from a TSP student object
 	 * @param {User} user the current user
@@ -491,34 +518,19 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 */
 	async updateStudent(user, tspStudent) {
 		try {
-			const userUpdateObject = {};
+			const updateObject = this.prepareStudentUpdateObject(user, tspStudent);
 
-			// Check if anything has changed on the TSP side regarding user data
-			// and, if yes, set all the current data in the user update object.
-			const equal = user.firstName === tspStudent.schuelerVorname && user.lastName === tspStudent.schuelerNachname;
-			if (!equal) {
-				userUpdateObject.firstName = tspStudent.schuelerVorname;
-				userUpdateObject.lastName = tspStudent.schuelerNachname;
-			}
-
-			// If the feature flag is enabled, add the last synced at field
-			// to the user options (for the updated user document) to set
-			// the last sync date value to the current date.
-			if (this.lastSyncedAtEnabled) {
-				userUpdateObject.lastSyncedAt = new Date();
-			}
-
-			// Check if the user update object is empty which would mean that both:
+			// Check if the student's update object is empty which would mean that both:
 			//   1. no data has been changed on the TSP side;
 			//   2. "last synced at" feature flag is disabled.
-			// If any of these two is not true, the user object will be updated.
-			if (_.isEmpty(userUpdateObject)) {
+			// If any of these two is not true, the student's object will be updated.
+			if (_.isEmpty(updateObject)) {
 				this.stats.users.students.unchanged += 1;
 
 				return user;
 			}
 
-			const student = await this.app.service('users').patch(user._id, userUpdateObject);
+			const student = await this.app.service('users').patch(user._id, updateObject);
 
 			this.stats.users.students.updated += 1;
 
@@ -538,6 +550,24 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		}
 	}
 
+	prepareStudentCreateObject(schoolId, tspStudent) {
+		const createObject = {
+			firstName: tspStudent.schuelerVorname,
+			lastName: tspStudent.schuelerNachname,
+			schoolId,
+			source: ENTITY_SOURCE,
+			sourceOptions: { [SOURCE_ID_ATTRIBUTE]: tspStudent.schuelerUid },
+		};
+
+		// If the feature flag is enabled, add the last synced at field
+		// (with value set to the current date) to the student create object.
+		if (this.lastSyncedAtEnabled) {
+			createObject.lastSyncedAt = new Date();
+		}
+
+		return createObject;
+	}
+
 	/**
 	 * Create a Schul-Cloud user based on a TSP student object
 	 * @param {Object} tspStudent TSP student object
@@ -548,25 +578,9 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 */
 	async createStudent(tspStudent, school, systemId) {
 		try {
-			const sourceOptions = {};
-			sourceOptions[SOURCE_ID_ATTRIBUTE] = tspStudent.schuelerUid;
+			const createObject = this.prepareStudentCreateObject(school._id, tspStudent);
 
-			const userOptions = {
-				firstName: tspStudent.schuelerVorname,
-				lastName: tspStudent.schuelerNachname,
-				schoolId: school._id,
-				source: ENTITY_SOURCE,
-				sourceOptions,
-			};
-
-			// If the feature flag is enabled, add the last synced at field
-			// to the user options (for the newly created user document) to
-			// set the last sync date value to the current date.
-			if (this.lastSyncedAtEnabled) {
-				userOptions.lastSyncedAt = new Date();
-			}
-
-			const student = await createUserAndAccount(this.app, userOptions, 'student', systemId);
+			const student = await createUserAndAccount(this.app, createObject, 'student', systemId);
 
 			this.stats.users.students.created += 1;
 
