@@ -8,7 +8,6 @@ import {
 	ContentElementFactory,
 	ContentElementType,
 	EntityId,
-	InputFormat,
 	RichTextElement,
 } from '@shared/domain';
 import { ObjectId } from 'bson';
@@ -122,7 +121,6 @@ export class ColumnBoardService {
 	private createRichTextElement(text: string): RichTextElement {
 		const element: RichTextElement = this.contentElementFactory.build(ContentElementType.RICH_TEXT) as RichTextElement;
 		element.text = text;
-		element.inputFormat = InputFormat.RICH_TEXT_CK5;
 
 		return element;
 	}
