@@ -43,7 +43,7 @@ const getTeamsIdsForUser = async (userId) => {
 const removeUserFromTeams = async (userId) => {
 	validateRemoveUserFromTeamsParams(userId);
 	const filter = filterTeamsMember(userId);
-	const updateResult = await teamsModel.updateMany(filter, { $pull: { userIds: { userId: userId } } }).exec();
+	const updateResult = await teamsModel.updateMany(filter, { $pull: { userIds: { userId } } }).exec();
 
 	return updateManyResult(updateResult);
 };
