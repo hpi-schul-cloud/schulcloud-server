@@ -105,7 +105,7 @@ const updateHandler = (update: Uint8Array, origin, doc: WSSharedDoc) => {
 export class WSSharedDoc extends Doc {
 	name: string;
 
-	conns: Map<WebSocket, any>;
+	conns: Map<WebSocket, Set<number>>;
 
 	awareness: Awareness;
 
