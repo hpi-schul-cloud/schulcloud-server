@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard } from '@shared/domain';
+import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard, ContentElementFactory } from '@shared/domain';
 import { columnBoardNodeFactory, setupEntities } from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { ObjectId } from 'bson';
@@ -25,6 +25,10 @@ describe(ColumnBoardService.name, () => {
 				{
 					provide: BoardDoService,
 					useValue: createMock<BoardDoService>(),
+				},
+				{
+					provide: ContentElementFactory,
+					useValue: createMock<ContentElementFactory>(),
 				},
 			],
 		}).compile();
