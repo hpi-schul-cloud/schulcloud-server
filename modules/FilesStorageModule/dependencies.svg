@@ -24,155 +24,155 @@
 <title>cluster_FilesStorageModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 1662,-268 1662,-70 8,-70"/>
 </g>
-<g id="clust3" class="cluster">
-<title>cluster_FilesStorageModule_imports</title>
-<polygon fill="none" stroke="black" points="553,-78 553,-130 1654,-130 1654,-78 553,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_FilesStorageModule_exports</title>
-<polygon fill="none" stroke="black" points="857,-208 857,-260 1005,-260 1005,-208 857,-208"/>
+<polygon fill="none" stroke="black" points="741,-208 741,-260 889,-260 889,-208 741,-208"/>
 </g>
 <g id="clust6" class="cluster">
 <title>cluster_FilesStorageModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 545,-130 545,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="1125,-78 1125,-130 1654,-130 1654,-78 1125,-78"/>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_FilesStorageModule_imports</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 1117,-130 1117,-78 16,-78"/>
 </g>
 <!-- AuthenticationModule -->
 <g id="node1" class="node">
 <title>AuthenticationModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1646.25,-122 1643.25,-126 1622.25,-126 1619.25,-122 1503.75,-122 1503.75,-86 1646.25,-86 1646.25,-122"/>
-<text text-anchor="middle" x="1575" y="-99.8" font-family="Times,serif" font-size="14.00">AuthenticationModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1109.25,-122 1106.25,-126 1085.25,-126 1082.25,-122 966.75,-122 966.75,-86 1109.25,-86 1109.25,-122"/>
+<text text-anchor="middle" x="1038" y="-99.8" font-family="Times,serif" font-size="14.00">AuthenticationModule</text>
 </g>
 <!-- FilesStorageModule -->
 <g id="node8" class="node">
 <title>FilesStorageModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="995.54,-187 992.54,-191 971.54,-191 968.54,-187 866.46,-187 866.46,-151 995.54,-151 995.54,-187"/>
-<text text-anchor="middle" x="931" y="-164.8" font-family="Times,serif" font-size="14.00">FilesStorageModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="879.54,-187 876.54,-191 855.54,-191 852.54,-187 750.46,-187 750.46,-151 879.54,-151 879.54,-187"/>
+<text text-anchor="middle" x="815" y="-164.8" font-family="Times,serif" font-size="14.00">FilesStorageModule</text>
 </g>
 <!-- AuthenticationModule&#45;&gt;FilesStorageModule -->
 <g id="edge1" class="edge">
 <title>AuthenticationModule&#45;&gt;FilesStorageModule</title>
-<path fill="none" stroke="black" d="M1575,-122.01C1575,-144.49 1575,-180 1575,-180 1575,-180 1005.7,-180 1005.7,-180"/>
-<polygon fill="black" stroke="black" points="1005.7,-176.5 995.7,-180 1005.7,-183.5 1005.7,-176.5"/>
+<path fill="none" stroke="black" d="M1038,-122.01C1038,-138.05 1038,-159 1038,-159 1038,-159 889.8,-159 889.8,-159"/>
+<polygon fill="black" stroke="black" points="889.8,-155.5 879.8,-159 889.8,-162.5 889.8,-155.5"/>
 </g>
 <!-- AuthorizationModule -->
 <g id="node2" class="node">
 <title>AuthorizationModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1485.81,-122 1482.81,-126 1461.81,-126 1458.81,-122 1348.19,-122 1348.19,-86 1485.81,-86 1485.81,-122"/>
-<text text-anchor="middle" x="1417" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="948.81,-122 945.81,-126 924.81,-126 921.81,-122 811.19,-122 811.19,-86 948.81,-86 948.81,-122"/>
+<text text-anchor="middle" x="880" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
 </g>
 <!-- AuthorizationModule&#45;&gt;FilesStorageModule -->
 <g id="edge2" class="edge">
 <title>AuthorizationModule&#45;&gt;FilesStorageModule</title>
-<path fill="none" stroke="black" d="M1417,-122.13C1417,-142.57 1417,-173 1417,-173 1417,-173 1005.54,-173 1005.54,-173"/>
-<polygon fill="black" stroke="black" points="1005.54,-169.5 995.54,-173 1005.54,-176.5 1005.54,-169.5"/>
+<path fill="none" stroke="black" d="M845.56,-122.11C845.56,-122.11 845.56,-140.99 845.56,-140.99"/>
+<polygon fill="black" stroke="black" points="842.06,-140.99 845.56,-150.99 849.06,-140.99 842.06,-140.99"/>
 </g>
 <!-- CoreModule -->
 <g id="node3" class="node">
 <title>CoreModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1330.26,-122 1327.26,-126 1306.26,-126 1303.26,-122 1243.74,-122 1243.74,-86 1330.26,-86 1330.26,-122"/>
-<text text-anchor="middle" x="1287" y="-99.8" font-family="Times,serif" font-size="14.00">CoreModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="793.26,-122 790.26,-126 769.26,-126 766.26,-122 706.74,-122 706.74,-86 793.26,-86 793.26,-122"/>
+<text text-anchor="middle" x="750" y="-99.8" font-family="Times,serif" font-size="14.00">CoreModule</text>
 </g>
 <!-- CoreModule&#45;&gt;FilesStorageModule -->
 <g id="edge3" class="edge">
 <title>CoreModule&#45;&gt;FilesStorageModule</title>
-<path fill="none" stroke="black" d="M1287,-122.27C1287,-140.56 1287,-166 1287,-166 1287,-166 1005.88,-166 1005.88,-166"/>
-<polygon fill="black" stroke="black" points="1005.88,-162.5 995.88,-166 1005.88,-169.5 1005.88,-162.5"/>
+<path fill="none" stroke="black" d="M771.81,-122.11C771.81,-122.11 771.81,-140.99 771.81,-140.99"/>
+<polygon fill="black" stroke="black" points="768.31,-140.99 771.81,-150.99 775.31,-140.99 768.31,-140.99"/>
 </g>
 <!-- FilesStorageApiModule -->
 <g id="node4" class="node">
 <title>FilesStorageApiModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1225.03,-122 1222.03,-126 1201.03,-126 1198.03,-122 1074.97,-122 1074.97,-86 1225.03,-86 1225.03,-122"/>
-<text text-anchor="middle" x="1150" y="-99.8" font-family="Times,serif" font-size="14.00">FilesStorageApiModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="688.03,-122 685.03,-126 664.03,-126 661.03,-122 537.97,-122 537.97,-86 688.03,-86 688.03,-122"/>
+<text text-anchor="middle" x="613" y="-99.8" font-family="Times,serif" font-size="14.00">FilesStorageApiModule</text>
 </g>
 <!-- FilesStorageApiModule&#45;&gt;FilesStorageModule -->
 <g id="edge4" class="edge">
 <title>FilesStorageApiModule&#45;&gt;FilesStorageModule</title>
-<path fill="none" stroke="black" d="M1150,-122.01C1150,-138.05 1150,-159 1150,-159 1150,-159 1005.82,-159 1005.82,-159"/>
-<polygon fill="black" stroke="black" points="1005.82,-155.5 995.82,-159 1005.82,-162.5 1005.82,-155.5"/>
+<path fill="none" stroke="black" d="M613,-122.01C613,-138.05 613,-159 613,-159 613,-159 740.25,-159 740.25,-159"/>
+<polygon fill="black" stroke="black" points="740.25,-162.5 750.25,-159 740.25,-155.5 740.25,-162.5"/>
 </g>
 <!-- LoggerModule -->
 <g id="node5" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1056.98,-122 1053.98,-126 1032.98,-126 1029.98,-122 957.02,-122 957.02,-86 1056.98,-86 1056.98,-122"/>
-<text text-anchor="middle" x="1007" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="519.98,-122 516.98,-126 495.98,-126 492.98,-122 420.02,-122 420.02,-86 519.98,-86 519.98,-122"/>
+<text text-anchor="middle" x="470" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;FilesStorageModule -->
 <g id="edge5" class="edge">
 <title>LoggerModule&#45;&gt;FilesStorageModule</title>
-<path fill="none" stroke="black" d="M976.39,-122.11C976.39,-122.11 976.39,-140.99 976.39,-140.99"/>
-<polygon fill="black" stroke="black" points="972.89,-140.99 976.39,-150.99 979.89,-140.99 972.89,-140.99"/>
+<path fill="none" stroke="black" d="M470,-122.27C470,-140.56 470,-166 470,-166 470,-166 740.11,-166 740.11,-166"/>
+<polygon fill="black" stroke="black" points="740.11,-169.5 750.11,-166 740.11,-162.5 740.11,-169.5"/>
 </g>
 <!-- RabbitMQWrapperModule -->
 <g id="node6" class="node">
 <title>RabbitMQWrapperModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="939.4,-122 936.4,-126 915.4,-126 912.4,-122 770.6,-122 770.6,-86 939.4,-86 939.4,-122"/>
-<text text-anchor="middle" x="855" y="-99.8" font-family="Times,serif" font-size="14.00">RabbitMQWrapperModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="402.4,-122 399.4,-126 378.4,-126 375.4,-122 233.6,-122 233.6,-86 402.4,-86 402.4,-122"/>
+<text text-anchor="middle" x="318" y="-99.8" font-family="Times,serif" font-size="14.00">RabbitMQWrapperModule</text>
 </g>
 <!-- RabbitMQWrapperModule&#45;&gt;FilesStorageModule -->
 <g id="edge6" class="edge">
 <title>RabbitMQWrapperModule&#45;&gt;FilesStorageModule</title>
-<path fill="none" stroke="black" d="M902.72,-122.11C902.72,-122.11 902.72,-140.99 902.72,-140.99"/>
-<polygon fill="black" stroke="black" points="899.22,-140.99 902.72,-150.99 906.22,-140.99 899.22,-140.99"/>
+<path fill="none" stroke="black" d="M318,-122.13C318,-142.57 318,-173 318,-173 318,-173 740.28,-173 740.28,-173"/>
+<polygon fill="black" stroke="black" points="740.28,-176.5 750.28,-173 740.28,-169.5 740.28,-176.5"/>
 </g>
 <!-- RabbitMQWrapperTestModule -->
 <g id="node7" class="node">
 <title>RabbitMQWrapperTestModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="753,-122 750,-126 729,-126 726,-122 561,-122 561,-86 753,-86 753,-122"/>
-<text text-anchor="middle" x="657" y="-99.8" font-family="Times,serif" font-size="14.00">RabbitMQWrapperTestModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="216,-122 213,-126 192,-126 189,-122 24,-122 24,-86 216,-86 216,-122"/>
+<text text-anchor="middle" x="120" y="-99.8" font-family="Times,serif" font-size="14.00">RabbitMQWrapperTestModule</text>
 </g>
 <!-- RabbitMQWrapperTestModule&#45;&gt;FilesStorageModule -->
 <g id="edge7" class="edge">
 <title>RabbitMQWrapperTestModule&#45;&gt;FilesStorageModule</title>
-<path fill="none" stroke="black" d="M657,-122.01C657,-138.05 657,-159 657,-159 657,-159 856.41,-159 856.41,-159"/>
-<polygon fill="black" stroke="black" points="856.41,-162.5 866.41,-159 856.41,-155.5 856.41,-162.5"/>
+<path fill="none" stroke="black" d="M120,-122.01C120,-144.49 120,-180 120,-180 120,-180 740.24,-180 740.24,-180"/>
+<polygon fill="black" stroke="black" points="740.24,-183.5 750.24,-180 740.24,-176.5 740.24,-183.5"/>
 </g>
 <!-- FilesStorageService  -->
 <g id="node9" class="node">
 <title>FilesStorageService </title>
-<polygon fill="#fb8072" stroke="black" points="996.96,-252 865.04,-252 865.04,-216 996.96,-216 996.96,-252"/>
-<text text-anchor="middle" x="931" y="-229.8" font-family="Times,serif" font-size="14.00">FilesStorageService </text>
+<polygon fill="#fb8072" stroke="black" points="880.96,-252 749.04,-252 749.04,-216 880.96,-216 880.96,-252"/>
+<text text-anchor="middle" x="815" y="-229.8" font-family="Times,serif" font-size="14.00">FilesStorageService </text>
 </g>
 <!-- FilesStorageModule&#45;&gt;FilesStorageService  -->
 <g id="edge8" class="edge">
 <title>FilesStorageModule&#45;&gt;FilesStorageService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M931,-187.11C931,-187.11 931,-205.99 931,-205.99"/>
-<polygon fill="black" stroke="black" points="927.5,-205.99 931,-215.99 934.5,-205.99 927.5,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M815,-187.11C815,-187.11 815,-205.99 815,-205.99"/>
+<polygon fill="black" stroke="black" points="811.5,-205.99 815,-215.99 818.5,-205.99 811.5,-205.99"/>
 </g>
 <!-- FileRecordRepo -->
 <g id="node10" class="node">
 <title>FileRecordRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="463" cy="-104" rx="74.16" ry="18"/>
-<text text-anchor="middle" x="463" y="-99.8" font-family="Times,serif" font-size="14.00">FileRecordRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="1572" cy="-104" rx="74.16" ry="18"/>
+<text text-anchor="middle" x="1572" y="-99.8" font-family="Times,serif" font-size="14.00">FileRecordRepo</text>
 </g>
 <!-- FileRecordRepo&#45;&gt;FilesStorageModule -->
 <g id="edge9" class="edge">
 <title>FileRecordRepo&#45;&gt;FilesStorageModule</title>
-<path fill="none" stroke="black" d="M463,-122.27C463,-140.56 463,-166 463,-166 463,-166 856.42,-166 856.42,-166"/>
-<polygon fill="black" stroke="black" points="856.42,-169.5 866.42,-166 856.42,-162.5 856.42,-169.5"/>
+<path fill="none" stroke="black" d="M1572,-122.01C1572,-144.49 1572,-180 1572,-180 1572,-180 889.54,-180 889.54,-180"/>
+<polygon fill="black" stroke="black" points="889.54,-176.5 879.54,-180 889.54,-183.5 889.54,-176.5"/>
 </g>
 <!-- FilesStorageService -->
 <g id="node11" class="node">
 <title>FilesStorageService</title>
-<ellipse fill="#fdb462" stroke="black" cx="282" cy="-104" rx="88.03" ry="18"/>
-<text text-anchor="middle" x="282" y="-99.8" font-family="Times,serif" font-size="14.00">FilesStorageService</text>
+<ellipse fill="#fdb462" stroke="black" cx="1391" cy="-104" rx="88.03" ry="18"/>
+<text text-anchor="middle" x="1391" y="-99.8" font-family="Times,serif" font-size="14.00">FilesStorageService</text>
 </g>
 <!-- FilesStorageService&#45;&gt;FilesStorageModule -->
 <g id="edge10" class="edge">
 <title>FilesStorageService&#45;&gt;FilesStorageModule</title>
-<path fill="none" stroke="black" d="M282,-122.13C282,-142.57 282,-173 282,-173 282,-173 856.4,-173 856.4,-173"/>
-<polygon fill="black" stroke="black" points="856.4,-176.5 866.4,-173 856.4,-169.5 856.4,-176.5"/>
+<path fill="none" stroke="black" d="M1391,-122.13C1391,-142.57 1391,-173 1391,-173 1391,-173 889.68,-173 889.68,-173"/>
+<polygon fill="black" stroke="black" points="889.68,-169.5 879.68,-173 889.68,-176.5 889.68,-169.5"/>
 </g>
 <!-- S3ClientAdapter -->
 <g id="node12" class="node">
 <title>S3ClientAdapter</title>
-<ellipse fill="#fdb462" stroke="black" cx="100" cy="-104" rx="75.88" ry="18"/>
-<text text-anchor="middle" x="100" y="-99.8" font-family="Times,serif" font-size="14.00">S3ClientAdapter</text>
+<ellipse fill="#fdb462" stroke="black" cx="1209" cy="-104" rx="75.88" ry="18"/>
+<text text-anchor="middle" x="1209" y="-99.8" font-family="Times,serif" font-size="14.00">S3ClientAdapter</text>
 </g>
 <!-- S3ClientAdapter&#45;&gt;FilesStorageModule -->
 <g id="edge11" class="edge">
 <title>S3ClientAdapter&#45;&gt;FilesStorageModule</title>
-<path fill="none" stroke="black" d="M100,-122.01C100,-144.49 100,-180 100,-180 100,-180 856.14,-180 856.14,-180"/>
-<polygon fill="black" stroke="black" points="856.14,-183.5 866.14,-180 856.14,-176.5 856.14,-183.5"/>
+<path fill="none" stroke="black" d="M1209,-122.27C1209,-140.56 1209,-166 1209,-166 1209,-166 889.62,-166 889.62,-166"/>
+<polygon fill="black" stroke="black" points="889.62,-162.5 879.62,-166 889.62,-169.5 889.62,-162.5"/>
 </g>
 </g>
 </svg>
