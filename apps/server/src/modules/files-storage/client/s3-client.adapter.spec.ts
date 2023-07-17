@@ -430,4 +430,152 @@ describe('S3ClientAdapter', () => {
 			await expect(service.copy(undefined)).rejects.toThrowError(InternalServerErrorException);
 		});
 	});
+
+	describe('head', () => {
+		const setup = () => {
+			const { pathToFile } = createParameter();
+
+			return { pathToFile };
+		};
+
+		describe('when file exists', () => {
+			it('should call send() of client with head object', async () => {
+				const { pathToFile } = setup();
+
+				await service.head(pathToFile);
+
+				expect(client.send).toBeCalledWith(
+					expect.objectContaining({
+						input: { Bucket: 'test-bucket', Key: pathToFile },
+					})
+				);
+			});
+		});
+
+		describe('when file does not exist', () => {
+			it('should throw NotFoundException', async () => {
+				const { pathToFile } = setup();
+				// @ts-expect-error ignore parameter type of mock function
+				client.send.mockRejectedValueOnce(new Error('NoSuchKey'));
+
+				const headPromise = service.head(pathToFile);
+
+				await expect(headPromise).rejects.toBeInstanceOf(NotFoundException);
+			});
+		});
+	});
+
+	describe('list', () => {
+		const setup = () => {
+			const prefix = 'test/';
+
+			const keys = Array.from(Array(2500).keys()).map((n) => `KEY-${n}`);
+			const responseContents = keys.map((key) => {
+				return {
+					Key: `${prefix}${key}`,
+				};
+			});
+
+			return { prefix, keys, responseContents };
+		};
+
+		afterEach(() => {
+			client.send.mockClear();
+		});
+
+		it('should truncate result when max is given', async () => {
+			const { prefix, keys, responseContents } = setup();
+
+			// @ts-expect-error ignore parameter type of mock function
+			client.send.mockResolvedValue({
+				IsTruncated: false,
+				Contents: responseContents.slice(0, 500),
+			});
+
+			const resultKeys = await service.list(prefix, 500);
+
+			expect(resultKeys).toEqual(keys.slice(0, 500));
+
+			expect(client.send).toBeCalledWith(
+				expect.objectContaining({
+					input: {
+						Bucket: 'test-bucket',
+						Prefix: prefix,
+						ContinuationToken: undefined,
+						MaxKeys: 500,
+					},
+				})
+			);
+		});
+
+		it('should call send() multiple times if bucket contains more than 1000 keys', async () => {
+			const { prefix, responseContents, keys } = setup();
+
+			client.send
+				// @ts-expect-error ignore parameter type of mock function
+				.mockResolvedValueOnce({
+					IsTruncated: true,
+					NextContinuationToken: '1',
+					Contents: responseContents.slice(0, 1000),
+				})
+				// @ts-expect-error ignore parameter type of mock function
+				.mockResolvedValueOnce({
+					IsTruncated: true,
+					NextContinuationToken: '2',
+					Contents: responseContents.slice(1000, 2000),
+				})
+				// @ts-expect-error ignore parameter type of mock function
+				.mockResolvedValueOnce({
+					Contents: responseContents.slice(2000),
+				});
+
+			const resultKeys = await service.list(prefix);
+
+			expect(resultKeys).toEqual(keys);
+
+			expect(client.send).toHaveBeenNthCalledWith(
+				1,
+				expect.objectContaining({
+					input: {
+						Bucket: 'test-bucket',
+						Prefix: prefix,
+						ContinuationToken: undefined,
+					},
+				})
+			);
+
+			expect(client.send).toHaveBeenNthCalledWith(
+				2,
+				expect.objectContaining({
+					input: {
+						Bucket: 'test-bucket',
+						Prefix: prefix,
+						ContinuationToken: '1',
+					},
+				})
+			);
+
+			expect(client.send).toHaveBeenNthCalledWith(
+				3,
+				expect.objectContaining({
+					input: {
+						Bucket: 'test-bucket',
+						Prefix: prefix,
+						ContinuationToken: '2',
+					},
+				})
+			);
+		});
+
+		it('should throw error if client rejects with an error', async () => {
+			const { prefix } = setup();
+
+			// @ts-expect-error ignore parameter type of mock function
+			client.send.mockRejectedValue(new Error());
+
+			const listPromise = service.list(prefix);
+
+			await expect(listPromise).rejects.toThrow();
+		});
+	});
 });

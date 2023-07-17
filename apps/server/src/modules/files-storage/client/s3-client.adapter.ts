@@ -4,6 +4,9 @@ import {
 	CreateBucketCommand,
 	DeleteObjectsCommand,
 	GetObjectCommand,
+	HeadObjectCommand,
+	ListObjectsV2Command,
+	ListObjectsV2CommandOutput,
 	S3Client,
 	ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
@@ -181,6 +184,61 @@ export class S3ClientAdapter implements IStorageClient {
 		});
 
 		return this.client.send(req);
+	}
+
+	public async list(prefix: string, maxKeys?: number) {
+		this.logger.log({ action: 'list', params: { prefix, bucket: this.config.bucket } });
+
+		try {
+			let files: string[] = [];
+			let ret: ListObjectsV2CommandOutput | undefined;
+
+			do {
+				const req = new ListObjectsV2Command({
+					Bucket: this.config.bucket,
+					Prefix: prefix,
+					ContinuationToken: ret?.NextContinuationToken,
+					MaxKeys: maxKeys && maxKeys - files.length,
+				});
+
+				// Iterations are dependent on each other
+				// eslint-disable-next-line no-await-in-loop
+				ret = await this.client.send(req);
+
+				const returnedFiles =
+					ret?.Contents?.filter((o) => o.Key)
+						.map((o) => o.Key as string) // Can not be undefined because of filter above
+						.map((key) => key.substring(prefix.length)) ?? [];
+
+				files = files.concat(returnedFiles);
+			} while (ret?.IsTruncated && (!maxKeys || files.length < maxKeys));
+
+			return files;
+		} catch (err) {
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:list');
+		}
+	}
+
+	public async head(path: string) {
+		try {
+			this.logger.log({ action: 'head', params: { path, bucket: this.config.bucket } });
+
+			const req = new HeadObjectCommand({
+				Bucket: this.config.bucket,
+				Key: path,
+			});
+
+			const headResponse = await this.client.send(req);
+
+			return headResponse;
+		} catch (err) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			if (err.message && err.message === 'NoSuchKey') {
+				this.logger.log(`could not find the file for head with id ${path}`);
+				throw new NotFoundException('NoSuchKey');
+			}
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:head');
+		}
 	}
 
 	/* istanbul ignore next */
