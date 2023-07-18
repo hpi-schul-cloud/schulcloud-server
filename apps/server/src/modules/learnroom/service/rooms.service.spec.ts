@@ -173,7 +173,7 @@ describe('rooms service', () => {
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
-						expect(columnBoardService.create).toBeCalledWith<BoardExternalReference[]>({
+						expect(columnBoardService.createWelcomeColumnBoard).toBeCalledWith<BoardExternalReference[]>({
 							type: BoardExternalReferenceType.Course,
 							id: board.course.id,
 						});
@@ -186,7 +186,9 @@ describe('rooms service', () => {
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
-						expect(columnBoardService.create).not.toBeCalledWith(expect.objectContaining({ id: board.course.id }));
+						expect(columnBoardService.createWelcomeColumnBoard).not.toBeCalledWith(
+							expect.objectContaining({ id: board.course.id })
+						);
 					});
 				});
 
@@ -213,7 +215,7 @@ describe('rooms service', () => {
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
-						expect(columnBoardService.create).toBeCalledWith<BoardExternalReference[]>({
+						expect(columnBoardService.createWelcomeColumnBoard).toBeCalledWith<BoardExternalReference[]>({
 							type: BoardExternalReferenceType.Course,
 							id: board.course.id,
 						});
@@ -235,7 +237,7 @@ describe('rooms service', () => {
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
-						expect(columnBoardService.create).toBeCalledWith<BoardExternalReference[]>({
+						expect(columnBoardService.createWelcomeColumnBoard).toBeCalledWith<BoardExternalReference[]>({
 							type: BoardExternalReferenceType.Course,
 							id: board.course.id,
 						});
@@ -256,7 +258,7 @@ describe('rooms service', () => {
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
-						expect(columnBoardService.create).not.toBeCalled();
+						expect(columnBoardService.createWelcomeColumnBoard).not.toBeCalled();
 					});
 				});
 
