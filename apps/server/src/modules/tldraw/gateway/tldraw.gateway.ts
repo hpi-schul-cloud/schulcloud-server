@@ -8,17 +8,10 @@ import { WSSharedDoc, setupWSConnection, setPersistence } from '../utils';
 
 let connectionString: string;
 
-const ENVIRONMENTS = {
-	DEVELOPMENT: 'development',
-	TEST: 'test',
-	PRODUCTION: 'production',
-	MIGRATION: 'migration',
-};
-
 const NODE_ENV = Configuration.get('NODE_ENV') as NodeEnvType;
 
 switch (NODE_ENV) {
-	case ENVIRONMENTS.TEST:
+	case NodeEnvType.TEST:
 		connectionString = 'mongodb://127.0.0.1:27017/tldraw-test';
 		break;
 	default:
