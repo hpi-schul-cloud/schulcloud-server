@@ -457,7 +457,7 @@ describe('[ImportUserModule]', () => {
 			let userRepoByIdSpy: jest.SpyInstance;
 			let permissionServiceSpy: jest.SpyInstance;
 			let importUserRepoFindImportUsersSpy: jest.SpyInstance;
-			let importUserRepoDeleteImportUsersBySchoolSpy: jest.SpyInstance;
+			let importUserRepoDeleteImportUser: jest.SpyInstance;
 			let schoolServiceSaveSpy: jest.SpyInstance;
 			let schoolServiceSpy: jest.SpyInstance;
 			let userRepoFlushSpy: jest.SpyInstance;
@@ -503,7 +503,7 @@ describe('[ImportUserModule]', () => {
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				});
-				importUserRepoDeleteImportUsersBySchoolSpy = importUserRepo.deleteImportUsersBySchool.mockResolvedValue();
+				importUserRepoDeleteImportUser = importUserRepo.delete.mockResolvedValue();
 				schoolServiceSaveSpy = schoolService.save.mockReturnValueOnce(Promise.resolve(createMockSchoolDo(school)));
 			});
 			afterEach(() => {
@@ -511,7 +511,7 @@ describe('[ImportUserModule]', () => {
 				permissionServiceSpy.mockRestore();
 				importUserRepoFindImportUsersSpy.mockRestore();
 				accountServiceFindByUserIdSpy.mockRestore();
-				importUserRepoDeleteImportUsersBySchoolSpy.mockRestore();
+				importUserRepoDeleteImportUser.mockRestore();
 				schoolServiceSpy.mockRestore();
 				schoolServiceSaveSpy.mockRestore();
 				userRepoFlushSpy.mockRestore();
@@ -552,7 +552,7 @@ describe('[ImportUserModule]', () => {
 			});
 			it('should remove import users for school', async () => {
 				await uc.saveAllUsersMatches(currentUser.id);
-				expect(importUserRepoDeleteImportUsersBySchoolSpy).toHaveBeenCalledWith(school);
+				expect(importUserRepoDeleteImportUser).toHaveBeenCalledWith(importUser1);
 			});
 			it('should throw if school data is inconsistent', async () => {
 				schoolServiceSpy.mockRestore();
