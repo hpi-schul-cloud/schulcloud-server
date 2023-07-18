@@ -319,10 +319,12 @@
 				},
 				"S3_ACCESS_KEY": {
 					"type": "string",
+					"default": "",
 					"description": "Access Key to S3"
 				},
 				"S3_SECRET_KEY": {
 					"type": "string",
+					"default": "",
 					"description": "Secret key to S3"
 				},
 				"S3_BUCKET_TEMP_FILES": {

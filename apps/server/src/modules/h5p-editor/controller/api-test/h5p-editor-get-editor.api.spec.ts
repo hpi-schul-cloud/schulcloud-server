@@ -8,6 +8,7 @@ import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, u
 import { ICurrentUser } from '@src/modules/authentication';
 import { Request } from 'express';
 import { DeepMocked, createMock } from '@golevelup/ts-jest/lib/mocks';
+import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 import { H5PEditorUc } from '../../uc/h5p.uc';
 
@@ -48,6 +49,8 @@ describe('H5PEditor Controller (api)', () => {
 					return true;
 				},
 			})
+			.overrideProvider(S3ClientAdapter)
+			.useValue(createMock<S3ClientAdapter>())
 			.overrideProvider(H5PEditorUc)
 			.useValue(createMock<H5PEditorUc>())
 			.compile();

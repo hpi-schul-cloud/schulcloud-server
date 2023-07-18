@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
-import { Module, NotFoundException } from '@nestjs/common';
+import { Module, NotFoundException, Scope } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Account, Role, School, SchoolYear, System, User } from '@shared/domain';
 import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq';
@@ -13,21 +13,21 @@ import { CoreModule } from '@src/core';
 import { LegacyLogger, Logger } from '@src/core/logger';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { AuthorizationModule } from '@src/modules/authorization';
-
+import { S3ClientAdapter } from '../files-storage/client/s3-client.adapter';
 import { H5PEditorController } from './controller/h5p-editor.controller';
-import { config } from './h5p-editor.config';
+import { config, s3Config } from './h5p-editor.config';
+import { S3Config } from './interface/config';
 import { H5PAjaxEndpointService } from './service';
 import { H5PEditorService } from './service/h5p-editor.service';
 import { H5PPlayerService } from './service/h5p-player.service';
 import { H5PEditorUc } from './uc/h5p.uc';
-
 import { ContentStorage } from './contentStorage/contentStorage';
 import { LibraryStorage } from './libraryStorage/libraryStorage';
 import { TemporaryFileStorage } from './temporary-file-storage/temporary-file-storage';
 import { TemporaryFileRepo } from './temporary-file-storage/temporary-file.repo';
-import { S3ClientAdapter } from '../files-storage/client/s3-client.adapter';
-import { S3Config } from '../files-storage/interface';
 import { s3ConfigTempFiles } from './s3-config';
+import { H5PContentRepo } from './contentStorage/h5p-content.repo';
+import { H5PContent } from './contentStorage/h5p-content.entity';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -61,7 +61,7 @@ const imports = [
 		clientUrl: DB_URL,
 		password: DB_PASSWORD,
 		user: DB_USERNAME,
-		entities: [User, Account, Role, School, System, SchoolYear],
+		entities: [User, Account, H5PContent, Role, School, System, SchoolYear],
 
 		// debug: true, // use it for locally debugging of querys
 	}),
@@ -74,11 +74,12 @@ const providers = [
 	Logger,
 	S3ClientAdapter,
 	H5PEditorUc,
+	H5PContentRepo,
 	H5PEditorService,
 	H5PPlayerService,
 	H5PAjaxEndpointService,
+	ContentStorage,
 	TemporaryFileStorage,
-	{ provide: ContentStorage, useValue: new ContentStorage(path.join(os.tmpdir(), '/h5p_content')) },
 	{ provide: LibraryStorage, useValue: new LibraryStorage(path.join(os.tmpdir(), '/h5p_libraries')) },
 	{
 		provide: 'S3ClientAdapter_TempFiles',
@@ -89,6 +90,26 @@ const providers = [
 	{
 		provide: 'S3Config_TempFiles',
 		useValue: s3ConfigTempFiles,
+	},
+	{
+		provide: 'S3_Client',
+		scope: Scope.REQUEST,
+		useFactory: (configProvider: S3Config) =>
+			new S3Client({
+				region: configProvider.region,
+				credentials: {
+					accessKeyId: configProvider.accessKeyId,
+					secretAccessKey: configProvider.secretAccessKey,
+				},
+				endpoint: configProvider.endpoint,
+				forcePathStyle: true,
+				tls: true,
+			}),
+		inject: ['S3_Config'],
+	},
+	{
+		provide: 'S3_Config',
+		useValue: s3Config,
 	},
 ];
 

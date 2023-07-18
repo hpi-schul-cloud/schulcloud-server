@@ -20,6 +20,8 @@ import { H5PAjaxEndpointService, H5PEditorService, H5PPlayerService } from './se
 import { TemporaryFileStorage } from './temporary-file-storage/temporary-file-storage';
 import { H5PEditorUc } from './uc/h5p.uc';
 import { s3ConfigTempFiles } from './s3-config';
+import { S3ClientAdapter } from '../files-storage/client/s3-client.adapter';
+import { H5PContentRepo } from './contentStorage/h5p-content.repo';
 
 const imports = [
 	H5PEditorModule,
@@ -37,7 +39,9 @@ const providers = [
 	H5PPlayerService,
 	H5PEditorService,
 	H5PAjaxEndpointService,
-	{ provide: ContentStorage, useValue: new ContentStorage(path.join(os.tmpdir(), '/h5p_content')) },
+	H5PContentRepo,
+	ContentStorage,
+	S3ClientAdapter,
 	{ provide: LibraryStorage, useValue: new LibraryStorage(path.join(os.tmpdir(), '/h5p_libraries')) },
 	TemporaryFileStorage,
 	{
