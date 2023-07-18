@@ -9,8 +9,6 @@ const CALLBACK_URL = (Configuration.get('FEATURE_TLDRAW_CALLBACK_URL') ?? '') as
 const CALLBACK_TIMEOUT: number = (Configuration.get('FEATURE_TLDRAW_CALLBACK_TIMEOUT') ?? 5000) as number;
 const CALLBACK_OBJECTS = Configuration.get('FEATURE_TLDRAW_CALLBACK_OBJ') as Map<string, unknown>;
 
-export const isCallbackSet = !!CALLBACK_URL;
-
 /**
  * Take axios response and convert into internal response format
  * @private

@@ -6,7 +6,7 @@ import { writeUpdate, readSyncMessage, writeSyncStep1 } from 'y-protocols/sync';
 import { debounce } from 'lodash';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import WebSocket from 'ws';
-import { callbackHandler, isCallbackSet } from '@src/modules/tldraw/utils/';
+import { callbackHandler } from '@src/modules/tldraw/utils/';
 import { WSMessageType, WSConnectionState, Persitence } from '@src/modules/tldraw/types';
 
 const CALLBACK_DEBOUNCE_WAIT: number = (Configuration.get('FEATURE_TLDRAW_CALLBACK_DEBOUNCE_WAIT') as number) ?? 2000;
@@ -95,6 +95,10 @@ export class WSSharedDoc extends Doc {
 
 	awareness: Awareness;
 
+	CALLBACK_URL = (Configuration.get('FEATURE_TLDRAW_CALLBACK_URL') ?? '') as URL;
+
+	isCallbackSet: boolean;
+
 	/**
 	 * @param {string} name
 	 */
@@ -104,6 +108,7 @@ export class WSSharedDoc extends Doc {
 		this.conns = new Map();
 		this.awareness = new Awareness(this);
 		this.awareness.setLocalState(null);
+		this.isCallbackSet = !!this.CALLBACK_URL;
 
 		/**
 		 * @param {{ added: Array<number>, updated: Array<number>, removed: Array<number> }} changes
@@ -136,7 +141,7 @@ export class WSSharedDoc extends Doc {
 		};
 		this.awareness.on('update', awarenessChangeHandler);
 		this.on('update', updateHandler);
-		if (isCallbackSet) {
+		if (this.isCallbackSet) {
 			this.on('update', debounce(callbackHandler, CALLBACK_DEBOUNCE_WAIT, { maxWait: CALLBACK_DEBOUNCE_MAX_WAIT }));
 		}
 	}

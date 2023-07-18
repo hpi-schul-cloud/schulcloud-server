@@ -18,20 +18,14 @@ const imports = [
 	CoreModule,
 	LoggerModule,
 ];
-const controllers = [];
-const providers = [];
 @Module({
 	imports,
-	controllers,
-	providers,
 })
 export class TldrawTestModule {
 	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		return {
 			module: TldrawTestModule,
 			imports: [...imports, MongoMemoryDatabaseModule.forRoot({ ...options })],
-			controllers,
-			providers,
 		};
 	}
 }
