@@ -6,7 +6,8 @@ import { writeUpdate, readSyncMessage, writeSyncStep1 } from 'y-protocols/sync';
 import { debounce } from 'lodash';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import WebSocket from 'ws';
-import { isCallbackSet, callbackHandler } from './callback';
+import { callbackHandler, isCallbackSet } from '@src/modules/tldraw/utils/';
+import { WSMessageType, WSConnectionState, Persitence } from '@src/modules/tldraw/types';
 
 const CALLBACK_DEBOUNCE_WAIT: number = (Configuration.get('FEATURE_TLDRAW_CALLBACK_DEBOUNCE_WAIT') as number) ?? 2000;
 const CALLBACK_DEBOUNCE_MAX_WAIT: number =
@@ -14,21 +15,6 @@ const CALLBACK_DEBOUNCE_MAX_WAIT: number =
 const pingTimeout: number = (Configuration.get('FEATURE_TLDRAW_PING_TIMEOUT') as number) ?? 30000;
 // disable gc when using snapshots!
 const gcEnabled: boolean = Configuration.get('FEATURE_TLDRAW_GC_ENABLED') as boolean;
-
-enum WSConnectionState {
-	CONNECTING = 0,
-	OPEN = 1,
-}
-
-enum WSMessageType {
-	SYNC = 0,
-	AWARENESS = 1,
-}
-
-type Persitence = {
-	bindState: (arg0: string, arg1: WSSharedDoc) => void;
-	writeState: (arg0: string, arg1: WSSharedDoc) => Promise<any>;
-};
 
 /**
  * @type {{bindState: function(string,WSSharedDoc):void, writeState:function(string,WSSharedDoc):Promise<any>, provider: any}|null}
@@ -168,7 +154,7 @@ export const getYDoc = (docname: string, gc = true) =>
 		const doc = new WSSharedDoc(docname);
 		doc.gc = gc;
 		if (persistence !== null) {
-			persistence.bindState(docname, doc);
+			void persistence.bindState(docname, doc);
 		}
 		docs.set(docname, doc);
 		return doc;

@@ -1,72 +1,22 @@
-import * as http from "http";
-import axios, { AxiosResponse } from 'axios';
-import lodash from "lodash";
+import axios, { AxiosError, AxiosRequestConfig } from 'axios';
+import lodash from 'lodash';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Timeout, GeneralError } from '@feathersjs/errors';
-const CALLBACK_URL = Configuration.get('FEATURE_TLDRAW_CALLBACK_URL') as string ? new URL(Configuration.get('FEATURE_TLDRAW_CALLBACK_URL')) : null;
-const CALLBACK_TIMEOUT = Configuration.get('FEATURE_TLDRAW_CALLBACK_TIMEOUT') ?? 5000;
-const CALLBACK_OBJECTS = Configuration.get('FEATURE_TLDRAW_CALLBACK_OBJ') ? JSON.parse(Configuration.get('FEATURE_TLDRAW_CALLBACK_OBJ')) : {};
+import { WSSharedDoc } from '@src/modules/tldraw/utils';
+import { DataToSend, RequestOptions, TldrawAxiosResponse } from '../types';
+
+const CALLBACK_URL = (Configuration.get('FEATURE_TLDRAW_CALLBACK_URL') ?? '') as URL;
+const CALLBACK_TIMEOUT: number = (Configuration.get('FEATURE_TLDRAW_CALLBACK_TIMEOUT') ?? 5000) as number;
+const CALLBACK_OBJECTS = Configuration.get('FEATURE_TLDRAW_CALLBACK_OBJ') as Map<string, unknown>;
 
 export const isCallbackSet = !!CALLBACK_URL;
 
 /**
- * @param {Uint8Array} update
- * @param {any} origin
- * @param {WSSharedDoc} doc
- */
-export const callbackHandler = (update, origin, doc) => {
-	const room = doc.name;
-	const dataToSend = {
-		room,
-		data: {}
-	};
-	const sharedObjectList = Object.keys(CALLBACK_OBJECTS);
-	sharedObjectList.forEach(sharedObjectName => {
-		const sharedObjectType = CALLBACK_OBJECTS[sharedObjectName];
-		dataToSend.data[sharedObjectName] = {
-			type: sharedObjectType,
-			content: getContent(sharedObjectName, sharedObjectType, doc).toJSON(),
-		}
-	});
-	callbackRequest(CALLBACK_URL, CALLBACK_TIMEOUT, dataToSend);
-}
-
-/**
- * @param {URL} url
- * @param {number} timeout
- * @param {Object} data
- */
-const callbackRequest = (url, timeout, data) => {
-	data = JSON.stringify(data);
-	const axiosClient = axios.create();
-
-	const options = {
-		hostname: url.hostname,
-		port: url.port,
-		path: url.pathname,
-		timeout,
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			'Content-Length': data.length
-		}
-	};
-
-	const requestOptions = lodash.merge({ ...url, ...options });
-	axiosClient.request(requestOptions).then(transformResponse).catch(transformErrorResponse);
-}
-
-/**
  * Take axios response and convert into internal response format
  * @private
- * @param config
- * @param data
- * @param headers
- * @param request
- * @param status
- * @param statusText
+ * @param {TldrawAxiosResponse} response like axios response defined in request wrapper
  */
-function transformResponse({ config, data, headers, request, status, statusText }: AxiosResponse) {
+function transformResponse({ config, data, headers, request, status, statusText }: TldrawAxiosResponse) {
 	// return internal response format
 	return {
 		config,
@@ -82,10 +32,10 @@ function transformResponse({ config, data, headers, request, status, statusText 
  * Transform axios response to internal format
  * @private
  */
-function transformErrorResponse(error) {
+function transformErrorResponse(error: AxiosError) {
 	if (error.response) {
 		// we got a non-200 response which can be responded but will still be thrown
-		throw this.transformResponse(error.response);
+		throw new GeneralError('response error', transformResponse(error.response as TldrawAxiosResponse));
 	}
 	if (error.request) {
 		// The request was made but no response was received
@@ -99,17 +49,73 @@ function transformErrorResponse(error) {
 }
 
 /**
+ * @param {URL} url
+ * @param {number} timeout
+ * @param {DataToSend} data
+ */
+const callbackRequest = (url: URL, timeout: number, data: DataToSend) => {
+	const dataStr = JSON.stringify(data);
+	const axiosClient = axios.create();
+
+	const options: RequestOptions = {
+		hostname: url.hostname,
+		port: url.port,
+		path: url.pathname,
+		timeout,
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Content-Length': String(dataStr.length),
+		},
+	};
+
+	const requestOptions = lodash.merge({ ...url, ...options }) as AxiosRequestConfig;
+	axiosClient
+		.request(requestOptions)
+		.then((response) => transformResponse(response as TldrawAxiosResponse))
+		.catch(transformErrorResponse);
+};
+
+/**
  * @param {string} objName
  * @param {string} objType
  * @param {WSSharedDoc} doc
  */
-const getContent = (objName, objType, doc) => {
+const getContent = (objName: string, objType: string, doc: WSSharedDoc): { [p: string]: any } | string => {
 	switch (objType) {
-		case 'Array': return doc.getArray(objName);
-		case 'Map': return doc.getMap(objName);
-		case 'Text': return doc.getText(objName);
-		case 'XmlFragment': return doc.getXmlFragment(objName);
-		case 'XmlElement': return doc.getXmlElement(objName);
-		default : return {};
+		case 'Array':
+			return doc.getArray(objName).toJSON() as string[];
+		case 'Map':
+			return doc.getMap(objName).toJSON();
+		case 'Text':
+			return doc.getText(objName).toJSON();
+		case 'XmlFragment':
+			return doc.getXmlFragment(objName).toJSON();
+		default:
+			return {};
 	}
-}
+};
+
+/**
+ * @param {Uint8Array} update
+ * @param {any} origin
+ * @param {WSSharedDoc} doc
+ */
+export const callbackHandler = (update: Uint8Array, origin, doc: WSSharedDoc) => {
+	const room = doc.name;
+	const dataToSend: DataToSend = {
+		room,
+		data: null,
+	};
+	const sharedObjectList = Object.keys(CALLBACK_OBJECTS);
+	sharedObjectList.forEach((sharedObjectName) => {
+		const sharedObjectType = CALLBACK_OBJECTS[sharedObjectName] as string;
+		if (dataToSend.data) {
+			dataToSend.data[sharedObjectName] = {
+				type: sharedObjectType,
+				content: getContent(sharedObjectName, sharedObjectType, doc),
+			};
+		}
+	});
+	callbackRequest(CALLBACK_URL, CALLBACK_TIMEOUT, dataToSend);
+};

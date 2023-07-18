@@ -1,13 +1,10 @@
-import {
-	WebSocketGateway,
-	WebSocketServer,
-	OnGatewayInit,
-	OnGatewayConnection,
-} from '@nestjs/websockets';
-import { Server } from 'ws';
-import * as Y from 'yjs';
+import { WebSocketGateway, WebSocketServer, OnGatewayInit, OnGatewayConnection } from '@nestjs/websockets';
+import { Server, WebSocket } from 'ws';
+import { encodeStateVector, encodeStateAsUpdate, applyUpdate, Doc } from 'yjs';
 import * as MongodbPersistence from 'y-mongodb-provider';
-import { WSSharedDoc, setupWSConnection, setPersistence } from '@src/modules/tldraw/utils/utils';
+import { NodeEnvType } from '@src/modules/server';
+import { Configuration } from '@hpi-schul-cloud/commons';
+import { WSSharedDoc, setupWSConnection, setPersistence } from '../utils';
 
 let connectionString: string;
 
@@ -18,7 +15,7 @@ const ENVIRONMENTS = {
 	MIGRATION: 'migration',
 };
 
-const { NODE_ENV = ENVIRONMENTS.DEVELOPMENT } = process.env;
+const NODE_ENV = Configuration.get('NODE_ENV') as NodeEnvType;
 
 switch (NODE_ENV) {
 	case ENVIRONMENTS.TEST:
@@ -28,37 +25,37 @@ switch (NODE_ENV) {
 		connectionString = 'mongodb://127.0.0.1:27017/tldraw';
 }
 
-
 @WebSocketGateway(3345)
 export class TldrawGateway implements OnGatewayInit, OnGatewayConnection {
 	@WebSocketServer()
 	server!: Server;
+
 	doc: WSSharedDoc | undefined;
 
-	handleConnection(client: any, request) {
-		const docName =  request.url.slice(1).split('?')[0];
+	handleConnection(client: WebSocket, request: Request) {
+		const docName = request.url.slice(1).split('?')[0];
 		setupWSConnection(client, docName);
 	}
 
-	afterInit(server: Server) {
+	afterInit() {
 		const mdb = new MongodbPersistence.MongodbPersistence(connectionString, {
 			collectionName: 'docs',
 			flushSize: 400,
-			multipleCollections: false
-		});
+			multipleCollections: false,
+		}) as MongodbPersistence;
 
 		setPersistence({
 			bindState: async (docName, ydoc) => {
-				const persistedYdoc = await mdb.getYDoc(docName);
-				const persistedStateVector = Y.encodeStateVector(persistedYdoc);
-				const diff = Y.encodeStateAsUpdate(ydoc, persistedStateVector);
+				const persistedYdoc = await (mdb.getYDoc(docName) as Promise<Doc>);
+				const persistedStateVector = encodeStateVector(persistedYdoc);
+				const diff = encodeStateAsUpdate(ydoc, persistedStateVector);
 				if (diff.reduce((previousValue, currentValue) => previousValue + currentValue, 0) > 0) {
 					mdb.storeUpdate(docName, diff);
 				}
 
-				Y.applyUpdate(ydoc, Y.encodeStateAsUpdate(persistedYdoc));
+				applyUpdate(ydoc, encodeStateAsUpdate(persistedYdoc));
 
-				ydoc.on('update', async update => {
+				ydoc.on('update', (update) => {
 					mdb.storeUpdate(docName, update);
 				});
 
@@ -67,7 +64,7 @@ export class TldrawGateway implements OnGatewayInit, OnGatewayConnection {
 			writeState: async (docName) => {
 				// This is called when all connections to the document are closed.
 				await mdb.flushDocument(docName);
-			}
+			},
 		});
 	}
 }

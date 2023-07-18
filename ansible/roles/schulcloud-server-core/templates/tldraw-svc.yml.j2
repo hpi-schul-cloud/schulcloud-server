@@ -12,8 +12,8 @@ spec:
   type: ClusterIP
   ports:
     - port: {{ PORT_TLDRAW }}
-      targetPort: 3344
+      targetPort: 3345
       protocol: TCP
-      name: api-h5p
+      name: tldraw
   selector:
     app: tldraw
