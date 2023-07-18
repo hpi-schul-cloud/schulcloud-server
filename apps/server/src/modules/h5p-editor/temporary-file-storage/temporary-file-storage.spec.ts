@@ -131,7 +131,7 @@ describe('TemporaryFileStorage', () => {
 		describe('WHEN file exists', () => {
 			it('should delete file', async () => {
 				const { user1, file1 } = setup();
-				repo.findByUserAndPath.mockResolvedValue(file1);
+				repo.findByUserAndFilename.mockResolvedValue(file1);
 				await storage.deleteFile(file1.filename, user1.id);
 				expect(repo.delete).toHaveBeenCalled();
 				expect(s3clientAdapter.delete).toHaveBeenCalledWith([join(user1.id, file1.filename)]);
@@ -140,7 +140,7 @@ describe('TemporaryFileStorage', () => {
 		describe('WHEN file does not exist', () => {
 			it('should throw error', async () => {
 				const { user1, file1 } = setup();
-				repo.findByUserAndPath.mockImplementation(() => {
+				repo.findByUserAndFilename.mockImplementation(() => {
 					throw new Error('Not found');
 				});
 				await expect(async () => {
@@ -156,7 +156,7 @@ describe('TemporaryFileStorage', () => {
 		describe('WHEN file exists', () => {
 			it('should return true', async () => {
 				const { user1, file1 } = setup();
-				repo.findByUserAndPath.mockResolvedValue(file1);
+				repo.findByUserAndFilename.mockResolvedValue(file1);
 				await expect(storage.fileExists(file1.filename, user1)).resolves.toBe(true);
 			});
 		});
@@ -172,7 +172,7 @@ describe('TemporaryFileStorage', () => {
 		describe('WHEN file exists', () => {
 			it('should return file stats', async () => {
 				const { user1, file1 } = setup();
-				repo.findByUserAndPath.mockResolvedValue(file1);
+				repo.findByUserAndFilename.mockResolvedValue(file1);
 				const filestats = await storage.getFileStats(file1.filename, user1);
 				expect(filestats.size).toBe(file1.size);
 				expect(filestats.birthtime).toBe(file1.birthtime);
@@ -181,7 +181,7 @@ describe('TemporaryFileStorage', () => {
 		describe('WHEN file does not exist', () => {
 			it('should throw error', async () => {
 				const { user1 } = setup();
-				repo.findByUserAndPath.mockImplementation(() => {
+				repo.findByUserAndFilename.mockImplementation(() => {
 					throw new Error('Not found');
 				});
 				await expect(async () => storage.getFileStats('abc/nonexistingfile.txt', user1)).rejects.toThrow();
@@ -201,7 +201,7 @@ describe('TemporaryFileStorage', () => {
 					contentRange: undefined,
 					etag: undefined,
 				};
-				repo.findByUserAndPath.mockResolvedValue(file1);
+				repo.findByUserAndFilename.mockResolvedValue(file1);
 				s3clientAdapter.get.mockResolvedValue(response);
 				const stream = await storage.getFileStream(file1.filename, user1);
 				let content = Buffer.alloc(0);
@@ -219,7 +219,7 @@ describe('TemporaryFileStorage', () => {
 		describe('WHEN file does not exist', () => {
 			it('should throw error', async () => {
 				const { user1 } = setup();
-				repo.findByUserAndPath.mockImplementation(() => {
+				repo.findByUserAndFilename.mockImplementation(() => {
 					throw new Error('Not found');
 				});
 				await expect(async () => storage.getFileStream('abc/nonexistingfile.txt', user1)).rejects.toThrow();
@@ -257,7 +257,7 @@ describe('TemporaryFileStorage', () => {
 				const newData = 'This is new fake H5P content.';
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 				const readStream = Readable.from(newData) as ReadStream;
-				repo.findByUserAndPath.mockResolvedValue(file1);
+				repo.findByUserAndFilename.mockResolvedValue(file1);
 				let savedData = Buffer.alloc(0);
 				s3clientAdapter.create.mockImplementation(async (path: string, file: FileDto) => {
 					savedData += file.data.read();
@@ -274,7 +274,7 @@ describe('TemporaryFileStorage', () => {
 				const filename = 'newfile.txt';
 				const newData = 'This is new fake H5P content.';
 				const readStream = Readable.from(newData) as ReadStream;
-				repo.findByUserAndPath.mockImplementation(() => {
+				repo.findByUserAndFilename.mockImplementation(() => {
 					throw new Error('Not found');
 				});
 				let savedData = Buffer.alloc(0);

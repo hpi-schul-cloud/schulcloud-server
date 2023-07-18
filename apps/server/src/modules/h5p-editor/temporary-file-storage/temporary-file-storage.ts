@@ -19,9 +19,9 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		throw new Error(`Filename contains forbidden characters or is empty: '${filename}'`);
 	}
 
-	private async getFileInfo(filename: string, userId: string): Promise<TemporaryFile> {
+	private getFileInfo(filename: string, userId: string): Promise<TemporaryFile> {
 		this.checkFilename(filename);
-		return this.repo.findByUserAndPath(userId, filename);
+		return this.repo.findByUserAndFilename(userId, filename);
 	}
 
 	public sanitizeFilename?(filename: string): string {
@@ -32,7 +32,7 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 
 	public async deleteFile(filename: string, userId: string): Promise<void> {
 		this.checkFilename(filename);
-		const meta = await this.repo.findByUserAndPath(userId, filename);
+		const meta = await this.repo.findByUserAndFilename(userId, filename);
 		await this.s3Client.delete([join(userId, filename)]);
 		await this.repo.delete(meta);
 	}
@@ -40,7 +40,7 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 	public async fileExists(filename: string, user: IUser): Promise<boolean> {
 		this.checkFilename(filename);
 		try {
-			await this.repo.findByUserAndPath(user.id, filename);
+			await this.repo.findByUserAndFilename(user.id, filename);
 			return true;
 		} catch (error) {
 			return false;
@@ -58,7 +58,7 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		rangeEnd?: number | undefined
 	): Promise<Readable> {
 		this.checkFilename(filename);
-		const tempFile = await this.repo.findByUserAndPath(user.id, filename);
+		const tempFile = await this.repo.findByUserAndFilename(user.id, filename);
 		const path = join(user.id, filename);
 		if (rangeStart === undefined) {
 			if (rangeEnd === undefined) {
@@ -92,7 +92,7 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		const path = join(user.id, filename);
 		let tempFile: TemporaryFile | undefined;
 		try {
-			tempFile = await this.repo.findByUserAndPath(user.id, filename);
+			tempFile = await this.repo.findByUserAndFilename(user.id, filename);
 			await this.s3Client.delete([path]);
 		} catch (err) {
 			/* does not exist */
