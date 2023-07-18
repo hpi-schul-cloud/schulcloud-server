@@ -4,6 +4,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 import { H5PEditorTestModule } from '@src/modules/h5p-editor/h5p-editor-test.module';
 
 describe('H5PEditor Controller (api)', () => {
@@ -17,6 +18,8 @@ describe('H5PEditor Controller (api)', () => {
 		const module = await Test.createTestingModule({
 			imports: [H5PEditorTestModule],
 		})
+			.overrideProvider(S3ClientAdapter)
+			.useValue(createMock<S3ClientAdapter>())
 			.overrideProvider(H5PAjaxEndpoint)
 			.useValue(createMock<H5PAjaxEndpoint>())
 			.compile();

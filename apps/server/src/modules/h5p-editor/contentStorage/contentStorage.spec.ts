@@ -1,143 +1,107 @@
+import { HeadObjectCommandOutput } from '@aws-sdk/client-s3';
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { IContentMetadata, ILibraryName, LibraryName } from '@lumieducation/h5p-server';
+import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IContentMetadata, ILibraryName, IUser } from '@lumieducation/h5p-server';
-import * as fs from 'node:fs';
-import fsPromiseMock from 'node:fs/promises';
-import { Readable, Stream } from 'stream';
-import rimraf from 'rimraf';
-import path from 'node:path';
+import { IEntity } from '@shared/domain';
+import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
+import { IGetFileResponse } from '@src/modules/files-storage/interface';
+import { ObjectID } from 'bson';
+import { Readable } from 'stream';
 import { ContentStorage } from './contentStorage';
+import { H5PContent } from './h5p-content.entity';
+import { H5PContentRepo } from './h5p-content.repo';
 
-function delay(ms: number) {
-	// eslint-disable-next-line no-promise-executor-return
-	return new Promise((resolve) => setTimeout(resolve, ms));
-}
+const helpers = {
+	buildMetadata(
+		title: string,
+		mainLibrary: string,
+		preloadedDependencies: ILibraryName[] = [],
+		dynamicDependencies?: ILibraryName[],
+		editorDependencies?: ILibraryName[]
+	): IContentMetadata {
+		return {
+			defaultLanguage: 'de-DE',
+			license: 'Unlicensed',
+			title,
+			dynamicDependencies,
+			editorDependencies,
+			embedTypes: ['iframe'],
+			language: 'de-DE',
+			mainLibrary,
+			preloadedDependencies,
+		};
+	},
 
-const setup = () => {
-	const dir = './apps/server/src/modules/h5p-editor/contentStorage/testContentStorage/';
+	buildContent(n = 0) {
+		const metadata = helpers.buildMetadata(`Content #${n}`, `Library-${n}.0`);
+		const content = {
+			data: `Data #${n}`,
+		};
 
-	if (!fs.existsSync(dir)) {
-		fs.mkdirSync(dir);
-	}
+		const h5pContent = new H5PContent({ metadata, content });
 
-	const library: ILibraryName = {
-		machineName: 'testLibrary',
-		majorVersion: 1,
-		minorVersion: 0,
-	};
+		return {
+			withID(id?: number) {
+				const objectId = new ObjectID(id);
+				h5pContent._id = objectId;
+				h5pContent.id = objectId.toString();
 
-	const library2: ILibraryName = {
-		machineName: 'testLibrary56',
-		majorVersion: 1,
-		minorVersion: 0,
-	};
+				return h5pContent;
+			},
+			new() {
+				return h5pContent;
+			},
+		};
+	},
 
-	const metadata: IContentMetadata = {
-		embedTypes: ['div'],
-		language: 'de',
-		mainLibrary: 'testLibrary',
-		preloadedDependencies: [library],
-		editorDependencies: [library],
-		dynamicDependencies: [library],
-		defaultLanguage: '',
-		license: '',
-		title: 'Test123',
-	};
+	createUser() {
+		return {
+			canCreateRestricted: false,
+			canInstallRecommended: false,
+			canUpdateAndInstallLibraries: false,
+			email: 'example@schul-cloud.org',
+			id: '12345',
+			name: 'Example User',
+			type: 'user',
+		};
+	},
 
-	const metadata2: IContentMetadata = {
-		embedTypes: ['div'],
-		language: 'de',
-		mainLibrary: 'testLibrary2',
-		preloadedDependencies: [library],
-		defaultLanguage: '',
-		license: '',
-		title: 'Test123',
-	};
+	repoSaveMock: async <Entity extends IEntity>(entities: Entity | Entity[]) => {
+		if (!Array.isArray(entities)) {
+			entities = [entities];
+		}
 
-	const metadata3: IContentMetadata = {
-		embedTypes: ['div'],
-		language: 'de',
-		mainLibrary: 'testLibrary3',
-		preloadedDependencies: [],
-		editorDependencies: [],
-		dynamicDependencies: [],
-		defaultLanguage: '',
-		license: '',
-		title: 'Test123',
-	};
+		for (const entity of entities) {
+			if (!entity._id) {
+				const id = new ObjectID();
+				entity._id = id;
+				entity.id = id.toString();
+			}
+		}
 
-	const testContentFilename = 'testContent.json';
-	fs.writeFileSync(path.join(dir, testContentFilename), JSON.stringify(metadata));
-	const content = testContentFilename;
-	const user: IUser = {
-		canCreateRestricted: false,
-		canInstallRecommended: false,
-		canUpdateAndInstallLibraries: false,
-		email: 'testUser1@testUser123.de',
-		id: '',
-		name: 'User Test',
-		type: '',
-	};
-	const stream: Stream = new Stream();
-
-	const contentId = '2345';
-	const contentId2 = '6789';
-	const contentId4 = '5678906';
-	const notExistingContentId = '987mn';
-	fs.mkdirSync(path.join(dir, contentId.toString()), { recursive: true });
-	fs.writeFileSync(path.join(dir, contentId.toString(), 'h5p.json'), JSON.stringify(metadata));
-	fs.writeFileSync(path.join(dir, contentId.toString(), 'content.json'), JSON.stringify(content));
-
-	fs.mkdirSync(path.join(dir, contentId2), { recursive: true });
-	fs.writeFileSync(path.join(dir, contentId2.toString(), 'h5p.json'), JSON.stringify(metadata2));
-	fs.writeFileSync(path.join(dir, contentId2.toString(), 'content.json'), JSON.stringify(content));
-
-	fs.mkdirSync(path.join(dir, contentId4), { recursive: true });
-	fs.writeFileSync(path.join(dir, contentId4.toString(), 'h5p.json'), JSON.stringify(metadata3));
-	fs.writeFileSync(path.join(dir, contentId4.toString(), 'content.json'), JSON.stringify(content));
-
-	const filename1 = 'testFile1.json';
-	const notExistingFilename = 'testFile987.json';
-	const undefinedContentId = '';
-	const wrongFilename = 'testName!?.json';
-	const filename2 = 'testFiletoAdd123.json';
-	const emptyContentId = '';
-	fs.writeFileSync(path.join(dir, contentId.toString(), filename1), JSON.stringify(content));
-
-	return {
-		content,
-		contentId,
-		contentId2,
-		dir,
-		emptyContentId,
-		filename1,
-		filename2,
-		library,
-		library2,
-		metadata,
-		notExistingContentId,
-		notExistingFilename,
-		stream,
-		undefinedContentId,
-		user,
-		wrongFilename,
-	};
+		return Promise.resolve();
+	},
 };
 
 describe('ContentStorage', () => {
 	let module: TestingModule;
 	let service: ContentStorage;
-	const { dir } = setup();
+	let s3ClientAdapter: DeepMocked<S3ClientAdapter>;
+	let contentRepo: DeepMocked<H5PContentRepo>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				{
-					provide: ContentStorage,
-					useValue: new ContentStorage(dir, { invalidCharactersRegexp: /!/ }),
-				},
+				ContentStorage,
+				{ provide: S3ClientAdapter, useValue: createMock<S3ClientAdapter>() },
+				{ provide: H5PContentRepo, useValue: createMock<H5PContentRepo>() },
 			],
 		}).compile();
+
 		service = module.get(ContentStorage);
+		s3ClientAdapter = module.get(S3ClientAdapter);
+		contentRepo = module.get(H5PContentRepo);
 	});
 
 	afterAll(async () => {
@@ -145,327 +109,786 @@ describe('ContentStorage', () => {
 	});
 
 	afterEach(() => {
-		rimraf.sync(dir);
 		jest.resetAllMocks();
 	});
 
-	it('should be defined', () => {
+	it('service should be defined', () => {
 		expect(service).toBeDefined();
 	});
 
 	describe('addContent', () => {
-		describe('WHEN content is created successfully', () => {
-			it('should return contentId', async () => {
-				const { metadata, content, user } = setup();
-				const contentID = await service.addContent(metadata, content, user);
-				expect(contentID).toBeDefined();
-				expect(typeof contentID).toBe('string');
+		const setup = () => {
+			const newContent = helpers.buildContent(0).new();
+			const existingContent = helpers.buildContent(0).withID();
+
+			const user = helpers.createUser();
+
+			return { newContent, existingContent, user };
+		};
+
+		describe('WHEN adding new content', () => {
+			it('should call H5pContentRepo.save', async () => {
+				const {
+					newContent: { metadata, content },
+					user,
+				} = setup();
+
+				await service.addContent(metadata, content, user);
+
+				expect(contentRepo.save).toHaveBeenCalledWith(expect.objectContaining({ metadata, content }));
+			});
+
+			it('should return content id', async () => {
+				const {
+					newContent: { metadata, content },
+					user,
+				} = setup();
+				contentRepo.save.mockImplementationOnce(helpers.repoSaveMock);
+
+				const id = await service.addContent(metadata, content, user);
+
+				expect(id).toBeDefined();
 			});
 		});
-		describe('WHEN contentId is empty', () => {
-			it('should throw new error', async () => {
-				const { metadata, content, user, emptyContentId } = setup();
-				try {
-					await service.addContent(metadata, content, user, emptyContentId);
-				} catch (err) {
-					expect(err).toBeInstanceOf(Error);
-				}
+
+		describe('WHEN modifying existing content', () => {
+			it('should call H5pContentRepo.save', async () => {
+				const {
+					existingContent,
+					newContent: { metadata, content },
+					user,
+				} = setup();
+				contentRepo.findById.mockResolvedValueOnce(existingContent);
+
+				await service.addContent(metadata, content, user, existingContent.id);
+
+				expect(contentRepo.save).toHaveBeenCalledWith(expect.objectContaining({ metadata, content }));
+			});
+
+			it('should save content and return existing content id', async () => {
+				const {
+					existingContent,
+					newContent: { metadata, content },
+					user,
+				} = setup();
+				const oldId = existingContent.id;
+				contentRepo.save.mockImplementationOnce(helpers.repoSaveMock);
+				contentRepo.findById.mockResolvedValueOnce(existingContent);
+
+				const newId = await service.addContent(metadata, content, user, oldId);
+
+				expect(newId).toEqual(oldId);
+				expect(existingContent).toEqual(expect.objectContaining({ metadata, content }));
 			});
 		});
-		describe('WHEN content can not be added error', () => {
-			it('should throw new error', async () => {
-				const { metadata, content, user } = setup();
-				jest.spyOn(fsPromiseMock, 'writeFile').mockImplementationOnce(() => {
-					throw new Error('Could not write file');
-				});
-				try {
-					await service.addContent(metadata, content, user);
-				} catch (err) {
-					expect(err).toBeInstanceOf(Error);
-				}
+
+		describe('WHEN saving content fails', () => {
+			it('should throw an InternalServerErrorException', async () => {
+				const {
+					existingContent: { metadata, content },
+					user,
+				} = setup();
+				contentRepo.save.mockRejectedValueOnce(new Error());
+
+				const addContentPromise = service.addContent(metadata, content, user);
+
+				await expect(addContentPromise).rejects.toThrow(InternalServerErrorException);
 			});
 		});
-		describe('WHEN contentId can not be generated', () => {
-			it('should throw new error', async () => {
-				const { metadata, content, user } = setup();
-				// eslint-disable-next-line @typescript-eslint/require-await
-				jest.spyOn(fsPromiseMock, 'access').mockImplementation(async () => undefined);
-				try {
-					await service.addContent(metadata, content, user);
-				} catch (err) {
-					expect(err).toBeInstanceOf(Error);
-				}
+
+		describe('WHEN finding content fails', () => {
+			it('should throw an InternalServerErrorException', async () => {
+				const {
+					existingContent: { metadata, content, id },
+					user,
+				} = setup();
+				contentRepo.findById.mockRejectedValueOnce(new Error());
+
+				const addContentPromise = service.addContent(metadata, content, user, id);
+
+				await expect(addContentPromise).rejects.toThrow(InternalServerErrorException);
 			});
 		});
 	});
 
 	describe('addFile', () => {
-		describe('WHEN file is created successfully', () => {
-			it('should add a file to content', async () => {
-				const { stream, contentId } = setup();
-				const filename = 'testFiletoAdd123.json';
-				await service.addFile(contentId, filename, stream);
-				await delay(0);
-				const fileExists = fs.existsSync(path.join(dir, contentId.toString(), filename));
-				expect(fileExists).toEqual(true);
+		const setup = () => {
+			const filename = 'filename.txt';
+			const stream = Readable.from('content');
+
+			const contentID = new ObjectID();
+			const contentIDString = contentID.toString();
+
+			const user = helpers.createUser();
+
+			const fileCreateError = new Error('Could not create file');
+
+			return {
+				filename,
+				stream,
+				contentID,
+				contentIDString,
+				user,
+				fileCreateError,
+			};
+		};
+
+		describe('WHEN adding a file to existing content', () => {
+			it('should check if the content exists', async () => {
+				const { contentIDString, filename, stream, user } = setup();
+
+				await service.addFile(contentIDString, filename, stream, user);
+
+				expect(contentRepo.findById).toBeCalledWith(contentIDString);
+			});
+
+			it('should call S3ClientAdapter.create', async () => {
+				const { contentIDString, filename, stream, user } = setup();
+
+				await service.addFile(contentIDString, filename, stream, user);
+
+				expect(s3ClientAdapter.create).toBeCalledWith(
+					expect.stringContaining(filename),
+					expect.objectContaining({
+						name: filename,
+						data: stream,
+						mimeType: 'application/json',
+					})
+				);
 			});
 		});
-		describe('WHEN file is not created successfully', () => {
-			it('should throw an error', async () => {
-				const { stream, notExistingContentId, filename2 } = setup();
-				try {
-					await service.addFile(notExistingContentId, filename2, stream);
-				} catch (err) {
-					expect(err).toBeInstanceOf(Error);
-				}
+
+		describe('WHEN adding a file to non existant content', () => {
+			it('should throw NotFoundException', async () => {
+				const { contentIDString, filename, stream, user } = setup();
+				contentRepo.findById.mockRejectedValueOnce(new Error());
+
+				const addFilePromise = service.addFile(contentIDString, filename, stream, user);
+
+				await expect(addFilePromise).rejects.toThrow(NotFoundException);
 			});
 		});
-		describe('WHEN filename has special characters', () => {
-			it('should throw an error', async () => {
-				const { stream, notExistingContentId, wrongFilename } = setup();
-				try {
-					await service.addFile(notExistingContentId, wrongFilename, stream);
-				} catch (err) {
-					expect(err).toBeInstanceOf(Error);
-				}
+
+		describe('WHEN S3ClientAdapter throws error', () => {
+			it('should throw the error', async () => {
+				const { contentIDString, filename, stream, user, fileCreateError } = setup();
+				s3ClientAdapter.create.mockRejectedValueOnce(fileCreateError);
+
+				const addFilePromise = service.addFile(contentIDString, filename, stream, user);
+
+				await expect(addFilePromise).rejects.toBe(fileCreateError);
+			});
+		});
+
+		describe('WHEN content id is empty string', () => {
+			it('should throw error', async () => {
+				const { filename, stream, user } = setup();
+
+				const addFilePromise = service.addFile('', filename, stream, user);
+
+				await expect(addFilePromise).rejects.toThrow();
 			});
 		});
 	});
 
 	describe('contentExists', () => {
-		describe('WHEN content exists', () => {
+		describe('WHEN content does exist', () => {
 			it('should return true', async () => {
-				const { contentId } = setup();
-				const contentExists = await service.contentExists(contentId);
-				expect(contentExists).toEqual(true);
+				const content = helpers.buildContent().withID();
+				contentRepo.findById.mockResolvedValueOnce(content);
+
+				const exists = await service.contentExists(content.id);
+
+				expect(exists).toBe(true);
 			});
 		});
+
 		describe('WHEN content does not exist', () => {
 			it('should return false', async () => {
-				const { notExistingContentId } = setup();
-				const contentExists = await service.contentExists(notExistingContentId);
-				expect(contentExists).toEqual(false);
-			});
-		});
-		describe('WHEN content is undefined', () => {
-			it('should throw an error', async () => {
-				const { undefinedContentId } = setup();
-				try {
-					await service.contentExists(undefinedContentId);
-				} catch (err) {
-					expect(err).toBeInstanceOf(Error);
-				}
+				contentRepo.findById.mockRejectedValueOnce(new Error());
+
+				const exists = await service.contentExists('');
+
+				expect(exists).toBe(false);
 			});
 		});
 	});
 
 	describe('deleteContent', () => {
-		describe('WHEN content is deleted successfully', () => {
-			it('should delete existing content', async () => {
-				const { contentId } = setup();
-				await service.deleteContent(contentId);
-				const contentExists = fs.existsSync(path.join(dir, contentId.toString()));
-				expect(contentExists).toEqual(false);
-			});
-		});
+		const setup = () => {
+			const content = helpers.buildContent().withID();
 
-		describe('WHEN content can not be deleted', () => {
-			it('should throw error', async () => {
-				const { notExistingContentId } = setup();
-				try {
-					await service.deleteContent(notExistingContentId);
-				} catch (err) {
-					expect(err).toBeInstanceOf(Error);
+			const files = ['file1.txt', 'file2.txt', 'file3.txt', 'file4.txt'];
+
+			const user = helpers.createUser();
+
+			return {
+				content,
+				files,
+				user,
+			};
+		};
+
+		describe('WHEN content exists', () => {
+			it('should call H5PContentRepo.delete', async () => {
+				const { content, user } = setup();
+				contentRepo.findById.mockResolvedValueOnce(content);
+
+				await service.deleteContent(content.id, user);
+
+				expect(contentRepo.delete).toHaveBeenCalledWith(content);
+			});
+
+			it('should call S3ClientAdapter.deleteFile for every file', async () => {
+				const { content, user, files } = setup();
+				s3ClientAdapter.list.mockResolvedValueOnce(files);
+
+				await service.deleteContent(content.id, user);
+
+				for (const file of files) {
+					expect(s3ClientAdapter.delete).toHaveBeenCalledWith([expect.stringContaining(file)]);
 				}
 			});
 		});
+
+		describe('WHEN content does not exist', () => {
+			it('should throw InternalServerErrorException', async () => {
+				const { content, user } = setup();
+				contentRepo.findById.mockRejectedValueOnce(new Error());
+
+				const deletePromise = service.deleteContent(content.id, user);
+
+				await expect(deletePromise).rejects.toThrow(InternalServerErrorException);
+			});
+		});
+
+		describe('WHEN H5PContentRepo.delete throws an error', () => {
+			it('should throw InternalServerErrorException', async () => {
+				const { content, user } = setup();
+				contentRepo.delete.mockRejectedValueOnce(new Error());
+
+				const deletePromise = service.deleteContent(content.id, user);
+
+				await expect(deletePromise).rejects.toThrow(InternalServerErrorException);
+			});
+		});
+
+		describe('WHEN S3ClientAdapter.delete throws an error', () => {
+			it('should throw InternalServerErrorException', async () => {
+				const { content, user } = setup();
+				s3ClientAdapter.delete.mockRejectedValueOnce(new Error());
+
+				const deletePromise = service.deleteContent(content.id, user);
+
+				await expect(deletePromise).rejects.toThrow(InternalServerErrorException);
+			});
+		});
 	});
+
 	describe('deleteFile', () => {
-		describe('WHEN file is deleted successfully', () => {
-			it('should delete existing file', async () => {
-				const { contentId, filename1 } = setup();
-				await service.deleteFile(contentId, filename1);
-				const fileExists = fs.existsSync(path.join(dir, contentId.toString(), filename1));
-				expect(fileExists).toEqual(false);
+		const setup = () => {
+			const filename = 'file.txt';
+			const invalidFilename = '..test.txt';
+
+			const user = helpers.createUser();
+
+			const deleteError = new Error('Could not delete');
+
+			const contentID = new ObjectID().toString();
+
+			return {
+				contentID,
+				deleteError,
+				filename,
+				invalidFilename,
+				user,
+			};
+		};
+
+		describe('WHEN deleting a file', () => {
+			it('should call S3ClientAdapter.delete', async () => {
+				const { contentID, filename, user } = setup();
+
+				await service.deleteFile(contentID, filename, user);
+
+				expect(s3ClientAdapter.delete).toHaveBeenCalledWith([expect.stringContaining(contentID)]);
 			});
 		});
 
-		describe('WHEN file can not be deleted', () => {
+		describe('WHEN filename is invalid', () => {
 			it('should throw error', async () => {
-				const { notExistingContentId, notExistingFilename } = setup();
-				try {
-					await service.deleteFile(notExistingContentId, notExistingFilename);
-				} catch (err) {
-					expect(err).toBeInstanceOf(Error);
-				}
+				const { contentID, invalidFilename, user } = setup();
+
+				const deletePromise = service.deleteFile(contentID, invalidFilename, user);
+
+				await expect(deletePromise).rejects.toThrow();
+			});
+		});
+
+		describe('WHEN S3ClientAdapter throws an error', () => {
+			it('should throw along the error', async () => {
+				const { contentID, filename, user, deleteError } = setup();
+				s3ClientAdapter.delete.mockRejectedValueOnce(deleteError);
+
+				const deletePromise = service.deleteFile(contentID, filename, user);
+
+				await expect(deletePromise).rejects.toBe(deleteError);
 			});
 		});
 	});
+
 	describe('fileExists', () => {
+		const setup = () => {
+			const filename = 'file.txt';
+			const invalidFilename = '..test.txt';
+
+			const deleteError = new Error('Could not delete');
+
+			const contentID = new ObjectID().toString();
+
+			return {
+				contentID,
+				deleteError,
+				filename,
+				invalidFilename,
+			};
+		};
+
 		describe('WHEN file exists', () => {
 			it('should return true', async () => {
-				const { contentId, filename1 } = setup();
-				const fileExists = await service.fileExists(contentId, filename1);
-				expect(fileExists).toEqual(true);
+				const { contentID, filename } = setup();
+				s3ClientAdapter.head.mockResolvedValueOnce(createMock());
+
+				const exists = await service.fileExists(contentID, filename);
+
+				expect(exists).toBe(true);
 			});
 		});
 
 		describe('WHEN file does not exist', () => {
 			it('should return false', async () => {
-				const { notExistingContentId, notExistingFilename } = setup();
-				const fileExists = await service.fileExists(notExistingContentId, notExistingFilename);
-				expect(fileExists).toEqual(false);
+				const { contentID, filename } = setup();
+				s3ClientAdapter.head.mockRejectedValueOnce(new NotFoundException('NoSuchKey'));
+
+				const exists = await service.fileExists(contentID, filename);
+
+				expect(exists).toBe(false);
 			});
 		});
-		describe('WHEN conetntId is undefined', () => {
-			it('should throw an error', async () => {
-				const { undefinedContentId, notExistingFilename } = setup();
-				try {
-					await service.fileExists(undefinedContentId, notExistingFilename);
-				} catch (err) {
-					expect(err).toBeInstanceOf(Error);
-				}
+
+		describe('WHEN S3ClientAdapter.head throws error', () => {
+			it('should throw InternalServerException', async () => {
+				const { contentID, filename } = setup();
+				s3ClientAdapter.head.mockRejectedValueOnce(new Error());
+
+				const existsPromise = service.fileExists(contentID, filename);
+
+				await expect(existsPromise).rejects.toThrow(InternalServerErrorException);
+			});
+		});
+
+		describe('WHEN filename is invalid', () => {
+			it('should throw error', async () => {
+				const { contentID, invalidFilename } = setup();
+
+				const existsPromise = service.fileExists(contentID, invalidFilename);
+
+				await expect(existsPromise).rejects.toThrow();
 			});
 		});
 	});
 
 	describe('getFileStats', () => {
+		const setup = () => {
+			const filename = 'file.txt';
+
+			const user = helpers.createUser();
+
+			const contentID = new ObjectID().toString();
+
+			const birthtime = new Date();
+			const size = 100;
+
+			const headResponse = createMock<HeadObjectCommandOutput>({
+				ContentLength: size,
+				LastModified: birthtime,
+			});
+
+			const headResponseWithoutContentLength = createMock<HeadObjectCommandOutput>({
+				ContentLength: undefined,
+				LastModified: birthtime,
+			});
+
+			const headResponseWithoutLastModified = createMock<HeadObjectCommandOutput>({
+				ContentLength: size,
+				LastModified: undefined,
+			});
+
+			const headError = new Error('Head');
+
+			return {
+				size,
+				birthtime,
+				contentID,
+				filename,
+				user,
+				headResponse,
+				headResponseWithoutContentLength,
+				headResponseWithoutLastModified,
+				headError,
+			};
+		};
+
 		describe('WHEN file exists', () => {
-			it('should return fileStats', async () => {
-				const { contentId, filename1, user } = setup();
-				const fileStats = await service.getFileStats(contentId, filename1, user);
-				expect(fileStats).toBeDefined();
-				expect(typeof fileStats).toBe('object');
-				expect(fileStats.size).toBeGreaterThan(0);
-				expect(fileStats.birthtime).toBeDefined();
+			it('should return file stats', async () => {
+				const { filename, contentID, user, headResponse, size, birthtime } = setup();
+				s3ClientAdapter.head.mockResolvedValueOnce(headResponse);
+
+				const stats = await service.getFileStats(contentID, filename, user);
+
+				expect(stats).toEqual(
+					expect.objectContaining({
+						birthtime,
+						size,
+					})
+				);
 			});
 		});
 
-		describe('WHEN file does not exist', () => {
-			it('should throw an error', async () => {
-				const { notExistingContentId, notExistingFilename, user } = setup();
-				try {
-					await service.getFileStats(notExistingContentId, notExistingFilename, user);
-				} catch (err) {
-					expect(err).toBeInstanceOf(Error);
-				}
+		describe('WHEN response from S3 is missing ContentLength field', () => {
+			it('should throw InternalServerError', async () => {
+				const { filename, contentID, user, headResponseWithoutContentLength } = setup();
+				s3ClientAdapter.head.mockResolvedValueOnce(headResponseWithoutContentLength);
+
+				const statsPromise = service.getFileStats(contentID, filename, user);
+
+				await expect(statsPromise).rejects.toThrow(InternalServerErrorException);
+			});
+		});
+
+		describe('WHEN response from S3 is missing LastModified field', () => {
+			it('should throw InternalServerError', async () => {
+				const { filename, contentID, user, headResponseWithoutLastModified } = setup();
+				s3ClientAdapter.head.mockResolvedValueOnce(headResponseWithoutLastModified);
+
+				const statsPromise = service.getFileStats(contentID, filename, user);
+
+				await expect(statsPromise).rejects.toThrow(InternalServerErrorException);
+			});
+		});
+
+		describe('WHEN S3ClientAdapter.head throws error', () => {
+			it('should throw the error', async () => {
+				const { filename, contentID, user, headError } = setup();
+				s3ClientAdapter.head.mockRejectedValueOnce(headError);
+
+				const statsPromise = service.getFileStats(contentID, filename, user);
+
+				await expect(statsPromise).rejects.toBe(headError);
 			});
 		});
 	});
 
 	describe('getFileStream', () => {
+		const setup = () => {
+			const filename = 'testfile.txt';
+			const fileStream = Readable.from('content');
+			const contentID = new ObjectID().toString();
+			const fileResponse = createMock<IGetFileResponse>({ data: fileStream });
+			const user = helpers.createUser();
+
+			const getError = new Error('Could not get file');
+
+			// [start, end, expected range]
+			const testRanges = [
+				[undefined, undefined, '0-'],
+				[100, undefined, '100-'],
+				[undefined, 100, '0-100'],
+				[100, 999, '100-999'],
+			] as const;
+
+			return { filename, contentID, fileStream, fileResponse, testRanges, user, getError };
+		};
+
 		describe('WHEN file exists', () => {
-			it('should return fileStream', async () => {
-				const { contentId, filename1, user } = setup();
-				const fileStream = await service.getFileStream(contentId, filename1, user);
-				expect(fileStream).toBeDefined();
-				expect(typeof fileStream).toBe('object');
-				expect(fileStream).toBeInstanceOf(Readable);
+			it('should S3ClientAdapter.get with range', async () => {
+				const { testRanges, contentID, filename, user } = setup();
+
+				for (const range of testRanges) {
+					// eslint-disable-next-line no-await-in-loop
+					await service.getFileStream(contentID, filename, user, range[0], range[1]);
+
+					expect(s3ClientAdapter.get).toHaveBeenCalledWith(expect.stringContaining(filename), range[2]);
+				}
+			});
+
+			it('should return stream from S3ClientAdapter', async () => {
+				const { fileStream, contentID, filename, user, fileResponse } = setup();
+				s3ClientAdapter.get.mockResolvedValueOnce(fileResponse);
+
+				const stream = await service.getFileStream(contentID, filename, user);
+
+				expect(stream).toBe(fileStream);
 			});
 		});
 
-		describe('WHEN file does not exist', () => {
-			it('should throw an error', async () => {
-				const { notExistingContentId, notExistingFilename, user } = setup();
-				try {
-					await service.getFileStream(notExistingContentId, notExistingFilename, user);
-				} catch (err) {
-					expect(err).toBeInstanceOf(Error);
-				}
+		describe('WHEN S3ClientAdapter.get throws error', () => {
+			it('should throw the error', async () => {
+				const { contentID, filename, user, getError } = setup();
+				s3ClientAdapter.get.mockRejectedValueOnce(getError);
+
+				const streamPromise = service.getFileStream(contentID, filename, user);
+
+				await expect(streamPromise).rejects.toBe(getError);
 			});
 		});
 	});
 
 	describe('getMetadata', () => {
-		describe('WHEN file exists', () => {
+		const setup = () => {
+			const content = helpers.buildContent().withID();
+			const { id } = content;
+			const error = new Error('Content not found');
+
+			const user = helpers.createUser();
+
+			return { content, id, user, error };
+		};
+
+		describe('WHEN content exists', () => {
 			it('should return metadata', async () => {
-				const { contentId, user } = setup();
-				const metadata = await service.getMetadata(contentId, user);
-				expect(metadata).toBeDefined();
-				expect(metadata.language).toEqual('de');
+				const { content, id } = setup();
+				contentRepo.findById.mockResolvedValueOnce(content);
+
+				const metadata = await service.getMetadata(id);
+
+				expect(metadata).toEqual(content.metadata);
 			});
 		});
 
-		describe('WHEN user is not defined', () => {
-			it('should throw an error', async () => {
-				const { contentId } = setup();
-				try {
-					await service.getMetadata(contentId);
-				} catch (err) {
-					expect(err).toBeInstanceOf(Error);
-				}
+		describe('WHEN content does not exist', () => {
+			it('should throw error', async () => {
+				const { id, error } = setup();
+				contentRepo.findById.mockRejectedValueOnce(error);
+
+				const metadataPromise = service.getMetadata(id);
+
+				await expect(metadataPromise).rejects.toBe(error);
 			});
 		});
 	});
 
 	describe('getParameters', () => {
-		describe('WHEN user and content is defined', () => {
+		const setup = () => {
+			const content = helpers.buildContent().withID();
+			const { id } = content;
+			const error = new Error('Content not found');
+
+			const user = helpers.createUser();
+
+			return { content, id, user, error };
+		};
+
+		describe('WHEN content exists', () => {
 			it('should return parameters', async () => {
-				const { contentId, user } = setup();
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				const parameters = await service.getParameters(contentId, user);
-				expect(parameters).toBeDefined();
-				expect(typeof parameters).toBe('string');
+				const { content, id } = setup();
+				contentRepo.findById.mockResolvedValueOnce(content);
+
+				const parameters = await service.getParameters(id);
+
+				expect(parameters).toEqual(content.content);
 			});
 		});
 
-		describe('WHEN user is not defined', () => {
-			it('should throw an error', async () => {
-				const { contentId } = setup();
-				try {
-					await service.getParameters(contentId);
-				} catch (err) {
-					expect(err).toBeInstanceOf(Error);
-				}
+		describe('WHEN content does not exist', () => {
+			it('should throw error', async () => {
+				const { id, error } = setup();
+				contentRepo.findById.mockRejectedValueOnce(error);
+
+				const parametersPromise = service.getParameters(id);
+
+				await expect(parametersPromise).rejects.toBe(error);
 			});
 		});
 	});
 
-	describe('getUsage', () => {
-		describe('WHEN file exists and has main library', () => {
-			it('should return usage with main library greater than 0', async () => {
-				const { library } = setup();
-				const usage = await service.getUsage(library);
-				expect(usage).toBeDefined();
-				expect(usage.asMainLibrary).toBeGreaterThan(0);
-				expect(usage.asDependency).toBeGreaterThan(0);
-			});
-		});
-		describe('WHEN file exists and does not have a library', () => {
-			it('should return 0 dependecies and libaries', async () => {
-				const { library2 } = setup();
-				const usage = await service.getUsage(library2);
-				expect(usage).toBeDefined();
-				expect(usage.asMainLibrary).toEqual(0);
-				expect(usage.asDependency).toEqual(0);
-			});
-		});
-	});
+	describe('listContent', () => {
+		const setup = () => {
+			const getContentsResponse = [1, 2, 3, 4].map((id) => helpers.buildContent().withID(id));
+			const contentIds = getContentsResponse.map((content) => content.id);
 
-	describe('getUserPermissions', () => {
-		describe('WHEN user and content is defined', () => {
-			it('should return parameters', async () => {
-				const { contentId, user } = setup();
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				const permissions = await service.getUserPermissions(contentId, user);
-				expect(permissions).toBeDefined();
-				expect(permissions.length).toBeGreaterThan(0);
-				expect(permissions[1]).toEqual(1);
-				expect(permissions[2]).toEqual(2);
-				expect(permissions[3]).toEqual(3);
-				expect(permissions[4]).toEqual(5);
+			const error = new Error('could not list entities');
+
+			const user = helpers.createUser();
+
+			return { getContentsResponse, contentIds, user, error };
+		};
+
+		describe('WHEN querying for contents', () => {
+			it('should return list of IDs', async () => {
+				const { contentIds, getContentsResponse, user } = setup();
+				contentRepo.getAllContents.mockResolvedValueOnce(getContentsResponse);
+
+				const ids = await service.listContent(user);
+
+				expect(ids).toEqual(contentIds);
+			});
+		});
+
+		describe('WHEN H5PContentRepo.getAllContents throws error', () => {
+			it('should throw the error', async () => {
+				const { error, user } = setup();
+				contentRepo.getAllContents.mockRejectedValueOnce(error);
+
+				const listPromise = service.listContent(user);
+
+				await expect(listPromise).rejects.toBe(error);
 			});
 		});
 	});
 
 	describe('listFiles', () => {
-		describe('WHEN content has files', () => {
-			it('should return a list of files from the content', async () => {
-				const { contentId, user } = setup();
-				const fileList = await service.listFiles(contentId, user);
-				expect(fileList).toBeDefined();
-				expect(fileList.length).toBeGreaterThan(0);
-				expect(fileList[0]).toEqual('testFile1.json');
+		const setup = () => {
+			const content = helpers.buildContent().withID();
+			const user = helpers.createUser();
+			const filenames = ['1.txt', '2.txt'];
+			const error = new Error('error occured');
+
+			return { content, filenames, user, error };
+		};
+
+		describe('WHEN content exists', () => {
+			it('should return list of filenames', async () => {
+				const { filenames, content, user } = setup();
+				contentRepo.findById.mockResolvedValueOnce(content);
+				s3ClientAdapter.list.mockResolvedValueOnce(filenames);
+
+				const files = await service.listFiles(content.id, user);
+
+				expect(files).toEqual(filenames);
+			});
+		});
+
+		describe('WHEN content does not exist', () => {
+			it('should throw NotFoundException', async () => {
+				const { content, user } = setup();
+				contentRepo.findById.mockRejectedValueOnce(new Error());
+
+				const listPromise = service.listFiles(content.id, user);
+
+				await expect(listPromise).rejects.toThrow(NotFoundException);
+			});
+		});
+
+		describe('WHEN S3ClientAdapter.list throws error', () => {
+			it('should throw the error', async () => {
+				const { content, user, error } = setup();
+				s3ClientAdapter.list.mockRejectedValueOnce(error);
+
+				const listPromise = service.listFiles(content.id, user);
+
+				await expect(listPromise).rejects.toBe(error);
+			});
+		});
+
+		describe('WHEN ID is empty string', () => {
+			it('should throw error', async () => {
+				const { user } = setup();
+
+				const listPromise = service.listFiles('', user);
+
+				await expect(listPromise).rejects.toThrow();
+			});
+		});
+	});
+
+	describe('getUsage', () => {
+		const setup = () => {
+			const library = 'TEST.Library-1.0';
+			const libraryName = LibraryName.fromUberName(library);
+
+			const contentMain = helpers.buildContent(0).withID(0);
+			const content1 = helpers.buildContent(1).withID(1);
+			const content2 = helpers.buildContent(2).withID(2);
+			const content3 = helpers.buildContent(3).withID(3);
+			const content4 = helpers.buildContent(4).withID(4);
+
+			contentMain.metadata.mainLibrary = libraryName.machineName;
+			contentMain.metadata.preloadedDependencies = [libraryName];
+			content1.metadata.preloadedDependencies = [libraryName];
+			content2.metadata.editorDependencies = [libraryName];
+			content3.metadata.dynamicDependencies = [libraryName];
+
+			const contents = [contentMain, content1, content2, content3, content4];
+
+			const findByIdMock = async (id: string) => {
+				const content = contents.find((c) => c.id === id);
+
+				if (content) {
+					return Promise.resolve(content);
+				}
+
+				throw new Error('Not found');
+			};
+
+			const expectedUsage = { asDependency: 3, asMainLibrary: 1 };
+
+			return { libraryName, findByIdMock, contents, expectedUsage };
+		};
+
+		it('should return the number of times the library is used', async () => {
+			const { libraryName, contents, findByIdMock, expectedUsage } = setup();
+			contentRepo.findById.mockImplementation(findByIdMock); // Will be called multiple times
+			contentRepo.getAllContents.mockResolvedValueOnce(contents);
+
+			const test = await service.getUsage(libraryName);
+
+			expect(test).toEqual(expectedUsage);
+		});
+	});
+
+	describe('getUserPermissions (currently unused)', () => {
+		it('should return array of permissions', async () => {
+			const user = helpers.createUser();
+
+			// This method is currently unused and will be changed later
+			const permissions = await service.getUserPermissions('id', user);
+
+			expect(permissions.length).toBeGreaterThan(0);
+		});
+	});
+
+	describe('private methods', () => {
+		describe('WHEN calling getContentPath with invalid parameters', () => {
+			it('should throw error', async () => {
+				// Test private getContentPath using listFiles
+				const promise = service.listFiles('');
+				await expect(promise).rejects.toThrow('COULD_NOT_CREATE_PATH');
+			});
+		});
+
+		describe('WHEN calling getFilePath with invalid parameters', () => {
+			it('should throw error', async () => {
+				// Test private getFilePath using fileExists
+				const missingContentID = service.fileExists('', 'filename');
+				await expect(missingContentID).rejects.toThrow('COULD_NOT_CREATE_PATH');
+
+				const missingFilename = service.fileExists('id', '');
+				await expect(missingFilename).rejects.toThrow('COULD_NOT_CREATE_PATH');
+			});
+		});
+
+		describe('WHEN calling checkFilename with invalid parameters', () => {
+			it('should throw error', async () => {
+				// Test private checkFilename using deleteFile
+				const invalidChars = service.deleteFile('id', 'ex#ample.txt');
+				await expect(invalidChars).rejects.toThrow('Filename contains forbidden characters');
+
+				const includesDoubleDot = service.deleteFile('id', '../test.txt');
+				await expect(includesDoubleDot).rejects.toThrow('Filename contains forbidden characters');
+
+				const startsWithSlash = service.deleteFile('id', '/example.txt');
+				await expect(startsWithSlash).rejects.toThrow('Filename contains forbidden characters');
 			});
 		});
 	});
