@@ -19,7 +19,7 @@ import { SystemService } from '@src/modules/system/service/system.service';
 import { UserService } from '@src/modules/user';
 import { MigrationCheckService, UserMigrationService } from '@src/modules/user-login-migration';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { OAuthSSOError } from '../error/oauth-sso.error';
+import { OAuthSSOError, UserNotFoundAfterProvisioningLoggableException } from '../error';
 import { OAuthTokenDto } from '../interface';
 import { OauthTokenResponse } from './dto';
 import { OauthAdapterService } from './oauth-adapter.service';
@@ -519,23 +519,14 @@ describe('OAuthService', () => {
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
 				migrationCheckService.shouldUserMigrate.mockResolvedValue(false);
 				userService.findByExternalId.mockResolvedValue(null);
-
-				return {
-					externalUserId,
-				};
 			};
 
-			it('should throw an error with code sso_provisioning_disabled', async () => {
-				const { externalUserId } = setup();
+			it('should throw UserNotFoundAfterProvisioningLoggableException', async () => {
+				setup();
 
 				const func = () => service.provisionUser('systemId', 'idToken', 'accessToken');
 
-				await expect(func).rejects.toThrow(
-					new OAuthSSOError(
-						`Provisioning of user with externalId: ${externalUserId} failed`,
-						'sso_provisioning_disabled'
-					)
-				);
+				await expect(func).rejects.toThrow(UserNotFoundAfterProvisioningLoggableException);
 				expect(provisioningService.provisionData).not.toHaveBeenCalled();
 			});
 		});
@@ -559,20 +550,14 @@ describe('OAuthService', () => {
 				provisioningService.getData.mockResolvedValue(oauthData);
 				provisioningService.provisionData.mockResolvedValue(provisioningDto);
 				userService.findByExternalId.mockResolvedValue(null);
-
-				return {
-					externalUserId,
-				};
 			};
 
 			it('should throw an error', async () => {
-				const { externalUserId } = setup();
+				setup();
 
 				const func = () => service.provisionUser('systemId', 'idToken', 'accessToken');
 
-				await expect(func).rejects.toThrow(
-					new OAuthSSOError(`Provisioning of user with externalId: ${externalUserId} failed`, 'sso_user_notfound')
-				);
+				await expect(func).rejects.toThrow(UserNotFoundAfterProvisioningLoggableException);
 			});
 		});
 	});
@@ -650,16 +635,6 @@ describe('OAuthService', () => {
 					'http://mock.de/auth?client_id=12345&redirect_uri=https%3A%2F%2Fmock.de%2Fapi%2Fv3%2Fsso%2Foauth%2Fmigration&response_type=code&scope=openid+uuid&state=state&kc_idp_hint=TheIdpHint'
 				);
 			});
-		});
-	});
-
-	describe('createErrorRedirect is called', () => {
-		it('should return redirect with errorCode', () => {
-			const expectedErrorCode = 'ERROR_CODE';
-
-			const redirect = service.createErrorRedirect(expectedErrorCode);
-
-			expect(redirect).toEqual(`${hostUri}/login?error=${expectedErrorCode}`);
 		});
 	});
 });

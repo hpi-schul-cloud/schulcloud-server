@@ -1,7 +1,7 @@
 const { getUsername } = require('./TSP');
 const { FileModel } = require('../../../fileStorage/model');
 const { info: logInfo, error: logError } = require('../../../../logger');
-const { teamsRepo } = require('../../../teams');
+const { teamsRepo } = require('../../../../components/teams/repo');
 
 const getInvalidatedUuid = (uuid) => `${uuid}/invalid!`;
 const getInvalidatedEmail = (email) => `${email}.invalid`;
@@ -29,7 +29,7 @@ const deleteUser = (app, user) => {
 	return Promise.all([
 		userService.remove({ _id: user._id }),
 		accountService.deleteByUserId(user._id.toString()),
-		teamsRepo.removeUserFromTeams(user._id),
+		teamsRepo.removeUserFromTeams(user._id.toString()),
 	]);
 };
 
