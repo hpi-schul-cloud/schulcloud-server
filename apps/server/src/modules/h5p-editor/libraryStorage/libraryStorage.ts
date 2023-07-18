@@ -77,7 +77,7 @@ export class LibraryStorage implements ILibraryStorage {
 					data: dataStream,
 				})
 			);
-			size = (await this.s3Client.get(filepath)).contentLength ?? 0;
+			size = (await this.s3Client.head(filepath)).ContentLength ?? 0;
 		} catch (error) {
 			return false;
 		}
@@ -111,7 +111,28 @@ export class LibraryStorage implements ILibraryStorage {
 			libMeta.majorVersion,
 			libMeta.minorVersion,
 			libMeta.patchVersion,
-			restricted
+			restricted,
+			libMeta.runnable,
+			libMeta.title,
+			undefined,
+			libMeta.addTo,
+			libMeta.author,
+			libMeta.coreApi,
+			libMeta.description,
+			libMeta.dropLibraryCss,
+			libMeta.dynamicDependencies,
+			libMeta.editorDependencies,
+			libMeta.embedTypes,
+			libMeta.fullscreen,
+			libMeta.h,
+			libMeta.license,
+			libMeta.metadataSettings,
+			libMeta.preloadedCss,
+			libMeta.preloadedDependencies,
+			libMeta.preloadedJs,
+			libMeta.w,
+			libMeta.requiredExtensions,
+			libMeta.state
 		);
 
 		await this.libraryRepo.createLibrary(library);
@@ -293,11 +314,9 @@ export class LibraryStorage implements ILibraryStorage {
 			libraryName.minorVersion
 		);
 
-		const prefix = this.getFilePath(library, 'language');
-
 		const languages: string[] = [];
 		for (const file of library.files) {
-			if (file.name.startsWith(prefix) && file.name.endsWith('.json')) {
+			if (file.name.startsWith('language') && file.name.endsWith('.json')) {
 				languages.push(path.basename(file.name, '.json'));
 			}
 		}
@@ -335,8 +354,11 @@ export class LibraryStorage implements ILibraryStorage {
 	 */
 	public async listAddons(): Promise<ILibraryMetadata[]> {
 		const installedLibraryNames = await this.getInstalledLibraryNames();
+		console.log(installedLibraryNames);
 		const installedLibraries = await Promise.all(installedLibraryNames.map((addonName) => this.getLibrary(addonName)));
+		console.log(installedLibraries);
 		const addons = installedLibraries.filter((library) => library.addTo !== undefined);
+		console.log(addons);
 
 		return addons;
 	}

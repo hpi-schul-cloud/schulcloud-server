@@ -21,11 +21,14 @@ export class LibraryRepo extends BaseRepo<InstalledLibrary> {
 		majorVersion: number,
 		minorVersion: number
 	): Promise<InstalledLibrary> {
-		return this._em.findOneOrFail(this.entityName, {
-			machineName,
-			majorVersion,
-			minorVersion,
-		});
+		const libs = await this._em.find(this.entityName, { machineName, majorVersion, minorVersion });
+		if (libs.length === 1) {
+			return libs[0];
+		}
+		if (libs.length === 0) {
+			throw new Error('Library not found');
+		}
+		throw new Error('Multiple libraries with the same name and version found');
 	}
 
 	async findByName(machineName: string): Promise<InstalledLibrary[]> {
