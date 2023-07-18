@@ -13,7 +13,7 @@ export class TemporaryFileRepo extends BaseRepo<TemporaryFile> {
 		return this.save(this.create(tempFile));
 	}
 
-	async findByPath(userId: EntityId, filename: string): Promise<TemporaryFile> {
+	async findByUserAndPath(userId: EntityId, filename: string): Promise<TemporaryFile> {
 		return this._em.findOneOrFail(this.entityName, { ownedByUserId: userId, filename });
 	}
 
