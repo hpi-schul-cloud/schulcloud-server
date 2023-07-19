@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
 import {
-	CustomParameterScope,
-	CustomParameterType,
 	CustomParameterDO,
 	CustomParameterEntryDO,
+	CustomParameterScope,
+	CustomParameterType,
 	ExternalToolDO,
 	SchoolExternalToolDO,
 } from '@shared/domain';
@@ -18,6 +18,7 @@ const typeCheckers: { [key in CustomParameterType]: (val: string) => boolean } =
 	[CustomParameterType.AUTO_CONTEXTID]: () => true,
 	[CustomParameterType.AUTO_CONTEXTNAME]: () => true,
 	[CustomParameterType.AUTO_SCHOOLID]: () => true,
+	[CustomParameterType.AUTO_SCHOOLNUMBER]: () => true,
 };
 
 @Injectable()

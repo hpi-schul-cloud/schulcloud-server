@@ -1,7 +1,7 @@
-import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/tool';
 import { Injectable } from '@nestjs/common';
-import { CustomParameterScope } from '@shared/domain';
 import { ValidationError } from '@shared/common';
+import { autoParameters, CustomParameterScope } from '@shared/domain';
+import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/tool';
 import { ExternalToolService } from '../external-tool.service';
 
 @Injectable()
@@ -109,9 +109,18 @@ export class CommonToolValidationService {
 	}
 
 	private isGlobalParameterValid(customParameter: CustomParameterDO): boolean {
-		if (CustomParameterScope.GLOBAL === customParameter.scope && !customParameter.default) {
-			return false;
+		if (customParameter.scope !== CustomParameterScope.GLOBAL) {
+			return true;
 		}
-		return true;
+
+		if (autoParameters.includes(customParameter.type)) {
+			return true;
+		}
+
+		if (customParameter.default) {
+			return true;
+		}
+
+		return false;
 	}
 }

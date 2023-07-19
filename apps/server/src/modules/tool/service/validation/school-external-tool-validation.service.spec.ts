@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
+	CustomParameterDO,
 	CustomParameterScope,
 	CustomParameterType,
-	CustomParameterDO,
 	ExternalToolDO,
 	SchoolExternalToolDO,
 } from '@shared/domain';
@@ -368,6 +368,28 @@ describe('SchoolExternalToolValidationService', () => {
 					name: 'correctType',
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.AUTO_SCHOOLID,
+				});
+				const { schoolExternalToolDO } = setup(
+					{
+						parameters: [correctTypeParam],
+					},
+					{
+						parameters: [{ name: 'correctType', value: 'irgendeineId123' }],
+					}
+				);
+
+				const func = () => service.validate(schoolExternalToolDO);
+
+				await expect(func()).resolves.not.toThrowError('tool_param_type_mismatch:');
+			});
+		});
+
+		describe('when checking parameter type auto_schoolnumber', () => {
+			it('should return without error when type matches param value', async () => {
+				const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
+					name: 'correctType',
+					scope: CustomParameterScope.SCHOOL,
+					type: CustomParameterType.AUTO_SCHOOLNUMBER,
 				});
 				const { schoolExternalToolDO } = setup(
 					{
