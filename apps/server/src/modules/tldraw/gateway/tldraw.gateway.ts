@@ -35,9 +35,9 @@ export class TldrawGateway implements OnGatewayInit, OnGatewayConnection {
 
 	afterInit() {
 		const mdb = new MongodbPersistence.MongodbPersistence(this.connectionString, {
-			collectionName: 'docs',
-			flushSize: 400,
-			multipleCollections: false,
+			collectionName: this.configService.get<string>('TLDRAW_DB_COLLECTION_NAME') ?? 'drawings',
+			flushSize: this.configService.get<string>('TLDRAW_DB_FLUSH_SIZE') ?? 400,
+			multipleCollections: this.configService.get<string>('TLDRAW_DB_MULTIPLE_COLLECTIONS'),
 		}) as MongodbPersistence;
 
 		setPersistence({

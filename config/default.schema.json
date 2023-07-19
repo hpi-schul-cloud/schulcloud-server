@@ -1216,40 +1216,55 @@
 				}
 			}
 		},
-		"FEATURE_TLDRAW_CALLBACK_URL": {
+		"TLDRAW_CALLBACK_URL": {
 			"type": "string",
 			"default": "",
 			"description": "callback URL for tldraw communication "
 		},
-		"FEATURE_TLDRAW_CALLBACK_TIMEOUT": {
+		"TLDRAW_CALLBACK_TIMEOUT": {
 			"type": "number",
 			"default": 5000,
 			"description": "callback timeout for tldraw communication "
 		},
-		"FEATURE_TLDRAW_CALLBACK_OBJ": {
+		"TLDRAW_CALLBACK_OBJ": {
 			"type": "string",
 			"default": "",
 			"description": "callback object for tldraw communication "
 		},
-		"FEATURE_TLDRAW_CALLBACK_DEBOUNCE_WAIT": {
+		"TLDRAW_CALLBACK_DEBOUNCE_WAIT": {
 			"type": "number",
 			"default": 2000,
 			"description": "time for waiting between calls for tldraw"
 		},
-		"FEATURE_TLDRAW_CALLBACK_DEBOUNCE_MAX_WAIT": {
+		"TLDRAW_CALLBACK_DEBOUNCE_MAX_WAIT": {
 			"type": "number",
 			"default": 10000,
 			"description": "Max time for waiting between calls for tldraw"
 		},
-		"FEATURE_TLDRAW_PING_TIMEOUT": {
+		"TLDRAW_PING_TIMEOUT": {
 			"type": "number",
 			"default": 30000,
 			"description": "Max time for waiting between calls for tldraw"
 		},
-		"FEATURE_TLDRAW_GC_ENABLED": {
+		"TLDRAW_GC_ENABLED": {
 			"type": "boolean",
 			"default": true,
 			"description": "If tldraw garbage collector should be enabled"
+		},
+		"TLDRAW_DB_COLLECTION_NAME": {
+			"type": "string",
+			"default": "drawing",
+			"description": "Collection name in which tldraw drawing are stored"
+		},
+		"TLDRAW_DB_FLUSH_SIZE": {
+			"type": "integer",
+			"default": 400,
+			"description": "DB collection flushing size"
+		},
+		"TLDRAW_DB_MULTIPLE_COLLECTIONS": {
+			"type": "boolean",
+			"default": false,
+			"description": "DB collection allowing multiple collections for drawing"
 		}
 	},
 	"required": [

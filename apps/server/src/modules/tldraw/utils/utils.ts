@@ -9,12 +9,11 @@ import WebSocket from 'ws';
 import { callbackHandler } from '@src/modules/tldraw/utils/';
 import { WSMessageType, WSConnectionState, Persitence } from '@src/modules/tldraw/types';
 
-const CALLBACK_DEBOUNCE_WAIT: number = (Configuration.get('FEATURE_TLDRAW_CALLBACK_DEBOUNCE_WAIT') as number) ?? 2000;
-const CALLBACK_DEBOUNCE_MAX_WAIT: number =
-	(Configuration.get('FEATURE_TLDRAW_CALLBACK_DEBOUNCE_MAX_WAIT') as number) ?? 10000;
-const pingTimeout: number = (Configuration.get('FEATURE_TLDRAW_PING_TIMEOUT') as number) ?? 30000;
+const CALLBACK_DEBOUNCE_WAIT: number = (Configuration.get('TLDRAW_CALLBACK_DEBOUNCE_WAIT') as number) ?? 2000;
+const CALLBACK_DEBOUNCE_MAX_WAIT: number = (Configuration.get('TLDRAW_CALLBACK_DEBOUNCE_MAX_WAIT') as number) ?? 10000;
+const pingTimeout: number = (Configuration.get('TLDRAW_PING_TIMEOUT') as number) ?? 30000;
 // disable gc when using snapshots!
-const gcEnabled: boolean = Configuration.get('FEATURE_TLDRAW_GC_ENABLED') as boolean;
+const gcEnabled: boolean = Configuration.get('TLDRAW_GC_ENABLED') as boolean;
 
 /**
  * @type {{bindState: function(string,WSSharedDoc):void, writeState:function(string,WSSharedDoc):Promise<any>, provider: any}|null}
@@ -95,7 +94,7 @@ export class WSSharedDoc extends Doc {
 
 	awareness: Awareness;
 
-	CALLBACK_URL = (Configuration.get('FEATURE_TLDRAW_CALLBACK_URL') ?? '') as URL;
+	CALLBACK_URL = (Configuration.get('TLDRAW_CALLBACK_URL') ?? '') as URL;
 
 	isCallbackSet: boolean;
 
