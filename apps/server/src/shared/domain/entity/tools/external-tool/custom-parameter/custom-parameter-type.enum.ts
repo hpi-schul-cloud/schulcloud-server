@@ -5,4 +5,5 @@ export enum CustomParameterType {
 	AUTO_COURSEID = 'auto_courseid',
 	AUTO_COURSENAME = 'auto_coursename',
 	AUTO_SCHOOLID = 'auto_schoolid',
+	AUTO_SCHOOLNUMBER = 'auto_schoolnumber',
 }
