@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { ExternalToolDO, Oauth2ToolConfigDO, Permission, PseudonymDO, User } from '@shared/domain';
+import { ExternalToolDO, Oauth2ToolConfigDO, Permission, Pseudonym, User, UserDO } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import {
@@ -12,6 +12,7 @@ import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '@src/modules
 import { OauthProviderRequestMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-request.mapper';
 import { PseudonymService } from '@src/modules/pseudonym/service';
 import { OauthProviderLoginFlowService } from '../service/oauth-provider.login-flow.service';
+import { UserService } from '../../user';
 
 @Injectable()
 export class OauthProviderLoginFlowUc {
@@ -19,7 +20,8 @@ export class OauthProviderLoginFlowUc {
 		private readonly oauthProviderService: OauthProviderService,
 		private readonly oauthProviderLoginFlowService: OauthProviderLoginFlowService,
 		private readonly pseudonymService: PseudonymService,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly userService: UserService
 	) {}
 
 	async getLoginRequest(challenge: string): Promise<ProviderLoginResponse> {
@@ -66,7 +68,8 @@ export class OauthProviderLoginFlowUc {
 			this.authorizationService.checkAllPermissions(user, [Permission.NEXTCLOUD_USER]);
 		}
 
-		const pseudonym: PseudonymDO = await this.pseudonymService.findOrCreatePseudonym(currentUserId, tool.id);
+		const user: UserDO = await this.userService.findById(currentUserId);
+		const pseudonym: Pseudonym = await this.pseudonymService.findOrCreatePseudonym(user, tool);
 
 		const skipConsent: boolean = this.shouldSkipConsent(tool);
 

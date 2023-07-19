@@ -1,12 +1,12 @@
 import { Entity, Property, Unique } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseEntityWithTimestamps } from './base.entity';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 
-export type IPseudonymProperties = Readonly<Omit<Pseudonym, keyof BaseEntityWithTimestamps>>;
+export type IPseudonymEntityProps = Readonly<Omit<PseudonymEntity, keyof BaseEntityWithTimestamps>>;
 
 @Entity({ tableName: 'pseudonyms' })
 @Unique({ properties: ['userId', 'toolId'] })
-export class Pseudonym extends BaseEntityWithTimestamps {
+export class PseudonymEntity extends BaseEntityWithTimestamps {
 	@Property()
 	@Unique()
 	pseudonym: string;
@@ -17,7 +17,7 @@ export class Pseudonym extends BaseEntityWithTimestamps {
 	@Property()
 	userId: ObjectId;
 
-	constructor(props: IPseudonymProperties) {
+	constructor(props: IPseudonymEntityProps) {
 		super();
 		this.pseudonym = props.pseudonym;
 		this.toolId = props.toolId;

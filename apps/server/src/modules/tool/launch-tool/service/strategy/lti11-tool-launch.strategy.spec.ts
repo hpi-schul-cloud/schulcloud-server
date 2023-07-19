@@ -8,7 +8,7 @@ import {
 	Lti11ToolConfigDO,
 	LtiMessageType,
 	LtiPrivacyPermission,
-	PseudonymDO,
+	Pseudonym,
 	RoleName,
 	SchoolExternalToolDO,
 	ToolConfigType,
@@ -20,7 +20,7 @@ import {
 	schoolExternalToolDOFactory,
 	userDoFactory,
 } from '@shared/testing';
-import { pseudonymDOFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
+import { pseudonymFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
 import { PseudonymService } from '@src/modules/pseudonym';
 import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
@@ -353,7 +353,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 
 				const user: UserDO = userDoFactory.buildWithId();
 
-				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId();
+				const pseudonym: Pseudonym = pseudonymFactory.buildWithId();
 
 				userService.findById.mockResolvedValue(user);
 				pseudonymService.findOrCreatePseudonym.mockResolvedValue(pseudonym);

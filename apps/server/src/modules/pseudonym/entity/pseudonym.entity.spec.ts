@@ -1,6 +1,6 @@
-import { Pseudonym } from '@shared/domain/index';
+import { Pseudonym } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
-import { pseudonymFactory } from '@shared/testing/factory/pseudonym.factory';
+import { pseudonymEntityFactory } from '@shared/testing/factory/pseudonym.factory';
 
 describe('Pseudonym Entity', () => {
 	beforeAll(async () => {
@@ -15,7 +15,7 @@ describe('Pseudonym Entity', () => {
 		});
 
 		it('should create a user by passing required properties', () => {
-			const entity = pseudonymFactory.build();
+			const entity = pseudonymEntityFactory.build();
 			expect(entity instanceof Pseudonym).toEqual(true);
 		});
 	});
