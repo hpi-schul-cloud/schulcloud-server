@@ -1,6 +1,9 @@
+import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ContextExternalToolDO, ExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
 import { contextExternalToolDOFactory, externalToolDOFactory, schoolExternalToolDOFactory } from '@shared/testing';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { SchoolService } from '@src/modules/school';
 import { LaunchRequestMethod, PropertyData } from '../../types';
 import { OAuth2ToolLaunchStrategy } from './oauth2-tool-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
@@ -11,7 +14,17 @@ describe('OAuth2ToolLaunchStrategy', () => {
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
-			providers: [OAuth2ToolLaunchStrategy],
+			providers: [
+				OAuth2ToolLaunchStrategy,
+				{
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
+				},
+				{
+					provide: CourseService,
+					useValue: createMock<CourseService>(),
+				},
+			],
 		}).compile();
 
 		strategy = module.get(OAuth2ToolLaunchStrategy);

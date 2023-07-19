@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import {
 	Counted,
 	Course,
@@ -21,6 +21,7 @@ import { TaskService } from '../service';
 export class TaskUC {
 	constructor(
 		private readonly taskRepo: TaskRepo,
+		@Inject(forwardRef(() => AuthorizationService))
 		private readonly authorizationService: AuthorizationService,
 		private readonly courseRepo: CourseRepo,
 		private readonly lessonRepo: LessonRepo,

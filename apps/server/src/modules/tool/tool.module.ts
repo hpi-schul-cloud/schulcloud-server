@@ -11,7 +11,9 @@ import {
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '@src/modules/authorization';
+import { LearnroomModule } from '@src/modules/learnroom';
 import { PseudonymModule } from '@src/modules/pseudonym';
+import { SchoolModule } from '@src/modules/school';
 import { UserModule } from '@src/modules/user';
 import { Lti11EncryptionService, ToolLaunchService } from './launch-tool/service';
 import {
@@ -25,11 +27,11 @@ import {
 	ContextExternalToolService,
 	ContextExternalToolValidationService,
 	ExternalToolService,
+	ExternalToolServiceMapper,
 	ExternalToolValidationService,
 	ExternalToolVersionService,
 	SchoolExternalToolService,
 	SchoolExternalToolValidationService,
-	ExternalToolServiceMapper,
 } from './service';
 
 @Module({
@@ -40,6 +42,8 @@ import {
 		forwardRef(() => AuthorizationModule),
 		UserModule,
 		PseudonymModule,
+		SchoolModule,
+		LearnroomModule,
 	],
 	providers: [
 		ExternalToolService,

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Course, EntityId, User } from '@shared/domain';
 import { BoardRepo, CourseRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
@@ -20,6 +20,7 @@ export class CourseCopyService {
 		private readonly roomsService: RoomsService,
 		private readonly boardCopyService: BoardCopyService,
 		private readonly copyHelperService: CopyHelperService,
+		@Inject(forwardRef(() => AuthorizationService))
 		private readonly authorizationService: AuthorizationService
 	) {}
 

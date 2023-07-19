@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { FeathersServiceProvider } from '@shared/infra/feathers';
 import { CourseRepo, LessonRepo, SubmissionRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
@@ -10,7 +10,7 @@ import { SubmissionService, TaskCopyService, TaskService } from './service';
 import { SubmissionUc, TaskCopyUC, TaskUC } from './uc';
 
 @Module({
-	imports: [AuthorizationModule, FilesStorageClientModule, CopyHelperModule],
+	imports: [forwardRef(() => AuthorizationModule), FilesStorageClientModule, CopyHelperModule],
 	controllers: [TaskController, SubmissionController],
 	providers: [
 		TaskUC,

@@ -4,6 +4,8 @@ import { RoleReference } from '@shared/domain/domainobject';
 import { PseudonymService } from '@src/modules/pseudonym';
 import { UserService } from '@src/modules/user';
 import { Authorization } from 'oauth-1.0a';
+import { CourseService } from '../../../../learnroom';
+import { SchoolService } from '../../../../school';
 import { LtiRole } from '../../../interface';
 import { ExternalToolService } from '../../../service';
 import { LtiRoleMapper } from '../../mapper';
@@ -18,9 +20,11 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		private readonly externalToolService: ExternalToolService,
 		private readonly userService: UserService,
 		private readonly pseudonymService: PseudonymService,
-		private readonly lti11EncryptionService: Lti11EncryptionService
+		private readonly lti11EncryptionService: Lti11EncryptionService,
+		schoolService: SchoolService,
+		courseService: CourseService
 	) {
-		super();
+		super(schoolService, courseService);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars

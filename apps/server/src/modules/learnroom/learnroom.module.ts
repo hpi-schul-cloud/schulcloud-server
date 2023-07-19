@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { FeathersServiceProvider } from '@shared/infra/feathers';
 import {
 	BoardRepo,
@@ -20,11 +20,9 @@ import { CourseController } from './controller/course.controller';
 import { DashboardController } from './controller/dashboard.controller';
 import { RoomsController } from './controller/rooms.controller';
 import { RoomBoardResponseMapper } from './mapper/room-board-response.mapper';
-import { BoardCopyService } from './service/board-copy.service';
+import { BoardCopyService, CourseCopyService, CourseService } from './service';
 import { ColumnBoardTargetService } from './service/column-board-target.service';
 import { CommonCartridgeExportService } from './service/common-cartridge-export.service';
-import { CourseCopyService } from './service/course-copy.service';
-import { CourseService } from './service/course.service';
 import { RoomsService } from './service/rooms.service';
 import { CourseCopyUC } from './uc/course-copy.uc';
 import { CourseExportUc } from './uc/course-export.uc';
@@ -37,7 +35,7 @@ import { RoomsUc } from './uc/rooms.uc';
 
 @Module({
 	imports: [
-		AuthorizationModule,
+		forwardRef(() => AuthorizationModule),
 		FilesStorageClientModule,
 		LessonModule,
 		TaskModule,
