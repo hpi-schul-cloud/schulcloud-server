@@ -9,8 +9,8 @@ export enum CustomParameterType {
 }
 
 export const autoParameters: CustomParameterType[] = [
-	CustomParameterType.AUTO_COURSEID,
-	CustomParameterType.AUTO_COURSENAME,
+	CustomParameterType.AUTO_CONTEXTID,
+	CustomParameterType.AUTO_CONTEXTNAME,
 	CustomParameterType.AUTO_SCHOOLID,
 	CustomParameterType.AUTO_SCHOOLNUMBER,
 ];
