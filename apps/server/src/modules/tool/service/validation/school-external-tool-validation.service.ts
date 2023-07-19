@@ -15,8 +15,8 @@ const typeCheckers: { [key in CustomParameterType]: (val: string) => boolean } =
 	[CustomParameterType.STRING]: () => true,
 	[CustomParameterType.NUMBER]: (val: string) => !isNaN(Number(val)),
 	[CustomParameterType.BOOLEAN]: (val: string) => val === 'true' || val === 'false',
-	[CustomParameterType.AUTO_COURSEID]: () => true,
-	[CustomParameterType.AUTO_COURSENAME]: () => true,
+	[CustomParameterType.AUTO_CONTEXTID]: () => true,
+	[CustomParameterType.AUTO_CONTEXTNAME]: () => true,
 	[CustomParameterType.AUTO_SCHOOLID]: () => true,
 };
 
