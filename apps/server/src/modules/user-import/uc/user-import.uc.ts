@@ -22,6 +22,8 @@ import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import { AuthorizationService } from '@src/modules/authorization';
+import { Logger } from '@src/core/logger';
+import { UserMigrationIsNotEnable, SchoolInUserMigrationStartLoggable } from '../loggable';
 import { SchoolService } from '../../school';
 import {
 	LdapAlreadyPersistedException,
@@ -42,13 +44,22 @@ export class UserImportUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolService: SchoolService,
 		private readonly systemRepo: SystemRepo,
-		private readonly userRepo: UserRepo
-	) {}
+		private readonly userRepo: UserRepo,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(UserImportUc.name);
+	}
 
 	private checkFeatureEnabled(school: SchoolDO): void | never {
 		const enabled = Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean;
 		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeatures.LDAP_UNIVENTION_MIGRATION);
 		if (!enabled && !isLdapPilotSchool) {
+			/* this.logger.log({
+				getLogMessage: () => {
+					return { message: 'feature flag of user migration may be disable or the school is not an LDAP pilot' };
+				},
+			}); */
+			this.logger.log(new UserMigrationIsNotEnable());
 			throw new InternalServerErrorException('User Migration not enabled');
 		}
 	}
@@ -65,6 +76,11 @@ export class UserImportUc {
 		query: IImportUserScope,
 		options?: IFindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
+		this.logger.log({
+			getLogMessage: () => {
+				return { message: 'finding all import users...' };
+			},
+		});
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
 		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
@@ -89,6 +105,11 @@ export class UserImportUc {
 
 		// check same school
 		if (!school.id || school.id !== userMatch.school.id || school.id !== importUser.school.id) {
+			this.logger.log({
+				getLogMessage: () => {
+					return { message: 'Set match: School Id does not match with user school Id', schoolId: school.id };
+				},
+			});
 			throw new ForbiddenException('not same school');
 		}
 
@@ -109,6 +130,15 @@ export class UserImportUc {
 		const importUser = await this.importUserRepo.findById(importUserId);
 		// check same school
 		if (school.id !== importUser.school.id) {
+			this.logger.log({
+				getLogMessage: () => {
+					return {
+						message: 'Remove match: School Id does not match with school Id of the imported user',
+						schoolId: school.id,
+						schoolIdOfUser: importUser.school.id,
+					};
+				},
+			});
 			throw new ForbiddenException('not same school');
 		}
 
@@ -126,6 +156,15 @@ export class UserImportUc {
 
 		// check same school
 		if (school.id !== importUser.school.id) {
+			this.logger.log({
+				getLogMessage: () => {
+					return {
+						message: 'Update Flag: School Id does not match with school Id of the imported user',
+						schoolId: school.id,
+						schoolIdOfUser: importUser.school.id,
+					};
+				},
+			});
 			throw new ForbiddenException('not same school');
 		}
 
@@ -167,6 +206,14 @@ export class UserImportUc {
 		// TODO Change ImportUserRepo to DO to fix this workaround
 		const [importUsers, total] = await this.importUserRepo.findImportUsers(currentUser.school, filters, options);
 		if (total > 0) {
+			this.logger.log({
+				getLogMessage: () => {
+					return {
+						message: 'save all matched users',
+						numberOfMatchedUser: total,
+					};
+				},
+			});
 			for (const importUser of importUsers) {
 				// TODO: Find a better solution for this loop
 				// this needs to be synchronous, because otherwise it was leading to
@@ -185,6 +232,13 @@ export class UserImportUc {
 		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
 		if (!school.externalId || school.inUserMigration !== true || !school.inMaintenanceSince) {
+			this.logger.log({
+				getLogMessage: () => {
+					return {
+						message: 'migration may already be complete or the school may not yet be in maintenance mode',
+					};
+				},
+			});
 			throw new BadRequestException('School cannot exit from user migration mode');
 		}
 		school.inUserMigration = false;
@@ -194,7 +248,7 @@ export class UserImportUc {
 	async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap = true): Promise<void> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
-
+		this.logger.log(new SchoolInUserMigrationStartLoggable(currentUserId, school.name, useCentralLdap));
 		this.checkFeatureEnabled(school);
 		this.checkSchoolNumber(school, useCentralLdap);
 		this.checkSchoolNotInMigration(school);
@@ -218,10 +272,24 @@ export class UserImportUc {
 		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
 		if (school.inUserMigration !== false || !school.inMaintenanceSince || !school.externalId) {
+			this.logger.log({
+				getLogMessage: () => {
+					return {
+						message: 'migration may not yet be complete or the school may not yet be in maintenance mode',
+					};
+				},
+			});
 			throw new BadRequestException('Sync cannot be activated for school');
 		}
 		school.inMaintenanceSince = undefined;
 		await this.schoolService.save(school);
+		this.logger.log({
+			getLogMessage: () => {
+				return {
+					message: 'migration for school is completed',
+				};
+			},
+		});
 	}
 
 	private async getCurrentUser(currentUserId: EntityId, permission: UserImportPermissions): Promise<User> {
@@ -262,7 +330,7 @@ export class UserImportUc {
 				// eslint-disable-next-line no-await-in-loop
 				const system: System = await this.systemRepo.findById(systemId);
 				if (system.ldapConfig) {
-					throw new LdapAlreadyPersistedException();
+					throw new LdapAlreadyPersistedException('LDAP System exists already for this school.');
 				}
 			}
 		}
@@ -270,13 +338,13 @@ export class UserImportUc {
 
 	private checkSchoolNumber(school: SchoolDO, useCentralLdap: boolean): void | never {
 		if (useCentralLdap && !school.officialSchoolNumber) {
-			throw new MissingSchoolNumberException();
+			throw new MissingSchoolNumberException('The school is missing a official school number.');
 		}
 	}
 
 	private checkSchoolNotInMigration(school: SchoolDO): void | never {
 		if (school.inUserMigration !== undefined && school.inUserMigration !== null) {
-			throw new MigrationAlreadyActivatedException();
+			throw new MigrationAlreadyActivatedException('Migration is already activated for this school.');
 		}
 	}
 }
