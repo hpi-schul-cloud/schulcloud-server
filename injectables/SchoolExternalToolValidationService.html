@@ -135,7 +135,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/tool/service/validation/school-external-tool-validation.service.ts:24</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/tool/service/validation/school-external-tool-validation.service.ts:25</a></div>
                             </td>
                         </tr>
 
@@ -200,8 +200,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="58"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/school-external-tool-validation.service.ts:58</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="59"
+                            class="link-to-prism">apps/server/src/modules/tool/service/validation/school-external-tool-validation.service.ts:59</a></div>
                 </td>
             </tr>
 
@@ -283,8 +283,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="36"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/school-external-tool-validation.service.ts:36</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="37"
+                            class="link-to-prism">apps/server/src/modules/tool/service/validation/school-external-tool-validation.service.ts:37</a></div>
                 </td>
             </tr>
 
@@ -354,8 +354,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="75"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/school-external-tool-validation.service.ts:75</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="76"
+                            class="link-to-prism">apps/server/src/modules/tool/service/validation/school-external-tool-validation.service.ts:76</a></div>
                 </td>
             </tr>
 
@@ -437,8 +437,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="91"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/school-external-tool-validation.service.ts:91</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="92"
+                            class="link-to-prism">apps/server/src/modules/tool/service/validation/school-external-tool-validation.service.ts:92</a></div>
                 </td>
             </tr>
 
@@ -520,8 +520,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="83"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/school-external-tool-validation.service.ts:83</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="84"
+                            class="link-to-prism">apps/server/src/modules/tool/service/validation/school-external-tool-validation.service.ts:84</a></div>
                 </td>
             </tr>
 
@@ -603,8 +603,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="50"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/school-external-tool-validation.service.ts:50</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="51"
+                            class="link-to-prism">apps/server/src/modules/tool/service/validation/school-external-tool-validation.service.ts:51</a></div>
                 </td>
             </tr>
 
@@ -686,8 +686,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="27"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/school-external-tool-validation.service.ts:27</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="28"
+                            class="link-to-prism">apps/server/src/modules/tool/service/validation/school-external-tool-validation.service.ts:28</a></div>
                 </td>
             </tr>
 
@@ -744,10 +744,10 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
 import {
-	CustomParameterScope,
-	CustomParameterType,
 	CustomParameterDO,
 	CustomParameterEntryDO,
+	CustomParameterScope,
+	CustomParameterType,
 	ExternalToolDO,
 	SchoolExternalToolDO,
 } from &#x27;@shared/domain&#x27;;
@@ -761,6 +761,7 @@ const typeCheckers: { [key in CustomParameterType]: (val: string) &#x3D;&gt; boo
 	[CustomParameterType.AUTO_COURSEID]: () &#x3D;&gt; true,
 	[CustomParameterType.AUTO_COURSENAME]: () &#x3D;&gt; true,
 	[CustomParameterType.AUTO_SCHOOLID]: () &#x3D;&gt; true,
+	[CustomParameterType.AUTO_SCHOOLNUMBER]: () &#x3D;&gt; true,
 };
 
 @Injectable()

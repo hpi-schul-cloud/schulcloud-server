@@ -94,6 +94,9 @@
                             <a href="#Authenticate" title="apps/server/src/modules/authentication/decorator/auth.decorator.ts" ><b>Authenticate</b>&nbsp;&nbsp;&nbsp;(apps/.../auth.decorator.ts)</a>
                         </li>
                         <li>
+                            <a href="#autoParameters" title="apps/server/src/shared/domain/entity/tools/external-tool/custom-parameter/custom-parameter-type.enum.ts" ><b>autoParameters</b>&nbsp;&nbsp;&nbsp;(apps/.../custom-parameter-type.enum.ts)</a>
+                        </li>
+                        <li>
                             <a href="#availableParentTypes" title="apps/server/src/modules/files-storage/controller/api-test/mocks.ts" ><b>availableParentTypes</b>&nbsp;&nbsp;&nbsp;(apps/.../mocks.ts)</a>
                         </li>
                         <li>
@@ -1713,6 +1716,40 @@
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>[&#x27;jwt&#x27;] as const</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/domain/entity/tools/external-tool/custom-parameter/custom-parameter-type.enum.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="autoParameters"></a>
+                    <span class="name">
+                        <span ><b>autoParameters</b></span>
+                        <a href="#autoParameters"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/CustomParameter.html" target="_self" >CustomParameterType[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[
+	CustomParameterType.AUTO_COURSEID,
+	CustomParameterType.AUTO_COURSENAME,
+	CustomParameterType.AUTO_SCHOOLID,
+	CustomParameterType.AUTO_SCHOOLNUMBER,
+]</code>
                     </td>
                 </tr>
 
@@ -5864,6 +5901,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	[CustomParameterTypeParams.AUTO_COURSEID]: CustomParameterType.AUTO_COURSEID,
 	[CustomParameterTypeParams.AUTO_COURSENAME]: CustomParameterType.AUTO_COURSENAME,
 	[CustomParameterTypeParams.AUTO_SCHOOLID]: CustomParameterType.AUTO_SCHOOLID,
+	[CustomParameterTypeParams.AUTO_SCHOOLNUMBER]: CustomParameterType.AUTO_SCHOOLNUMBER,
 }</code>
                     </td>
                 </tr>
@@ -5960,6 +5998,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	[CustomParameterType.AUTO_COURSEID]: CustomParameterTypeParams.AUTO_COURSEID,
 	[CustomParameterType.AUTO_COURSENAME]: CustomParameterTypeParams.AUTO_COURSENAME,
 	[CustomParameterType.AUTO_SCHOOLID]: CustomParameterTypeParams.AUTO_SCHOOLID,
+	[CustomParameterType.AUTO_SCHOOLNUMBER]: CustomParameterTypeParams.AUTO_SCHOOLNUMBER,
 }</code>
                     </td>
                 </tr>
@@ -8457,6 +8496,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	[CustomParameterType.AUTO_COURSEID]: () &#x3D;&gt; true,
 	[CustomParameterType.AUTO_COURSENAME]: () &#x3D;&gt; true,
 	[CustomParameterType.AUTO_SCHOOLID]: () &#x3D;&gt; true,
+	[CustomParameterType.AUTO_SCHOOLNUMBER]: () &#x3D;&gt; true,
 }</code>
                     </td>
                 </tr>

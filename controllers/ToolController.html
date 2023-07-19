@@ -282,8 +282,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="130"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:130</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="134"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:134</a></div>
                 </td>
             </tr>
 
@@ -376,8 +376,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="68"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:68</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="72"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:72</a></div>
                 </td>
             </tr>
 
@@ -491,8 +491,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="95"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:95</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="99"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:99</a></div>
                 </td>
             </tr>
 
@@ -586,8 +586,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="145"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:145</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="149"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:149</a></div>
                 </td>
             </tr>
 
@@ -681,8 +681,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="110"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:110</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="114"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:114</a></div>
                 </td>
             </tr>
 
@@ -776,8 +776,8 @@ import { ExternalToolDO, IFindOptions, Page, ToolReference } from &#x27;@shared/
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
-import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate, ToolReferenceUc } from &#x27;../uc&#x27;;
 import { ExternalToolSearchQuery } from &#x27;../interface&#x27;;
+import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate, ToolReferenceUc } from &#x27;../uc&#x27;;
 import {
 	ContextExternalToolContextParams,
 	ExternalToolCreateParams,
@@ -789,8 +789,8 @@ import {
 	ToolIdParams,
 	ToolReferenceResponse,
 } from &#x27;./dto&#x27;;
-import { ExternalToolRequestMapper, ExternalToolResponseMapper } from &#x27;./mapper&#x27;;
 import { ToolReferenceListResponse } from &#x27;./dto/response/tool-reference-list.response&#x27;;
+import { ExternalToolRequestMapper, ExternalToolResponseMapper } from &#x27;./mapper&#x27;;
 
 @ApiTags(&#x27;Tool&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
@@ -815,9 +815,13 @@ export class ToolController {
 		@Body() externalToolParams: ExternalToolCreateParams
 	): Promise&lt;ExternalToolResponse&gt; {
 		const externalToolDO: ExternalToolCreate &#x3D; this.externalToolDOMapper.mapCreateRequest(externalToolParams);
+
 		const created: ExternalToolDO &#x3D; await this.externalToolUc.createExternalTool(currentUser.userId, externalToolDO);
+
 		const mapped: ExternalToolResponse &#x3D; this.externalResponseMapper.mapToExternalToolResponse(created);
+
 		this.logger.debug(&#x60;ExternalTool with id ${mapped.id} was created by user with id ${currentUser.userId}&#x60;);
+
 		return mapped;
 	}
 

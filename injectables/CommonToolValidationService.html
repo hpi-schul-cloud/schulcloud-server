@@ -758,10 +758,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CustomParameterDO, ExternalToolDO } from &#x27;@shared/domain/domainobject/tool&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { CustomParameterScope } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
+import { autoParameters, CustomParameterScope } from &#x27;@shared/domain&#x27;;
+import { CustomParameterDO, ExternalToolDO } from &#x27;@shared/domain/domainobject/tool&#x27;;
 import { ExternalToolService } from &#x27;../external-tool.service&#x27;;
 
 @Injectable()
@@ -869,10 +869,19 @@ export class CommonToolValidationService {
 	}
 
 	private isGlobalParameterValid(customParameter: CustomParameterDO): boolean {
-		if (CustomParameterScope.GLOBAL &#x3D;&#x3D;&#x3D; customParameter.scope &amp;&amp; !customParameter.default) {
-			return false;
+		if (customParameter.scope !&#x3D;&#x3D; CustomParameterScope.GLOBAL) {
+			return true;
 		}
-		return true;
+
+		if (autoParameters.includes(customParameter.type)) {
+			return true;
+		}
+
+		if (customParameter.default) {
+			return true;
+		}
+
+		return false;
 	}
 }
 </code></pre>
