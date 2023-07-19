@@ -21,7 +21,7 @@ import {
 	Lti11ToolConfigUpdate,
 	Oauth2ToolConfigCreate,
 	Oauth2ToolConfigUpdate,
-} from '../../uc/dto';
+} from '../../uc';
 import {
 	BasicToolConfigParams,
 	CustomParameterPostParams,
@@ -54,6 +54,7 @@ const typeMapping: Record<CustomParameterTypeParams, CustomParameterType> = {
 	[CustomParameterTypeParams.AUTO_COURSEID]: CustomParameterType.AUTO_COURSEID,
 	[CustomParameterTypeParams.AUTO_COURSENAME]: CustomParameterType.AUTO_COURSENAME,
 	[CustomParameterTypeParams.AUTO_SCHOOLID]: CustomParameterType.AUTO_SCHOOLID,
+	[CustomParameterTypeParams.AUTO_SCHOOLNUMBER]: CustomParameterType.AUTO_SCHOOLNUMBER,
 };
 
 @Injectable()
