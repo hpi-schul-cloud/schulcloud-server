@@ -37,7 +37,7 @@ export class LdapService {
 				client.bind(username, password, (err) => {
 					if (err) {
 						this.logger.debug(err);
-						reject(new UnauthorizedException(err, 'User could not authenticate'));
+						reject(new UnauthorizedException('User could not authenticate', { cause: err }));
 					} else {
 						this.logger.debug('[LDAP] Bind successful');
 						resolve(client);
