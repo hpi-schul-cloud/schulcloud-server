@@ -318,12 +318,12 @@ describe('SchoolExternalToolValidationService', () => {
 			});
 		});
 
-		describe('when checking parameter type auto_courseId', () => {
+		describe('when checking parameter type auto_contextId', () => {
 			it('should return without error when type matches param value', async () => {
 				const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
 					name: 'correctType',
 					scope: CustomParameterScope.SCHOOL,
-					type: CustomParameterType.AUTO_COURSEID,
+					type: CustomParameterType.AUTO_CONTEXTID,
 				});
 				const { schoolExternalToolDO } = setup(
 					{
@@ -340,12 +340,12 @@ describe('SchoolExternalToolValidationService', () => {
 			});
 		});
 
-		describe('when checking parameter type auto_courseName', () => {
+		describe('when checking parameter type auto_contextName', () => {
 			it('should return without error when type matches param value', async () => {
 				const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
 					name: 'correctType',
 					scope: CustomParameterScope.SCHOOL,
-					type: CustomParameterType.AUTO_COURSENAME,
+					type: CustomParameterType.AUTO_CONTEXTNAME,
 				});
 				const { schoolExternalToolDO } = setup(
 					{

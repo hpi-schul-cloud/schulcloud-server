@@ -268,7 +268,7 @@ describe('CommonToolValidationService', () => {
 					const externalToolDO: ExternalToolDO = externalToolDOFactory
 						.withCustomParameters(1, {
 							scope: CustomParameterScope.GLOBAL,
-							type: CustomParameterType.AUTO_COURSEID,
+							type: CustomParameterType.AUTO_CONTEXTID,
 							default: undefined,
 						})
 						.build();
