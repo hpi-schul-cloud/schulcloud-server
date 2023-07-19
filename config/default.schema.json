@@ -1215,6 +1215,14 @@
 					"description": "Number of simultaneously synchronized students, teachers and classes"
 				}
 			}
+		},
+		"GLOBAL_ANNOUNCEMENT_TEXT": {
+			"type": "string",
+			"description": "global announcement, shown to all user roles specified in GLOBAL_ANNOUNCEMENT_ROLES"
+		},
+		"GLOBAL_ANNOUNCEMENT_ROLES": {
+			"type": "string",
+			"description": "comma separated list of roles which GLOBAL_ANNOUNCEMENT_TEXT is shown to"
 		}
 	},
 	"required": [
