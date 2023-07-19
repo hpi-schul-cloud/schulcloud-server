@@ -188,7 +188,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 		}
 
 		if (
-			customParameter.type === CustomParameterType.AUTO_COURSEID &&
+			customParameter.type === CustomParameterType.AUTO_CONTEXTID &&
 			contextExternalToolDO.contextRef.type === ToolContextType.COURSE
 		) {
 			return contextExternalToolDO.contextRef.id;
