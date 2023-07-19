@@ -1,12 +1,12 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ValidationError } from '@shared/common';
+import { CustomParameterScope, CustomParameterType } from '@shared/domain';
+import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/tool';
 import {
 	customParameterDOFactory,
 	externalToolDOFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { Test, TestingModule } from '@nestjs/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/tool';
-import { CustomParameterScope } from '@shared/domain';
-import { ValidationError } from '@shared/common';
 import { ExternalToolService } from '../external-tool.service';
 import { CommonToolValidationService } from './common-tool-validation.service';
 
@@ -182,55 +182,109 @@ describe('CommonToolValidationService', () => {
 		});
 
 		describe('when parameters has a parameter with scope global', () => {
-			it('should pass when parameter has a default value', async () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory
-					.withCustomParameters(1, {
-						scope: CustomParameterScope.GLOBAL,
-						default: 'defaultValue',
-					})
-					.build();
+			describe('when parameter has a default value', () => {
+				const setup = () => {
+					const externalToolDO: ExternalToolDO = externalToolDOFactory
+						.withCustomParameters(1, {
+							scope: CustomParameterScope.GLOBAL,
+							default: 'defaultValue',
+						})
+						.build();
 
-				const result: Promise<void> = service.validateCommon(externalToolDO);
+					return {
+						externalToolDO,
+					};
+				};
 
-				await expect(result).resolves.not.toThrow();
+				it('should pass', async () => {
+					const { externalToolDO } = setup();
+
+					const result: Promise<void> = service.validateCommon(externalToolDO);
+
+					await expect(result).resolves.not.toThrow();
+				});
 			});
 
-			it('should throw an exception when defaultValue is empty', async () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory
-					.withCustomParameters(1, {
-						scope: CustomParameterScope.GLOBAL,
-						default: undefined,
-					})
-					.build();
+			describe('when defaultValue is empty', () => {
+				const setup = () => {
+					const externalToolDO: ExternalToolDO = externalToolDOFactory
+						.withCustomParameters(1, {
+							scope: CustomParameterScope.GLOBAL,
+							default: undefined,
+						})
+						.build();
 
-				const result: Promise<void> = service.validateCommon(externalToolDO);
+					return {
+						externalToolDO,
+					};
+				};
 
-				await expect(result).rejects.toThrow(
-					new ValidationError(
-						`tool_param_default_required: The "${
-							(externalToolDO.parameters as CustomParameterDO[])[0].name
-						}" is a global parameter and requires a default value.`
-					)
-				);
+				it('should throw an exception', async () => {
+					const { externalToolDO } = setup();
+
+					const result: Promise<void> = service.validateCommon(externalToolDO);
+
+					await expect(result).rejects.toThrow(
+						new ValidationError(
+							`tool_param_default_required: The "${
+								(externalToolDO.parameters as CustomParameterDO[])[0].name
+							}" is a global parameter and requires a default value.`
+						)
+					);
+				});
 			});
 
-			it('should throw an exception when the defaultValue is undefined', async () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory
-					.withCustomParameters(1, {
-						scope: CustomParameterScope.GLOBAL,
-						default: '',
-					})
-					.build();
+			describe('when the defaultValue is undefined', () => {
+				const setup = () => {
+					const externalToolDO: ExternalToolDO = externalToolDOFactory
+						.withCustomParameters(1, {
+							scope: CustomParameterScope.GLOBAL,
+							default: '',
+						})
+						.build();
 
-				const result: Promise<void> = service.validateCommon(externalToolDO);
+					return {
+						externalToolDO,
+					};
+				};
 
-				await expect(result).rejects.toThrow(
-					new ValidationError(
-						`tool_param_default_required: The "${
-							(externalToolDO.parameters as CustomParameterDO[])[0].name
-						}" is a global parameter and requires a default value.`
-					)
-				);
+				it('should throw an exception', async () => {
+					const { externalToolDO } = setup();
+
+					const result: Promise<void> = service.validateCommon(externalToolDO);
+
+					await expect(result).rejects.toThrow(
+						new ValidationError(
+							`tool_param_default_required: The "${
+								(externalToolDO.parameters as CustomParameterDO[])[0].name
+							}" is a global parameter and requires a default value.`
+						)
+					);
+				});
+			});
+
+			describe('when the type is an auto type', () => {
+				const setup = () => {
+					const externalToolDO: ExternalToolDO = externalToolDOFactory
+						.withCustomParameters(1, {
+							scope: CustomParameterScope.GLOBAL,
+							type: CustomParameterType.AUTO_COURSEID,
+							default: undefined,
+						})
+						.build();
+
+					return {
+						externalToolDO,
+					};
+				};
+
+				it('should pass without a default', async () => {
+					const { externalToolDO } = setup();
+
+					const result: Promise<void> = service.validateCommon(externalToolDO);
+
+					await expect(result).resolves.not.toThrow();
+				});
 			});
 		});
 	});
