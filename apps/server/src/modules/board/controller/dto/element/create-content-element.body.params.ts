@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ContentElementType } from '@shared/domain';
 import { IsEnum, IsInt, IsOptional, Min } from 'class-validator';
 
-export class CreateContentElementBody {
+export class CreateContentElementBodyParams {
 	@IsEnum(ContentElementType)
 	@ApiProperty({
 		description: 'The type of element',
