@@ -41,8 +41,8 @@ const typeMapping: Record<CustomParameterType, CustomParameterTypeParams> = {
 	[CustomParameterType.STRING]: CustomParameterTypeParams.STRING,
 	[CustomParameterType.BOOLEAN]: CustomParameterTypeParams.BOOLEAN,
 	[CustomParameterType.NUMBER]: CustomParameterTypeParams.NUMBER,
-	[CustomParameterType.AUTO_COURSEID]: CustomParameterTypeParams.AUTO_COURSEID,
-	[CustomParameterType.AUTO_COURSENAME]: CustomParameterTypeParams.AUTO_COURSENAME,
+	[CustomParameterType.AUTO_CONTEXTID]: CustomParameterTypeParams.AUTO_CONTEXTID,
+	[CustomParameterType.AUTO_CONTEXTNAME]: CustomParameterTypeParams.AUTO_CONTEXTNAME,
 	[CustomParameterType.AUTO_SCHOOLID]: CustomParameterTypeParams.AUTO_SCHOOLID,
 };
 
