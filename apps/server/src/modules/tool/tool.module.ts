@@ -3,6 +3,7 @@ import { EncryptionModule } from '@shared/infra/encryption';
 import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
 import {
 	ContextExternalToolRepo,
+	CourseRepo,
 	ExternalToolRepo,
 	ExternalToolRepoMapper,
 	ExternalToolSortingMapper,
@@ -11,7 +12,6 @@ import {
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '@src/modules/authorization';
-import { LearnroomModule } from '@src/modules/learnroom';
 import { PseudonymModule } from '@src/modules/pseudonym';
 import { SchoolModule } from '@src/modules/school';
 import { UserModule } from '@src/modules/user';
@@ -43,7 +43,6 @@ import {
 		UserModule,
 		PseudonymModule,
 		SchoolModule,
-		LearnroomModule,
 	],
 	providers: [
 		ExternalToolService,
@@ -67,6 +66,8 @@ import {
 		Lti11ToolLaunchStrategy,
 		OAuth2ToolLaunchStrategy,
 		CommonToolService,
+		// Importing the LearnroomModule instead of CourseRepo creates some kind of dependency cycle that lets unrelated tests fail
+		CourseRepo,
 	],
 	exports: [
 		ExternalToolService,

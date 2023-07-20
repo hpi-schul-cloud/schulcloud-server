@@ -14,6 +14,7 @@ import {
 	SchoolDO,
 	SchoolExternalToolDO,
 } from '@shared/domain';
+import { CourseRepo } from '@shared/repo';
 import {
 	contextExternalToolDOFactory,
 	courseFactory,
@@ -23,7 +24,6 @@ import {
 	schoolExternalToolDOFactory,
 	setupEntities,
 } from '@shared/testing';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { SchoolService } from '@src/modules/school';
 import {
 	LaunchRequestMethod,
@@ -74,7 +74,7 @@ describe('AbstractLaunchStrategy', () => {
 	let launchStrategy: TestLaunchStrategy;
 
 	let schoolService: DeepMocked<SchoolService>;
-	let courseService: DeepMocked<CourseService>;
+	let courseRepo: DeepMocked<CourseRepo>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -87,15 +87,15 @@ describe('AbstractLaunchStrategy', () => {
 					useValue: createMock<SchoolService>(),
 				},
 				{
-					provide: CourseService,
-					useValue: createMock<CourseService>(),
+					provide: CourseRepo,
+					useValue: createMock<CourseRepo>(),
 				},
 			],
 		}).compile();
 
 		launchStrategy = module.get(TestLaunchStrategy);
 		schoolService = module.get(SchoolService);
-		courseService = module.get(CourseService);
+		courseRepo = module.get(CourseRepo);
 	});
 
 	afterAll(async () => {
@@ -199,7 +199,7 @@ describe('AbstractLaunchStrategy', () => {
 				);
 
 				schoolService.getSchoolById.mockResolvedValue(school);
-				courseService.findById.mockResolvedValue(course);
+				courseRepo.findById.mockResolvedValue(course);
 
 				const sortFn = (a: PropertyData, b: PropertyData) => {
 					if (a.name < b.name) {

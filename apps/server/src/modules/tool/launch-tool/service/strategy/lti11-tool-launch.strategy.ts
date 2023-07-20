@@ -1,13 +1,7 @@
-import {
-	forwardRef,
-	Inject,
-	Injectable,
-	InternalServerErrorException,
-	UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId, LtiPrivacyPermission, PseudonymDO, RoleName, UserDO } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { CourseRepo } from '@shared/repo';
 import { PseudonymService } from '@src/modules/pseudonym';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
@@ -28,10 +22,9 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		private readonly pseudonymService: PseudonymService,
 		private readonly lti11EncryptionService: Lti11EncryptionService,
 		schoolService: SchoolService,
-		@Inject(forwardRef(() => CourseService))
-		courseService: CourseService
+		courseRepo: CourseRepo
 	) {
-		super(schoolService, courseService);
+		super(schoolService, courseRepo);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars

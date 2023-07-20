@@ -14,6 +14,7 @@ import {
 	ToolConfigType,
 	UserDO,
 } from '@shared/domain';
+import { CourseRepo } from '@shared/repo';
 import {
 	contextExternalToolDOFactory,
 	externalToolDOFactory,
@@ -21,7 +22,6 @@ import {
 	userDoFactory,
 } from '@shared/testing';
 import { pseudonymDOFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { PseudonymService } from '@src/modules/pseudonym';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
@@ -71,8 +71,8 @@ describe('Lti11ToolLaunchStrategy', () => {
 					useValue: createMock<SchoolService>(),
 				},
 				{
-					provide: CourseService,
-					useValue: createMock<CourseService>(),
+					provide: CourseRepo,
+					useValue: createMock<CourseRepo>(),
 				},
 			],
 		}).compile();

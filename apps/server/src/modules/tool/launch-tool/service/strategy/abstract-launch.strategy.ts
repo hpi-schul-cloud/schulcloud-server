@@ -12,7 +12,7 @@ import {
 	SchoolDO,
 	SchoolExternalToolDO,
 } from '@shared/domain';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { CourseRepo } from '@shared/repo';
 import { SchoolService } from '@src/modules/school';
 import { URLSearchParams } from 'url';
 import { ToolContextType } from '../../../interface';
@@ -24,7 +24,7 @@ import { IToolLaunchStrategy } from './tool-launch-strategy.interface';
 
 @Injectable()
 export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
-	constructor(private readonly schoolService: SchoolService, private readonly courseService: CourseService) {}
+	constructor(private readonly schoolService: SchoolService, private readonly courseRepo: CourseRepo) {}
 
 	public async createLaunchData(userId: EntityId, data: IToolLaunchParams): Promise<ToolLaunchData> {
 		const launchData: ToolLaunchData = this.buildToolLaunchDataFromExternalTool(data.externalToolDO);
@@ -219,7 +219,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 			}
 			case CustomParameterType.AUTO_CONTEXTNAME: {
 				if (contextExternalToolDO.contextRef.type === ToolContextType.COURSE) {
-					const course: Course = await this.courseService.findById(contextExternalToolDO.contextRef.id);
+					const course: Course = await this.courseRepo.findById(contextExternalToolDO.contextRef.id);
 
 					return course.name;
 				}
