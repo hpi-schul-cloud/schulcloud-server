@@ -13,6 +13,7 @@ import { Logger } from '@src/core/logger';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { S3Client } from '@aws-sdk/client-s3';
+import { UserRepo } from '@shared/repo';
 import { H5PEditorController } from './controller/h5p-editor.controller';
 import { config, s3Config } from './h5p-editor.config';
 import { S3Config } from './interface/config';
@@ -88,6 +89,7 @@ const providers = [
 	H5PPlayerService,
 	H5PContentRepo,
 	H5PAjaxEndpointService,
+	UserRepo,
 	...storages,
 ];
 

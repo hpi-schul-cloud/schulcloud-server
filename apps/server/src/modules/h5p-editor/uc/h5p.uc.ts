@@ -9,12 +9,17 @@ import {
 import { ICurrentUser } from '@src/modules/authentication';
 import { Request } from 'express';
 import { Readable } from 'stream';
-
+import { UserRepo } from '@shared/repo';
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams } from '../controller/dto';
 
 @Injectable()
 export class H5PEditorUc {
-	constructor(private h5pEditor: H5PEditor, private h5pPlayer: H5PPlayer, private h5pAjaxEndpoint: H5PAjaxEndpoint) {}
+	constructor(
+		private h5pEditor: H5PEditor,
+		private h5pPlayer: H5PPlayer,
+		private h5pAjaxEndpoint: H5PAjaxEndpoint,
+		private readonly userRepo: UserRepo
+	) {}
 
 	/**
 	 * Returns a callback that parses the request range.
@@ -81,11 +86,12 @@ export class H5PEditorUc {
 		try {
 			const filesFile = files?.find((file) => file.fieldname === 'file');
 			const libraryUploadFile = files?.find((file) => file.fieldname === 'h5p');
+			const language = await this.getUserLanguage(currentUser);
 
 			const result = await this.h5pAjaxEndpoint.postAjax(
 				query.action,
 				body,
-				undefined, // Todo: Language
+				language, // TODO: Language
 				user,
 				filesFile && {
 					data: filesFile.buffer,
@@ -207,9 +213,11 @@ export class H5PEditorUc {
 		return h5pPlayerHtml;
 	}
 
-	public async getH5pEditor(currentUser: ICurrentUser, contentId: string, language: string): Promise<string> {
+	public async getH5pEditor(currentUser: ICurrentUser, contentId: string): Promise<string> {
 		// If contentId is undefined, a new H5P content will be created.
 		// TODO: await this.checkPermission...
+		// TODO: implement language from currentUser
+		const language = await this.getUserLanguage(currentUser);
 		const user = this.changeUserType(currentUser);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		const createdH5PEditor: string = await this.h5pEditor.render(contentId, language, user);
@@ -256,14 +264,23 @@ export class H5PEditorUc {
 	private changeUserType(currentUser: ICurrentUser): IUser {
 		// TODO: declare IUser (e.g. add roles, schoolId, etc.)
 		const user: IUser = {
-			canCreateRestricted: false,
-			canInstallRecommended: false,
-			canUpdateAndInstallLibraries: false,
+			canCreateRestricted: true,
+			canInstallRecommended: true,
+			canUpdateAndInstallLibraries: true,
 			email: '',
 			id: currentUser.userId,
 			name: '',
 			type: '',
 		};
 		return user;
+	}
+
+	private async getUserLanguage(currentUser: ICurrentUser): Promise<string> {
+		const languageUser = await this.userRepo.findById(currentUser.userId);
+		let language = 'de';
+		if (languageUser.language) {
+			language = languageUser.language.toString();
+		}
+		return language;
 	}
 }
