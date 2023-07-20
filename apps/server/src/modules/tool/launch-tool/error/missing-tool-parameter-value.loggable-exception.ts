@@ -3,15 +3,15 @@ import { BusinessError } from '@shared/common';
 import { ContextExternalToolDO, CustomParameterDO } from '@shared/domain';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
-export class MissingToolParameterLoggableException extends BusinessError implements Loggable {
+export class MissingToolParameterValueLoggableException extends BusinessError implements Loggable {
 	constructor(
 		private readonly contextExternalTool: ContextExternalToolDO,
 		private readonly parameters: CustomParameterDO[]
 	) {
 		super(
 			{
-				type: 'MISSING_TOOL_PARAMETER',
-				title: 'Missing tool parameter',
+				type: 'MISSING_TOOL_PARAMETER_VALUE',
+				title: 'Missing tool parameter value',
 				defaultMessage: 'The external tool was attempted to launch, but a parameter was not configured.',
 			},
 			HttpStatus.UNPROCESSABLE_ENTITY,
@@ -31,7 +31,7 @@ export class MissingToolParameterLoggableException extends BusinessError impleme
 			stack: this.stack,
 			data: {
 				contextExternalToolId: this.contextExternalTool.id,
-				parameter: parameterNames.toString(),
+				parameterNames: `[${parameterNames.join(', ')}]`,
 			},
 		};
 	}

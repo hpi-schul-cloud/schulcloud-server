@@ -16,7 +16,7 @@ import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { SchoolService } from '@src/modules/school';
 import { URLSearchParams } from 'url';
 import { ToolContextType } from '../../../interface';
-import { MissingToolParameterLoggableException, ParameterNotImplementedLoggableException } from '../../error';
+import { MissingToolParameterValueLoggableException, ParameterNotImplementedLoggableException } from '../../error';
 import { ToolLaunchMapper } from '../../mapper';
 import { LaunchRequestMethod, PropertyData, PropertyLocation, ToolLaunchData, ToolLaunchRequest } from '../../types';
 import { IToolLaunchParams } from './tool-launch-params.interface';
@@ -200,7 +200,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 		);
 
 		if (missingParameters.length > 0) {
-			throw new MissingToolParameterLoggableException(contextExternalToolDO, missingParameters);
+			throw new MissingToolParameterValueLoggableException(contextExternalToolDO, missingParameters);
 		}
 	}
 
@@ -236,8 +236,9 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 			case CustomParameterType.BOOLEAN:
 			case CustomParameterType.NUMBER:
 			case CustomParameterType.STRING: {
-				// Global parameters have no parameter entry and always use the default
-				return matchingParameterEntry?.value ?? customParameter.default;
+				return customParameter.scope === CustomParameterScope.GLOBAL
+					? customParameter.default
+					: matchingParameterEntry?.value;
 			}
 			default: {
 				throw new ParameterNotImplementedLoggableException(customParameter.type);
