@@ -3,12 +3,11 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, pseudonymFactory } from '@shared/testing';
+import { cleanupCollections, pseudonymFactory, externalToolPseudonymEntityFactory } from '@shared/testing';
 import { pseudonymEntityFactory } from '@shared/testing/factory/pseudonym.factory';
 import { LegacyLogger } from '@src/core/logger';
 import { v4 as uuidv4 } from 'uuid';
 import { Pseudonym } from '@shared/domain';
-import { externalToolPseudonymEntityFactory } from '@shared/testing/factory/external-tool-pseudonym.factory';
 import { ExternalToolPseudonymEntity } from '../entity';
 import { ExternalToolPseudonymRepo } from './external-tool-pseudonym.repo';
 
