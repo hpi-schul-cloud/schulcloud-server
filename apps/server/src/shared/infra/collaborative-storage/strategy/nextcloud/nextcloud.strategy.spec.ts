@@ -7,7 +7,7 @@ import { TeamRolePermissionsDto } from '@shared/infra/collaborative-storage/dto/
 import { NextcloudClient } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.client';
 import { NextcloudStrategy } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.strategy';
 import { LtiToolRepo } from '@shared/repo';
-import { pseudonymFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
+import { ltiToolDOFactory, pseudonymFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { TeamDto, TeamUserDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
 import { ExternalToolService } from '@src/modules/tool';
@@ -91,7 +91,7 @@ describe('NextCloudStrategy', () => {
 	});
 
 	beforeEach(() => {
-		nextcloudTool = new LtiToolDO({
+		nextcloudTool = ltiToolDOFactory.build({
 			id: 'toolId',
 			name: toolName,
 			isLocal: true,
