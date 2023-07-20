@@ -1513,7 +1513,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 		}
 
 		if (
-			customParameter.type &#x3D;&#x3D;&#x3D; CustomParameterType.AUTO_COURSEID &amp;&amp;
+			customParameter.type &#x3D;&#x3D;&#x3D; CustomParameterType.AUTO_CONTEXTID &amp;&amp;
 			contextExternalToolDO.contextRef.type &#x3D;&#x3D;&#x3D; ToolContextType.COURSE
 		) {
 			return contextExternalToolDO.contextRef.id;

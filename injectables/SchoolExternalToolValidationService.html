@@ -758,8 +758,8 @@ const typeCheckers: { [key in CustomParameterType]: (val: string) &#x3D;&gt; boo
 	[CustomParameterType.STRING]: () &#x3D;&gt; true,
 	[CustomParameterType.NUMBER]: (val: string) &#x3D;&gt; !isNaN(Number(val)),
 	[CustomParameterType.BOOLEAN]: (val: string) &#x3D;&gt; val &#x3D;&#x3D;&#x3D; &#x27;true&#x27; || val &#x3D;&#x3D;&#x3D; &#x27;false&#x27;,
-	[CustomParameterType.AUTO_COURSEID]: () &#x3D;&gt; true,
-	[CustomParameterType.AUTO_COURSENAME]: () &#x3D;&gt; true,
+	[CustomParameterType.AUTO_CONTEXTID]: () &#x3D;&gt; true,
+	[CustomParameterType.AUTO_CONTEXTNAME]: () &#x3D;&gt; true,
 	[CustomParameterType.AUTO_SCHOOLID]: () &#x3D;&gt; true,
 	[CustomParameterType.AUTO_SCHOOLNUMBER]: () &#x3D;&gt; true,
 };
