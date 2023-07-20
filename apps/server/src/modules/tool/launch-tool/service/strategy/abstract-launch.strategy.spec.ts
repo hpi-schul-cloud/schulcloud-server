@@ -137,13 +137,13 @@ describe('AbstractLaunchStrategy', () => {
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.BODY,
 					name: 'autoCourseIdParam',
-					type: CustomParameterType.AUTO_COURSEID,
+					type: CustomParameterType.AUTO_CONTEXTID,
 				});
 				const autoCourseNameCustomParameter = customParameterDOFactory.build({
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.BODY,
 					name: 'autoCourseNameParam',
-					type: CustomParameterType.AUTO_COURSENAME,
+					type: CustomParameterType.AUTO_CONTEXTNAME,
 				});
 				const autoSchoolNumberCustomParameter = customParameterDOFactory.build({
 					scope: CustomParameterScope.GLOBAL,

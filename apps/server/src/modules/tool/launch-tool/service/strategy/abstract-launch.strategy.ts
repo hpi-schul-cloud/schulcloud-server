@@ -214,10 +214,10 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 			case CustomParameterType.AUTO_SCHOOLID: {
 				return schoolExternalToolDO.schoolId;
 			}
-			case CustomParameterType.AUTO_COURSEID: {
+			case CustomParameterType.AUTO_CONTEXTID: {
 				return contextExternalToolDO.contextRef.id;
 			}
-			case CustomParameterType.AUTO_COURSENAME: {
+			case CustomParameterType.AUTO_CONTEXTNAME: {
 				if (contextExternalToolDO.contextRef.type === ToolContextType.COURSE) {
 					const course: Course = await this.courseService.findById(contextExternalToolDO.contextRef.id);
 
