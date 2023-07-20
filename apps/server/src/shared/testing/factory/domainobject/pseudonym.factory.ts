@@ -8,5 +8,7 @@ export const pseudonymFactory = DoBaseFactory.define<Pseudonym, PseudonymProps>(
 		pseudonym: `pseudonym${sequence}`,
 		toolId: 'toolId',
 		userId: 'userId',
+		createdAt: new Date(2023, 6, 1),
+		updatedAt: new Date(2023, 7, 1),
 	};
 });

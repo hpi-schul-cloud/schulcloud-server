@@ -280,7 +280,7 @@ describe('PseudonymService', () => {
 				const externalTool: ExternalToolDO = externalToolDOFactory.buildWithId();
 
 				externalToolPseudonymRepo.findByUserIdAndToolId.mockResolvedValueOnce(null);
-				externalToolPseudonymRepo.save.mockResolvedValueOnce(pseudonym);
+				externalToolPseudonymRepo.createOrUpdate.mockResolvedValueOnce(pseudonym);
 
 				return {
 					pseudonym,
@@ -294,7 +294,7 @@ describe('PseudonymService', () => {
 
 				await service.findOrCreatePseudonym(user, externalTool);
 
-				expect(externalToolPseudonymRepo.save).toHaveBeenCalledWith(
+				expect(externalToolPseudonymRepo.createOrUpdate).toHaveBeenCalledWith(
 					expect.objectContaining({
 						userId: user.id,
 						toolId: externalTool.id,

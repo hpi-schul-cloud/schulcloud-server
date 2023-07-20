@@ -3,13 +3,13 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections } from '@shared/testing';
+import { cleanupCollections, pseudonymFactory } from '@shared/testing';
 import { pseudonymEntityFactory } from '@shared/testing/factory/pseudonym.factory';
 import { v4 as uuidv4 } from 'uuid';
 import { LegacyLogger } from '@src/core/logger';
 import { Pseudonym } from '@shared/domain';
 import { PseudonymsRepo } from './pseudonyms.repo';
-import { IPseudonymEntityProps, PseudonymEntity } from '../entity';
+import { PseudonymEntity } from '../entity';
 
 describe('PseudonymRepo', () => {
 	let module: TestingModule;
@@ -38,32 +38,6 @@ describe('PseudonymRepo', () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
-	});
-
-	describe('entityName', () => {
-		it('should return PseudonymEntity', () => {
-			expect(repo.entityName).toBe(PseudonymEntity);
-		});
-	});
-
-	describe('entityFactory', () => {
-		const props: IPseudonymEntityProps = {
-			pseudonym: 'pseudonym',
-			toolId: new ObjectId(),
-			userId: new ObjectId(),
-		};
-
-		it('should return new entity of type Pseudonym', () => {
-			const result: PseudonymEntity = repo.entityFactory(props);
-
-			expect(result).toBeInstanceOf(PseudonymEntity);
-		});
-
-		it('should return new entity with values from properties', () => {
-			const result: PseudonymEntity = repo.entityFactory(props);
-
-			expect(result).toEqual(expect.objectContaining(props));
-		});
 	});
 
 	describe('findByUserIdAndToolIdOrFail', () => {
@@ -144,39 +118,55 @@ describe('PseudonymRepo', () => {
 		});
 	});
 
-	describe('save', () => {
-		const setup = async () => {
-			const id = new ObjectId().toHexString();
-
-			const domainObject: Pseudonym = new Pseudonym({
-				id,
-				pseudonym: uuidv4(),
-				toolId: new ObjectId().toHexString(),
-				userId: new ObjectId().toHexString(),
-			});
-
-			const entity: PseudonymEntity = pseudonymEntityFactory.buildWithId(
-				{
-					pseudonym: uuidv4(),
-					toolId: new ObjectId(),
-					userId: new ObjectId(),
-				},
-				id
-			);
-
-			await em.persistAndFlush(entity);
-
-			return {
-				domainObject,
+	describe('createOrUpdate', () => {
+		describe('when pseudonym is new', () => {
+			const setup = () => {
+				return {
+					domainObject: pseudonymFactory.build({
+						pseudonym: uuidv4(),
+						toolId: new ObjectId().toHexString(),
+						userId: new ObjectId().toHexString(),
+					}),
+				};
 			};
-		};
 
-		it('should return a domain object', async () => {
-			const { domainObject } = await setup();
+			it('should create a new pseudonym if it does not exist', async () => {
+				const { domainObject } = setup();
 
-			const result: Pseudonym = await repo.save(domainObject);
+				const result: Pseudonym = await repo.createOrUpdate(domainObject);
 
-			expect(result).toEqual(domainObject);
+				expect(result.id).toBeTruthy();
+				expect(result.pseudonym).toEqual(domainObject.pseudonym);
+				expect(result.toolId).toEqual(domainObject.toolId);
+				expect(result.userId).toEqual(domainObject.userId);
+			});
+		});
+
+		describe('when pseudonym is existing', () => {
+			const setup = async () => {
+				const entity: PseudonymEntity = pseudonymEntityFactory.buildWithId();
+				await em.persistAndFlush(entity);
+
+				return {
+					domainObject: pseudonymFactory.build({
+						id: entity.id,
+						pseudonym: uuidv4(),
+						toolId: new ObjectId().toHexString(),
+						userId: new ObjectId().toHexString(),
+					}),
+				};
+			};
+
+			it('should update an existing pseudonym', async () => {
+				const { domainObject } = await setup();
+
+				const result: Pseudonym = await repo.createOrUpdate(domainObject);
+
+				expect(result.id).toEqual(domainObject.id);
+				expect(result.pseudonym).toEqual(domainObject.pseudonym);
+				expect(result.toolId).toEqual(domainObject.toolId);
+				expect(result.userId).toEqual(domainObject.userId);
+			});
 		});
 	});
 });

@@ -5,6 +5,8 @@ export interface PseudonymProps extends AuthorizableObject {
 	pseudonym: string;
 	toolId: EntityId;
 	userId: EntityId;
+	createdAt: Date;
+	updatedAt: Date;
 }
 
 export class Pseudonym extends DomainObject<PseudonymProps> {
@@ -18,5 +20,13 @@ export class Pseudonym extends DomainObject<PseudonymProps> {
 
 	get userId(): EntityId {
 		return this.props.userId;
+	}
+
+	get createdAt(): Date {
+		return this.props.createdAt;
+	}
+
+	get updatedAt(): Date {
+		return this.props.updatedAt;
 	}
 }
