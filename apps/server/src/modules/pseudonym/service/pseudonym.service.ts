@@ -1,7 +1,6 @@
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ExternalToolDO, LtiToolDO, Pseudonym, UserDO } from '@shared/domain';
 import { v4 as uuidv4 } from 'uuid';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { IToolFeatures, ToolFeatures } from '@src/modules/tool/tool-config';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 
@@ -33,7 +32,8 @@ export class PseudonymService {
 		let pseudonym: Pseudonym | null = await repository.findByUserIdAndToolId(user.id, tool.id);
 		if (!pseudonym) {
 			pseudonym = new Pseudonym({
-				id: new ObjectId().toHexString(),
+				// TODO: handle creation of ids in the domain layer
+				id: '',
 				pseudonym: uuidv4(),
 				userId: user.id,
 				toolId: tool.id,
