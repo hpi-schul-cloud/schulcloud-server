@@ -175,6 +175,9 @@ export class UserImportUc {
 				await this.updateUserAndAccount(importUser, school);
 			}
 		}
+		// TODO Change ImportUserRepo to DO to fix this workaround
+		// Delete all remaining importUser-objects that dont need to be ported
+		await this.importUserRepo.deleteImportUsersBySchool(currentUser.school);
 		await this.endSchoolInUserMigration(currentUserId);
 	}
 
