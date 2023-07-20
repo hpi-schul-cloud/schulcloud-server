@@ -16,8 +16,8 @@ import { ExternalToolDO, IFindOptions, Page, ToolReference } from '@shared/domai
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate, ToolReferenceUc } from '../uc';
 import { ExternalToolSearchQuery } from '../interface';
+import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate, ToolReferenceUc } from '../uc';
 import {
 	ContextExternalToolContextParams,
 	ExternalToolCreateParams,
@@ -29,8 +29,8 @@ import {
 	ToolIdParams,
 	ToolReferenceResponse,
 } from './dto';
-import { ExternalToolRequestMapper, ExternalToolResponseMapper } from './mapper';
 import { ToolReferenceListResponse } from './dto/response/tool-reference-list.response';
+import { ExternalToolRequestMapper, ExternalToolResponseMapper } from './mapper';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -55,9 +55,13 @@ export class ToolController {
 		@Body() externalToolParams: ExternalToolCreateParams
 	): Promise<ExternalToolResponse> {
 		const externalToolDO: ExternalToolCreate = this.externalToolDOMapper.mapCreateRequest(externalToolParams);
+
 		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(currentUser.userId, externalToolDO);
+
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToExternalToolResponse(created);
+
 		this.logger.debug(`ExternalTool with id ${mapped.id} was created by user with id ${currentUser.userId}`);
+
 		return mapped;
 	}
 
