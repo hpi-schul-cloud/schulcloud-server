@@ -2,7 +2,6 @@ import { WebSocketGateway, WebSocketServer, OnGatewayInit, OnGatewayConnection }
 import { Server, WebSocket } from 'ws';
 import { encodeStateVector, encodeStateAsUpdate, applyUpdate, Doc } from 'yjs';
 import * as MongodbPersistence from 'y-mongodb-provider';
-import { NodeEnvType } from '@src/modules/server';
 import { ConfigService } from '@nestjs/config';
 import { TldrawConfig } from '@src/modules/tldraw/config';
 import { WSSharedDoc, setupWSConnection, setPersistence } from '../utils';
@@ -17,15 +16,7 @@ export class TldrawGateway implements OnGatewayInit, OnGatewayConnection {
 	connectionString: string;
 
 	constructor(private readonly configService: ConfigService<TldrawConfig, true>) {
-		const NODE_ENV = this.configService.get<string>('NODE_ENV');
-
-		switch (NODE_ENV) {
-			case NodeEnvType.TEST:
-				this.connectionString = 'mongodb://127.0.0.1:27017/tldraw-test';
-				break;
-			default:
-				this.connectionString = 'mongodb://127.0.0.1:27017/tldraw';
-		}
+		this.connectionString = this.configService.get<string>('CONNECTION_STRING');
 	}
 
 	handleConnection(client: WebSocket, request: Request) {

@@ -37,7 +37,7 @@ const docs = new Map();
  * @param {WSSharedDoc} doc
  * @param {any} ws
  */
-export const closeConn = (doc: WSSharedDoc, ws: WebSocket) => {
+const closeConn = (doc: WSSharedDoc, ws: WebSocket) => {
 	if (doc.conns.has(ws)) {
 		const controlledIds = doc.conns.get(ws) as Set<number>;
 		doc.conns.delete(ws);
@@ -59,7 +59,7 @@ export const closeConn = (doc: WSSharedDoc, ws: WebSocket) => {
  * @param {WebSocket} conn
  * @param {Uint8Array} message
  */
-export const send = (doc: WSSharedDoc, conn: WebSocket, message: Uint8Array) => {
+const send = (doc: WSSharedDoc, conn: WebSocket, message: Uint8Array) => {
 	if (conn.readyState !== WSConnectionState.CONNECTING && conn.readyState !== WSConnectionState.OPEN) {
 		closeConn(doc, conn);
 	}
@@ -156,7 +156,7 @@ export class WSSharedDoc extends Doc {
  * @param  gc - whether to allow gc on the doc (applies only when created)
  * @return {WSSharedDoc}
  */
-export const getYDoc = (docname: string, gc = true) =>
+const getYDoc = (docname: string, gc = true) =>
 	map.setIfUndefined(docs, docname, () => {
 		const doc = new WSSharedDoc(docname);
 		doc.gc = gc;

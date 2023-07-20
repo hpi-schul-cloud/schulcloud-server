@@ -8,6 +8,7 @@ export interface TldrawConfig {
 	TLDRAW_DB_COLLECTION_NAME: string;
 	TLDRAW_DB_FLUSH_SIZE: string;
 	TLDRAW_DB_MULTIPLE_COLLECTIONS: string;
+	CONNECTION_STRING: string;
 }
 
 const tldrawConfig = {
@@ -17,6 +18,10 @@ const tldrawConfig = {
 	TLDRAW_DB_COLLECTION_NAME: Configuration.get('TLDRAW_DB_COLLECTION_NAME') as string,
 	TLDRAW_DB_FLUSH_SIZE: Configuration.get('TLDRAW_DB_FLUSH_SIZE') as number,
 	TLDRAW_DB_MULTIPLE_COLLECTIONS: Configuration.get('TLDRAW_DB_MULTIPLE_COLLECTIONS') as boolean,
+	CONNECTION_STRING:
+		Configuration.get('NODE_ENV') === NodeEnvType.TEST
+			? 'mongodb://127.0.0.1:27017/tldraw-test'
+			: 'mongodb://127.0.0.1:27017/tldraw',
 };
 
 export const config = () => tldrawConfig;
