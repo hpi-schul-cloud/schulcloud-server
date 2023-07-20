@@ -11,8 +11,8 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '@src/modules/oauth-provider/controller/dto';
 import { OauthProviderRequestMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-request.mapper';
 import { PseudonymService } from '@src/modules/pseudonym/service';
+import { UserService } from '@src/modules/user';
 import { OauthProviderLoginFlowService } from '../service/oauth-provider.login-flow.service';
-import { UserService } from '../../user';
 
 @Injectable()
 export class OauthProviderLoginFlowUc {
