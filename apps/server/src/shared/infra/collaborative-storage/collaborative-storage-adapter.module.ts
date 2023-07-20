@@ -8,6 +8,7 @@ import { LtiToolRepo } from '@shared/repo/ltitool/';
 import { LoggerModule } from '@src/core/logger';
 import { ToolModule } from '@src/modules/tool';
 import { PseudonymModule } from '@src/modules/pseudonym';
+import { UserModule } from '@src/modules/user';
 import { CollaborativeStorageAdapter } from './collaborative-storage.adapter';
 
 const storageStrategy: Provider = {
@@ -16,7 +17,7 @@ const storageStrategy: Provider = {
 };
 
 @Module({
-	imports: [HttpModule, LoggerModule, ToolModule, PseudonymModule],
+	imports: [HttpModule, LoggerModule, ToolModule, PseudonymModule, UserModule],
 	providers: [
 		CollaborativeStorageAdapter,
 		CollaborativeStorageAdapterMapper,

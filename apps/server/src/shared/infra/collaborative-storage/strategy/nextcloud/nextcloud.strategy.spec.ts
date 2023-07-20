@@ -2,12 +2,12 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { LtiPrivacyPermission, LtiRoleType, Pseudonym, RoleName, User } from '@shared/domain';
+import { LtiPrivacyPermission, LtiRoleType, Pseudonym, RoleName, User, UserDO } from '@shared/domain';
 import { TeamRolePermissionsDto } from '@shared/infra/collaborative-storage/dto/team-role-permissions.dto';
 import { NextcloudClient } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.client';
 import { NextcloudStrategy } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.strategy';
 import { LtiToolRepo } from '@shared/repo';
-import { pseudonymFactory, setupEntities, userFactory } from '@shared/testing';
+import { pseudonymFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { TeamDto, TeamUserDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
 import { ExternalToolService } from '@src/modules/tool';
@@ -28,14 +28,13 @@ class NextcloudStrategySpec extends NextcloudStrategy {
 	}
 }
 
-describe('NextCloud Adapter Strategy', () => {
+describe('NextCloudStrategy', () => {
 	let module: TestingModule;
 	let strategy: NextcloudStrategySpec;
 
 	let client: DeepMocked<NextcloudClient>;
 	let pseudonymService: DeepMocked<PseudonymService>;
 	let ltiToolRepo: DeepMocked<LtiToolRepo>;
-	// TODO: beautfiy test and test userService
 	let userService: DeepMocked<UserService>;
 
 	let nextcloudTool: LtiToolDO;
@@ -76,12 +75,14 @@ describe('NextCloud Adapter Strategy', () => {
 				},
 			],
 		}).compile();
+
 		strategy = module.get(NextcloudStrategySpec);
 		client = module.get(NextcloudClient);
 		pseudonymService = module.get(PseudonymService);
 		userService = module.get(UserService);
 		ltiToolRepo = module.get(LtiToolRepo);
 		logger = module.get(LegacyLogger);
+
 		await setupEntities();
 	});
 
@@ -113,230 +114,520 @@ describe('NextCloud Adapter Strategy', () => {
 			resource_link_id: 'resource_link_id',
 			skipConsent: true,
 		});
-		ltiToolRepo.findByName.mockResolvedValue([nextcloudTool]);
 	});
 
 	describe('updateTeamPermissionsForRole', () => {
-		let teamRolePermissionsDto: TeamRolePermissionsDto;
+		describe('when nextcloud group can be found', () => {
+			const setup = () => {
+				const teamRolePermissionsDto: TeamRolePermissionsDto = {
+					teamId: 'teamId',
+					teamName: 'teamName',
+					roleName: 'roleName',
+					permissions: [],
+				};
 
-		beforeEach(() => {
-			teamRolePermissionsDto = {
-				teamId: 'teamId',
-				teamName: 'teamName',
-				roleName: 'roleName',
-				permissions: [],
+				const groupId = 'groupId';
+				const folderId = 1;
+
+				client.findGroupId.mockResolvedValueOnce(groupId);
+				client.findGroupFolderIdForGroupId.mockResolvedValueOnce(folderId);
+
+				return { teamRolePermissionsDto, groupId };
 			};
+
+			it('call clients findGroupId', async () => {
+				const { teamRolePermissionsDto } = setup();
+
+				await strategy.updateTeamPermissionsForRole(teamRolePermissionsDto);
+
+				expect(client.findGroupId).toHaveBeenCalledWith(
+					NextcloudStrategySpec.specGenerateGroupId(teamRolePermissionsDto)
+				);
+			});
+
+			it('call clients findGroupFolderIdForGroupId', async () => {
+				const { teamRolePermissionsDto, groupId } = setup();
+
+				await strategy.updateTeamPermissionsForRole(teamRolePermissionsDto);
+
+				expect(client.findGroupFolderIdForGroupId).toHaveBeenCalledWith(groupId);
+			});
 		});
 
-		it('update team permissions if nextcloud group can be found', async () => {
-			const groupId = 'groupId';
-			const folderId = 1;
+		describe('when nextcloud group can not be found', () => {
+			const setup = () => {
+				const teamRolePermissionsDto: TeamRolePermissionsDto = {
+					teamId: 'teamId',
+					teamName: 'teamName',
+					roleName: 'roleName',
+					permissions: [],
+				};
 
-			client.findGroupId.mockResolvedValueOnce(groupId);
-			client.findGroupFolderIdForGroupId.mockResolvedValueOnce(folderId);
+				const groupId = 'groupId';
 
-			await strategy.updateTeamPermissionsForRole(teamRolePermissionsDto);
+				client.findGroupId.mockResolvedValueOnce(groupId);
+				client.findGroupFolderIdForGroupId.mockRejectedValueOnce(new Error('some nextcloud error'));
 
-			expect(client.findGroupId).toHaveBeenCalledWith(
-				NextcloudStrategySpec.specGenerateGroupId(teamRolePermissionsDto)
-			);
-			expect(client.findGroupFolderIdForGroupId).toHaveBeenCalledWith(groupId);
-		});
+				return { teamRolePermissionsDto, groupId };
+			};
 
-		it('does not update team permissions if nextcloud group can not be found', async () => {
-			const groupId = NextcloudStrategySpec.specGenerateGroupId(teamRolePermissionsDto);
+			it('call clients findGroupId', async () => {
+				const { teamRolePermissionsDto } = setup();
 
-			client.findGroupId.mockResolvedValueOnce(groupId);
-			client.findGroupFolderIdForGroupId.mockRejectedValueOnce(new Error('some nextcloud error'));
+				await strategy.updateTeamPermissionsForRole(teamRolePermissionsDto);
 
-			await strategy.updateTeamPermissionsForRole(teamRolePermissionsDto);
+				expect(client.findGroupId).toHaveBeenCalledWith(
+					NextcloudStrategySpec.specGenerateGroupId(teamRolePermissionsDto)
+				);
+			});
 
-			expect(client.findGroupId).toHaveBeenCalledWith(groupId);
-			expect(client.findGroupFolderIdForGroupId).toHaveBeenCalledWith(groupId);
+			it('call clients findGroupFolderIdForGroupId', async () => {
+				const { teamRolePermissionsDto, groupId } = setup();
+
+				await strategy.updateTeamPermissionsForRole(teamRolePermissionsDto);
+
+				expect(client.findGroupFolderIdForGroupId).toHaveBeenCalledWith(groupId);
+			});
 		});
 	});
 
 	describe('deleteTeam', () => {
-		it('delete team if nextcloud group exists', async () => {
+		const setup = () => {
 			const groupId = 'groupId';
 			const teamId = 'teamId';
 			const folderId = 1;
 
+			client.getNameWithPrefix.mockReturnValue(groupId);
 			client.findGroupFolderIdForGroupId.mockResolvedValue(folderId);
+
+			return { groupId, teamId, folderId };
+		};
+
+		it('should call clients findGroupFolderIdForGroupId', async () => {
+			const { groupId, teamId } = setup();
 
 			await strategy.deleteTeam(teamId);
 
 			expect(client.findGroupFolderIdForGroupId).toHaveBeenCalledWith(groupId);
+		});
+
+		it('should call clients deleteGroup', async () => {
+			const { groupId, teamId } = setup();
+
+			await strategy.deleteTeam(teamId);
+
 			expect(client.deleteGroup).toHaveBeenCalledWith(groupId);
+		});
+
+		it('should call clients deleteGroupFolder', async () => {
+			const { teamId, folderId } = setup();
+
+			await strategy.deleteTeam(teamId);
+
 			expect(client.deleteGroupFolder).toHaveBeenCalledWith(folderId);
 		});
 	});
 
 	describe('createTeam', () => {
-		it('should call client to create nextcloud group', async () => {
-			const groupdId = 'groupdId';
+		const setup = () => {
+			const groupId = 'groupdId';
+			const userId = 'userId';
 			const teamDto: TeamDto = {
-				teamUsers: [{ userId: 'userId', schoolId: 'schoolId', roleId: 'roleId' }],
+				teamUsers: [{ userId, schoolId: 'schoolId', roleId: 'roleId' }],
 				id: 'id',
 				name: 'name',
 			};
 			const folderId = 1;
 
-			client.getNameWithPrefix.mockReturnValue(groupdId);
+			ltiToolRepo.findByName.mockResolvedValue([nextcloudTool]);
+			client.getNameWithPrefix.mockReturnValue(groupId);
 			pseudonymService.findByUserAndTool.mockRejectedValueOnce(undefined);
 			client.findGroupFolderIdForGroupId.mockResolvedValue(folderId);
+			client.getGroupUsers.mockResolvedValue([userId]);
+
+			return { groupId, teamDto, folderId };
+		};
+
+		it('should call clients createGroup', async () => {
+			const { groupId, teamDto } = setup();
 
 			await strategy.createTeam(teamDto);
 
-			expect(client.createGroup).toHaveBeenCalledWith(groupdId, teamDto.name);
-			expect(client.findGroupFolderIdForGroupId).toHaveBeenCalledWith(groupdId);
+			expect(client.createGroup).toHaveBeenCalledWith(groupId, teamDto.name);
+		});
+
+		it('should call clients findGroupFolderIdForGroupId', async () => {
+			const { groupId, teamDto } = setup();
+
+			await strategy.createTeam(teamDto);
+
+			expect(client.findGroupFolderIdForGroupId).toHaveBeenCalledWith(groupId);
+		});
+
+		it('should call clients changeGroupFolderName', async () => {
+			const { teamDto, folderId } = setup();
+
+			await strategy.createTeam(teamDto);
+
 			expect(client.changeGroupFolderName).toHaveBeenCalledWith(folderId, `${teamDto.name} (${teamDto.id})`);
 		});
 	});
 
 	describe('updateTeam', () => {
-		let teamDto: TeamDto;
-		let nextCloudUserId: string;
+		describe('when teamId is missing', () => {
+			const setup = () => {
+				const teamDto: TeamDto = {
+					teamUsers: [{ userId: 'userId', schoolId: 'schoolId', roleId: 'roleId' }],
+					id: '',
+					name: 'name',
+				};
 
-		beforeEach(() => {
-			teamDto = {
-				teamUsers: [{ userId: 'userId', schoolId: 'schoolId', roleId: 'roleId' }],
-				id: 'id',
-				name: 'name',
+				return { teamDto };
 			};
-			nextCloudUserId = 'nextcloudUserId';
+
+			it('should throw error', async () => {
+				const { teamDto } = setup();
+
+				await expect(strategy.updateTeam(teamDto)).rejects.toThrow(UnprocessableEntityException);
+			});
 		});
 
-		it('should throw error when teamId is missing', async () => {
-			teamDto.id = '';
+		describe('when team user and name exists', () => {
+			const setup = () => {
+				const teamDto: TeamDto = {
+					teamUsers: [{ userId: 'userId', schoolId: 'schoolId', roleId: 'roleId' }],
+					id: 'id',
+					name: 'name',
+				};
+				const nextCloudUserId = 'nextcloudUserId';
+				const folderId = 1;
+				const groupId = 'groupId';
 
-			// Act & Assert
-			await expect(strategy.updateTeam(teamDto)).rejects.toThrow(UnprocessableEntityException);
+				ltiToolRepo.findByName.mockResolvedValue([nextcloudTool]);
+				client.getNameWithPrefix.mockReturnValue(groupId);
+				client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
+				pseudonymService.findByUserAndTool.mockRejectedValueOnce(undefined);
+				client.findGroupFolderIdForGroupId.mockResolvedValueOnce(folderId);
+
+				const expectedFolderName: string = NextcloudStrategySpec.specGenerateGroupFolderName(teamDto.id, teamDto.name);
+
+				return { teamDto, folderId, groupId, expectedFolderName };
+			};
+
+			it('should call clients renameGroup', async () => {
+				const { teamDto, groupId } = setup();
+
+				await strategy.updateTeam(teamDto);
+
+				expect(client.renameGroup).toHaveBeenCalledWith(groupId, teamDto.name);
+			});
+
+			it('should call clients changeGroupFolderName', async () => {
+				const { teamDto, folderId, expectedFolderName } = setup();
+
+				await strategy.updateTeam(teamDto);
+
+				expect(client.changeGroupFolderName).toHaveBeenCalledWith(folderId, expectedFolderName);
+			});
 		});
 
-		it('should update team user and name if those exist', async () => {
-			const folderId = 1;
-			const groupId = 'groupId';
-			client.getNameWithPrefix.mockReturnValue(groupId);
-			client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
-			pseudonymService.findByUserAndTool.mockRejectedValueOnce(undefined);
-			client.findGroupFolderIdForGroupId.mockResolvedValueOnce(folderId);
+		describe('when team user does not exist', () => {
+			const setup = () => {
+				const teamDto: TeamDto = {
+					teamUsers: [],
+					id: 'teamId',
+					name: '',
+				};
 
-			await strategy.updateTeam(teamDto);
+				client.getNameWithPrefix.mockReturnValue('groupId');
 
-			expect(client.renameGroup).toHaveBeenCalledWith(groupId, teamDto.name);
-			const expectedFolderName: string = NextcloudStrategySpec.specGenerateGroupFolderName(teamDto.id, teamDto.name);
-			expect(client.changeGroupFolderName).toHaveBeenCalledWith(folderId, expectedFolderName);
-		});
+				return { teamDto };
+			};
 
-		it('should not update team user and name if those do not exist', async () => {
-			const groupId = 'groupId';
-			teamDto.teamUsers = [];
-			teamDto.name = '';
-			client.getNameWithPrefix.mockReturnValue(groupId);
+			it('should not call clients getGroupUsers', async () => {
+				const { teamDto } = setup();
 
-			await strategy.updateTeam(teamDto);
+				await strategy.updateTeam(teamDto);
 
-			expect(client.getGroupUsers).not.toHaveBeenCalled();
-			expect(client.findGroupFolderIdForGroupId).not.toHaveBeenCalled();
-			expect(client.renameGroup).not.toHaveBeenCalled();
-			expect(client.changeGroupFolderName).not.toHaveBeenCalled();
+				expect(client.getGroupUsers).not.toHaveBeenCalled();
+			});
+
+			it('should not call clients findGroupFolderIdForGroupId', async () => {
+				const { teamDto } = setup();
+
+				await strategy.updateTeam(teamDto);
+
+				expect(client.findGroupFolderIdForGroupId).not.toHaveBeenCalled();
+			});
+
+			it('should not call clients renameGroup', async () => {
+				const { teamDto } = setup();
+
+				await strategy.updateTeam(teamDto);
+
+				expect(client.renameGroup).not.toHaveBeenCalled();
+			});
+
+			it('should not call clients changeGroupFolderName', async () => {
+				const { teamDto } = setup();
+
+				await strategy.updateTeam(teamDto);
+
+				expect(client.changeGroupFolderName).not.toHaveBeenCalled();
+			});
 		});
 	});
 
 	describe('updateTeamUsersInGroup', () => {
-		let user: User;
-		let teamUsers: TeamUserDto[];
-		let pseudonymDo: Pseudonym;
-		let nextCloudUserId: string;
-		let groupId: string;
+		describe('when user was added to a team', () => {
+			const setup = () => {
+				const user: User = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
+				const userDo: UserDO = userDoFactory.build({ id: user.id });
+				const teamUsers: TeamUserDto[] = [{ userId: user.id, schoolId: user.school.id, roleId: user.roles[0].id }];
 
-		beforeEach(() => {
-			user = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
-			teamUsers = [{ userId: user.id, schoolId: user.school.id, roleId: user.roles[0].id }];
+				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({
+					userId: user.id,
+					toolId: nextcloudTool.id as string,
+					pseudonym: `ps${user.id}`,
+				});
 
-			pseudonymDo = pseudonymFactory.buildWithId({
-				userId: user.id,
-				toolId: nextcloudTool.id as string,
-				pseudonym: `ps${user.id}`,
+				const nextCloudUserId = `prefix-${pseudonym.pseudonym}`;
+				const groupId = 'groupId';
+
+				ltiToolRepo.findByName.mockResolvedValue([nextcloudTool]);
+				client.getGroupUsers.mockResolvedValue([]);
+				pseudonymService.findByUserAndTool.mockResolvedValue(pseudonym);
+				client.getNameWithPrefix.mockReturnValue(nextCloudUserId);
+				userService.findById.mockResolvedValue(userDo);
+
+				return { user, teamUsers, pseudonym, nextCloudUserId, groupId, userDo };
+			};
+
+			it('should call clients getGroupUsers', async () => {
+				const { teamUsers, groupId } = setup();
+
+				await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
+
+				expect(client.getGroupUsers).toHaveBeenCalledWith(groupId);
 			});
 
-			nextCloudUserId = `prefix-${pseudonymDo.pseudonym}`;
-			groupId = 'groupId';
+			it('should call ltiToolRepo.findByName', async () => {
+				const { teamUsers, groupId } = setup();
+
+				await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
+
+				expect(ltiToolRepo.findByName).toHaveBeenCalledWith(nextcloudTool.name);
+			});
+
+			it('should call clients pseudonymService.findByUserAndTool', async () => {
+				const { teamUsers, groupId, userDo } = setup();
+
+				await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
+
+				expect(pseudonymService.findByUserAndTool).toHaveBeenCalledWith(userDo, nextcloudTool);
+			});
+
+			it('should call userService.findById', async () => {
+				const { user, teamUsers, groupId } = setup();
+
+				await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
+
+				expect(userService.findById).toHaveBeenCalledWith(user.id);
+			});
+
+			it('should call clients getNameWithPrefix', async () => {
+				const { teamUsers, pseudonym, groupId } = setup();
+
+				await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
+
+				expect(client.getNameWithPrefix).toHaveBeenCalledWith(pseudonym.pseudonym);
+			});
+
+			it('should call clients removeUserFromGroup', async () => {
+				const { teamUsers, groupId } = setup();
+
+				await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
+
+				expect(client.removeUserFromGroup).not.toHaveBeenCalled();
+			});
+
+			it('should call clients addUserToGroup', async () => {
+				const { teamUsers, nextCloudUserId, groupId } = setup();
+
+				await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
+
+				expect(client.addUserToGroup).toHaveBeenCalledWith(nextCloudUserId, groupId);
+			});
 		});
 
-		it('should add one user to group in nextcloud if added in sc team', async () => {
-			client.getGroupUsers.mockResolvedValue([]);
-			pseudonymService.findByUserAndTool.mockResolvedValue(pseudonymDo);
-			client.getNameWithPrefix.mockReturnValue(nextCloudUserId);
+		describe('when user was removed from a team', () => {
+			const setup = () => {
+				const user: User = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
+				const teamUsers: TeamUserDto[] = [];
 
-			await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
+				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({
+					userId: user.id,
+					toolId: nextcloudTool.id as string,
+					pseudonym: `ps${user.id}`,
+				});
 
-			expect(client.getGroupUsers).toHaveBeenCalledWith(groupId);
-			expect(ltiToolRepo.findByName).toHaveBeenCalledWith(nextcloudTool.name);
-			expect(pseudonymService.findByUserAndTool).toHaveBeenCalledWith(teamUsers[0].userId, pseudonymDo.toolId);
-			expect(client.getNameWithPrefix).toHaveBeenCalledWith(pseudonymDo.pseudonym);
-			expect(client.removeUserFromGroup).not.toHaveBeenCalled();
-			expect(client.addUserToGroup).toHaveBeenCalledWith(nextCloudUserId, groupId);
+				const nextCloudUserId = `prefix-${pseudonym.pseudonym}`;
+				const groupId = 'groupId';
+
+				ltiToolRepo.findByName.mockResolvedValue([nextcloudTool]);
+				client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
+				pseudonymService.findByUserAndTool.mockResolvedValue(pseudonym);
+				client.getNameWithPrefix.mockReturnValue(nextCloudUserId);
+
+				return { teamUsers, nextCloudUserId, groupId };
+			};
+
+			it('should call clients getGroupUsers', async () => {
+				const { teamUsers, groupId } = setup();
+
+				await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
+
+				expect(client.getGroupUsers).toHaveBeenCalledWith(groupId);
+			});
+
+			it('should not call pseudonymService.findByUserAndTool', async () => {
+				const { teamUsers, groupId } = setup();
+
+				await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
+
+				expect(pseudonymService.findByUserAndTool).not.toHaveBeenCalled();
+			});
+
+			it('should not call clients getNameWithPrefix', async () => {
+				const { teamUsers, groupId } = setup();
+
+				await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
+
+				expect(client.getNameWithPrefix).not.toHaveBeenCalled();
+			});
+
+			it('should not call clients removeUserFromGroup', async () => {
+				const { teamUsers, nextCloudUserId, groupId } = setup();
+
+				await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
+
+				expect(client.removeUserFromGroup).toHaveBeenCalledWith(nextCloudUserId, groupId);
+			});
+
+			it('should not call clients addUserToGroup', async () => {
+				const { teamUsers, groupId } = setup();
+
+				await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
+
+				expect(client.addUserToGroup).not.toHaveBeenCalled();
+			});
 		});
 
-		it('should remove one user from group in nextcloud if not exist in sc team', async () => {
-			client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
-			teamUsers = [];
+		describe('when no pseudonym for the user was found', () => {
+			const setup = () => {
+				const user: User = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
+				const teamUsers: TeamUserDto[] = [
+					{ userId: user.id, schoolId: user.school.id, roleId: user.roles[0].id },
+					{ userId: 'invalidId', schoolId: 'someSchool', roleId: 'someRole' },
+				];
 
-			await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
+				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({
+					userId: user.id,
+					toolId: nextcloudTool.id as string,
+					pseudonym: `ps${user.id}`,
+				});
 
-			expect(client.getGroupUsers).toHaveBeenCalledWith(groupId);
-			expect(pseudonymService.findByUserAndTool).not.toHaveBeenCalled();
-			expect(client.getNameWithPrefix).not.toHaveBeenCalled();
-			expect(client.removeUserFromGroup).toHaveBeenCalledWith(nextCloudUserId, groupId);
-			expect(client.addUserToGroup).not.toHaveBeenCalled();
+				const nextCloudUserId = `prefix-${pseudonym.pseudonym}`;
+				const groupId = 'groupId';
+
+				ltiToolRepo.findByName.mockResolvedValue([nextcloudTool]);
+				client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
+				pseudonymService.findByUserAndTool.mockResolvedValueOnce(pseudonym).mockRejectedValueOnce(undefined);
+				client.getNameWithPrefix.mockReturnValue(nextCloudUserId);
+
+				return { teamUsers, groupId };
+			};
+
+			it('should not clients addUserToGroup', async () => {
+				const { teamUsers, groupId } = setup();
+
+				await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
+
+				expect(client.addUserToGroup).not.toHaveBeenCalled();
+			});
+
+			it('should not call clients removeUserFromGroup', async () => {
+				const { teamUsers, groupId } = setup();
+
+				await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
+
+				expect(client.removeUserFromGroup).not.toHaveBeenCalled();
+			});
 		});
 
-		it('should not add or remove if no pseudonym found', async () => {
-			teamUsers = [
-				{ userId: user.id, schoolId: user.school.id, roleId: user.roles[0].id },
-				{ userId: 'invalidId', schoolId: 'someSchool', roleId: 'someRole' },
-			];
+		describe('when there are more than one team with the same name', () => {
+			const setup = () => {
+				const user: User = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
+				const teamUsers: TeamUserDto[] = [{ userId: user.id, schoolId: user.school.id, roleId: user.roles[0].id }];
 
-			client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
-			pseudonymService.findByUserAndTool.mockResolvedValueOnce(pseudonymDo).mockRejectedValueOnce(undefined);
-			client.getNameWithPrefix.mockReturnValue(nextCloudUserId);
+				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({
+					userId: user.id,
+					toolId: nextcloudTool.id as string,
+					pseudonym: `ps${user.id}`,
+				});
 
-			await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
+				const nextCloudUserId = `prefix-${pseudonym.pseudonym}`;
+				const groupId = 'groupId';
+				const nextcloudTool2: LtiToolDO = { ...nextcloudTool };
 
-			expect(client.addUserToGroup).not.toHaveBeenCalled();
-			expect(client.removeUserFromGroup).not.toHaveBeenCalled();
-		});
+				client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
+				ltiToolRepo.findByName.mockResolvedValue([nextcloudTool, nextcloudTool2]);
+				pseudonymService.findByUserAndTool.mockResolvedValue(pseudonym);
 
-		it('should log a warning when there are more than one team with the same name', async () => {
-			const nextcloudTool2: LtiToolDO = { ...nextcloudTool };
-			client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
-			ltiToolRepo.findByName.mockResolvedValue([nextcloudTool, nextcloudTool2]);
-			pseudonymService.findByUserAndTool.mockResolvedValue(pseudonymDo);
-			await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
+				return { user, teamUsers, pseudonym, nextCloudUserId, groupId };
+			};
 
-			expect(logger.warn).toHaveBeenCalled();
+			it('should log a warning', async () => {
+				const { groupId, teamUsers } = setup();
+
+				await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
+
+				expect(logger.warn).toHaveBeenCalled();
+			});
 		});
 	});
 
 	describe('generateGroupFolderName', () => {
-		const teamId = 'teamId';
-		const teamName = 'teamName';
+		const setup = () => {
+			const teamId = 'teamId';
+			const teamName = 'teamName';
 
-		const folderName: string = NextcloudStrategySpec.specGenerateGroupFolderName(teamId, teamName);
+			return { teamId, teamName };
+		};
 
-		expect(folderName).toEqual(`${teamName} (${teamId})`);
+		it('should return concatenated teamName and teamId', () => {
+			const { teamId, teamName } = setup();
+
+			const folderName: string = NextcloudStrategySpec.specGenerateGroupFolderName(teamId, teamName);
+
+			expect(folderName).toEqual(`${teamName} (${teamId})`);
+		});
 	});
 
 	describe('generateGroupId', () => {
-		it('should return concatenated groupId', () => {
+		const setup = () => {
 			const dto: TeamRolePermissionsDto = {
 				teamId: 'teamId',
 				teamName: 'teamName',
 				roleName: 'roleName',
 				permissions: [],
 			};
+
+			return { dto };
+		};
+
+		it('should return concatenated groupId', () => {
+			const { dto } = setup();
 
 			const groupId: string = NextcloudStrategySpec.specGenerateGroupId(dto);
 
