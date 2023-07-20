@@ -21,7 +21,7 @@ import {
 	userDoFactory,
 } from '@shared/testing';
 import { pseudonymFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
-import { PseudonymService } from '@src/modules/pseudonym';
+import { PseudonymService } from '@src/modules/pseudonym/service';
 import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
 import { Authorization } from 'oauth-1.0a';
