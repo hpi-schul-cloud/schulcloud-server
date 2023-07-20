@@ -96,7 +96,7 @@ describe('AbstractLaunchStrategy', () => {
 				scope: CustomParameterScope.CONTEXT,
 				location: CustomParameterLocation.BODY,
 				name: 'contextParam',
-				type: CustomParameterType.AUTO_COURSEID,
+				type: CustomParameterType.AUTO_CONTEXTID,
 			});
 
 			const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
