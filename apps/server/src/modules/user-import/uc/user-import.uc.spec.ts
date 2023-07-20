@@ -457,7 +457,8 @@ describe('[ImportUserModule]', () => {
 			let userRepoByIdSpy: jest.SpyInstance;
 			let permissionServiceSpy: jest.SpyInstance;
 			let importUserRepoFindImportUsersSpy: jest.SpyInstance;
-			let importUserRepoDeleteImportUser: jest.SpyInstance;
+			let importUserRepoDeleteImportUsersBySchoolSpy: jest.SpyInstance;
+			let importUserRepoDeleteImportUserSpy: jest.SpyInstance;
 			let schoolServiceSaveSpy: jest.SpyInstance;
 			let schoolServiceSpy: jest.SpyInstance;
 			let userRepoFlushSpy: jest.SpyInstance;
@@ -503,7 +504,8 @@ describe('[ImportUserModule]', () => {
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				});
-				importUserRepoDeleteImportUser = importUserRepo.delete.mockResolvedValue();
+				importUserRepoDeleteImportUsersBySchoolSpy = importUserRepo.deleteImportUsersBySchool.mockResolvedValue();
+				importUserRepoDeleteImportUserSpy = importUserRepo.delete.mockResolvedValue();
 				schoolServiceSaveSpy = schoolService.save.mockReturnValueOnce(Promise.resolve(createMockSchoolDo(school)));
 			});
 			afterEach(() => {
@@ -511,7 +513,7 @@ describe('[ImportUserModule]', () => {
 				permissionServiceSpy.mockRestore();
 				importUserRepoFindImportUsersSpy.mockRestore();
 				accountServiceFindByUserIdSpy.mockRestore();
-				importUserRepoDeleteImportUser.mockRestore();
+				importUserRepoDeleteImportUsersBySchoolSpy.mockRestore();
 				schoolServiceSpy.mockRestore();
 				schoolServiceSaveSpy.mockRestore();
 				userRepoFlushSpy.mockRestore();
@@ -546,13 +548,14 @@ describe('[ImportUserModule]', () => {
 
 				const filters = { matches: [MatchCreatorScope.MANUAL, MatchCreatorScope.AUTO] };
 				expect(importUserRepoFindImportUsersSpy).toHaveBeenCalledWith(school, filters, {});
+				expect(importUserRepoDeleteImportUserSpy).toHaveBeenCalledTimes(2);
 				expect(userRepoSaveWithoutFlushSpy).toHaveBeenCalledTimes(2);
 				expect(userRepoSaveWithoutFlushSpy.mock.calls).toEqual([[userMatch1], [userMatch2]]);
 				userRepoSaveWithoutFlushSpy.mockRestore();
 			});
 			it('should remove import users for school', async () => {
 				await uc.saveAllUsersMatches(currentUser.id);
-				expect(importUserRepoDeleteImportUser).toHaveBeenCalledWith(importUser1);
+				expect(importUserRepoDeleteImportUsersBySchoolSpy).toHaveBeenCalledWith(school);
 			});
 			it('should throw if school data is inconsistent', async () => {
 				schoolServiceSpy.mockRestore();
