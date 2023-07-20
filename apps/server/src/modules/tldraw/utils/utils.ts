@@ -94,7 +94,7 @@ export class WSSharedDoc extends Doc {
 
 	awareness: Awareness;
 
-	CALLBACK_URL = (Configuration.get('TLDRAW_CALLBACK_URL') ?? '') as URL;
+	CALLBACK_URL: URL;
 
 	isCallbackSet: boolean;
 
@@ -107,6 +107,9 @@ export class WSSharedDoc extends Doc {
 		this.conns = new Map();
 		this.awareness = new Awareness(this);
 		this.awareness.setLocalState(null);
+		this.CALLBACK_URL = (
+			Configuration.has('TLDRAW_CALLBACK_URL') ? Configuration.get('TLDRAW_CALLBACK_URL') : ''
+		) as URL;
 		this.isCallbackSet = !!this.CALLBACK_URL;
 
 		/**

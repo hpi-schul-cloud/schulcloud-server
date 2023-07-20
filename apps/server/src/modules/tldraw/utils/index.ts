@@ -1,2 +1,2 @@
-export { WSSharedDoc, setupWSConnection, setPersistence } from './utils';
-export { callbackHandler } from './callback';
+export * from './utils';
+export * from './callback';

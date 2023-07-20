@@ -4,7 +4,7 @@ import { encodeStateVector, encodeStateAsUpdate, applyUpdate, Doc } from 'yjs';
 import * as MongodbPersistence from 'y-mongodb-provider';
 import { NodeEnvType } from '@src/modules/server';
 import { ConfigService } from '@nestjs/config';
-import { TlDrawConfig } from '@src/modules/tldraw/tldraw.config';
+import { TldrawConfig } from '@src/modules/tldraw/config';
 import { WSSharedDoc, setupWSConnection, setPersistence } from '../utils';
 
 @WebSocketGateway(3345)
@@ -16,7 +16,7 @@ export class TldrawGateway implements OnGatewayInit, OnGatewayConnection {
 
 	connectionString: string;
 
-	constructor(private readonly configService: ConfigService<TlDrawConfig, true>) {
+	constructor(private readonly configService: ConfigService<TldrawConfig, true>) {
 		const NODE_ENV = this.configService.get<string>('NODE_ENV');
 
 		switch (NODE_ENV) {
@@ -34,7 +34,7 @@ export class TldrawGateway implements OnGatewayInit, OnGatewayConnection {
 		if (docName.length > 0) {
 			setupWSConnection(client, docName);
 		} else {
-			client.close(400, 'Document name is mandatory in url.');
+			client.close(4000, 'Document name is mandatory in url.');
 		}
 	}
 

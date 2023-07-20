@@ -1,45 +1,60 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TldrawGateway } from '../gateway';
 import { createMock } from '@golevelup/ts-jest';
-import { WebsocketProvider } from 'y-websocket';
-import * as Y from 'yjs'
+import { INestApplication } from '@nestjs/common';
+import WebSocket from 'ws';
+import { WsAdapter } from '@nestjs/platform-ws';
+import { CoreModule } from '@src/core';
+import { ConfigModule } from '@nestjs/config';
+import { createConfigModuleOptions } from '@src/config';
+import { config } from '@src/modules/tldraw/config';
+import { TldrawGateway } from '.';
 
 describe('TldrawGateway', () => {
 	let gateway: TldrawGateway;
-	let clientSocket: WebsocketProvider;
-	let app;
-	let address;
-	let doc;
+	let clientSocket: WebSocket;
+	let app: INestApplication;
+	const appPort = 3434;
+	const gatewayPort = 3345;
 
-	beforeEach(async () => {
+	async function createNestApp(): Promise<void> {
+		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
 		const module: TestingModule = await Test.createTestingModule({
+			imports,
 			providers: [
 				{
 					provide: TldrawGateway,
-					useValue: createMock<TldrawGateway>()
-				}],
+					useValue: createMock<TldrawGateway>(),
+				},
+			],
 		}).compile();
 		app = module.createNestApplication();
-		await app.init();
-		address = app.getHttpServer().listen().address();
+		app.useWebSocketAdapter(new WsAdapter(app));
 		gateway = module.get<TldrawGateway>(TldrawGateway);
-		doc = new Y.Doc()
-		clientSocket = new WebsocketProvider(`ws://localhost:${address.port}`, 'testRommname', doc, { WebSocketPolyfill: require('ws') })
-	});
+	}
 
-	afterEach(async function () {
+	afterEach(async () => {
 		await app.close();
-		await clientSocket.disconnect();
 	});
 
-	it('should be defined', () => {
+	it('should be defined', async () => {
+		await createNestApp();
+		await app.listen(appPort);
+
 		expect(gateway).toBeDefined();
 	});
 
-	it('should handle connection', () => {
+	it('should handle connection', async () => {
+		await createNestApp();
+		await app.listen(appPort);
 		const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
-		const message = { text: 'Hello, world!' };
-		gateway.handleConnection(clientSocket, message);
-		expect(handleConnectionSpy).toHaveBeenCalledWith(clientSocket, message);
+		const message = 'TEST STRING';
+		const request = new Request(new URL(`ws://localhost:${gatewayPort}?roomName=TEST`), {
+			body: message,
+			method: 'POST',
+		});
+		clientSocket = new WebSocket(`ws://localhost:${gatewayPort}/TEST`);
+
+		gateway.handleConnection(clientSocket, request);
+		expect(handleConnectionSpy).toHaveBeenCalledWith(clientSocket, request);
 	});
 });

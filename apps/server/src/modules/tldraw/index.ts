@@ -1,1 +1,1 @@
-export * from './tldraw-app.module';
+export * from './tldraw.module';

@@ -4,7 +4,7 @@ import { createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
 import { TldrawGateway } from '@src/modules/tldraw/gateway';
-import { config } from './tldraw.config';
+import { config } from './config';
 
 const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
 
@@ -12,4 +12,4 @@ const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(conf
 	imports,
 	providers: [Logger, TldrawGateway],
 })
-export class TldrawAppModule {}
+export class TldrawModule {}

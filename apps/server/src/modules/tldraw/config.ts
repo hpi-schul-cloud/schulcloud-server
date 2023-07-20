@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { NodeEnvType } from '@src/modules/server';
 
-export interface TlDrawConfig {
+export interface TldrawConfig {
 	NEST_LOG_LEVEL: string;
 	INCOMING_REQUEST_TIMEOUT: number;
 	NODE_ENV: string;

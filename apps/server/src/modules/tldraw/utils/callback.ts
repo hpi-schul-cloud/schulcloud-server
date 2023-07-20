@@ -5,8 +5,10 @@ import { Timeout, GeneralError } from '@feathersjs/errors';
 import { WSSharedDoc } from '@src/modules/tldraw/utils';
 import { DataToSend, RequestOptions, TldrawAxiosResponse } from '../types';
 
-const CALLBACK_URL = (Configuration.get('TLDRAW_CALLBACK_URL') ?? '') as URL;
-const CALLBACK_TIMEOUT: number = (Configuration.get('TLDRAW_CALLBACK_TIMEOUT') ?? 5000) as number;
+const CALLBACK_URL = (Configuration.has('TLDRAW_CALLBACK_URL') ? Configuration.get('TLDRAW_CALLBACK_URL') : '') as URL;
+const CALLBACK_TIMEOUT: number = (
+	Configuration.has('TLDRAW_CALLBACK_TIMEOUT') ? Configuration.get('TLDRAW_CALLBACK_TIMEOUT') : 5000
+) as number;
 const CALLBACK_OBJECTS = Configuration.get('TLDRAW_CALLBACK_OBJ') as Map<string, unknown>;
 
 /**
