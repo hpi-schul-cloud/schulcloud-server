@@ -1,7 +1,6 @@
-import { S3Client } from '@aws-sdk/client-s3';
+import { S3Client, S3ServiceException } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'node:stream';
@@ -85,103 +84,64 @@ describe('S3ClientAdapter', () => {
 				);
 			});
 		});
-
-		describe('WHEN client throws error', () => {
-			const setup = () => {
-				const error = new Error('Bad Request');
-				// @ts-expect-error Testcase
-				client.send.mockRejectedValueOnce(error);
-			};
-
-			it('should throw error from client', async () => {
-				setup();
-
-				await expect(service.createBucket()).rejects.toThrow();
-			});
-		});
 	});
 
 	describe('getFile', () => {
-		describe('WHEN file was received successfully ', () => {
-			const setup = () => {
-				const { pathToFile, config, bytesRange } = createParameter();
-				const resultObj = {
-					Body: { on: () => true },
-					ContentType: 'data.ContentType',
-					ContentLength: 'data.ContentLength',
-					ContentRange: 'data.ContentRange',
-					ETag: 'data.ETag',
-				};
-
-				// @ts-expect-error Testcase
-				client.send.mockResolvedValueOnce(resultObj);
-
-				return { pathToFile, config, bytesRange };
+		const setup = () => {
+			const { pathToFile, config, bytesRange } = createParameter();
+			const resultObj = {
+				Body: { on: () => true },
+				ContentType: 'data.ContentType',
+				ContentLength: 'data.ContentLength',
+				ContentRange: 'data.ContentRange',
+				ETag: 'data.ETag',
 			};
 
-			it('should call send() of client', async () => {
-				const { pathToFile, config } = setup();
+			// @ts-expect-error Testcase
+			client.send.mockResolvedValueOnce(resultObj);
 
-				await service.get(pathToFile);
+			return { pathToFile, config, bytesRange };
+		};
 
-				expect(client.send).toBeCalledWith(
-					expect.objectContaining({
-						input: { Bucket: config.bucket, Key: pathToFile },
-					})
-				);
-			});
+		it('should call send() of client', async () => {
+			const { pathToFile, config } = setup();
 
-			it('should call send() of client with bytes range', async () => {
-				const { pathToFile, config, bytesRange } = setup();
+			await service.get(pathToFile);
 
-				await service.get(pathToFile, bytesRange);
-
-				expect(client.send).toBeCalledWith(
-					expect.objectContaining({
-						input: { Bucket: config.bucket, Key: pathToFile, Range: bytesRange },
-					})
-				);
-			});
-
-			it('should return file', async () => {
-				const { pathToFile } = setup();
-
-				setup();
-
-				const result = await service.get(pathToFile);
-
-				expect(result).toStrictEqual(
-					expect.objectContaining({
-						contentType: 'data.ContentType',
-						contentLength: 'data.ContentLength',
-						contentRange: 'data.ContentRange',
-						etag: 'data.ETag',
-					})
-				);
-			});
+			expect(client.send).toBeCalledWith(
+				expect.objectContaining({
+					input: { Bucket: config.bucket, Key: pathToFile },
+				})
+			);
 		});
 
-		describe('WHEN client throws error', () => {
-			const setup = (errorKey: string) => {
-				const { pathToFile } = createParameter();
-				const error = new Error(errorKey);
-				// @ts-expect-error Testcase
-				client.send.mockRejectedValueOnce(error);
+		it('should call send() of client with bytes range', async () => {
+			const { pathToFile, config, bytesRange } = setup();
 
-				return { error, pathToFile };
-			};
+			await service.get(pathToFile, bytesRange);
 
-			it('should throw NotFoundException', async () => {
-				const { pathToFile } = setup('NoSuchKey');
+			expect(client.send).toBeCalledWith(
+				expect.objectContaining({
+					input: { Bucket: config.bucket, Key: pathToFile, Range: bytesRange },
+				})
+			);
+		});
 
-				await expect(service.get(pathToFile)).rejects.toThrowError(NotFoundException);
-			});
+		it('should return file', async () => {
+			const { pathToFile } = setup();
 
-			it('should throw error', async () => {
-				const { pathToFile } = setup('Unknown Error');
+			setup();
 
-				await expect(service.get(pathToFile)).rejects.toThrowError(InternalServerErrorException);
-			});
+			const result = await service.get(pathToFile);
+
+			expect(result).toStrictEqual(
+				expect.objectContaining({
+					contentType: 'data.ContentType',
+					contentLength: 'data.ContentLength',
+					contentRange: 'data.ContentRange',
+					etag: 'data.ETag',
+				})
+			);
 		});
 	});
 
@@ -230,7 +190,7 @@ describe('S3ClientAdapter', () => {
 			const setup = () => {
 				const { file } = createFile();
 				const { pathToFile } = createParameter();
-				const error = { Code: 'NoSuchBucket' };
+				const error = new S3ServiceException({ name: 'NoSuchBucket', $fault: 'client', $metadata: {} });
 
 				const uploadDoneMock = jest.spyOn(Upload.prototype, 'done').mockRejectedValueOnce(error);
 				const createBucketMock = jest.spyOn(service, 'createBucket').mockResolvedValueOnce();
@@ -263,11 +223,11 @@ describe('S3ClientAdapter', () => {
 			});
 		});
 
-		describe('WHEN client throws error', () => {
+		describe('WHEN client throws any other error', () => {
 			const setup = () => {
 				const { file } = createFile();
 				const { pathToFile } = createParameter();
-				const error = new InternalServerErrorException('testError', 'S3ClientAdapter:create');
+				const error = new Error('testError');
 
 				const uploadDoneMock = jest.spyOn(Upload.prototype, 'done').mockRejectedValueOnce(error);
 
@@ -319,20 +279,16 @@ describe('S3ClientAdapter', () => {
 			);
 		});
 
-		it('should return empty array on error with Code "NoSuchKey"', async () => {
+		it('should return empty array on NoSuchKey error', async () => {
 			const { pathToFile } = setup();
 
+			const error = new S3ServiceException({ name: 'NoSuchKey', $fault: 'client', $metadata: {} });
 			// @ts-expect-error should run into error
-			client.send.mockRejectedValue({ Code: 'NoSuchKey' });
+			client.send.mockRejectedValueOnce(error);
 
 			const res = await service.moveToTrash([pathToFile]);
 
 			expect(res).toEqual([]);
-		});
-
-		it('should throw an InternalServerErrorException on error', async () => {
-			// @ts-expect-error should run into error
-			await expect(service.moveToTrash(undefined)).rejects.toThrowError(InternalServerErrorException);
 		});
 	});
 
@@ -390,11 +346,6 @@ describe('S3ClientAdapter', () => {
 				})
 			);
 		});
-
-		it('should throw an InternalServerErrorException by error', async () => {
-			// @ts-expect-error should run into error
-			await expect(service.restore(undefined)).rejects.toThrowError(InternalServerErrorException);
-		});
 	});
 
 	describe('copy', () => {
@@ -423,11 +374,6 @@ describe('S3ClientAdapter', () => {
 					},
 				})
 			);
-		});
-
-		it('should throw an InternalServerErrorException by error', async () => {
-			// @ts-expect-error should run into error
-			await expect(service.copy(undefined)).rejects.toThrowError(InternalServerErrorException);
 		});
 	});
 });

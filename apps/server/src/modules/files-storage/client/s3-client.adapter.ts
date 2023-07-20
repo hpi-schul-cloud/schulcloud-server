@@ -5,10 +5,11 @@ import {
 	DeleteObjectsCommand,
 	GetObjectCommand,
 	S3Client,
+	S3ServiceException,
 	ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
 import { FileDto } from '../dto';
@@ -28,48 +29,32 @@ export class S3ClientAdapter implements IStorageClient {
 
 	// is public but only used internally
 	public async createBucket() {
-		try {
-			this.logger.log({ action: 'create bucket', params: { bucket: this.config.bucket } });
+		this.logger.log({ action: 'create bucket', params: { bucket: this.config.bucket } });
 
-			const req = new CreateBucketCommand({ Bucket: this.config.bucket });
-			await this.client.send(req);
-		} catch (err) {
-			if (err instanceof Error) {
-				this.logger.error(`${err.message} "${this.config.bucket}"`);
-			}
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:createBucket');
-		}
+		const req = new CreateBucketCommand({ Bucket: this.config.bucket });
+		await this.client.send(req);
 	}
 
 	public async get(path: string, bytesRange?: string): Promise<IGetFileResponse> {
-		try {
-			this.logger.log({ action: 'get', params: { path, bucket: this.config.bucket } });
+		this.logger.log({ action: 'get', params: { path, bucket: this.config.bucket } });
 
-			const req = new GetObjectCommand({
-				Bucket: this.config.bucket,
-				Key: path,
-				Range: bytesRange,
-			});
+		const req = new GetObjectCommand({
+			Bucket: this.config.bucket,
+			Key: path,
+			Range: bytesRange,
+		});
 
-			const data = await this.client.send(req);
-			const stream = data.Body as Readable;
+		const data = await this.client.send(req);
+		const stream = data.Body as Readable;
 
-			this.checkStreamResponsive(stream, path);
-			return {
-				data: stream,
-				contentType: data.ContentType,
-				contentLength: data.ContentLength,
-				contentRange: data.ContentRange,
-				etag: data.ETag,
-			};
-		} catch (err) {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (err.message && err.message === 'NoSuchKey') {
-				this.logger.log(`could not find one of the files for deletion with id ${path}`);
-				throw new NotFoundException('NoSuchKey');
-			}
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:get');
-		}
+		this.checkStreamResponsive(stream, path);
+		return {
+			data: stream,
+			contentType: data.ContentType,
+			contentLength: data.ContentLength,
+			contentRange: data.ContentRange,
+			etag: data.ETag,
+		};
 	}
 
 	public async create(path: string, file: FileDto): Promise<ServiceOutputTypes> {
@@ -90,14 +75,13 @@ export class S3ClientAdapter implements IStorageClient {
 			const commandOutput = await upload.done();
 			return commandOutput;
 		} catch (err) {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (err.Code && err.Code === 'NoSuchBucket') {
+			if (err instanceof S3ServiceException && err.name === 'NoSuchBucket') {
 				await this.createBucket();
 
 				return await this.create(path, file);
 			}
 
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:create');
+			throw err;
 		}
 	}
 
@@ -115,58 +99,50 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return result;
 		} catch (err) {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (err.response && err.response.Code && err.response.Code === 'NoSuchKey') {
+			if (err instanceof S3ServiceException && err.name === 'NoSuchKey') {
 				this.logger.log(`could not find one of the files for deletion with ids ${paths.join(',')}`);
 				return [];
 			}
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:delete');
+
+			throw err;
 		}
 	}
 
 	public async restore(paths: string[]): Promise<CopyObjectCommandOutput[]> {
-		try {
-			this.logger.log({ action: 'restore', params: { paths, bucket: this.config.bucket } });
+		this.logger.log({ action: 'restore', params: { paths, bucket: this.config.bucket } });
 
-			const copyPaths = paths.map((path) => {
-				return { sourcePath: `${this.deletedFolderName}/${path}`, targetPath: path };
-			});
+		const copyPaths = paths.map((path) => {
+			return { sourcePath: `${this.deletedFolderName}/${path}`, targetPath: path };
+		});
 
-			const result = await this.copy(copyPaths);
+		const result = await this.copy(copyPaths);
 
-			// try catch with rollback is not needed,
-			// because the second copyRequest try override existing files in trash folder
-			const deleteObjects = copyPaths.map((p) => p.sourcePath);
-			await this.delete(deleteObjects);
+		// try catch with rollback is not needed,
+		// because the second copyRequest try override existing files in trash folder
+		const deleteObjects = copyPaths.map((p) => p.sourcePath);
+		await this.delete(deleteObjects);
 
-			return result;
-		} catch (err) {
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:restore');
-		}
+		return result;
 	}
 
 	public async copy(paths: ICopyFiles[]) {
-		try {
-			this.logger.log({ action: 'copy', params: { paths, bucket: this.config.bucket } });
+		this.logger.log({ action: 'copy', params: { paths, bucket: this.config.bucket } });
 
-			const copyRequests = paths.map(async (path) => {
-				const req = new CopyObjectCommand({
-					Bucket: this.config.bucket,
-					CopySource: `${this.config.bucket}/${path.sourcePath}`,
-					Key: `${path.targetPath}`,
-				});
-
-				const data = await this.client.send(req);
-
-				return data;
+		const copyRequests = paths.map(async (path) => {
+			const req = new CopyObjectCommand({
+				Bucket: this.config.bucket,
+				CopySource: `${this.config.bucket}/${path.sourcePath}`,
+				Key: `${path.targetPath}`,
 			});
 
-			const result = await Promise.all(copyRequests);
+			const data = await this.client.send(req);
 
-			return result;
-		} catch (err) {
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:copy');
-		}
+			return data;
+		});
+
+		const result = await Promise.all(copyRequests);
+
+		return result;
 	}
 
 	public async delete(paths: string[]) {
