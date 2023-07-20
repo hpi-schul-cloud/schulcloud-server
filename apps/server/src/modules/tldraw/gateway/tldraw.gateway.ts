@@ -30,7 +30,12 @@ export class TldrawGateway implements OnGatewayInit, OnGatewayConnection {
 
 	handleConnection(client: WebSocket, request: Request) {
 		const docName = request.url.slice(1).split('?')[0];
-		setupWSConnection(client, docName);
+
+		if (docName.length > 0) {
+			setupWSConnection(client, docName);
+		} else {
+			client.close(400, 'Document name is mandatory in url.');
+		}
 	}
 
 	afterInit() {
