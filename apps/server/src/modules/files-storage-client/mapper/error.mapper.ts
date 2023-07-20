@@ -1,15 +1,15 @@
 import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { ApiValidationError } from '@shared/common';
-import { FileStorageErrors, IFileStorageErrors } from '../interfaces';
+import { FileStorageError, IFileStorageError } from '../interfaces';
 
-export const isValidationError = (error: IFileStorageErrors): boolean => {
+export const isValidationError = (error: IFileStorageError): boolean => {
 	const checked = !!(error.validationErrors && error.validationErrors.length > 0);
 
 	return checked;
 };
 export class ErrorMapper {
-	static mapErrorToDomainError(errorObj: IFileStorageErrors): FileStorageErrors {
-		let error: FileStorageErrors;
+	static mapErrorToDomainError(errorObj: IFileStorageError): FileStorageError {
+		let error: FileStorageError;
 		if (errorObj.status === 400 && isValidationError(errorObj)) {
 			error = new ApiValidationError(errorObj.validationErrors);
 		} else if (errorObj.status === 400 && !isValidationError(errorObj)) {
