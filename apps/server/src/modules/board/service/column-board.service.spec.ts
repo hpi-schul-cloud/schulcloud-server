@@ -1,8 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard } from '@shared/domain';
+import {
+	BoardExternalReference,
+	BoardExternalReferenceType,
+	Card,
+	ColumnBoard,
+	ContentElementFactory,
+	InputFormat,
+	RichTextElement,
+} from '@shared/domain';
 import { columnBoardNodeFactory, setupEntities } from '@shared/testing';
-import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
+import { columnBoardFactory, columnFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
@@ -13,6 +23,8 @@ describe(ColumnBoardService.name, () => {
 	let service: ColumnBoardService;
 	let boardDoRepo: DeepMocked<BoardDoRepo>;
 	let boardDoService: DeepMocked<BoardDoService>;
+	let contentElementFactory: DeepMocked<ContentElementFactory>;
+	let configBefore: IConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -26,13 +38,24 @@ describe(ColumnBoardService.name, () => {
 					provide: BoardDoService,
 					useValue: createMock<BoardDoService>(),
 				},
+				{
+					provide: ContentElementFactory,
+					useValue: createMock<ContentElementFactory>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(ColumnBoardService);
 		boardDoRepo = module.get(BoardDoRepo);
 		boardDoService = module.get(BoardDoService);
+		contentElementFactory = module.get(ContentElementFactory);
+		configBefore = Configuration.toObject({ plainSecrets: true });
 		await setupEntities();
+	});
+
+	afterEach(() => {
+		jest.clearAllMocks();
+		Configuration.reset(configBefore);
 	});
 
 	afterAll(async () => {
@@ -43,8 +66,12 @@ describe(ColumnBoardService.name, () => {
 		const board = columnBoardFactory.build();
 		const boardId = board.id;
 		const column = columnFactory.build();
+		const externalReference: BoardExternalReference = {
+			id: new ObjectId().toHexString(),
+			type: BoardExternalReferenceType.Course,
+		};
 
-		return { board, boardId, column };
+		return { board, boardId, column, externalReference };
 	};
 
 	describe('findById', () => {
@@ -64,6 +91,18 @@ describe(ColumnBoardService.name, () => {
 			const result = await service.findById(board.id);
 
 			expect(result).toEqual(board);
+		});
+	});
+
+	describe('findIdsByExternalReference', () => {
+		it('should call the board do repository', async () => {
+			const { boardId, externalReference } = setup();
+
+			boardDoRepo.findIdsByExternalReference.mockResolvedValue([boardId]);
+
+			await service.findIdsByExternalReference(externalReference);
+
+			expect(boardDoRepo.findIdsByExternalReference).toHaveBeenCalledWith(externalReference);
 		});
 	});
 
@@ -134,6 +173,67 @@ describe(ColumnBoardService.name, () => {
 						createdAt: expect.any(Date),
 						updatedAt: expect.any(Date),
 					})
+				);
+			});
+		});
+	});
+
+	describe('createWelcomeColumnBoard', () => {
+		beforeEach(() => {
+			contentElementFactory.build.mockImplementation(() => richTextElementFactory.build());
+		});
+
+		it('should create a column board with initial content', async () => {
+			const { externalReference } = setup();
+
+			const columnBoard = await service.createWelcomeColumnBoard(externalReference);
+
+			const column = columnBoard.children[0];
+			const card = column.children[0] as Card;
+			const element = card.children[0] as RichTextElement;
+			expect(card.title).not.toHaveLength(0);
+			expect(element).toEqual(
+				expect.objectContaining({
+					text: expect.any(String),
+					inputFormat: InputFormat.RICH_TEXT_CK5,
+				})
+			);
+		});
+
+		describe('when a help link is configured', () => {
+			beforeEach(() => {
+				Configuration.set('COLUMN_BOARD_HELP_LINK', 'http://example.com/help');
+			});
+
+			it('should add a text element containing the link url', async () => {
+				const { externalReference } = setup();
+
+				const columnBoard = await service.createWelcomeColumnBoard(externalReference);
+
+				const column = columnBoard.children[0];
+				const card = column.children[0] as Card;
+				const element = card.children[1] as RichTextElement;
+
+				expect(element.text).toEqual(expect.stringContaining(Configuration.get('COLUMN_BOARD_HELP_LINK') as string));
+			});
+		});
+
+		describe('when a feedback link is configured', () => {
+			beforeEach(() => {
+				Configuration.set('COLUMN_BOARD_FEEDBACK_LINK', 'http://example.com/feedback');
+			});
+
+			it('should add a text element containing the link url', async () => {
+				const { externalReference } = setup();
+
+				const columnBoard = await service.createWelcomeColumnBoard(externalReference);
+
+				const column = columnBoard.children[0];
+				const card = column.children[0] as Card;
+				const element = card.children[2] as RichTextElement;
+
+				expect(element.text).toEqual(
+					expect.stringContaining(Configuration.get('COLUMN_BOARD_FEEDBACK_LINK') as string)
 				);
 			});
 		});
