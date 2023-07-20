@@ -59,11 +59,6 @@ export class PostH5PContentCreateParams {
 	};
 
 	@ApiProperty()
-	@IsObject()
-	@IsOptional()
-	metadata!: IContentMetadata;
-
-	@ApiProperty()
 	@IsString()
 	@IsNotEmpty()
 	library!: string;

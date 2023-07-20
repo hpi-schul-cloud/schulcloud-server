@@ -16,12 +16,12 @@ export class H5PContentMetadata {
 
 export class H5PSaveResponse {
 	constructor(id: string, metadata: IContentMetadata) {
-		this.id = id;
+		this.contentId = id;
 		this.metadata = metadata;
 	}
 
 	@ApiProperty()
-	id!: string;
+	contentId!: string;
 
 	@ApiProperty({ type: H5PContentMetadata })
 	metadata!: H5PContentMetadata;

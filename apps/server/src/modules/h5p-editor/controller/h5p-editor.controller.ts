@@ -199,7 +199,14 @@ export class H5PEditorController {
 		return deleteSuccessfull;
 	}
 
-	@Get('/edit/:contentId?')
+	@Get('/edit')
+	async getNewH5PEditor(@CurrentUser() currentUser: ICurrentUser): Promise<string> {
+		// TODO: Get user language
+		const response = this.h5pEditorUc.getH5pEditor(currentUser, undefined as unknown as string, 'de');
+		return response;
+	}
+
+	@Get('/edit/:contentId')
 	async getH5PEditor(@Param() params: GetH5PEditorParams, @CurrentUser() currentUser: ICurrentUser): Promise<string> {
 		// TODO: Get user language
 		const response = this.h5pEditorUc.getH5pEditor(currentUser, params.contentId as string, 'de');
