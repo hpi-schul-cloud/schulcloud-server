@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
 import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import { CommonCartridgeVersion } from '../common-cartridge';
@@ -8,7 +8,6 @@ import { CommonCartridgeExportService } from '../service/common-cartridge-export
 export class CourseExportUc {
 	constructor(
 		private readonly courseExportService: CommonCartridgeExportService,
-		@Inject(forwardRef(() => AuthorizationService))
 		private readonly authorizationService: AuthorizationService
 	) {}
 

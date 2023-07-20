@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { ForbiddenException, forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { CourseRepo, LessonRepo } from '@shared/repo';
@@ -16,7 +16,6 @@ import { LessonCopyService } from '@src/modules/lesson/service';
 @Injectable()
 export class LessonCopyUC {
 	constructor(
-		@Inject(forwardRef(() => AuthorizationService))
 		private readonly authorisation: AuthorizationService,
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly lessonRepo: LessonRepo,

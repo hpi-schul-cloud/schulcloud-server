@@ -1,2 +1,2 @@
 export * from './learnroom.module';
-export { CourseService, CourseCopyService } from './service';
+export * from './service/course-copy.service';

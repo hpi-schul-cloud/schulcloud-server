@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { LessonService } from '../service';
@@ -6,7 +6,6 @@ import { LessonService } from '../service';
 @Injectable()
 export class LessonUC {
 	constructor(
-		@Inject(forwardRef(() => AuthorizationService))
 		private readonly authorizationService: AuthorizationService,
 		private readonly lessonService: LessonService
 	) {}

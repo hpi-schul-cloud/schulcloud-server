@@ -7,7 +7,7 @@ import { BoardExternalReference, BoardExternalReferenceType, EntityId } from '@s
 import { BoardRepo, LessonRepo } from '@shared/repo';
 import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { CardService, ColumnBoardService, ColumnService, ContentElementService } from '@src/modules/board';
-import { TaskService } from '@src/modules/task/service';
+import { TaskService } from '@src/modules/task/service/task.service';
 import { ColumnBoardTargetService } from './column-board-target.service';
 import { RoomsService } from './rooms.service';
 
@@ -29,7 +29,6 @@ describe('rooms service', () => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
 		await setupEntities();
 		module = await Test.createTestingModule({
-			imports: [],
 			providers: [
 				RoomsService,
 				{

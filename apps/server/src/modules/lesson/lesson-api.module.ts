@@ -1,11 +1,11 @@
-import { forwardRef, Module } from '@nestjs/common';
-import { AuthorizationModule } from '../authorization';
+import { Module } from '@nestjs/common';
+import { AuthorizationModule } from '@src/modules/authorization';
 import { LessonController } from './controller';
 import { LessonModule } from './lesson.module';
 import { LessonUC } from './uc';
 
 @Module({
-	imports: [LessonModule, forwardRef(() => AuthorizationModule)],
+	imports: [LessonModule, AuthorizationModule],
 	controllers: [LessonController],
 	providers: [LessonUC],
 })
