@@ -1,11 +1,12 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ExternalToolDO, LtiToolDO, Pseudonym, Team, UserDO } from '@shared/domain';
 import { TeamsRepo } from '@shared/repo';
 import { PseudonymService } from '@src/modules/pseudonym';
 import { UserService } from '@src/modules/user';
 import { GroupNameIdTuple, IdToken, OauthScope } from '../interface';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
+import { IdTokenCreationLoggableException } from '../error/id-token-creation-exception.loggable';
 
 @Injectable()
 export class IdTokenService {
@@ -58,11 +59,7 @@ export class IdTokenService {
 		const tool: ExternalToolDO | LtiToolDO = await this.oauthProviderLoginFlowService.findToolByClientId(clientId);
 
 		if (!tool.id) {
-			throw new InternalServerErrorException(
-				`Something went wrong for id token creation. Tool could not be found for userId: ${
-					user.id ?? ''
-				} and clientId: ${clientId}`
-			);
+			throw new IdTokenCreationLoggableException(clientId, user.id);
 		}
 
 		const pseudonym: Pseudonym = await this.pseudonymService.findByUserAndTool(user, tool);

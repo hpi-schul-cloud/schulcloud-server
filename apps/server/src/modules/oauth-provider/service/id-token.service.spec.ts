@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExternalToolDO, Pseudonym, Team, UserDO } from '@shared/domain';
 import { TeamsRepo } from '@shared/repo';
@@ -13,6 +12,7 @@ import { IdTokenService } from '@src/modules/oauth-provider/service/id-token.ser
 import { PseudonymService } from '@src/modules/pseudonym/service';
 import { UserService } from '@src/modules/user/service/user.service';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
+import { IdTokenCreationLoggableException } from '../error/id-token-creation-exception.loggable';
 import resetAllMocks = jest.resetAllMocks;
 
 describe('IdTokenService', () => {
@@ -256,18 +256,12 @@ describe('IdTokenService', () => {
 				};
 			};
 
-			it('should throw an InternalServerErrorException', async () => {
+			it('should throw an IdTokenCreationLoggableException', async () => {
 				const { user } = setup();
 
 				const func = async () => service.createIdToken('userId', [OauthScope.PROFILE], 'clientId');
 
-				await expect(func).rejects.toThrow(
-					new InternalServerErrorException(
-						`Something went wrong for id token creation. Tool could not be found for userId: ${
-							user.id as string
-						} and clientId: clientId`
-					)
-				);
+				await expect(func).rejects.toThrow(new IdTokenCreationLoggableException('clientId', user.id));
 			});
 		});
 	});
