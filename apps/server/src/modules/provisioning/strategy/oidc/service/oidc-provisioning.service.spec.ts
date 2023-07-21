@@ -102,7 +102,7 @@ describe('OidcProvisioningService', () => {
 				features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
 			});
 
-			schoolService.createOrUpdateSchool.mockResolvedValue(savedSchoolDO);
+			schoolService.save.mockResolvedValue(savedSchoolDO);
 			schoolService.getSchoolByExternalId.mockResolvedValue(null);
 			schoolYearService.getCurrentSchoolYear.mockResolvedValue(schoolYearFactory.build());
 			federalStateService.findFederalStateByName.mockResolvedValue(federalStateFactory.build());
@@ -145,10 +145,13 @@ describe('OidcProvisioningService', () => {
 
 				await service.provisionExternalSchool(externalSchoolDto, systemId);
 
-				expect(schoolService.createOrUpdateSchool).toHaveBeenCalledWith({
-					...savedSchoolDO,
-					systems: [otherSystemId, systemId],
-				});
+				expect(schoolService.save).toHaveBeenCalledWith(
+					{
+						...savedSchoolDO,
+						systems: [otherSystemId, systemId],
+					},
+					true
+				);
 			});
 
 			it('should create a new system list', async () => {
@@ -159,15 +162,18 @@ describe('OidcProvisioningService', () => {
 
 				await service.provisionExternalSchool(externalSchoolDto, systemId);
 
-				expect(schoolService.createOrUpdateSchool).toHaveBeenCalledWith({
-					...savedSchoolDO,
-					federalState: {
-						...savedSchoolDO.federalState,
-						createdAt: expect.any(Date),
-						updatedAt: expect.any(Date),
+				expect(schoolService.save).toHaveBeenCalledWith(
+					{
+						...savedSchoolDO,
+						federalState: {
+							...savedSchoolDO.federalState,
+							createdAt: expect.any(Date),
+							updatedAt: expect.any(Date),
+						},
+						inMaintenanceSince: expect.any(Date),
 					},
-					inMaintenanceSince: expect.any(Date),
-				});
+					true
+				);
 			});
 		});
 	});
