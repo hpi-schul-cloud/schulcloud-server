@@ -5,12 +5,14 @@ import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolRepo } from '@shared/repo';
 import { schoolDOFactory, setupEntities } from '@shared/testing';
 import { SchoolService } from './school.service';
+import { SchoolValidationService } from './validation/school-validation.service';
 
 describe('SchoolService', () => {
 	let module: TestingModule;
 	let schoolService: SchoolService;
 
 	let schoolRepo: DeepMocked<SchoolRepo>;
+	let schoolValidationService: DeepMocked<SchoolValidationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -20,10 +22,17 @@ describe('SchoolService', () => {
 					provide: SchoolRepo,
 					useValue: createMock<SchoolRepo>(),
 				},
+				{
+					provide: SchoolValidationService,
+					useValue: createMock<SchoolValidationService>(),
+				},
 			],
 		}).compile();
+
 		schoolRepo = module.get(SchoolRepo);
 		schoolService = module.get(SchoolService);
+		schoolValidationService = module.get(SchoolValidationService);
+
 		await setupEntities();
 	});
 
@@ -60,43 +69,6 @@ describe('SchoolService', () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
-	});
-
-	describe('createOrUpdate is called', () => {
-		describe('when a school doesnt exist yet', () => {
-			it('should create new school', async () => {
-				const { schoolUnsaved } = setupOld();
-
-				await schoolService.createOrUpdateSchool(schoolUnsaved);
-
-				expect(schoolRepo.save).toHaveBeenCalledWith(schoolUnsaved);
-			});
-		});
-
-		describe('when update existing school', () => {
-			it('should call the repo', async () => {
-				const { schoolSaved } = setupOld();
-
-				await schoolService.createOrUpdateSchool(schoolSaved);
-
-				expect(schoolRepo.findById).toHaveBeenCalledWith(schoolSaved.id);
-			});
-
-			it('should update existing school', async () => {
-				const { schoolSaved, schoolSavedId } = setupOld();
-				schoolSaved.name = 'loadedSchool';
-				schoolRepo.findById.mockResolvedValue(schoolSaved);
-
-				await schoolService.createOrUpdateSchool(schoolSaved);
-
-				expect(schoolRepo.save).toHaveBeenCalledWith(
-					expect.objectContaining({
-						name: 'loadedSchool',
-						id: schoolSavedId,
-					})
-				);
-			});
-		});
 	});
 
 	describe('hasFeature is called', () => {
@@ -183,82 +155,85 @@ describe('SchoolService', () => {
 				);
 			});
 		});
+	});
 
-		describe('getSchoolById is called', () => {
-			describe('when id is given', () => {
-				it('should call the repo', async () => {
-					const { schoolSavedId } = setupOld();
-
-					await schoolService.getSchoolById(schoolSavedId);
-
-					expect(schoolRepo.findById).toHaveBeenCalledWith(schoolSavedId);
-				});
-
-				it('should return a do', async () => {
-					const { schoolSavedId } = setupOld();
-
-					const schoolDO: SchoolDO = await schoolService.getSchoolById(schoolSavedId);
-
-					expect(schoolDO).toBeInstanceOf(SchoolDO);
-				});
-			});
-		});
-
-		describe('getSchoolByExternalId', () => {
+	describe('getSchoolById is called', () => {
+		describe('when id is given', () => {
 			it('should call the repo', async () => {
-				const { schoolSavedExternalId, systems } = setupOld();
+				const { schoolSavedId } = setupOld();
 
-				await schoolService.getSchoolByExternalId(schoolSavedExternalId, systems[0]);
+				await schoolService.getSchoolById(schoolSavedId);
 
-				expect(schoolRepo.findByExternalId).toHaveBeenCalledWith(schoolSavedExternalId, systems[0]);
+				expect(schoolRepo.findById).toHaveBeenCalledWith(schoolSavedId);
 			});
 
 			it('should return a do', async () => {
-				const { schoolSavedExternalId, systems } = setupOld();
+				const { schoolSavedId } = setupOld();
 
-				const schoolDO: SchoolDO | null = await schoolService.getSchoolByExternalId(schoolSavedExternalId, systems[0]);
-
-				expect(schoolDO).toBeInstanceOf(SchoolDO);
-			});
-			it('should return null', async () => {
-				const { systems } = setupOld();
-
-				schoolRepo.findByExternalId.mockResolvedValue(null);
-
-				const schoolDO: SchoolDO | null = await schoolService.getSchoolByExternalId('null', systems[0]);
-
-				expect(schoolDO).toBeNull();
-			});
-		});
-
-		describe('when a school is searched by schoolnumber', () => {
-			it('should call the repo', async () => {
-				const { schoolSavedNumber } = setupOld();
-
-				await schoolService.getSchoolBySchoolNumber(schoolSavedNumber);
-
-				expect(schoolRepo.findBySchoolNumber).toHaveBeenCalledWith(schoolSavedNumber);
-			});
-
-			it('should return a do', async () => {
-				const { schoolSavedNumber } = setupOld();
-
-				const schoolDO: SchoolDO | null = await schoolService.getSchoolBySchoolNumber(schoolSavedNumber);
+				const schoolDO: SchoolDO = await schoolService.getSchoolById(schoolSavedId);
 
 				expect(schoolDO).toBeInstanceOf(SchoolDO);
 			});
-			it('should return null', async () => {
-				schoolRepo.findBySchoolNumber.mockResolvedValue(null);
+		});
+	});
 
-				const schoolDO: SchoolDO | null = await schoolService.getSchoolBySchoolNumber('null');
+	describe('getSchoolByExternalId', () => {
+		it('should call the repo', async () => {
+			const { schoolSavedExternalId, systems } = setupOld();
 
-				expect(schoolDO).toBeNull();
-			});
+			await schoolService.getSchoolByExternalId(schoolSavedExternalId, systems[0]);
+
+			expect(schoolRepo.findByExternalId).toHaveBeenCalledWith(schoolSavedExternalId, systems[0]);
 		});
 
-		describe('save is called', () => {
-			const setupSave = () => {
+		it('should return a do', async () => {
+			const { schoolSavedExternalId, systems } = setupOld();
+
+			const schoolDO: SchoolDO | null = await schoolService.getSchoolByExternalId(schoolSavedExternalId, systems[0]);
+
+			expect(schoolDO).toBeInstanceOf(SchoolDO);
+		});
+		it('should return null', async () => {
+			const { systems } = setupOld();
+
+			schoolRepo.findByExternalId.mockResolvedValue(null);
+
+			const schoolDO: SchoolDO | null = await schoolService.getSchoolByExternalId('null', systems[0]);
+
+			expect(schoolDO).toBeNull();
+		});
+	});
+
+	describe('when a school is searched by schoolnumber', () => {
+		it('should call the repo', async () => {
+			const { schoolSavedNumber } = setupOld();
+
+			await schoolService.getSchoolBySchoolNumber(schoolSavedNumber);
+
+			expect(schoolRepo.findBySchoolNumber).toHaveBeenCalledWith(schoolSavedNumber);
+		});
+
+		it('should return a do', async () => {
+			const { schoolSavedNumber } = setupOld();
+
+			const schoolDO: SchoolDO | null = await schoolService.getSchoolBySchoolNumber(schoolSavedNumber);
+
+			expect(schoolDO).toBeInstanceOf(SchoolDO);
+		});
+		it('should return null', async () => {
+			schoolRepo.findBySchoolNumber.mockResolvedValue(null);
+
+			const schoolDO: SchoolDO | null = await schoolService.getSchoolBySchoolNumber('null');
+
+			expect(schoolDO).toBeNull();
+		});
+	});
+
+	describe('save is called', () => {
+		describe('when validation is deactivated', () => {
+			const setup = () => {
 				const school: SchoolDO = schoolDOFactory.build();
+
 				schoolRepo.save.mockResolvedValue(school);
 
 				return {
@@ -266,21 +241,102 @@ describe('SchoolService', () => {
 				};
 			};
 
-			describe('when school is given', () => {
-				it('should call the repo', async () => {
-					const { school } = setupSave();
+			it('should call the repo', async () => {
+				const { school } = setup();
 
-					await schoolService.save(school);
+				await schoolService.save(school);
+
+				expect(schoolRepo.save).toHaveBeenCalledWith(school);
+			});
+
+			it('should return a do', async () => {
+				const { school } = setup();
+
+				const schoolDO: SchoolDO = await schoolService.save(school);
+
+				expect(schoolDO).toBeDefined();
+			});
+
+			it('should call the validation service', async () => {
+				const { school } = setup();
+
+				await schoolService.save(school);
+
+				expect(schoolValidationService.validate).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when validation is active', () => {
+			describe('when the validation fails', () => {
+				const setup = () => {
+					const school: SchoolDO = schoolDOFactory.build();
+
+					schoolRepo.save.mockResolvedValueOnce(school);
+					schoolValidationService.validate.mockRejectedValueOnce(new Error());
+
+					return {
+						school,
+					};
+				};
+
+				it('should reject', async () => {
+					const { school } = setup();
+
+					const func = () => schoolService.save(school, true);
+
+					await expect(func).rejects.toThrow();
+				});
+
+				it('should call the validation service', async () => {
+					const { school } = setup();
+
+					await expect(schoolService.save(school, true)).rejects.toThrow();
+
+					expect(schoolValidationService.validate).toHaveBeenCalledWith(school);
+				});
+
+				it('should not save', async () => {
+					const { school } = setup();
+
+					await expect(schoolService.save(school, true)).rejects.toThrow();
+
+					expect(schoolRepo.save).not.toHaveBeenCalled();
+				});
+			});
+
+			describe('when the validation succeeds', () => {
+				const setup = () => {
+					const school: SchoolDO = schoolDOFactory.build();
+
+					schoolRepo.save.mockResolvedValueOnce(school);
+
+					return {
+						school,
+					};
+				};
+
+				it('should call the repo', async () => {
+					const { school } = setup();
+
+					await schoolService.save(school, true);
 
 					expect(schoolRepo.save).toHaveBeenCalledWith(school);
 				});
 
 				it('should return a do', async () => {
-					const { school } = setupSave();
+					const { school } = setup();
 
-					const schoolDO: SchoolDO = await schoolService.save(school);
+					const schoolDO: SchoolDO = await schoolService.save(school, true);
 
 					expect(schoolDO).toBeDefined();
+				});
+
+				it('should call the validation service', async () => {
+					const { school } = setup();
+
+					await schoolService.save(school, true);
+
+					expect(schoolValidationService.validate).toHaveBeenCalledWith(school);
 				});
 			});
 		});
