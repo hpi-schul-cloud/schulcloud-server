@@ -167,7 +167,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 						}),
 						new PropertyData({
 							name: 'launch_presentation_locale',
-							value: 'en',
+							value: 'de-DE',
 							location: PropertyLocation.BODY,
 						}),
 						new PropertyData({
