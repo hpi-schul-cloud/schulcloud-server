@@ -9,7 +9,7 @@ export class SchoolValidationService {
 
 	public async validate(school: SchoolDO): Promise<void> {
 		if (!(await this.isSchoolNumberUnique(school))) {
-			throw new SchoolNumberDuplicateLoggableException(school);
+			throw new SchoolNumberDuplicateLoggableException(school.officialSchoolNumber as string);
 		}
 	}
 

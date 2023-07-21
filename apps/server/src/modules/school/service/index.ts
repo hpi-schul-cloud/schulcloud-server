@@ -1,4 +1,4 @@
 export * from './school.service';
 export * from './school-year.service';
 export * from './federal-state.service';
-export * from './validation/school-validation.service';
+export * from './validation';

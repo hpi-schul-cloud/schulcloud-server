@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityId, SchoolFeatures } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolRepo } from '@shared/repo';
-import { SchoolValidationService } from './validation/school-validation.service';
+import { SchoolValidationService } from './validation';
 
 @Injectable()
 export class SchoolService {

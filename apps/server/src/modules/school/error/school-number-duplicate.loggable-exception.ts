@@ -1,9 +1,8 @@
 import { UnprocessableEntityException } from '@nestjs/common';
-import { SchoolDO } from '@shared/domain';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class SchoolNumberDuplicateLoggableException extends UnprocessableEntityException implements Loggable {
-	constructor(private readonly school: SchoolDO) {
+	constructor(private readonly officialSchoolNumber: string) {
 		super();
 	}
 
@@ -13,7 +12,7 @@ export class SchoolNumberDuplicateLoggableException extends UnprocessableEntityE
 			message: 'Unable to save the school. A school with this official school number does already exist.',
 			stack: this.stack,
 			data: {
-				officialSchoolNumber: this.school.officialSchoolNumber,
+				officialSchoolNumber: this.officialSchoolNumber,
 			},
 		};
 	}

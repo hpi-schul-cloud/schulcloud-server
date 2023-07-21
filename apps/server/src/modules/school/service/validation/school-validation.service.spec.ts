@@ -32,60 +32,78 @@ describe('SchoolValidationService', () => {
 	});
 
 	describe('validate', () => {
-		describe('when a new school is created and the school number is unique', () => {
-			const setup = () => {
-				const school: SchoolDO = schoolDOFactory.buildWithId({ officialSchoolNumber: '1234' });
+		describe('isSchoolNumberUnique', () => {
+			describe('when a school has no official school number', () => {
+				const setup = () => {
+					const school: SchoolDO = schoolDOFactory.buildWithId({ officialSchoolNumber: undefined });
 
-				schoolRepo.findBySchoolNumber.mockResolvedValue(null);
-
-				return {
-					school,
+					return {
+						school,
+					};
 				};
-			};
 
-			it('should pass', async () => {
-				const { school } = setup();
+				it('should pass', async () => {
+					const { school } = setup();
 
-				await expect(service.validate(school)).resolves.not.toThrow();
+					await expect(service.validate(school)).resolves.not.toThrow();
+				});
 			});
-		});
 
-		describe('when an existing school is updated and the school number is unique', () => {
-			const setup = () => {
-				const school: SchoolDO = schoolDOFactory.buildWithId({ officialSchoolNumber: '1234' });
+			describe('when a new school is created and the school number is unique', () => {
+				const setup = () => {
+					const school: SchoolDO = schoolDOFactory.buildWithId({ officialSchoolNumber: '1234' });
 
-				schoolRepo.findBySchoolNumber.mockResolvedValue(school);
+					schoolRepo.findBySchoolNumber.mockResolvedValue(null);
 
-				return {
-					school,
+					return {
+						school,
+					};
 				};
-			};
 
-			it('should pass', async () => {
-				const { school } = setup();
+				it('should pass', async () => {
+					const { school } = setup();
 
-				await expect(service.validate(school)).resolves.not.toThrow();
+					await expect(service.validate(school)).resolves.not.toThrow();
+				});
 			});
-		});
 
-		describe('when the school number already exists on another school', () => {
-			const setup = () => {
-				const newSchool: SchoolDO = schoolDOFactory.buildWithId({ officialSchoolNumber: '1234' });
-				const existingSchool: SchoolDO = schoolDOFactory.buildWithId({ officialSchoolNumber: '1234' });
+			describe('when an existing school is updated and the school number is unique', () => {
+				const setup = () => {
+					const school: SchoolDO = schoolDOFactory.buildWithId({ officialSchoolNumber: '1234' });
 
-				schoolRepo.findBySchoolNumber.mockResolvedValue(existingSchool);
+					schoolRepo.findBySchoolNumber.mockResolvedValue(school);
 
-				return {
-					newSchool,
+					return {
+						school,
+					};
 				};
-			};
 
-			it('should throw a SchoolNumberDuplicateLoggableException', async () => {
-				const { newSchool } = setup();
+				it('should pass', async () => {
+					const { school } = setup();
 
-				const func = async () => service.validate(newSchool);
+					await expect(service.validate(school)).resolves.not.toThrow();
+				});
+			});
 
-				await expect(func).rejects.toThrow(SchoolNumberDuplicateLoggableException);
+			describe('when the school number already exists on another school', () => {
+				const setup = () => {
+					const newSchool: SchoolDO = schoolDOFactory.buildWithId({ officialSchoolNumber: '1234' });
+					const existingSchool: SchoolDO = schoolDOFactory.buildWithId({ officialSchoolNumber: '1234' });
+
+					schoolRepo.findBySchoolNumber.mockResolvedValue(existingSchool);
+
+					return {
+						newSchool,
+					};
+				};
+
+				it('should throw a SchoolNumberDuplicateLoggableException', async () => {
+					const { newSchool } = setup();
+
+					const func = async () => service.validate(newSchool);
+
+					await expect(func).rejects.toThrow(SchoolNumberDuplicateLoggableException);
+				});
 			});
 		});
 	});
