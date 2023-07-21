@@ -12,25 +12,22 @@ import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { PseudonymModule } from '@src/modules/pseudonym';
 import { UserModule } from '@src/modules/user';
-import { Lti11EncryptionService, ToolLaunchService } from './launch-tool/service';
+import { Lti11EncryptionService, ToolLaunchService } from './tool-launch/service';
 import {
 	BasicToolLaunchStrategy,
 	Lti11ToolLaunchStrategy,
 	OAuth2ToolLaunchStrategy,
-} from './launch-tool/service/strategy';
+} from './tool-launch/service/strategy';
+import ToolConfiguration, { ToolFeatures } from './tool-config';
 import {
-	CommonToolService,
-	CommonToolValidationService,
-	ContextExternalToolService,
-	ContextExternalToolValidationService,
 	ExternalToolService,
+	ExternalToolServiceMapper,
 	ExternalToolValidationService,
 	ExternalToolVersionService,
-	SchoolExternalToolService,
-	SchoolExternalToolValidationService,
-	ExternalToolServiceMapper,
-} from './service';
-import ToolConfiguration, { ToolFeatures } from './tool-config';
+} from './external-tool/service';
+import { SchoolExternalToolService, SchoolExternalToolValidationService } from './school-external-tool/service';
+import { ContextExternalToolService, ContextExternalToolValidationService } from './context-external-tool/service';
+import { CommonToolService, CommonToolValidationService } from './common/service';
 
 @Module({
 	imports: [

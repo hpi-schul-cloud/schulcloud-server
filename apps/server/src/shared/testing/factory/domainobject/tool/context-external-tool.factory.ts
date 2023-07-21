@@ -3,7 +3,7 @@ import {
 	ContextExternalToolProps,
 	CustomParameterEntryDO,
 } from '@shared/domain/domainobject/tool';
-import { ToolContextType } from '@src/modules/tool/interface';
+import { ToolContextType } from 'apps/server/src/modules/tool/common/interface';
 import { DeepPartial } from 'fishery';
 import { DoBaseFactory } from '../do-base.factory';
 

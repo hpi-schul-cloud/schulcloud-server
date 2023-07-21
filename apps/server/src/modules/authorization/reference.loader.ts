@@ -13,7 +13,7 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { BoardDoAuthorizableService } from '@src/modules/board/service';
-import { ContextExternalToolService } from '@src/modules/tool/service';
+import { ContextExternalToolService } from '@src/modules/tool/context-external-tool/service';
 import { AuthorizableReferenceType } from './types';
 
 // replace later with general "base" do-repo

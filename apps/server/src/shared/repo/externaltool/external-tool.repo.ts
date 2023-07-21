@@ -13,7 +13,7 @@ import {
 import { ExternalToolDO } from '@shared/domain/domainobject/tool';
 import { BaseDORepo, Scope } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { ExternalToolSearchQuery } from '@src/modules/tool/interface';
+import { ExternalToolSearchQuery } from 'apps/server/src/modules/tool/common/interface';
 import { ExternalToolSortingMapper } from './external-tool-sorting.mapper';
 import { ExternalToolRepoMapper } from './external-tool.repo.mapper';
 import { ExternalToolScope } from './external-tool.scope';
