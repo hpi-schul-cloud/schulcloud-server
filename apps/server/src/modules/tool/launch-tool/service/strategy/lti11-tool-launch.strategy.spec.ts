@@ -14,6 +14,7 @@ import {
 	ToolConfigType,
 	UserDO,
 } from '@shared/domain';
+import { CourseRepo } from '@shared/repo';
 import {
 	contextExternalToolDOFactory,
 	externalToolDOFactory,
@@ -22,6 +23,7 @@ import {
 } from '@shared/testing';
 import { pseudonymFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
 import { PseudonymService } from '@src/modules/pseudonym/service';
+import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
 import { Authorization } from 'oauth-1.0a';
@@ -63,6 +65,14 @@ describe('Lti11ToolLaunchStrategy', () => {
 				{
 					provide: Lti11EncryptionService,
 					useValue: createMock<Lti11EncryptionService>(),
+				},
+				{
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
+				},
+				{
+					provide: CourseRepo,
+					useValue: createMock<CourseRepo>(),
 				},
 			],
 		}).compile();
