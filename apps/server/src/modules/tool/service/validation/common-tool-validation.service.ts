@@ -139,6 +139,8 @@ export class CommonToolValidationService {
 			return true;
 		}
 
-		return customParameter.scope === CustomParameterScope.GLOBAL;
+		const isGlobal: boolean = customParameter.scope === CustomParameterScope.GLOBAL;
+
+		return isGlobal;
 	}
 }
