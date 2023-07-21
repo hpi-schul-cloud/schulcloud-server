@@ -13,7 +13,9 @@ export class ExternalToolPseudonymRepo {
 			toolId: new ObjectId(toolId),
 		});
 
-		return this.mapEntityToDomainObject(entity);
+		const domainObject: Pseudonym = this.mapEntityToDomainObject(entity);
+
+		return domainObject;
 	}
 
 	async findByUserIdAndToolId(userId: EntityId, toolId: EntityId): Promise<Pseudonym | null> {
