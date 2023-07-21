@@ -9,7 +9,6 @@ import { EtherpadService, LessonCopyService, LessonService, NexboardService } fr
 
 @Module({
 	imports: [FilesStorageClientModule, LoggerModule, CopyHelperModule, TaskModule],
-	controllers: [],
 	providers: [LessonRepo, LessonService, EtherpadService, NexboardService, LessonCopyService, FeathersServiceProvider],
 	exports: [LessonService, LessonCopyService],
 })
