@@ -5,14 +5,14 @@ import { ExternalToolDO } from '@shared/domain/domainobject/tool';
 import { ValidationError } from '@shared/common';
 import { ExternalToolService } from './external-tool.service';
 import { ExternalToolValidationService } from './external-tool-validation.service';
-import { CommonToolValidationService } from '../../common/service';
+import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
 
 describe('ExternalToolValidationService', () => {
 	let module: TestingModule;
 	let service: ExternalToolValidationService;
 
 	let externalToolService: DeepMocked<ExternalToolService>;
-	let commonToolValidationService: DeepMocked<CommonToolValidationService>;
+	let commonToolValidationService: DeepMocked<ExternalToolParameterValidationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -23,15 +23,15 @@ describe('ExternalToolValidationService', () => {
 					useValue: createMock<ExternalToolService>(),
 				},
 				{
-					provide: CommonToolValidationService,
-					useValue: createMock<CommonToolValidationService>(),
+					provide: ExternalToolParameterValidationService,
+					useValue: createMock<ExternalToolParameterValidationService>(),
 				},
 			],
 		}).compile();
 
 		service = module.get(ExternalToolValidationService);
 		externalToolService = module.get(ExternalToolService);
-		commonToolValidationService = module.get(CommonToolValidationService);
+		commonToolValidationService = module.get(ExternalToolParameterValidationService);
 	});
 
 	afterAll(async () => {

@@ -26,10 +26,11 @@ import {
 	ExternalToolServiceMapper,
 	ExternalToolValidationService,
 	ExternalToolVersionService,
+	ExternalToolParameterValidationService,
 } from './external-tool/service';
 import { SchoolExternalToolService, SchoolExternalToolValidationService } from './school-external-tool/service';
 import { ContextExternalToolService, ContextExternalToolValidationService } from './context-external-tool/service';
-import { CommonToolService, CommonToolValidationService } from './common/service';
+import { CommonToolService } from './common/service';
 
 @Module({
 	imports: [
@@ -57,7 +58,7 @@ import { CommonToolService, CommonToolValidationService } from './common/service
 		ExternalToolVersionService,
 		SchoolExternalToolService,
 		ContextExternalToolService,
-		CommonToolValidationService,
+		ExternalToolParameterValidationService,
 		SchoolExternalToolValidationService,
 		ContextExternalToolValidationService,
 		ToolLaunchService,
@@ -76,7 +77,7 @@ import { CommonToolService, CommonToolValidationService } from './common/service
 		SchoolExternalToolService,
 		ContextExternalToolService,
 		ExternalToolRepoMapper,
-		CommonToolValidationService,
+		ExternalToolParameterValidationService,
 		SchoolExternalToolValidationService,
 		ContextExternalToolValidationService,
 		ToolLaunchService,

@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
 import { autoParameters, CustomParameterScope } from '@shared/domain';
 import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/tool';
-import { ExternalToolService } from '../../external-tool/service/external-tool.service';
+import { ExternalToolService } from './external-tool.service';
 
 @Injectable()
-export class CommonToolValidationService {
+export class ExternalToolParameterValidationService {
 	constructor(private readonly externalToolService: ExternalToolService) {}
 
 	async validateCommon(externalToolDO: ExternalToolDO | Partial<ExternalToolDO>): Promise<void> {

@@ -7,19 +7,19 @@ import {
 	customParameterDOFactory,
 	externalToolDOFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { ExternalToolService } from '../../external-tool/service';
-import { CommonToolValidationService } from './common-tool-validation.service';
+import { ExternalToolService } from './index';
+import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
 
-describe('CommonToolValidationService', () => {
+describe('ExternalToolParameterValidationService', () => {
 	let module: TestingModule;
-	let service: CommonToolValidationService;
+	let service: ExternalToolParameterValidationService;
 
 	let externalToolService: DeepMocked<ExternalToolService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				CommonToolValidationService,
+				ExternalToolParameterValidationService,
 				{
 					provide: ExternalToolService,
 					useValue: createMock<ExternalToolService>(),
@@ -27,7 +27,7 @@ describe('CommonToolValidationService', () => {
 			],
 		}).compile();
 
-		service = module.get(CommonToolValidationService);
+		service = module.get(ExternalToolParameterValidationService);
 		externalToolService = module.get(ExternalToolService);
 	});
 
