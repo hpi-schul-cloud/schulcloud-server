@@ -7,7 +7,6 @@ import {
 	ExternalToolRepo,
 	ExternalToolRepoMapper,
 	ExternalToolSortingMapper,
-	PseudonymsRepo,
 	SchoolExternalToolRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
@@ -33,6 +32,7 @@ import {
 	SchoolExternalToolService,
 	SchoolExternalToolValidationService,
 } from './service';
+import ToolConfiguration, { ToolFeatures } from './tool-config';
 
 @Module({
 	imports: [
@@ -41,13 +41,16 @@ import {
 		EncryptionModule,
 		forwardRef(() => AuthorizationModule),
 		UserModule,
-		PseudonymModule,
+		forwardRef(() => PseudonymModule),
 		SchoolModule,
 	],
 	providers: [
+		{
+			provide: ToolFeatures,
+			useValue: ToolConfiguration.toolFeatures,
+		},
 		ExternalToolService,
 		ExternalToolServiceMapper,
-		PseudonymsRepo,
 		ExternalToolRepo,
 		ExternalToolRepoMapper,
 		ExternalToolSortingMapper,
@@ -70,6 +73,7 @@ import {
 		CourseRepo,
 	],
 	exports: [
+		ToolFeatures,
 		ExternalToolService,
 		ExternalToolValidationService,
 		SchoolExternalToolService,
