@@ -1610,13 +1610,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/SchoolModule.html" data-type="entity-link" >SchoolModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-SchoolModule-c436399d7bd845ab404dbb88b8787208119c200a6334773442a1faaad6aca1909bda67d2c9ffe4142106e0d2527faefed192fbf881fbc4d8b7b6efc71beac596"' : 'data-bs-target="#xs-injectables-links-module-SchoolModule-c436399d7bd845ab404dbb88b8787208119c200a6334773442a1faaad6aca1909bda67d2c9ffe4142106e0d2527faefed192fbf881fbc4d8b7b6efc71beac596"' }>
+                                        'data-bs-target="#injectables-links-module-SchoolModule-c1e9c39c499f14e7146ce17c1f3262b42842aeaf575d0f8833d948c6016aa04e9dd8a8fc14b71349baf39bfe470b1b75a2e59b053900a8d3d6833d9aa8e7db3a"' : 'data-bs-target="#xs-injectables-links-module-SchoolModule-c1e9c39c499f14e7146ce17c1f3262b42842aeaf575d0f8833d948c6016aa04e9dd8a8fc14b71349baf39bfe470b1b75a2e59b053900a8d3d6833d9aa8e7db3a"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-SchoolModule-c436399d7bd845ab404dbb88b8787208119c200a6334773442a1faaad6aca1909bda67d2c9ffe4142106e0d2527faefed192fbf881fbc4d8b7b6efc71beac596"' :
-                                        'id="xs-injectables-links-module-SchoolModule-c436399d7bd845ab404dbb88b8787208119c200a6334773442a1faaad6aca1909bda67d2c9ffe4142106e0d2527faefed192fbf881fbc4d8b7b6efc71beac596"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-SchoolModule-c1e9c39c499f14e7146ce17c1f3262b42842aeaf575d0f8833d948c6016aa04e9dd8a8fc14b71349baf39bfe470b1b75a2e59b053900a8d3d6833d9aa8e7db3a"' :
+                                        'id="xs-injectables-links-module-SchoolModule-c1e9c39c499f14e7146ce17c1f3262b42842aeaf575d0f8833d948c6016aa04e9dd8a8fc14b71349baf39bfe470b1b75a2e59b053900a8d3d6833d9aa8e7db3a"' }>
                                         <li class="link">
                                             <a href="injectables/FederalStateRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >FederalStateRepo</a>
                                         </li>
@@ -1628,6 +1628,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                         </li>
                                         <li class="link">
                                             <a href="injectables/SchoolService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchoolService</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/SchoolValidationService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchoolValidationService</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/SchoolYearRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchoolYearRepo</a>
@@ -3632,6 +3635,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/SchoolMigrationError.html" data-type="entity-link" >SchoolMigrationError</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SchoolNumberDuplicateLoggableException.html" data-type="entity-link" >SchoolNumberDuplicateLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/SchoolNumberMissingLoggableException.html" data-type="entity-link" >SchoolNumberMissingLoggableException</a>
                             </li>
                             <li class="link">
@@ -4501,6 +4507,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/SchoolService.html" data-type="entity-link" >SchoolService</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/SchoolValidationService.html" data-type="entity-link" >SchoolValidationService</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/SchoolYearRepo.html" data-type="entity-link" >SchoolYearRepo</a>

@@ -411,10 +411,10 @@ import { AccountService } from &#x27;@src/modules/account/services/account.servi
 import { AccountSaveDto } from &#x27;@src/modules/account/services/dto&#x27;;
 import { RoleService } from &#x27;@src/modules/role&#x27;;
 import { RoleDto } from &#x27;@src/modules/role/service/dto/role.dto&#x27;;
-import { SchoolService, FederalStateService, SchoolYearService } from &#x27;@src/modules/school&#x27;;
+import { FederalStateService, SchoolService, SchoolYearService } from &#x27;@src/modules/school&#x27;;
+import { FederalStateNames } from &#x27;@src/modules/school/types&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
 import CryptoJS from &#x27;crypto-js&#x27;;
-import { FederalStateNames } from &#x27;@src/modules/school/types&#x27;;
 import { ExternalSchoolDto, ExternalUserDto } from &#x27;../../../dto&#x27;;
 
 @Injectable()
@@ -461,7 +461,7 @@ export class OidcProvisioningService {
 			});
 		}
 
-		const savedSchool: SchoolDO &#x3D; await this.schoolService.createOrUpdateSchool(school);
+		const savedSchool: SchoolDO &#x3D; await this.schoolService.save(school, true);
 		return savedSchool;
 	}
 

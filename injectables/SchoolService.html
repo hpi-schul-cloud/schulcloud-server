@@ -86,10 +86,6 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#createOrUpdateSchool" >createOrUpdateSchool</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
                                 <a href="#getSchoolByExternalId" >getSchoolByExternalId</a>
                             </li>
                             <li>
@@ -103,11 +99,6 @@
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#hasFeature" >hasFeature</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#patchSchool" >patchSchool</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -135,12 +126,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(schoolRepo: <a href="../injectables/SchoolRepo.html" target="_self">SchoolRepo</a>)</code>
+<code>constructor(schoolRepo: <a href="../injectables/SchoolRepo.html" target="_self">SchoolRepo</a>, schoolValidationService: <a href="../injectables/SchoolValidationService.html" target="_self">SchoolValidationService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:8</a></div>
                             </td>
                         </tr>
 
@@ -169,6 +160,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>schoolValidationService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SchoolValidationService.html" target="_self" >SchoolValidationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -183,77 +186,6 @@
     <h3 id="methods">
         Methods
     </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="createOrUpdateSchool"></a>
-                    <span class="name">
-                        <span class="modifier">Async</span>
-                        <span ><b>createOrUpdateSchool</b></span>
-                        <a href="#createOrUpdateSchool"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createOrUpdateSchool(school: <a href="../classes/SchoolDO.html" target="_self">SchoolDO</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="10"
-                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:10</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>school</td>
-                                    <td>
-                                                <code><a href="../classes/SchoolDO.html" target="_self" >SchoolDO</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/School.html" target="_self" >Promise&lt;SchoolDO&gt;</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -276,8 +208,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="38"
-                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:38</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="33"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:33</a></div>
                 </td>
             </tr>
 
@@ -359,8 +291,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="33"
-                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:33</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="27"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:27</a></div>
                 </td>
             </tr>
 
@@ -430,8 +362,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="43"
-                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:43</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:39</a></div>
                 </td>
             </tr>
 
@@ -501,8 +433,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="20"
-                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:20</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="14"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:14</a></div>
                 </td>
             </tr>
 
@@ -566,78 +498,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="patchSchool"></a>
-                    <span class="name">
-                        <span class="modifier">Private</span>
-                        <span class="modifier">Async</span>
-                        <span ><b>patchSchool</b></span>
-                        <a href="#patchSchool"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>patchSchool(school: <a href="../classes/SchoolDO.html" target="_self">SchoolDO</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="53"
-                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:53</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>school</td>
-                                    <td>
-                                                <code><a href="../classes/SchoolDO.html" target="_self" >SchoolDO</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>    <code>unknown</code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="removeFeature"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -656,8 +516,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="25"
-                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:25</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="19"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:19</a></div>
                 </td>
             </tr>
 
@@ -732,15 +592,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>save(school: <a href="../classes/SchoolDO.html" target="_self">SchoolDO</a>)</code>
+                    <code>save(school: <a href="../classes/SchoolDO.html" target="_self">SchoolDO</a>, validate)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="48"
-                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:48</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="45"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:45</a></div>
                 </td>
             </tr>
 
@@ -757,6 +617,7 @@
                                     <td>Name</td>
                                     <td>Type</td>
                                     <td>Optional</td>
+                                    <td>Default value</td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -770,6 +631,22 @@
                                         No
                                     </td>
 
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>validate</td>
+                                    <td>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>false</code>
+                                    </td>
 
                                 </tr>
                             </tbody>
@@ -798,20 +675,14 @@
 import { EntityId, SchoolFeatures } from &#x27;@shared/domain&#x27;;
 import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
 import { SchoolRepo } from &#x27;@shared/repo&#x27;;
+import { SchoolValidationService } from &#x27;./validation&#x27;;
 
 @Injectable()
 export class SchoolService {
-	constructor(private readonly schoolRepo: SchoolRepo) {}
-
-	async createOrUpdateSchool(school: SchoolDO): Promise&lt;SchoolDO&gt; {
-		let createdSchool: SchoolDO;
-		if (school.id) {
-			createdSchool &#x3D; await this.patchSchool(school);
-		} else {
-			createdSchool &#x3D; await this.schoolRepo.save(school);
-		}
-		return createdSchool;
-	}
+	constructor(
+		private readonly schoolRepo: SchoolRepo,
+		private readonly schoolValidationService: SchoolValidationService
+	) {}
 
 	async hasFeature(schoolId: EntityId, feature: SchoolFeatures): Promise&lt;boolean&gt; {
 		const entity: SchoolDO &#x3D; await this.schoolRepo.findById(schoolId);
@@ -828,31 +699,30 @@ export class SchoolService {
 
 	async getSchoolById(id: string): Promise&lt;SchoolDO&gt; {
 		const schoolDO: SchoolDO &#x3D; await this.schoolRepo.findById(id);
+
 		return schoolDO;
 	}
 
 	async getSchoolByExternalId(externalId: string, systemId: string): Promise&lt;SchoolDO | null&gt; {
 		const schoolDO: SchoolDO | null &#x3D; await this.schoolRepo.findByExternalId(externalId, systemId);
+
 		return schoolDO;
 	}
 
 	async getSchoolBySchoolNumber(schoolNumber: string): Promise&lt;SchoolDO | null&gt; {
 		const schoolDO: SchoolDO | null &#x3D; await this.schoolRepo.findBySchoolNumber(schoolNumber);
+
 		return schoolDO;
 	}
 
-	async save(school: SchoolDO): Promise&lt;SchoolDO&gt; {
+	async save(school: SchoolDO, validate &#x3D; false): Promise&lt;SchoolDO&gt; {
+		if (validate) {
+			await this.schoolValidationService.validate(school);
+		}
+
 		const ret: SchoolDO &#x3D; await this.schoolRepo.save(school);
+
 		return ret;
-	}
-
-	private async patchSchool(school: SchoolDO) {
-		const entity: SchoolDO &#x3D; await this.schoolRepo.findById(school.id as string);
-		const patchedEntity: SchoolDO &#x3D; { ...entity, ...school };
-
-		await this.schoolRepo.save(patchedEntity);
-
-		return patchedEntity;
 	}
 }
 </code></pre>
