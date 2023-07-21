@@ -15,7 +15,7 @@ import {
 import { LegacyLogger } from '@src/core/logger';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { LessonCopyService } from '@src/modules/lesson/service';
-import { TaskCopyService } from '@src/modules/task';
+import { TaskCopyService } from '@src/modules/task/service';
 import { BoardCopyService } from './board-copy.service';
 
 describe('board copy service', () => {
