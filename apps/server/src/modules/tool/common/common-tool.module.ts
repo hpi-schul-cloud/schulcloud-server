@@ -1,0 +1,11 @@
+import { Module } from '@nestjs/common';
+import { ContextExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
+import { LoggerModule } from '@src/core/logger';
+import { CommonToolService } from './service';
+
+@Module({
+	imports: [LoggerModule],
+	providers: [CommonToolService, SchoolExternalToolRepo, ContextExternalToolRepo],
+	exports: [CommonToolService, SchoolExternalToolRepo, ContextExternalToolRepo],
+})
+export class CommonToolModule {}

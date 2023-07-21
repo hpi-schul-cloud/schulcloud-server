@@ -1,86 +1,33 @@
-import { forwardRef, Module } from '@nestjs/common';
-import { EncryptionModule } from '@shared/infra/encryption';
-import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
-import {
-	ContextExternalToolRepo,
-	CourseRepo,
-	ExternalToolRepo,
-	ExternalToolRepoMapper,
-	ExternalToolSortingMapper,
-	SchoolExternalToolRepo,
-} from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
-import { AuthorizationModule } from '@src/modules/authorization';
-import { PseudonymModule } from '@src/modules/pseudonym';
-import { SchoolModule } from '@src/modules/school';
-import { UserModule } from '@src/modules/user';
-import { Lti11EncryptionService, ToolLaunchService } from './tool-launch/service';
-import {
-	BasicToolLaunchStrategy,
-	Lti11ToolLaunchStrategy,
-	OAuth2ToolLaunchStrategy,
-} from './tool-launch/service/strategy';
+import { Module } from '@nestjs/common';
 import ToolConfiguration, { ToolFeatures } from './tool-config';
-import {
-	ExternalToolService,
-	ExternalToolServiceMapper,
-	ExternalToolValidationService,
-	ExternalToolVersionService,
-	ExternalToolParameterValidationService,
-} from './external-tool/service';
-import { SchoolExternalToolService, SchoolExternalToolValidationService } from './school-external-tool/service';
-import { ContextExternalToolService, ContextExternalToolValidationService } from './context-external-tool/service';
+import { ContextExternalToolModule } from './context-external-tool';
+import { SchoolExternalToolModule } from './school-external-tool';
+import { ExternalToolModule } from './external-tool';
+import { CommonToolModule } from './common';
+import { ToolLaunchModule } from './tool-launch';
 import { CommonToolService } from './common/service';
 
 @Module({
 	imports: [
-		LoggerModule,
-		OauthProviderServiceModule,
-		EncryptionModule,
-		forwardRef(() => AuthorizationModule),
-		UserModule,
-		forwardRef(() => PseudonymModule),
-		SchoolModule,
+		CommonToolModule,
+		ExternalToolModule,
+		SchoolExternalToolModule,
+		ContextExternalToolModule,
+		ToolLaunchModule,
 	],
 	providers: [
 		{
 			provide: ToolFeatures,
 			useValue: ToolConfiguration.toolFeatures,
 		},
-		ExternalToolService,
-		ExternalToolServiceMapper,
-		ExternalToolRepo,
-		ExternalToolRepoMapper,
-		ExternalToolSortingMapper,
-		SchoolExternalToolRepo,
-		ContextExternalToolRepo,
-		ExternalToolValidationService,
-		ExternalToolVersionService,
-		SchoolExternalToolService,
-		ContextExternalToolService,
-		ExternalToolParameterValidationService,
-		SchoolExternalToolValidationService,
-		ContextExternalToolValidationService,
-		ToolLaunchService,
-		Lti11EncryptionService,
-		BasicToolLaunchStrategy,
-		Lti11ToolLaunchStrategy,
-		OAuth2ToolLaunchStrategy,
 		CommonToolService,
-		// Importing the LearnroomModule instead of CourseRepo creates some kind of dependency cycle that lets unrelated tests fail
-		CourseRepo,
 	],
 	exports: [
 		ToolFeatures,
-		ExternalToolService,
-		ExternalToolValidationService,
-		SchoolExternalToolService,
-		ContextExternalToolService,
-		ExternalToolRepoMapper,
-		ExternalToolParameterValidationService,
-		SchoolExternalToolValidationService,
-		ContextExternalToolValidationService,
-		ToolLaunchService,
+		ExternalToolModule,
+		SchoolExternalToolModule,
+		ContextExternalToolModule,
+		ToolLaunchModule,
 		CommonToolService,
 	],
 })

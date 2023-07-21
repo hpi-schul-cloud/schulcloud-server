@@ -16,9 +16,9 @@ import {
 } from '@shared/repo';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { BoardDoAuthorizableService } from '@src/modules/board';
+import { ContextExternalToolService } from '@src/modules/tool/context-external-tool/service';
 import { ReferenceLoader } from './reference.loader';
 import { AuthorizableReferenceType } from './types';
-import { ContextExternalToolService } from '../tool/service';
 
 describe('reference.loader', () => {
 	let service: ReferenceLoader;

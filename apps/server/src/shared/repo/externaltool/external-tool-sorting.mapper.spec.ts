@@ -1,14 +1,8 @@
 import { QueryOrderMap } from '@mikro-orm/core';
-import { ExternalTool, LtiTool, SortOrder, SortOrderMap, ExternalToolDO } from '@shared/domain';
+import { ExternalTool, ExternalToolDO, LtiTool, SortOrder, SortOrderMap } from '@shared/domain';
 import { ExternalToolSortingMapper } from '@shared/repo';
 
 describe('ExternalToolSortingMapper', () => {
-	let mapper: ExternalToolSortingMapper;
-
-	beforeAll(() => {
-		mapper = new ExternalToolSortingMapper();
-	});
-
 	describe('mapDOSortOrderToQueryOrder', () => {
 		it('should map sortOrderMap of DO to queryOrderMap of entity', () => {
 			const doSortOrderMap: SortOrderMap<ExternalToolDO> = {
@@ -20,7 +14,8 @@ describe('ExternalToolSortingMapper', () => {
 				name: doSortOrderMap.name,
 			};
 
-			const entityQueryOrderMap: QueryOrderMap<LtiTool> = mapper.mapDOSortOrderToQueryOrder(doSortOrderMap);
+			const entityQueryOrderMap: QueryOrderMap<LtiTool> =
+				ExternalToolSortingMapper.mapDOSortOrderToQueryOrder(doSortOrderMap);
 
 			expect(entityQueryOrderMap).toEqual(expectedResponse);
 		});
@@ -34,7 +29,8 @@ describe('ExternalToolSortingMapper', () => {
 				_id: doSortOrderMap.id,
 			};
 
-			const entityQueryOrderMap: QueryOrderMap<ExternalTool> = mapper.mapDOSortOrderToQueryOrder(doSortOrderMap);
+			const entityQueryOrderMap: QueryOrderMap<ExternalTool> =
+				ExternalToolSortingMapper.mapDOSortOrderToQueryOrder(doSortOrderMap);
 
 			expect(entityQueryOrderMap).toEqual(expectedResponse);
 		});

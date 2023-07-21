@@ -10,9 +10,9 @@ import {
 } from '@shared/domain';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { LegacyLogger } from '@src/core/logger';
-import { SchoolExternalToolQuery } from '../../../modules/tool/school-external-tool/uc/dto/school-external-tool.types';
-import { ExternalToolRepoMapper } from '../externaltool/external-tool.repo.mapper';
+import { SchoolExternalToolQuery } from '@src/modules/tool/school-external-tool/uc/dto/school-external-tool.types';
 import { SchoolExternalToolScope } from './school-external-tool.scope';
+import { ExternalToolRepoMapper } from '../externaltool';
 
 @Injectable()
 export class SchoolExternalToolRepo extends BaseDORepo<
@@ -20,11 +20,7 @@ export class SchoolExternalToolRepo extends BaseDORepo<
 	SchoolExternalTool,
 	ISchoolExternalToolProperties
 > {
-	constructor(
-		private readonly externalToolRepoMapper: ExternalToolRepoMapper,
-		protected readonly _em: EntityManager,
-		protected readonly logger: LegacyLogger
-	) {
+	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
 	}
 
@@ -83,7 +79,7 @@ export class SchoolExternalToolRepo extends BaseDORepo<
 			toolId: entity.tool.id,
 			schoolId: entity.school.id,
 			toolVersion: entity.toolVersion,
-			parameters: this.externalToolRepoMapper.mapCustomParameterEntryEntitiesToDOs(entity.schoolParameters),
+			parameters: ExternalToolRepoMapper.mapCustomParameterEntryEntitiesToDOs(entity.schoolParameters),
 		});
 	}
 
@@ -92,7 +88,7 @@ export class SchoolExternalToolRepo extends BaseDORepo<
 			school: this._em.getReference(School, entityDO.schoolId),
 			tool: this._em.getReference(ExternalTool, entityDO.toolId),
 			toolVersion: entityDO.toolVersion,
-			schoolParameters: this.externalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),
+			schoolParameters: ExternalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),
 		};
 	}
 }
