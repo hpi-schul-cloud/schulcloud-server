@@ -205,6 +205,7 @@ export class UserImportUc {
 			}
 		}
 		// TODO Change ImportUserRepo to DO to fix this workaround
+		// Delete all remaining importUser-objects that dont need to be ported
 		await this.importUserRepo.deleteImportUsersBySchool(currentUser.school);
 		await this.endSchoolInUserMigration(currentUserId);
 	}
@@ -279,6 +280,7 @@ export class UserImportUc {
 
 		await this.userRepo.save(user);
 		await this.accountService.save(account);
+		await this.importUserRepo.delete(importUser);
 	}
 
 	private async getMigrationSystem(): Promise<System> {
