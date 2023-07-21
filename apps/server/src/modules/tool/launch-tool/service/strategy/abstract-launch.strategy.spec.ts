@@ -26,7 +26,7 @@ import {
 } from '@shared/testing';
 import { SchoolService } from '@src/modules/school';
 import { ToolContextType } from '../../../interface';
-import { MissingToolParameterValueLoggableException, ParameterNotImplementedLoggableException } from '../../error';
+import { MissingToolParameterValueLoggableException, ParameterTypeNotImplementedLoggableException } from '../../error';
 import {
 	LaunchRequestMethod,
 	PropertyData,
@@ -105,7 +105,7 @@ describe('AbstractLaunchStrategy', () => {
 	});
 
 	describe('createLaunchData', () => {
-		describe('when parameters of every time are defined', () => {
+		describe('when parameters of every type are defined', () => {
 			const setup = () => {
 				const schoolId: string = new ObjectId().toHexString();
 
@@ -435,7 +435,7 @@ describe('AbstractLaunchStrategy', () => {
 						contextExternalToolDO,
 					});
 
-				await expect(func).rejects.toThrow(ParameterNotImplementedLoggableException);
+				await expect(func).rejects.toThrow(ParameterTypeNotImplementedLoggableException);
 			});
 		});
 
@@ -480,7 +480,7 @@ describe('AbstractLaunchStrategy', () => {
 						contextExternalToolDO,
 					});
 
-				await expect(func).rejects.toThrow(ParameterNotImplementedLoggableException);
+				await expect(func).rejects.toThrow(ParameterTypeNotImplementedLoggableException);
 			});
 		});
 	});

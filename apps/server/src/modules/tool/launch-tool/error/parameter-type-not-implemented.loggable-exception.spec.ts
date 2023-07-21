@@ -1,10 +1,10 @@
 import { CustomParameterType } from '@shared/domain';
-import { ParameterNotImplementedLoggableException } from './parameter-not-implemented.loggable-exception';
+import { ParameterTypeNotImplementedLoggableException } from './parameter-type-not-implemented.loggable-exception';
 
 describe('ParameterNotImplementedLoggableException', () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const exception = new ParameterNotImplementedLoggableException(CustomParameterType.AUTO_SCHOOLID);
+			const exception = new ParameterTypeNotImplementedLoggableException(CustomParameterType.AUTO_SCHOOLID);
 
 			return {
 				exception,
@@ -17,7 +17,7 @@ describe('ParameterNotImplementedLoggableException', () => {
 			const result = exception.getLogMessage();
 
 			expect(result).toEqual({
-				type: 'PARAMETER_NOT_IMPLEMENTED',
+				type: 'PARAMETER_TYPE_NOT_IMPLEMENTED',
 				message: expect.any(String),
 				stack: expect.any(String),
 				data: {

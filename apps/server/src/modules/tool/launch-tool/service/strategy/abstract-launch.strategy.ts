@@ -16,7 +16,7 @@ import { CourseRepo } from '@shared/repo';
 import { SchoolService } from '@src/modules/school';
 import { URLSearchParams } from 'url';
 import { ToolContextType } from '../../../interface';
-import { MissingToolParameterValueLoggableException, ParameterNotImplementedLoggableException } from '../../error';
+import { MissingToolParameterValueLoggableException, ParameterTypeNotImplementedLoggableException } from '../../error';
 import { ToolLaunchMapper } from '../../mapper';
 import { LaunchRequestMethod, PropertyData, PropertyLocation, ToolLaunchData, ToolLaunchRequest } from '../../types';
 import { IToolLaunchParams } from './tool-launch-params.interface';
@@ -224,7 +224,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 					return course.name;
 				}
 
-				throw new ParameterNotImplementedLoggableException(
+				throw new ParameterTypeNotImplementedLoggableException(
 					`${customParameter.type}/${contextExternalToolDO.contextRef.type as string}`
 				);
 			}
@@ -241,7 +241,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 					: matchingParameterEntry?.value;
 			}
 			default: {
-				throw new ParameterNotImplementedLoggableException(customParameter.type);
+				throw new ParameterTypeNotImplementedLoggableException(customParameter.type);
 			}
 		}
 	}
