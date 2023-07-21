@@ -44,6 +44,11 @@ export class CommonToolValidationService {
 						`tool_param_default_required: The "${param.name}" is a global parameter and requires a default value.`
 					);
 				}
+				if (!this.isAutoParameterGlobal(param)) {
+					throw new ValidationError(
+						`tool_param_auto_requires_global: The "${param.name}" with type "${param.type}" must have the scope "global", since it is automatically filled.`
+					);
+				}
 				if (!this.isRegexCommentMandatoryAndFilled(param)) {
 					throw new ValidationError(
 						`tool_param_regexComment: The "${param.name}" parameter is missing a regex comment.`
@@ -55,6 +60,7 @@ export class CommonToolValidationService {
 
 	private isCustomParameterNameEmpty(customParameters: CustomParameterDO[]): boolean {
 		const isEmpty = customParameters.some((param: CustomParameterDO) => !param.name);
+
 		return isEmpty;
 	}
 
@@ -62,7 +68,9 @@ export class CommonToolValidationService {
 		if (!externalToolDO.name) {
 			return true;
 		}
+
 		const duplicate: ExternalToolDO | null = await this.externalToolService.findExternalToolByName(externalToolDO.name);
+
 		return duplicate == null || duplicate.id === externalToolDO.id;
 	}
 
@@ -98,6 +106,7 @@ export class CommonToolValidationService {
 			}
 			return true;
 		});
+
 		return isValid;
 	}
 
@@ -105,6 +114,7 @@ export class CommonToolValidationService {
 		if (customParameter.regex && !customParameter.regexComment) {
 			return false;
 		}
+
 		return true;
 	}
 
@@ -122,5 +132,13 @@ export class CommonToolValidationService {
 		}
 
 		return false;
+	}
+
+	private isAutoParameterGlobal(customParameter: CustomParameterDO): boolean {
+		if (!autoParameters.includes(customParameter.type)) {
+			return true;
+		}
+
+		return customParameter.scope === CustomParameterScope.GLOBAL;
 	}
 }
