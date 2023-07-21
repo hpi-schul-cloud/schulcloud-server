@@ -112,41 +112,42 @@ export class WSSharedDoc extends Doc {
 		) as URL;
 		this.isCallbackSet = !!this.CALLBACK_URL;
 
-		/**
-		 * @param {{ added: Array<number>, updated: Array<number>, removed: Array<number> }} changes
-		 * @param {WebSocket | null} conn Origin is the connection that made the change
-		 */
-		const awarenessChangeHandler = (
-			{ added, updated, removed }: { added: Array<number>; updated: Array<number>; removed: Array<number> },
-			conn: WebSocket | null
-		) => {
-			const changedClients = added.concat(updated, removed);
-			if (conn !== null) {
-				const connControlledIDs = this.conns.get(conn) as Set<number>;
-				if (connControlledIDs !== undefined) {
-					added.forEach((clientID) => {
-						connControlledIDs.add(clientID);
-					});
-					removed.forEach((clientID) => {
-						connControlledIDs.delete(clientID);
-					});
-				}
-			}
-			// broadcast awareness update
-			const encoder = encoding.createEncoder();
-			encoding.writeVarUint(encoder, WSMessageType.AWARENESS);
-			encoding.writeVarUint8Array(encoder, encodeAwarenessUpdate(this.awareness, changedClients));
-			const buff = encoding.toUint8Array(encoder);
-			this.conns.forEach((_, c) => {
-				send(this, c, buff);
-			});
-		};
-		this.awareness.on('update', awarenessChangeHandler);
+		this.awareness.on('update', this.awarenessChangeHandler);
 		this.on('update', updateHandler);
 		if (this.isCallbackSet) {
 			this.on('update', debounce(callbackHandler, CALLBACK_DEBOUNCE_WAIT, { maxWait: CALLBACK_DEBOUNCE_MAX_WAIT }));
 		}
 	}
+
+	/**
+	 * @param {{ added: Array<number>, updated: Array<number>, removed: Array<number> }} changes
+	 * @param {WebSocket | null} conn Origin is the connection that made the change
+	 */
+	awarenessChangeHandler = (
+		{ added, updated, removed }: { added: Array<number>; updated: Array<number>; removed: Array<number> },
+		conn: WebSocket | null
+	) => {
+		const changedClients = added.concat(updated, removed);
+		if (conn !== null) {
+			const connControlledIDs = this.conns.get(conn) as Set<number>;
+			if (connControlledIDs !== undefined) {
+				added.forEach((clientID) => {
+					connControlledIDs.add(clientID);
+				});
+				removed.forEach((clientID) => {
+					connControlledIDs.delete(clientID);
+				});
+			}
+		}
+		// broadcast awareness update
+		const encoder = encoding.createEncoder();
+		encoding.writeVarUint(encoder, WSMessageType.AWARENESS);
+		encoding.writeVarUint8Array(encoder, encodeAwarenessUpdate(this.awareness, changedClients));
+		const buff = encoding.toUint8Array(encoder);
+		this.conns.forEach((_, c) => {
+			send(this, c, buff);
+		});
+	};
 }
 
 /**
@@ -220,20 +221,26 @@ export const setupWSConnection = (ws: WebSocket, docName = 'GLOBAL') => {
 	// Check if connection is still alive
 	let pongReceived = true;
 	const pingInterval = setInterval(() => {
-		if (!pongReceived) {
-			if (doc.conns.has(ws)) {
-				closeConn(doc, ws);
-			}
-			clearInterval(pingInterval);
-		} else if (doc.conns.has(ws)) {
+		const hasConn = doc.conns.has(ws);
+
+		if (pongReceived) {
+			if (!hasConn) return;
 			pongReceived = false;
+
 			try {
 				ws.ping();
 			} catch (e) {
 				closeConn(doc, ws);
 				clearInterval(pingInterval);
 			}
+			return;
 		}
+
+		if (hasConn) {
+			closeConn(doc, ws);
+		}
+
+		clearInterval(pingInterval);
 	}, pingTimeout);
 	ws.on('close', () => {
 		closeConn(doc, ws);
