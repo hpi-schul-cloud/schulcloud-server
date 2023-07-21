@@ -25,6 +25,8 @@ import {
 	setupEntities,
 } from '@shared/testing';
 import { SchoolService } from '@src/modules/school';
+import { ToolContextType } from '../../../interface';
+import { MissingToolParameterValueLoggableException, ParameterNotImplementedLoggableException } from '../../error';
 import {
 	LaunchRequestMethod,
 	PropertyData,
@@ -167,7 +169,7 @@ describe('AbstractLaunchStrategy', () => {
 				// School External Tool
 				const schoolParameterEntry: CustomParameterEntryDO = new CustomParameterEntryDO({
 					name: schoolCustomParameter.name,
-					value: 'anyValue1',
+					value: 'true',
 				});
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
 					parameters: [schoolParameterEntry],
@@ -346,6 +348,139 @@ describe('AbstractLaunchStrategy', () => {
 						},
 					],
 				});
+			});
+		});
+
+		describe('when a parameter has no value, but is required', () => {
+			const setup = () => {
+				const autoSchoolNumberCustomParameter = customParameterDOFactory.build({
+					scope: CustomParameterScope.GLOBAL,
+					location: CustomParameterLocation.BODY,
+					name: 'autoSchoolNumberParam',
+					type: CustomParameterType.AUTO_SCHOOLNUMBER,
+				});
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
+					parameters: [autoSchoolNumberCustomParameter],
+				});
+
+				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+					parameters: [],
+				});
+
+				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build({
+					parameters: [],
+				});
+
+				const school: SchoolDO = schoolDOFactory.buildWithId({
+					officialSchoolNumber: undefined,
+				});
+
+				schoolService.getSchoolById.mockResolvedValue(school);
+
+				return {
+					externalToolDO,
+					schoolExternalToolDO,
+					contextExternalToolDO,
+				};
+			};
+
+			it('should throw a MissingToolParameterValueLoggableException', async () => {
+				const { externalToolDO, schoolExternalToolDO, contextExternalToolDO } = setup();
+
+				const func = async () =>
+					launchStrategy.createLaunchData('userId', {
+						externalToolDO,
+						schoolExternalToolDO,
+						contextExternalToolDO,
+					});
+
+				await expect(func).rejects.toThrow(MissingToolParameterValueLoggableException);
+			});
+		});
+
+		describe('when a parameter type is not implemented ', () => {
+			const setup = () => {
+				const customParameterWithUnknownType = customParameterDOFactory.build({
+					scope: CustomParameterScope.GLOBAL,
+					location: CustomParameterLocation.BODY,
+					name: 'unknownTypeParam',
+					type: 'unknownType' as unknown as CustomParameterType,
+				});
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
+					parameters: [customParameterWithUnknownType],
+				});
+
+				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+					parameters: [],
+				});
+
+				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build({
+					parameters: [],
+				});
+
+				return {
+					externalToolDO,
+					schoolExternalToolDO,
+					contextExternalToolDO,
+				};
+			};
+
+			it('should throw a ParameterNotImplementedLoggableException', async () => {
+				const { externalToolDO, schoolExternalToolDO, contextExternalToolDO } = setup();
+
+				const func = async () =>
+					launchStrategy.createLaunchData('userId', {
+						externalToolDO,
+						schoolExternalToolDO,
+						contextExternalToolDO,
+					});
+
+				await expect(func).rejects.toThrow(ParameterNotImplementedLoggableException);
+			});
+		});
+
+		describe('when a lookup for a context name is not implemented', () => {
+			const setup = () => {
+				const customParameterWithUnknownType = customParameterDOFactory.build({
+					scope: CustomParameterScope.GLOBAL,
+					location: CustomParameterLocation.BODY,
+					name: 'autoContextNameParam',
+					type: CustomParameterType.AUTO_CONTEXTNAME,
+				});
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
+					parameters: [customParameterWithUnknownType],
+				});
+
+				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+					parameters: [],
+				});
+
+				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build({
+					contextRef: {
+						id: new ObjectId().toHexString(),
+						type: 'unknownContext' as unknown as ToolContextType,
+					},
+					parameters: [],
+				});
+
+				return {
+					externalToolDO,
+					schoolExternalToolDO,
+					contextExternalToolDO,
+				};
+			};
+
+			it('should throw a ParameterNotImplementedLoggableException', async () => {
+				const { externalToolDO, schoolExternalToolDO, contextExternalToolDO } = setup();
+
+				const func = async () =>
+					launchStrategy.createLaunchData('userId', {
+						externalToolDO,
+						schoolExternalToolDO,
+						contextExternalToolDO,
+					});
+
+				await expect(func).rejects.toThrow(ParameterNotImplementedLoggableException);
 			});
 		});
 	});
