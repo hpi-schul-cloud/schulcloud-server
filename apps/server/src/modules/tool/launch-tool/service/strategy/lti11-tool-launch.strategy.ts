@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, LtiPrivacyPermission, PseudonymDO, RoleName, UserDO } from '@shared/domain';
+import { EntityId, LtiPrivacyPermission, Pseudonym, RoleName, UserDO } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
 import { PseudonymService } from '@src/modules/pseudonym';
 import { UserService } from '@src/modules/user';
@@ -31,8 +31,6 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		const { config } = data.externalToolDO;
 		const contextId: EntityId = data.contextExternalToolDO.contextRef.id;
 
-		const toolId: EntityId = data.externalToolDO.id as EntityId;
-
 		if (!this.externalToolService.isLti11Config(config)) {
 			throw new UnprocessableEntityException(
 				`Unable to build LTI 1.1 launch data. Tool configuration is of type ${config.type}. Expected "lti11"`
@@ -62,7 +60,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			}),
 			new PropertyData({
 				name: 'launch_presentation_locale',
-				value: 'en',
+				value: 'de-DE',
 				location: PropertyLocation.BODY,
 			}),
 			new PropertyData({
@@ -95,7 +93,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		}
 
 		if (config.privacy_permission === LtiPrivacyPermission.PSEUDONYMOUS) {
-			const pseudonym: PseudonymDO = await this.pseudonymService.findOrCreatePseudonym(userId, toolId);
+			const pseudonym: Pseudonym = await this.pseudonymService.findOrCreatePseudonym(user, data.externalToolDO);
 
 			additionalProperties.push(
 				new PropertyData({

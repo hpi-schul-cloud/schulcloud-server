@@ -1,11 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalToolDO, PseudonymDO, Team, UserDO } from '@shared/domain';
+import { ExternalToolDO, Pseudonym, Team, UserDO } from '@shared/domain';
 import { TeamsRepo } from '@shared/repo';
-import { externalToolDOFactory, setupEntities, userDoFactory } from '@shared/testing';
-import { pseudonymDOFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
+import { externalToolDOFactory, setupEntities, userDoFactory, pseudonymFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { IdToken } from '@src/modules/oauth-provider/interface/id-token';
 import { OauthScope } from '@src/modules/oauth-provider/interface/oauth-scope.enum';
@@ -13,6 +11,7 @@ import { IdTokenService } from '@src/modules/oauth-provider/service/id-token.ser
 import { PseudonymService } from '@src/modules/pseudonym/service';
 import { UserService } from '@src/modules/user/service/user.service';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
+import { IdTokenCreationLoggableException } from '../error/id-token-creation-exception.loggable';
 import resetAllMocks = jest.resetAllMocks;
 
 describe('IdTokenService', () => {
@@ -85,12 +84,12 @@ describe('IdTokenService', () => {
 
 				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
 
-				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId({ pseudonym: 'pseudonym' });
+				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({ pseudonym: 'pseudonym' });
 
 				userService.findById.mockResolvedValue(user);
 				userService.getDisplayName.mockResolvedValue(displayName);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
-				pseudonymService.findByUserIdAndToolId.mockResolvedValue(pseudonym);
+				pseudonymService.findByUserAndTool.mockResolvedValue(pseudonym);
 
 				return {
 					user,
@@ -123,13 +122,13 @@ describe('IdTokenService', () => {
 
 				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
 
-				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId({ pseudonym: 'pseudonym' });
+				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({ pseudonym: 'pseudonym' });
 
 				teamsRepo.findByUserId.mockResolvedValue([team]);
 				userService.findById.mockResolvedValue(user);
 				userService.getDisplayName.mockResolvedValue(displayName);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
-				pseudonymService.findByUserIdAndToolId.mockResolvedValue(pseudonym);
+				pseudonymService.findByUserAndTool.mockResolvedValue(pseudonym);
 
 				return {
 					team,
@@ -167,12 +166,12 @@ describe('IdTokenService', () => {
 
 				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
 
-				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId({ pseudonym: 'pseudonym' });
+				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({ pseudonym: 'pseudonym' });
 
 				userService.findById.mockResolvedValue(user);
 				userService.getDisplayName.mockResolvedValue(displayName);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
-				pseudonymService.findByUserIdAndToolId.mockResolvedValue(pseudonym);
+				pseudonymService.findByUserAndTool.mockResolvedValue(pseudonym);
 
 				return {
 					user,
@@ -204,12 +203,12 @@ describe('IdTokenService', () => {
 
 				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
 
-				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId({ pseudonym: 'pseudonym' });
+				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({ pseudonym: 'pseudonym' });
 
 				userService.findById.mockResolvedValue(user);
 				userService.getDisplayName.mockResolvedValue(displayName);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
-				pseudonymService.findByUserIdAndToolId.mockResolvedValue(pseudonym);
+				pseudonymService.findByUserAndTool.mockResolvedValue(pseudonym);
 
 				return {
 					user,
@@ -242,7 +241,7 @@ describe('IdTokenService', () => {
 
 				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config().build({ id: undefined });
 
-				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId({ pseudonym: 'pseudonym' });
+				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({ pseudonym: 'pseudonym' });
 
 				userService.findById.mockResolvedValue(user);
 				userService.getDisplayName.mockResolvedValue(displayName);
@@ -256,16 +255,12 @@ describe('IdTokenService', () => {
 				};
 			};
 
-			it('should throw an InternalServerErrorException', async () => {
-				setup();
+			it('should throw an IdTokenCreationLoggableException', async () => {
+				const { user } = setup();
 
 				const func = async () => service.createIdToken('userId', [OauthScope.PROFILE], 'clientId');
 
-				await expect(func).rejects.toThrow(
-					new InternalServerErrorException(
-						'Something went wrong for id token creation. Tool could not be found for userId: userId and clientId: clientId'
-					)
-				);
+				await expect(func).rejects.toThrow(new IdTokenCreationLoggableException('clientId', user.id));
 			});
 		});
 	});
