@@ -87,12 +87,16 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#findByUserIdAndToolId" >findByUserIdAndToolId</a>
+                                <a href="#findByUserAndTool" >findByUserAndTool</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findOrCreatePseudonym" >findOrCreatePseudonym</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getRepository" >getRepository</a>
                             </li>
                         </ul>
                     </td>
@@ -112,12 +116,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(pseudonymRepo: <a href="../injectables/PseudonymsRepo.html" target="_self">PseudonymsRepo</a>)</code>
+<code>constructor(toolFeatures: <a href="../interfaces/IToolFeatures.html" target="_self">IToolFeatures</a>, pseudonymRepo: <a href="../injectables/PseudonymsRepo.html" target="_self">PseudonymsRepo</a>, externalToolPseudonymRepo: <a href="../injectables/ExternalToolPseudonymRepo.html" target="_self">ExternalToolPseudonymRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -135,10 +139,34 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
+                                                        <td>toolFeatures</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/IToolFeatures.html" target="_self" >IToolFeatures</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
                                                         <td>pseudonymRepo</td>
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/PseudonymsRepo.html" target="_self" >PseudonymsRepo</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>externalToolPseudonymRepo</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ExternalToolPseudonymRepo.html" target="_self" >ExternalToolPseudonymRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -164,103 +192,19 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="findByUserIdAndToolId"></a>
+                    <a name="findByUserAndTool"></a>
                     <span class="name">
                         <span class="modifier">Public</span>
                         <span class="modifier">Async</span>
-                        <span ><b>findByUserIdAndToolId</b></span>
-                        <a href="#findByUserIdAndToolId"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>findByUserAndTool</b></span>
+                        <a href="#findByUserAndTool"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findByUserIdAndToolId(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, toolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="10"
-                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:10</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>userId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>toolId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/Pseudonym.html" target="_self" >Promise&lt;PseudonymDO&gt;</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="findOrCreatePseudonym"></a>
-                    <span class="name">
-                        <span class="modifier">Public</span>
-                        <span class="modifier">Async</span>
-                        <span ><b>findOrCreatePseudonym</b></span>
-                        <a href="#findOrCreatePseudonym"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findOrCreatePseudonym(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, toolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>findByUserAndTool(user: <a href="../classes/UserDO.html" target="_self">UserDO</a>, tool: <a href="../undefineds/ExternalTool.html" target="_self">ExternalToolDO | LtiToolDO</a>)</code>
                 </td>
             </tr>
 
@@ -289,9 +233,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>userId</td>
+                                    <td>user</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                <code><a href="../classes/UserDO.html" target="_self" >UserDO</a></code>
                                     </td>
 
                                     <td>
@@ -301,9 +245,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>toolId</td>
+                                    <td>tool</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#ExternalTool" target="_self" >ExternalToolDO | LtiToolDO</a></code>
                                     </td>
 
                                     <td>
@@ -318,7 +262,162 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/Pseudonym.html" target="_self" >Promise&lt;PseudonymDO&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/Pseudonym.html" target="_self" >Promise&lt;Pseudonym&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findOrCreatePseudonym"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>findOrCreatePseudonym</b></span>
+                        <a href="#findOrCreatePseudonym"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findOrCreatePseudonym(user: <a href="../classes/UserDO.html" target="_self">UserDO</a>, tool: <a href="../undefineds/ExternalTool.html" target="_self">ExternalToolDO | LtiToolDO</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="26"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:26</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>user</td>
+                                    <td>
+                                                <code><a href="../classes/UserDO.html" target="_self" >UserDO</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>tool</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#ExternalTool" target="_self" >ExternalToolDO | LtiToolDO</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/Pseudonym.html" target="_self" >Promise&lt;Pseudonym&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getRepository"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>getRepository</b></span>
+                        <a href="#getRepository"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getRepository(tool: <a href="../undefineds/ExternalTool.html" target="_self">ExternalToolDO | LtiToolDO</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="50"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:50</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>tool</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#ExternalTool" target="_self" >ExternalToolDO | LtiToolDO</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/Pseudonym.html" target="_self" >PseudonymsRepo | ExternalToolPseudonymRepo</a></code>
 
                     </div>
                     <div class="io-description">
@@ -334,35 +433,60 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId, PseudonymDO } from &#x27;@shared/domain&#x27;;
-import { PseudonymsRepo } from &#x27;@shared/repo&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
+import { ExternalToolDO, LtiToolDO, Pseudonym, UserDO } from &#x27;@shared/domain&#x27;;
 import { v4 as uuidv4 } from &#x27;uuid&#x27;;
+import { IToolFeatures, ToolFeatures } from &#x27;@src/modules/tool/tool-config&#x27;;
+import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+import { ExternalToolPseudonymRepo, PseudonymsRepo } from &#x27;../repo&#x27;;
 
 @Injectable()
 export class PseudonymService {
-	constructor(private readonly pseudonymRepo: PseudonymsRepo) {}
+	constructor(
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
+		private readonly pseudonymRepo: PseudonymsRepo,
+		private readonly externalToolPseudonymRepo: ExternalToolPseudonymRepo
+	) {}
 
-	public async findByUserIdAndToolId(userId: EntityId, toolId: EntityId): Promise&lt;PseudonymDO&gt; {
-		const pseudonymPromise: Promise&lt;PseudonymDO&gt; &#x3D; this.pseudonymRepo.findByUserIdAndToolIdOrFail(userId, toolId);
+	public async findByUserAndTool(user: UserDO, tool: ExternalToolDO | LtiToolDO): Promise&lt;Pseudonym&gt; {
+		if (!user.id || !tool.id) {
+			throw new InternalServerErrorException(&#x27;User or tool id is missing&#x27;);
+		}
+
+		const pseudonymPromise: Promise&lt;Pseudonym&gt; &#x3D; this.getRepository(tool).findByUserIdAndToolIdOrFail(user.id, tool.id);
 
 		return pseudonymPromise;
 	}
 
-	public async findOrCreatePseudonym(userId: EntityId, toolId: EntityId): Promise&lt;PseudonymDO&gt; {
-		let pseudonym: PseudonymDO | null &#x3D; await this.pseudonymRepo.findByUserIdAndToolId(userId, toolId);
+	public async findOrCreatePseudonym(user: UserDO, tool: ExternalToolDO | LtiToolDO): Promise&lt;Pseudonym&gt; {
+		if (!user.id || !tool.id) {
+			throw new InternalServerErrorException(&#x27;User or tool id is missing&#x27;);
+		}
 
+		const repository: PseudonymsRepo | ExternalToolPseudonymRepo &#x3D; this.getRepository(tool);
+
+		let pseudonym: Pseudonym | null &#x3D; await repository.findByUserIdAndToolId(user.id, tool.id);
 		if (!pseudonym) {
-			pseudonym &#x3D; new PseudonymDO({
+			pseudonym &#x3D; new Pseudonym({
+				id: new ObjectId().toHexString(),
 				pseudonym: uuidv4(),
-				userId,
-				toolId,
+				userId: user.id,
+				toolId: tool.id,
+				createdAt: new Date(),
+				updatedAt: new Date(),
 			});
 
-			pseudonym &#x3D; await this.pseudonymRepo.save(pseudonym);
+			pseudonym &#x3D; await repository.createOrUpdate(pseudonym);
 		}
 
 		return pseudonym;
+	}
+
+	private getRepository(tool: ExternalToolDO | LtiToolDO): PseudonymsRepo | ExternalToolPseudonymRepo {
+		if (this.toolFeatures.ctlToolsTabEnabled &amp;&amp; tool instanceof ExternalToolDO) {
+			return this.externalToolPseudonymRepo;
+		}
+		return this.pseudonymRepo;
 	}
 }
 </code></pre>

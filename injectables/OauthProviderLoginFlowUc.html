@@ -124,12 +124,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(oauthProviderService: <a href="../classes/OauthProviderService.html" target="_self">OauthProviderService</a>, oauthProviderLoginFlowService: <a href="../injectables/OauthProviderLoginFlowService.html" target="_self">OauthProviderLoginFlowService</a>, pseudonymService: <a href="../injectables/PseudonymService.html" target="_self">PseudonymService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>)</code>
+<code>constructor(oauthProviderService: <a href="../classes/OauthProviderService.html" target="_self">OauthProviderService</a>, oauthProviderLoginFlowService: <a href="../injectables/OauthProviderLoginFlowService.html" target="_self">OauthProviderLoginFlowService</a>, pseudonymService: <a href="../injectables/PseudonymService.html" target="_self">PseudonymService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:18</a></div>
                             </td>
                         </tr>
 
@@ -194,6 +194,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>userService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/UserService.html" target="_self" >UserService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -231,8 +243,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="45"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:45</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="47"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:47</a></div>
                 </td>
             </tr>
 
@@ -326,8 +338,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="25"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:25</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="27"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:27</a></div>
                 </td>
             </tr>
 
@@ -397,8 +409,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="30"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:30</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="32"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:32</a></div>
                 </td>
             </tr>
 
@@ -505,8 +517,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="102"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:102</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="105"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:105</a></div>
                 </td>
             </tr>
 
@@ -588,8 +600,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="90"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:90</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="93"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:93</a></div>
                 </td>
             </tr>
 
@@ -644,7 +656,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, InternalServerErrorException, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
-import { ExternalToolDO, Oauth2ToolConfigDO, Permission, PseudonymDO, User } from &#x27;@shared/domain&#x27;;
+import { ExternalToolDO, Oauth2ToolConfigDO, Permission, Pseudonym, User, UserDO } from &#x27;@shared/domain&#x27;;
 import { LtiToolDO } from &#x27;@shared/domain/domainobject/ltitool.do&#x27;;
 import { OauthProviderService } from &#x27;@shared/infra/oauth-provider&#x27;;
 import {
@@ -656,6 +668,7 @@ import { AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
 import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from &#x27;@src/modules/oauth-provider/controller/dto&#x27;;
 import { OauthProviderRequestMapper } from &#x27;@src/modules/oauth-provider/mapper/oauth-provider-request.mapper&#x27;;
 import { PseudonymService } from &#x27;@src/modules/pseudonym/service&#x27;;
+import { UserService } from &#x27;@src/modules/user&#x27;;
 import { OauthProviderLoginFlowService } from &#x27;../service/oauth-provider.login-flow.service&#x27;;
 
 @Injectable()
@@ -664,7 +677,8 @@ export class OauthProviderLoginFlowUc {
 		private readonly oauthProviderService: OauthProviderService,
 		private readonly oauthProviderLoginFlowService: OauthProviderLoginFlowService,
 		private readonly pseudonymService: PseudonymService,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly userService: UserService
 	) {}
 
 	async getLoginRequest(challenge: string): Promise&lt;ProviderLoginResponse&gt; {
@@ -711,7 +725,8 @@ export class OauthProviderLoginFlowUc {
 			this.authorizationService.checkAllPermissions(user, [Permission.NEXTCLOUD_USER]);
 		}
 
-		const pseudonym: PseudonymDO &#x3D; await this.pseudonymService.findOrCreatePseudonym(currentUserId, tool.id);
+		const user: UserDO &#x3D; await this.userService.findById(currentUserId);
+		const pseudonym: Pseudonym &#x3D; await this.pseudonymService.findOrCreatePseudonym(user, tool);
 
 		const skipConsent: boolean &#x3D; this.shouldSkipConsent(tool);
 

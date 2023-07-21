@@ -369,7 +369,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:121</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:119</a></code>
 </div>
                 </td>
             </tr>
@@ -459,7 +459,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:146</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:144</a></code>
 </div>
                 </td>
             </tr>
@@ -1478,7 +1478,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, InternalServerErrorException, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
-import { EntityId, LtiPrivacyPermission, PseudonymDO, RoleName, UserDO } from &#x27;@shared/domain&#x27;;
+import { EntityId, LtiPrivacyPermission, Pseudonym, RoleName, UserDO } from &#x27;@shared/domain&#x27;;
 import { RoleReference } from &#x27;@shared/domain/domainobject&#x27;;
 import { PseudonymService } from &#x27;@src/modules/pseudonym&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
@@ -1510,8 +1510,6 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		const { config } &#x3D; data.externalToolDO;
 		const contextId: EntityId &#x3D; data.contextExternalToolDO.contextRef.id;
 
-		const toolId: EntityId &#x3D; data.externalToolDO.id as EntityId;
-
 		if (!this.externalToolService.isLti11Config(config)) {
 			throw new UnprocessableEntityException(
 				&#x60;Unable to build LTI 1.1 launch data. Tool configuration is of type ${config.type}. Expected &quot;lti11&quot;&#x60;
@@ -1541,7 +1539,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			}),
 			new PropertyData({
 				name: &#x27;launch_presentation_locale&#x27;,
-				value: &#x27;en&#x27;,
+				value: &#x27;de-DE&#x27;,
 				location: PropertyLocation.BODY,
 			}),
 			new PropertyData({
@@ -1574,7 +1572,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		}
 
 		if (config.privacy_permission &#x3D;&#x3D;&#x3D; LtiPrivacyPermission.PSEUDONYMOUS) {
-			const pseudonym: PseudonymDO &#x3D; await this.pseudonymService.findOrCreatePseudonym(userId, toolId);
+			const pseudonym: Pseudonym &#x3D; await this.pseudonymService.findOrCreatePseudonym(user, data.externalToolDO);
 
 			additionalProperties.push(
 				new PropertyData({

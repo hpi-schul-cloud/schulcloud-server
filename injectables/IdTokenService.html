@@ -140,7 +140,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:15</a></div>
                             </td>
                         </tr>
 
@@ -241,8 +241,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="47"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:47</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="48"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:48</a></div>
                 </td>
             </tr>
 
@@ -312,8 +312,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="26"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:26</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="27"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:27</a></div>
                 </td>
             </tr>
 
@@ -401,15 +401,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createIframeSubject(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, clientId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>createIframeSubject(user: <a href="../classes/UserDO.html" target="_self">UserDO</a>, clientId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="57"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:57</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="58"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:58</a></div>
                 </td>
             </tr>
 
@@ -430,9 +430,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>userId</td>
+                                    <td>user</td>
                                     <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                <code><a href="../classes/UserDO.html" target="_self" >UserDO</a></code>
                                     </td>
 
                                     <td>
@@ -496,7 +496,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -523,7 +523,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -537,13 +537,14 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
-import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
-import { ExternalToolDO, LtiToolDO, PseudonymDO, Team, UserDO } from &#x27;@shared/domain&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { ExternalToolDO, LtiToolDO, Pseudonym, Team, UserDO } from &#x27;@shared/domain&#x27;;
 import { TeamsRepo } from &#x27;@shared/repo&#x27;;
 import { PseudonymService } from &#x27;@src/modules/pseudonym&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
 import { GroupNameIdTuple, IdToken, OauthScope } from &#x27;../interface&#x27;;
 import { OauthProviderLoginFlowService } from &#x27;./oauth-provider.login-flow.service&#x27;;
+import { IdTokenCreationLoggableException } from &#x27;../error/id-token-creation-exception.loggable&#x27;;
 
 @Injectable()
 export class IdTokenService {
@@ -569,7 +570,7 @@ export class IdTokenService {
 
 		const user: UserDO &#x3D; await this.userService.findById(userId);
 		const name: string &#x3D; await this.userService.getDisplayName(user);
-		const iframe: string | undefined &#x3D; await this.createIframeSubject(userId, clientId);
+		const iframe: string | undefined &#x3D; await this.createIframeSubject(user, clientId);
 		const groups: GroupNameIdTuple[] &#x3D; this.buildGroupsClaim(teams);
 
 		return {
@@ -592,18 +593,16 @@ export class IdTokenService {
 	}
 
 	// TODO N21-335 How we can refactor the iframe in the id token?
-	private async createIframeSubject(userId: string, clientId: string): Promise&lt;string&gt; {
+	private async createIframeSubject(user: UserDO, clientId: string): Promise&lt;string&gt; {
 		const tool: ExternalToolDO | LtiToolDO &#x3D; await this.oauthProviderLoginFlowService.findToolByClientId(clientId);
 
 		if (!tool.id) {
-			throw new InternalServerErrorException(
-				&#x60;Something went wrong for id token creation. Tool could not be found for userId: ${userId} and clientId: ${clientId}&#x60;
-			);
+			throw new IdTokenCreationLoggableException(clientId, user.id);
 		}
 
-		const pseudonymDO: PseudonymDO &#x3D; await this.pseudonymService.findByUserIdAndToolId(userId, tool.id);
+		const pseudonym: Pseudonym &#x3D; await this.pseudonymService.findByUserAndTool(user, tool);
 
-		return &#x60;&lt;iframe src&#x3D;&quot;${this.host}/oauth2/username/${pseudonymDO.pseudonym}&quot; ${this.iFrameProperties}&gt;&lt;/iframe&gt;&#x60;;
+		return &#x60;&lt;iframe src&#x3D;&quot;${this.host}/oauth2/username/${pseudonym.pseudonym}&quot; ${this.iFrameProperties}&gt;&lt;/iframe&gt;&#x60;;
 	}
 }
 </code></pre>
