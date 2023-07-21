@@ -1,3 +1,5 @@
+import { SchoolDO } from '@shared/domain';
+import { schoolDOFactory } from '@shared/testing';
 import { SchoolNumberDuplicateLoggableException } from './school-number-duplicate.loggable-exception';
 
 describe('SchoolNumberDuplicateLoggableException', () => {
@@ -5,7 +7,9 @@ describe('SchoolNumberDuplicateLoggableException', () => {
 		const setup = () => {
 			const officialSchoolNumber = '1234';
 
-			const exception = new SchoolNumberDuplicateLoggableException(officialSchoolNumber);
+			const school: SchoolDO = schoolDOFactory.buildWithId({ officialSchoolNumber });
+
+			const exception = new SchoolNumberDuplicateLoggableException(school);
 
 			return {
 				exception,

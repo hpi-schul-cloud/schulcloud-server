@@ -1,8 +1,8 @@
-import { NotImplementedException } from '@nestjs/common';
+import { UnprocessableEntityException } from '@nestjs/common';
 import { SchoolDO } from '@shared/domain';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
-export class SchoolNumberDuplicateLoggableException extends NotImplementedException implements Loggable {
+export class SchoolNumberDuplicateLoggableException extends UnprocessableEntityException implements Loggable {
 	constructor(private readonly school: SchoolDO) {
 		super();
 	}
