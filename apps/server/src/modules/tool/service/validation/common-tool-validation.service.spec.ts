@@ -169,6 +169,8 @@ describe('CommonToolValidationService', () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory
 					.withCustomParameters(1, { regex: '.', scope: CustomParameterScope.SCHOOL })
 					.build();
+				externalToolService.findExternalToolByName.mockResolvedValue(null);
+
 				const result: Promise<void> = service.validateCommon(externalToolDO);
 
 				await expect(result).rejects.toThrow(
@@ -190,6 +192,8 @@ describe('CommonToolValidationService', () => {
 							default: 'defaultValue',
 						})
 						.build();
+
+					externalToolService.findExternalToolByName.mockResolvedValue(null);
 
 					return {
 						externalToolDO,
@@ -213,6 +217,8 @@ describe('CommonToolValidationService', () => {
 							default: undefined,
 						})
 						.build();
+
+					externalToolService.findExternalToolByName.mockResolvedValue(null);
 
 					return {
 						externalToolDO,
@@ -242,6 +248,8 @@ describe('CommonToolValidationService', () => {
 							default: '',
 						})
 						.build();
+
+					externalToolService.findExternalToolByName.mockResolvedValue(null);
 
 					return {
 						externalToolDO,
@@ -273,6 +281,8 @@ describe('CommonToolValidationService', () => {
 						})
 						.build();
 
+					externalToolService.findExternalToolByName.mockResolvedValue(null);
+
 					return {
 						externalToolDO,
 					};
@@ -285,6 +295,36 @@ describe('CommonToolValidationService', () => {
 
 					await expect(result).resolves.not.toThrow();
 				});
+			});
+		});
+
+		describe('when a auto parameter is not in scope global', () => {
+			const setup = () => {
+				const parameter: CustomParameterDO = customParameterDOFactory.build({
+					type: CustomParameterType.AUTO_SCHOOLID,
+					scope: CustomParameterScope.SCHOOL,
+				});
+
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({ parameters: [parameter] });
+
+				externalToolService.findExternalToolByName.mockResolvedValue(null);
+
+				return {
+					externalToolDO,
+					parameter,
+				};
+			};
+
+			it('should throw exception', async () => {
+				const { externalToolDO, parameter } = setup();
+
+				const result: Promise<void> = service.validateCommon(externalToolDO);
+
+				await expect(result).rejects.toThrow(
+					new ValidationError(
+						`tool_param_auto_requires_global: The "${parameter.name}" with type "${parameter.type}" must have the scope "global", since it is automatically filled.`
+					)
+				);
 			});
 		});
 	});
