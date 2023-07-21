@@ -1200,6 +1200,11 @@
 			"default": true,
 			"description": "Enables old LTI-tool tab in a course"
 		},
+		"FEATURE_SHOW_OUTDATED_USERS":{
+			"type": "boolean",
+			"default": false,
+			"description": "Shows oudated users"
+		},
 		"TSP_SCHOOL_SYNCER": {
 			"type": "object",
 			"description": "TSP School Syncer properties",
