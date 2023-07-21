@@ -34,4 +34,10 @@ export class FileRecordScope extends Scope<FileRecord> {
 
 		return this;
 	}
+
+	byName(fileName: string): FileRecordScope {
+		this.addQuery({ name: fileName });
+
+		return this;
+	}
 }

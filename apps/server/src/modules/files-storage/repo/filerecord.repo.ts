@@ -17,6 +17,13 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		return fileRecord;
 	}
 
+	async findOneByName(name: string): Promise<FileRecord> {
+		const scope = new FileRecordScope().byName(name).byMarkedForDelete(false);
+		const fileRecord = await this.findOneOrFail(scope);
+
+		return fileRecord;
+	}
+
 	async findOneByIdMarkedForDelete(id: EntityId): Promise<FileRecord> {
 		const scope = new FileRecordScope().byFileRecordId(id).byMarkedForDelete(true);
 		const fileRecord = await this.findOneOrFail(scope);

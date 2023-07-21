@@ -243,4 +243,14 @@ export class FilesStorageUC {
 
 		return countedFileRecords;
 	}
+
+	// preview
+	public async preview(userId: EntityId, params: DownloadFileParams, hash: string): Promise<FileRecord> {
+		// check if respective preview file does exist
+		const renameParms = new RenameFileParams();
+		renameParms.fileName = `/previews/${hash}`;
+		const fileRecord = await this.filesStorageService.getFileRecordByName(renameParms);
+
+		return fileRecord;
+	}
 }

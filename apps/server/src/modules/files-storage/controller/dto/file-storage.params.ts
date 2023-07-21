@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain';
-import { Allow, IsEnum, IsMongoId, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import { Allow, IsEnum, IsInt, IsMongoId, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 import { FileRecordParentType } from '../../entity';
 
 export class FileRecordParams {
@@ -101,4 +101,18 @@ export class CopyFilesOfParentPayload {
 
 	@ValidateNested()
 	target!: FileRecordParams;
+}
+
+export class PreviewParams {
+	@ApiProperty()
+	@IsInt()
+	width!: number;
+
+	@ApiProperty()
+	@IsInt()
+	height!: number;
+
+	@ApiProperty()
+	@IsInt()
+	ratio!: number;
 }

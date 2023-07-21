@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import {
 	BadRequestException,
 	Body,
@@ -38,6 +39,7 @@ import {
 	FileRecordParams,
 	FileRecordResponse,
 	FileUrlParams,
+	PreviewParams,
 	RenameFileParams,
 	SingleFileParams,
 } from './dto';
@@ -278,5 +280,29 @@ export class FilesStorageController {
 		const response = await this.filesStorageUC.copyOneFile(currentUser.userId, params, copyFileParam);
 
 		return response;
+	}
+
+	@ApiOperation({ summary: 'Get a preview' })
+	@ApiResponse({ status: 200, type: FileRecordResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@Get('/preview/:fileRecordId/:fileName')
+	async preview(
+		@Param() params: DownloadFileParams,
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() preview: PreviewParams
+	): Promise<string> {
+		await Promise.resolve();
+
+		const hash = crypto
+			.createHash('md5')
+			.update(
+				`${params.fileRecordId}/${params.fileName}?width=${preview.width}&height=${preview.height}&ratio=${preview.ratio}`
+			)
+			.digest('hex');
+
+		const response = await this.filesStorageUC.preview(currentUser.userId, params, hash);
+
+		return hash;
 	}
 }
