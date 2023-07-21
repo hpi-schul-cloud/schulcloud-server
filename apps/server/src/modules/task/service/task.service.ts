@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, forwardRef, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
 import {
 	Counted,
@@ -21,6 +21,7 @@ export class TaskService {
 	constructor(
 		private readonly taskRepo: TaskRepo,
 		private readonly userRepo: UserRepo,
+		@Inject(forwardRef(() => AuthorizationService))
 		private readonly authorizationService: AuthorizationService,
 		private readonly courseRepo: CourseRepo,
 		private readonly lessonRepo: LessonRepo,
