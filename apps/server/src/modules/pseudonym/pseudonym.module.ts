@@ -1,10 +1,12 @@
-import { Module } from '@nestjs/common';
-import { PseudonymsRepo } from '@shared/repo';
+import { forwardRef, Module } from '@nestjs/common';
 import { LegacyLogger } from '@src/core/logger';
 import { PseudonymService } from './service';
+import { ExternalToolPseudonymRepo, PseudonymsRepo } from './repo';
+import { ToolModule } from '../tool';
 
 @Module({
-	providers: [PseudonymService, PseudonymsRepo, LegacyLogger],
+	imports: [forwardRef(() => ToolModule)],
+	providers: [PseudonymService, PseudonymsRepo, ExternalToolPseudonymRepo, LegacyLogger],
 	exports: [PseudonymService],
 })
 export class PseudonymModule {}

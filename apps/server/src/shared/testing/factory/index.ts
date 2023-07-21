@@ -30,3 +30,4 @@ export * from './domainobject';
 export * from './federal-state.factory';
 export * from './user-login-migration.factory';
 export * from './base.factory';
+export * from './external-tool-pseudonym.factory';
