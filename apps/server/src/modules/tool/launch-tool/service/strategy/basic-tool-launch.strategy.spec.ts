@@ -1,14 +1,37 @@
+import { createMock } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
 import { ContextExternalToolDO, ExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
+import { CourseRepo } from '@shared/repo';
 import { contextExternalToolDOFactory, externalToolDOFactory, schoolExternalToolDOFactory } from '@shared/testing';
+import { SchoolService } from '@src/modules/school';
 import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
 import { BasicToolLaunchStrategy } from './basic-tool-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
 
 describe('BasicToolLaunchStrategy', () => {
+	let module: TestingModule;
 	let basicToolLaunchStrategy: BasicToolLaunchStrategy;
 
-	beforeEach(() => {
-		basicToolLaunchStrategy = new BasicToolLaunchStrategy();
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
+			providers: [
+				BasicToolLaunchStrategy,
+				{
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
+				},
+				{
+					provide: CourseRepo,
+					useValue: createMock<CourseRepo>(),
+				},
+			],
+		}).compile();
+
+		basicToolLaunchStrategy = module.get(BasicToolLaunchStrategy);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe('buildToolLaunchRequestPayload', () => {
