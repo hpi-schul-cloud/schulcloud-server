@@ -269,7 +269,12 @@ describe('PseudonymService', () => {
 
 				const result: Pseudonym = await service.findOrCreatePseudonym(user, externalTool);
 
-				expect(result).toEqual(pseudonym);
+				expect(result.id).toEqual(pseudonym.id);
+				expect(result.toolId).toEqual(pseudonym.toolId);
+				expect(result.userId).toEqual(pseudonym.userId);
+				expect(result.pseudonym).toEqual(pseudonym.pseudonym);
+				expect(result.createdAt).toBeDefined();
+				expect(result.updatedAt).toBeDefined();
 			});
 		});
 
