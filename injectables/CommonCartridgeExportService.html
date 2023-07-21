@@ -118,12 +118,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, lessonService: <a href="../injectables/LessonService.html" target="_self">LessonService</a>, taskService: <a href="../injectables/TaskService.html" target="_self">TaskService</a>)</code>
+<code>constructor(courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, lessonService: <a href="../injectables/LessonService.html" target="_self">LessonService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:15</a></div>
                             </td>
                         </tr>
 
@@ -157,18 +157,6 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/LessonService.html" target="_self" >LessonService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>taskService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/TaskService.html" target="_self" >TaskService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -212,8 +200,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="23"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:23</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="18"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:18</a></div>
                 </td>
             </tr>
 
@@ -307,8 +295,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="65"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:65</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="60"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:60</a></div>
                 </td>
             </tr>
 
@@ -402,8 +390,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="109"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:109</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="104"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:104</a></div>
                 </td>
             </tr>
 
@@ -476,8 +464,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="56"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:56</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="51"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:51</a></div>
                 </td>
             </tr>
 
@@ -544,26 +532,21 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId, Lesson, IComponentProperties, Course } from &#x27;@shared/domain&#x27;;
+import { Course, EntityId, IComponentProperties, Lesson } from &#x27;@shared/domain&#x27;;
 import { LessonService } from &#x27;@src/modules/lesson/service&#x27;;
-import { TaskService } from &#x27;@src/modules/task/service/task.service&#x27;;
 import { ComponentType } from &#x27;@src/shared/domain/entity/lesson.entity&#x27;;
-import { CourseService } from &#x27;./course.service&#x27;;
 import {
-	ICommonCartridgeOrganizationProps,
-	ICommonCartridgeResourceProps,
 	CommonCartridgeFileBuilder,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
+	ICommonCartridgeOrganizationProps,
+	ICommonCartridgeResourceProps,
 } from &#x27;../common-cartridge&#x27;;
+import { CourseService } from &#x27;./course.service&#x27;;
 
 @Injectable()
 export class CommonCartridgeExportService {
-	constructor(
-		private readonly courseService: CourseService,
-		private readonly lessonService: LessonService,
-		private readonly taskService: TaskService
-	) {}
+	constructor(private readonly courseService: CourseService, private readonly lessonService: LessonService) {}
 
 	async exportCourse(courseId: EntityId, userId: EntityId, version: CommonCartridgeVersion): Promise&lt;Buffer&gt; {
 		const course &#x3D; await this.courseService.findById(courseId);

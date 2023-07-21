@@ -148,9 +148,6 @@
                             <a href="#config" title="jest.config.ts" ><b>config</b>&nbsp;&nbsp;&nbsp;(jest.config.ts)</a>
                         </li>
                         <li>
-                            <a href="#config" title="apps/server/src/shared/controller/swagger.ts" ><b>config</b>&nbsp;&nbsp;&nbsp;(apps/.../swagger.ts)</a>
-                        </li>
-                        <li>
                             <a href="#config" title="apps/server/src/modules/files-storage/files-storage.config.ts" ><b>config</b>&nbsp;&nbsp;&nbsp;(apps/.../files-storage.config.ts)</a>
                         </li>
                         <li>
@@ -161,6 +158,9 @@
                         </li>
                         <li>
                             <a href="#config" title="apps/server/src/modules/server/server.config.ts" ><b>config</b>&nbsp;&nbsp;&nbsp;(apps/.../server.config.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#config" title="apps/server/src/shared/controller/swagger.ts" ><b>config</b>&nbsp;&nbsp;&nbsp;(apps/.../swagger.ts)</a>
                         </li>
                         <li>
                             <a href="#contextExternalToolDOFactory" title="apps/server/src/shared/testing/factory/domainobject/tool/context-external-tool.factory.ts" ><b>contextExternalToolDOFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../context-external-tool.factory.ts)</a>
@@ -691,6 +691,18 @@
                             <a href="#" title="apps/server/src/core/error/server-error-types.ts" ><b></b>&nbsp;&nbsp;&nbsp;(apps/.../server-error-types.ts)</a>
                         </li>
                         <li>
+                            <a href="#" title="apps/server/src/modules/authentication/constants.ts" ><b></b>&nbsp;&nbsp;&nbsp;(apps/.../constants.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#userPermissions" title="apps/server/src/shared/testing/user-role-permissions.ts" ><b>userPermissions</b>&nbsp;&nbsp;&nbsp;(apps/.../user-role-permissions.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#VideoConferenceSettings" title="apps/server/src/modules/video-conference/interface/video-conference-settings.interface.ts" ><b>VideoConferenceSettings</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference-settings.interface.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#" title="apps/server/src/shared/infra/file-system/file-system.adapter.ts" ><b></b>&nbsp;&nbsp;&nbsp;(apps/.../file-system.adapter.ts)</a>
+                        </li>
+                        <li>
                             <a href="#userDoFactory" title="apps/server/src/shared/testing/factory/user.do.factory.ts" ><b>userDoFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../user.do.factory.ts)</a>
                         </li>
                         <li>
@@ -703,22 +715,10 @@
                             <a href="#userLoginMigrationFactory" title="apps/server/src/shared/testing/factory/user-login-migration.factory.ts" ><b>userLoginMigrationFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../user-login-migration.factory.ts)</a>
                         </li>
                         <li>
-                            <a href="#userPermissions" title="apps/server/src/shared/testing/user-role-permissions.ts" ><b>userPermissions</b>&nbsp;&nbsp;&nbsp;(apps/.../user-role-permissions.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#" title="apps/server/src/modules/authentication/constants.ts" ><b></b>&nbsp;&nbsp;&nbsp;(apps/.../constants.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#" title="apps/server/src/shared/infra/file-system/file-system.adapter.ts" ><b></b>&nbsp;&nbsp;&nbsp;(apps/.../file-system.adapter.ts)</a>
-                        </li>
-                        <li>
                             <a href="#videoConferenceDOFactory" title="apps/server/src/shared/testing/factory/video-conference.do.factory.ts" ><b>videoConferenceDOFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference.do.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#videoConferenceFactory" title="apps/server/src/shared/testing/factory/video-conference.factory.ts" ><b>videoConferenceFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference.factory.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#VideoConferenceSettings" title="apps/server/src/modules/video-conference/interface/video-conference-settings.interface.ts" ><b>VideoConferenceSettings</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference-settings.interface.ts)</a>
                         </li>
                         <li>
                             <a href="#VideoConferencingScopeMapping" title="apps/server/src/shared/repo/videoconference/video-conference.repo.ts" ><b>VideoConferencingScopeMapping</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference.repo.ts)</a>
@@ -2556,70 +2556,6 @@ This allows adding console commands to execute provider methods.</p>
         </tbody>
     </table>
 </section>
-    <h3>apps/server/src/shared/controller/swagger.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="config"></a>
-                    <span class="name">
-                        <span ><b>config</b></span>
-                        <a href="#config"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>new DocumentBuilder()
-	.addServer(&#x27;/api/v3/&#x27;) // add default path as server to have correct urls ald let &#x27;try out&#x27; work
-	.setTitle(&#x27;HPI Schul-Cloud Server API&#x27;)
-	.setDescription(&#x27;This is v3 of HPI Schul-Cloud Server. Checkout /docs for v1.&#x27;)
-	.setVersion(&#x27;3.0&#x27;)
-	/** set authentication for all routes enabled by default */
-	.addBearerAuth({ type: &#x27;http&#x27;, scheme: &#x27;bearer&#x27;, bearerFormat: &#x27;JWT&#x27; })
-	.build()</code>
-                    </td>
-                </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-description"><hr>
-<p>OpenAPI docs setup</p>
-<hr>
-<p>They will be generated by Controller routes
-and DTOs/Entities passed. Their properties
-must use @ApiProperty</p>
-</div>
-                </td>
-            </tr>
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="enableOpenApiDocs"></a>
-                    <span class="name">
-                        <span ><b>enableOpenApiDocs</b></span>
-                        <a href="#enableOpenApiDocs"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>(app: INestApplication, path: string, options?: SwaggerDocumentOptions): void &#x3D;&gt; {
-	const document &#x3D; SwaggerModule.createDocument(app, config, options);
-	SwaggerModule.setup(path, app, document);
-}</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
     <h3>apps/server/src/modules/files-storage/files-storage.config.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -2906,6 +2842,70 @@ must use @ApiProperty</p>
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/shared/controller/swagger.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="config"></a>
+                    <span class="name">
+                        <span ><b>config</b></span>
+                        <a href="#config"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new DocumentBuilder()
+	.addServer(&#x27;/api/v3/&#x27;) // add default path as server to have correct urls ald let &#x27;try out&#x27; work
+	.setTitle(&#x27;HPI Schul-Cloud Server API&#x27;)
+	.setDescription(&#x27;This is v3 of HPI Schul-Cloud Server. Checkout /docs for v1.&#x27;)
+	.setVersion(&#x27;3.0&#x27;)
+	/** set authentication for all routes enabled by default */
+	.addBearerAuth({ type: &#x27;http&#x27;, scheme: &#x27;bearer&#x27;, bearerFormat: &#x27;JWT&#x27; })
+	.build()</code>
+                    </td>
+                </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><hr>
+<p>OpenAPI docs setup</p>
+<hr>
+<p>They will be generated by Controller routes
+and DTOs/Entities passed. Their properties
+must use @ApiProperty</p>
+</div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="enableOpenApiDocs"></a>
+                    <span class="name">
+                        <span ><b>enableOpenApiDocs</b></span>
+                        <a href="#enableOpenApiDocs"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>(app: INestApplication, path: string, options?: SwaggerDocumentOptions): void &#x3D;&gt; {
+	const document &#x3D; SwaggerModule.createDocument(app, config, options);
+	SwaggerModule.setup(path, app, document);
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/shared/testing/factory/domainobject/tool/context-external-tool.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -2926,7 +2926,7 @@ must use @ApiProperty</p>
 	({ sequence }) &#x3D;&gt; {
 		return {
 			schoolToolRef: { schoolToolId: &#x60;schoolToolId-${sequence}&#x60;, schoolId: &#x27;schoolId&#x27; },
-			contextRef: { id: &#x27;courseId&#x27;, type: ToolContextType.COURSE },
+			contextRef: { id: new ObjectId().toHexString(), type: ToolContextType.COURSE },
 			displayName: &#x27;My Course Tool 1&#x27;,
 			parameters: [new CustomParameterEntryDO({ name: &#x27;param&#x27;, value: &#x27;value&#x27; })],
 			toolVersion: 1,
@@ -4389,13 +4389,13 @@ must use @ApiProperty</p>
 	AccountApiModule,
 	CollaborativeStorageModule,
 	OauthApiModule,
-	TaskModule,
+	TaskApiModule,
 	TaskCardModule,
 	LessonApiModule,
 	NewsModule,
 	UserApiModule,
 	ImportUserModule,
-	LearnroomModule,
+	LearnroomApiModule,
 	FilesStorageClientModule,
 	SystemApiModule,
 	MailModule.forRoot({
@@ -4410,15 +4410,11 @@ must use @ApiProperty</p>
 		adminPassword: Configuration.get(&#x27;ROCKET_CHAT_ADMIN_PASSWORD&#x27;) as string,
 	}),
 	SchoolApiModule,
-	ProvisioningModule,
-	RoleModule,
-	VideoConferenceModule,
 	VideoConferenceApiModule,
 	OauthProviderApiModule,
 	SharingApiModule,
 	ToolApiModule,
 	UserLoginMigrationApiModule,
-	BoardModule,
 	BoardApiModule,
 ]</code>
                     </td>
@@ -8659,6 +8655,52 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/modules/video-conference/interface/video-conference-settings.interface.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="VideoConferenceSettings"></a>
+                    <span class="name">
+                        <span ><b>VideoConferenceSettings</b></span>
+                        <a href="#VideoConferenceSettings"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Symbol(&#x27;VideoConferenceSettings&#x27;)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/infra/file-system/file-system.adapter.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name=""></a>
+                    <span class="name">
+                        <span ><b></b></span>
+                        <a href="#"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>fsp</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/shared/testing/factory/user.do.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -8785,29 +8827,6 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
-    <h3>apps/server/src/shared/infra/file-system/file-system.adapter.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name=""></a>
-                    <span class="name">
-                        <span ><b></b></span>
-                        <a href="#"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>fsp</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
     <h3>apps/server/src/shared/testing/factory/video-conference.do.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -8880,29 +8899,6 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		};
 	}
 )</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
-    <h3>apps/server/src/modules/video-conference/interface/video-conference-settings.interface.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="VideoConferenceSettings"></a>
-                    <span class="name">
-                        <span ><b>VideoConferenceSettings</b></span>
-                        <a href="#VideoConferenceSettings"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>Symbol(&#x27;VideoConferenceSettings&#x27;)</code>
                     </td>
                 </tr>
 

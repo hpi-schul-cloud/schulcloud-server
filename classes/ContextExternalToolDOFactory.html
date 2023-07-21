@@ -234,8 +234,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="11"
-                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/context-external-tool.factory.ts:11</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="12"
+                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/context-external-tool.factory.ts:12</a></div>
                 </td>
             </tr>
 
@@ -1334,7 +1334,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+import {
 	ContextExternalToolDO,
 	ContextExternalToolProps,
 	CustomParameterEntryDO,
@@ -1357,7 +1358,7 @@ export const contextExternalToolDOFactory &#x3D; ContextExternalToolDOFactory.de
 	({ sequence }) &#x3D;&gt; {
 		return {
 			schoolToolRef: { schoolToolId: &#x60;schoolToolId-${sequence}&#x60;, schoolId: &#x27;schoolId&#x27; },
-			contextRef: { id: &#x27;courseId&#x27;, type: ToolContextType.COURSE },
+			contextRef: { id: new ObjectId().toHexString(), type: ToolContextType.COURSE },
 			displayName: &#x27;My Course Tool 1&#x27;,
 			parameters: [new CustomParameterEntryDO({ name: &#x27;param&#x27;, value: &#x27;value&#x27; })],
 			toolVersion: 1,
