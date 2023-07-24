@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 import {
 	BadRequestException,
 	Body,
@@ -290,16 +289,9 @@ export class FilesStorageController {
 	async preview(
 		@Param() params: DownloadFileParams,
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() preview: PreviewParams
+		@Query() previewParams: PreviewParams
 	): Promise<FileRecordResponse> {
-		const hash = crypto
-			.createHash('md5')
-			.update(
-				`${params.fileRecordId}/${params.fileName}?width=${preview.width}&height=${preview.height}&ratio=${preview.ratio}`
-			)
-			.digest('hex');
-
-		const fileRecord = await this.filesStorageUC.preview(currentUser.userId, params, hash);
+		const fileRecord = await this.filesStorageUC.preview(currentUser.userId, params, previewParams);
 
 		const response = FileRecordMapper.mapToFileRecordResponse(fileRecord);
 

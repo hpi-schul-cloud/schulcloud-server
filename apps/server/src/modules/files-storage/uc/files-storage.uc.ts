@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Counted, EntityId } from '@shared/domain';
@@ -15,6 +16,7 @@ import {
 	DownloadFileParams,
 	FileRecordParams,
 	FileUrlParams,
+	PreviewParams,
 	RenameFileParams,
 	ScanResultParams,
 	SingleFileParams,
@@ -245,15 +247,26 @@ export class FilesStorageUC {
 	}
 
 	// preview
-	public async preview(userId: EntityId, params: DownloadFileParams, hash: string): Promise<FileRecord> {
-		// check if respective preview file does exist
-		const renameParms = new RenameFileParams();
-		renameParms.fileName = `/previews/${hash}`;
-		const [fileRecords, count] = await this.filesStorageService.getFileRecordByName(renameParms);
+	public async preview(
+		userId: EntityId,
+		params: DownloadFileParams,
+		previewParams: PreviewParams
+	): Promise<FileRecord> {
+		const hash = crypto
+			.createHash('md5')
+			.update(
+				`${params.fileRecordId}/${params.fileName}?width=${previewParams.width}&height=${previewParams.height}&ratio=${previewParams.ratio}`
+			)
+			.digest('hex');
+		const renameParams = new RenameFileParams();
+		renameParams.fileName = `/previews/${hash}`;
 		let result: FileRecord;
+
+		const [fileRecords, count] = await this.filesStorageService.getFileRecordByName(renameParams);
 
 		if (count === 0) {
 			// TODO create preview image and return file record
+			result = await this.filesStorageService.getFileRecord(params);
 		} else {
 			result = fileRecords[0];
 		}
