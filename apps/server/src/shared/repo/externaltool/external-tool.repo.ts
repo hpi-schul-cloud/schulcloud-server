@@ -11,21 +11,14 @@ import {
 	ToolConfigType,
 } from '@shared/domain';
 import { ExternalToolDO } from '@shared/domain/domainobject/tool';
-import { BaseDORepo, Scope } from '@shared/repo';
+import { BaseDORepo, ExternalToolRepoMapper, ExternalToolSortingMapper, Scope } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { ExternalToolSearchQuery } from '@src/modules/tool/interface';
-import { ExternalToolSortingMapper } from './external-tool-sorting.mapper';
-import { ExternalToolRepoMapper } from './external-tool.repo.mapper';
+import { ExternalToolSearchQuery } from '@src/modules/tool/common/interface';
 import { ExternalToolScope } from './external-tool.scope';
 
 @Injectable()
 export class ExternalToolRepo extends BaseDORepo<ExternalToolDO, ExternalTool, IExternalToolProperties> {
-	constructor(
-		private readonly externalToolRepoMapper: ExternalToolRepoMapper,
-		protected readonly _em: EntityManager,
-		protected readonly logger: LegacyLogger,
-		protected readonly sortingMapper: ExternalToolSortingMapper
-	) {
+	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
 	}
 
@@ -66,7 +59,9 @@ export class ExternalToolRepo extends BaseDORepo<ExternalToolDO, ExternalTool, I
 
 	async find(query: ExternalToolSearchQuery, options?: IFindOptions<ExternalToolDO>): Promise<Page<ExternalToolDO>> {
 		const pagination: IPagination = options?.pagination || {};
-		const order: QueryOrderMap<ExternalTool> = this.sortingMapper.mapDOSortOrderToQueryOrder(options?.order || {});
+		const order: QueryOrderMap<ExternalTool> = ExternalToolSortingMapper.mapDOSortOrderToQueryOrder(
+			options?.order || {}
+		);
 		const scope: Scope<ExternalTool> = new ExternalToolScope()
 			.byName(query.name)
 			.byClientId(query.clientId)
@@ -89,10 +84,10 @@ export class ExternalToolRepo extends BaseDORepo<ExternalToolDO, ExternalTool, I
 	}
 
 	mapEntityToDO(entity: ExternalTool): ExternalToolDO {
-		return this.externalToolRepoMapper.mapEntityToDO(entity);
+		return ExternalToolRepoMapper.mapEntityToDO(entity);
 	}
 
 	mapDOToEntityProperties(entityDO: ExternalToolDO): IExternalToolProperties {
-		return this.externalToolRepoMapper.mapDOToEntityProperties(entityDO);
+		return ExternalToolRepoMapper.mapDOToEntityProperties(entityDO);
 	}
 }

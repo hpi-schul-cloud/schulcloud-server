@@ -1,6 +1,5 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolExternalToolScope } from './school-external-tool.scope';
-import { schoolFactory } from '../../testing';
-import { School } from '../../domain';
 
 describe('SchoolExternalToolScope', () => {
 	let scope: SchoolExternalToolScope;
@@ -10,7 +9,7 @@ describe('SchoolExternalToolScope', () => {
 		scope.allowEmptyQuery(true);
 	});
 
-	describe('bySchool is called', () => {
+	describe('bySchool', () => {
 		describe('when school parameter is undefined', () => {
 			it('should return scope without added schoolId to query', () => {
 				scope.bySchoolId(undefined);
@@ -20,11 +19,30 @@ describe('SchoolExternalToolScope', () => {
 
 		describe('when school parameter is defined', () => {
 			it('should return scope with added schoolId to query', () => {
-				const school: School = schoolFactory.buildWithId();
+				const id: string = new ObjectId().toHexString();
 
-				scope.bySchoolId(school._id.toString());
+				scope.bySchoolId(id);
 
-				expect(scope.query).toEqual({ school: school._id.toString() });
+				expect(scope.query).toEqual({ school: id });
+			});
+		});
+	});
+
+	describe('byTool', () => {
+		describe('when tool parameter is undefined', () => {
+			it('should return scope without added toolId to query', () => {
+				scope.byToolId(undefined);
+				expect(scope.query).toEqual({});
+			});
+		});
+
+		describe('when tool parameter is defined', () => {
+			it('should return scope with added toolId to query', () => {
+				const id: string = new ObjectId().toHexString();
+
+				scope.byToolId(id);
+
+				expect(scope.query).toEqual({ tool: id });
 			});
 		});
 	});
