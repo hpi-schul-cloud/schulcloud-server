@@ -17,13 +17,6 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		return fileRecord;
 	}
 
-	async findOneByName(name: string): Promise<FileRecord> {
-		const scope = new FileRecordScope().byName(name).byMarkedForDelete(false);
-		const fileRecord = await this.findOneOrFail(scope);
-
-		return fileRecord;
-	}
-
 	async findOneByIdMarkedForDelete(id: EntityId): Promise<FileRecord> {
 		const scope = new FileRecordScope().byFileRecordId(id).byMarkedForDelete(true);
 		const fileRecord = await this.findOneOrFail(scope);
@@ -67,6 +60,14 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		const fileRecord = await this.findOneOrFail(scope);
 
 		return fileRecord;
+	}
+
+	async findByName(name: string, options?: IFindOptions<FileRecord>): Promise<Counted<FileRecord[]>> {
+		const scope = new FileRecordScope().byName(name).byMarkedForDelete(false);
+
+		const [fileRecords, count] = await this.findAndCount(scope, options);
+
+		return [fileRecords, count];
 	}
 
 	private async findAndCount(

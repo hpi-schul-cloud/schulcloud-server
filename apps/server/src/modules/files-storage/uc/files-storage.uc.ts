@@ -249,8 +249,15 @@ export class FilesStorageUC {
 		// check if respective preview file does exist
 		const renameParms = new RenameFileParams();
 		renameParms.fileName = `/previews/${hash}`;
-		const fileRecord = await this.filesStorageService.getFileRecordByName(renameParms);
+		const [fileRecords, count] = await this.filesStorageService.getFileRecordByName(renameParms);
+		let result: FileRecord;
 
-		return fileRecord;
+		if (count === 0) {
+			// TODO create preview image and return file record
+		} else {
+			result = fileRecords[0];
+		}
+
+		return result;
 	}
 }

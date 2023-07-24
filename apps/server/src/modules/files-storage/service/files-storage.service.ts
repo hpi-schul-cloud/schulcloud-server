@@ -74,10 +74,10 @@ export class FilesStorageService {
 		return countedFileRecords;
 	}
 
-	public async getFileRecordByName(params: RenameFileParams): Promise<FileRecord> {
-		const fileRecord = await this.fileRecordRepo.findOneByName(params.fileName);
+	public async getFileRecordByName(params: RenameFileParams): Promise<Counted<FileRecord[]>> {
+		const countedFileRecords = await this.fileRecordRepo.findByName(params.fileName);
 
-		return fileRecord;
+		return countedFileRecords;
 	}
 
 	// upload

@@ -291,7 +291,7 @@ export class FilesStorageController {
 		@Param() params: DownloadFileParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() preview: PreviewParams
-	): Promise<string> {
+	): Promise<FileRecordResponse> {
 		await Promise.resolve();
 
 		const hash = crypto
@@ -301,8 +301,10 @@ export class FilesStorageController {
 			)
 			.digest('hex');
 
-		const response = await this.filesStorageUC.preview(currentUser.userId, params, hash);
+		const fileRecord = await this.filesStorageUC.preview(currentUser.userId, params, hash);
 
-		return hash;
+		const response = FileRecordMapper.mapToFileRecordResponse(fileRecord);
+
+		return response;
 	}
 }
