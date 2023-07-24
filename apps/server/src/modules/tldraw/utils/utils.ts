@@ -198,7 +198,6 @@ export const messageHandler = (conn: WebSocket, doc: WSSharedDoc, message: Uint8
 				break;
 		}
 	} catch (err) {
-		console.error(err);
 		doc.emit('error', [err]);
 	}
 };
