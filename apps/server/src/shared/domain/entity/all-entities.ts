@@ -1,4 +1,5 @@
 import { ShareToken } from '@src/modules/sharing/entity/share-token.entity';
+import { ExternalToolPseudonymEntity, PseudonymEntity } from '@src/modules/pseudonym/entity';
 import { Account } from './account.entity';
 import {
 	CardNode,
@@ -29,7 +30,6 @@ import { Lesson } from './lesson.entity';
 import { LtiTool } from './ltitool.entity';
 import { Material } from './materials.entity';
 import { CourseNews, News, SchoolNews, TeamNews } from './news.entity';
-import { Pseudonym } from './pseudonym.entity';
 import { Role } from './role.entity';
 import { School, SchoolRolePermission, SchoolRoles } from './school.entity';
 import { SchoolYear } from './schoolyear.entity';
@@ -73,7 +73,8 @@ export const ALL_ENTITIES = [
 	LtiTool,
 	Material,
 	News,
-	Pseudonym,
+	PseudonymEntity,
+	ExternalToolPseudonymEntity,
 	Role,
 	School,
 	SchoolExternalTool,
