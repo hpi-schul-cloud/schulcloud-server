@@ -114,7 +114,7 @@ export class CardController {
 	}
 
 	@ApiOperation({ summary: 'Create a new element on a card.' })
-	@ApiExtraModels(RichTextElementResponse, FileElementResponse)
+	@ApiExtraModels(RichTextElementResponse, FileElementResponse, SubmissionContainerElementResponse)
 	@ApiResponse({
 		status: 201,
 		schema: {
