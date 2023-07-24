@@ -6,6 +6,7 @@ metadata:
     app: api-tsp-sync-cronjob
   name: api-tsp-sync-school-cronjob
 spec:
+  suspend: true
   schedule: "{{ SERVER_TSP_SYNC_SCHOOL_CRONJOB|default("39 3 * * *", true) }}"
   jobTemplate:
     spec:
