@@ -3,7 +3,7 @@ import { InvalidOriginForLogoutUrlLoggableException } from './invalid-origin-for
 describe('InvalidOriginForLogoutUrlLoggableException', () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const exception = new InvalidOriginForLogoutUrlLoggableException('logoutUrl', 'origin');
+			const exception = new InvalidOriginForLogoutUrlLoggableException('https://logout-url.com', 'https://origin.com');
 
 			return {
 				exception,
@@ -20,8 +20,8 @@ describe('InvalidOriginForLogoutUrlLoggableException', () => {
 				message: expect.any(String),
 				stack: expect.any(String),
 				data: {
-					received: 'logoutUrl',
-					expected: 'origin',
+					received: 'https://logout-url.com',
+					expected: 'https://origin.com',
 				},
 			});
 		});
