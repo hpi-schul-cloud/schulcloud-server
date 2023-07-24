@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/service/validation/external-tool-validation.service.ts</code>
+            <code>apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts</code>
         </p>
 
 
@@ -124,12 +124,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, commonToolValidationService: <a href="../injectables/CommonToolValidationService.html" target="_self">CommonToolValidationService</a>)</code>
+<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, commonToolValidationService: <a href="../injectables/ExternalToolParameterValidationService.html" target="_self">ExternalToolParameterValidationService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/tool/service/validation/external-tool-validation.service.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:8</a></div>
                             </td>
                         </tr>
 
@@ -162,7 +162,7 @@
                                                         <td>commonToolValidationService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/CommonToolValidationService.html" target="_self" >CommonToolValidationService</a></code>
+                                                                        <code><a href="../injectables/ExternalToolParameterValidationService.html" target="_self" >ExternalToolParameterValidationService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -208,7 +208,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="48"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/external-tool-validation.service.ts:48</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:48</a></div>
                 </td>
             </tr>
 
@@ -279,7 +279,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="14"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/external-tool-validation.service.ts:14</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:14</a></div>
                 </td>
             </tr>
 
@@ -350,7 +350,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="38"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/external-tool-validation.service.ts:38</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:38</a></div>
                 </td>
             </tr>
 
@@ -422,7 +422,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="22"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/external-tool-validation.service.ts:22</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:22</a></div>
                 </td>
             </tr>
 
@@ -460,7 +460,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -493,7 +493,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="56"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/external-tool-validation.service.ts:56</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:56</a></div>
                 </td>
             </tr>
 
@@ -562,14 +562,14 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ExternalToolDO } from &#x27;@shared/domain/domainobject/tool&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
-import { ExternalToolService } from &#x27;../external-tool.service&#x27;;
-import { CommonToolValidationService } from &#x27;./common-tool-validation.service&#x27;;
+import { ExternalToolService } from &#x27;./external-tool.service&#x27;;
+import { ExternalToolParameterValidationService } from &#x27;./external-tool-parameter-validation.service&#x27;;
 
 @Injectable()
 export class ExternalToolValidationService {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
-		private readonly commonToolValidationService: CommonToolValidationService
+		private readonly commonToolValidationService: ExternalToolParameterValidationService
 	) {}
 
 	async validateCreate(externalToolDO: ExternalToolDO): Promise&lt;void&gt; {
@@ -580,8 +580,8 @@ export class ExternalToolValidationService {
 		this.validateLti11Config(externalToolDO);
 	}
 
-	private async validateOauth2Config(externalToolDO: ExternalToolDO) {
-		if (this.externalToolService.isOauth2Config(externalToolDO.config)) {
+	private async validateOauth2Config(externalToolDO: ExternalToolDO): Promise&lt;void&gt; {
+		if (ExternalToolDO.isOauth2Config(externalToolDO.config)) {
 			if (!externalToolDO.config.clientSecret) {
 				throw new ValidationError(
 					&#x60;tool_clientSecret_missing: The Client Secret of the tool ${externalToolDO.name || &#x27;&#x27;} is missing.&#x60;
@@ -596,8 +596,8 @@ export class ExternalToolValidationService {
 		}
 	}
 
-	private validateLti11Config(externalToolDO: ExternalToolDO) {
-		if (this.externalToolService.isLti11Config(externalToolDO.config)) {
+	private validateLti11Config(externalToolDO: ExternalToolDO): void {
+		if (ExternalToolDO.isLti11Config(externalToolDO.config)) {
 			if (!externalToolDO.config.secret) {
 				throw new ValidationError(
 					&#x60;tool_secret_missing: The secret of the LTI tool ${externalToolDO.name || &#x27;&#x27;} is missing.&#x60;
@@ -608,7 +608,7 @@ export class ExternalToolValidationService {
 
 	private async isClientIdUnique(externalToolDO: ExternalToolDO): Promise&lt;boolean&gt; {
 		let duplicate: ExternalToolDO | null &#x3D; null;
-		if (this.externalToolService.isOauth2Config(externalToolDO.config)) {
+		if (ExternalToolDO.isOauth2Config(externalToolDO.config)) {
 			duplicate &#x3D; await this.externalToolService.findExternalToolByOAuth2ConfigClientId(externalToolDO.config.clientId);
 		}
 		return duplicate &#x3D;&#x3D; null || duplicate.id &#x3D;&#x3D;&#x3D; externalToolDO.id;
@@ -623,7 +623,7 @@ export class ExternalToolValidationService {
 
 		const loadedTool: ExternalToolDO &#x3D; await this.externalToolService.findExternalToolById(toolId);
 		if (
-			this.externalToolService.isOauth2Config(loadedTool.config) &amp;&amp;
+			ExternalToolDO.isOauth2Config(loadedTool.config) &amp;&amp;
 			externalToolDO.config &amp;&amp;
 			externalToolDO.config.type !&#x3D;&#x3D; loadedTool.config.type
 		) {
@@ -634,8 +634,8 @@ export class ExternalToolValidationService {
 
 		if (
 			externalToolDO.config &amp;&amp;
-			this.externalToolService.isOauth2Config(externalToolDO.config) &amp;&amp;
-			this.externalToolService.isOauth2Config(loadedTool.config) &amp;&amp;
+			ExternalToolDO.isOauth2Config(externalToolDO.config) &amp;&amp;
+			ExternalToolDO.isOauth2Config(loadedTool.config) &amp;&amp;
 			externalToolDO.config.clientId !&#x3D;&#x3D; loadedTool.config.clientId
 		) {
 			throw new ValidationError(

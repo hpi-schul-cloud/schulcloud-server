@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/launch-tool/service/tool-launch.service.ts</code>
+            <code>apps/server/src/modules/tool/tool-launch/service/tool-launch.service.ts</code>
         </p>
 
 
@@ -138,7 +138,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/tool-launch.service.ts:24</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/tool-launch.service.ts:25</a></div>
                             </td>
                         </tr>
 
@@ -261,8 +261,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="40"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/tool-launch.service.ts:40</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="41"
+                            class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/tool-launch.service.ts:41</a></div>
                 </td>
             </tr>
 
@@ -332,8 +332,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="53"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/tool-launch.service.ts:53</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="54"
+                            class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/tool-launch.service.ts:54</a></div>
                 </td>
             </tr>
 
@@ -415,8 +415,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="92"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/tool-launch.service.ts:92</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="93"
+                            class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/tool-launch.service.ts:93</a></div>
                 </td>
             </tr>
 
@@ -523,8 +523,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="75"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/tool-launch.service.ts:75</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="76"
+                            class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/tool-launch.service.ts:76</a></div>
                 </td>
             </tr>
 
@@ -598,7 +598,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/tool-launch.service.ts:24</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/tool-launch.service.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -619,9 +619,8 @@ import {
 	SchoolExternalToolDO,
 	ToolConfigurationStatus,
 } from &#x27;@shared/domain&#x27;;
-import { ToolConfigType } from &#x27;../../interface&#x27;;
-import { ExternalToolService, SchoolExternalToolService } from &#x27;../../service&#x27;;
-import { CommonToolService } from &#x27;../../service/common-tool.service&#x27;;
+import { ToolConfigType } from &#x27;../../common/interface&#x27;;
+import { CommonToolService } from &#x27;../../common/service&#x27;;
 import { ToolLaunchMapper } from &#x27;../mapper&#x27;;
 import { ToolLaunchData, ToolLaunchRequest } from &#x27;../types&#x27;;
 import {
@@ -631,6 +630,8 @@ import {
 	OAuth2ToolLaunchStrategy,
 } from &#x27;./strategy&#x27;;
 import { ToolStatusOutdatedLoggableException } from &#x27;../error&#x27;;
+import { SchoolExternalToolService } from &#x27;../../school-external-tool/service&#x27;;
+import { ExternalToolService } from &#x27;../../external-tool/service&#x27;;
 
 @Injectable()
 export class ToolLaunchService {

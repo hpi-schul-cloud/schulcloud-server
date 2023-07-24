@@ -40,7 +40,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >ExternalToolSortingMapper</li>
+  <li class="breadcrumb-item" >ContextExternalToolAuthorizableService</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/repo/externaltool/external-tool-sorting.mapper.ts</code>
+            <code>apps/server/src/modules/tool/context-external-tool/service/context-external-tool-authorizable.service.ts</code>
         </p>
 
 
@@ -85,7 +85,8 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#mapDOSortOrderToQueryOrder" >mapDOSortOrderToQueryOrder</a>
+                                    <span class="modifier">Async</span>
+                                <a href="#findById" >findById</a>
                             </li>
                         </ul>
                     </td>
@@ -99,6 +100,54 @@
     </table>
 </section>
 
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(contextExternalToolRepo: <a href="../injectables/ContextExternalToolRepo.html" target="_self">ContextExternalToolRepo</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool-authorizable.service.ts:7</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>contextExternalToolRepo</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ContextExternalToolRepo.html" target="_self" >ContextExternalToolRepo</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
 
             <section data-compodoc="block-methods">
     
@@ -109,24 +158,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapDOSortOrderToQueryOrder"></a>
+                    <a name="findById"></a>
                     <span class="name">
-                        <span ><b>mapDOSortOrderToQueryOrder</b></span>
-                        <a href="#mapDOSortOrderToQueryOrder"><span class="icon ion-ios-link"></span></a>
+                        <span class="modifier">Async</span>
+                        <span ><b>findById</b></span>
+                        <a href="#findById"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>mapDOSortOrderToQueryOrder(sort: <a href="../classes/ExternalToolDO.html" target="_self">SortOrderMap&lt;ExternalToolDO&gt;</a>)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findById(id: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="7"
-                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool-sorting.mapper.ts:7</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="10"
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool-authorizable.service.ts:10</a></div>
                 </td>
             </tr>
 
@@ -147,9 +198,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>sort</td>
+                                    <td>id</td>
                                     <td>
-                                                <code><a href="../classes/ExternalToolDO.html" target="_self" >SortOrderMap&lt;ExternalToolDO&gt;</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                     </td>
 
                                     <td>
@@ -164,7 +215,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/ExternalTool.html" target="_self" >QueryOrderMap&lt;ExternalTool&gt;</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;ContextExternalToolDO&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -180,21 +231,19 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { QueryOrderMap } from &#x27;@mikro-orm/core&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationLoaderService } from &#x27;@src/modules/authorization&#x27;;
+import { ContextExternalToolDO, EntityId } from &#x27;@shared/domain&#x27;;
+import { ContextExternalToolRepo } from &#x27;@shared/repo&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { ExternalTool, SortOrderMap, ExternalToolDO } from &#x27;@shared/domain&#x27;;
 
 @Injectable()
-export class ExternalToolSortingMapper {
-	mapDOSortOrderToQueryOrder(sort: SortOrderMap&lt;ExternalToolDO&gt;): QueryOrderMap&lt;ExternalTool&gt; {
-		const queryOrderMap: QueryOrderMap&lt;ExternalTool&gt; &#x3D; {
-			_id: sort.id,
-			name: sort.name,
-		};
-		Object.keys(queryOrderMap)
-			.filter((key) &#x3D;&gt; queryOrderMap[key] &#x3D;&#x3D;&#x3D; undefined)
-			.forEach((key) &#x3D;&gt; delete queryOrderMap[key]);
-		return queryOrderMap;
+export class ContextExternalToolAuthorizableService implements AuthorizationLoaderService {
+	constructor(private readonly contextExternalToolRepo: ContextExternalToolRepo) {}
+
+	async findById(id: EntityId): Promise&lt;ContextExternalToolDO&gt; {
+		const contextExternalTool: ContextExternalToolDO &#x3D; await this.contextExternalToolRepo.findById(id);
+
+		return contextExternalTool;
 	}
 }
 </code></pre>
@@ -240,7 +289,7 @@ export class ExternalToolSortingMapper {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'ExternalToolSortingMapper.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'ContextExternalToolAuthorizableService.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

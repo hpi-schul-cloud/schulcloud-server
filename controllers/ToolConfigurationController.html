@@ -61,7 +61,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/controller/tool-configuration.controller.ts</code>
+            <code>apps/server/src/modules/tool/external-tool/controller/tool-configuration.controller.ts</code>
         </p>
 
             <p class="comment">
@@ -175,8 +175,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="59"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool-configuration.controller.ts:59</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="60"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool-configuration.controller.ts:60</a></div>
                 </td>
             </tr>
 
@@ -280,8 +280,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="36"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool-configuration.controller.ts:36</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="37"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool-configuration.controller.ts:37</a></div>
                 </td>
             </tr>
 
@@ -375,8 +375,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="102"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool-configuration.controller.ts:102</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="103"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool-configuration.controller.ts:103</a></div>
                 </td>
             </tr>
 
@@ -493,8 +493,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="82"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool-configuration.controller.ts:82</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="83"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool-configuration.controller.ts:83</a></div>
                 </td>
             </tr>
 
@@ -575,12 +575,13 @@ import { ExternalToolConfigurationUc } from &#x27;../uc&#x27;;
 import {
 	ContextTypeParams,
 	ExternalToolConfigurationTemplateResponse,
-	SchoolToolConfigurationListResponse,
 	IdParams,
 	ToolConfigurationListResponse,
 	ToolIdParams,
 } from &#x27;./dto&#x27;;
-import { ExternalToolResponseMapper, SchoolExternalToolResponseMapper } from &#x27;./mapper&#x27;;
+import { ExternalToolResponseMapper } from &#x27;../mapper&#x27;;
+import { SchoolToolConfigurationListResponse } from &#x27;../../school-external-tool/controller/dto&#x27;;
+import { SchoolExternalToolResponseMapper } from &#x27;../../school-external-tool/mapper&#x27;;
 
 @ApiTags(&#x27;Tool&#x27;)
 @Authenticate(&#x27;jwt&#x27;)

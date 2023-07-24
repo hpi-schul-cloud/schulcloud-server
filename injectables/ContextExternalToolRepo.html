@@ -192,7 +192,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(externalToolRepoMapper: <a href="../injectables/ExternalToolRepoMapper.html" target="_self">ExternalToolRepoMapper</a>, _em: EntityManager, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
+<code>constructor(_em: EntityManager, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -214,18 +214,6 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                                <tr>
-                                                        <td>externalToolRepoMapper</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/ExternalToolRepoMapper.html" target="_self" >ExternalToolRepoMapper</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
                                                 <tr>
                                                         <td>_em</td>
                                                   
@@ -286,8 +274,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="60"
-                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:60</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="56"
+                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:56</a></div>
                 </td>
             </tr>
 
@@ -357,8 +345,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="42"
-                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:42</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="38"
+                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:38</a></div>
                 </td>
             </tr>
 
@@ -432,7 +420,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:38</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:34</a></code>
 </div>
                 </td>
             </tr>
@@ -503,8 +491,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="49"
-                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:49</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="45"
+                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:45</a></div>
                 </td>
             </tr>
 
@@ -574,8 +562,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="113"
-                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:113</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="109"
+                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:109</a></div>
                 </td>
             </tr>
 
@@ -645,8 +633,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="104"
-                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:104</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="100"
+                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:100</a></div>
                 </td>
             </tr>
 
@@ -720,7 +708,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:93</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:89</a></code>
 </div>
                 </td>
             </tr>
@@ -795,7 +783,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:72</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:68</a></code>
 </div>
                 </td>
             </tr>
@@ -1644,7 +1632,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:34</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:30</a></div>
                                 </td>
                             </tr>
 
@@ -1664,13 +1652,13 @@ import {
 	ContextRef,
 	IContextExternalToolProperties,
 	SchoolExternalTool,
+	SchoolExternalToolRefDO,
 } from &#x27;@shared/domain&#x27;;
 import { ContextExternalToolType } from &#x27;@shared/domain/entity/tools/course-external-tool/context-external-tool-type.enum&#x27;;
 import { BaseDORepo } from &#x27;@shared/repo&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { ToolContextType } from &#x27;@src/modules/tool/interface&#x27;;
-import { ContextExternalToolQuery } from &#x27;@src/modules/tool/uc/dto&#x27;;
-import { SchoolExternalToolRefDO } from &#x27;../../domain&#x27;;
+import { ToolContextType } from &#x27;@src/modules/tool/common/interface/tool-context-type.enum&#x27;;
+import { ContextExternalToolQuery } from &#x27;@src/modules/tool/context-external-tool/uc/dto/context-external-tool.types&#x27;;
 import { ExternalToolRepoMapper } from &#x27;../externaltool&#x27;;
 import { ContextExternalToolScope } from &#x27;./context-external-tool.scope&#x27;;
 
@@ -1680,11 +1668,7 @@ export class ContextExternalToolRepo extends BaseDORepo&lt;
 	ContextExternalTool,
 	IContextExternalToolProperties
 &gt; {
-	constructor(
-		private readonly externalToolRepoMapper: ExternalToolRepoMapper,
-		protected readonly _em: EntityManager,
-		protected readonly logger: LegacyLogger
-	) {
+	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
 	}
 
@@ -1743,7 +1727,7 @@ export class ContextExternalToolRepo extends BaseDORepo&lt;
 			contextRef,
 			displayName: entity.displayName,
 			toolVersion: entity.toolVersion,
-			parameters: this.externalToolRepoMapper.mapCustomParameterEntryEntitiesToDOs(entity.parameters),
+			parameters: ExternalToolRepoMapper.mapCustomParameterEntryEntitiesToDOs(entity.parameters),
 		});
 	}
 
@@ -1754,7 +1738,7 @@ export class ContextExternalToolRepo extends BaseDORepo&lt;
 			displayName: entityDO.displayName,
 			schoolTool: this._em.getReference(SchoolExternalTool, entityDO.schoolToolRef.schoolToolId),
 			toolVersion: entityDO.toolVersion,
-			parameters: this.externalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),
+			parameters: ExternalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),
 		};
 	}
 

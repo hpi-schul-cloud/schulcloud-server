@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/controller/mapper/external-tool-request.mapper.ts</code>
+            <code>apps/server/src/modules/tool/external-tool/mapper/external-tool-request.mapper.ts</code>
         </p>
 
 
@@ -163,7 +163,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="89"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/external-tool-request.mapper.ts:89</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-request.mapper.ts:89</a></div>
                 </td>
             </tr>
 
@@ -250,7 +250,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="172"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/external-tool-request.mapper.ts:172</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-request.mapper.ts:172</a></div>
                 </td>
             </tr>
 
@@ -321,7 +321,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="115"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/external-tool-request.mapper.ts:115</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-request.mapper.ts:115</a></div>
                 </td>
             </tr>
 
@@ -392,7 +392,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="143"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/external-tool-request.mapper.ts:143</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-request.mapper.ts:143</a></div>
                 </td>
             </tr>
 
@@ -463,7 +463,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="119"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/external-tool-request.mapper.ts:119</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-request.mapper.ts:119</a></div>
                 </td>
             </tr>
 
@@ -534,7 +534,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="125"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/external-tool-request.mapper.ts:125</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-request.mapper.ts:125</a></div>
                 </td>
             </tr>
 
@@ -605,7 +605,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="131"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/external-tool-request.mapper.ts:131</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-request.mapper.ts:131</a></div>
                 </td>
             </tr>
 
@@ -676,7 +676,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="137"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/external-tool-request.mapper.ts:137</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-request.mapper.ts:137</a></div>
                 </td>
             </tr>
 
@@ -745,7 +745,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="160"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/external-tool-request.mapper.ts:160</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-request.mapper.ts:160</a></div>
                 </td>
             </tr>
 
@@ -816,7 +816,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="62"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/external-tool-request.mapper.ts:62</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-request.mapper.ts:62</a></div>
                 </td>
             </tr>
 
@@ -901,17 +901,7 @@ import {
 	CustomParameterScopeTypeParams,
 	CustomParameterTypeParams,
 	ExternalToolSearchQuery,
-} from &#x27;../../interface&#x27;;
-import {
-	BasicToolConfig,
-	CustomParameter,
-	ExternalToolCreate,
-	ExternalToolUpdate,
-	Lti11ToolConfigCreate,
-	Lti11ToolConfigUpdate,
-	Oauth2ToolConfigCreate,
-	Oauth2ToolConfigUpdate,
-} from &#x27;../../uc&#x27;;
+} from &#x27;../../common/interface&#x27;;
 import {
 	BasicToolConfigParams,
 	CustomParameterPostParams,
@@ -923,7 +913,17 @@ import {
 	Oauth2ToolConfigCreateParams,
 	Oauth2ToolConfigUpdateParams,
 	SortExternalToolParams,
-} from &#x27;../dto&#x27;;
+} from &#x27;../controller/dto&#x27;;
+import {
+	BasicToolConfig,
+	CustomParameter,
+	ExternalToolCreate,
+	ExternalToolUpdate,
+	Lti11ToolConfigCreate,
+	Lti11ToolConfigUpdate,
+	Oauth2ToolConfigCreate,
+	Oauth2ToolConfigUpdate,
+} from &#x27;../uc&#x27;;
 
 const scopeMapping: Record&lt;CustomParameterScopeTypeParams, CustomParameterScope&gt; &#x3D; {
 	[CustomParameterScopeTypeParams.GLOBAL]: CustomParameterScope.GLOBAL,

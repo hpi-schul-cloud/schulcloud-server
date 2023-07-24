@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/launch-tool/uc/tool-launch.uc.ts</code>
+            <code>apps/server/src/modules/tool/tool-launch/uc/tool-launch.uc.ts</code>
         </p>
 
 
@@ -111,7 +111,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/tool/launch-tool/uc/tool-launch.uc.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/tool/tool-launch/uc/tool-launch.uc.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -189,7 +189,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="15"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/uc/tool-launch.uc.ts:15</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/tool-launch/uc/tool-launch.uc.ts:15</a></div>
                 </td>
             </tr>
 
@@ -258,9 +258,9 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ContextExternalToolDO, EntityId, Permission } from &#x27;@shared/domain&#x27;;
 import { Action } from &#x27;@src/modules/authorization&#x27;;
-import { ContextExternalToolService } from &#x27;../../service&#x27;;
 import { ToolLaunchService } from &#x27;../service&#x27;;
 import { ToolLaunchData, ToolLaunchRequest } from &#x27;../types&#x27;;
+import { ContextExternalToolService } from &#x27;../../context-external-tool/service&#x27;;
 
 @Injectable()
 export class ToolLaunchUc {

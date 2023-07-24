@@ -68,7 +68,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/controller/mapper/context-external-tool-response.mapper.ts</code>
+            <code>apps/server/src/modules/tool/context-external-tool/mapper/context-external-tool-response.mapper.ts</code>
         </p>
 
 
@@ -139,8 +139,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="5"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/context-external-tool-response.mapper.ts:5</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="6"
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/mapper/context-external-tool-response.mapper.ts:6</a></div>
                 </td>
             </tr>
 
@@ -211,8 +211,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="19"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/context-external-tool-response.mapper.ts:19</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="20"
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/mapper/context-external-tool-response.mapper.ts:20</a></div>
                 </td>
             </tr>
 
@@ -270,8 +270,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ContextExternalTool } from &#x27;../../uc/dto&#x27;;
-import { ContextExternalToolResponse, CustomParameterEntryParam, CustomParameterEntryResponse } from &#x27;../dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ContextExternalToolResponse } from &#x27;../controller/dto&#x27;;
+import { CustomParameterEntryParam, CustomParameterEntryResponse } from &#x27;../../school-external-tool/controller/dto&#x27;;
+import { ContextExternalTool } from &#x27;../uc/dto/context-external-tool.types&#x27;;
 
 export class ContextExternalToolResponseMapper {
 	static mapContextExternalToolResponse(contextExternalTool: ContextExternalTool): ContextExternalToolResponse {

@@ -323,13 +323,6 @@
                     </div>
                     <div>
                     </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/ExternalToolScope.html" target="_self" >ExternalToolScope</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
                 </td>
             </tr>
         </tbody>
@@ -392,13 +385,6 @@
                     </div>
                     <div>
                     </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/ExternalToolScope.html" target="_self" >ExternalToolScope</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
                 </td>
             </tr>
         </tbody>
@@ -460,13 +446,6 @@
                         </table>
                     </div>
                     <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/ExternalToolScope.html" target="_self" >ExternalToolScope</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
                     </div>
                 </td>
             </tr>
@@ -632,25 +611,25 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ExternalTool } from &#x27;@shared/domain&#x27;;
-import { Scope } from &#x27;@shared/repo&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ExternalTool } from &#x27;@shared/domain/entity/tools/external-tool/external-tool.entity&#x27;;
+import { Scope } from &#x27;@shared/repo/scope&#x27;;
 
 export class ExternalToolScope extends Scope&lt;ExternalTool&gt; {
-	byName(name: string | undefined): ExternalToolScope {
+	byName(name: string | undefined): this {
 		if (name) {
 			this.addQuery({ name: { $re: name } });
 		}
 		return this;
 	}
 
-	byClientId(clientId: string | undefined): ExternalToolScope {
+	byClientId(clientId: string | undefined): this {
 		if (clientId) {
 			this.addQuery({ config: { clientId } });
 		}
 		return this;
 	}
 
-	byHidden(isHidden: boolean | undefined): ExternalToolScope {
+	byHidden(isHidden: boolean | undefined): this {
 		if (isHidden !&#x3D;&#x3D; undefined) {
 			this.addQuery({ isHidden });
 		}

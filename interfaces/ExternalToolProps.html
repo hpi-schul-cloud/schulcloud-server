@@ -481,10 +481,14 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BaseDO } from &#x27;../base.do&#x27;;
-import { Oauth2ToolConfigDO } from &#x27;./config/oauth2-tool-config.do&#x27;;
+import {
+	Oauth2ToolConfigDO,
+	BasicToolConfigDO,
+	Lti11ToolConfigDO,
+	ExternalToolConfigDO,
+	ToolConfigType,
+} from &#x27;./config&#x27;;
 import { CustomParameterDO } from &#x27;./custom-parameter.do&#x27;;
-import { BasicToolConfigDO } from &#x27;./config/basic-tool-config.do&#x27;;
-import { Lti11ToolConfigDO } from &#x27;./config/lti11-tool-config.do&#x27;;
 import { ToolVersion } from &#x27;./types&#x27;;
 
 export interface ExternalToolProps {
@@ -539,6 +543,14 @@ export class ExternalToolDO extends BaseDO implements ToolVersion {
 
 	getVersion(): number {
 		return this.version;
+	}
+
+	static isOauth2Config(config: ExternalToolConfigDO): config is Oauth2ToolConfigDO {
+		return ToolConfigType.OAUTH2 &#x3D;&#x3D;&#x3D; config.type;
+	}
+
+	static isLti11Config(config: ExternalToolConfigDO): config is Lti11ToolConfigDO {
+		return ToolConfigType.LTI11 &#x3D;&#x3D;&#x3D; config.type;
 	}
 }
 </code></pre>

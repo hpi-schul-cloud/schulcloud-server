@@ -458,9 +458,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ToolConfigType } from &#x27;@shared/domain/entity&#x27;;
-import { TokenEndpointAuthMethod } from &#x27;@src/modules/tool/interface/token-endpoint-auth-method.enum&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { TokenEndpointAuthMethod } from &#x27;@src/modules/tool/common/interface&#x27;;
 import { ExternalToolConfigDO } from &#x27;./external-tool-config.do&#x27;;
+import { ToolConfigType } from &#x27;./tool-config-type.enum&#x27;;
 
 export class Oauth2ToolConfigDO extends ExternalToolConfigDO {
 	clientId: string;

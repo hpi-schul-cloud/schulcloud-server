@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/controller/mapper/school-external-tool-response.mapper.ts</code>
+            <code>apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-response.mapper.ts</code>
         </p>
 
 
@@ -144,7 +144,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="47"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/school-external-tool-response.mapper.ts:47</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-response.mapper.ts:47</a></div>
                 </td>
             </tr>
 
@@ -216,7 +216,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="55"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/school-external-tool-response.mapper.ts:55</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-response.mapper.ts:55</a></div>
                 </td>
             </tr>
 
@@ -287,7 +287,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="73"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/school-external-tool-response.mapper.ts:73</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-response.mapper.ts:73</a></div>
                 </td>
             </tr>
 
@@ -356,7 +356,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="33"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/school-external-tool-response.mapper.ts:33</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-response.mapper.ts:33</a></div>
                 </td>
             </tr>
 
@@ -425,7 +425,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="26"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/school-external-tool-response.mapper.ts:26</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-response.mapper.ts:26</a></div>
                 </td>
             </tr>
 
@@ -487,14 +487,14 @@ import {
 	ToolConfigurationStatus,
 } from &#x27;@shared/domain&#x27;;
 import {
-	SchoolExternalToolSearchListResponse,
-	SchoolExternalToolResponse,
 	CustomParameterEntryResponse,
-	ToolConfigurationStatusResponse,
-	SchoolToolConfigurationListResponse,
+	SchoolExternalToolResponse,
+	SchoolExternalToolSearchListResponse,
 	SchoolToolConfigurationEntryResponse,
-} from &#x27;../dto&#x27;;
-import { AvailableToolsForContext } from &#x27;../../uc&#x27;;
+	SchoolToolConfigurationListResponse,
+} from &#x27;../controller/dto&#x27;;
+import { ToolConfigurationStatusResponse } from &#x27;../../external-tool/controller/dto&#x27;;
+import { AvailableToolsForContext } from &#x27;../../external-tool/uc&#x27;;
 
 export const statusMapping: Record&lt;ToolConfigurationStatus, ToolConfigurationStatusResponse&gt; &#x3D; {
 	[ToolConfigurationStatus.LATEST]: ToolConfigurationStatusResponse.LATEST,

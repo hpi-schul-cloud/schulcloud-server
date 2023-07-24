@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/uc/school-external-tool.uc.ts</code>
+            <code>apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts</code>
         </p>
 
 
@@ -137,7 +137,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/tool/uc/school-external-tool.uc.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -238,8 +238,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="28"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/school-external-tool.uc.ts:28</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="29"
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:29</a></div>
                 </td>
             </tr>
 
@@ -321,8 +321,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="51"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/school-external-tool.uc.ts:51</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="52"
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:52</a></div>
                 </td>
             </tr>
 
@@ -405,8 +405,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="88"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/school-external-tool.uc.ts:88</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="89"
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:89</a></div>
                 </td>
             </tr>
 
@@ -489,8 +489,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="44"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/school-external-tool.uc.ts:44</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="45"
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:45</a></div>
                 </td>
             </tr>
 
@@ -572,8 +572,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="16"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/school-external-tool.uc.ts:16</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="17"
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:17</a></div>
                 </td>
             </tr>
 
@@ -655,8 +655,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="60"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/school-external-tool.uc.ts:60</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="61"
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:61</a></div>
                 </td>
             </tr>
 
@@ -738,8 +738,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="69"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/school-external-tool.uc.ts:69</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="70"
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:70</a></div>
                 </td>
             </tr>
 
@@ -820,8 +820,9 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId, Permission, SchoolExternalToolDO } from &#x27;@shared/domain&#x27;;
 import { Action, AuthorizationService, AuthorizableReferenceType } from &#x27;@src/modules/authorization&#x27;;
-import { ContextExternalToolService, SchoolExternalToolService, SchoolExternalToolValidationService } from &#x27;../service&#x27;;
-import { SchoolExternalTool, SchoolExternalToolQueryInput } from &#x27;./dto&#x27;;
+import { SchoolExternalToolService, SchoolExternalToolValidationService } from &#x27;../service&#x27;;
+import { ContextExternalToolService } from &#x27;../../context-external-tool/service&#x27;;
+import { SchoolExternalTool, SchoolExternalToolQueryInput } from &#x27;./dto/school-external-tool.types&#x27;;
 
 @Injectable()
 export class SchoolExternalToolUc {

@@ -61,7 +61,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/controller/tool.controller.ts</code>
+            <code>apps/server/src/modules/tool/external-tool/controller/tool.controller.ts</code>
         </p>
 
             <p class="comment">
@@ -190,7 +190,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="53"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:53</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:53</a></div>
                 </td>
             </tr>
 
@@ -283,7 +283,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="134"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:134</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:134</a></div>
                 </td>
             </tr>
 
@@ -377,7 +377,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="72"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:72</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:72</a></div>
                 </td>
             </tr>
 
@@ -492,7 +492,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="99"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:99</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:99</a></div>
                 </td>
             </tr>
 
@@ -587,7 +587,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="149"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:149</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:149</a></div>
                 </td>
             </tr>
 
@@ -682,7 +682,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="114"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:114</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:114</a></div>
                 </td>
             </tr>
 
@@ -776,10 +776,10 @@ import { ExternalToolDO, IFindOptions, Page, ToolReference } from &#x27;@shared/
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
-import { ExternalToolSearchQuery } from &#x27;../interface&#x27;;
+import { ExternalToolSearchQuery } from &#x27;../../common/interface&#x27;;
 import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate, ToolReferenceUc } from &#x27;../uc&#x27;;
+import { ExternalToolRequestMapper, ExternalToolResponseMapper } from &#x27;../mapper&#x27;;
 import {
-	ContextExternalToolContextParams,
 	ExternalToolCreateParams,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
@@ -787,10 +787,10 @@ import {
 	ExternalToolUpdateParams,
 	SortExternalToolParams,
 	ToolIdParams,
+	ToolReferenceListResponse,
 	ToolReferenceResponse,
 } from &#x27;./dto&#x27;;
-import { ToolReferenceListResponse } from &#x27;./dto/response/tool-reference-list.response&#x27;;
-import { ExternalToolRequestMapper, ExternalToolResponseMapper } from &#x27;./mapper&#x27;;
+import { ContextExternalToolContextParams } from &#x27;../../context-external-tool/controller/dto&#x27;;
 
 @ApiTags(&#x27;Tool&#x27;)
 @Authenticate(&#x27;jwt&#x27;)

@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/controller/mapper/external-tool-response.mapper.ts</code>
+            <code>apps/server/src/modules/tool/external-tool/mapper/external-tool-response.mapper.ts</code>
         </p>
 
 
@@ -161,7 +161,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="79"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/external-tool-response.mapper.ts:79</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-response.mapper.ts:79</a></div>
                 </td>
             </tr>
 
@@ -232,7 +232,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="91"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/external-tool-response.mapper.ts:91</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-response.mapper.ts:91</a></div>
                 </td>
             </tr>
 
@@ -301,7 +301,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="108"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/external-tool-response.mapper.ts:108</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-response.mapper.ts:108</a></div>
                 </td>
             </tr>
 
@@ -372,7 +372,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="112"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/external-tool-response.mapper.ts:112</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-response.mapper.ts:112</a></div>
                 </td>
             </tr>
 
@@ -443,7 +443,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="83"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/external-tool-response.mapper.ts:83</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-response.mapper.ts:83</a></div>
                 </td>
             </tr>
 
@@ -514,7 +514,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="87"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/external-tool-response.mapper.ts:87</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-response.mapper.ts:87</a></div>
                 </td>
             </tr>
 
@@ -583,7 +583,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="125"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/external-tool-response.mapper.ts:125</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-response.mapper.ts:125</a></div>
                 </td>
             </tr>
 
@@ -652,7 +652,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="52"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/external-tool-response.mapper.ts:52</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-response.mapper.ts:52</a></div>
                 </td>
             </tr>
 
@@ -723,7 +723,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="147"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/external-tool-response.mapper.ts:147</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-response.mapper.ts:147</a></div>
                 </td>
             </tr>
 
@@ -792,7 +792,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="139"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/external-tool-response.mapper.ts:139</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/external-tool-response.mapper.ts:139</a></div>
                 </td>
             </tr>
 
@@ -859,7 +859,7 @@ import {
 	CustomParameterLocationParams,
 	CustomParameterScopeTypeParams,
 	CustomParameterTypeParams,
-} from &#x27;../../interface&#x27;;
+} from &#x27;../../common/interface&#x27;;
 import {
 	BasicToolConfigResponse,
 	CustomParameterResponse,
@@ -870,8 +870,8 @@ import {
 	ToolConfigurationEntryResponse,
 	ToolConfigurationListResponse,
 	ToolReferenceResponse,
-} from &#x27;../dto&#x27;;
-import { statusMapping } from &#x27;./school-external-tool-response.mapper&#x27;;
+} from &#x27;../controller/dto&#x27;;
+import { statusMapping } from &#x27;../../school-external-tool/mapper&#x27;;
 
 const scopeMapping: Record&lt;CustomParameterScope, CustomParameterScopeTypeParams&gt; &#x3D; {
 	[CustomParameterScope.GLOBAL]: CustomParameterScopeTypeParams.GLOBAL,

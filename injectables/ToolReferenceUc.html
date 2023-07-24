@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/uc/tool-reference.uc.ts</code>
+            <code>apps/server/src/modules/tool/external-tool/uc/tool-reference.uc.ts</code>
         </p>
 
 
@@ -131,7 +131,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/tool/uc/tool-reference.uc.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/tool-reference.uc.ts:21</a></div>
                             </td>
                         </tr>
 
@@ -233,8 +233,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="50"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/tool-reference.uc.ts:50</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="48"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/tool-reference.uc.ts:48</a></div>
                 </td>
             </tr>
 
@@ -317,8 +317,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="80"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/tool-reference.uc.ts:80</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="78"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/tool-reference.uc.ts:78</a></div>
                 </td>
             </tr>
 
@@ -401,8 +401,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="97"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/tool-reference.uc.ts:97</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="95"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/tool-reference.uc.ts:95</a></div>
                 </td>
             </tr>
 
@@ -473,8 +473,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="93"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/tool-reference.uc.ts:93</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="91"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/tool-reference.uc.ts:91</a></div>
                 </td>
             </tr>
 
@@ -544,8 +544,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="31"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/tool-reference.uc.ts:31</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="29"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/tool-reference.uc.ts:29</a></div>
                 </td>
             </tr>
 
@@ -635,14 +635,12 @@ import {
 	ToolConfigurationStatus,
 } from &#x27;@shared/domain&#x27;;
 import { Action } from &#x27;@src/modules/authorization&#x27;;
-import {
-	CommonToolService,
-	ContextExternalToolService,
-	ExternalToolService,
-	SchoolExternalToolService,
-} from &#x27;../service&#x27;;
-import { ToolContextType } from &#x27;../interface&#x27;;
-import { ToolReferenceMapper } from &#x27;../controller/mapper/tool-reference.mapper&#x27;;
+import { ToolContextType } from &#x27;../../common/interface&#x27;;
+import { ExternalToolService } from &#x27;../service&#x27;;
+import { SchoolExternalToolService } from &#x27;../../school-external-tool/service&#x27;;
+import { ContextExternalToolService } from &#x27;../../context-external-tool/service&#x27;;
+import { CommonToolService } from &#x27;../../common/service&#x27;;
+import { ToolReferenceMapper } from &#x27;../mapper/tool-reference.mapper&#x27;;
 
 @Injectable()
 export class ToolReferenceUc {

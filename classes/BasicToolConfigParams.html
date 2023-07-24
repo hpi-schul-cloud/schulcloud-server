@@ -68,7 +68,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/controller/dto/request/config/basic-tool-config.params.ts</code>
+            <code>apps/server/src/modules/tool/external-tool/controller/dto/request/config/basic-tool-config.params.ts</code>
         </p>
 
 
@@ -226,7 +226,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IsEnum, IsString } from &#x27;class-validator&#x27;;
 import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
 import { ExternalToolConfigCreateParams } from &#x27;./external-tool-config.params&#x27;;
-import { ToolConfigType } from &#x27;../../../../interface&#x27;;
+import { ToolConfigType } from &#x27;../../../../../common/interface&#x27;;
 
 export class BasicToolConfigParams extends ExternalToolConfigCreateParams {
 	@IsEnum(ToolConfigType)

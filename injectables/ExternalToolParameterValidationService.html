@@ -40,7 +40,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >CommonToolValidationService</li>
+  <li class="breadcrumb-item" >ExternalToolParameterValidationService</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/service/validation/common-tool-validation.service.ts</code>
+            <code>apps/server/src/modules/tool/external-tool/service/external-tool-parameter-validation.service.ts</code>
         </p>
 
 
@@ -144,7 +144,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/tool/service/validation/common-tool-validation.service.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-parameter-validation.service.ts:8</a></div>
                             </td>
                         </tr>
 
@@ -210,7 +210,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="77"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/common-tool-validation.service.ts:77</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-parameter-validation.service.ts:77</a></div>
                 </td>
             </tr>
 
@@ -281,7 +281,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="137"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/common-tool-validation.service.ts:137</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-parameter-validation.service.ts:137</a></div>
                 </td>
             </tr>
 
@@ -352,7 +352,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="61"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/common-tool-validation.service.ts:61</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-parameter-validation.service.ts:61</a></div>
                 </td>
             </tr>
 
@@ -423,7 +423,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="121"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/common-tool-validation.service.ts:121</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-parameter-validation.service.ts:121</a></div>
                 </td>
             </tr>
 
@@ -495,7 +495,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="67"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/common-tool-validation.service.ts:67</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-parameter-validation.service.ts:67</a></div>
                 </td>
             </tr>
 
@@ -566,7 +566,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="113"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/common-tool-validation.service.ts:113</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-parameter-validation.service.ts:113</a></div>
                 </td>
             </tr>
 
@@ -637,7 +637,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="86"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/common-tool-validation.service.ts:86</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-parameter-validation.service.ts:86</a></div>
                 </td>
             </tr>
 
@@ -708,7 +708,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="11"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/common-tool-validation.service.ts:11</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-parameter-validation.service.ts:11</a></div>
                 </td>
             </tr>
 
@@ -779,7 +779,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="100"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/common-tool-validation.service.ts:100</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-parameter-validation.service.ts:100</a></div>
                 </td>
             </tr>
 
@@ -837,10 +837,10 @@
 import { ValidationError } from &#x27;@shared/common&#x27;;
 import { autoParameters, CustomParameterScope } from &#x27;@shared/domain&#x27;;
 import { CustomParameterDO, ExternalToolDO } from &#x27;@shared/domain/domainobject/tool&#x27;;
-import { ExternalToolService } from &#x27;../external-tool.service&#x27;;
+import { ExternalToolService } from &#x27;./external-tool.service&#x27;;
 
 @Injectable()
-export class CommonToolValidationService {
+export class ExternalToolParameterValidationService {
 	constructor(private readonly externalToolService: ExternalToolService) {}
 
 	async validateCommon(externalToolDO: ExternalToolDO | Partial&lt;ExternalToolDO&gt;): Promise&lt;void&gt; {
@@ -1022,7 +1022,7 @@ export class CommonToolValidationService {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'CommonToolValidationService.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'ExternalToolParameterValidationService.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

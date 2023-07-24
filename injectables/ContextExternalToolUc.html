@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/uc/context-external-tool.uc.ts</code>
+            <code>apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts</code>
         </p>
 
 
@@ -124,7 +124,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/tool/uc/context-external-tool.uc.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -214,7 +214,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="18"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/context-external-tool.uc.ts:18</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:18</a></div>
                 </td>
             </tr>
 
@@ -297,7 +297,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="38"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/context-external-tool.uc.ts:38</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:38</a></div>
                 </td>
             </tr>
 
@@ -381,7 +381,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="62"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/context-external-tool.uc.ts:62</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:62</a></div>
                 </td>
             </tr>
 
@@ -464,7 +464,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="52"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/context-external-tool.uc.ts:52</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:52</a></div>
                 </td>
             </tr>
 
@@ -547,9 +547,9 @@ import { ContextExternalToolDO, ContextRef, EntityId, Permission } from &#x27;@s
 import { Action } from &#x27;@src/modules/authorization&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { ForbiddenLoggableException } from &#x27;@src/modules/authorization/errors/forbidden.loggable-exception&#x27;;
-import { ContextExternalTool } from &#x27;./dto&#x27;;
 import { ContextExternalToolService, ContextExternalToolValidationService } from &#x27;../service&#x27;;
-import { ToolContextType } from &#x27;../interface&#x27;;
+import { ContextExternalTool } from &#x27;./dto/context-external-tool.types&#x27;;
+import { ToolContextType } from &#x27;../../common/interface&#x27;;
 
 @Injectable()
 export class ContextExternalToolUc {

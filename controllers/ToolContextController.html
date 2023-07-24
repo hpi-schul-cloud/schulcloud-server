@@ -61,7 +61,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/controller/tool-context.controller.ts</code>
+            <code>apps/server/src/modules/tool/context-external-tool/controller/tool-context.controller.ts</code>
         </p>
 
             <p class="comment">
@@ -172,7 +172,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="45"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool-context.controller.ts:45</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/tool-context.controller.ts:45</a></div>
                 </td>
             </tr>
 
@@ -266,7 +266,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="68"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool-context.controller.ts:68</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/tool-context.controller.ts:68</a></div>
                 </td>
             </tr>
 
@@ -362,7 +362,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="88"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool-context.controller.ts:88</a></div>
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/tool-context.controller.ts:88</a></div>
                 </td>
             </tr>
 
@@ -438,21 +438,21 @@
 	ApiUnprocessableEntityResponse,
 } from &#x27;@nestjs/swagger&#x27;;
 import { Body, Controller, Delete, Get, Param, Post } from &#x27;@nestjs/common&#x27;;
-import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
-import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
 import { ContextExternalToolDO } from &#x27;@shared/domain&#x27;;
+import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
+import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
+import { ContextExternalToolRequestMapper, ContextExternalToolResponseMapper } from &#x27;../mapper&#x27;;
 import {
+	ContextExternalToolContextParams,
 	ContextExternalToolIdParams,
 	ContextExternalToolPostParams,
 	ContextExternalToolResponse,
-	ContextExternalToolContextParams,
 	ContextExternalToolSearchListResponse,
 } from &#x27;./dto&#x27;;
 import { ContextExternalToolUc } from &#x27;../uc&#x27;;
-import { ContextExternalToolRequestMapper, ContextExternalToolResponseMapper } from &#x27;./mapper&#x27;;
-import { ContextExternalTool } from &#x27;../uc/dto&#x27;;
+import { ContextExternalTool } from &#x27;../uc/dto/context-external-tool.types&#x27;;
 
 @ApiTags(&#x27;Tool&#x27;)
 @Authenticate(&#x27;jwt&#x27;)

@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/launch-tool/service/strategy/lti11-tool-launch.strategy.ts</code>
+            <code>apps/server/src/modules/tool/tool-launch/service/strategy/lti11-tool-launch.strategy.ts</code>
         </p>
 
 
@@ -169,12 +169,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, pseudonymService: <a href="../injectables/PseudonymService.html" target="_self">PseudonymService</a>, lti11EncryptionService: <a href="../injectables/Lti11EncryptionService.html" target="_self">Lti11EncryptionService</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>)</code>
+<code>constructor(userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, pseudonymService: <a href="../injectables/PseudonymService.html" target="_self">PseudonymService</a>, lti11EncryptionService: <a href="../injectables/Lti11EncryptionService.html" target="_self">Lti11EncryptionService</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/lti11-tool-launch.strategy.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/strategy/lti11-tool-launch.strategy.ts:17</a></div>
                             </td>
                         </tr>
 
@@ -191,18 +191,6 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                                <tr>
-                                                        <td>externalToolService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/ExternalToolService.html" target="_self" >ExternalToolService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
                                                 <tr>
                                                         <td>userService</td>
                                                   
@@ -307,7 +295,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:31</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:29</a></code>
 </div>
                 </td>
             </tr>
@@ -397,7 +385,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:123</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:121</a></code>
 </div>
                 </td>
             </tr>
@@ -487,7 +475,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:148</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:146</a></code>
 </div>
                 </td>
             </tr>
@@ -1510,25 +1498,23 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, InternalServerErrorException, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
-import { EntityId, LtiPrivacyPermission, Pseudonym, RoleName, UserDO } from &#x27;@shared/domain&#x27;;
+import { EntityId, ExternalToolDO, LtiPrivacyPermission, Pseudonym, RoleName, UserDO } from &#x27;@shared/domain&#x27;;
 import { RoleReference } from &#x27;@shared/domain/domainobject&#x27;;
 import { CourseRepo } from &#x27;@shared/repo&#x27;;
 import { PseudonymService } from &#x27;@src/modules/pseudonym&#x27;;
 import { SchoolService } from &#x27;@src/modules/school&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
 import { Authorization } from &#x27;oauth-1.0a&#x27;;
-import { LtiRole } from &#x27;../../../interface&#x27;;
-import { ExternalToolService } from &#x27;../../../service&#x27;;
 import { LtiRoleMapper } from &#x27;../../mapper&#x27;;
 import { LaunchRequestMethod, PropertyData, PropertyLocation } from &#x27;../../types&#x27;;
 import { Lti11EncryptionService } from &#x27;../lti11-encryption.service&#x27;;
 import { AbstractLaunchStrategy } from &#x27;./abstract-launch.strategy&#x27;;
 import { IToolLaunchParams } from &#x27;./tool-launch-params.interface&#x27;;
+import { LtiRole } from &#x27;../../../common/interface&#x27;;
 
 @Injectable()
 export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 	constructor(
-		private readonly externalToolService: ExternalToolService,
 		private readonly userService: UserService,
 		private readonly pseudonymService: PseudonymService,
 		private readonly lti11EncryptionService: Lti11EncryptionService,
@@ -1546,7 +1532,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		const { config } &#x3D; data.externalToolDO;
 		const contextId: EntityId &#x3D; data.contextExternalToolDO.contextRef.id;
 
-		if (!this.externalToolService.isLti11Config(config)) {
+		if (!ExternalToolDO.isLti11Config(config)) {
 			throw new UnprocessableEntityException(
 				&#x60;Unable to build LTI 1.1 launch data. Tool configuration is of type ${config.type}. Expected &quot;lti11&quot;&#x60;
 			);
