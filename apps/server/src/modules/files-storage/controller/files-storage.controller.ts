@@ -292,8 +292,6 @@ export class FilesStorageController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() preview: PreviewParams
 	): Promise<FileRecordResponse> {
-		await Promise.resolve();
-
 		const hash = crypto
 			.createHash('md5')
 			.update(
