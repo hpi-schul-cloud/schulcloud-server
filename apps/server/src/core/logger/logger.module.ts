@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { ConfigService } from '@nestjs/config';
 import { utilities, WinstonModule } from 'nest-winston';
 import winston from 'winston';
@@ -12,11 +11,10 @@ import { Logger } from './logger';
 	imports: [
 		WinstonModule.forRootAsync({
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			useFactory: (_configService: ConfigService<ILoggerConfig, true>) => {
+			useFactory: (configService: ConfigService<ILoggerConfig, true>) => {
 				return {
 					levels: winston.config.syslog.levels,
-					// level: configService.get<string>('NEST_LOG_LEVEL'),
-					level: Configuration.get('NEST_LOG_LEVEL') as string,
+					level: configService.get<string>('NEST_LOG_LEVEL'),
 					exitOnError: false,
 					transports: [
 						new winston.transports.Console({
@@ -31,7 +29,7 @@ import { Logger } from './logger';
 					],
 				};
 			},
-			inject: [Configuration],
+			inject: [ConfigService],
 		}),
 	],
 	providers: [LegacyLogger, Logger, ErrorLogger],
