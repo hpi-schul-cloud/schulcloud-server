@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { ConfigService } from '@nestjs/config';
 import { utilities, WinstonModule } from 'nest-winston';
 import winston from 'winston';
@@ -15,7 +16,7 @@ import { Logger } from './logger';
 				return {
 					levels: winston.config.syslog.levels,
 					// level: configService.get<string>('NEST_LOG_LEVEL'),
-					level: 'debug',
+					level: Configuration.get('NEST_LOG_LEVEL') as string,
 					exitOnError: false,
 					transports: [
 						new winston.transports.Console({
