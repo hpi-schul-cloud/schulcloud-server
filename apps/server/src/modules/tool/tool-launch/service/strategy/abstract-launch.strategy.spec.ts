@@ -25,7 +25,7 @@ import {
 	setupEntities,
 } from '@shared/testing';
 import { SchoolService } from '@src/modules/school';
-import { ToolContextType } from '../../../interface';
+import { ToolContextType } from '../../../common/interface';
 import { MissingToolParameterValueLoggableException, ParameterTypeNotImplementedLoggableException } from '../../error';
 import {
 	LaunchRequestMethod,

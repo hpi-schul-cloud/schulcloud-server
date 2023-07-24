@@ -28,6 +28,7 @@ import { CommonToolService } from './common/service';
 		SchoolExternalToolModule,
 		ContextExternalToolModule,
 		ToolLaunchModule,
+		// TODO: remove this when reference loader is using service instead of repo
 		CommonToolService,
 	],
 })

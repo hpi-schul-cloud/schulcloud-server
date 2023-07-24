@@ -28,7 +28,7 @@ import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
 import { Authorization } from 'oauth-1.0a';
 import { LtiRole, ToolContextType } from '../../../common/interface';
-import { ExternalToolService } from '../../../service';
+import { ExternalToolService } from '../../../external-tool/service';
 import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { Lti11ToolLaunchStrategy } from './lti11-tool-launch.strategy';
