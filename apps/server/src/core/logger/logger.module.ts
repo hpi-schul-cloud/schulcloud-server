@@ -14,6 +14,7 @@ import { Logger } from './logger';
 			useFactory: (_configService: ConfigService<ILoggerConfig, true>) => {
 				return {
 					levels: winston.config.syslog.levels,
+					// level: configService.get<string>('NEST_LOG_LEVEL'),
 					level: 'debug',
 					exitOnError: false,
 					transports: [
