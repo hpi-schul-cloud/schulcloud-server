@@ -7,7 +7,7 @@ import { BoardExternalReference, BoardExternalReferenceType, EntityId } from '@s
 import { BoardRepo, LessonRepo } from '@shared/repo';
 import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { CardService, ColumnBoardService, ColumnService, ContentElementService } from '@src/modules/board';
-import { TaskService } from '@src/modules/task/service';
+import { TaskService } from '@src/modules/task';
 import { ColumnBoardTargetService } from './column-board-target.service';
 import { RoomsService } from './rooms.service';
 
@@ -29,7 +29,6 @@ describe('rooms service', () => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
 		await setupEntities();
 		module = await Test.createTestingModule({
-			imports: [],
 			providers: [
 				RoomsService,
 				{
@@ -173,7 +172,7 @@ describe('rooms service', () => {
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
-						expect(columnBoardService.create).toBeCalledWith<BoardExternalReference[]>({
+						expect(columnBoardService.createWelcomeColumnBoard).toBeCalledWith<BoardExternalReference[]>({
 							type: BoardExternalReferenceType.Course,
 							id: board.course.id,
 						});
@@ -186,7 +185,9 @@ describe('rooms service', () => {
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
-						expect(columnBoardService.create).not.toBeCalledWith(expect.objectContaining({ id: board.course.id }));
+						expect(columnBoardService.createWelcomeColumnBoard).not.toBeCalledWith(
+							expect.objectContaining({ id: board.course.id })
+						);
 					});
 				});
 
@@ -213,7 +214,7 @@ describe('rooms service', () => {
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
-						expect(columnBoardService.create).toBeCalledWith<BoardExternalReference[]>({
+						expect(columnBoardService.createWelcomeColumnBoard).toBeCalledWith<BoardExternalReference[]>({
 							type: BoardExternalReferenceType.Course,
 							id: board.course.id,
 						});
@@ -235,7 +236,7 @@ describe('rooms service', () => {
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
-						expect(columnBoardService.create).toBeCalledWith<BoardExternalReference[]>({
+						expect(columnBoardService.createWelcomeColumnBoard).toBeCalledWith<BoardExternalReference[]>({
 							type: BoardExternalReferenceType.Course,
 							id: board.course.id,
 						});
@@ -256,7 +257,7 @@ describe('rooms service', () => {
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
-						expect(columnBoardService.create).not.toBeCalled();
+						expect(columnBoardService.createWelcomeColumnBoard).not.toBeCalled();
 					});
 				});
 

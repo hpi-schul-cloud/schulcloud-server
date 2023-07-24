@@ -1,7 +1,7 @@
 import { SchoolExternalTool } from '@shared/domain';
 import { schoolExternalToolFactory } from '@shared/testing';
 import { ContextExternalToolScope } from './context-external-tool.scope';
-import { ToolContextType } from '../../../modules/tool/interface';
+import { ToolContextType } from '../../../modules/tool/common/interface';
 
 describe('CourseExternalToolScope', () => {
 	let scope: ContextExternalToolScope;
