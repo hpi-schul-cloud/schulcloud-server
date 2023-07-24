@@ -34,7 +34,7 @@ describe('WebSocketGateway (WsAdapter)', () => {
 		app = testingApp;
 
 		await app.listen(3335);
-		ws = new WebSocket('ws://localhost:3345/TEST');
+		ws = new WebSocket('ws://localhost:3346/TEST');
 		utilsSpy = jest.spyOn(Utils, 'messageHandler').mockReturnValue();
 	});
 

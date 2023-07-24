@@ -14,7 +14,7 @@ describe('TldrawGateway', () => {
 	let clientSocket: WebSocket;
 	let app: INestApplication;
 	const appPort = 3434;
-	const gatewayPort = 3345;
+	const gatewayPort = 3346;
 
 	async function createNestApp(): Promise<void> {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
