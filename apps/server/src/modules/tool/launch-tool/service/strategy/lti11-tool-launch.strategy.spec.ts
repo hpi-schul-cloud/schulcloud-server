@@ -8,20 +8,22 @@ import {
 	Lti11ToolConfigDO,
 	LtiMessageType,
 	LtiPrivacyPermission,
-	PseudonymDO,
+	Pseudonym,
 	RoleName,
 	SchoolExternalToolDO,
 	ToolConfigType,
 	UserDO,
 } from '@shared/domain';
+import { CourseRepo } from '@shared/repo';
 import {
 	contextExternalToolDOFactory,
 	externalToolDOFactory,
 	schoolExternalToolDOFactory,
 	userDoFactory,
 } from '@shared/testing';
-import { pseudonymDOFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
-import { PseudonymService } from '@src/modules/pseudonym';
+import { pseudonymFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
+import { PseudonymService } from '@src/modules/pseudonym/service';
+import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
 import { Authorization } from 'oauth-1.0a';
@@ -63,6 +65,14 @@ describe('Lti11ToolLaunchStrategy', () => {
 				{
 					provide: Lti11EncryptionService,
 					useValue: createMock<Lti11EncryptionService>(),
+				},
+				{
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
+				},
+				{
+					provide: CourseRepo,
+					useValue: createMock<CourseRepo>(),
 				},
 			],
 		}).compile();
@@ -167,7 +177,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 						}),
 						new PropertyData({
 							name: 'launch_presentation_locale',
-							value: 'en',
+							value: 'de-DE',
 							location: PropertyLocation.BODY,
 						}),
 						new PropertyData({
@@ -353,7 +363,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 
 				const user: UserDO = userDoFactory.buildWithId();
 
-				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId();
+				const pseudonym: Pseudonym = pseudonymFactory.buildWithId();
 
 				userService.findById.mockResolvedValue(user);
 				pseudonymService.findOrCreatePseudonym.mockResolvedValue(pseudonym);
