@@ -7,13 +7,13 @@ import {
 	ContextRef,
 	IContextExternalToolProperties,
 	SchoolExternalTool,
+	SchoolExternalToolRefDO,
 } from '@shared/domain';
 import { ContextExternalToolType } from '@shared/domain/entity/tools/course-external-tool/context-external-tool-type.enum';
 import { BaseDORepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { ToolContextType } from '@src/modules/tool/interface';
-import { ContextExternalToolQuery } from '@src/modules/tool/uc/dto';
-import { SchoolExternalToolRefDO } from '../../domain';
+import { ToolContextType } from '@src/modules/tool/common/interface/tool-context-type.enum';
+import { ContextExternalToolQuery } from '@src/modules/tool/context-external-tool/uc/dto/context-external-tool.types';
 import { ExternalToolRepoMapper } from '../externaltool';
 import { ContextExternalToolScope } from './context-external-tool.scope';
 
@@ -23,11 +23,7 @@ export class ContextExternalToolRepo extends BaseDORepo<
 	ContextExternalTool,
 	IContextExternalToolProperties
 > {
-	constructor(
-		private readonly externalToolRepoMapper: ExternalToolRepoMapper,
-		protected readonly _em: EntityManager,
-		protected readonly logger: LegacyLogger
-	) {
+	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
 	}
 
@@ -86,7 +82,7 @@ export class ContextExternalToolRepo extends BaseDORepo<
 			contextRef,
 			displayName: entity.displayName,
 			toolVersion: entity.toolVersion,
-			parameters: this.externalToolRepoMapper.mapCustomParameterEntryEntitiesToDOs(entity.parameters),
+			parameters: ExternalToolRepoMapper.mapCustomParameterEntryEntitiesToDOs(entity.parameters),
 		});
 	}
 
@@ -97,7 +93,7 @@ export class ContextExternalToolRepo extends BaseDORepo<
 			displayName: entityDO.displayName,
 			schoolTool: this._em.getReference(SchoolExternalTool, entityDO.schoolToolRef.schoolToolId),
 			toolVersion: entityDO.toolVersion,
-			parameters: this.externalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),
+			parameters: ExternalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),
 		};
 	}
 
