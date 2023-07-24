@@ -10,7 +10,7 @@ import { LtiToolRepo } from '@shared/repo';
 import { ltiToolDOFactory, pseudonymFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { TeamDto, TeamUserDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
-import { ExternalToolService } from '@src/modules/tool';
+import { ExternalToolService } from '@src/modules/tool/external-tool/service';
 import { PseudonymService } from '@src/modules/pseudonym';
 import { UserService } from '@src/modules/user';
 
