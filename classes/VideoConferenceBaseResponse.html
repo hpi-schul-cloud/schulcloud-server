@@ -130,7 +130,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/video-conference/controller/dto/response/video-conference-deprecated.response.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/video-conference/controller/dto/response/video-conference-deprecated.response.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -192,7 +192,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/video-conference/controller/dto/response/video-conference-deprecated.response.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/video-conference/controller/dto/response/video-conference-deprecated.response.ts:12</a></div>
                         </td>
                     </tr>
 
@@ -218,7 +218,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/video-conference/controller/dto/response/video-conference-deprecated.response.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/video-conference/controller/dto/response/video-conference-deprecated.response.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -245,7 +245,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/video-conference/controller/dto/response/video-conference-deprecated.response.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/video-conference/controller/dto/response/video-conference-deprecated.response.ts:8</a></div>
                         </td>
                     </tr>
 
@@ -265,7 +265,6 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Permission } from &#x27;@shared/domain&#x27;;
-import { VideoConferenceOptions } from &#x27;../../../interface&#x27;;
 import { VideoConferenceStateResponse } from &#x27;./video-conference-state.response&#x27;;
 
 /**
@@ -288,10 +287,10 @@ export class VideoConferenceBaseResponse {
 /**
  * @deprecated Please use new video conference response classes
  */
-export class VideoConferenceJoinResponse extends VideoConferenceBaseResponse {
+export class DeprecatedVideoConferenceJoinResponse extends VideoConferenceBaseResponse {
 	url?: string;
 
-	constructor(resp: VideoConferenceJoinResponse) {
+	constructor(resp: DeprecatedVideoConferenceJoinResponse) {
 		super(resp);
 		this.url &#x3D; resp.url;
 	}
@@ -300,10 +299,16 @@ export class VideoConferenceJoinResponse extends VideoConferenceBaseResponse {
 /**
  * @deprecated Please use new video conference response classes
  */
-export class VideoConferenceInfoResponse extends VideoConferenceBaseResponse {
-	options?: VideoConferenceOptions;
+export class DeprecatedVideoConferenceInfoResponse extends VideoConferenceBaseResponse {
+	options?: {
+		everyAttendeeJoinsMuted: boolean;
 
-	constructor(resp: VideoConferenceInfoResponse) {
+		everybodyJoinsAsModerator: boolean;
+
+		moderatorMustApproveJoinRequests: boolean;
+	};
+
+	constructor(resp: DeprecatedVideoConferenceInfoResponse) {
 		super(resp);
 		this.options &#x3D; resp.options;
 	}

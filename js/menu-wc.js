@@ -3030,6 +3030,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/DeleteFilesConsole.html" data-type="entity-link" >DeleteFilesConsole</a>
                             </li>
                             <li class="link">
+                                <a href="classes/DeprecatedVideoConferenceInfoResponse.html" data-type="entity-link" class="deprecated-name">DeprecatedVideoConferenceInfoResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/DeprecatedVideoConferenceJoinResponse.html" data-type="entity-link" class="deprecated-name">DeprecatedVideoConferenceJoinResponse</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/DoBaseFactory.html" data-type="entity-link" >DoBaseFactory</a>
                             </li>
                             <li class="link">
@@ -3256,6 +3262,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/ImportUserUrlParams.html" data-type="entity-link" >ImportUserUrlParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/InvalidOriginForLogoutUrlLoggableException.html" data-type="entity-link" >InvalidOriginForLogoutUrlLoggableException</a>
                             </li>
                             <li class="link">
                                 <a href="classes/IservMapper.html" data-type="entity-link" >IservMapper</a>
@@ -4155,19 +4164,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/VideoConferenceInfo.html" data-type="entity-link" >VideoConferenceInfo</a>
                             </li>
                             <li class="link">
-                                <a href="classes/VideoConferenceInfoResponse.html" data-type="entity-link" class="deprecated-name">VideoConferenceInfoResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/VideoConferenceInfoResponse-1.html" data-type="entity-link" >VideoConferenceInfoResponse</a>
+                                <a href="classes/VideoConferenceInfoResponse.html" data-type="entity-link" >VideoConferenceInfoResponse</a>
                             </li>
                             <li class="link">
                                 <a href="classes/VideoConferenceJoin.html" data-type="entity-link" >VideoConferenceJoin</a>
                             </li>
                             <li class="link">
-                                <a href="classes/VideoConferenceJoinResponse.html" data-type="entity-link" class="deprecated-name">VideoConferenceJoinResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/VideoConferenceJoinResponse-1.html" data-type="entity-link" >VideoConferenceJoinResponse</a>
+                                <a href="classes/VideoConferenceJoinResponse.html" data-type="entity-link" >VideoConferenceJoinResponse</a>
                             </li>
                             <li class="link">
                                 <a href="classes/VideoConferenceMapper.html" data-type="entity-link" >VideoConferenceMapper</a>

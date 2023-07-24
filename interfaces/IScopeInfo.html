@@ -261,13 +261,16 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain/types/entity-id&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain&#x27;;
 
 export interface IScopeInfo {
 	scopeId: EntityId;
+
 	scopeName: string;
-	logoutUrl: string;
+
 	title: string;
+
+	logoutUrl: string;
 }
 </code></pre>
     </div>

@@ -420,16 +420,16 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Permission, VideoConferenceScope } from &#x27;@shared/domain&#x27;;
 import { AuthorizableReferenceType } from &#x27;@src/modules/authorization&#x27;;
+import { BBBRole } from &#x27;../bbb&#x27;;
 import {
 	VideoConferenceCreateParams,
 	VideoConferenceInfoResponse,
 	VideoConferenceJoinResponse,
 	VideoConferenceStateResponse,
 } from &#x27;../controller/dto&#x27;;
-import { VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from &#x27;../uc/dto&#x27;;
-import { BBBRole } from &#x27;../bbb&#x27;;
-import { VideoConferenceOptions } from &#x27;../interface&#x27;;
 import { VideoConferenceOptionsResponse } from &#x27;../controller/dto/response/video-conference-options.response&#x27;;
+import { defaultVideoConferenceOptions, VideoConferenceOptions } from &#x27;../interface&#x27;;
+import { VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from &#x27;../uc/dto&#x27;;
 
 export const PermissionMapping &#x3D; {
 	[BBBRole.MODERATOR]: Permission.START_MEETING,
@@ -467,9 +467,12 @@ export class VideoConferenceMapper {
 
 	static toVideoConferenceOptions(params: VideoConferenceCreateParams): VideoConferenceOptions {
 		return {
-			everyAttendeeJoinsMuted: params.everyAttendeeJoinsMuted ?? false,
-			everybodyJoinsAsModerator: params.everybodyJoinsAsModerator ?? false,
-			moderatorMustApproveJoinRequests: params.moderatorMustApproveJoinRequests ?? false,
+			everyAttendeeJoinsMuted: params.everyAttendeeJoinsMuted ?? defaultVideoConferenceOptions.everyAttendeeJoinsMuted,
+			everybodyJoinsAsModerator:
+				params.everybodyJoinsAsModerator ?? defaultVideoConferenceOptions.everybodyJoinsAsModerator,
+			moderatorMustApproveJoinRequests:
+				params.moderatorMustApproveJoinRequests ?? defaultVideoConferenceOptions.moderatorMustApproveJoinRequests,
+			logoutUrl: params.logoutUrl,
 		};
 	}
 }

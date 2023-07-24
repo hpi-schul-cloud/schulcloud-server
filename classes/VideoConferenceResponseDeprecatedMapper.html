@@ -260,7 +260,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/VideoConferenceInfoResponse.html" target="_self" >VideoConferenceInfoResponse</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/DeprecatedVideoConferenceInfoResponse.html" target="_self" >DeprecatedVideoConferenceInfoResponse</a></code>
 
                     </div>
                     <div class="io-description">
@@ -331,7 +331,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/VideoConferenceJoinResponse.html" target="_self" >VideoConferenceJoinResponse</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/DeprecatedVideoConferenceJoinResponse.html" target="_self" >DeprecatedVideoConferenceJoinResponse</a></code>
 
                     </div>
                     <div class="io-description">
@@ -351,13 +351,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { VideoConference, VideoConferenceInfo, VideoConferenceJoin } from &#x27;../uc/dto&#x27;;
-import { BBBBaseResponse } from &#x27;../bbb&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BBBBaseResponse } from &#x27;../bbb&#x27;;
 import {
+	DeprecatedVideoConferenceInfoResponse,
+	DeprecatedVideoConferenceJoinResponse,
 	VideoConferenceBaseResponse,
-	VideoConferenceInfoResponse,
-	VideoConferenceJoinResponse,
 } from &#x27;../controller/dto/response/video-conference-deprecated.response&#x27;;
+import { VideoConference, VideoConferenceInfo, VideoConferenceJoin } from &#x27;../uc/dto&#x27;;
 import { VideoConferenceMapper } from &#x27;./video-conference.mapper&#x27;;
 
 /**
@@ -371,16 +371,16 @@ export class VideoConferenceResponseDeprecatedMapper {
 		});
 	}
 
-	static mapToJoinResponse(from: VideoConferenceJoin): VideoConferenceJoinResponse {
-		return new VideoConferenceJoinResponse({
+	static mapToJoinResponse(from: VideoConferenceJoin): DeprecatedVideoConferenceJoinResponse {
+		return new DeprecatedVideoConferenceJoinResponse({
 			state: VideoConferenceMapper.toVideoConferenceStateResponse(from.state),
 			permission: from.permission,
 			url: from.url,
 		});
 	}
 
-	static mapToInfoResponse(from: VideoConferenceInfo): VideoConferenceInfoResponse {
-		return new VideoConferenceInfoResponse({
+	static mapToInfoResponse(from: VideoConferenceInfo): DeprecatedVideoConferenceInfoResponse {
+		return new DeprecatedVideoConferenceInfoResponse({
 			state: VideoConferenceMapper.toVideoConferenceStateResponse(from.state),
 			permission: from.permission,
 			options: from.options,

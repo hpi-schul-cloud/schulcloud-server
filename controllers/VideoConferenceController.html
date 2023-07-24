@@ -181,8 +181,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="126"
-                            class="link-to-prism">apps/server/src/modules/video-conference/controller/video-conference.controller.ts:126</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="133"
+                            class="link-to-prism">apps/server/src/modules/video-conference/controller/video-conference.controller.ts:133</a></div>
                 </td>
             </tr>
 
@@ -277,8 +277,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="99"
-                            class="link-to-prism">apps/server/src/modules/video-conference/controller/video-conference.controller.ts:99</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="106"
+                            class="link-to-prism">apps/server/src/modules/video-conference/controller/video-conference.controller.ts:106</a></div>
                 </td>
             </tr>
 
@@ -373,8 +373,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="71"
-                            class="link-to-prism">apps/server/src/modules/video-conference/controller/video-conference.controller.ts:71</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="78"
+                            class="link-to-prism">apps/server/src/modules/video-conference/controller/video-conference.controller.ts:78</a></div>
                 </td>
             </tr>
 
@@ -455,7 +455,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>start(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, scopeParams: <a href="../classes/VideoConferenceScopeParams.html" target="_self">VideoConferenceScopeParams</a>, params: <a href="../classes/VideoConferenceCreateParams.html" target="_self">VideoConferenceCreateParams</a>)</code>
+                    <code>start(req: Request, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, scopeParams: <a href="../classes/VideoConferenceScopeParams.html" target="_self">VideoConferenceScopeParams</a>, params: <a href="../classes/VideoConferenceCreateParams.html" target="_self">VideoConferenceCreateParams</a>)</code>
                 </td>
             </tr>
 
@@ -469,8 +469,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="43"
-                            class="link-to-prism">apps/server/src/modules/video-conference/controller/video-conference.controller.ts:43</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="45"
+                            class="link-to-prism">apps/server/src/modules/video-conference/controller/video-conference.controller.ts:45</a></div>
                 </td>
             </tr>
 
@@ -490,6 +490,18 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <tr>
+                                    <td>req</td>
+                                    <td>
+                                            <code>Request</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
                                 <tr>
                                     <td>currentUser</td>
                                     <td>
@@ -546,20 +558,22 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
-import { Body, Controller, Get, HttpStatus, Param, Put } from &#x27;@nestjs/common&#x27;;
-import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Get, HttpStatus, Param, Put, Req } from &#x27;@nestjs/common&#x27;;
+import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
+import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
+import { Request } from &#x27;express&#x27;;
+import { InvalidOriginForLogoutUrlLoggableException } from &#x27;../error&#x27;;
+import { VideoConferenceOptions } from &#x27;../interface&#x27;;
+import { VideoConferenceMapper } from &#x27;../mapper/video-conference.mapper&#x27;;
+import { VideoConferenceCreateUc, VideoConferenceEndUc, VideoConferenceInfoUc, VideoConferenceJoinUc } from &#x27;../uc&#x27;;
+import { ScopeRef, VideoConferenceInfo, VideoConferenceJoin } from &#x27;../uc/dto&#x27;;
 import {
 	VideoConferenceCreateParams,
 	VideoConferenceInfoResponse,
 	VideoConferenceJoinResponse,
 	VideoConferenceScopeParams,
 } from &#x27;./dto&#x27;;
-import { VideoConferenceCreateUc, VideoConferenceEndUc, VideoConferenceInfoUc, VideoConferenceJoinUc } from &#x27;../uc&#x27;;
-import { ScopeRef, VideoConferenceInfo, VideoConferenceJoin } from &#x27;../uc/dto&#x27;;
-import { VideoConferenceMapper } from &#x27;../mapper/video-conference.mapper&#x27;;
-import { VideoConferenceOptions } from &#x27;../interface&#x27;;
 
 @ApiTags(&#x27;VideoConference&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
@@ -589,10 +603,15 @@ export class VideoConferenceController {
 	})
 	@ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: &#x27;Unable to fetch required data.&#x27; })
 	async start(
+		@Req() req: Request,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() scopeParams: VideoConferenceScopeParams,
 		@Body() params: VideoConferenceCreateParams
 	): Promise&lt;void&gt; {
+		if (params.logoutUrl &amp;&amp; new URL(params.logoutUrl).origin !&#x3D;&#x3D; req.headers.origin) {
+			throw new InvalidOriginForLogoutUrlLoggableException(params.logoutUrl, req.headers.origin);
+		}
+
 		const scopeRef &#x3D; new ScopeRef(scopeParams.scopeId, scopeParams.scope);
 		const videoConferenceOptions: VideoConferenceOptions &#x3D; VideoConferenceMapper.toVideoConferenceOptions(params);
 

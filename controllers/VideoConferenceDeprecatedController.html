@@ -396,7 +396,7 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;:scope/:scopeId&#x27;)<br />@ApiOperation({summary: &#x27;Returns information about a running video conference.&#x27;})<br />@ApiResponse({status: 200, type: VideoConferenceInfoResponse, description: &#x27;Returns a list of information about a video conference.&#x27;})<br />@ApiResponse({status: 400, type: BadRequestException, description: &#x27;Invalid parameters.&#x27;})<br />@ApiResponse({status: 403, type: ForbiddenException, description: &#x27;User does not have the permission to get information about this conference.&#x27;})<br />@ApiResponse({status: 500, type: InternalServerErrorException, description: &#x27;Unable to fetch required data.&#x27;})<br /></code>
+                    <code>@Get(&#x27;:scope/:scopeId&#x27;)<br />@ApiOperation({summary: &#x27;Returns information about a running video conference.&#x27;})<br />@ApiResponse({status: 200, type: DeprecatedVideoConferenceInfoResponse, description: &#x27;Returns a list of information about a video conference.&#x27;})<br />@ApiResponse({status: 400, type: BadRequestException, description: &#x27;Invalid parameters.&#x27;})<br />@ApiResponse({status: 403, type: ForbiddenException, description: &#x27;User does not have the permission to get information about this conference.&#x27;})<br />@ApiResponse({status: 500, type: InternalServerErrorException, description: &#x27;Unable to fetch required data.&#x27;})<br /></code>
                 </td>
             </tr>
 
@@ -465,7 +465,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/VideoConference.html" target="_self" >Promise&lt;VideoConferenceInfoResponse&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../entitys/VideoConference.html" target="_self" >Promise&lt;DeprecatedVideoConferenceInfoResponse&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -479,8 +479,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
-import {
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
 	BadRequestException,
 	Body,
 	Controller,
@@ -493,16 +492,17 @@ import {
 } from &#x27;@nestjs/common&#x27;;
 import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { VideoConferenceScope } from &#x27;@shared/domain/interface&#x27;;
+import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication/interface&#x27;;
+import { BBBBaseResponse } from &#x27;../bbb&#x27;;
+import { defaultVideoConferenceOptions } from &#x27;../interface&#x27;;
 import { VideoConferenceResponseDeprecatedMapper } from &#x27;../mapper/vc-deprecated-response.mapper&#x27;;
 import { VideoConferenceDeprecatedUc } from &#x27;../uc&#x27;;
 import { VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from &#x27;../uc/dto&#x27;;
 import { VideoConferenceCreateParams } from &#x27;./dto&#x27;;
-import { defaultVideoConferenceOptions } from &#x27;../interface&#x27;;
-import { BBBBaseResponse } from &#x27;../bbb&#x27;;
 import {
+	DeprecatedVideoConferenceInfoResponse,
 	VideoConferenceBaseResponse,
-	VideoConferenceInfoResponse,
 } from &#x27;./dto/response/video-conference-deprecated.response&#x27;;
 
 /**
@@ -555,7 +555,7 @@ export class VideoConferenceDeprecatedController {
 	})
 	@ApiResponse({
 		status: 200,
-		type: VideoConferenceInfoResponse,
+		type: DeprecatedVideoConferenceInfoResponse,
 		description: &#x27;Returns a list of information about a video conference.&#x27;,
 	})
 	@ApiResponse({ status: 400, type: BadRequestException, description: &#x27;Invalid parameters.&#x27; })
@@ -569,7 +569,7 @@ export class VideoConferenceDeprecatedController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param(&#x27;scope&#x27;) scope: VideoConferenceScope,
 		@Param(&#x27;scopeId&#x27;) scopeId: string
-	): Promise&lt;VideoConferenceInfoResponse&gt; {
+	): Promise&lt;DeprecatedVideoConferenceInfoResponse&gt; {
 		const dto: VideoConferenceInfo &#x3D; await this.videoConferenceUc.getMeetingInfo(currentUser, scope, scopeId);
 		return VideoConferenceResponseDeprecatedMapper.mapToInfoResponse(dto);
 	}

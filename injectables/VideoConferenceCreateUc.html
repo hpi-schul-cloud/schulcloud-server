@@ -95,10 +95,6 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#mergeOptionsWithDefaults" >mergeOptionsWithDefaults</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
                                 <a href="#prepareBBBCreateConfigBuilder" >prepareBBBCreateConfigBuilder</a>
                             </li>
                             <li>
@@ -223,8 +219,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="50"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-create.uc.ts:50</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="40"
+                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-create.uc.ts:40</a></div>
                 </td>
             </tr>
 
@@ -395,77 +391,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mergeOptionsWithDefaults"></a>
-                    <span class="name">
-                        <span class="modifier">Private</span>
-                        <span ><b>mergeOptionsWithDefaults</b></span>
-                        <a href="#mergeOptionsWithDefaults"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mergeOptionsWithDefaults(options: <a href="../interfaces/VideoConferenceOptions.html" target="_self">VideoConferenceOptions</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="40"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-create.uc.ts:40</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>options</td>
-                                    <td>
-                                                <code><a href="../interfaces/VideoConferenceOptions.html" target="_self" >VideoConferenceOptions</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../interfaces/VideoConferenceOptions.html" target="_self" >VideoConferenceOptions</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="prepareBBBCreateConfigBuilder"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
@@ -484,8 +409,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="70"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-create.uc.ts:70</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="61"
+                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-create.uc.ts:61</a></div>
                 </td>
             </tr>
 
@@ -579,8 +504,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="95"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-create.uc.ts:95</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="86"
+                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-create.uc.ts:86</a></div>
                 </td>
             </tr>
 
@@ -663,8 +588,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="91"
-                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-create.uc.ts:91</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="82"
+                            class="link-to-prism">apps/server/src/modules/video-conference/uc/video-conference-create.uc.ts:82</a></div>
                 </td>
             </tr>
 
@@ -730,10 +655,10 @@ import {
 	BBBService,
 	GuestPolicy,
 } from &#x27;../bbb&#x27;;
-import { IScopeInfo, ScopeRef } from &#x27;./dto&#x27;;
-import { VideoConferenceService } from &#x27;../service&#x27;;
-import { defaultVideoConferenceOptions, VideoConferenceOptions } from &#x27;../interface&#x27;;
 import { ErrorStatus } from &#x27;../error/error-status.enum&#x27;;
+import { VideoConferenceOptions } from &#x27;../interface&#x27;;
+import { VideoConferenceService } from &#x27;../service&#x27;;
+import { IScopeInfo, ScopeRef } from &#x27;./dto&#x27;;
 
 @Injectable()
 export class VideoConferenceCreateUc {
@@ -753,18 +678,8 @@ export class VideoConferenceCreateUc {
 		}
 
 		if (bbbMeetingInfoResponse &#x3D;&#x3D;&#x3D; undefined) {
-			await this.create(currentUserId, scope, this.mergeOptionsWithDefaults(options));
+			await this.create(currentUserId, scope, options);
 		}
-	}
-
-	private mergeOptionsWithDefaults(options: VideoConferenceOptions): VideoConferenceOptions {
-		return {
-			everyAttendeeJoinsMuted: options.everyAttendeeJoinsMuted ?? defaultVideoConferenceOptions.everyAttendeeJoinsMuted,
-			everybodyJoinsAsModerator:
-				options.everybodyJoinsAsModerator ?? defaultVideoConferenceOptions.everybodyJoinsAsModerator,
-			moderatorMustApproveJoinRequests:
-				options.moderatorMustApproveJoinRequests ?? defaultVideoConferenceOptions.moderatorMustApproveJoinRequests,
-		};
 	}
 
 	private async create(currentUserId: EntityId, scope: ScopeRef, options: VideoConferenceOptions): Promise&lt;void&gt; {
@@ -784,6 +699,7 @@ export class VideoConferenceCreateUc {
 		await this.videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions(scope.id, scope.scope, options);
 
 		const configBuilder: BBBCreateConfigBuilder &#x3D; this.prepareBBBCreateConfigBuilder(scope, options, scopeInfo);
+
 		await this.bbbService.create(configBuilder.build());
 	}
 
@@ -795,7 +711,7 @@ export class VideoConferenceCreateUc {
 		const configBuilder: BBBCreateConfigBuilder &#x3D; new BBBCreateConfigBuilder({
 			name: this.videoConferenceService.sanitizeString(scopeInfo.title),
 			meetingID: scope.id,
-		}).withLogoutUrl(scopeInfo.logoutUrl);
+		}).withLogoutUrl(options.logoutUrl ?? scopeInfo.logoutUrl);
 
 		if (options.moderatorMustApproveJoinRequests) {
 			configBuilder.withGuestPolicy(GuestPolicy.ASK_MODERATOR);
