@@ -7,13 +7,13 @@ import {
 	ContextRef,
 	IContextExternalToolProperties,
 	SchoolExternalTool,
+	SchoolExternalToolRefDO,
 } from '@shared/domain';
 import { ContextExternalToolType } from '@shared/domain/entity/tools/course-external-tool/context-external-tool-type.enum';
 import { BaseDORepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { ToolContextType } from 'apps/server/src/modules/tool/common/interface';
+import { ToolContextType } from '@src/modules/tool/common/interface/tool-context-type.enum';
 import { ContextExternalToolQuery } from '@src/modules/tool/context-external-tool/uc/dto/context-external-tool.types';
-import { SchoolExternalToolRefDO } from '../../domain';
 import { ExternalToolRepoMapper } from '../externaltool';
 import { ContextExternalToolScope } from './context-external-tool.scope';
 

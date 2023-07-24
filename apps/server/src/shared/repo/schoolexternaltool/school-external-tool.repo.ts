@@ -66,10 +66,11 @@ export class SchoolExternalToolRepo extends BaseDORepo<
 
 	private buildScope(query: SchoolExternalToolQuery): SchoolExternalToolScope {
 		const scope: SchoolExternalToolScope = new SchoolExternalToolScope();
-		if (query.schoolId) {
-			scope.bySchoolId(query.schoolId);
-		}
+
+		scope.bySchoolId(query.schoolId);
+		scope.byToolId(query.toolId);
 		scope.allowEmptyQuery(true);
+
 		return scope;
 	}
 

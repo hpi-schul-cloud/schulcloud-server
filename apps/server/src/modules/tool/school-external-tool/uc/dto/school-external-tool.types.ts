@@ -2,6 +2,12 @@ import { SchoolExternalToolProps } from '@shared/domain/domainobject/tool/school
 
 export type SchoolExternalTool = SchoolExternalToolProps;
 
-export type SchoolExternalToolQueryInput = Partial<Pick<SchoolExternalToolProps, 'schoolId'>>;
+export type SchoolExternalToolQueryInput = {
+	schoolId?: string;
+	toolId?: string;
+};
 
-export type SchoolExternalToolQuery = Partial<Pick<SchoolExternalToolProps, 'schoolId'>>;
+export type SchoolExternalToolQuery = {
+	schoolId?: string;
+	toolId?: string;
+};
