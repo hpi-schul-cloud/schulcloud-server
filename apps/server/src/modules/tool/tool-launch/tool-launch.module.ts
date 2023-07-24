@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { SchoolModule } from '@src/modules/school';
-import { CourseRepo } from '@shared/repo';
 import { UserModule } from '@src/modules/user';
 import { PseudonymModule } from '@src/modules/pseudonym';
+import { CourseRepo } from '@shared/repo';
 import { Lti11EncryptionService, ToolLaunchService } from './service';
 import { SchoolExternalToolModule } from '../school-external-tool';
 import { ExternalToolModule } from '../external-tool';

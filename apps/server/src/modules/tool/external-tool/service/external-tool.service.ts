@@ -3,10 +3,8 @@ import {
 	CustomParameterDO,
 	CustomParameterScope,
 	EntityId,
-	ExternalToolConfigDO,
 	ExternalToolDO,
 	IFindOptions,
-	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 	Page,
 	SchoolExternalToolDO,
@@ -16,7 +14,7 @@ import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { ExternalToolSearchQuery, TokenEndpointAuthMethod, ToolConfigType } from '../../common/interface';
+import { ExternalToolSearchQuery, TokenEndpointAuthMethod } from '../../common/interface';
 import { ExternalToolVersionService } from './external-tool-version.service';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 
@@ -34,9 +32,9 @@ export class ExternalToolService {
 	) {}
 
 	async createExternalTool(externalToolDO: ExternalToolDO): Promise<ExternalToolDO> {
-		if (this.isLti11Config(externalToolDO.config) && externalToolDO.config.secret) {
+		if (ExternalToolDO.isLti11Config(externalToolDO.config) && externalToolDO.config.secret) {
 			externalToolDO.config.secret = this.encryptionService.encrypt(externalToolDO.config.secret);
-		} else if (this.isOauth2Config(externalToolDO.config)) {
+		} else if (ExternalToolDO.isOauth2Config(externalToolDO.config)) {
 			const oauthClient: ProviderOauthClient = this.mapper.mapDoToProviderOauthClient(
 				externalToolDO.name,
 				externalToolDO.config
@@ -64,7 +62,7 @@ export class ExternalToolService {
 
 		const resolvedTools: (ExternalToolDO | undefined)[] = await Promise.all(
 			tools.data.map(async (tool: ExternalToolDO): Promise<ExternalToolDO | undefined> => {
-				if (this.isOauth2Config(tool.config)) {
+				if (ExternalToolDO.isOauth2Config(tool.config)) {
 					try {
 						await this.addExternalOauth2DataToConfig(tool.config);
 					} catch (e) {
@@ -85,7 +83,7 @@ export class ExternalToolService {
 
 	async findExternalToolById(id: EntityId): Promise<ExternalToolDO> {
 		const tool: ExternalToolDO = await this.externalToolRepo.findById(id);
-		if (this.isOauth2Config(tool.config)) {
+		if (ExternalToolDO.isOauth2Config(tool.config)) {
 			try {
 				await this.addExternalOauth2DataToConfig(tool.config);
 			} catch (e) {
@@ -123,14 +121,6 @@ export class ExternalToolService {
 		]);
 	}
 
-	isLti11Config(config: ExternalToolConfigDO): config is Lti11ToolConfigDO {
-		return ToolConfigType.LTI11 === config.type;
-	}
-
-	isOauth2Config(config: ExternalToolConfigDO): config is Oauth2ToolConfigDO {
-		return ToolConfigType.OAUTH2 === config.type;
-	}
-
 	async getExternalToolForScope(externalToolId: EntityId, scope: CustomParameterScope): Promise<ExternalToolDO> {
 		const externalTool: ExternalToolDO = await this.externalToolRepo.findById(externalToolId);
 		if (externalTool.parameters) {
@@ -142,7 +132,7 @@ export class ExternalToolService {
 	}
 
 	private async updateOauth2ToolConfig(toUpdate: ExternalToolDO) {
-		if (this.isOauth2Config(toUpdate.config)) {
+		if (ExternalToolDO.isOauth2Config(toUpdate.config)) {
 			const toUpdateOauthClient: ProviderOauthClient = this.mapper.mapDoToProviderOauthClient(
 				toUpdate.name,
 				toUpdate.config

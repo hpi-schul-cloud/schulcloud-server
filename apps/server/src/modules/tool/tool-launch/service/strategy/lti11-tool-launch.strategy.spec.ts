@@ -3,15 +3,12 @@ import { InternalServerErrorException, UnprocessableEntityException } from '@nes
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	ContextExternalToolDO,
-	ExternalToolConfigDO,
 	ExternalToolDO,
-	Lti11ToolConfigDO,
 	LtiMessageType,
 	LtiPrivacyPermission,
 	Pseudonym,
 	RoleName,
 	SchoolExternalToolDO,
-	ToolConfigType,
 	UserDO,
 } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
@@ -28,7 +25,6 @@ import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
 import { Authorization } from 'oauth-1.0a';
 import { LtiRole, ToolContextType } from '../../../common/interface';
-import { ExternalToolService } from '../../../external-tool/service';
 import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { Lti11ToolLaunchStrategy } from './lti11-tool-launch.strategy';
@@ -46,14 +42,6 @@ describe('Lti11ToolLaunchStrategy', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				Lti11ToolLaunchStrategy,
-				{
-					provide: ExternalToolService,
-					useValue: createMock<ExternalToolService>({
-						isLti11Config(config: ExternalToolConfigDO): config is Lti11ToolConfigDO {
-							return config.type === ToolConfigType.LTI11;
-						},
-					}),
-				},
 				{
 					provide: UserService,
 					useValue: createMock<UserService>(),

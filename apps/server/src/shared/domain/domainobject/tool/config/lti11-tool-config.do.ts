@@ -1,5 +1,6 @@
-import { LtiMessageType, LtiPrivacyPermission, ToolConfigType } from '@shared/domain/entity';
+import { LtiMessageType, LtiPrivacyPermission } from '@shared/domain/entity';
 import { ExternalToolConfigDO } from './external-tool-config.do';
+import { ToolConfigType } from './tool-config-type.enum';
 
 export class Lti11ToolConfigDO extends ExternalToolConfigDO {
 	key: string;

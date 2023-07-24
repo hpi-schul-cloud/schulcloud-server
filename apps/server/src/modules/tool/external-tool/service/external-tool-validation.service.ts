@@ -19,8 +19,8 @@ export class ExternalToolValidationService {
 		this.validateLti11Config(externalToolDO);
 	}
 
-	private async validateOauth2Config(externalToolDO: ExternalToolDO) {
-		if (this.externalToolService.isOauth2Config(externalToolDO.config)) {
+	private async validateOauth2Config(externalToolDO: ExternalToolDO): Promise<void> {
+		if (ExternalToolDO.isOauth2Config(externalToolDO.config)) {
 			if (!externalToolDO.config.clientSecret) {
 				throw new ValidationError(
 					`tool_clientSecret_missing: The Client Secret of the tool ${externalToolDO.name || ''} is missing.`
@@ -35,8 +35,8 @@ export class ExternalToolValidationService {
 		}
 	}
 
-	private validateLti11Config(externalToolDO: ExternalToolDO) {
-		if (this.externalToolService.isLti11Config(externalToolDO.config)) {
+	private validateLti11Config(externalToolDO: ExternalToolDO): void {
+		if (ExternalToolDO.isLti11Config(externalToolDO.config)) {
 			if (!externalToolDO.config.secret) {
 				throw new ValidationError(
 					`tool_secret_missing: The secret of the LTI tool ${externalToolDO.name || ''} is missing.`
@@ -47,7 +47,7 @@ export class ExternalToolValidationService {
 
 	private async isClientIdUnique(externalToolDO: ExternalToolDO): Promise<boolean> {
 		let duplicate: ExternalToolDO | null = null;
-		if (this.externalToolService.isOauth2Config(externalToolDO.config)) {
+		if (ExternalToolDO.isOauth2Config(externalToolDO.config)) {
 			duplicate = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(externalToolDO.config.clientId);
 		}
 		return duplicate == null || duplicate.id === externalToolDO.id;
@@ -62,7 +62,7 @@ export class ExternalToolValidationService {
 
 		const loadedTool: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
 		if (
-			this.externalToolService.isOauth2Config(loadedTool.config) &&
+			ExternalToolDO.isOauth2Config(loadedTool.config) &&
 			externalToolDO.config &&
 			externalToolDO.config.type !== loadedTool.config.type
 		) {
@@ -73,8 +73,8 @@ export class ExternalToolValidationService {
 
 		if (
 			externalToolDO.config &&
-			this.externalToolService.isOauth2Config(externalToolDO.config) &&
-			this.externalToolService.isOauth2Config(loadedTool.config) &&
+			ExternalToolDO.isOauth2Config(externalToolDO.config) &&
+			ExternalToolDO.isOauth2Config(loadedTool.config) &&
 			externalToolDO.config.clientId !== loadedTool.config.clientId
 		) {
 			throw new ValidationError(

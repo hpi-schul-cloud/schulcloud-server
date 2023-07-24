@@ -1,29 +1,23 @@
 import { Module } from '@nestjs/common';
-import ToolConfiguration, { ToolFeatures } from './tool-config';
 import { ContextExternalToolModule } from './context-external-tool';
 import { SchoolExternalToolModule } from './school-external-tool';
 import { ExternalToolModule } from './external-tool';
 import { CommonToolModule } from './common';
 import { ToolLaunchModule } from './tool-launch';
 import { CommonToolService } from './common/service';
+import { ToolConfigModule } from './tool-config.module';
 
 @Module({
 	imports: [
+		ToolConfigModule,
 		CommonToolModule,
 		ExternalToolModule,
 		SchoolExternalToolModule,
 		ContextExternalToolModule,
 		ToolLaunchModule,
 	],
-	providers: [
-		{
-			provide: ToolFeatures,
-			useValue: ToolConfiguration.toolFeatures,
-		},
-		CommonToolService,
-	],
+	providers: [CommonToolService],
 	exports: [
-		ToolFeatures,
 		ExternalToolModule,
 		SchoolExternalToolModule,
 		ContextExternalToolModule,

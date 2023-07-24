@@ -538,50 +538,6 @@ describe('ExternalToolService', () => {
 		});
 	});
 
-	describe('isLti11Config is called', () => {
-		describe('when external tool with config.type Lti11 is given', () => {
-			it('should return true', () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.withLti11Config().buildWithId();
-
-				const func = () => service.isLti11Config(externalToolDO.config);
-
-				expect(func()).toBeTruthy();
-			});
-		});
-
-		describe('when external tool with config.type Lti11 is not given', () => {
-			it('should return false', () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
-
-				const func = () => service.isLti11Config(externalToolDO.config);
-
-				expect(func()).toBeFalsy();
-			});
-		});
-	});
-
-	describe('isOauth2Config is called', () => {
-		describe('when external tool with config.type Oauth2 is given', () => {
-			it('should return true', () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
-
-				const func = () => service.isOauth2Config(externalToolDO.config);
-
-				expect(func()).toBeTruthy();
-			});
-		});
-
-		describe('when external tool with config.type Oauth2 is not given', () => {
-			it('should return false', () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
-
-				const func = () => service.isOauth2Config(externalToolDO.config);
-
-				expect(func()).toBeFalsy();
-			});
-		});
-	});
-
 	describe('getExternalToolForScope is called', () => {
 		describe('when scope school is given', () => {
 			it('should return an external tool with only school scoped custom parameters', async () => {

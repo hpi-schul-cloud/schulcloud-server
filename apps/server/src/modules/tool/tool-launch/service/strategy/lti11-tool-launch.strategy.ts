@@ -1,23 +1,21 @@
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, LtiPrivacyPermission, Pseudonym, RoleName, UserDO } from '@shared/domain';
+import { EntityId, ExternalToolDO, LtiPrivacyPermission, Pseudonym, RoleName, UserDO } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
 import { CourseRepo } from '@shared/repo';
 import { PseudonymService } from '@src/modules/pseudonym';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { Authorization } from 'oauth-1.0a';
-import { LtiRole } from '../../../common/interface';
 import { LtiRoleMapper } from '../../mapper';
 import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
-import { ExternalToolService } from '../../../external-tool/service';
+import { LtiRole } from '../../../common/interface';
 
 @Injectable()
 export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 	constructor(
-		private readonly externalToolService: ExternalToolService,
 		private readonly userService: UserService,
 		private readonly pseudonymService: PseudonymService,
 		private readonly lti11EncryptionService: Lti11EncryptionService,
@@ -35,7 +33,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		const { config } = data.externalToolDO;
 		const contextId: EntityId = data.contextExternalToolDO.contextRef.id;
 
-		if (!this.externalToolService.isLti11Config(config)) {
+		if (!ExternalToolDO.isLti11Config(config)) {
 			throw new UnprocessableEntityException(
 				`Unable to build LTI 1.1 launch data. Tool configuration is of type ${config.type}. Expected "lti11"`
 			);
