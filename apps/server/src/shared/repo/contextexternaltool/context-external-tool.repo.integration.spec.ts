@@ -19,8 +19,8 @@ import {
 	schoolFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { ContextExternalToolQuery } from '@src/modules/tool';
-import { ToolContextType } from '@src/modules/tool/interface';
+import { ContextExternalToolQuery } from '@src/modules/tool/context-external-tool/uc/dto/context-external-tool.types';
+import { ToolContextType } from '@src/modules/tool/common/interface';
 import { ContextExternalToolRepo } from './context-external-tool.repo';
 
 describe('ContextExternalToolRepo', () => {

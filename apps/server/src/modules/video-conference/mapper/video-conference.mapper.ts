@@ -1,15 +1,15 @@
 import { Permission, VideoConferenceScope } from '@shared/domain';
 import { AuthorizableReferenceType } from '@src/modules/authorization';
+import { BBBRole } from '../bbb';
 import {
 	VideoConferenceCreateParams,
 	VideoConferenceInfoResponse,
 	VideoConferenceJoinResponse,
 	VideoConferenceStateResponse,
 } from '../controller/dto';
-import { VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
-import { BBBRole } from '../bbb';
-import { VideoConferenceOptions } from '../interface';
 import { VideoConferenceOptionsResponse } from '../controller/dto/response/video-conference-options.response';
+import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
+import { VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
 
 export const PermissionMapping = {
 	[BBBRole.MODERATOR]: Permission.START_MEETING,
@@ -47,9 +47,12 @@ export class VideoConferenceMapper {
 
 	static toVideoConferenceOptions(params: VideoConferenceCreateParams): VideoConferenceOptions {
 		return {
-			everyAttendeeJoinsMuted: params.everyAttendeeJoinsMuted ?? false,
-			everybodyJoinsAsModerator: params.everybodyJoinsAsModerator ?? false,
-			moderatorMustApproveJoinRequests: params.moderatorMustApproveJoinRequests ?? false,
+			everyAttendeeJoinsMuted: params.everyAttendeeJoinsMuted ?? defaultVideoConferenceOptions.everyAttendeeJoinsMuted,
+			everybodyJoinsAsModerator:
+				params.everybodyJoinsAsModerator ?? defaultVideoConferenceOptions.everybodyJoinsAsModerator,
+			moderatorMustApproveJoinRequests:
+				params.moderatorMustApproveJoinRequests ?? defaultVideoConferenceOptions.moderatorMustApproveJoinRequests,
+			logoutUrl: params.logoutUrl,
 		};
 	}
 }
