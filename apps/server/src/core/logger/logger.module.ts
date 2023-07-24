@@ -31,7 +31,7 @@ import { Logger } from './logger';
 					],
 				};
 			},
-			inject: [ConfigService],
+			inject: [Configuration],
 		}),
 	],
 	providers: [LegacyLogger, Logger, ErrorLogger],
