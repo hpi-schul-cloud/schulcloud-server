@@ -2,17 +2,12 @@ import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/commo
 import { ContextRef, EntityId } from '@shared/domain';
 import { ContextExternalToolDO } from '@shared/domain/domainobject/tool';
 import { ContextExternalToolRepo } from '@shared/repo';
-import {
-	AuthorizableReferenceType,
-	AuthorizationContext,
-	AuthorizationLoaderService,
-	AuthorizationService,
-} from '@src/modules/authorization';
+import { AuthorizableReferenceType, AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
 import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
 import { ContextTypeMapper } from '../../common/mapper';
 
 @Injectable()
-export class ContextExternalToolService implements AuthorizationLoaderService {
+export class ContextExternalToolService {
 	constructor(
 		private readonly contextExternalToolRepo: ContextExternalToolRepo,
 		@Inject(forwardRef(() => AuthorizationService))
@@ -87,10 +82,6 @@ export class ContextExternalToolService implements AuthorizationLoaderService {
 			contextExternalToolDO.contextRef.id,
 			context
 		);
-	}
-
-	async findById(id: EntityId): Promise<ContextExternalToolDO> {
-		return this.getContextExternalToolById(id);
 	}
 
 	async findAllByContext(contextRef: ContextRef): Promise<ContextExternalToolDO[]> {
