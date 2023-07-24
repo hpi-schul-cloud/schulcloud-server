@@ -1,7 +1,9 @@
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, LtiPrivacyPermission, PseudonymDO, RoleName, UserDO } from '@shared/domain';
+import { EntityId, LtiPrivacyPermission, Pseudonym, RoleName, UserDO } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
+import { CourseRepo } from '@shared/repo';
 import { PseudonymService } from '@src/modules/pseudonym';
+import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { Authorization } from 'oauth-1.0a';
 import { LtiRole } from '../../../interface';
@@ -18,9 +20,11 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		private readonly externalToolService: ExternalToolService,
 		private readonly userService: UserService,
 		private readonly pseudonymService: PseudonymService,
-		private readonly lti11EncryptionService: Lti11EncryptionService
+		private readonly lti11EncryptionService: Lti11EncryptionService,
+		schoolService: SchoolService,
+		courseRepo: CourseRepo
 	) {
-		super();
+		super(schoolService, courseRepo);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -30,8 +34,6 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 	): Promise<PropertyData[]> {
 		const { config } = data.externalToolDO;
 		const contextId: EntityId = data.contextExternalToolDO.contextRef.id;
-
-		const toolId: EntityId = data.externalToolDO.id as EntityId;
 
 		if (!this.externalToolService.isLti11Config(config)) {
 			throw new UnprocessableEntityException(
@@ -62,7 +64,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			}),
 			new PropertyData({
 				name: 'launch_presentation_locale',
-				value: 'en',
+				value: 'de-DE',
 				location: PropertyLocation.BODY,
 			}),
 			new PropertyData({
@@ -95,7 +97,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		}
 
 		if (config.privacy_permission === LtiPrivacyPermission.PSEUDONYMOUS) {
-			const pseudonym: PseudonymDO = await this.pseudonymService.findOrCreatePseudonym(userId, toolId);
+			const pseudonym: Pseudonym = await this.pseudonymService.findOrCreatePseudonym(user, data.externalToolDO);
 
 			additionalProperties.push(
 				new PropertyData({

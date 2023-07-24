@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const { mix } = require('mixwith');
 const pLimit = require('p-limit');
 const { Configuration } = require('@hpi-schul-cloud/commons');
@@ -50,6 +51,9 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 */
 	constructor(app, stats, logger, config) {
 		super(app, stats, logger);
+
+		this.lastSyncedAtEnabled = Configuration.get('FEATURE_SYNC_LAST_SYNCED_AT_ENABLED') === true;
+
 		this.stats = Object.assign(this.stats, {
 			users: {
 				teachers: {
@@ -67,7 +71,6 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			},
 		});
 		this.config = this.normalizeConfig(config);
-
 		this.api = new TspApi();
 
 		// caches for currentYear and federalState as they need async initialization
@@ -343,6 +346,30 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		return this.createTeacher(tspTeacher, school, systemId);
 	}
 
+	prepareTeacherUpdateObject(user, tspTeacher) {
+		const updateObject = {};
+
+		// Check if anything has changed on the TSP side regarding teacher's data
+		// and, if yes, set all the current data in the teacher's update object.
+		const equal =
+			(user.namePrefix === tspTeacher.lehrerTitel || (!user.namePrefix && !tspTeacher.namePrefix)) &&
+			user.firstName === tspTeacher.lehrerVorname &&
+			user.lastName === tspTeacher.lehrerNachname;
+		if (!equal) {
+			updateObject.namePrefix = tspTeacher.lehrerTitel;
+			updateObject.firstName = tspTeacher.lehrerVorname;
+			updateObject.lastName = tspTeacher.lehrerNachname;
+		}
+
+		// If the feature flag is enabled, add the last synced at field
+		// (with value set to the current date) to the teacher's update object.
+		if (this.lastSyncedAtEnabled) {
+			updateObject.lastSyncedAt = new Date();
+		}
+
+		return updateObject;
+	}
+
 	/**
 	 * Patches a Schul-Cloud user based on information from a TSP teacher object
 	 * @param {User} user the current user
@@ -352,21 +379,22 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 */
 	async updateTeacher(user, tspTeacher) {
 		try {
-			const equal =
-				(user.namePrefix === tspTeacher.lehrerTitel || (!user.namePrefix && !tspTeacher.namePrefix)) &&
-				user.firstName === tspTeacher.lehrerVorname &&
-				user.lastName === tspTeacher.lehrerNachname;
-			if (equal) {
+			const updateObject = this.prepareTeacherUpdateObject(user, tspTeacher);
+
+			// Check if the teacher's update object is empty which would mean that both:
+			//   1. no data has been changed on the TSP side;
+			//   2. "last synced at" feature flag is disabled.
+			// If any of these two is not true, the teacher's object will be updated.
+			if (_.isEmpty(updateObject)) {
 				this.stats.users.teachers.unchanged += 1;
+
 				return user;
 			}
 
-			const teacher = await this.app.service('users').patch(user._id, {
-				namePrefix: tspTeacher.lehrerTitel,
-				firstName: tspTeacher.lehrerVorname,
-				lastName: tspTeacher.lehrerNachname,
-			});
+			const teacher = await this.app.service('users').patch(user._id, updateObject);
+
 			this.stats.users.teachers.updated += 1;
+
 			return teacher;
 		} catch (err) {
 			this.stats.users.teachers.errors += 1;
@@ -376,8 +404,28 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				entity: tspTeacher.lehrerUid,
 				message: `Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}" konnte nicht aktualisiert werden.`,
 			});
+
 			return null;
 		}
+	}
+
+	prepareTeacherCreateObject(schoolId, tspTeacher) {
+		const createObject = {
+			namePrefix: tspTeacher.lehrerTitel,
+			firstName: tspTeacher.lehrerVorname,
+			lastName: tspTeacher.lehrerNachname,
+			schoolId,
+			source: ENTITY_SOURCE,
+			sourceOptions: { [SOURCE_ID_ATTRIBUTE]: tspTeacher.lehrerUid },
+		};
+
+		// If the feature flag is enabled, add the last synced at field
+		// (with value set to the current date) to the teacher's create object.
+		if (this.lastSyncedAtEnabled) {
+			createObject.lastSyncedAt = new Date();
+		}
+
+		return createObject;
 	}
 
 	/**
@@ -390,22 +438,12 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 */
 	async createTeacher(tspTeacher, school, systemId) {
 		try {
-			const sourceOptions = {};
-			sourceOptions[SOURCE_ID_ATTRIBUTE] = tspTeacher.lehrerUid;
-			const teacher = await createUserAndAccount(
-				this.app,
-				{
-					namePrefix: tspTeacher.lehrerTitel,
-					firstName: tspTeacher.lehrerVorname,
-					lastName: tspTeacher.lehrerNachname,
-					schoolId: school._id,
-					source: ENTITY_SOURCE,
-					sourceOptions,
-				},
-				'teacher',
-				systemId
-			);
+			const createObject = this.prepareTeacherCreateObject(school._id, tspTeacher);
+
+			const teacher = await createUserAndAccount(this.app, createObject, 'teacher', systemId);
+
 			this.stats.users.teachers.created += 1;
+
 			return teacher;
 		} catch (err) {
 			this.stats.users.teachers.errors += 1;
@@ -415,6 +453,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				entity: tspTeacher.lehrerUid,
 				message: `Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}" konnte nicht erstellt werden.`,
 			});
+
 			return null;
 		}
 	}
@@ -450,6 +489,26 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		return this.createStudent(tspStudent, school, systemId);
 	}
 
+	prepareStudentUpdateObject(user, tspStudent) {
+		const updateObject = {};
+
+		// Check if anything has changed on the TSP side regarding student's data
+		// and, if yes, set all the current data in the student's update object.
+		const equal = user.firstName === tspStudent.schuelerVorname && user.lastName === tspStudent.schuelerNachname;
+		if (!equal) {
+			updateObject.firstName = tspStudent.schuelerVorname;
+			updateObject.lastName = tspStudent.schuelerNachname;
+		}
+
+		// If the feature flag is enabled, add the last synced at field
+		// (with value set to the current date) to the student's update object.
+		if (this.lastSyncedAtEnabled) {
+			updateObject.lastSyncedAt = new Date();
+		}
+
+		return updateObject;
+	}
+
 	/**
 	 * Patches a Schul-Cloud user based on information from a TSP student object
 	 * @param {User} user the current user
@@ -459,17 +518,22 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 */
 	async updateStudent(user, tspStudent) {
 		try {
-			const equal = user.firstName === tspStudent.schuelerVorname && user.lastName === tspStudent.schuelerNachname;
-			if (equal) {
+			const updateObject = this.prepareStudentUpdateObject(user, tspStudent);
+
+			// Check if the student's update object is empty which would mean that both:
+			//   1. no data has been changed on the TSP side;
+			//   2. "last synced at" feature flag is disabled.
+			// If any of these two is not true, the student's object will be updated.
+			if (_.isEmpty(updateObject)) {
 				this.stats.users.students.unchanged += 1;
+
 				return user;
 			}
 
-			const student = await this.app.service('users').patch(user._id, {
-				firstName: tspStudent.schuelerVorname,
-				lastName: tspStudent.schuelerNachname,
-			});
+			const student = await this.app.service('users').patch(user._id, updateObject);
+
 			this.stats.users.students.updated += 1;
+
 			return student;
 		} catch (err) {
 			this.stats.users.students.errors += 1;
@@ -481,8 +545,27 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 					`Schüler "${tspStudent.schuelerVorname} ${tspStudent.schuelerNachname}"` +
 					' konnte nicht aktualisiert werden.',
 			});
+
 			return null;
 		}
+	}
+
+	prepareStudentCreateObject(schoolId, tspStudent) {
+		const createObject = {
+			firstName: tspStudent.schuelerVorname,
+			lastName: tspStudent.schuelerNachname,
+			schoolId,
+			source: ENTITY_SOURCE,
+			sourceOptions: { [SOURCE_ID_ATTRIBUTE]: tspStudent.schuelerUid },
+		};
+
+		// If the feature flag is enabled, add the last synced at field
+		// (with value set to the current date) to the student's create object.
+		if (this.lastSyncedAtEnabled) {
+			createObject.lastSyncedAt = new Date();
+		}
+
+		return createObject;
 	}
 
 	/**
@@ -495,21 +578,12 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 */
 	async createStudent(tspStudent, school, systemId) {
 		try {
-			const sourceOptions = {};
-			sourceOptions[SOURCE_ID_ATTRIBUTE] = tspStudent.schuelerUid;
-			const student = await createUserAndAccount(
-				this.app,
-				{
-					firstName: tspStudent.schuelerVorname,
-					lastName: tspStudent.schuelerNachname,
-					schoolId: school._id,
-					source: ENTITY_SOURCE,
-					sourceOptions,
-				},
-				'student',
-				systemId
-			);
+			const createObject = this.prepareStudentCreateObject(school._id, tspStudent);
+
+			const student = await createUserAndAccount(this.app, createObject, 'student', systemId);
+
 			this.stats.users.students.created += 1;
+
 			return student;
 		} catch (err) {
 			this.stats.users.students.errors += 1;
@@ -519,6 +593,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				entity: tspStudent.schuelerUid,
 				message: `Schüler "${tspStudent.schuelerVorname} ${tspStudent.schuelerNachname}" konnte nicht erstellt werden.`,
 			});
+
 			return null;
 		}
 	}
