@@ -63,7 +63,7 @@ export class UserImportUc {
 		const enabled = Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean;
 		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeatures.LDAP_UNIVENTION_MIGRATION);
 		if (!enabled && !isLdapPilotSchool) {
-			this.logger.log(new UserMigrationIsNotEnable());
+			this.logger.debug(new UserMigrationIsNotEnable());
 			throw new InternalServerErrorException('User Migration not enabled');
 		}
 	}
@@ -80,7 +80,7 @@ export class UserImportUc {
 		query: IImportUserScope,
 		options?: IFindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
-		this.logger.log({
+		this.logger.debug({
 			getLogMessage: () => {
 				return { message: 'finding all import users...' };
 			},
@@ -109,7 +109,7 @@ export class UserImportUc {
 
 		// check same school
 		if (!school.id || school.id !== userMatch.school.id || school.id !== importUser.school.id) {
-			this.logger.log(new SchoolIdDoesNotMatchWithUserSchoolId(userMatch.school.id, importUser.school.id, school.id));
+			this.logger.debug(new SchoolIdDoesNotMatchWithUserSchoolId(userMatch.school.id, importUser.school.id, school.id));
 			throw new ForbiddenException('not same school');
 		}
 
@@ -130,7 +130,7 @@ export class UserImportUc {
 		const importUser = await this.importUserRepo.findById(importUserId);
 		// check same school
 		if (school.id !== importUser.school.id) {
-			this.logger.log(new SchoolIdDoesNotMatchWithUserSchoolId('', importUser.school.id, school.id));
+			this.logger.debug(new SchoolIdDoesNotMatchWithUserSchoolId('', importUser.school.id, school.id));
 			throw new ForbiddenException('not same school');
 		}
 
@@ -148,7 +148,7 @@ export class UserImportUc {
 
 		// check same school
 		if (school.id !== importUser.school.id) {
-			this.logger.log(new SchoolIdDoesNotMatchWithUserSchoolId('', importUser.school.id, school.id));
+			this.logger.debug(new SchoolIdDoesNotMatchWithUserSchoolId('', importUser.school.id, school.id));
 			throw new ForbiddenException('not same school');
 		}
 
@@ -190,7 +190,7 @@ export class UserImportUc {
 		// TODO Change ImportUserRepo to DO to fix this workaround
 		const [importUsers, total] = await this.importUserRepo.findImportUsers(currentUser.school, filters, options);
 		if (total > 0) {
-			this.logger.log({
+			this.logger.debug({
 				getLogMessage: () => {
 					return {
 						message: 'save all matched users',
@@ -217,7 +217,7 @@ export class UserImportUc {
 		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
 		if (!school.externalId || school.inUserMigration !== true || !school.inMaintenanceSince) {
-			this.logger.log(new MigrationMayBeCompleted(school.inUserMigration));
+			this.logger.debug(new MigrationMayBeCompleted(school.inUserMigration));
 			throw new BadRequestException('School cannot exit from user migration mode');
 		}
 		school.inUserMigration = false;
@@ -227,7 +227,7 @@ export class UserImportUc {
 	async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap = true): Promise<void> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
-		this.logger.log(new SchoolInUserMigrationStartLoggable(currentUserId, school.name, useCentralLdap));
+		this.logger.debug(new SchoolInUserMigrationStartLoggable(currentUserId, school.name, useCentralLdap));
 		this.checkFeatureEnabled(school);
 		this.checkSchoolNumber(school, useCentralLdap);
 		this.checkSchoolNotInMigration(school);
@@ -251,12 +251,12 @@ export class UserImportUc {
 		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
 		if (school.inUserMigration !== false || !school.inMaintenanceSince || !school.externalId) {
-			this.logger.log(new MigrationMayNotBeCompleted(school.inUserMigration));
+			this.logger.debug(new MigrationMayNotBeCompleted(school.inUserMigration));
 			throw new BadRequestException('Sync cannot be activated for school');
 		}
 		school.inMaintenanceSince = undefined;
 		await this.schoolService.save(school);
-		this.logger.log(new SchoolInUserMigrationEndLoggable(school.name));
+		this.logger.debug(new SchoolInUserMigrationEndLoggable(school.name));
 	}
 
 	private async getCurrentUser(currentUserId: EntityId, permission: UserImportPermissions): Promise<User> {
