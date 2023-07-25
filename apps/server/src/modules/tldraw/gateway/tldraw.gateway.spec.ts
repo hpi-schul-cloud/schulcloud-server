@@ -36,7 +36,7 @@ describe('TldrawGateway', () => {
 		await app.close();
 	});
 
-	it('should be defined', async () => {
+	it('should gateway properties be defined', async () => {
 		await createNestApp();
 		await app.listen(appPort);
 

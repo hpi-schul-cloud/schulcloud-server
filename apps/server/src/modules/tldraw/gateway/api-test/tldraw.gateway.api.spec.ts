@@ -19,7 +19,7 @@ describe('WebSocketGateway (WsAdapter)', () => {
 	let ws: WebSocket;
 	let app: INestApplication;
 	let gateway: TldrawGateway;
-	let utilsSpy;
+	// let utilsSpy;
 
 	async function createNestApp(docName: string): Promise<void> {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
@@ -35,8 +35,6 @@ describe('WebSocketGateway (WsAdapter)', () => {
 
 		await app.listen(3335);
 		ws = new WebSocket(`ws://localhost:3346/${docName}`);
-
-		utilsSpy = jest.spyOn(Utils, 'messageHandler').mockReturnValue();
 	}
 
 	async function closeConnections(): Promise<void> {
@@ -44,8 +42,9 @@ describe('WebSocketGateway (WsAdapter)', () => {
 		await app.close();
 	}
 
-	it(`should refuze connection if there is no docName`, async () => {
+	it(`should refuse connection if there is no docName`, async () => {
 		await createNestApp('');
+		const utilsSpy = jest.spyOn(Utils, 'messageHandler').mockReturnValue();
 		jest.mock('../../utils/utils');
 		const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
 
@@ -66,7 +65,7 @@ describe('WebSocketGateway (WsAdapter)', () => {
 		await closeConnections();
 	});
 
-	it(`should handle connection and data transfer1`, async () => {
+	it(`should handle connection and data transfer`, async () => {
 		await createNestApp('TEST1');
 		const messageHandlerSpy = jest.spyOn(gateway, 'handleConnection');
 
@@ -85,22 +84,30 @@ describe('WebSocketGateway (WsAdapter)', () => {
 		await closeConnections();
 	});
 
-	it(`should handle connection and data transfer2`, async () => {
+	it(`should handle 2 connections at same doc and data transfer`, async () => {
 		await createNestApp('TEST2');
+		const ws2 = new WebSocket(`ws://localhost:3346/TEST2`);
+		const utilsSpy = jest.spyOn(Utils, 'setupWSConnection').mockReturnValue();
 		jest.mock('../../utils/utils');
+		const messageHandlerSpy = jest.spyOn(gateway, 'handleConnection');
 
 		await new Promise((resolve) => {
 			ws.on('open', resolve);
 		});
 
+		await new Promise((resolve) => {
+			ws2.on('open', resolve);
+		});
 		const byteArray = new TextEncoder().encode(message);
 		const { buffer } = byteArray;
 
 		ws.send(buffer);
+		// ws2.send(buffer);
 
 		expect(utilsSpy).toHaveBeenCalled();
-		expect(utilsSpy).toHaveBeenCalledTimes(1);
-
+		expect(messageHandlerSpy).toHaveBeenCalled();
+		expect(messageHandlerSpy).toHaveBeenCalledTimes(2);
+		ws2.close();
 		await closeConnections();
 	});
 });
