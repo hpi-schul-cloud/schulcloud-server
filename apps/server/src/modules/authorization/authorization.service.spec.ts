@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ForbiddenException, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
 import { setupEntities, userFactory } from '@shared/testing';
@@ -191,27 +191,6 @@ describe('AuthorizationService', () => {
 	});
 
 	describe('hasPermissionByReferences', () => {
-		describe('when loader throws an error', () => {
-			const setup = () => {
-				const context = AuthorizationContextBuilder.read([]);
-				const userId = 'test';
-				const entityId = 'test';
-				const entityName = AuthorizableReferenceType.Course;
-
-				loader.loadAuthorizableObject.mockRejectedValueOnce(InternalServerErrorException);
-
-				return { context, userId, entityId, entityName };
-			};
-
-			it('should reject with ForbiddenException', async () => {
-				const { context, userId, entityId, entityName } = setup();
-
-				await expect(service.hasPermissionByReferences(userId, entityName, entityId, context)).rejects.toThrow(
-					ForbiddenException
-				);
-			});
-		});
-
 		describe('when the selected rule returns true', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);

@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { BaseDO, EntityId, User } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { AuthorizationHelper } from './authorization.helper';
@@ -51,19 +51,14 @@ export class AuthorizationService {
 		entityId: EntityId,
 		context: AuthorizationContext
 	): Promise<boolean> {
-		// TODO: This try-catch-block should be removed. See ticket: https://ticketsystem.dbildungscloud.de/browse/BC-4023
-		try {
-			const [user, object] = await Promise.all([
-				this.getUserWithPermissions(userId),
-				this.loader.loadAuthorizableObject(entityName, entityId),
-			]);
-			const rule = this.ruleManager.selectRule(user, object, context);
-			const hasPermission = rule.hasPermission(user, object, context);
+		const [user, object] = await Promise.all([
+			this.getUserWithPermissions(userId),
+			this.loader.loadAuthorizableObject(entityName, entityId),
+		]);
+		const rule = this.ruleManager.selectRule(user, object, context);
+		const hasPermission = rule.hasPermission(user, object, context);
 
-			return hasPermission;
-		} catch (err) {
-			throw new ForbiddenException(err);
-		}
+		return hasPermission;
 	}
 
 	public checkAllPermissions(user: User, requiredPermissions: string[]): void {
