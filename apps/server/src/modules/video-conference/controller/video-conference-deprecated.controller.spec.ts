@@ -1,17 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ICurrentUser } from '@src/modules/authentication';
-import { VideoConferenceScope } from '@shared/domain/interface';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { VideoConferenceDeprecatedController } from './video-conference-deprecated.controller';
-import { VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
-import { VideoConferenceDeprecatedUc } from '../uc';
-import { defaultVideoConferenceOptions } from '../interface';
+import { Test, TestingModule } from '@nestjs/testing';
+import { VideoConferenceScope } from '@shared/domain/interface';
+import { ICurrentUser } from '@src/modules/authentication';
 import { BBBBaseResponse, BBBCreateResponse } from '../bbb';
+import { defaultVideoConferenceOptions } from '../interface';
+import { VideoConferenceDeprecatedUc } from '../uc';
+import { VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
 import {
-	VideoConferenceInfoResponse,
-	VideoConferenceJoinResponse,
+	DeprecatedVideoConferenceInfoResponse,
+	DeprecatedVideoConferenceJoinResponse,
 } from './dto/response/video-conference-deprecated.response';
+import { VideoConferenceDeprecatedController } from './video-conference-deprecated.controller';
 
 describe('VideoConferenceDeprecatedController', () => {
 	let module: TestingModule;
@@ -50,7 +50,7 @@ describe('VideoConferenceDeprecatedController', () => {
 			videoConferenceUc.create.mockResolvedValue({} as VideoConference<BBBCreateResponse>);
 			videoConferenceUc.join.mockResolvedValue({ url: 'mockUrl' } as VideoConferenceJoin);
 
-			const ret: VideoConferenceJoinResponse = await controller.createAndJoin(
+			const ret: DeprecatedVideoConferenceJoinResponse = await controller.createAndJoin(
 				currentUser,
 				VideoConferenceScope.COURSE,
 				'scopeId',
@@ -72,7 +72,7 @@ describe('VideoConferenceDeprecatedController', () => {
 			videoConferenceUc.create.mockImplementation(() => Promise.reject());
 			videoConferenceUc.join.mockResolvedValue({ url: 'mockUrl' } as VideoConferenceJoin);
 
-			const ret: VideoConferenceJoinResponse = await controller.createAndJoin(
+			const ret: DeprecatedVideoConferenceJoinResponse = await controller.createAndJoin(
 				currentUser,
 				VideoConferenceScope.COURSE,
 				'scopeId',
@@ -96,7 +96,7 @@ describe('VideoConferenceDeprecatedController', () => {
 			videoConferenceUc.create.mockResolvedValue({} as VideoConference<BBBCreateResponse>);
 			videoConferenceUc.join.mockResolvedValue({ url: 'mockUrl' } as VideoConferenceJoin);
 
-			const ret: VideoConferenceJoinResponse = await controller.createAndJoin(
+			const ret: DeprecatedVideoConferenceJoinResponse = await controller.createAndJoin(
 				currentUser,
 				VideoConferenceScope.COURSE,
 				scopeId,
@@ -118,7 +118,7 @@ describe('VideoConferenceDeprecatedController', () => {
 				state: VideoConferenceState.RUNNING,
 			} as VideoConferenceInfo);
 
-			const ret: VideoConferenceInfoResponse = await controller.info(
+			const ret: DeprecatedVideoConferenceInfoResponse = await controller.info(
 				currentUser,
 				VideoConferenceScope.COURSE,
 				'scopeId'
@@ -134,7 +134,7 @@ describe('VideoConferenceDeprecatedController', () => {
 				state: VideoConferenceState.FINISHED,
 			} as VideoConference<BBBBaseResponse>);
 
-			const ret: VideoConferenceInfoResponse = await controller.end(
+			const ret: DeprecatedVideoConferenceInfoResponse = await controller.end(
 				currentUser,
 				VideoConferenceScope.COURSE,
 				'scopeId'

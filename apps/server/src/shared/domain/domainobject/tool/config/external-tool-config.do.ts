@@ -1,4 +1,4 @@
-import { ToolConfigType } from '@shared/domain/entity';
+import { ToolConfigType } from './tool-config-type.enum';
 
 export abstract class ExternalToolConfigDO {
 	type: ToolConfigType;
