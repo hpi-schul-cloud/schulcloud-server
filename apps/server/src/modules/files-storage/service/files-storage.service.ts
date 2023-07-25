@@ -12,6 +12,7 @@ import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { LegacyLogger } from '@src/core/logger';
 import crypto from 'crypto';
 import { subClass } from 'gm';
+import { PassThrough } from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import {
 	CopyFileResponse,
@@ -37,7 +38,7 @@ import {
 	unmarkForDelete,
 } from '../helper';
 import { IGetFileResponse } from '../interface';
-import { CopyFileResponseBuilder, FileRecordMapper, FilesStorageMapper } from '../mapper';
+import { CopyFileResponseBuilder, FileDtoBuilder, FileRecordMapper, FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
 
 @Injectable()
@@ -238,7 +239,7 @@ export class FilesStorageService {
 		return response;
 	}
 
-	public async downloadPreview(
+	public async getPreview(
 		fileRecord: FileRecord,
 		params: DownloadFileParams,
 		previewParams: PreviewParams,
@@ -246,29 +247,31 @@ export class FilesStorageService {
 	): Promise<IGetFileResponse> {
 		this.checkIfPreviewPossible(fileRecord);
 
-		const fileParamsString = `${params.fileRecordId}${params.fileName}${previewParams.width}${previewParams.height}${previewParams.ratio}`;
-		const hash = crypto.createHash('md5').update(fileParamsString).digest('hex');
-		let response: IGetFileResponse;
-
+		const hash = this.createNameHash(params, previewParams);
 		const [fileRecords, count] = await this.fileRecordRepo.findByName(hash);
+		let response: IGetFileResponse;
 
 		if (count === 0) {
 			response = await this.generatePreview(fileRecord, params, previewParams, hash, bytesRange);
 		} else {
-			const prewiewParams: DownloadFileParams = {
-				fileRecordId: fileRecords[0].id,
-				fileName: fileRecords[0].name,
-			};
-
-			this.checkFileName(fileRecords[0], prewiewParams);
-			this.checkScanStatus(fileRecords[0]);
-
-			const path = [fileRecords[0].getSchoolId(), 'previews', fileRecords[0].id].join('/');
-
-			response = await this.storageClient.get(path, bytesRange);
+			response = await this.downloadPreview(fileRecords, bytesRange);
 		}
 
 		return response;
+	}
+
+	private createNameHash(params: DownloadFileParams, previewParams: PreviewParams): string {
+		const fileParamsString = `${params.fileRecordId}${params.fileName}${previewParams.width}${previewParams.height}${previewParams.ratio}`;
+		const hash = crypto.createHash('md5').update(fileParamsString).digest('hex');
+
+		return hash;
+	}
+
+	private async downloadPreview(fileRecords: FileRecord[], bytesRange?: string): Promise<IGetFileResponse> {
+		const path = [fileRecords[0].getSchoolId(), 'previews', fileRecords[0].id].join('/');
+		const preview = await this.storageClient.get(path, bytesRange);
+
+		return preview;
 	}
 
 	private async generatePreview(
@@ -279,28 +282,48 @@ export class FilesStorageService {
 		bytesRange?: string
 	): Promise<IGetFileResponse> {
 		const original = await this.download(fileRecord, params, bytesRange);
+		const preview = this.resizeAndConvertToWebP(original, fileRecord, previewParams);
 
+		const fileDto = FileDtoBuilder.build(hash, preview, 'image/webp');
+		const previewFileRecord = await this.savePreviewFileRecord(fileRecord, fileDto);
+		await this.uploadPreview(previewFileRecord, fileDto);
+
+		return {
+			data: preview,
+			contentType: 'image/webp',
+			contentLength: previewFileRecord.size,
+			contentRange: undefined,
+			etag: undefined,
+		};
+	}
+
+	private resizeAndConvertToWebP(
+		original: IGetFileResponse,
+		fileRecord: FileRecord,
+		previewParams: PreviewParams
+	): PassThrough {
 		const im = subClass({ imageMagick: true });
 		const preview = im(original.data, fileRecord.name).resize(previewParams.width, previewParams.height).stream('webp');
 
+		return preview;
+	}
+
+	private async uploadPreview(previewFileRecord: FileRecord, fileDto: FileDto): Promise<void> {
+		const filePath = [previewFileRecord.getSchoolId(), 'previews', previewFileRecord.id].join('/');
+		await this.createFileInStorageAndRollbackOnError(previewFileRecord, filePath, fileDto);
+	}
+
+	private async savePreviewFileRecord(original: FileRecord, fileDto: FileDto): Promise<FileRecord> {
 		const fileRecordParams = {
-			schoolId: fileRecord.getSchoolId(),
-			parentId: fileRecord.parentId,
-			parentType: fileRecord.parentType,
+			schoolId: original.getSchoolId(),
+			parentId: original.parentId,
+			parentType: original.parentType,
 		};
 
-		const fileDto = new FileDto({ name: hash, data: preview, mimeType: 'image/webp' });
-		const previewFileRecord = await this.createFileRecord(fileDto, fileRecordParams, fileRecord.creatorId);
-		await this.fileRecordRepo.save(previewFileRecord);
+		const fileRecord = await this.createFileRecord(fileDto, fileRecordParams, original.creatorId);
+		await this.fileRecordRepo.save(fileRecord);
 
-		const filePath = [previewFileRecord.getSchoolId(), 'previews', previewFileRecord.id].join('/');
-
-		await this.createFileInStorageAndRollbackOnError(previewFileRecord, filePath, fileDto);
-
-		// Can we remove this call and return preview directly?
-		const result = await this.storageClient.get(filePath);
-
-		return result;
+		return fileRecord;
 	}
 
 	// delete
