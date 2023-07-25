@@ -19,7 +19,6 @@ export * from './ltitool';
 export * from './materials';
 export * from './mongo.patterns';
 export * from './news';
-export * from './pseudonyms';
 export * from './role';
 export * from './school';
 export * from './schoolexternaltool';
