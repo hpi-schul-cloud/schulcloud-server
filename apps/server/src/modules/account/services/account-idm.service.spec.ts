@@ -5,6 +5,7 @@ import { IAccount } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { IdentityManagementOauthService, IdentityManagementService } from '@shared/infra/identity-management';
 import { NotImplementedException } from '@nestjs/common';
+import { LoggerModule } from '@src/core/logger';
 import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../mapper';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountLookupService } from './account-lookup.service';
@@ -33,7 +34,7 @@ describe('AccountIdmService', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot(), LoggerModule],
 			providers: [
 				AccountServiceIdm,
 				{
