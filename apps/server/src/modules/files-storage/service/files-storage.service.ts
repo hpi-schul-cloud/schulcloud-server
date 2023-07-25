@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+import gm from 'gm';
 import {
 	BadRequestException,
 	ConflictException,
@@ -16,6 +18,7 @@ import {
 	CopyFilesOfParentParams,
 	DownloadFileParams,
 	FileRecordParams,
+	PreviewParams,
 	RenameFileParams,
 	ScanResultParams,
 	SingleFileParams,
@@ -81,11 +84,16 @@ export class FilesStorageService {
 	}
 
 	// upload
-	public async uploadFile(userId: EntityId, params: FileRecordParams, file: FileDto): Promise<FileRecord> {
+	public async uploadFile(
+		userId: EntityId,
+		params: FileRecordParams,
+		filePath: string,
+		file: FileDto
+	): Promise<FileRecord> {
 		const fileRecord = await this.createFileRecord(file, params, userId);
 		await this.fileRecordRepo.save(fileRecord);
 
-		await this.createFileInStorageAndRollbackOnError(fileRecord, params, file);
+		await this.createFileInStorageAndRollbackOnError(fileRecord, filePath, file);
 
 		return fileRecord;
 	}
@@ -112,11 +120,9 @@ export class FilesStorageService {
 
 	private async createFileInStorageAndRollbackOnError(
 		fileRecord: FileRecord,
-		params: FileRecordParams,
+		filePath: string,
 		file: FileDto
 	): Promise<void> {
-		const filePath = createPath(params.schoolId, fileRecord.id);
-
 		try {
 			const fileSizePromise = this.countFileSize(file);
 
@@ -197,6 +203,13 @@ export class FilesStorageService {
 		}
 	}
 
+	private checkIfPreviewPossible(fileRecord: FileRecord): void | NotAcceptableException {
+		if (!fileRecord.isPreviewPossible()) {
+			this.logger.warn(`could not generate preview for : ${fileRecord.id} ${fileRecord.mimeType}`);
+			throw new NotAcceptableException(ErrorType.PREVIEW_NOT_POSSIBLE);
+		}
+	}
+
 	public async downloadFile(
 		schoolId: EntityId,
 		fileRecordId: EntityId,
@@ -219,6 +232,55 @@ export class FilesStorageService {
 		const response = await this.downloadFile(fileRecord.getSchoolId(), fileRecord.id, bytesRange);
 
 		return response;
+	}
+
+	public async downloadPreview(
+		fileRecord: FileRecord,
+		params: DownloadFileParams,
+		previewParams: PreviewParams,
+		bytesRange?: string
+	): Promise<IGetFileResponse> {
+		this.checkIfPreviewPossible(fileRecord);
+
+		const fileParamsString = `${params.fileRecordId}${params.fileName}${previewParams.width}${previewParams.height}${previewParams.ratio}`;
+		const hash = crypto.createHash('md5').update(fileParamsString).digest('hex');
+		let response: IGetFileResponse;
+
+		const [fileRecords, count] = await this.fileRecordRepo.findByName(hash);
+
+		if (count === 0) {
+			response = await this.generatePreview(fileRecord, params, previewParams, hash, bytesRange);
+		} else {
+			response = await this.download(fileRecords[0], params, bytesRange);
+		}
+
+		return response;
+	}
+
+	private async generatePreview(
+		fileRecord: FileRecord,
+		params: DownloadFileParams,
+		previewParams: PreviewParams,
+		hash: string,
+		bytesRange?: string
+	) {
+		const original = await this.download(fileRecord, params, bytesRange);
+
+		const im = gm.subClass({ imageMagick: true });
+
+		const preview = im(original.data, fileRecord.name).resize(previewParams.width, previewParams.height).stream();
+
+		const fileRecordParams = {
+			schoolId: fileRecord.getSchoolId(),
+			parentId: fileRecord.parentId,
+			parentType: fileRecord.parentType,
+		};
+		const filePath = [fileRecord.getSchoolId(), 'previews', fileRecord._id].join('/');
+		const fileDto = { name: hash, data: preview, mimeType: fileRecord.mimeType };
+
+		await this.uploadFile(fileRecord.creatorId, fileRecordParams, filePath, fileDto);
+
+		return preview;
 	}
 
 	// delete

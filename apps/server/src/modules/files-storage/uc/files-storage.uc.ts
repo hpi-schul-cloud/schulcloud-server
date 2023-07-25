@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Counted, EntityId } from '@shared/domain';
@@ -140,6 +139,23 @@ export class FilesStorageUC {
 		return res;
 	}
 
+	public async downloadPreview(
+		userId: EntityId,
+		params: DownloadFileParams,
+		previewParams: PreviewParams,
+		bytesRange?: string
+	): Promise<IGetFileResponse> {
+		const singleFileParams = FilesStorageMapper.mapToSingleFileParams(params);
+		const fileRecord = await this.filesStorageService.getFileRecord(singleFileParams);
+		const { parentType, parentId } = fileRecord.getParentInfo();
+
+		await this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.read);
+
+		const result = this.filesStorageService.downloadPreview(fileRecord, params, previewParams, bytesRange);
+
+		return result;
+	}
+
 	// delete
 	public async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.delete);
@@ -244,33 +260,5 @@ export class FilesStorageUC {
 		const countedFileRecords = await this.filesStorageService.getFileRecordsOfParent(params.parentId);
 
 		return countedFileRecords;
-	}
-
-	// preview
-	public async preview(
-		userId: EntityId,
-		params: DownloadFileParams,
-		previewParams: PreviewParams
-	): Promise<FileRecord> {
-		const hash = crypto
-			.createHash('md5')
-			.update(
-				`${params.fileRecordId}/${params.fileName}?width=${previewParams.width}&height=${previewParams.height}&ratio=${previewParams.ratio}`
-			)
-			.digest('hex');
-		const renameParams = new RenameFileParams();
-		renameParams.fileName = `/previews/${hash}`;
-		let result: FileRecord;
-
-		const [fileRecords, count] = await this.filesStorageService.getFileRecordByName(renameParams);
-
-		if (count === 0) {
-			// TODO create preview image and return file record
-			result = await this.filesStorageService.getFileRecord(params);
-		} else {
-			result = fileRecords[0];
-		}
-
-		return result;
 	}
 }

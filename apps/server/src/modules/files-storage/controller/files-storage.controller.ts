@@ -137,6 +137,55 @@ export class FilesStorageController {
 		});
 	}
 
+	@ApiOperation({ summary: 'Streamable download of a preview file.' })
+	@ApiResponse({ status: 200, type: StreamableFile })
+	@ApiResponse({ status: 206, type: StreamableFile })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@ApiResponse({ status: 406, type: NotAcceptableException })
+	@ApiResponse({ status: 500, type: InternalServerErrorException })
+	@Get('/preview/:fileRecordId/:fileName')
+	async downloadPreview(
+		@Param() params: DownloadFileParams,
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() previewParams: PreviewParams,
+		@Req() req: Request,
+		@Res({ passthrough: true }) response: Response
+	): Promise<StreamableFile> {
+		// Get Range HTTP header value to check if caller
+		// requested either partial or full data stream.
+		const bytesRange = req.header('Range');
+
+		// Call download method with either defined or undefined bytes range.
+		const res = await this.filesStorageUC.downloadPreview(currentUser.userId, params, previewParams, bytesRange);
+
+		// Destroy the stream after it has been closed.
+		req.on('close', () => res.data.destroy());
+
+		// If bytes range has been defined, set Accept-Ranges and Content-Range HTTP headers
+		// in a response and also set 206 Partial Content HTTP status code to inform the caller
+		// about the partial data stream. Otherwise, just set a 200 OK HTTP status code.
+		if (bytesRange) {
+			response.set({
+				'Accept-Ranges': 'bytes',
+				'Content-Range': res.contentRange,
+			});
+
+			response.status(HttpStatus.PARTIAL_CONTENT);
+		} else {
+			response.status(HttpStatus.OK);
+		}
+
+		// Return StreamableFile with stream data and options that will additionally set
+		// Content-Type, Content-Disposition and Content-Length headers in a response.
+		return new StreamableFile(res.data, {
+			type: res.contentType,
+			disposition: `inline; filename="${encodeURI(params.fileName)}"`,
+			length: res.contentLength,
+		});
+	}
+
 	@ApiOperation({ summary: 'Get a list of file meta data of a parent entityId.' })
 	@ApiResponse({ status: 200, type: FileRecordListResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
@@ -277,23 +326,6 @@ export class FilesStorageController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<CopyFileResponse> {
 		const response = await this.filesStorageUC.copyOneFile(currentUser.userId, params, copyFileParam);
-
-		return response;
-	}
-
-	@ApiOperation({ summary: 'Get a preview' })
-	@ApiResponse({ status: 200, type: FileRecordResponse })
-	@ApiResponse({ status: 400, type: ApiValidationError })
-	@ApiResponse({ status: 403, type: ForbiddenException })
-	@Get('/preview/:fileRecordId/:fileName')
-	async preview(
-		@Param() params: DownloadFileParams,
-		@CurrentUser() currentUser: ICurrentUser,
-		@Query() previewParams: PreviewParams
-	): Promise<FileRecordResponse> {
-		const fileRecord = await this.filesStorageUC.preview(currentUser.userId, params, previewParams);
-
-		const response = FileRecordMapper.mapToFileRecordResponse(fileRecord);
 
 		return response;
 	}

@@ -239,4 +239,15 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	public getSchoolId(): EntityId {
 		return this.schoolId;
 	}
+
+	public isPreviewPossible(): boolean {
+		const result =
+			this.mimeType === 'image/bmp' ||
+			this.mimeType === 'image/gif' ||
+			this.mimeType === 'image/jpeg' ||
+			this.mimeType === 'image/png' ||
+			this.mimeType === 'image/svg+xml';
+
+		return result;
+	}
 }
