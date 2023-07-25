@@ -1,6 +1,3 @@
-import crypto from 'crypto';
-import gm from 'gm';
-import { Readable } from 'stream';
 import {
 	BadRequestException,
 	ConflictException,
@@ -13,6 +10,8 @@ import { ConfigService } from '@nestjs/config';
 import { Counted, EntityId } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { LegacyLogger } from '@src/core/logger';
+import crypto from 'crypto';
+import { subClass } from 'gm';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import {
 	CopyFileResponse,
@@ -256,7 +255,17 @@ export class FilesStorageService {
 		if (count === 0) {
 			response = await this.generatePreview(fileRecord, params, previewParams, hash, bytesRange);
 		} else {
-			response = await this.download(fileRecords[0], params, bytesRange);
+			const prewiewParams: DownloadFileParams = {
+				fileRecordId: fileRecords[0].id,
+				fileName: fileRecords[0].name,
+			};
+
+			this.checkFileName(fileRecords[0], prewiewParams);
+			this.checkScanStatus(fileRecords[0]);
+
+			const path = [fileRecords[0].getSchoolId(), 'previews', fileRecords[0].id].join('/');
+
+			response = await this.storageClient.get(path, bytesRange);
 		}
 
 		return response;
@@ -271,34 +280,27 @@ export class FilesStorageService {
 	): Promise<IGetFileResponse> {
 		const original = await this.download(fileRecord, params, bytesRange);
 
-		const im = gm.subClass({ imageMagick: true });
-
-		let preview: Readable = new Readable();
-		im(original.data, fileRecord.name)
-			.resize(previewParams.width, previewParams.height)
-			.toBuffer((err, buffer) => {
-				preview = Readable.from(buffer);
-			});
+		const im = subClass({ imageMagick: true });
+		const preview = im(original.data, fileRecord.name).resize(previewParams.width, previewParams.height).stream('webp');
 
 		const fileRecordParams = {
 			schoolId: fileRecord.getSchoolId(),
 			parentId: fileRecord.parentId,
 			parentType: fileRecord.parentType,
 		};
-		const filePath = [fileRecord.getSchoolId(), 'previews', hash].join('/');
-		const fileDto: FileDto = { name: hash, data: preview, mimeType: fileRecord.mimeType };
 
-		await this.uploadFile(fileRecord.creatorId, fileRecordParams, fileDto, filePath);
+		const fileDto = new FileDto({ name: hash, data: preview, mimeType: 'image/webp' });
+		const previewFileRecord = await this.createFileRecord(fileDto, fileRecordParams, fileRecord.creatorId);
+		await this.fileRecordRepo.save(previewFileRecord);
 
-		const response: IGetFileResponse = {
-			data: preview,
-			contentType: undefined,
-			contentLength: undefined,
-			contentRange: undefined,
-			etag: undefined,
-		};
+		const filePath = [previewFileRecord.getSchoolId(), 'previews', previewFileRecord.id].join('/');
 
-		return response;
+		await this.createFileInStorageAndRollbackOnError(previewFileRecord, filePath, fileDto);
+
+		// Can we remove this call and return preview directly?
+		const result = await this.storageClient.get(filePath);
+
+		return result;
 	}
 
 	// delete
