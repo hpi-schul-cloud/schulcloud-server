@@ -15,8 +15,8 @@ import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolSearchQuery, TokenEndpointAuthMethod } from '../../common/interface';
-import { ExternalToolVersionService } from './external-tool-version.service';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
+import { ExternalToolVersionService } from './external-tool-version.service';
 
 @Injectable()
 export class ExternalToolService {
@@ -123,11 +123,13 @@ export class ExternalToolService {
 
 	async getExternalToolForScope(externalToolId: EntityId, scope: CustomParameterScope): Promise<ExternalToolDO> {
 		const externalTool: ExternalToolDO = await this.externalToolRepo.findById(externalToolId);
+
 		if (externalTool.parameters) {
 			externalTool.parameters = externalTool.parameters.filter(
 				(parameter: CustomParameterDO) => parameter.scope === scope
 			);
 		}
+
 		return externalTool;
 	}
 

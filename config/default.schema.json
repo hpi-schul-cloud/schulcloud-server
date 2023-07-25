@@ -1200,6 +1200,11 @@
 			"default": true,
 			"description": "Enables old LTI-tool tab in a course"
 		},
+		"FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the configuration of context parameters"
+		},
 		"TSP_SCHOOL_SYNCER": {
 			"type": "object",
 			"description": "TSP School Syncer properties",
