@@ -46,12 +46,12 @@ export class BBBService {
 					resp.data
 				);
 				if (bbbResp.response.returncode !== BBBStatus.SUCCESS) {
-					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
+					throw new InternalServerErrorException(`${bbbResp.response.messageKey}: ${bbbResp.response.message}`);
 				}
 				return bbbResp as BBBResponse<BBBCreateResponse>;
 			})
 			.catch((error) => {
-				throw new InternalServerErrorException(error);
+				throw error;
 			});
 	}
 
@@ -86,12 +86,12 @@ export class BBBService {
 			.then((resp: AxiosResponse<string>) => {
 				const bbbResp = this.converterUtil.xml2object<BBBResponse<BBBBaseResponse>>(resp.data);
 				if (bbbResp.response.returncode !== BBBStatus.SUCCESS) {
-					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
+					throw new InternalServerErrorException(`${bbbResp.response.messageKey}: ${bbbResp.response.message}`);
 				}
 				return bbbResp;
 			})
 			.catch((error) => {
-				throw new InternalServerErrorException(error);
+				throw error;
 			});
 	}
 
@@ -111,12 +111,12 @@ export class BBBService {
 					BBBResponse<BBBMeetingInfoResponse> | BBBResponse<BBBBaseResponse>
 				>(resp.data);
 				if (bbbResp.response.returncode !== BBBStatus.SUCCESS) {
-					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
+					throw new InternalServerErrorException(`${bbbResp.response.messageKey}: ${bbbResp.response.message}`);
 				}
 				return bbbResp as BBBResponse<BBBMeetingInfoResponse>;
 			})
 			.catch((error) => {
-				throw new InternalServerErrorException(error);
+				throw error;
 			});
 	}
 
