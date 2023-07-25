@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import gm from 'gm';
+import { Readable } from 'stream';
 import {
 	BadRequestException,
 	ConflictException,
@@ -39,7 +40,6 @@ import {
 import { IGetFileResponse } from '../interface';
 import { CopyFileResponseBuilder, FileRecordMapper, FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
-import { Readable } from 'stream';
 
 @Injectable()
 export class FilesStorageService {
@@ -88,11 +88,15 @@ export class FilesStorageService {
 	public async uploadFile(
 		userId: EntityId,
 		params: FileRecordParams,
-		filePath: string,
-		file: FileDto
+		file: FileDto,
+		filePath?: string
 	): Promise<FileRecord> {
 		const fileRecord = await this.createFileRecord(file, params, userId);
 		await this.fileRecordRepo.save(fileRecord);
+
+		if (!filePath) {
+			filePath = createPath(fileRecord.schoolId, fileRecord.id);
+		}
 
 		await this.createFileInStorageAndRollbackOnError(fileRecord, filePath, file);
 
@@ -269,7 +273,7 @@ export class FilesStorageService {
 
 		const im = gm.subClass({ imageMagick: true });
 
-		let preview: Readable;
+		let preview: Readable = new Readable();
 		im(original.data, fileRecord.name)
 			.resize(previewParams.width, previewParams.height)
 			.toBuffer((err, buffer) => {
@@ -284,9 +288,17 @@ export class FilesStorageService {
 		const filePath = [fileRecord.getSchoolId(), 'previews', hash].join('/');
 		const fileDto: FileDto = { name: hash, data: preview, mimeType: fileRecord.mimeType };
 
-		await this.uploadFile(fileRecord.creatorId, fileRecordParams, filePath, fileDto);
+		await this.uploadFile(fileRecord.creatorId, fileRecordParams, fileDto, filePath);
 
-		return preview;
+		const response: IGetFileResponse = {
+			data: preview,
+			contentType: undefined,
+			contentLength: undefined,
+			contentRange: undefined,
+			etag: undefined,
+		};
+
+		return response;
 	}
 
 	// delete
