@@ -4,8 +4,8 @@ import {
 	ContextExternalToolProps,
 	CustomParameterEntryDO,
 } from '@shared/domain/domainobject/tool';
-import { ToolContextType } from '@src/modules/tool/interface';
 import { DeepPartial } from 'fishery';
+import { ToolContextType } from '@src/modules/tool/common/interface';
 import { DoBaseFactory } from '../do-base.factory';
 
 class ContextExternalToolDOFactory extends DoBaseFactory<ContextExternalToolDO, ContextExternalToolProps> {

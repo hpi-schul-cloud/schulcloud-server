@@ -3,7 +3,7 @@ import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception
 import { ExternalToolDO } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolService } from '@src/modules/lti-tool/service';
-import { ExternalToolService } from '@src/modules/tool/service';
+import { ExternalToolService } from '@src/modules/tool/external-tool/service';
 
 @Injectable()
 export class OauthProviderLoginFlowService {

@@ -1,8 +1,12 @@
 import { BaseDO } from '../base.do';
-import { Oauth2ToolConfigDO } from './config/oauth2-tool-config.do';
+import {
+	Oauth2ToolConfigDO,
+	BasicToolConfigDO,
+	Lti11ToolConfigDO,
+	ExternalToolConfigDO,
+	ToolConfigType,
+} from './config';
 import { CustomParameterDO } from './custom-parameter.do';
-import { BasicToolConfigDO } from './config/basic-tool-config.do';
-import { Lti11ToolConfigDO } from './config/lti11-tool-config.do';
 import { ToolVersion } from './types';
 
 export interface ExternalToolProps {
@@ -57,5 +61,13 @@ export class ExternalToolDO extends BaseDO implements ToolVersion {
 
 	getVersion(): number {
 		return this.version;
+	}
+
+	static isOauth2Config(config: ExternalToolConfigDO): config is Oauth2ToolConfigDO {
+		return ToolConfigType.OAUTH2 === config.type;
+	}
+
+	static isLti11Config(config: ExternalToolConfigDO): config is Lti11ToolConfigDO {
+		return ToolConfigType.LTI11 === config.type;
 	}
 }
