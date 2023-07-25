@@ -21,7 +21,7 @@ describe('WebSocketGateway (WsAdapter)', () => {
 	let gateway: TldrawGateway;
 	let utilsSpy;
 
-	beforeEach(async () => {
+	async function createNestApp(docName: string): Promise<void> {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
 		const testingModule = await Test.createTestingModule({
 			imports,
@@ -34,16 +34,40 @@ describe('WebSocketGateway (WsAdapter)', () => {
 		app = testingApp;
 
 		await app.listen(3335);
-		ws = new WebSocket('ws://localhost:3346/TEST');
-		utilsSpy = jest.spyOn(Utils, 'messageHandler').mockReturnValue();
-	});
+		ws = new WebSocket(`ws://localhost:3346/${docName}`);
 
-	afterEach(async () => {
+		utilsSpy = jest.spyOn(Utils, 'messageHandler').mockReturnValue();
+	}
+
+	async function closeConnections(): Promise<void> {
 		ws.close();
 		await app.close();
+	}
+
+	it(`should refuze connection if there is no docName`, async () => {
+		await createNestApp('');
+		jest.mock('../../utils/utils');
+		const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
+
+		await new Promise((resolve) => {
+			ws.on('open', resolve);
+		});
+
+		const byteArray = new TextEncoder().encode(message);
+		const { buffer } = byteArray;
+
+		ws.send(buffer);
+
+		expect(gateway.server).toBeDefined();
+		expect(handleConnectionSpy).toHaveBeenCalled();
+		expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
+		expect(utilsSpy).not.toHaveBeenCalled();
+
+		await closeConnections();
 	});
 
 	it(`should handle connection and data transfer1`, async () => {
+		await createNestApp('TEST1');
 		const messageHandlerSpy = jest.spyOn(gateway, 'handleConnection');
 
 		await new Promise((resolve) => {
@@ -57,9 +81,12 @@ describe('WebSocketGateway (WsAdapter)', () => {
 
 		expect(messageHandlerSpy).toHaveBeenCalled();
 		expect(messageHandlerSpy).toHaveBeenCalledTimes(1);
+
+		await closeConnections();
 	});
 
 	it(`should handle connection and data transfer2`, async () => {
+		await createNestApp('TEST2');
 		jest.mock('../../utils/utils');
 
 		await new Promise((resolve) => {
@@ -73,6 +100,7 @@ describe('WebSocketGateway (WsAdapter)', () => {
 
 		expect(utilsSpy).toHaveBeenCalled();
 		expect(utilsSpy).toHaveBeenCalledTimes(1);
-		ws.close();
+
+		await closeConnections();
 	});
 });

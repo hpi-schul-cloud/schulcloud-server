@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { TldrawConfig } from '@src/modules/tldraw/config';
 import { NodeEnvType } from '@src/modules/server';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { WSSharedDoc, setupWSConnection, setPersistence } from '../utils';
+import { setupWSConnection, setPersistence } from '../utils';
 
 const socketPort: number = Configuration.get('NODE_ENV') === NodeEnvType.TEST ? 3346 : 3345;
 
@@ -15,11 +15,9 @@ export class TldrawGateway implements OnGatewayInit, OnGatewayConnection {
 	@WebSocketServer()
 	server!: Server;
 
-	doc: WSSharedDoc | undefined;
-
 	connectionString: string;
 
-	constructor(private readonly configService: ConfigService<TldrawConfig, true>) {
+	constructor(readonly configService: ConfigService<TldrawConfig, true>) {
 		this.connectionString = this.configService.get<string>('CONNECTION_STRING');
 	}
 
