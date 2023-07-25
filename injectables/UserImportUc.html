@@ -373,8 +373,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="258"
-                            class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:258</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="260"
+                            class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:260</a></div>
                 </td>
             </tr>
 
@@ -444,8 +444,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="277"
-                            class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:277</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="279"
+                            class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:279</a></div>
                 </td>
             </tr>
 
@@ -515,8 +515,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="271"
-                            class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:271</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="273"
+                            class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:273</a></div>
                 </td>
             </tr>
 
@@ -598,8 +598,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="216"
-                            class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:216</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="217"
+                            class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:217</a></div>
                 </td>
             </tr>
 
@@ -670,8 +670,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="183"
-                            class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:183</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="184"
+                            class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:184</a></div>
                 </td>
             </tr>
 
@@ -947,8 +947,8 @@ The current user must have permission to read schools users and view importusers
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="227"
-                            class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:227</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="228"
+                            class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:228</a></div>
                 </td>
             </tr>
 
@@ -1031,8 +1031,8 @@ The current user must have permission to read schools users and view importusers
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="252"
-                            class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:252</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="254"
+                            class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:254</a></div>
                 </td>
             </tr>
 
@@ -1322,8 +1322,8 @@ The current user must have permission to read schools users and view importusers
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="194"
-                            class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:194</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="195"
+                            class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:195</a></div>
                 </td>
             </tr>
 
@@ -1506,8 +1506,8 @@ The current user must have permission to read schools users and view importusers
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="234"
-                            class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:234</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="235"
+                            class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:235</a></div>
                 </td>
             </tr>
 
@@ -1751,6 +1751,7 @@ export class UserImportUc {
 			}
 		}
 		// TODO Change ImportUserRepo to DO to fix this workaround
+		// Delete all remaining importUser-objects that dont need to be ported
 		await this.importUserRepo.deleteImportUsersBySchool(currentUser.school);
 		await this.endSchoolInUserMigration(currentUserId);
 	}
@@ -1822,6 +1823,7 @@ export class UserImportUc {
 
 		await this.userRepo.save(user);
 		await this.accountService.save(account);
+		await this.importUserRepo.delete(importUser);
 	}
 
 	private async getMigrationSystem(): Promise&lt;System&gt; {
