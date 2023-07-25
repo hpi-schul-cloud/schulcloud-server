@@ -3,11 +3,11 @@ import { Injectable, NotImplementedException } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { Counted, EntityId, IAccount, IAccountUpdate } from '@shared/domain';
 import { IdentityManagementService, IdentityManagementOauthService } from '@shared/infra/identity-management';
+import { LegacyLogger } from '@src/core/logger';
 import { AccountIdmToDtoMapper } from '../mapper';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountDto, AccountSaveDto } from './dto';
 import { AccountLookupService } from './account-lookup.service';
-import { LegacyLogger } from '@src/core/logger';
 
 @Injectable()
 export class AccountServiceIdm extends AbstractAccountService {
