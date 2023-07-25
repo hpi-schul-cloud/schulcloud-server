@@ -57,7 +57,6 @@ export class UserImportUc {
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(UserImportUc.name);
-		this.logger = this.logger.createChildLogger('debug');
 	}
 
 	private checkFeatureEnabled(school: SchoolDO): void | never {
