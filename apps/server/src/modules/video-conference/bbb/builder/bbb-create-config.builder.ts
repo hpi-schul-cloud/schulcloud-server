@@ -1,7 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { BBBCreateConfig, BBBRole, GuestPolicy } from '../request';
 import { Builder } from './builder';
-import { BBBRole } from '../request/bbb-join.config';
-import { BBBCreateConfig, GuestPolicy } from '../request/bbb-create.config';
 
 export class BBBCreateConfigBuilder extends Builder<BBBCreateConfig> {
 	withLogoutUrl(logoutUrl: string): BBBCreateConfigBuilder {
