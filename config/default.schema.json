@@ -1202,7 +1202,7 @@
 		},
 		"FEATURE_SHOW_OUTDATED_USERS":{
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Shows oudated users"
 		},
 		"TSP_SCHOOL_SYNCER": {
