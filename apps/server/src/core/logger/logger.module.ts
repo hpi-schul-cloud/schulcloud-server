@@ -10,12 +10,11 @@ import { Logger } from './logger';
 @Module({
 	imports: [
 		WinstonModule.forRootAsync({
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			useFactory: (_configService: ConfigService<ILoggerConfig, true>) => {
+			useFactory: (configService: ConfigService<ILoggerConfig, true>) => {
 				return {
 					levels: winston.config.syslog.levels,
-					// level: configService.get<string>('NEST_LOG_LEVEL'),
-					level: 'debug',
+					level: configService.get<string>('NEST_LOG_LEVEL'),
+					// level: 'debug',
 					exitOnError: false,
 					transports: [
 						new winston.transports.Console({
