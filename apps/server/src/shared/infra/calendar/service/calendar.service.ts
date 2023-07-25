@@ -35,7 +35,7 @@ export class CalendarService {
 		)
 			.then((resp: AxiosResponse<ICalendarEvent>) => this.calendarMapper.mapToDto(resp.data))
 			.catch((error) => {
-				throw new InternalServerErrorException(error);
+				throw error;
 			});
 	}
 
