@@ -39,6 +39,7 @@ import {
 import { IGetFileResponse } from '../interface';
 import { CopyFileResponseBuilder, FileRecordMapper, FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
+import { Readable } from 'stream';
 
 @Injectable()
 export class FilesStorageService {
@@ -263,20 +264,25 @@ export class FilesStorageService {
 		previewParams: PreviewParams,
 		hash: string,
 		bytesRange?: string
-	) {
+	): Promise<IGetFileResponse> {
 		const original = await this.download(fileRecord, params, bytesRange);
 
 		const im = gm.subClass({ imageMagick: true });
 
-		const preview = im(original.data, fileRecord.name).resize(previewParams.width, previewParams.height).stream();
+		let preview: Readable;
+		im(original.data, fileRecord.name)
+			.resize(previewParams.width, previewParams.height)
+			.toBuffer((err, buffer) => {
+				preview = Readable.from(buffer);
+			});
 
 		const fileRecordParams = {
 			schoolId: fileRecord.getSchoolId(),
 			parentId: fileRecord.parentId,
 			parentType: fileRecord.parentType,
 		};
-		const filePath = [fileRecord.getSchoolId(), 'previews', fileRecord._id].join('/');
-		const fileDto = { name: hash, data: preview, mimeType: fileRecord.mimeType };
+		const filePath = [fileRecord.getSchoolId(), 'previews', hash].join('/');
+		const fileDto: FileDto = { name: hash, data: preview, mimeType: fileRecord.mimeType };
 
 		await this.uploadFile(fileRecord.creatorId, fileRecordParams, filePath, fileDto);
 
