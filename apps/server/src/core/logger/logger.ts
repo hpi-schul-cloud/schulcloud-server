@@ -34,7 +34,7 @@ export class Logger {
 		this.context = name;
 	}
 
-	public createChildLogger(level: string): WinstonLogger {
-		return this.logger.child({ context: this.context, level });
+	public createChildLogger(level: string): Logger {
+		return <Logger>(<unknown>this.logger.child({ context: this.context, level }));
 	}
 }
