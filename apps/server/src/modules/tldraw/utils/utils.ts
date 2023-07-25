@@ -3,14 +3,10 @@ import { Doc } from 'yjs';
 import { Awareness, encodeAwarenessUpdate, removeAwarenessStates, applyAwarenessUpdate } from 'y-protocols/awareness';
 import { encoding, decoding, map } from 'lib0';
 import { writeUpdate, readSyncMessage, writeSyncStep1 } from 'y-protocols/sync';
-import { debounce } from 'lodash';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import WebSocket from 'ws';
-import { callbackHandler } from '@src/modules/tldraw/utils/';
 import { WSMessageType, WSConnectionState, Persitence } from '@src/modules/tldraw/types';
 
-const CALLBACK_DEBOUNCE_WAIT: number = (Configuration.get('TLDRAW_CALLBACK_DEBOUNCE_WAIT') as number) ?? 2000;
-const CALLBACK_DEBOUNCE_MAX_WAIT: number = (Configuration.get('TLDRAW_CALLBACK_DEBOUNCE_MAX_WAIT') as number) ?? 10000;
 const pingTimeout: number = (Configuration.get('TLDRAW_PING_TIMEOUT') as number) ?? 30000;
 // disable gc when using snapshots!
 const gcEnabled: boolean = Configuration.get('TLDRAW_GC_ENABLED') as boolean;
@@ -94,10 +90,6 @@ export class WSSharedDoc extends Doc {
 
 	awareness: Awareness;
 
-	CALLBACK_URL: URL;
-
-	isCallbackSet: boolean;
-
 	/**
 	 * @param {string} name
 	 */
@@ -107,16 +99,9 @@ export class WSSharedDoc extends Doc {
 		this.conns = new Map();
 		this.awareness = new Awareness(this);
 		this.awareness.setLocalState(null);
-		this.CALLBACK_URL = (
-			Configuration.has('TLDRAW_CALLBACK_URL') ? Configuration.get('TLDRAW_CALLBACK_URL') : ''
-		) as URL;
-		this.isCallbackSet = !!this.CALLBACK_URL;
 
 		this.awareness.on('update', this.awarenessChangeHandler);
 		this.on('update', updateHandler);
-		if (this.isCallbackSet) {
-			this.on('update', debounce(callbackHandler, CALLBACK_DEBOUNCE_WAIT, { maxWait: CALLBACK_DEBOUNCE_MAX_WAIT }));
-		}
 	}
 
 	/**

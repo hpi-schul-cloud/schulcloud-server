@@ -1216,31 +1216,6 @@
 				}
 			}
 		},
-		"TLDRAW_CALLBACK_URL": {
-			"type": "string",
-			"default": "",
-			"description": "callback URL for tldraw communication "
-		},
-		"TLDRAW_CALLBACK_TIMEOUT": {
-			"type": "number",
-			"default": 5000,
-			"description": "callback timeout for tldraw communication "
-		},
-		"TLDRAW_CALLBACK_OBJ": {
-			"type": "string",
-			"default": "",
-			"description": "callback object for tldraw communication "
-		},
-		"TLDRAW_CALLBACK_DEBOUNCE_WAIT": {
-			"type": "number",
-			"default": 2000,
-			"description": "time for waiting between calls for tldraw"
-		},
-		"TLDRAW_CALLBACK_DEBOUNCE_MAX_WAIT": {
-			"type": "number",
-			"default": 10000,
-			"description": "Max time for waiting between calls for tldraw"
-		},
 		"TLDRAW_PING_TIMEOUT": {
 			"type": "number",
 			"default": 30000,
