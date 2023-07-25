@@ -10,7 +10,6 @@ import { Logger } from './logger';
 @Module({
 	imports: [
 		WinstonModule.forRootAsync({
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			useFactory: (configService: ConfigService<ILoggerConfig, true>) => {
 				return {
 					levels: winston.config.syslog.levels,
