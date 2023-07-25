@@ -10,6 +10,7 @@ import {
 	TeamUser,
 	UserDO,
 	VideoConferenceDO,
+	VideoConferenceOptionsDO,
 	VideoConferenceScope,
 } from '@shared/domain';
 import { CalendarEventDto, CalendarService } from '@shared/infra/calendar';
@@ -20,14 +21,14 @@ import {
 	AuthorizationContextBuilder,
 	AuthorizationService,
 } from '@src/modules/authorization';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
-import { ErrorStatus } from '../error/error-status.enum';
 import { BBBRole } from '../bbb';
+import { ErrorStatus } from '../error/error-status.enum';
+import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';
 import { PermissionScopeMapping } from '../mapper/video-conference.mapper';
 import { IScopeInfo, VideoConferenceState } from '../uc/dto';
-import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';
 
 @Injectable()
 export class VideoConferenceService {
@@ -148,6 +149,7 @@ export class VideoConferenceService {
 		switch (scope) {
 			case VideoConferenceScope.COURSE: {
 				const course: Course = await this.courseService.findById(scopeId);
+
 				return {
 					scopeId,
 					scopeName: 'courses',
@@ -157,6 +159,7 @@ export class VideoConferenceService {
 			}
 			case VideoConferenceScope.EVENT: {
 				const event: CalendarEventDto = await this.calendarService.findEvent(userId, scopeId);
+
 				return {
 					scopeId: event.teamId,
 					scopeName: 'teams',
@@ -188,6 +191,7 @@ export class VideoConferenceService {
 		scope: VideoConferenceScope
 	): Promise<VideoConferenceDO> {
 		const videoConference: VideoConferenceDO = await this.videoConferenceRepo.findByScopeAndScopeId(scopeId, scope);
+
 		return videoConference;
 	}
 
@@ -197,18 +201,22 @@ export class VideoConferenceService {
 		options: VideoConferenceOptions
 	): Promise<VideoConferenceDO> {
 		let vcDo: VideoConferenceDO;
+
 		// try and catch based on legacy behavior
 		try {
 			vcDo = await this.findVideoConferenceByScopeIdAndScope(scopeId, scope);
-			vcDo.options = options;
+
+			vcDo.options = new VideoConferenceOptionsDO(options);
 		} catch (error) {
 			vcDo = new VideoConferenceDO({
 				target: scopeId,
 				targetModel: scope,
-				options,
+				options: new VideoConferenceOptionsDO(options),
 			});
 		}
+
 		vcDo = await this.saveVideoConference(vcDo);
+
 		return vcDo;
 	}
 
