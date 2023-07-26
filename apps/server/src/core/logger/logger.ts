@@ -37,9 +37,10 @@ export class Logger {
 	}
 
 	public createChild(options: ChildOptions): Logger {
-		options.context = options.context || this.context;
-		options.level = options.level || this.logger.level;
-		const logger = new Logger(this.logger.child(options));
+		const child = this.logger.child({});
+		child.level = options.level || this.logger.level;
+		const logger = new Logger(child);
+		logger.setContext(options.context || this.context);
 		return logger;
 	}
 }
