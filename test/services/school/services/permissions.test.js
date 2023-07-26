@@ -19,7 +19,9 @@ describe('permissons service', () => {
 		nestServices = await setupNestServices(app);
 		testHelper = testObjects(appPromise());
 		server = await app.listen(0);
-		testSchool = await testHelper.createTestSchool();
+		testSchool = await testHelper.createTestSchool({
+			permissions: { teacher: { STUDENT_LIST: true } },
+		});
 		testUser = await testHelper.createTestUser({ schoolId: testSchool._id, roles: ['administrator'] });
 		testParams = await testHelper.generateRequestParamsFromUser(testUser);
 		testParams.query = {};
