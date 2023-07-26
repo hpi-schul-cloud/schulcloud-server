@@ -1,13 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CustomParameterScope, IFindOptions, Page, SchoolExternalToolDO, SortOrder } from '@shared/domain';
-import {
-	CustomParameterDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/tool';
+import { IFindOptions, Page, SchoolExternalToolDO, SortOrder } from '@shared/domain';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
@@ -23,6 +17,8 @@ import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalToolVersionService } from './external-tool-version.service';
 import { ExternalToolService } from './external-tool.service';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
+import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO, CustomParameterDO } from '../domainobject';
+import { CustomParameterScope } from '../entity';
 
 describe('ExternalToolService', () => {
 	let module: TestingModule;

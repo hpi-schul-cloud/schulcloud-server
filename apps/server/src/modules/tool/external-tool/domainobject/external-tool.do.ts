@@ -1,12 +1,13 @@
-import { BaseDO } from '../base.do';
+import { BaseDO } from '@shared/domain';
+
+import { CustomParameterDO } from './custom-parameter.do';
 import {
-	Oauth2ToolConfigDO,
 	BasicToolConfigDO,
-	Lti11ToolConfigDO,
 	ExternalToolConfigDO,
+	Lti11ToolConfigDO,
+	Oauth2ToolConfigDO,
 	ToolConfigType,
 } from './config';
-import { CustomParameterDO } from './custom-parameter.do';
 import { ToolVersion } from './types';
 
 export interface ExternalToolProps {

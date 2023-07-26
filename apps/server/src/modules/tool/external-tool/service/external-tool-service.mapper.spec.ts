@@ -1,9 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Oauth2ToolConfigDO } from '@shared/domain/domainobject/tool';
-import { ToolConfigType } from '@shared/domain';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { TokenEndpointAuthMethod } from '../../common/interface';
+import { Oauth2ToolConfigDO, ToolConfigType } from '../domainobject';
 
 describe('ExternalToolServiceMapper', () => {
 	let module: TestingModule;

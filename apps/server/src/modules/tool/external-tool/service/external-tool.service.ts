@@ -1,14 +1,5 @@
 import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
-import {
-	CustomParameterDO,
-	CustomParameterScope,
-	EntityId,
-	ExternalToolDO,
-	IFindOptions,
-	Oauth2ToolConfigDO,
-	Page,
-	SchoolExternalToolDO,
-} from '@shared/domain';
+import { EntityId, IFindOptions, Page, SchoolExternalToolDO } from '@shared/domain';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
@@ -17,6 +8,8 @@ import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolSearchQuery, TokenEndpointAuthMethod } from '../../common/interface';
 import { ExternalToolVersionService } from './external-tool-version.service';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
+import { ExternalToolDO, Oauth2ToolConfigDO, CustomParameterDO } from '../domainobject';
+import { CustomParameterScope } from '../entity';
 
 @Injectable()
 export class ExternalToolService {

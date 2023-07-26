@@ -1,20 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	SortOrder,
-	SortOrderMap,
-	ToolConfigType,
-} from '@shared/domain';
+import { SortOrder, SortOrderMap } from '@shared/domain';
+import { basicToolConfigDOFactory, customParameterDOFactory, externalToolDOFactory } from '@shared/testing';
 import {
 	BasicToolConfigDO,
 	CustomParameterDO,
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/tool';
-import { basicToolConfigDOFactory, customParameterDOFactory, externalToolDOFactory } from '@shared/testing';
+} from '../domainobject';
+import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '../entity';
 import {
 	CustomParameterLocationParams,
 	CustomParameterScopeTypeParams,
@@ -23,6 +17,7 @@ import {
 	LtiMessageType,
 	LtiPrivacyPermission,
 	TokenEndpointAuthMethod,
+	ToolConfigType,
 } from '../../common/interface';
 import { ExternalToolRequestMapper } from './external-tool-request.mapper';
 import {

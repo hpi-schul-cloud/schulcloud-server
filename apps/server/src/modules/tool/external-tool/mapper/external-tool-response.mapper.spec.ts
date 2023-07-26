@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '@shared/domain';
+import { externalToolDOFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import {
 	BasicToolConfigDO,
 	CustomParameterDO,
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/tool';
-import { externalToolDOFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+} from '../domainobject';
+import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '../entity';
 import {
 	CustomParameterLocationParams,
 	CustomParameterScopeTypeParams,

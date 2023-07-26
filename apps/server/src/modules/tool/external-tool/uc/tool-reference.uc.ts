@@ -4,7 +4,6 @@ import {
 	ContextExternalToolDO,
 	ContextRef,
 	EntityId,
-	ExternalToolDO,
 	Permission,
 	SchoolExternalToolDO,
 	ToolConfigurationStatus,
@@ -16,6 +15,7 @@ import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { CommonToolService } from '../../common/service';
 import { ToolReferenceMapper } from '../mapper/tool-reference.mapper';
+import { ExternalToolDO } from '../domainobject';
 
 @Injectable()
 export class ToolReferenceUc {

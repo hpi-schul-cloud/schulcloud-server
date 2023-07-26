@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolReference } from '@shared/domain';
+import { ToolReference } from '@shared/domain';
 import {
 	BasicToolConfigDO,
 	CustomParameterDO,
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/tool';
+} from '../domainobject';
 import {
 	CustomParameterLocationParams,
 	CustomParameterScopeTypeParams,
@@ -24,6 +24,7 @@ import {
 	ToolReferenceResponse,
 } from '../controller/dto';
 import { statusMapping } from '../../school-external-tool/mapper';
+import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '../entity';
 
 const scopeMapping: Record<CustomParameterScope, CustomParameterScopeTypeParams> = {
 	[CustomParameterScope.GLOBAL]: CustomParameterScopeTypeParams.GLOBAL,

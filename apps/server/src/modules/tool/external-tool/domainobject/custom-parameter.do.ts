@@ -1,4 +1,4 @@
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '@shared/domain';
+import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '../entity';
 
 export class CustomParameterDO {
 	name: string;

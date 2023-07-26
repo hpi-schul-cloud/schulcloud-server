@@ -1,11 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import {
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	ExternalToolDO,
-	SortOrderMap,
-} from '@shared/domain';
+import { SortOrderMap } from '@shared/domain';
+import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '../entity';
 import {
 	CustomParameterLocationParams,
 	CustomParameterScopeTypeParams,
@@ -34,6 +29,7 @@ import {
 	Oauth2ToolConfigCreate,
 	Oauth2ToolConfigUpdate,
 } from '../uc';
+import { ExternalToolDO } from '../domainobject';
 
 const scopeMapping: Record<CustomParameterScopeTypeParams, CustomParameterScope> = {
 	[CustomParameterScopeTypeParams.GLOBAL]: CustomParameterScope.GLOBAL,

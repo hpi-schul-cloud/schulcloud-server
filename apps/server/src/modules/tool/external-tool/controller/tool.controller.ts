@@ -12,7 +12,7 @@ import {
 } from '@nestjs/swagger';
 import { ValidationError } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
-import { ExternalToolDO, IFindOptions, Page, ToolReference } from '@shared/domain';
+import { IFindOptions, Page, ToolReference } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
@@ -31,6 +31,7 @@ import {
 	ToolReferenceResponse,
 } from './dto';
 import { ContextExternalToolContextParams } from '../../context-external-tool/controller/dto';
+import { ExternalToolDO } from '../domainobject';
 
 @ApiTags('Tool')
 @Authenticate('jwt')

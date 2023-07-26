@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
 	ContextExternalToolDO,
-	ExternalToolDO,
 	Permission,
 	SchoolExternalToolDO,
 	ToolConfigurationStatus,
@@ -17,6 +16,7 @@ import { ExternalToolService } from '../service';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { CommonToolService } from '../../common/service';
+import { ExternalToolDO } from '../domainobject';
 
 describe('ToolReferenceUc', () => {
 	let module: TestingModule;
