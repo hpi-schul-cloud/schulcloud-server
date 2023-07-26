@@ -10,7 +10,6 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
-import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@src/modules/copy-helper';
 import { LessonCopyService } from '@src/modules/lesson/service';
 import { BoardCopyService } from './board-copy.service';
@@ -26,7 +25,7 @@ describe('course copy service', () => {
 	let boardCopyService: DeepMocked<BoardCopyService>;
 	let lessonCopyService: DeepMocked<LessonCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
-	let authorization: DeepMocked<AuthorizationService>;
+	let userRepo: DeepMocked<UserRepo>;
 
 	afterAll(async () => {
 		await module.close();
@@ -66,8 +65,8 @@ describe('course copy service', () => {
 					useValue: createMock<CopyHelperService>(),
 				},
 				{
-					provide: AuthorizationService,
-					useValue: createMock<AuthorizationService>(),
+					provide: UserRepo,
+					useValue: createMock<UserRepo>(),
 				},
 			],
 		}).compile();
@@ -79,7 +78,7 @@ describe('course copy service', () => {
 		boardCopyService = module.get(BoardCopyService);
 		lessonCopyService = module.get(LessonCopyService);
 		copyHelperService = module.get(CopyHelperService);
-		authorization = module.get(AuthorizationService);
+		userRepo = module.get(UserRepo);
 	});
 
 	beforeEach(() => {
@@ -95,11 +94,10 @@ describe('course copy service', () => {
 			const courseCopy = courseFactory.buildWithId({ teachers: [user] });
 			const boardCopy = boardFactory.build({ course: courseCopy });
 
-			authorization.getUserWithPermissions.mockResolvedValue(user);
+			userRepo.findById.mockResolvedValue(user);
 			courseRepo.findById.mockResolvedValue(course);
 			courseRepo.findAllByUserId.mockResolvedValue([allCourses, allCourses.length]);
 			boardRepo.findByCourseId.mockResolvedValue(originalBoard);
-			authorization.checkPermission.mockReturnValue();
 			roomsService.updateBoard.mockResolvedValue(originalBoard);
 
 			const courseCopyName = 'Copy';
@@ -132,7 +130,7 @@ describe('course copy service', () => {
 		it('should fetch the user', async () => {
 			const { course, user } = setup();
 			await service.copyCourse({ userId: user.id, courseId: course.id });
-			expect(authorization.getUserWithPermissions).toBeCalledWith(user.id);
+			expect(userRepo.findById).toBeCalledWith(user.id, true);
 		});
 
 		it('should fetch original course', async () => {
@@ -271,7 +269,7 @@ describe('course copy service', () => {
 
 			const destinationSchool = schoolFactory.buildWithId();
 			const targetUser = userFactory.build({ school: destinationSchool });
-			authorization.getUserWithPermissions.mockResolvedValue(targetUser);
+			userRepo.findById.mockResolvedValue(targetUser);
 
 			const status = await service.copyCourse({ userId: targetUser.id, courseId: course.id });
 			const courseCopy = status.copyEntity as Course;
@@ -320,9 +318,8 @@ describe('course copy service', () => {
 			const course = courseFactory.build();
 			courseRepo.findById.mockResolvedValue(course);
 			courseRepo.findAllByUserId.mockResolvedValue([[course], 1]);
-			authorization.getUserWithPermissions.mockResolvedValue(user);
+			userRepo.findById.mockResolvedValue(user);
 			// boardRepo.findByCourseId.mockResolvedValue(originalBoard);
-			authorization.checkPermission.mockReturnValue();
 			// roomsService.updateBoard.mockResolvedValue(originalBoard);
 			const boardCopy = boardFactory.build();
 			const boardCopyStatus = {
@@ -343,7 +340,7 @@ describe('course copy service', () => {
 				const { course } = setup();
 				const destinationSchool = schoolFactory.buildWithId();
 				const targetUser = userFactory.build({ school: destinationSchool });
-				authorization.getUserWithPermissions.mockResolvedValue(targetUser);
+				userRepo.findById.mockResolvedValue(targetUser);
 				const status = await service.copyCourse({ userId: targetUser.id, courseId: course.id });
 				const courseCopy = status.copyEntity as Course;
 
@@ -354,7 +351,7 @@ describe('course copy service', () => {
 				const { course } = setup();
 				const destinationSchool = schoolFactory.buildWithId();
 				const targetUser = userFactory.build({ school: destinationSchool });
-				authorization.getUserWithPermissions.mockResolvedValue(targetUser);
+				userRepo.findById.mockResolvedValue(targetUser);
 				const status = await service.copyCourse({ userId: targetUser.id, courseId: course.id });
 				const courseCopy = status.copyEntity as Course;
 
@@ -411,9 +408,8 @@ describe('course copy service', () => {
 			courseRepo.findById.mockResolvedValue(originalCourse);
 			courseRepo.findAllByUserId.mockResolvedValue([[originalCourse], 1]);
 
-			authorization.getUserWithPermissions.mockResolvedValue(user);
+			userRepo.findById.mockResolvedValue(user);
 			boardRepo.findByCourseId.mockResolvedValue(originalBoard);
-			authorization.checkPermission.mockReturnValue();
 			roomsService.updateBoard.mockResolvedValue(originalBoard);
 
 			const courseCopyName = 'Copy';
@@ -457,9 +453,8 @@ describe('course copy service', () => {
 			courseRepo.findById.mockResolvedValue(originalCourse);
 			courseRepo.findAllByUserId.mockResolvedValue([[originalCourse], 1]);
 
-			authorization.getUserWithPermissions.mockResolvedValue(user);
+			userRepo.findById.mockResolvedValue(user);
 			boardRepo.findByCourseId.mockResolvedValue(originalBoard);
-			authorization.checkPermission.mockReturnValue();
 			roomsService.updateBoard.mockResolvedValue(originalBoard);
 
 			const boardCopy = boardFactory.build();
