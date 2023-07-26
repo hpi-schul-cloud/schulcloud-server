@@ -196,7 +196,7 @@
 		},
 		"name": "teacher",
 		"updatedAt": {
-			"$date": "2023-07-24T11:05:59.088Z"
+			"$date": "2023-04-28T13:00:08.424Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -222,6 +222,7 @@
 			"REQUEST_CONSENTS",
 			"SCHOOL_NEWS_EDIT",
 			"STUDENT_EDIT",
+			"STUDENT_LIST",
 			"STUDENT_SKIP_REGISTRATION",
 			"SUBMISSIONS_SCHOOL_VIEW",
 			"TEACHER_LIST",
