@@ -1,4 +1,13 @@
-import { H5PAjaxEndpoint, H5PEditor, H5PPlayer, H5pError, IContentMetadata, IUser } from '@lumieducation/h5p-server';
+import {
+	H5PAjaxEndpoint,
+	H5PEditor,
+	H5PPlayer,
+	H5pError,
+	IContentMetadata,
+	IEditorModel,
+	IPlayerModel,
+	IUser,
+} from '@lumieducation/h5p-server';
 import {
 	BadRequestException,
 	HttpException,
@@ -199,22 +208,38 @@ export class H5PEditorUc {
 		}
 	}
 
-	public async getH5pPlayer(currentUser: ICurrentUser, contentId: string): Promise<string> {
+	public async getH5pPlayer(currentUser: ICurrentUser, contentId: string): Promise<IPlayerModel> {
 		// TODO: await this.checkPermission...
 		const user = this.changeUserType(currentUser);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		const h5pPlayerHtml: string = await this.h5pPlayer.render(contentId, user);
-		return h5pPlayerHtml;
+		const playerModel: IPlayerModel = await this.h5pPlayer.render(contentId, user);
+		return playerModel;
 	}
 
-	public async getH5pEditor(currentUser: ICurrentUser, contentId: string, language: string): Promise<string> {
+	public async getEmptyH5pEditor(currentUser: ICurrentUser, language: string) {
 		// If contentId is undefined, a new H5P content will be created.
 		// TODO: await this.checkPermission...
 		const user = this.changeUserType(currentUser);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		const createdH5PEditor: string = await this.h5pEditor.render(contentId, language, user);
+		const createdH5PEditor: IEditorModel = await this.h5pEditor.render(undefined as unknown as string, language, user);
 
 		return createdH5PEditor;
+	}
+
+	public async getH5pEditor(currentUser: ICurrentUser, contentId: string, language: string) {
+		// If contentId is undefined, a new H5P content will be created.
+		// TODO: await this.checkPermission...
+		const user = this.changeUserType(currentUser);
+
+		const [editorModel, content] = await Promise.all([
+			this.h5pEditor.render(contentId, language, user) as Promise<IEditorModel>,
+			this.h5pEditor.getContent(contentId, user),
+		]);
+
+		return {
+			editorModel,
+			content,
+		};
 	}
 
 	public async deleteH5pContent(currentUser: ICurrentUser, contentId: string): Promise<boolean> {

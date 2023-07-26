@@ -6,6 +6,7 @@ import {
 	Get,
 	HttpStatus,
 	InternalServerErrorException,
+	NotImplementedException,
 	Param,
 	Post,
 	Query,
@@ -36,24 +37,7 @@ import {
 	PostH5PContentCreateParams,
 	SaveH5PEditorParams,
 } from './dto';
-import { H5PSaveResponse } from './dto/h5p-editor.response';
-
-// Dummy html response so we can test i-frame integration
-const dummyResponse = (title: string) => `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${title}</title>
-</head>
-<body>
-    <h1>${title}</h1>
-    <p>This response can be used for testing</p>
-</body>
-</html>
-`;
+import { H5PEditorModelContentResponse, H5PEditorModelResponse, H5PSaveResponse } from './dto/h5p-editor.response';
 
 @ApiTags('h5p-editor')
 @Authenticate('jwt')
@@ -69,19 +53,13 @@ export class H5PEditorController {
 	@Get('/play/:contentId')
 	async getPlayer(@CurrentUser() currentUser: ICurrentUser, @Param() params: GetH5PContentParams) {
 		return this.h5pEditorUc.getH5pPlayer(currentUser, params.contentId);
-		// Dummy Response
-		// return Promise.resolve(dummyResponse('H5P Player Dummy'));
 	}
 
-	@ApiOperation({ summary: 'Return dummy HTML for testing' })
-	@ApiResponse({ status: 400, type: ApiValidationError })
-	@ApiResponse({ status: 400, type: BadRequestException })
-	@ApiResponse({ status: 403, type: ForbiddenException })
-	@ApiResponse({ status: 500, type: InternalServerErrorException })
-	@Get('/:contentId/edit')
-	async getEditor() {
-		// Dummy Response
-		return Promise.resolve(dummyResponse('H5P Editor Dummy'));
+	@ApiOperation({ summary: 'H5P tries to load the users last state; unsupported' })
+	@ApiResponse({ type: NotImplementedException })
+	@Get('contentUserData/*')
+	userDataSink() {
+		return new NotImplementedException();
 	}
 
 	// Other Endpoints (incomplete list), paths not final
@@ -200,17 +178,19 @@ export class H5PEditorController {
 	}
 
 	@Get('/edit')
-	async getNewH5PEditor(@CurrentUser() currentUser: ICurrentUser): Promise<string> {
+	@ApiResponse({ status: 200, type: H5PEditorModelResponse })
+	async getNewH5PEditor(@CurrentUser() currentUser: ICurrentUser) {
 		// TODO: Get user language
-		const response = this.h5pEditorUc.getH5pEditor(currentUser, undefined as unknown as string, 'de');
-		return response;
+		const editorModel = await this.h5pEditorUc.getEmptyH5pEditor(currentUser, 'de');
+		return new H5PEditorModelResponse(editorModel);
 	}
 
 	@Get('/edit/:contentId')
-	async getH5PEditor(@Param() params: GetH5PEditorParams, @CurrentUser() currentUser: ICurrentUser): Promise<string> {
+	@ApiResponse({ status: 200, type: H5PEditorModelContentResponse })
+	async getH5PEditor(@Param() params: GetH5PEditorParams, @CurrentUser() currentUser: ICurrentUser) {
 		// TODO: Get user language
-		const response = this.h5pEditorUc.getH5pEditor(currentUser, params.contentId as string, 'de');
-		return response;
+		const { editorModel, content } = await this.h5pEditorUc.getH5pEditor(currentUser, params.contentId as string, 'de');
+		return new H5PEditorModelContentResponse(editorModel, content);
 	}
 
 	@Post('/edit')
@@ -227,7 +207,7 @@ export class H5PEditorController {
 		return saveResponse;
 	}
 
-	@Post('/edit/:contentId?')
+	@Post('/edit/:contentId')
 	@ApiResponse({ status: 201, type: H5PSaveResponse })
 	async saveH5pContent(
 		@Body() body: PostH5PContentCreateParams,

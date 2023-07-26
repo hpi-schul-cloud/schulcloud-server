@@ -1,4 +1,4 @@
-import { H5PConfig, H5PEditor, IEditorModel, UrlGenerator, cacheImplementations } from '@lumieducation/h5p-server';
+import { H5PConfig, H5PEditor, UrlGenerator, cacheImplementations } from '@lumieducation/h5p-server';
 
 import { ContentStorage } from '../contentStorage/contentStorage';
 import { LibraryStorage } from '../libraryStorage/libraryStorage';
