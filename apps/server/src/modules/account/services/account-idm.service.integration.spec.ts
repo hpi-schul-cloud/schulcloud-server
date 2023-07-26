@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { IAccount } from '@shared/domain';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
-import { LegacyLogger, LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@src/core/logger';
 import { IdentityManagementModule } from '@shared/infra/identity-management';
 import { IdentityManagementService } from '../../../shared/infra/identity-management/identity-management.service';
 import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../mapper';
@@ -66,7 +66,6 @@ describe('AccountIdmService Integration', () => {
 					provide: AccountIdmToDtoMapper,
 					useClass: AccountIdmToDtoMapperDb,
 				},
-				LegacyLogger,
 			],
 		}).compile();
 		accountIdmService = module.get(AccountServiceIdm);
