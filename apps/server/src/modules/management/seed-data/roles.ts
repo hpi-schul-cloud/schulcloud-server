@@ -15,7 +15,7 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 	user: {
 		id: '0000d186816abba584714c95',
 		createdAt: '2017-01-01T00:06:37.148Z',
-		updatedAt: '2023-04-04T12:33:09.676Z',
+		updatedAt: '2023-07-26T10:06:18.310Z',
 		name: RoleName.USER,
 		roles: [],
 		permissions: [
@@ -46,7 +46,6 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 			Permission.FOLDER_DELETE,
 			Permission.HELPDESK_CREATE,
 			Permission.HOMEWORK_VIEW,
-			Permission.LERNSTORE_VIEW,
 			Permission.LINK_CREATE,
 			Permission.NEWS_VIEW,
 			Permission.NOTIFICATION_CREATE,

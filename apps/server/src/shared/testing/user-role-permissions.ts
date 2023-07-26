@@ -1,6 +1,6 @@
 /*
 	This permission set is based on the current state of dBildungscloud.
-	Last Update: 2023-03-21
+	Last Update: 2023-07-26
 */
 import { Permission } from '@shared/domain';
 
@@ -52,7 +52,6 @@ export const userPermissions = [
 	Permission.TEAM_VIEW,
 	Permission.CLASS_VIEW,
 	Permission.COURSE_VIEW,
-	Permission.LERNSTORE_VIEW,
 ] as Permission[];
 
 export const studentPermissions = [

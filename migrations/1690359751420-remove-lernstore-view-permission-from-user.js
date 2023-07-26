@@ -18,8 +18,6 @@ const Roles = mongoose.model(
 	'roles'
 );
 
-// TODO update seed data and remove this line
-
 module.exports = {
 	up: async function up() {
 		await connect();
