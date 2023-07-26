@@ -4,7 +4,7 @@ import { Logger as WinstonLogger } from 'winston';
 import { Loggable } from './interfaces';
 import { LoggingUtils } from './logging.utils';
 
-type ChildOptions = { context?: string, level?: string };
+type ChildOptions = { context?: string; level?: string };
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class Logger {
