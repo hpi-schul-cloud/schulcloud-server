@@ -159,6 +159,42 @@ describe('CommonToolValidationService', () => {
 			});
 		});
 
+		describe('when checking parameters of school external tool', () => {
+			const setup = () => {
+				const requiredContextParam: CustomParameterDO = customParameterDOFactory.build({
+					name: 'missingContextParam',
+					isOptional: false,
+					scope: CustomParameterScope.CONTEXT,
+					type: CustomParameterType.BOOLEAN,
+				});
+				const schoolParam: CustomParameterDO = customParameterDOFactory.build({
+					name: 'schoolParam',
+					scope: CustomParameterScope.SCHOOL,
+					type: CustomParameterType.BOOLEAN,
+				});
+
+				const { externalTool, schoolExternalTool } = createTools(
+					{ parameters: [requiredContextParam, schoolParam] },
+					{
+						parameters: [{ name: 'schoolParam', value: 'true' }],
+					}
+				);
+
+				return {
+					externalTool,
+					schoolExternalTool,
+				};
+			};
+
+			it('should not fail because of missing required context param', () => {
+				const { externalTool, schoolExternalTool } = setup();
+
+				const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
+
+				expect(func).not.toThrowError();
+			});
+		});
+
 		describe('when parameter is not school or context', () => {
 			const setup = () => {
 				const notSchoolParam: CustomParameterDO = customParameterDOFactory.build({

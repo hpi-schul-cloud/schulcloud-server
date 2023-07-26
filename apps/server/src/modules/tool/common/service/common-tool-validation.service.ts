@@ -41,17 +41,28 @@ export class CommonToolValidationService {
 	public checkCustomParameterEntries(loadedExternalTool: ExternalToolDO, validatableTool: ValidatableTool) {
 		if (loadedExternalTool.parameters) {
 			for (const param of loadedExternalTool.parameters) {
-				const foundEntry: CustomParameterEntryDO | undefined = validatableTool.parameters.find(
-					({ name }: CustomParameterEntryDO) => name.toLowerCase() === param.name.toLowerCase()
-				);
-				if (CustomParameterScope.SCHOOL === param.scope || CustomParameterScope.CONTEXT === param.scope) {
-					this.checkOptionalParameter(param, foundEntry);
-					if (foundEntry) {
-						this.checkParameterType(foundEntry, param);
-						this.checkParameterRegex(foundEntry, param);
-					}
-				}
+				this.checkScopeAndValidateParameter(validatableTool, param);
 			}
+		}
+	}
+
+	private checkScopeAndValidateParameter(validatableTool: ValidatableTool, param: CustomParameterDO): void {
+		const foundEntry: CustomParameterEntryDO | undefined = validatableTool.parameters.find(
+			({ name }: CustomParameterEntryDO): boolean => name.toLowerCase() === param.name.toLowerCase()
+		);
+
+		if (param.scope === CustomParameterScope.SCHOOL && validatableTool instanceof SchoolExternalToolDO) {
+			this.validateParameter(param, foundEntry);
+		} else if (param.scope === CustomParameterScope.CONTEXT && validatableTool instanceof ContextExternalToolDO) {
+			this.validateParameter(param, foundEntry);
+		}
+	}
+
+	private validateParameter(param: CustomParameterDO, foundEntry: CustomParameterEntryDO | undefined): void {
+		this.checkOptionalParameter(param, foundEntry);
+		if (foundEntry) {
+			this.checkParameterType(foundEntry, param);
+			this.checkParameterRegex(foundEntry, param);
 		}
 	}
 
