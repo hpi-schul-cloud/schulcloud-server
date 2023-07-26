@@ -262,5 +262,16 @@
 			"$date": "2023-05-16T11:09:04.602Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "64c0d7c76b956f0e74763f0f"
+		},
+		"state": "up",
+		"name": "remove-lernstore-view-permission-from-user",
+		"createdAt": {
+			"$date": "2023-07-26T08:22:31.420Z"
+		},
+		"__v": 0
 	}
 ]
