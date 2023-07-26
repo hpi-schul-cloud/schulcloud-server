@@ -45,6 +45,8 @@ export type UserImportPermissions =
 
 @Injectable()
 export class UserImportUc {
+	private readonly logger: Logger;
+
 	constructor(
 		private readonly accountService: AccountService,
 		private readonly importUserRepo: ImportUserRepo,
@@ -52,9 +54,9 @@ export class UserImportUc {
 		private readonly schoolService: SchoolService,
 		private readonly systemRepo: SystemRepo,
 		private readonly userRepo: UserRepo,
-		private readonly logger: Logger
+		logger: Logger
 	) {
-		this.logger.setContext(UserImportUc.name);
+		this.logger = logger.createChild({ context: UserImportUc.name, level: 'debug' });
 	}
 
 	private checkFeatureEnabled(school: SchoolDO): void | never {
