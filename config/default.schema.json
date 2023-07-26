@@ -903,7 +903,7 @@
 		},
 		"NEST_LOG_LEVEL": {
 			"type": "string",
-			"default": "notice",
+			"default": "debug",
 			"description": "Nest Log level for api. The http flag is for request logging. The http flag do only work by api methods with added 'request logging interceptor'.",
 			"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 		},
