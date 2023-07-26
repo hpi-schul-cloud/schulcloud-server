@@ -14,7 +14,6 @@ import { Logger } from './logger';
 				return {
 					levels: winston.config.syslog.levels,
 					level: configService.get<string>('NEST_LOG_LEVEL'),
-					// level: 'debug',
 					exitOnError: false,
 					transports: [
 						new winston.transports.Console({
