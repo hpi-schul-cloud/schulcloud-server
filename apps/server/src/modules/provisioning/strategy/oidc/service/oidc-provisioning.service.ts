@@ -7,10 +7,10 @@ import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { SchoolService, FederalStateService, SchoolYearService } from '@src/modules/school';
+import { FederalStateService, SchoolService, SchoolYearService } from '@src/modules/school';
+import { FederalStateNames } from '@src/modules/school/types';
 import { UserService } from '@src/modules/user';
 import CryptoJS from 'crypto-js';
-import { FederalStateNames } from '@src/modules/school/types';
 import { ExternalSchoolDto, ExternalUserDto } from '../../../dto';
 
 @Injectable()
@@ -57,7 +57,7 @@ export class OidcProvisioningService {
 			});
 		}
 
-		const savedSchool: SchoolDO = await this.schoolService.createOrUpdateSchool(school);
+		const savedSchool: SchoolDO = await this.schoolService.save(school, true);
 		return savedSchool;
 	}
 

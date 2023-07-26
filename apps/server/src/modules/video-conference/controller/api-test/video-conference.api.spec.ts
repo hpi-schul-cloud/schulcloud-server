@@ -1,20 +1,6 @@
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { EntityManager } from '@mikro-orm/mongodb';
-import MockAdapter from 'axios-mock-adapter';
 import { Test, TestingModule } from '@nestjs/testing';
-import axios from 'axios';
-import {
-	accountFactory,
-	cleanupCollections,
-	courseFactory,
-	roleFactory,
-	schoolFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-	userFactory,
-} from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server';
-import { Response } from 'supertest';
 import {
 	Account,
 	Course,
@@ -28,7 +14,21 @@ import {
 	VideoConference,
 	VideoConferenceScope,
 } from '@shared/domain';
+import {
+	accountFactory,
+	cleanupCollections,
+	courseFactory,
+	roleFactory,
+	schoolFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
+	userFactory,
+} from '@shared/testing';
 import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
+import { ServerTestModule } from '@src/modules/server';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+import { Response } from 'supertest';
 import { VideoConferenceCreateParams, VideoConferenceJoinResponse } from '../dto';
 
 describe('VideoConferenceController (API)', () => {
@@ -156,6 +156,45 @@ describe('VideoConferenceController (API)', () => {
 				const response: Response = await testApiClient.put('/anyScope/anyId/start');
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when the logoutUrl is from a wrong origin', () => {
+			const setup = async () => {
+				const school: School = schoolFactory.buildWithId({ features: [] });
+
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
+					Permission.START_MEETING,
+					Permission.JOIN_MEETING,
+				]);
+
+				await em.persistAndFlush([school, teacherAccount, teacherUser]);
+				em.clear();
+
+				const params: VideoConferenceCreateParams = {
+					everyAttendeeJoinsMuted: true,
+					everybodyJoinsAsModerator: true,
+					moderatorMustApproveJoinRequests: true,
+					logoutUrl: 'http://from.other.origin/',
+				};
+
+				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
+				return {
+					loggedInClient,
+					params,
+				};
+			};
+
+			it('should return bad request', async () => {
+				const { loggedInClient, params } = await setup();
+
+				const response: Response = await loggedInClient.put(
+					`${VideoConferenceScope.COURSE}/${new ObjectId().toHexString()}/start`,
+					params
+				);
+
+				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 			});
 		});
 

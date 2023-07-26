@@ -17,11 +17,11 @@ import { CardUc } from '../uc';
 import { ElementUc } from '../uc/element.uc';
 import { ContentElementUrlParams, MoveContentElementBody } from './dto';
 import {
-	ElementContentUpdateBodyParams,
+	UpdateElementContentBodyParams,
 	FileElementContentBody,
 	RichTextElementContentBody,
 	SubmissionContainerElementContentBody,
-} from './dto/element/element-content-update.body.params';
+} from './dto/element/update-element-content.body.params';
 
 @ApiTags('Board Element')
 @Authenticate('jwt')
@@ -59,7 +59,7 @@ export class ElementController {
 	@Patch(':contentElementId/content')
 	async updateElement(
 		@Param() urlParams: ContentElementUrlParams,
-		@Body() bodyParams: ElementContentUpdateBodyParams,
+		@Body() bodyParams: UpdateElementContentBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.elementUc.updateElementContent(currentUser.userId, urlParams.contentElementId, bodyParams.data.content);
