@@ -78,11 +78,6 @@ export class UserImportUc {
 		query: IImportUserScope,
 		options?: IFindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
-		this.logger.debug({
-			getLogMessage: () => {
-				return { message: 'finding all import users...' };
-			},
-		});
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
 		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
@@ -191,7 +186,7 @@ export class UserImportUc {
 			this.logger.debug({
 				getLogMessage: () => {
 					return {
-						message: 'save all matched users',
+						message: 'start saving all matched users',
 						numberOfMatchedUser: total,
 					};
 				},
