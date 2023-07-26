@@ -6,11 +6,11 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { IdentityManagementOauthService, IdentityManagementService } from '@shared/infra/identity-management';
 import { NotImplementedException } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
+import { ConfigModule } from '@nestjs/config';
 import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../mapper';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountLookupService } from './account-lookup.service';
 import { AccountDto, AccountSaveDto } from './dto';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 
 describe('AccountIdmService', () => {
 	let module: TestingModule;
