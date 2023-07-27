@@ -7,7 +7,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import WebSocket from 'ws';
 import { WSMessageType, WSConnectionState, Persitence } from '@src/modules/tldraw/types';
 
-const pingTimeout: number = (Configuration.get('TLDRAW_PING_TIMEOUT') as number) ?? 30000;
+const pingTimeout: number = (Configuration.get('TLDRAW_PING_TIMEOUT') as number) ?? 10000;
 // disable gc when using snapshots!
 const gcEnabled: boolean = Configuration.get('TLDRAW_GC_ENABLED') as boolean;
 
@@ -31,9 +31,9 @@ const docs = new Map();
 
 /**
  * @param {WSSharedDoc} doc
- * @param {any} ws
+ * @param {WebSocket} ws
  */
-const closeConn = (doc: WSSharedDoc, ws: WebSocket) => {
+export const closeConn = (doc: WSSharedDoc, ws: WebSocket) => {
 	if (doc.conns.has(ws)) {
 		const controlledIds = doc.conns.get(ws) as Set<number>;
 		doc.conns.delete(ws);
@@ -55,7 +55,7 @@ const closeConn = (doc: WSSharedDoc, ws: WebSocket) => {
  * @param {WebSocket} conn
  * @param {Uint8Array} message
  */
-const send = (doc: WSSharedDoc, conn: WebSocket, message: Uint8Array) => {
+export const send = (doc: WSSharedDoc, conn: WebSocket, message: Uint8Array) => {
 	if (conn.readyState !== WSConnectionState.CONNECTING && conn.readyState !== WSConnectionState.OPEN) {
 		closeConn(doc, conn);
 	}
@@ -75,7 +75,7 @@ const send = (doc: WSSharedDoc, conn: WebSocket, message: Uint8Array) => {
  * @param {any} origin
  * @param {WSSharedDoc} doc
  */
-const updateHandler = (update: Uint8Array, origin, doc: WSSharedDoc) => {
+export const updateHandler = (update: Uint8Array, origin, doc: WSSharedDoc) => {
 	const encoder = encoding.createEncoder();
 	encoding.writeVarUint(encoder, WSMessageType.SYNC);
 	writeUpdate(encoder, update);
@@ -142,7 +142,7 @@ export class WSSharedDoc extends Doc {
  * @param  gc - whether to allow gc on the doc (applies only when created)
  * @return {WSSharedDoc}
  */
-const getYDoc = (docname: string, gc = true) =>
+export const getYDoc = (docname: string, gc = true) =>
 	map.setIfUndefined(docs, docname, () => {
 		const doc = new WSSharedDoc(docname);
 		doc.gc = gc;
