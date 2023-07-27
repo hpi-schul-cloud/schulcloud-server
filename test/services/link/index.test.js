@@ -1,7 +1,9 @@
 const assert = require('assert');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const freeport = require('freeport');
 const appPromise = require('../../../src/app');
+const logger = require('../../../src/logger');
 
 chai.use(chaiHttp);
 
@@ -12,9 +14,18 @@ describe('link service', () => {
 	let service;
 
 	before(async () => {
+		port = await new Promise((resolve, reject) => {
+			freeport((err, freePort) => {
+				if (err) {
+					logger.error('freeport:', err);
+					reject(err);
+				}
+				resolve(freePort);
+			});
+		});
+
 		app = await appPromise();
-		server = await app.listen();
-		port = server.address().port;
+		server = await app.listen(port);
 		service = app.service('link');
 	});
 
@@ -27,10 +38,12 @@ describe('link service', () => {
 	});
 
 	it(`generates a link that has the correct target set`, async () => {
-		const url = `localhost:${port}/`;
+		const url = `http://localhost:${port}/`;
+
 		const data = await service.create({ target: url });
 		chai.expect(data._id).to.have.lengthOf(service.Model.linkLength);
 		chai.expect(data.target).to.equal(url);
+
 		const result = await chai.request(app).get(`/link/${data._id}`);
 		chai.expect(result.redirects[0]).to.equal(url);
 	});
