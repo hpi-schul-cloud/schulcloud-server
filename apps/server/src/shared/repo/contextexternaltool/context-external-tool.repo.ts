@@ -1,19 +1,17 @@
 import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import {
-	ContextExternalTool,
-	ContextExternalToolDO,
-	ContextRef,
-	IContextExternalToolProperties,
-	SchoolExternalTool,
-	SchoolExternalToolRefDO,
-} from '@shared/domain';
+import { ContextExternalToolDO, ContextRef, SchoolExternalToolRefDO } from '@shared/domain';
 import { BaseDORepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { ToolContextType } from '@src/modules/tool/common/interface/tool-context-type.enum';
 import { ContextExternalToolQuery } from '@src/modules/tool/context-external-tool/uc/dto/context-external-tool.types';
-import { ContextExternalToolType } from '../../../modules/tool/context-external-tool/entity/context-external-tool-type.enum';
+import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/entity';
+import {
+	ContextExternalTool,
+	ContextExternalToolType,
+	IContextExternalToolProperties,
+} from '@src/modules/tool/context-external-tool/entity';
 import { ExternalToolRepoMapper } from '../externaltool';
 import { ContextExternalToolScope } from './context-external-tool.scope';
 
