@@ -1,11 +1,12 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { ExternalToolDO, PseudonymDO } from '@shared/domain/';
+import { ExternalToolDO, Pseudonym, UserDO } from '@shared/domain/';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { PseudonymsRepo } from '@shared/repo/';
 import { LtiToolRepo } from '@shared/repo/ltitool/';
 import { LegacyLogger } from '@src/core/logger';
 import { TeamDto, TeamUserDto } from '@src/modules/collaborative-storage';
-import { ExternalToolService } from '@src/modules/tool';
+import { PseudonymService } from '@src/modules/pseudonym';
+import { UserService } from '@src/modules/user';
+import { ExternalToolService } from '@src/modules/tool/external-tool/service';
 import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
 import { ICollaborativeStorageStrategy } from '../base.interface.strategy';
 import { NextcloudClient } from './nextcloud.client';
@@ -20,9 +21,10 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 	constructor(
 		private readonly logger: LegacyLogger,
 		private readonly client: NextcloudClient,
-		private readonly pseudonymsRepo: PseudonymsRepo,
+		private readonly pseudonymService: PseudonymService,
 		private readonly ltiToolRepo: LtiToolRepo,
-		private readonly externalToolService: ExternalToolService
+		private readonly externalToolService: ExternalToolService,
+		private readonly userService: UserService
 	) {
 		this.logger.setContext(NextcloudStrategy.name);
 	}
@@ -125,17 +127,19 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 	 */
 	protected async updateTeamUsersInGroup(groupId: string, teamUsers: TeamUserDto[]): Promise<void[][]> {
 		const groupUserIds: string[] = await this.client.getGroupUsers(groupId);
-		const nextcloudLtiTool: ExternalToolDO | LtiToolDO = await this.findNextcloudTool();
+		const nextcloudTool: ExternalToolDO | LtiToolDO = await this.findNextcloudTool();
 
 		let convertedTeamUserIds: string[] = await Promise.all<Promise<string>[]>(
-			teamUsers.map(
-				async (teamUser: TeamUserDto): Promise<string> =>
-					// The Oauth authentication generates a pseudonym which will be used from external systems as identifier
-					this.pseudonymsRepo
-						.findByUserIdAndToolIdOrFail(teamUser.userId, nextcloudLtiTool.id as string)
-						.then((pseudonymDO: PseudonymDO) => this.client.getNameWithPrefix(pseudonymDO.pseudonym))
-						.catch(() => '')
-			)
+			// The Oauth authentication generates a pseudonym which will be used from external systems as identifier
+			teamUsers.map(async (teamUser: TeamUserDto): Promise<string> => {
+				const user: UserDO = await this.userService.findById(teamUser.userId);
+				const userId = await this.pseudonymService
+					.findByUserAndTool(user, nextcloudTool)
+					.then((pseudonymDO: Pseudonym) => this.client.getNameWithPrefix(pseudonymDO.pseudonym))
+					.catch(() => '');
+
+				return userId;
+			})
 		);
 		convertedTeamUserIds = convertedTeamUserIds.filter(Boolean);
 

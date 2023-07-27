@@ -7,37 +7,34 @@ import { ALL_ENTITIES } from '@shared/domain';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MailModule } from '@shared/infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
-import { RedisModule, REDIS_CLIENT } from '@shared/infra/redis';
+import { REDIS_CLIENT, RedisModule } from '@shared/infra/redis';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LegacyLogger, LoggerModule } from '@src/core/logger';
 import { AccountApiModule } from '@src/modules/account/account-api.module';
 import { AuthenticationApiModule } from '@src/modules/authentication/authentication-api.module';
+import { BoardApiModule } from '@src/modules/board/board-api.module';
 import { CollaborativeStorageModule } from '@src/modules/collaborative-storage';
 import { FilesStorageClientModule } from '@src/modules/files-storage-client';
-import { LearnroomModule } from '@src/modules/learnroom';
-import { LessonApiModule } from '@src/modules/lesson';
+import { LearnroomApiModule } from '@src/modules/learnroom/learnroom-api.module';
+import { LessonApiModule } from '@src/modules/lesson/lesson-api.module';
 import { NewsModule } from '@src/modules/news';
 import { OauthProviderApiModule } from '@src/modules/oauth-provider';
 import { OauthApiModule } from '@src/modules/oauth/oauth-api.module';
-import { ProvisioningModule } from '@src/modules/provisioning';
 import { RocketChatModule } from '@src/modules/rocketchat';
-import { RoleModule } from '@src/modules/role/role.module';
 import { SchoolApiModule } from '@src/modules/school/school-api.module';
 import { SharingApiModule } from '@src/modules/sharing/sharing.module';
 import { SystemApiModule } from '@src/modules/system/system-api.module';
-import { TaskModule } from '@src/modules/task';
 import { TaskCardModule } from '@src/modules/task-card';
+import { TaskApiModule } from '@src/modules/task/task-api.module';
 import { ToolApiModule } from '@src/modules/tool/tool-api.module';
 import { ImportUserModule } from '@src/modules/user-import';
 import { UserLoginMigrationApiModule } from '@src/modules/user-login-migration/user-login-migration-api.module';
 import { UserApiModule } from '@src/modules/user/user-api.module';
-import { VideoConferenceModule } from '@src/modules/video-conference';
 import { VideoConferenceApiModule } from '@src/modules/video-conference/video-conference-api.module';
 import connectRedis from 'connect-redis';
 import session from 'express-session';
 import { RedisClient } from 'redis';
-import { BoardApiModule, BoardModule } from '../board';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
 
@@ -48,13 +45,13 @@ const serverModules = [
 	AccountApiModule,
 	CollaborativeStorageModule,
 	OauthApiModule,
-	TaskModule,
+	TaskApiModule,
 	TaskCardModule,
 	LessonApiModule,
 	NewsModule,
 	UserApiModule,
 	ImportUserModule,
-	LearnroomModule,
+	LearnroomApiModule,
 	FilesStorageClientModule,
 	SystemApiModule,
 	MailModule.forRoot({
@@ -69,15 +66,11 @@ const serverModules = [
 		adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
 	}),
 	SchoolApiModule,
-	ProvisioningModule,
-	RoleModule,
-	VideoConferenceModule,
 	VideoConferenceApiModule,
 	OauthProviderApiModule,
 	SharingApiModule,
 	ToolApiModule,
 	UserLoginMigrationApiModule,
-	BoardModule,
 	BoardApiModule,
 ];
 

@@ -1,24 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Lesson, IComponentProperties, Course } from '@shared/domain';
+import { Course, EntityId, IComponentProperties, Lesson } from '@shared/domain';
 import { LessonService } from '@src/modules/lesson/service';
-import { TaskService } from '@src/modules/task/service/task.service';
 import { ComponentType } from '@src/shared/domain/entity/lesson.entity';
-import { CourseService } from './course.service';
 import {
-	ICommonCartridgeOrganizationProps,
-	ICommonCartridgeResourceProps,
 	CommonCartridgeFileBuilder,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
+	ICommonCartridgeOrganizationProps,
+	ICommonCartridgeResourceProps,
 } from '../common-cartridge';
+import { CourseService } from './course.service';
 
 @Injectable()
 export class CommonCartridgeExportService {
-	constructor(
-		private readonly courseService: CourseService,
-		private readonly lessonService: LessonService,
-		private readonly taskService: TaskService
-	) {}
+	constructor(private readonly courseService: CourseService, private readonly lessonService: LessonService) {}
 
 	async exportCourse(courseId: EntityId, userId: EntityId, version: CommonCartridgeVersion): Promise<Buffer> {
 		const course = await this.courseService.findById(courseId);

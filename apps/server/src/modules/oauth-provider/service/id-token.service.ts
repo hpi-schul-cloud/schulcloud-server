@@ -1,11 +1,12 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ExternalToolDO, LtiToolDO, PseudonymDO, Team, UserDO } from '@shared/domain';
+import { Injectable } from '@nestjs/common';
+import { ExternalToolDO, LtiToolDO, Pseudonym, Team, UserDO } from '@shared/domain';
 import { TeamsRepo } from '@shared/repo';
 import { PseudonymService } from '@src/modules/pseudonym';
 import { UserService } from '@src/modules/user';
 import { GroupNameIdTuple, IdToken, OauthScope } from '../interface';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
+import { IdTokenCreationLoggableException } from '../error/id-token-creation-exception.loggable';
 
 @Injectable()
 export class IdTokenService {
@@ -31,7 +32,7 @@ export class IdTokenService {
 
 		const user: UserDO = await this.userService.findById(userId);
 		const name: string = await this.userService.getDisplayName(user);
-		const iframe: string | undefined = await this.createIframeSubject(userId, clientId);
+		const iframe: string | undefined = await this.createIframeSubject(user, clientId);
 		const groups: GroupNameIdTuple[] = this.buildGroupsClaim(teams);
 
 		return {
@@ -54,17 +55,15 @@ export class IdTokenService {
 	}
 
 	// TODO N21-335 How we can refactor the iframe in the id token?
-	private async createIframeSubject(userId: string, clientId: string): Promise<string> {
+	private async createIframeSubject(user: UserDO, clientId: string): Promise<string> {
 		const tool: ExternalToolDO | LtiToolDO = await this.oauthProviderLoginFlowService.findToolByClientId(clientId);
 
 		if (!tool.id) {
-			throw new InternalServerErrorException(
-				`Something went wrong for id token creation. Tool could not be found for userId: ${userId} and clientId: ${clientId}`
-			);
+			throw new IdTokenCreationLoggableException(clientId, user.id);
 		}
 
-		const pseudonymDO: PseudonymDO = await this.pseudonymService.findByUserIdAndToolId(userId, tool.id);
+		const pseudonym: Pseudonym = await this.pseudonymService.findByUserAndTool(user, tool);
 
-		return `<iframe src="${this.host}/oauth2/username/${pseudonymDO.pseudonym}" ${this.iFrameProperties}></iframe>`;
+		return `<iframe src="${this.host}/oauth2/username/${pseudonym.pseudonym}" ${this.iFrameProperties}></iframe>`;
 	}
 }
