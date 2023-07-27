@@ -160,6 +160,8 @@
 		"file-type": "^16.2.0",
 		"freeport": "^1.0.5",
 		"html-entities": "^2.3.2",
+		"i18next": "^23.3.0",
+		"i18next-fs-backend": "^2.1.5",
 		"jose": "^1.28.1",
 		"jsonwebtoken": "^9.0.0",
 		"jwks-rsa": "^2.0.5",

@@ -58,6 +58,7 @@ export class H5PEditorUc {
 
 	public async getAjax(query: AjaxGetQueryParams, currentUser: ICurrentUser) {
 		const user = this.changeUserType(currentUser);
+		const language = await this.getUserLanguage(currentUser);
 
 		try {
 			const result = await this.h5pAjaxEndpoint.getAjax(
@@ -65,7 +66,7 @@ export class H5PEditorUc {
 				query.machineName,
 				query.majorVersion,
 				query.minorVersion,
-				query.language,
+				language,
 				user
 			);
 
