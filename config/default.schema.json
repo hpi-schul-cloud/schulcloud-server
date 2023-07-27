@@ -1200,6 +1200,11 @@
 			"default": true,
 			"description": "Enables old LTI-tool tab in a course"
 		},
+		"FEATURE_SHOW_OUTDATED_USERS":{
+			"type": "boolean",
+			"default": false,
+			"description": "This feature flag controls whether the outdated user accounts are displayed or not. After a migration, all user accounts which were not migrated will be marked as outdated."
+		},
 		"TSP_SCHOOL_SYNCER": {
 			"type": "object",
 			"description": "TSP School Syncer properties",
