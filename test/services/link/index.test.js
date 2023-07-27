@@ -13,7 +13,7 @@ describe('link service', () => {
 
 	before(async () => {
 		app = await appPromise();
-		server = await app.listen();
+		server = await app.listen(0);
 		port = server.address().port;
 		service = app.service('link');
 	});
