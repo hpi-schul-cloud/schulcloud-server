@@ -1,6 +1,6 @@
-import { ToolConfigType } from '@shared/domain/entity';
-import { TokenEndpointAuthMethod } from '@src/modules/tool/interface/token-endpoint-auth-method.enum';
+import { TokenEndpointAuthMethod } from '@src/modules/tool/common/interface';
 import { ExternalToolConfigDO } from './external-tool-config.do';
+import { ToolConfigType } from './tool-config-type.enum';
 
 export class Oauth2ToolConfigDO extends ExternalToolConfigDO {
 	clientId: string;

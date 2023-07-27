@@ -1,4 +1,4 @@
-import { ToolContextType } from '@src/modules/tool/interface';
+import { ToolContextType } from 'apps/server/src/modules/tool/common/interface';
 
 export class ContextRef {
 	id: string;
