@@ -22,6 +22,7 @@ export enum SchoolFeatures {
 	STUDENTVISIBILITY = 'studentVisibility', // deprecated
 	LDAP_UNIVENTION_MIGRATION = 'ldapUniventionMigrationSchool',
 	OAUTH_PROVISIONING_ENABLED = 'oauthProvisioningEnabled',
+	SHOW_OUTDATED_USERS = 'showOutdatedUsers',
 }
 
 export interface ISchoolProperties {
