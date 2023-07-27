@@ -28,13 +28,13 @@
 <title>cluster_FilesStorageModule_imports</title>
 <polygon fill="none" stroke="black" points="553,-78 553,-130 1654,-130 1654,-78 553,-78"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_FilesStorageModule_exports</title>
-<polygon fill="none" stroke="black" points="857,-208 857,-260 1005,-260 1005,-208 857,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_FilesStorageModule_providers</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 545,-130 545,-78 16,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_FilesStorageModule_exports</title>
+<polygon fill="none" stroke="black" points="857,-208 857,-260 1005,-260 1005,-208 857,-208"/>
 </g>
 <!-- AuthenticationModule -->
 <g id="node1" class="node">

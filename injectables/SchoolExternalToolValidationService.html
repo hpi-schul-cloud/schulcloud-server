@@ -86,26 +86,6 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#checkCustomParameterEntries" >checkCustomParameterEntries</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#checkForDuplicateParameters" >checkForDuplicateParameters</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#checkOptionalParameter" >checkOptionalParameter</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#checkParameterRegex" >checkParameterRegex</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#checkParameterType" >checkParameterType</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
                                 <a href="#checkVersionMatch" >checkVersionMatch</a>
                             </li>
                             <li>
@@ -130,12 +110,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>)</code>
+<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, commonToolValidationService: <a href="../injectables/CommonToolValidationService.html" target="_self">CommonToolValidationService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:25</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:8</a></div>
                             </td>
                         </tr>
 
@@ -164,6 +144,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>commonToolValidationService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/CommonToolValidationService.html" target="_self" >CommonToolValidationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -178,409 +170,6 @@
     <h3 id="methods">
         Methods
     </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="checkCustomParameterEntries"></a>
-                    <span class="name">
-                        <span class="modifier">Private</span>
-                        <span ><b>checkCustomParameterEntries</b></span>
-                        <a href="#checkCustomParameterEntries"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkCustomParameterEntries(loadedExternalTool: <a href="../classes/ExternalToolDO.html" target="_self">ExternalToolDO</a>, schoolExternalToolDO: <a href="../classes/SchoolExternalToolDO.html" target="_self">SchoolExternalToolDO</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="59"
-                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:59</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>loadedExternalTool</td>
-                                    <td>
-                                                <code><a href="../classes/ExternalToolDO.html" target="_self" >ExternalToolDO</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>schoolExternalToolDO</td>
-                                    <td>
-                                                <code><a href="../classes/SchoolExternalToolDO.html" target="_self" >SchoolExternalToolDO</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="checkForDuplicateParameters"></a>
-                    <span class="name">
-                        <span class="modifier">Private</span>
-                        <span ><b>checkForDuplicateParameters</b></span>
-                        <a href="#checkForDuplicateParameters"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkForDuplicateParameters(schoolExternalToolDO: <a href="../classes/SchoolExternalToolDO.html" target="_self">SchoolExternalToolDO</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="37"
-                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:37</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>schoolExternalToolDO</td>
-                                    <td>
-                                                <code><a href="../classes/SchoolExternalToolDO.html" target="_self" >SchoolExternalToolDO</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="checkOptionalParameter"></a>
-                    <span class="name">
-                        <span class="modifier">Private</span>
-                        <span ><b>checkOptionalParameter</b></span>
-                        <a href="#checkOptionalParameter"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkOptionalParameter(param: <a href="../classes/CustomParameterDO.html" target="_self">CustomParameterDO</a>, foundEntry: <a href="../undefineds/CustomParameter.html" target="_self">CustomParameterEntryDO | undefined</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="76"
-                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:76</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>param</td>
-                                    <td>
-                                                <code><a href="../classes/CustomParameterDO.html" target="_self" >CustomParameterDO</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>foundEntry</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#CustomParameter" target="_self" >CustomParameterEntryDO | undefined</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="checkParameterRegex"></a>
-                    <span class="name">
-                        <span class="modifier">Private</span>
-                        <span ><b>checkParameterRegex</b></span>
-                        <a href="#checkParameterRegex"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkParameterRegex(foundEntry: <a href="../classes/CustomParameterEntryDO.html" target="_self">CustomParameterEntryDO</a>, param: <a href="../classes/CustomParameterDO.html" target="_self">CustomParameterDO</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="92"
-                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:92</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>foundEntry</td>
-                                    <td>
-                                                <code><a href="../classes/CustomParameterEntryDO.html" target="_self" >CustomParameterEntryDO</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>param</td>
-                                    <td>
-                                                <code><a href="../classes/CustomParameterDO.html" target="_self" >CustomParameterDO</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="checkParameterType"></a>
-                    <span class="name">
-                        <span class="modifier">Private</span>
-                        <span ><b>checkParameterType</b></span>
-                        <a href="#checkParameterType"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkParameterType(foundEntry: <a href="../classes/CustomParameterEntryDO.html" target="_self">CustomParameterEntryDO</a>, param: <a href="../classes/CustomParameterDO.html" target="_self">CustomParameterDO</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="84"
-                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:84</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>foundEntry</td>
-                                    <td>
-                                                <code><a href="../classes/CustomParameterEntryDO.html" target="_self" >CustomParameterEntryDO</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>param</td>
-                                    <td>
-                                                <code><a href="../classes/CustomParameterDO.html" target="_self" >CustomParameterDO</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -603,8 +192,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="51"
-                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:51</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="26"
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:26</a></div>
                 </td>
             </tr>
 
@@ -686,8 +275,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="28"
-                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:28</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="14"
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool-validation.service.ts:14</a></div>
                 </td>
             </tr>
 
@@ -743,99 +332,33 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
-import {
-	CustomParameterDO,
-	CustomParameterEntryDO,
-	CustomParameterScope,
-	CustomParameterType,
-	ExternalToolDO,
-	SchoolExternalToolDO,
-} from &#x27;@shared/domain&#x27;;
-import { isNaN } from &#x27;lodash&#x27;;
+import { ExternalToolDO, SchoolExternalToolDO } from &#x27;@shared/domain&#x27;;
+import { CommonToolValidationService } from &#x27;../../common/service&#x27;;
 import { ExternalToolService } from &#x27;../../external-tool/service&#x27;;
-
-const typeCheckers: { [key in CustomParameterType]: (val: string) &#x3D;&gt; boolean } &#x3D; {
-	[CustomParameterType.STRING]: () &#x3D;&gt; true,
-	[CustomParameterType.NUMBER]: (val: string) &#x3D;&gt; !isNaN(Number(val)),
-	[CustomParameterType.BOOLEAN]: (val: string) &#x3D;&gt; val &#x3D;&#x3D;&#x3D; &#x27;true&#x27; || val &#x3D;&#x3D;&#x3D; &#x27;false&#x27;,
-	[CustomParameterType.AUTO_CONTEXTID]: () &#x3D;&gt; true,
-	[CustomParameterType.AUTO_CONTEXTNAME]: () &#x3D;&gt; true,
-	[CustomParameterType.AUTO_SCHOOLID]: () &#x3D;&gt; true,
-	[CustomParameterType.AUTO_SCHOOLNUMBER]: () &#x3D;&gt; true,
-};
 
 @Injectable()
 export class SchoolExternalToolValidationService {
-	constructor(private readonly externalToolService: ExternalToolService) {}
+	constructor(
+		private readonly externalToolService: ExternalToolService,
+		private readonly commonToolValidationService: CommonToolValidationService
+	) {}
 
 	async validate(schoolExternalToolDO: SchoolExternalToolDO): Promise&lt;void&gt; {
-		this.checkForDuplicateParameters(schoolExternalToolDO);
+		this.commonToolValidationService.checkForDuplicateParameters(schoolExternalToolDO);
+
 		const loadedExternalTool: ExternalToolDO &#x3D; await this.externalToolService.findExternalToolById(
 			schoolExternalToolDO.toolId
 		);
-		this.checkVersionMatch(schoolExternalToolDO.toolVersion, loadedExternalTool.version);
-		this.checkCustomParameterEntries(loadedExternalTool, schoolExternalToolDO);
-	}
 
-	private checkForDuplicateParameters(schoolExternalToolDO: SchoolExternalToolDO): void {
-		const caseInsensitiveNames &#x3D; schoolExternalToolDO.parameters.map(({ name }: CustomParameterEntryDO) &#x3D;&gt;
-			name.toLowerCase()
-		);
-		const uniqueNames &#x3D; new Set(caseInsensitiveNames);
-		if (!(uniqueNames.size &#x3D;&#x3D;&#x3D; schoolExternalToolDO.parameters.length)) {
-			throw new ValidationError(
-				&#x60;tool_param_duplicate: The tool ${
-					schoolExternalToolDO.name || &#x27;&#x27;
-				} contains multiple of the same custom parameters.&#x60;
-			);
-		}
+		this.checkVersionMatch(schoolExternalToolDO.toolVersion, loadedExternalTool.version);
+
+		this.commonToolValidationService.checkCustomParameterEntries(loadedExternalTool, schoolExternalToolDO);
 	}
 
 	private checkVersionMatch(schoolExternalToolVersion: number, externalToolVersion: number): void {
-		if (!(schoolExternalToolVersion &#x3D;&#x3D;&#x3D; externalToolVersion)) {
+		if (schoolExternalToolVersion !&#x3D;&#x3D; externalToolVersion) {
 			throw new ValidationError(
 				&#x60;tool_version_mismatch: The version ${schoolExternalToolVersion} of given schoolExternalTool does not match the externalTool version ${externalToolVersion}.&#x60;
-			);
-		}
-	}
-
-	private checkCustomParameterEntries(loadedExternalTool: ExternalToolDO, schoolExternalToolDO: SchoolExternalToolDO) {
-		if (loadedExternalTool.parameters) {
-			for (const param of loadedExternalTool.parameters) {
-				const foundEntry: CustomParameterEntryDO | undefined &#x3D; schoolExternalToolDO.parameters.find(
-					({ name }: CustomParameterEntryDO) &#x3D;&gt; name.toLowerCase() &#x3D;&#x3D;&#x3D; param.name.toLowerCase()
-				);
-				if (CustomParameterScope.SCHOOL &#x3D;&#x3D;&#x3D; param.scope) {
-					this.checkOptionalParameter(param, foundEntry);
-					if (foundEntry) {
-						this.checkParameterType(foundEntry, param);
-						this.checkParameterRegex(foundEntry, param);
-					}
-				}
-			}
-		}
-	}
-
-	private checkOptionalParameter(param: CustomParameterDO, foundEntry: CustomParameterEntryDO | undefined): void {
-		if (!foundEntry?.value &amp;&amp; !param.isOptional) {
-			throw new ValidationError(
-				&#x60;tool_param_required: The parameter with name ${param.name} is required but not found in the schoolExternalTool.&#x60;
-			);
-		}
-	}
-
-	private checkParameterType(foundEntry: CustomParameterEntryDO, param: CustomParameterDO): void {
-		if (foundEntry.value !&#x3D;&#x3D; undefined &amp;&amp; !typeCheckers[param.type](foundEntry.value)) {
-			throw new ValidationError(
-				&#x60;tool_param_type_mismatch: The value of parameter with name ${foundEntry.name} should be of type ${param.type}.&#x60;
-			);
-		}
-	}
-
-	private checkParameterRegex(foundEntry: CustomParameterEntryDO, param: CustomParameterDO): void {
-		if (param.regex &amp;&amp; !new RegExp(param.regex).test(foundEntry.value ?? &#x27;&#x27;)) {
-			throw new ValidationError(
-				&#x60;tool_param_value_regex: The given entry for the parameter with name ${foundEntry.name} does not fit the regex.&#x60;
 			);
 		}
 	}
