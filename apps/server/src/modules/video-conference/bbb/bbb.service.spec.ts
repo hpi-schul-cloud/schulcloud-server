@@ -257,7 +257,7 @@ describe('BBB Service', () => {
 			httpService.get.mockReturnValue(of(bbbMeetingInfoResponse));
 			converterUtil.xml2object.mockReturnValue(bbbMeetingInfoResponse.data);
 			const expectedError = new InternalServerErrorException(
-				`${bbbMeetingInfoResponse.data.response.messageKey}, ${bbbMeetingInfoResponse.data.response.message}`
+				`${bbbMeetingInfoResponse.data.response.messageKey}: ${bbbMeetingInfoResponse.data.response.message}`
 			);
 
 			// Act && Assert
@@ -293,7 +293,7 @@ describe('BBB Service', () => {
 			httpService.get.mockReturnValue(of(bbbMeetingInfoResponse));
 			converterUtil.xml2object.mockReturnValue(bbbMeetingInfoResponse.data);
 			const expectedError = new InternalServerErrorException(
-				`${bbbMeetingInfoResponse.data.response.messageKey}, ${bbbMeetingInfoResponse.data.response.message}`
+				`${bbbMeetingInfoResponse.data.response.messageKey}: ${bbbMeetingInfoResponse.data.response.message}`
 			);
 
 			// Act && Assert
