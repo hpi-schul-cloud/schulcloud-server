@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CustomParameterScope, IFindOptions, Page, SchoolExternalToolDO, SortOrder } from '@shared/domain';
+import { IFindOptions, Page, SchoolExternalToolDO, SortOrder } from '@shared/domain';
 import {
 	CustomParameterDO,
 	ExternalToolDO,
@@ -19,7 +19,7 @@ import {
 	oauth2ToolConfigDOFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { LegacyLogger } from '@src/core/logger';
-import { ExternalToolSearchQuery } from '../../common/interface';
+import { CustomParameterScope, ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalToolVersionService } from './external-tool-version.service';
 import { ExternalToolService } from './external-tool.service';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';

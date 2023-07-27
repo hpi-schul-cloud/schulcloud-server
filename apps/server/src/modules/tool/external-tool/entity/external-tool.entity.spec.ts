@@ -1,17 +1,15 @@
 import {
-	BasicToolConfig,
-	CustomParameter,
 	CustomParameterLocation,
 	CustomParameterScope,
 	CustomParameterType,
-	ExternalTool,
-	Lti11ToolConfig,
 	LtiMessageType,
 	LtiPrivacyPermission,
-	Oauth2ToolConfig,
 	ToolConfigType,
 } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
+import { BasicToolConfig, Lti11ToolConfig, Oauth2ToolConfig } from './config';
+import { CustomParameter } from './custom-parameter';
+import { ExternalTool } from './external-tool.entity';
 
 describe('ExternalTool Entity', () => {
 	beforeAll(async () => {

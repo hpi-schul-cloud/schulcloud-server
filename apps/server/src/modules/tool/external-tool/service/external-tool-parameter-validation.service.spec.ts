@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
-import { CustomParameterScope, CustomParameterType } from '@shared/domain';
 import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/tool';
 import {
 	customParameterDOFactory,
 	externalToolDOFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+import { CustomParameterScope, CustomParameterType } from '../../common/interface';
 import { ExternalToolService } from './index';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
 

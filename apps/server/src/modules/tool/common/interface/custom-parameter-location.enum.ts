@@ -1,4 +1,4 @@
-export enum CustomParameterLocationParams {
+export enum CustomParameterLocation {
 	PATH = 'path',
 	BODY = 'body',
 	QUERY = 'query',

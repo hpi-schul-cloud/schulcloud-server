@@ -1,5 +1,5 @@
 import { Embeddable, Enum, Property } from '@mikro-orm/core';
-import { ToolConfigType } from './tool-config-type.enum';
+import { ToolConfigType } from '../../../common/interface';
 
 @Embeddable({ abstract: true, discriminatorColumn: 'type' })
 export abstract class ExternalToolConfig {

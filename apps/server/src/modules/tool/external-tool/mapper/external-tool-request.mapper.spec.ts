@@ -1,12 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	SortOrder,
-	SortOrderMap,
-	ToolConfigType,
-} from '@shared/domain';
+import { SortOrder, SortOrderMap, ToolConfigType } from '@shared/domain';
 import {
 	BasicToolConfigDO,
 	CustomParameterDO,
@@ -16,8 +9,11 @@ import {
 } from '@shared/domain/domainobject/tool';
 import { basicToolConfigDOFactory, customParameterDOFactory, externalToolDOFactory } from '@shared/testing';
 import {
+	CustomParameterLocation,
 	CustomParameterLocationParams,
+	CustomParameterScope,
 	CustomParameterScopeTypeParams,
+	CustomParameterType,
 	CustomParameterTypeParams,
 	ExternalToolSearchQuery,
 	LtiMessageType,

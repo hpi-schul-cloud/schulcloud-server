@@ -1,22 +1,20 @@
 import {
-	BasicToolConfig,
-	ContextExternalTool,
-	CustomParameter,
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	ExternalTool,
-	ExternalToolConfig,
-	SchoolExternalTool,
-	ToolConfigType,
-} from '@shared/domain';
-import {
 	contextExternalToolFactory,
 	externalToolFactory,
 	schoolExternalToolFactory,
 	schoolFactory,
 	setupEntities,
 } from '@shared/testing';
+import {
+	CustomParameterLocation,
+	CustomParameterScope,
+	CustomParameterType,
+	ToolConfigType,
+} from '../../common/interface';
+
+import { BasicToolConfig, CustomParameter, ExternalTool, ExternalToolConfig } from '../../external-tool/entity';
+import { SchoolExternalTool } from '../../school-external-tool/entity';
+import { ContextExternalTool } from './context-external-tool.entity';
 
 describe('ExternalTool Entity', () => {
 	beforeAll(async () => {

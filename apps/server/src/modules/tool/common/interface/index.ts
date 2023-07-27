@@ -1,6 +1,6 @@
-export * from './custom-parameter-location.enum';
-export * from './custom-parameter-scope-type.enum';
-export * from './custom-parameter-type.enum';
+export * from './request-response/custom-parameter-location.enum';
+export * from './request-response/custom-parameter-scope-type.enum';
+export * from './request-response/custom-parameter-type.enum';
 export * from './lti-message-type.enum';
 export * from './lti-privacy-permission.enum';
 export * from './lti-role.enum';
@@ -8,3 +8,6 @@ export * from './token-endpoint-auth-method.enum';
 export * from './tool-config-type.enum';
 export * from './tool-context-type.enum';
 export * from './external-tool-search-query';
+export * from './custom-parameter-location.enum';
+export * from './custom-parameter-scope.enum';
+export * from './custom-parameter-type.enum';
