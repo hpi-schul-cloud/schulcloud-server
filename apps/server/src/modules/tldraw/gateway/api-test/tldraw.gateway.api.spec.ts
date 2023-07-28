@@ -36,8 +36,7 @@ describe('WebSocketGateway (WsAdapter)', () => {
 
 		gateway = testingModule.get<TldrawGateway>(TldrawGateway);
 		app = testingApp;
-
-		await app.listen(3339);
+		await app.init();
 	});
 
 	afterAll(async () => {
