@@ -1,6 +1,6 @@
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import request from 'supertest';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
@@ -17,17 +17,35 @@ class API {
 		this.app = app;
 	}
 
+	async emptyEditor() {
+		return request(this.app.getHttpServer()).get(`/h5p-editor/edit`);
+	}
+
 	async editH5pContent(contentId: string) {
 		return request(this.app.getHttpServer()).get(`/h5p-editor/edit/${contentId}`);
 	}
 }
 
 const setup = () => {
-	const contentId = '12345';
-	const notExistingContentId = '12345';
+	const contentId = new ObjectId(0).toString();
+	const notExistingContentId = new ObjectId(1).toString();
 	const badContentId = '';
 
-	return { contentId, notExistingContentId, badContentId };
+	const editorModel = {
+		scripts: ['example.js'],
+		styles: ['example.css'],
+	};
+
+	const exampleContent = {
+		h5p: {},
+		library: 'ExampleLib-1.0',
+		params: {
+			metadata: {},
+			params: { anything: true },
+		},
+	};
+
+	return { contentId, notExistingContentId, badContentId, editorModel, exampleContent };
 };
 
 describe('H5PEditor Controller (api)', () => {
@@ -67,6 +85,38 @@ describe('H5PEditor Controller (api)', () => {
 		await app.close();
 	});
 
+	describe('get new h5p editor', () => {
+		beforeEach(async () => {
+			await cleanupCollections(em);
+			const school = schoolFactory.build();
+			const roles = roleFactory.buildList(1, {
+				permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
+			});
+			const user = userFactory.build({ school, roles });
+
+			await em.persistAndFlush([user, school]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+		});
+		describe('with valid request params', () => {
+			it('should return 200 status', async () => {
+				const { editorModel } = setup();
+				// @ts-expect-error partial object
+				h5PEditorUc.getEmptyH5pEditor.mockResolvedValueOnce(editorModel);
+				const response = await api.emptyEditor();
+				expect(response.status).toEqual(200);
+			});
+		});
+		describe('with bad request params', () => {
+			it('should return 500 status', async () => {
+				h5PEditorUc.getEmptyH5pEditor.mockRejectedValueOnce(new Error('Could not get H5P editor'));
+				const response = await api.emptyEditor();
+				expect(response.status).toEqual(500);
+			});
+		});
+	});
+
 	describe('get h5p editor', () => {
 		beforeEach(async () => {
 			await cleanupCollections(em);
@@ -83,8 +133,9 @@ describe('H5PEditor Controller (api)', () => {
 		});
 		describe('with valid request params', () => {
 			it('should return 200 status', async () => {
-				const { contentId } = setup();
-				h5PEditorUc.getH5pEditor.mockResolvedValueOnce('iFrame');
+				const { contentId, editorModel, exampleContent } = setup();
+				// @ts-expect-error partial object
+				h5PEditorUc.getH5pEditor.mockResolvedValueOnce({ editorModel, content: exampleContent });
 				const response = await api.editH5pContent(contentId);
 				expect(response.status).toEqual(200);
 			});

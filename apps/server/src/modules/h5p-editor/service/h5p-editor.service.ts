@@ -29,11 +29,7 @@ export const H5PEditorService = {
 			undefined
 		);
 
-		h5pEditor.setRenderer((model) => {
-			const { urlGenerator: unused, ...rest } = model;
-
-			return { ...rest };
-		});
+		h5pEditor.setRenderer((model) => model);
 
 		return h5pEditor;
 	},

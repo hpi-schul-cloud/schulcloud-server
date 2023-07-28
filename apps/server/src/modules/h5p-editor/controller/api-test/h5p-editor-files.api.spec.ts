@@ -1,6 +1,6 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { ContentMetadata } from '@lumieducation/h5p-server/build/src/ContentMetadata';
-import { EntityManager } from '@mikro-orm/core';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
@@ -128,43 +128,45 @@ describe('H5PEditor Controller (api)', () => {
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
-				return { loggedInClient };
+				const dummyId = new ObjectId(0).toString();
+
+				return { loggedInClient, dummyId };
 			};
 
 			it('should return the content file', async () => {
-				const { loggedInClient } = await setup();
+				const { loggedInClient, dummyId } = await setup();
 
 				const mockFile = { content: 'Test File', size: 9, name: 'test.txt', birthtime: new Date() };
 
 				contentStorage.getFileStream.mockResolvedValueOnce(Readable.from(mockFile.content));
 				contentStorage.getFileStats.mockResolvedValueOnce({ birthtime: mockFile.birthtime, size: mockFile.size });
 
-				const response = await loggedInClient.get(`content/dummyId/${mockFile.name}`);
+				const response = await loggedInClient.get(`content/${dummyId}/${mockFile.name}`);
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);
 				expect(response.text).toBe(mockFile.content);
 			});
 
 			it('should work with range requests', async () => {
-				const { loggedInClient } = await setup();
+				const { loggedInClient, dummyId } = await setup();
 
 				const mockFile = { content: 'Test File', size: 9, name: 'test.txt', birthtime: new Date() };
 
 				contentStorage.getFileStream.mockResolvedValueOnce(Readable.from(mockFile.content));
 				contentStorage.getFileStats.mockResolvedValueOnce({ birthtime: mockFile.birthtime, size: mockFile.size });
 
-				const response = await loggedInClient.get(`content/dummyId/${mockFile.name}`).set('Range', 'bytes=2-4');
+				const response = await loggedInClient.get(`content/${dummyId}/${mockFile.name}`).set('Range', 'bytes=2-4');
 
 				expect(response.statusCode).toEqual(HttpStatus.PARTIAL_CONTENT);
 				expect(response.text).toBe(mockFile.content);
 			});
 
 			it('should return 404 if file does not exist', async () => {
-				const { loggedInClient } = await setup();
+				const { loggedInClient, dummyId } = await setup();
 
 				contentStorage.getFileStats.mockRejectedValueOnce(new Error('Does not exist'));
 
-				const response = await loggedInClient.get(`content/dummyId/nonexistant.txt`);
+				const response = await loggedInClient.get(`content/${dummyId}/nonexistant.txt`);
 
 				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
 			});

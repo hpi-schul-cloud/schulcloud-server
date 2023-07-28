@@ -6,7 +6,6 @@ import {
 	Get,
 	HttpStatus,
 	InternalServerErrorException,
-	NotImplementedException,
 	Param,
 	Post,
 	Query,
@@ -53,13 +52,6 @@ export class H5PEditorController {
 	@Get('/play/:contentId')
 	async getPlayer(@CurrentUser() currentUser: ICurrentUser, @Param() params: GetH5PContentParams) {
 		return this.h5pEditorUc.getH5pPlayer(currentUser, params.contentId);
-	}
-
-	@ApiOperation({ summary: 'H5P tries to load the users last state; unsupported' })
-	@ApiResponse({ type: NotImplementedException })
-	@Get('contentUserData/*')
-	userDataSink() {
-		return new NotImplementedException();
 	}
 
 	// Other Endpoints (incomplete list), paths not final

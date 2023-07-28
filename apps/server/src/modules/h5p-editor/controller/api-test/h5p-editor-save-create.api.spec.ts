@@ -1,6 +1,6 @@
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import request from 'supertest';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
@@ -14,9 +14,9 @@ import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 import { H5PEditorUc } from '../../uc/h5p.uc';
 
 const setup = () => {
-	const contentId = '12345';
+	const contentId = new ObjectId(0);
 	const createContentId = 'create';
-	const notExistingContentId = '12345';
+	const notExistingContentId = new ObjectId(1);
 	const badContentId = '';
 	const id = '0000000';
 	const metadata: IContentMetadata = {
@@ -37,7 +37,19 @@ class API {
 		this.app = app;
 	}
 
-	async createOrSave(contentId: string) {
+	async create() {
+		const body = {
+			params: {
+				params: {},
+				metadata: {},
+			},
+			metadata: {},
+			library: {},
+		};
+		return request(this.app.getHttpServer()).post(`/h5p-editor/edit/`).send(body);
+	}
+
+	async save(contentId: string) {
 		const body = {
 			params: {
 				params: {},
@@ -103,10 +115,10 @@ describe('H5PEditor Controller (api)', () => {
 		});
 		describe('with valid request params', () => {
 			it('should return 201 status', async () => {
-				const { createContentId, id, metadata } = setup();
+				const { id, metadata } = setup();
 				const result1 = { id, metadata };
-				h5PEditorUc.saveH5pContentGetMetadata.mockResolvedValueOnce(result1);
-				const response = await api.createOrSave(createContentId);
+				h5PEditorUc.createH5pContentGetMetadata.mockResolvedValueOnce(result1);
+				const response = await api.create();
 				expect(response.status).toEqual(201);
 			});
 		});
@@ -130,7 +142,7 @@ describe('H5PEditor Controller (api)', () => {
 				const { contentId, id, metadata } = setup();
 				const result1 = { id, metadata };
 				h5PEditorUc.saveH5pContentGetMetadata.mockResolvedValueOnce(result1);
-				const response = await api.createOrSave(contentId);
+				const response = await api.save(contentId.toString());
 				expect(response.status).toEqual(201);
 			});
 		});
@@ -138,7 +150,7 @@ describe('H5PEditor Controller (api)', () => {
 			it('should return 500 status', async () => {
 				const { notExistingContentId } = setup();
 				h5PEditorUc.saveH5pContentGetMetadata.mockRejectedValueOnce(new Error('Could not save H5P content'));
-				const response = await api.createOrSave(notExistingContentId);
+				const response = await api.save(notExistingContentId.toString());
 				expect(response.status).toEqual(500);
 			});
 		});
