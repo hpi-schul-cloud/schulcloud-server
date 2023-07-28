@@ -196,25 +196,18 @@ export class H5PEditorController {
 		return deleteSuccessfull;
 	}
 
-	@Get('/:contentId')
+	@Get('/edit/:contentId')
 	async getH5PEditor(@Param() params: GetH5PContentParams, @CurrentUser() currentUser: ICurrentUser): Promise<string> {
-		// TODO: Get user language
-		if (params.contentId === 'create') {
-			params.contentId = undefined as unknown as string;
-		}
 		const response = this.h5pEditorUc.getH5pEditor(currentUser, params.contentId);
 		return response;
 	}
 
-	@Post('/:contentId')
+	@Post('/edit/:contentId')
 	async createOrSaveH5pContent(
 		@Body() body: PostH5PContentCreateParams,
 		@Param() params: GetH5PContentParams,
 		@CurrentUser() currentUser: ICurrentUser
 	) {
-		if (params.contentId === 'create') {
-			params.contentId = undefined as unknown as string;
-		}
 		const response = await this.h5pEditorUc.saveH5pContentGetMetadata(
 			params.contentId,
 			currentUser,
@@ -222,7 +215,28 @@ export class H5PEditorController {
 			body.params.metadata,
 			body.library
 		);
+		return response;
+	}
 
+	@Get('/create')
+	async getH5PEditorCreate(@CurrentUser() currentUser: ICurrentUser): Promise<string> {
+		const contentId = undefined as unknown as string;
+
+		const response = this.h5pEditorUc.getH5pEditor(currentUser, contentId);
+		return response;
+	}
+
+	@Post('/create')
+	async createH5pContent(@Body() body: PostH5PContentCreateParams, @CurrentUser() currentUser: ICurrentUser) {
+		const contentId = undefined as unknown as string;
+
+		const response = await this.h5pEditorUc.saveH5pContentGetMetadata(
+			contentId,
+			currentUser,
+			body.params.params,
+			body.params.metadata,
+			body.library
+		);
 		return response;
 	}
 }
