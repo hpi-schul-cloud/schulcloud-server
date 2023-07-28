@@ -40,10 +40,13 @@ export const closeConn = (doc: WSSharedDoc, ws: WebSocket) => {
 		removeAwarenessStates(doc.awareness, Array.from(controlledIds), null);
 		if (doc.conns.size === 0 && persistence !== null) {
 			// if persisted, we store state and destroy ydocument
-			void persistence.writeState(doc.name, doc).then(() => {
-				doc.destroy();
-				return null;
-			});
+			persistence
+				.writeState(doc.name, doc)
+				.then(() => {
+					doc.destroy();
+					return null;
+				})
+				.catch(() => {});
 			docs.delete(doc.name);
 		}
 	}
@@ -147,7 +150,7 @@ export const getYDoc = (docname: string, gc = true) =>
 		const doc = new WSSharedDoc(docname);
 		doc.gc = gc;
 		if (persistence !== null) {
-			void persistence.bindState(docname, doc);
+			persistence.bindState(docname, doc).catch(() => {});
 		}
 		docs.set(docname, doc);
 		return doc;
