@@ -9,7 +9,7 @@ import { CustomParameterLocation, CustomParameterScope, CustomParameterType, Too
 
 import { BasicToolConfig, CustomParameter, ExternalToolEntity, ExternalToolConfig } from '../../external-tool/entity';
 import { SchoolExternalToolEntity } from '../../school-external-tool/entity';
-import { ContextExternalTool } from './context-external-tool.entity';
+import { ContextExternalToolEntity } from './context-external-tool.entity';
 
 describe('ExternalToolEntity', () => {
 	beforeAll(async () => {
@@ -19,7 +19,7 @@ describe('ExternalToolEntity', () => {
 	describe('constructor', () => {
 		it('should throw an error by empty constructor', () => {
 			// @ts-expect-error: Test case
-			const test = () => new ContextExternalTool();
+			const test = () => new ContextExternalToolEntity();
 			expect(test).toThrow();
 		});
 
@@ -55,13 +55,13 @@ describe('ExternalToolEntity', () => {
 				schoolParameters: [],
 				toolVersion: 1,
 			});
-			const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+			const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
 				schoolTool,
 				parameters: [],
 				toolVersion: 1,
 			});
 
-			expect(contextExternalTool instanceof ContextExternalTool).toEqual(true);
+			expect(contextExternalToolEntity instanceof ContextExternalToolEntity).toEqual(true);
 		});
 	});
 });

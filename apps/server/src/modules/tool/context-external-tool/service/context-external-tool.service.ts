@@ -70,7 +70,7 @@ export class ContextExternalToolService {
 		if (contextExternalToolDO.id) {
 			await this.authorizationService.checkPermissionByReferences(
 				userId,
-				AuthorizableReferenceType.ContextExternalTool,
+				AuthorizableReferenceType.ContextExternalToolEntity,
 				contextExternalToolDO.id,
 				context
 			);

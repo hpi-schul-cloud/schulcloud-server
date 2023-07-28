@@ -15,7 +15,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { CustomParameterEntryDO } from '@src/modules/tool/common/domain';
 import { ToolContextType } from '@src/modules/tool/common/enum';
 import { ContextExternalToolDO } from '@src/modules/tool/context-external-tool/domain';
-import { ContextExternalTool, ContextExternalToolType } from '@src/modules/tool/context-external-tool/entity';
+import { ContextExternalToolEntity, ContextExternalToolType } from '@src/modules/tool/context-external-tool/entity';
 import { ContextExternalToolQuery } from '@src/modules/tool/context-external-tool/uc/dto/context-external-tool.types';
 import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
 import { ContextExternalToolRepo } from './context-external-tool.repo';
@@ -54,13 +54,13 @@ describe('ContextExternalToolRepo', () => {
 		const school: School = schoolFactory.buildWithId();
 		const schoolExternalTool1: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId({ school });
 		const schoolExternalTool2: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId({ school });
-		const contextExternalTool1: ContextExternalTool = contextExternalToolFactory.buildWithId({
+		const contextExternalTool1: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
 			schoolTool: schoolExternalTool1,
 		});
-		const contextExternalTool2: ContextExternalTool = contextExternalToolFactory.buildWithId({
+		const contextExternalTool2: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
 			schoolTool: schoolExternalTool2,
 		});
-		const contextExternalTool3: ContextExternalTool = contextExternalToolFactory.buildWithId({
+		const contextExternalTool3: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
 			schoolTool: schoolExternalTool1,
 		});
 
@@ -76,7 +76,7 @@ describe('ContextExternalToolRepo', () => {
 	describe('getEntityName', () => {
 		it('should return ContextExternalTool', () => {
 			const { entityName } = repo;
-			expect(entityName).toEqual(ContextExternalTool);
+			expect(entityName).toEqual(ContextExternalToolEntity);
 		});
 	});
 

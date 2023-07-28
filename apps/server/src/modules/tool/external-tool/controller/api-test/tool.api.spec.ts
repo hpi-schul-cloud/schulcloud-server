@@ -31,7 +31,7 @@ import {
 } from '../dto';
 import { ContextExternalToolContextParams } from '../../../context-external-tool/controller/dto';
 import { ExternalToolEntity } from '../../entity';
-import { ContextExternalTool, ContextExternalToolType } from '../../../context-external-tool/entity';
+import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 
 describe('ToolController (API)', () => {
@@ -602,7 +602,7 @@ describe('ToolController (API)', () => {
 					school,
 					tool: externalToolEntity,
 				});
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+				const contextExternalTool: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
 					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,
@@ -652,7 +652,7 @@ describe('ToolController (API)', () => {
 					tool: externalToolEntity,
 					toolVersion: externalToolEntity.version,
 				});
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+				const contextExternalTool: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
 					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,

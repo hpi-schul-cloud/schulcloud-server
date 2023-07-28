@@ -4,7 +4,7 @@ import { Action } from '@src/modules/authorization';
 import { LegacyLogger } from '@src/core/logger';
 import { ForbiddenLoggableException } from '@src/modules/authorization/errors/forbidden.loggable-exception';
 import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
-import { ContextExternalTool } from './dto/context-external-tool.types';
+import { ContextExternalToolDto } from './dto/context-external-tool.types';
 import { ContextExternalToolDO, ContextRef } from '../domain';
 import { ToolContextType } from '../../common/enum';
 
@@ -18,16 +18,16 @@ export class ContextExternalToolUc {
 
 	async createContextExternalTool(
 		userId: EntityId,
-		contextExternalTool: ContextExternalTool
+		contextExternalToolDto: ContextExternalToolDto
 	): Promise<ContextExternalToolDO> {
-		const contextExternalToolDO = new ContextExternalToolDO(contextExternalTool);
+		const contextExternalToolDO = new ContextExternalToolDO(contextExternalToolDto);
 
 		await this.contextExternalToolService.ensureContextPermissions(userId, contextExternalToolDO, {
 			requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 			action: Action.write,
 		});
 
-		await this.contextExternalToolValidationService.validate(contextExternalTool);
+		await this.contextExternalToolValidationService.validate(contextExternalToolDto);
 
 		const createdTool: ContextExternalToolDO = await this.contextExternalToolService.createContextExternalTool(
 			contextExternalToolDO

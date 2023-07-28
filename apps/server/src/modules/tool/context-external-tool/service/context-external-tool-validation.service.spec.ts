@@ -4,6 +4,7 @@ import { ContextExternalToolRepo } from '@shared/repo';
 import { contextExternalToolDOFactory } from '@shared/testing';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { ContextExternalToolValidationService } from './context-external-tool-validation.service';
+import { ContextExternalToolDO } from '../domain';
 
 describe('ContextExternalToolValidationService', () => {
 	let module: TestingModule;
@@ -37,7 +38,7 @@ describe('ContextExternalToolValidationService', () => {
 	describe('validate is called', () => {
 		describe('when check duplication of contextExternalTool is succesfully ', () => {
 			const setup = () => {
-				const contextExternalTool = contextExternalToolDOFactory.buildWithId();
+				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId();
 				contextExternalToolRepo.find.mockResolvedValue([]);
 
 				return {

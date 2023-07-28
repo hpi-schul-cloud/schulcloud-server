@@ -1,7 +1,7 @@
 import { ShareToken } from '@src/modules/sharing/entity/share-token.entity';
 import { ExternalToolPseudonymEntity, PseudonymEntity } from '@src/modules/pseudonym/entity';
 import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
-import { ContextExternalTool } from '@src/modules/tool/context-external-tool/entity';
+import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity';
 import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
 import { Account } from './account.entity';
 import {
@@ -59,7 +59,7 @@ export const ALL_ENTITIES = [
 	RichTextElementNode,
 	SubmissionContainerElementNode,
 	Course,
-	ContextExternalTool,
+	ContextExternalToolEntity,
 	CourseGroup,
 	CourseNews,
 	DashboardGridElementModel,

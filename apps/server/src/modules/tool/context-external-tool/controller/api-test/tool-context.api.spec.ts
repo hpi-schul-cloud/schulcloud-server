@@ -23,7 +23,7 @@ import {
 } from '../dto';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { ToolContextType } from '../../../common/enum';
-import { ContextExternalTool } from '../../entity';
+import { ContextExternalToolEntity } from '../../entity';
 
 describe('ToolContextController (API)', () => {
 	let app: INestApplication;
@@ -126,10 +126,13 @@ describe('ToolContextController (API)', () => {
 						return res;
 					});
 
-				const createdContextExternalTool: ContextExternalTool | null = await em.findOne(ContextExternalTool, {
-					schoolTool: postParams.schoolToolId,
-					contextId: postParams.contextId,
-				});
+				const createdContextExternalTool: ContextExternalToolEntity | null = await em.findOne(
+					ContextExternalToolEntity,
+					{
+						schoolTool: postParams.schoolToolId,
+						contextId: postParams.contextId,
+					}
+				);
 
 				expect(createdContextExternalTool).toBeDefined();
 			});
@@ -191,7 +194,7 @@ describe('ToolContextController (API)', () => {
 					toolVersion: 1,
 					school,
 				});
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+				const contextExternalTool: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
 					contextId: course.id,
 					schoolTool: schoolExternalToolEntity,
 					toolVersion: 1,
@@ -213,7 +216,7 @@ describe('ToolContextController (API)', () => {
 
 				await request(app.getHttpServer()).delete(`${basePath}/${contextExternalTool.id}`).expect(200);
 
-				const deleted: ContextExternalTool | null = await em.findOne(ContextExternalTool, {
+				const deleted: ContextExternalToolEntity | null = await em.findOne(ContextExternalToolEntity, {
 					contextId: contextExternalTool.id,
 				});
 
@@ -231,7 +234,7 @@ describe('ToolContextController (API)', () => {
 					toolVersion: 1,
 				});
 
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+				const contextExternalTool: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
 					schoolTool: schoolExternalToolEntity,
 					toolVersion: 1,
 				});
@@ -278,7 +281,7 @@ describe('ToolContextController (API)', () => {
 				school,
 				toolVersion: 1,
 			});
-			const contextExternalTool1: ContextExternalTool = contextExternalToolFactory.buildWithId({
+			const contextExternalTool1: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
 				contextId: course.id,
 				schoolTool: schoolExternalTool1,
 				toolVersion: 1,
@@ -288,7 +291,7 @@ describe('ToolContextController (API)', () => {
 				toolVersion: 1,
 				school,
 			});
-			const contextExternalTool2: ContextExternalTool = contextExternalToolFactory.buildWithId({
+			const contextExternalTool2: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
 				contextId: course.id,
 				schoolTool: schoolExternalTool2,
 				toolVersion: 1,
@@ -298,7 +301,7 @@ describe('ToolContextController (API)', () => {
 				school: otherSchool,
 				toolVersion: 1,
 			});
-			const contextExternalToolFromOtherSchool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+			const contextExternalToolFromOtherSchool: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
 				contextId: course.id,
 				schoolTool: schoolExternalToolFromOtherSchool,
 				toolVersion: 1,

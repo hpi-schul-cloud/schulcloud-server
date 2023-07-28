@@ -6,21 +6,21 @@ import { CustomParameterDO } from '../../common/domain';
 describe('MissingToolParameterValueLoggableException', () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.build();
+			const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build();
 
 			const customParameters: CustomParameterDO[] = customParameterDOFactory.buildList(2);
 
-			const exception = new MissingToolParameterValueLoggableException(contextExternalTool, customParameters);
+			const exception = new MissingToolParameterValueLoggableException(contextExternalToolDO, customParameters);
 
 			return {
-				contextExternalTool,
+				contextExternalToolDO,
 				customParameters,
 				exception,
 			};
 		};
 
 		it('should log the correct message', () => {
-			const { contextExternalTool, customParameters, exception } = setup();
+			const { contextExternalToolDO, customParameters, exception } = setup();
 
 			const result = exception.getLogMessage();
 
@@ -29,7 +29,7 @@ describe('MissingToolParameterValueLoggableException', () => {
 				message: expect.any(String),
 				stack: expect.any(String),
 				data: {
-					contextExternalToolId: contextExternalTool.id,
+					contextExternalToolId: contextExternalToolDO.id,
 					parameterNames: `[${customParameters[0].name}, ${customParameters[1].name}]`,
 				},
 			});

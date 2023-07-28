@@ -21,7 +21,7 @@ import { Request } from 'express';
 import request, { Response } from 'supertest';
 import { LaunchRequestMethod } from '../../types';
 import { ToolLaunchRequestResponse, ToolLaunchParams } from '../dto';
-import { ContextExternalTool, ContextExternalToolType } from '../../../context-external-tool/entity';
+import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { ExternalToolEntity } from '../../../external-tool/entity';
 import { ToolConfigType } from '../../../common/enum';
@@ -83,7 +83,7 @@ describe('ToolLaunchController (API)', () => {
 					tool: externalToolEntity,
 					school,
 				});
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+				const contextExternalTool: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
 					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,
@@ -137,7 +137,7 @@ describe('ToolLaunchController (API)', () => {
 					school,
 					toolVersion: 0,
 				});
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+				const contextExternalTool: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
 					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,
@@ -188,7 +188,7 @@ describe('ToolLaunchController (API)', () => {
 					tool: externalToolEntity,
 					school: toolSchool,
 				});
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+				const contextExternalTool: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
 					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,

@@ -19,7 +19,7 @@ export interface IContextExternalToolProperties {
 }
 
 @Entity({ tableName: 'context_external_tools' })
-export class ContextExternalTool extends BaseEntityWithTimestamps {
+export class ContextExternalToolEntity extends BaseEntityWithTimestamps {
 	@ManyToOne()
 	schoolTool: SchoolExternalToolEntity;
 

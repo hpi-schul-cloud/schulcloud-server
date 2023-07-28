@@ -217,7 +217,7 @@ describe('ContextExternalToolService', () => {
 
 				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					userId,
-					AuthorizableReferenceType.ContextExternalTool,
+					AuthorizableReferenceType.ContextExternalToolEntity,
 					contextExternalTool.id,
 					{
 						action: Action.read,
@@ -259,7 +259,7 @@ describe('ContextExternalToolService', () => {
 
 				expect(authorizationService.checkPermissionByReferences).not.toHaveBeenCalledWith(
 					userId,
-					AuthorizableReferenceType.ContextExternalTool,
+					AuthorizableReferenceType.ContextExternalToolEntity,
 					contextExternalToolWithoutId.id,
 					{
 						action: Action.read,

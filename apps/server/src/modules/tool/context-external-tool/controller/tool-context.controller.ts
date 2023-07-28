@@ -23,7 +23,7 @@ import {
 	ContextExternalToolSearchListResponse,
 } from './dto';
 import { ContextExternalToolUc } from '../uc';
-import { ContextExternalTool } from '../uc/dto/context-external-tool.types';
+import { ContextExternalToolDto } from '../uc/dto/context-external-tool.types';
 import { ContextExternalToolDO } from '../domain';
 
 @ApiTags('Tool')
@@ -46,12 +46,12 @@ export class ToolContextController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: ContextExternalToolPostParams
 	): Promise<ContextExternalToolResponse> {
-		const contextExternalTool: ContextExternalTool =
+		const contextExternalToolDto: ContextExternalToolDto =
 			ContextExternalToolRequestMapper.mapContextExternalToolRequest(body);
 
 		const createdTool: ContextExternalToolDO = await this.contextExternalToolUc.createContextExternalTool(
 			currentUser.userId,
-			contextExternalTool
+			contextExternalToolDto
 		);
 
 		const response: ContextExternalToolResponse =
@@ -89,15 +89,15 @@ export class ToolContextController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextExternalToolContextParams
 	): Promise<ContextExternalToolSearchListResponse> {
-		const contextExternalTools: ContextExternalTool[] =
+		const contextExternalToolDtos: ContextExternalToolDto[] =
 			await this.contextExternalToolUc.getContextExternalToolsForContext(
 				currentUser.userId,
 				params.contextType,
 				params.contextId
 			);
 
-		const mappedTools: ContextExternalToolResponse[] = contextExternalTools.map(
-			(tool: ContextExternalTool): ContextExternalToolResponse =>
+		const mappedTools: ContextExternalToolResponse[] = contextExternalToolDtos.map(
+			(tool: ContextExternalToolDto): ContextExternalToolResponse =>
 				ContextExternalToolResponseMapper.mapContextExternalToolResponse(tool)
 		);
 

@@ -62,7 +62,7 @@ export class ReferenceLoader {
 		this.repos.set(AuthorizableReferenceType.Submission, { repo: this.submissionRepo });
 		this.repos.set(AuthorizableReferenceType.SchoolExternalToolEntity, { repo: this.schoolExternalToolRepo });
 		this.repos.set(AuthorizableReferenceType.BoardNode, { repo: this.boardNodeAuthorizableService });
-		this.repos.set(AuthorizableReferenceType.ContextExternalTool, {
+		this.repos.set(AuthorizableReferenceType.ContextExternalToolEntity, {
 			repo: this.contextExternalToolAuthorizableService,
 		});
 	}

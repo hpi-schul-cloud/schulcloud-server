@@ -1,9 +1,9 @@
 import { Scope } from '@shared/repo';
 import { EntityId } from '@shared/domain';
 import { ToolContextType } from '@src/modules/tool/common/enum';
-import { ContextExternalTool } from '@src/modules/tool/context-external-tool/entity';
+import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity';
 
-export class ContextExternalToolScope extends Scope<ContextExternalTool> {
+export class ContextExternalToolScope extends Scope<ContextExternalToolEntity> {
 	byId(id: EntityId | undefined): ContextExternalToolScope {
 		if (id !== undefined) {
 			this.addQuery({ id });

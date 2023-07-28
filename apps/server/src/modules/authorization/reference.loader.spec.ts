@@ -154,7 +154,7 @@ describe('reference.loader', () => {
 		});
 
 		it('should call contextExternalToolService.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.ContextExternalTool, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.ContextExternalToolEntity, entityId);
 
 			expect(contextExternalToolAuthorizableService.findById).toBeCalledWith(entityId);
 		});
