@@ -1,12 +1,14 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, SchoolFeatures } from '@shared/domain';
+import { EntityId, FederalState, SchoolFeatures, SchoolYear } from '@shared/domain';
+import { RoleReference } from '@shared/domain/domainobject';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { SchoolService } from '@src/modules/school';
+import { FederalStateService, SchoolService, SchoolYearService } from '@src/modules/school';
+import { FederalStateNames } from '@src/modules/school/types';
 import { UserService } from '@src/modules/user';
 import CryptoJS from 'crypto-js';
 import { ExternalSchoolDto, ExternalUserDto } from '../../../dto';
@@ -17,7 +19,9 @@ export class OidcProvisioningService {
 		private readonly userService: UserService,
 		private readonly schoolService: SchoolService,
 		private readonly roleService: RoleService,
-		private readonly accountService: AccountService
+		private readonly accountService: AccountService,
+		private readonly schoolYearService: SchoolYearService,
+		private readonly federalStateService: FederalStateService
 	) {}
 
 	async provisionExternalSchool(externalSchool: ExternalSchoolDto, systemId: EntityId): Promise<SchoolDO> {
@@ -36,24 +40,32 @@ export class OidcProvisioningService {
 				school.systems.push(systemId);
 			}
 		} else {
+			const schoolYear: SchoolYear = await this.schoolYearService.getCurrentSchoolYear();
+			const federalState: FederalState = await this.federalStateService.findFederalStateByName(
+				FederalStateNames.NIEDERSACHEN
+			);
+
 			school = new SchoolDO({
 				externalId: externalSchool.externalId,
 				name: externalSchool.name,
 				officialSchoolNumber: externalSchool.officialSchoolNumber,
 				systems: [systemId],
 				features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+				// TODO: N21-990 Refactoring: Create domain objects for schoolYear and federalState
+				schoolYear,
+				federalState,
 			});
 		}
 
-		const savedSchool: SchoolDO = await this.schoolService.createOrUpdateSchool(school);
+		const savedSchool: SchoolDO = await this.schoolService.save(school, true);
 		return savedSchool;
 	}
 
 	async provisionExternalUser(externalUser: ExternalUserDto, systemId: EntityId, schoolId?: string): Promise<UserDO> {
-		let roleIds: EntityId[] | undefined;
+		let roleRefs: RoleReference[] | undefined;
 		if (externalUser.roles) {
 			const roles: RoleDto[] = await this.roleService.findByNames(externalUser.roles);
-			roleIds = roles.map((role: RoleDto): EntityId => role.id || '');
+			roleRefs = roles.map((role: RoleDto): RoleReference => new RoleReference({ id: role.id || '', name: role.name }));
 		}
 
 		const existingUser: UserDO | null = await this.userService.findByExternalId(externalUser.externalId, systemId);
@@ -64,7 +76,7 @@ export class OidcProvisioningService {
 			user.firstName = externalUser.firstName ?? existingUser.firstName;
 			user.lastName = externalUser.lastName ?? existingUser.lastName;
 			user.email = externalUser.email ?? existingUser.email;
-			user.roleIds = roleIds ?? existingUser.roleIds;
+			user.roles = roleRefs ?? existingUser.roles;
 			user.schoolId = schoolId ?? existingUser.schoolId;
 		} else {
 			createNewAccount = true;
@@ -80,7 +92,7 @@ export class OidcProvisioningService {
 				firstName: externalUser.firstName ?? '',
 				lastName: externalUser.lastName ?? '',
 				email: externalUser.email ?? '',
-				roleIds: roleIds ?? [],
+				roles: roleRefs ?? [],
 				schoolId,
 			});
 		}

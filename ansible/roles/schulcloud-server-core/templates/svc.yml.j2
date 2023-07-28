@@ -5,9 +5,6 @@ metadata:
   namespace: {{ NAMESPACE }}
   labels:
     app: api
-  annotations:
-    prometheus.io/scrape: 'true'
-    prometheus.io/port: '3030'
 spec:
   type: ClusterIP
   ports:
@@ -15,5 +12,9 @@ spec:
       targetPort: 3030
       protocol: TCP
       name: api
+    - port: {{ PORT_METRICS_SERVER }}
+      targetPort: 9090
+      protocol: TCP
+      name: api-metrics
   selector:
     app: api

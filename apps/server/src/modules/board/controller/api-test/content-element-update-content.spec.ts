@@ -65,7 +65,7 @@ describe(`content element update content (api)`, () => {
 		it('should return status 204', async () => {
 			const { loggedInClient, element } = await setup();
 
-			const response = await loggedInClient.put(`${element.id}/content`, {
+			const response = await loggedInClient.patch(`${element.id}/content`, {
 				data: { content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' },
 			});
 
@@ -75,7 +75,7 @@ describe(`content element update content (api)`, () => {
 		it('should actually change content of the element', async () => {
 			const { loggedInClient, element } = await setup();
 
-			await loggedInClient.put(`${element.id}/content`, {
+			await loggedInClient.patch(`${element.id}/content`, {
 				data: { content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' },
 			});
 			const result = await em.findOneOrFail(RichTextElementNode, element.id);
@@ -90,7 +90,7 @@ describe(`content element update content (api)`, () => {
 
 			const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
 
-			await loggedInClient.put(`${element.id}/content`, {
+			await loggedInClient.patch(`${element.id}/content`, {
 				data: { content: { text, inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' },
 			});
 			const result = await em.findOneOrFail(RichTextElementNode, element.id);
@@ -127,7 +127,7 @@ describe(`content element update content (api)`, () => {
 		it('should return status 403', async () => {
 			const { loggedInClient, element } = await setup();
 
-			const response = await loggedInClient.put(`${element.id}/content`, {
+			const response = await loggedInClient.patch(`${element.id}/content`, {
 				data: { content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' },
 			});
 

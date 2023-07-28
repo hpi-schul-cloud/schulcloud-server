@@ -1,64 +1,29 @@
-import { forwardRef, Module } from '@nestjs/common';
-import {
-	PseudonymsRepo,
-	ExternalToolRepoMapper,
-	ExternalToolRepo,
-	SchoolExternalToolRepo,
-	ContextExternalToolRepo,
-	ExternalToolSortingMapper,
-} from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
-import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
-import { EncryptionModule } from '@shared/infra/encryption';
-import {
-	CommonToolValidationService,
-	ContextExternalToolService,
-	ContextExternalToolValidationService,
-	ExternalToolService,
-	ExternalToolValidationService,
-	ExternalToolVersionService,
-	Lti11Service,
-	SchoolExternalToolService,
-	SchoolExternalToolValidationService,
-} from './service';
-import { ExternalToolServiceMapper } from './service/mapper';
-import { ToolLaunchService } from './launch-tool/service/tool-launch.service';
-import { BasicToolLaunchStrategy } from './launch-tool/service/strategy';
-import { AuthorizationModule } from '../authorization';
+import { Module } from '@nestjs/common';
+import { ContextExternalToolModule } from './context-external-tool';
+import { SchoolExternalToolModule } from './school-external-tool';
+import { ExternalToolModule } from './external-tool';
+import { CommonToolModule } from './common';
+import { ToolLaunchModule } from './tool-launch';
+import { CommonToolService } from './common/service';
+import { ToolConfigModule } from './tool-config.module';
 
 @Module({
-	imports: [LoggerModule, OauthProviderServiceModule, EncryptionModule, forwardRef(() => AuthorizationModule)],
-	providers: [
-		Lti11Service,
-		ExternalToolService,
-		ExternalToolServiceMapper,
-		PseudonymsRepo,
-		ExternalToolRepo,
-		ExternalToolRepoMapper,
-		ExternalToolSortingMapper,
-		SchoolExternalToolRepo,
-		ContextExternalToolRepo,
-		ExternalToolValidationService,
-		ExternalToolVersionService,
-		SchoolExternalToolService,
-		ContextExternalToolService,
-		CommonToolValidationService,
-		SchoolExternalToolValidationService,
-		ContextExternalToolValidationService,
-		ToolLaunchService,
-		BasicToolLaunchStrategy,
+	imports: [
+		ToolConfigModule,
+		CommonToolModule,
+		ExternalToolModule,
+		SchoolExternalToolModule,
+		ContextExternalToolModule,
+		ToolLaunchModule,
 	],
+	providers: [CommonToolService],
 	exports: [
-		Lti11Service,
-		ExternalToolService,
-		ExternalToolValidationService,
-		SchoolExternalToolService,
-		ContextExternalToolService,
-		ExternalToolRepoMapper,
-		CommonToolValidationService,
-		SchoolExternalToolValidationService,
-		ContextExternalToolValidationService,
-		ToolLaunchService,
+		ExternalToolModule,
+		SchoolExternalToolModule,
+		ContextExternalToolModule,
+		ToolLaunchModule,
+		// TODO: remove this when reference loader is using service instead of repo
+		CommonToolService,
 	],
 })
 export class ToolModule {}

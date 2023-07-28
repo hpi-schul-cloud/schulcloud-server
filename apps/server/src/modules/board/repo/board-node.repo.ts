@@ -1,10 +1,20 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BoardNode } from '@shared/domain';
+import { BoardNode, EntityId } from '@shared/domain';
 
 @Injectable()
 export class BoardNodeRepo {
 	constructor(private readonly em: EntityManager) {}
+
+	async findById(id: EntityId): Promise<BoardNode> {
+		let entity = this.em.getUnitOfWork().getById<BoardNode>(BoardNode.name, id);
+		if (entity) {
+			return entity;
+		}
+
+		entity = await this.em.findOneOrFail(BoardNode, id);
+		return entity;
+	}
 
 	async findDescendants(node: BoardNode, depth?: number): Promise<BoardNode[]> {
 		const levelQuery = depth !== undefined ? { $gt: node.level, $lte: node.level + depth } : { $gt: node.level };

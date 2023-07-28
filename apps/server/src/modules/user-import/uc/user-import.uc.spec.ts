@@ -17,7 +17,7 @@ import {
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
-import { importUserFactory, schoolFactory, userFactory } from '@shared/testing';
+import { federalStateFactory, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AuthorizationService } from '@src/modules/authorization';
@@ -118,6 +118,7 @@ describe('[ImportUserModule]', () => {
 			const inUserMigration = school ? school.inUserMigration : undefined;
 			const systems =
 				school && school.systems.isInitialized() ? school.systems.getItems().map((system: System) => system.id) : [];
+			const federalState = school ? school.federalState : federalStateFactory.build();
 
 			return new SchoolDO({
 				id,
@@ -128,6 +129,7 @@ describe('[ImportUserModule]', () => {
 				inMaintenanceSince,
 				inUserMigration,
 				systems,
+				federalState,
 			});
 		};
 
@@ -456,6 +458,7 @@ describe('[ImportUserModule]', () => {
 			let permissionServiceSpy: jest.SpyInstance;
 			let importUserRepoFindImportUsersSpy: jest.SpyInstance;
 			let importUserRepoDeleteImportUsersBySchoolSpy: jest.SpyInstance;
+			let importUserRepoDeleteImportUserSpy: jest.SpyInstance;
 			let schoolServiceSaveSpy: jest.SpyInstance;
 			let schoolServiceSpy: jest.SpyInstance;
 			let userRepoFlushSpy: jest.SpyInstance;
@@ -502,6 +505,7 @@ describe('[ImportUserModule]', () => {
 					updatedAt: new Date(),
 				});
 				importUserRepoDeleteImportUsersBySchoolSpy = importUserRepo.deleteImportUsersBySchool.mockResolvedValue();
+				importUserRepoDeleteImportUserSpy = importUserRepo.delete.mockResolvedValue();
 				schoolServiceSaveSpy = schoolService.save.mockReturnValueOnce(Promise.resolve(createMockSchoolDo(school)));
 			});
 			afterEach(() => {
@@ -510,6 +514,7 @@ describe('[ImportUserModule]', () => {
 				importUserRepoFindImportUsersSpy.mockRestore();
 				accountServiceFindByUserIdSpy.mockRestore();
 				importUserRepoDeleteImportUsersBySchoolSpy.mockRestore();
+				importUserRepoDeleteImportUserSpy.mockRestore();
 				schoolServiceSpy.mockRestore();
 				schoolServiceSaveSpy.mockRestore();
 				userRepoFlushSpy.mockRestore();
@@ -544,9 +549,9 @@ describe('[ImportUserModule]', () => {
 
 				const filters = { matches: [MatchCreatorScope.MANUAL, MatchCreatorScope.AUTO] };
 				expect(importUserRepoFindImportUsersSpy).toHaveBeenCalledWith(school, filters, {});
+				expect(importUserRepoDeleteImportUserSpy).toHaveBeenCalledTimes(2);
 				expect(userRepoSaveWithoutFlushSpy).toHaveBeenCalledTimes(2);
 				expect(userRepoSaveWithoutFlushSpy.mock.calls).toEqual([[userMatch1], [userMatch2]]);
-				expect(userRepoFlushSpy).toHaveBeenCalledTimes(1);
 				userRepoSaveWithoutFlushSpy.mockRestore();
 			});
 			it('should remove import users for school', async () => {
@@ -631,6 +636,9 @@ describe('[ImportUserModule]', () => {
 				schoolParams.externalId = 'foo';
 				schoolParams.inMaintenanceSince = currentDate;
 				schoolParams.systems = [system.id];
+				schoolParams.federalState.createdAt = currentDate;
+				schoolParams.federalState.updatedAt = currentDate;
+
 				expect(schoolServiceSaveSpy).toHaveBeenCalledWith(schoolParams);
 			});
 
