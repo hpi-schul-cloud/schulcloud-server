@@ -6,8 +6,9 @@ import {
 	columnBoardFactory,
 	columnFactory,
 	fileElementFactory,
-	submissionContainerElementFactory,
 	setupEntities,
+	submissionContainerElementFactory,
+	submissionItemFactory,
 } from '@shared/testing';
 import { FileDto, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
@@ -164,6 +165,26 @@ describe(RecursiveDeleteVisitor.name, () => {
 			expect(em.remove).toHaveBeenCalledWith(
 				em.getReference(childSubmissionContainerElement.constructor, childSubmissionContainerElement.id)
 			);
+		});
+	});
+
+	describe('visitSubmissionItemAsync', () => {
+		const setup = () => {
+			const childSubmissionItem = submissionItemFactory.build();
+			const submissionItem = submissionItemFactory.build({
+				children: [childSubmissionItem],
+			});
+
+			return { submissionItem, childSubmissionItem };
+		};
+
+		it('should call entity remove', async () => {
+			const { submissionItem, childSubmissionItem } = setup();
+
+			await service.visitSubmissionItemAsync(submissionItem);
+
+			expect(em.remove).toHaveBeenCalledWith(em.getReference(submissionItem.constructor, submissionItem.id));
+			expect(em.remove).toHaveBeenCalledWith(em.getReference(childSubmissionItem.constructor, childSubmissionItem.id));
 		});
 	});
 });
