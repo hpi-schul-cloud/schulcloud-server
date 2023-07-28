@@ -137,5 +137,5 @@ describe('Logger', () => {
 
 			expect(winstonLogger.info).toBeCalledWith(expectedMessage);
 		});
-	})
+	});
 });
