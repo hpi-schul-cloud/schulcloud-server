@@ -133,9 +133,9 @@ describe('Logger', () => {
 				context: 'test context',
 			});
 
-			service.log(loggable);
+			service.notice(loggable);
 
-			expect(winstonLogger.info).toBeCalledWith(expectedMessage);
+			expect(winstonLogger.notice).toBeCalledWith(expectedMessage);
 		});
 	});
 });
