@@ -14,7 +14,7 @@ import {
 import { LegacyLogger } from '@src/core/logger';
 import { CustomParameterEntryDO } from '@src/modules/tool/common/domain';
 import { ToolContextType } from '@src/modules/tool/common/enum';
-import { ContextExternalToolDO } from '@src/modules/tool/context-external-tool/domain';
+import { ContextExternalTool } from '@src/modules/tool/context-external-tool/domain';
 import { ContextExternalToolEntity, ContextExternalToolType } from '@src/modules/tool/context-external-tool/entity';
 import { ContextExternalToolQuery } from '@src/modules/tool/context-external-tool/uc/dto/context-external-tool.types';
 import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
@@ -129,7 +129,7 @@ describe('ContextExternalToolRepo', () => {
 	describe('save', () => {
 		describe('when context is known', () => {
 			function setup() {
-				const domainObject: ContextExternalToolDO = contextExternalToolDOFactory.build({
+				const domainObject: ContextExternalTool = contextExternalToolDOFactory.build({
 					displayName: 'displayName',
 					contextRef: {
 						id: new ObjectId().toHexString(),
@@ -152,7 +152,7 @@ describe('ContextExternalToolRepo', () => {
 				const { domainObject } = setup();
 				const { id, ...expected } = domainObject;
 
-				const result: ContextExternalToolDO = await repo.save(domainObject);
+				const result: ContextExternalTool = await repo.save(domainObject);
 
 				expect(result).toMatchObject(expected);
 				expect(result.id).toBeDefined();
@@ -161,7 +161,7 @@ describe('ContextExternalToolRepo', () => {
 
 		describe('when context is unknown', () => {
 			const setup = () => {
-				const domainObject: ContextExternalToolDO = contextExternalToolDOFactory.build({
+				const domainObject: ContextExternalTool = contextExternalToolDOFactory.build({
 					contextRef: {
 						id: new ObjectId().toHexString(),
 						type: 'UNKNOWN' as ToolContextType,
@@ -206,7 +206,7 @@ describe('ContextExternalToolRepo', () => {
 					schoolToolRef: { schoolToolId: schoolExternalTool1.id },
 				};
 
-				const result: ContextExternalToolDO[] = await repo.find(query);
+				const result: ContextExternalTool[] = await repo.find(query);
 
 				expect(result[0].schoolToolRef.schoolToolId).toEqual(schoolExternalTool1.id);
 			});
@@ -232,7 +232,7 @@ describe('ContextExternalToolRepo', () => {
 					},
 				};
 
-				const result: ContextExternalToolDO[] = await repo.find(query);
+				const result: ContextExternalTool[] = await repo.find(query);
 
 				expect(result[0].contextRef.id).toEqual(contextExternalTool1.contextId);
 			});
@@ -258,7 +258,7 @@ describe('ContextExternalToolRepo', () => {
 			it('should return correct results', async () => {
 				const { query } = await setup();
 
-				const result: ContextExternalToolDO[] = await repo.find(query);
+				const result: ContextExternalTool[] = await repo.find(query);
 
 				expect(result[0].contextRef.type).toEqual(ToolContextType.COURSE);
 			});
@@ -311,7 +311,7 @@ describe('ContextExternalToolRepo', () => {
 			it('should return empty array', async () => {
 				const { query } = await setup();
 
-				const result: ContextExternalToolDO[] = await repo.find(query);
+				const result: ContextExternalTool[] = await repo.find(query);
 
 				expect(result).toEqual([]);
 			});

@@ -4,7 +4,7 @@ import { CommonToolService } from './common-tool.service';
 import { ExternalToolDO } from '../../external-tool/domain';
 import { SchoolExternalToolDO } from '../../school-external-tool/domain';
 import { ToolConfigurationStatus } from '../enum';
-import { ContextExternalToolDO } from '../../context-external-tool/domain';
+import { ContextExternalTool } from '../../context-external-tool/domain';
 
 describe('CommonToolService', () => {
 	let module: TestingModule;
@@ -27,7 +27,7 @@ describe('CommonToolService', () => {
 			const setup = () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId({ version: 0 });
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId({ toolVersion: 0 });
-				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId({ toolVersion: 0 });
+				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId({ toolVersion: 0 });
 
 				return {
 					externalToolDO,
@@ -53,7 +53,7 @@ describe('CommonToolService', () => {
 			const setup = () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId({ version: 1 });
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId({ toolVersion: 0 });
-				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId({ toolVersion: 0 });
+				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId({ toolVersion: 0 });
 
 				return {
 					externalToolDO,
@@ -79,7 +79,7 @@ describe('CommonToolService', () => {
 			const setup = () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId({ version: 1 });
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId({ toolVersion: 1 });
-				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId({ toolVersion: 0 });
+				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId({ toolVersion: 0 });
 
 				return {
 					externalToolDO,
@@ -105,7 +105,7 @@ describe('CommonToolService', () => {
 			const setup = () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId({ version: 1 });
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId({ toolVersion: 1 });
-				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId({ toolVersion: 0 });
+				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId({ toolVersion: 0 });
 
 				return {
 					externalToolDO,
@@ -131,7 +131,7 @@ describe('CommonToolService', () => {
 			const setup = () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId({ version: 1 });
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId({ toolVersion: 1 });
-				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId({ toolVersion: 2 });
+				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId({ toolVersion: 2 });
 
 				return {
 					externalToolDO,
@@ -157,7 +157,7 @@ describe('CommonToolService', () => {
 			const setup = () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId({ version: 1 });
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId({ toolVersion: 1 });
-				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId({ toolVersion: 2 });
+				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId({ toolVersion: 2 });
 
 				return {
 					externalToolDO,
@@ -183,7 +183,7 @@ describe('CommonToolService', () => {
 			const setup = () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId({ version: 1 });
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId({ toolVersion: 2 });
-				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId({ toolVersion: 2 });
+				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId({ toolVersion: 2 });
 
 				return {
 					externalToolDO,

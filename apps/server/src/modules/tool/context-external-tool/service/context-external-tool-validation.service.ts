@@ -1,7 +1,7 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { ContextExternalToolDto } from '../uc/dto/context-external-tool.types';
-import { ContextExternalToolDO } from '../domain';
+import { ContextExternalTool } from '../domain';
 
 @Injectable()
 export class ContextExternalToolValidationService {
@@ -12,7 +12,7 @@ export class ContextExternalToolValidationService {
 	}
 
 	private async checkDuplicateInContext(contextExternalToolDto: ContextExternalToolDto) {
-		const duplicate: ContextExternalToolDO[] = await this.contextExternalToolRepo.find({
+		const duplicate: ContextExternalTool[] = await this.contextExternalToolRepo.find({
 			schoolToolRef: contextExternalToolDto.schoolToolRef,
 			context: contextExternalToolDto.contextRef,
 		});

@@ -16,7 +16,7 @@ import { IToolLaunchParams } from './tool-launch-params.interface';
 import { IToolLaunchStrategy } from './tool-launch-strategy.interface';
 import { SchoolExternalToolDO } from '../../../school-external-tool/domain';
 import { CustomParameterDO, CustomParameterEntryDO } from '../../../common/domain';
-import { ContextExternalToolDO } from '../../../context-external-tool/domain';
+import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { ExternalToolDO } from '../../../external-tool/domain';
 
 @Injectable()
@@ -143,7 +143,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 		customParameterDOs: CustomParameterDO[],
 		scopes: { scope: CustomParameterScope; params: CustomParameterEntryDO[] }[],
 		schoolExternalToolDO: SchoolExternalToolDO,
-		contextExternalToolDO: ContextExternalToolDO
+		contextExternalTool: ContextExternalTool
 	): Promise<void> {
 		await Promise.all(
 			scopes.map(async ({ scope, params }): Promise<void> => {
@@ -158,7 +158,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 					parametersToInclude,
 					params,
 					schoolExternalToolDO,
-					contextExternalToolDO
+					contextExternalTool
 				);
 			})
 		);
@@ -169,7 +169,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 		parametersToInclude: CustomParameterDO[],
 		params: CustomParameterEntryDO[],
 		schoolExternalToolDO: SchoolExternalToolDO,
-		contextExternalToolDO: ContextExternalToolDO
+		contextExternalTool: ContextExternalTool
 	): Promise<void> {
 		const missingParameters: CustomParameterDO[] = [];
 
@@ -183,7 +183,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 					parameter,
 					matchingParameter,
 					schoolExternalToolDO,
-					contextExternalToolDO
+					contextExternalTool
 				);
 
 				if (value !== undefined) {
@@ -197,7 +197,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 		);
 
 		if (missingParameters.length > 0) {
-			throw new MissingToolParameterValueLoggableException(contextExternalToolDO, missingParameters);
+			throw new MissingToolParameterValueLoggableException(contextExternalTool, missingParameters);
 		}
 	}
 
@@ -205,24 +205,24 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 		customParameter: CustomParameterDO,
 		matchingParameterEntry: CustomParameterEntryDO | undefined,
 		schoolExternalToolDO: SchoolExternalToolDO,
-		contextExternalToolDO: ContextExternalToolDO
+		contextExternalTool: ContextExternalTool
 	): Promise<string | undefined> {
 		switch (customParameter.type) {
 			case CustomParameterType.AUTO_SCHOOLID: {
 				return schoolExternalToolDO.schoolId;
 			}
 			case CustomParameterType.AUTO_CONTEXTID: {
-				return contextExternalToolDO.contextRef.id;
+				return contextExternalTool.contextRef.id;
 			}
 			case CustomParameterType.AUTO_CONTEXTNAME: {
-				if (contextExternalToolDO.contextRef.type === ToolContextType.COURSE) {
-					const course: Course = await this.courseRepo.findById(contextExternalToolDO.contextRef.id);
+				if (contextExternalTool.contextRef.type === ToolContextType.COURSE) {
+					const course: Course = await this.courseRepo.findById(contextExternalTool.contextRef.id);
 
 					return course.name;
 				}
 
 				throw new ParameterTypeNotImplementedLoggableException(
-					`${customParameter.type}/${contextExternalToolDO.contextRef.type as string}`
+					`${customParameter.type}/${contextExternalTool.contextRef.type as string}`
 				);
 			}
 			case CustomParameterType.AUTO_SCHOOLNUMBER: {

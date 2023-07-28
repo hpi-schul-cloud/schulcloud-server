@@ -8,7 +8,7 @@ import { BasicToolLaunchStrategy } from './basic-tool-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
 import { ExternalToolDO } from '../../../external-tool/domain';
 import { SchoolExternalToolDO } from '../../../school-external-tool/domain';
-import { ContextExternalToolDO } from '../../../context-external-tool/domain';
+import { ContextExternalTool } from '../../../context-external-tool/domain';
 
 describe('BasicToolLaunchStrategy', () => {
 	let module: TestingModule;
@@ -104,7 +104,7 @@ describe('BasicToolLaunchStrategy', () => {
 		const setup = () => {
 			const externalToolDO: ExternalToolDO = externalToolDOFactory.build();
 			const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build();
-			const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build();
+			const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.build();
 
 			const data: IToolLaunchParams = {
 				contextExternalToolDO,

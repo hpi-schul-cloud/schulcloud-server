@@ -13,7 +13,7 @@ import { ToolStatusOutdatedLoggableException } from '../error';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ExternalToolService } from '../../external-tool/service';
 import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
-import { ContextExternalToolDO } from '../../context-external-tool/domain';
+import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ExternalToolDO } from '../../external-tool/domain';
 import { SchoolExternalToolDO } from '../../school-external-tool/domain';
 
@@ -48,7 +48,7 @@ export class ToolLaunchService {
 		return launchRequest;
 	}
 
-	async getLaunchData(userId: EntityId, contextExternalToolDO: ContextExternalToolDO): Promise<ToolLaunchData> {
+	async getLaunchData(userId: EntityId, contextExternalToolDO: ContextExternalTool): Promise<ToolLaunchData> {
 		const schoolExternalToolId: EntityId = contextExternalToolDO.schoolToolRef.schoolToolId;
 
 		const { externalToolDO, schoolExternalToolDO } = await this.loadToolHierarchy(schoolExternalToolId);
@@ -91,15 +91,15 @@ export class ToolLaunchService {
 		userId: EntityId,
 		externalToolDO: ExternalToolDO,
 		schoolExternalToolDO: SchoolExternalToolDO,
-		contextExternalToolDO: ContextExternalToolDO
+		contextExternalTool: ContextExternalTool
 	): void {
 		const status: ToolConfigurationStatus = this.commonToolService.determineToolConfigurationStatus(
 			externalToolDO,
 			schoolExternalToolDO,
-			contextExternalToolDO
+			contextExternalTool
 		);
 		if (status !== ToolConfigurationStatus.LATEST) {
-			throw new ToolStatusOutdatedLoggableException(userId, contextExternalToolDO.id ?? '');
+			throw new ToolStatusOutdatedLoggableException(userId, contextExternalTool.id ?? '');
 		}
 	}
 }

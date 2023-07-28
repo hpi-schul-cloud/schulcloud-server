@@ -7,7 +7,7 @@ import {
 	externalToolDOFactory,
 	schoolExternalToolDOFactory,
 } from '@shared/testing';
-import { ContextExternalToolDO } from '../../context-external-tool/domain';
+import { ContextExternalTool } from '../../context-external-tool/domain';
 import { LaunchRequestMethod, ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import {
 	BasicToolLaunchStrategy,
@@ -83,7 +83,7 @@ describe('ToolLaunchService', () => {
 		describe('when the tool config type is BASIC', () => {
 			const setup = () => {
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
-				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory
+				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory
 					.withSchoolExternalToolRef(schoolExternalToolDO.id as string)
 					.build();
 				const basicToolConfigDO: BasicToolConfigDO = basicToolConfigDOFactory.build();
@@ -101,7 +101,7 @@ describe('ToolLaunchService', () => {
 				const launchParams: IToolLaunchParams = {
 					externalToolDO,
 					schoolExternalToolDO,
-					contextExternalToolDO,
+					contextExternalToolDO: contextExternalTool,
 				};
 
 				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValue(schoolExternalToolDO);
@@ -153,7 +153,7 @@ describe('ToolLaunchService', () => {
 		describe('when the tool config type is unknown', () => {
 			const setup = () => {
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
-				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory
+				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory
 					.withSchoolExternalToolRef(schoolExternalToolDO.id as string)
 					.build();
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.build();
@@ -212,7 +212,7 @@ describe('ToolLaunchService', () => {
 		describe('when tool configuration status is not LATEST', () => {
 			const setup = () => {
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
-				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory
+				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory
 					.withSchoolExternalToolRef(schoolExternalToolDO.id as string)
 					.build();
 				const basicToolConfigDO: BasicToolConfigDO = basicToolConfigDOFactory.build();

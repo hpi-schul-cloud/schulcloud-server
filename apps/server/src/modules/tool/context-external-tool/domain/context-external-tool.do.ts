@@ -18,7 +18,7 @@ export interface ContextExternalToolProps {
 	toolVersion: number;
 }
 
-export class ContextExternalToolDO extends BaseDO implements ToolVersion {
+export class ContextExternalTool extends BaseDO implements ToolVersion {
 	schoolToolRef: SchoolExternalToolRefDO;
 
 	contextRef: ContextRef;

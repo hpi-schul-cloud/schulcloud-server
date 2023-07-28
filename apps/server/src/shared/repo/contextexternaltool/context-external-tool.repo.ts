@@ -11,14 +11,14 @@ import {
 	IContextExternalToolProperties,
 } from '@src/modules/tool/context-external-tool/entity';
 import { ToolContextType } from '@src/modules/tool/common/enum/tool-context-type.enum';
-import { ContextExternalToolDO, ContextRef } from '@src/modules/tool/context-external-tool/domain';
+import { ContextExternalTool, ContextRef } from '@src/modules/tool/context-external-tool/domain';
 import { SchoolExternalToolRefDO } from '@src/modules/tool/school-external-tool/domain';
 import { ExternalToolRepoMapper } from '../externaltool';
 import { ContextExternalToolScope } from './context-external-tool.scope';
 
 @Injectable()
 export class ContextExternalToolRepo extends BaseDORepo<
-	ContextExternalToolDO,
+	ContextExternalTool,
 	ContextExternalToolEntity,
 	IContextExternalToolProperties
 > {
@@ -41,16 +41,14 @@ export class ContextExternalToolRepo extends BaseDORepo<
 		return count;
 	}
 
-	async find(query: ContextExternalToolQuery): Promise<ContextExternalToolDO[]> {
+	async find(query: ContextExternalToolQuery): Promise<ContextExternalTool[]> {
 		const scope: ContextExternalToolScope = this.buildScope(query);
 
 		const entities: ContextExternalToolEntity[] = await this._em.find(this.entityName, scope.query, {
 			populate: ['schoolTool.school'],
 		});
 
-		const dos: ContextExternalToolDO[] = entities.map((entity: ContextExternalToolEntity) =>
-			this.mapEntityToDO(entity)
-		);
+		const dos: ContextExternalTool[] = entities.map((entity: ContextExternalToolEntity) => this.mapEntityToDO(entity));
 		return dos;
 	}
 
@@ -66,7 +64,7 @@ export class ContextExternalToolRepo extends BaseDORepo<
 		return scope;
 	}
 
-	mapEntityToDO(entity: ContextExternalToolEntity): ContextExternalToolDO {
+	mapEntityToDO(entity: ContextExternalToolEntity): ContextExternalTool {
 		const schoolToolRef: SchoolExternalToolRefDO = new SchoolExternalToolRefDO({
 			schoolId: entity.schoolTool.school?.id,
 			schoolToolId: entity.schoolTool.id,
@@ -77,7 +75,7 @@ export class ContextExternalToolRepo extends BaseDORepo<
 			type: this.mapContextTypeToDoType(entity.contextType),
 		});
 
-		return new ContextExternalToolDO({
+		return new ContextExternalTool({
 			id: entity.id,
 			schoolToolRef,
 			contextRef,
@@ -87,7 +85,7 @@ export class ContextExternalToolRepo extends BaseDORepo<
 		});
 	}
 
-	mapDOToEntityProperties(entityDO: ContextExternalToolDO): IContextExternalToolProperties {
+	mapDOToEntityProperties(entityDO: ContextExternalTool): IContextExternalToolProperties {
 		return {
 			contextId: entityDO.contextRef.id,
 			contextType: this.mapContextTypeToEntityType(entityDO.contextRef.type),

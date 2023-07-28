@@ -8,7 +8,7 @@ import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { CommonToolService } from '../../common/service';
 import { ToolReferenceMapper } from '../mapper/tool-reference.mapper';
-import { ContextExternalToolDO, ContextRef } from '../../context-external-tool/domain';
+import { ContextExternalTool, ContextRef } from '../../context-external-tool/domain';
 import { SchoolExternalToolDO } from '../../school-external-tool/domain';
 
 @Injectable()
@@ -23,12 +23,12 @@ export class ToolReferenceUc {
 	async getToolReferences(userId: EntityId, contextType: ToolContextType, contextId: string): Promise<ToolReference[]> {
 		const contextRef = new ContextRef({ type: contextType, id: contextId });
 
-		const contextExternalTools: ContextExternalToolDO[] = await this.contextExternalToolService.findAllByContext(
+		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolService.findAllByContext(
 			contextRef
 		);
 
 		const toolReferencesPromises: Promise<ToolReference | null>[] = contextExternalTools.map(
-			(contextExternalTool: ContextExternalToolDO) => this.buildToolReference(userId, contextExternalTool)
+			(contextExternalTool: ContextExternalTool) => this.buildToolReference(userId, contextExternalTool)
 		);
 
 		const toolReferencesWithNull: (ToolReference | null)[] = await Promise.all(toolReferencesPromises);
@@ -41,7 +41,7 @@ export class ToolReferenceUc {
 
 	private async buildToolReference(
 		userId: EntityId,
-		contextExternalTool: ContextExternalToolDO
+		contextExternalTool: ContextExternalTool
 	): Promise<ToolReference | null> {
 		try {
 			await this.ensureToolPermissions(userId, contextExternalTool);
@@ -69,7 +69,7 @@ export class ToolReferenceUc {
 		return toolReference;
 	}
 
-	private async ensureToolPermissions(userId: EntityId, contextExternalTool: ContextExternalToolDO): Promise<void> {
+	private async ensureToolPermissions(userId: EntityId, contextExternalTool: ContextExternalTool): Promise<void> {
 		const promise: Promise<void> = this.contextExternalToolService.ensureContextPermissions(
 			userId,
 			contextExternalTool,
@@ -82,7 +82,7 @@ export class ToolReferenceUc {
 		return promise;
 	}
 
-	private async fetchSchoolExternalTool(contextExternalTool: ContextExternalToolDO): Promise<SchoolExternalToolDO> {
+	private async fetchSchoolExternalTool(contextExternalTool: ContextExternalTool): Promise<SchoolExternalToolDO> {
 		return this.schoolExternalToolService.getSchoolExternalToolById(contextExternalTool.schoolToolRef.schoolToolId);
 	}
 

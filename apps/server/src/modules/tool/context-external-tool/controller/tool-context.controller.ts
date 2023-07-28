@@ -24,7 +24,7 @@ import {
 } from './dto';
 import { ContextExternalToolUc } from '../uc';
 import { ContextExternalToolDto } from '../uc/dto/context-external-tool.types';
-import { ContextExternalToolDO } from '../domain';
+import { ContextExternalTool } from '../domain';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -49,7 +49,7 @@ export class ToolContextController {
 		const contextExternalToolDto: ContextExternalToolDto =
 			ContextExternalToolRequestMapper.mapContextExternalToolRequest(body);
 
-		const createdTool: ContextExternalToolDO = await this.contextExternalToolUc.createContextExternalTool(
+		const createdTool: ContextExternalTool = await this.contextExternalToolUc.createContextExternalTool(
 			currentUser.userId,
 			contextExternalToolDto
 		);

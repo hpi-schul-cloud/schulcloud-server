@@ -22,7 +22,7 @@ import { IToolLaunchParams } from './tool-launch-params.interface';
 import { ExternalToolDO } from '../../../external-tool/domain';
 import { LtiMessageType, LtiPrivacyPermission, LtiRole, ToolContextType } from '../../../common/enum';
 import { SchoolExternalToolDO } from '../../../school-external-tool/domain';
-import { ContextExternalToolDO } from '../../../context-external-tool/domain';
+import { ContextExternalTool } from '../../../context-external-tool/domain';
 
 describe('Lti11ToolLaunchStrategy', () => {
 	let module: TestingModule;
@@ -92,7 +92,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 					})
 					.buildWithId();
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
-				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId();
+				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.buildWithId();
 
 				const data: IToolLaunchParams = {
 					contextExternalToolDO,
@@ -186,7 +186,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
 
 				const contextId: string = new ObjectId().toHexString();
-				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId({
+				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.buildWithId({
 					contextRef: { id: contextId, type: ToolContextType.COURSE },
 				});
 
@@ -235,7 +235,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 					})
 					.buildWithId();
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
-				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId();
+				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.buildWithId();
 
 				const data: IToolLaunchParams = {
 					contextExternalToolDO,
@@ -284,7 +284,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 					})
 					.buildWithId();
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
-				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId();
+				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.buildWithId();
 
 				const data: IToolLaunchParams = {
 					contextExternalToolDO,
@@ -335,7 +335,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 					})
 					.buildWithId();
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
-				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId();
+				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.buildWithId();
 
 				const data: IToolLaunchParams = {
 					contextExternalToolDO,
@@ -373,7 +373,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 			const setup = () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
-				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId();
+				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.buildWithId();
 
 				const data: IToolLaunchParams = {
 					contextExternalToolDO,

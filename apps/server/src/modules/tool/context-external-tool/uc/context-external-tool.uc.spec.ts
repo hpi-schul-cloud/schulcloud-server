@@ -7,7 +7,7 @@ import { ForbiddenLoggableException } from '@src/modules/authorization/errors/fo
 import { Action } from '@src/modules/authorization';
 import { ContextExternalToolUc } from './context-external-tool.uc';
 import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
-import { ContextExternalToolDO } from '../domain';
+import { ContextExternalTool } from '../domain';
 import { ToolContextType } from '../../common/enum';
 
 describe('ContextExternalToolUc', () => {
@@ -55,7 +55,7 @@ describe('ContextExternalToolUc', () => {
 			const setup = () => {
 				const userId: EntityId = 'userId';
 
-				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId({
+				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId({
 					displayName: 'Course',
 					contextRef: {
 						id: 'contextId',
@@ -106,7 +106,7 @@ describe('ContextExternalToolUc', () => {
 			const setup = () => {
 				const userId: EntityId = 'userId';
 
-				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId();
+				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId();
 
 				contextExternalToolService.ensureContextPermissions.mockResolvedValue();
 				contextExternalToolService.getContextExternalToolById.mockResolvedValue(contextExternalTool);
@@ -146,7 +146,7 @@ describe('ContextExternalToolUc', () => {
 				const contextId: EntityId = 'contextId';
 				const contextType: ToolContextType = ToolContextType.COURSE;
 
-				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId({
+				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId({
 					displayName: 'Course',
 					contextRef: {
 						id: 'contextId',

@@ -7,7 +7,7 @@ import { LaunchRequestMethod, PropertyData } from '../../types';
 import { OAuth2ToolLaunchStrategy } from './oauth2-tool-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
 import { ExternalToolDO } from '../../../external-tool/domain';
-import { ContextExternalToolDO } from '../../../context-external-tool/domain';
+import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { SchoolExternalToolDO } from '../../../school-external-tool/domain';
 
 describe('OAuth2ToolLaunchStrategy', () => {
@@ -47,7 +47,7 @@ describe('OAuth2ToolLaunchStrategy', () => {
 			const setup = () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.build();
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build();
-				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build();
+				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.build();
 
 				const data: IToolLaunchParams = {
 					contextExternalToolDO,

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
 import { AuthorizationContext, Rule } from '@src/modules/authorization/types';
-import { ContextExternalToolDO } from '@src/modules/tool/context-external-tool/domain';
+import { ContextExternalTool } from '@src/modules/tool/context-external-tool/domain';
 import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity';
 import { User } from '../entity';
 
@@ -9,15 +9,15 @@ import { User } from '../entity';
 export class ContextExternalToolRule implements Rule {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
-	public isApplicable(user: User, entity: ContextExternalToolEntity | ContextExternalToolDO): boolean {
-		const isMatched: boolean = entity instanceof ContextExternalToolEntity || entity instanceof ContextExternalToolDO;
+	public isApplicable(user: User, entity: ContextExternalToolEntity | ContextExternalTool): boolean {
+		const isMatched: boolean = entity instanceof ContextExternalToolEntity || entity instanceof ContextExternalTool;
 
 		return isMatched;
 	}
 
 	public hasPermission(
 		user: User,
-		entity: ContextExternalToolEntity | ContextExternalToolDO,
+		entity: ContextExternalToolEntity | ContextExternalTool,
 		context: AuthorizationContext
 	): boolean {
 		let hasPermission: boolean;

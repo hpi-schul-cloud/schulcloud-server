@@ -1,11 +1,11 @@
 import { ExternalToolDO, ToolReference } from '../domain';
-import { ContextExternalToolDO } from '../../context-external-tool/domain';
+import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ToolConfigurationStatus } from '../../common/enum';
 
 export class ToolReferenceMapper {
 	static mapToToolReference(
 		externalToolDO: ExternalToolDO,
-		contextExternalTool: ContextExternalToolDO,
+		contextExternalTool: ContextExternalTool,
 		status: ToolConfigurationStatus
 	): ToolReference {
 		const toolReference = new ToolReference({

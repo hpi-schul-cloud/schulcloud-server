@@ -11,7 +11,7 @@ import { AvailableToolsForContext } from './dto';
 import { ContextTypeMapper } from '../../common/mapper';
 import { ExternalToolDO } from '../domain';
 import { SchoolExternalToolDO } from '../../school-external-tool/domain';
-import { ContextExternalToolDO } from '../../context-external-tool/domain';
+import { ContextExternalTool } from '../../context-external-tool/domain';
 
 @Injectable()
 export class ExternalToolConfigurationUc {
@@ -53,7 +53,7 @@ export class ExternalToolConfigurationUc {
 		const [externalTools, schoolExternalTools, contextExternalToolsInUse]: [
 			Page<ExternalToolDO>,
 			SchoolExternalToolDO[],
-			ContextExternalToolDO[]
+			ContextExternalTool[]
 		] = await Promise.all([
 			this.externalToolService.findExternalTools({}),
 			this.schoolExternalToolService.findSchoolExternalTools({
@@ -79,12 +79,12 @@ export class ExternalToolConfigurationUc {
 
 	private filterForAvailableSchoolExternalTools(
 		schoolExternalTools: SchoolExternalToolDO[],
-		contextExternalToolsInUse: ContextExternalToolDO[]
+		contextExternalToolsInUse: ContextExternalTool[]
 	): SchoolExternalToolDO[] {
 		const availableSchoolExternalTools: SchoolExternalToolDO[] = schoolExternalTools.filter(
 			(schoolExternalTool: SchoolExternalToolDO): boolean => {
 				const hasContextExternalTool: boolean = contextExternalToolsInUse.some(
-					(contextExternalTool: ContextExternalToolDO) =>
+					(contextExternalTool: ContextExternalTool) =>
 						contextExternalTool.schoolToolRef.schoolToolId === schoolExternalTool.id
 				);
 
