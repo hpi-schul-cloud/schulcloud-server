@@ -7,7 +7,9 @@ import {
 	ContextExternalToolType,
 	Course,
 	CustomParameterDO,
+	CustomParameterLocation,
 	CustomParameterScope,
+	CustomParameterType,
 	ExternalTool,
 	Permission,
 	Role,
@@ -376,7 +378,30 @@ describe('ToolSchoolController (API)', () => {
 
 				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
 
-				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+				const customParameterGlobal: CustomParameterDO = customParameterDOFactory.build({
+					name: 'globalParam',
+					scope: CustomParameterScope.GLOBAL,
+				});
+				const customParameterSchool: CustomParameterDO = customParameterDOFactory.build({
+					name: 'schoolParam',
+					displayName: 'User Friendly Name',
+					description: 'This is a mock parameter.',
+					default: 'default',
+					location: CustomParameterLocation.PATH,
+					regex: 'regex',
+					regexComment: 'mockComment',
+					scope: CustomParameterScope.SCHOOL,
+					type: CustomParameterType.STRING,
+					isOptional: false,
+				});
+				const customParameterContext: CustomParameterDO = customParameterDOFactory.build({
+					name: 'contextParam',
+					scope: CustomParameterScope.CONTEXT,
+				});
+
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({
+					parameters: [customParameterGlobal, customParameterSchool, customParameterContext],
+				});
 
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
 					school,
@@ -390,12 +415,12 @@ describe('ToolSchoolController (API)', () => {
 					user,
 					school,
 					externalTool,
-					externalToolParameter1: externalTool.parameters?.[0] as CustomParameter,
+					externalToolParameter1: customParameterSchool,
 					schoolExternalTool,
 				};
 			};
 
-			it('should return a tool', async () => {
+			it('should return a tool with parameter with scope school', async () => {
 				const { user, schoolExternalTool, externalTool, externalToolParameter1 } = await setup();
 				currentUser = mapUserToCurrentUser(user);
 
@@ -516,11 +541,28 @@ describe('ToolSchoolController (API)', () => {
 
 				const course: Course = courseFactory.buildWithId({ school, teachers: [user] });
 
-				const customParameter: CustomParameterDO = customParameterDOFactory.build({
+				const customParameterGlobal: CustomParameterDO = customParameterDOFactory.build({
+					name: 'globalParam',
+					scope: CustomParameterScope.GLOBAL,
+				});
+				const customParameterSchool: CustomParameterDO = customParameterDOFactory.build({
+					name: 'schoolParam',
+					scope: CustomParameterScope.SCHOOL,
+				});
+				const customParameterContext: CustomParameterDO = customParameterDOFactory.build({
+					name: 'contextParam',
+					displayName: 'User Friendly Name',
+					description: 'This is a mock parameter.',
+					default: 'default',
+					location: CustomParameterLocation.BODY,
+					regex: 'regex',
+					regexComment: 'mockComment',
 					scope: CustomParameterScope.CONTEXT,
+					type: CustomParameterType.STRING,
+					isOptional: false,
 				});
 				const externalTool: ExternalTool = externalToolFactory.buildWithId({
-					parameters: [customParameter],
+					parameters: [customParameterGlobal, customParameterSchool, customParameterContext],
 				});
 
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
@@ -542,13 +584,13 @@ describe('ToolSchoolController (API)', () => {
 					school,
 					course,
 					externalTool,
-					externalToolParameter1: customParameter,
+					externalToolParameter1: customParameterContext,
 					schoolExternalTool,
 					contextExternalTool,
 				};
 			};
 
-			it('should return a tool', async () => {
+			it('should return a tool with parameter with scope context', async () => {
 				const { user, externalTool, schoolExternalTool, externalToolParameter1, contextExternalTool } = await setup();
 				currentUser = mapUserToCurrentUser(user);
 
