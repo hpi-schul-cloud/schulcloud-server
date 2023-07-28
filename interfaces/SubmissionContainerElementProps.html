@@ -151,9 +151,9 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BoardComposite, BoardCompositeProps } from &#x27;./board-composite.do&#x27;;
-import type { BoardCompositeVisitor, BoardCompositeVisitorAsync } from &#x27;./types&#x27;;
+import { SubmissionItem } from &#x27;./submission-item.do&#x27;;
+import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from &#x27;./types&#x27;;
 
-// todo: to be renamed
 export class SubmissionContainerElement extends BoardComposite&lt;SubmissionContainerElementProps&gt; {
 	get dueDate(): Date {
 		return this.props.dueDate;
@@ -163,8 +163,9 @@ export class SubmissionContainerElement extends BoardComposite&lt;SubmissionCont
 		this.props.dueDate &#x3D; value;
 	}
 
-	isAllowedAsChild(): boolean {
-		return false;
+	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
+		const allowed &#x3D; domainObject instanceof SubmissionItem;
+		return allowed;
 	}
 
 	accept(visitor: BoardCompositeVisitor): void {

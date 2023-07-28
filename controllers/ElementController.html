@@ -97,6 +97,18 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#createSubmission" >createSubmission</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#deleteElement" >deleteElement</a>
                             </li>
@@ -144,6 +156,116 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="createSubmission"></a>
+                    <span class="name">
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier">Async</span>
+                        <span ><b>createSubmission</b></span>
+                        <a href="#createSubmission"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createSubmission(urlParams: <a href="../classes/ContentElementUrlParams.html" target="_self">ContentElementUrlParams</a>, bodyParams: <a href="../classes/CreateSubmissionItemBodyParams.html" target="_self">CreateSubmissionItemBodyParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@ApiOperation({summary: &#x27;Create a new submission item in a submission container element.&#x27;})<br />@ApiExtraModels(SubmissionItemResponse)<br />@ApiResponse({status: 201, type: SubmissionItemResponse})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@ApiBody({required: true, type: CreateSubmissionItemBodyParams})<br />@Post(&#x27;:contentElementId/submissions&#x27;)<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="97"
+                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:97</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>urlParams</td>
+                                    <td>
+                                                <code><a href="../classes/ContentElementUrlParams.html" target="_self" >ContentElementUrlParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>bodyParams</td>
+                                    <td>
+                                                <code><a href="../classes/CreateSubmissionItemBodyParams.html" target="_self" >CreateSubmissionItemBodyParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>currentUser</td>
+                                    <td>
+                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../entitys/Submission.html" target="_self" >Promise&lt;SubmissionItemResponse&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="deleteElement"></a>
                     <span class="name">
                         <span class="modifier"></span>
@@ -176,8 +298,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="75"
-                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:75</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="82"
+                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:82</a></div>
                 </td>
             </tr>
 
@@ -273,8 +395,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="39"
-                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:39</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="46"
+                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:46</a></div>
                 </td>
             </tr>
 
@@ -383,8 +505,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="60"
-                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:60</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="67"
+                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:67</a></div>
                 </td>
             </tr>
 
@@ -469,21 +591,28 @@
 	NotFoundException,
 	Param,
 	Patch,
+	Post,
 	Put,
 } from &#x27;@nestjs/common&#x27;;
-import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { ApiValidationError } from &#x27;@shared/common&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { CardUc } from &#x27;../uc&#x27;;
 import { ElementUc } from &#x27;../uc/element.uc&#x27;;
-import { ContentElementUrlParams, MoveContentElementBody } from &#x27;./dto&#x27;;
 import {
-	UpdateElementContentBodyParams,
+	ContentElementUrlParams,
+	CreateSubmissionItemBodyParams,
+	MoveContentElementBody,
+	SubmissionItemResponse,
+} from &#x27;./dto&#x27;;
+import {
 	FileElementContentBody,
 	RichTextElementContentBody,
 	SubmissionContainerElementContentBody,
+	UpdateElementContentBodyParams,
 } from &#x27;./dto/element/update-element-content.body.params&#x27;;
+import { SubmissionItemResponseMapper } from &#x27;./mapper&#x27;;
 
 @ApiTags(&#x27;Board Element&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
@@ -539,6 +668,28 @@ export class ElementController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise&lt;void&gt; {
 		await this.cardUc.deleteElement(currentUser.userId, urlParams.contentElementId);
+	}
+
+	@ApiOperation({ summary: &#x27;Create a new submission item in a submission container element.&#x27; })
+	@ApiExtraModels(SubmissionItemResponse)
+	@ApiResponse({ status: 201, type: SubmissionItemResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@ApiBody({ required: true, type: CreateSubmissionItemBodyParams })
+	@Post(&#x27;:contentElementId/submissions&#x27;)
+	async createSubmission(
+		@Param() urlParams: ContentElementUrlParams,
+		@Body() bodyParams: CreateSubmissionItemBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise&lt;SubmissionItemResponse&gt; {
+		const submission &#x3D; await this.elementUc.createSubmissionItem(currentUser.userId, urlParams.contentElementId);
+		submission.userId &#x3D; currentUser.userId;
+		submission.completed &#x3D; false;
+		const mapper &#x3D; SubmissionItemResponseMapper.getInstance();
+		const response &#x3D; mapper.mapToResponse(submission);
+
+		return response;
 	}
 }
 </code></pre>
