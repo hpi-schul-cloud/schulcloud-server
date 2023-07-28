@@ -92,7 +92,7 @@ export class H5PEditorUc {
 			const result = await this.h5pAjaxEndpoint.postAjax(
 				query.action,
 				body,
-				language, // TODO: Language
+				language,
 				user,
 				filesFile && {
 					data: filesFile.buffer,
@@ -101,7 +101,7 @@ export class H5PEditorUc {
 					size: filesFile.size,
 				},
 				query.id,
-				undefined, // TODO: Translation callback
+				undefined,
 				libraryUploadFile && {
 					data: libraryUploadFile.buffer,
 					mimetype: libraryUploadFile.mimetype,
@@ -217,7 +217,6 @@ export class H5PEditorUc {
 	public async getH5pEditor(currentUser: ICurrentUser, contentId: string): Promise<string> {
 		// If contentId is undefined, a new H5P content will be created.
 		// TODO: await this.checkPermission...
-		// TODO: implement language from currentUser
 		const language = await this.getUserLanguage(currentUser);
 		const user = this.changeUserType(currentUser);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
