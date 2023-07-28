@@ -194,30 +194,30 @@ describe('ToolContextController (API)', () => {
 					toolVersion: 1,
 					school,
 				});
-				const contextExternalTool: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
+				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
 					contextId: course.id,
 					schoolTool: schoolExternalToolEntity,
 					toolVersion: 1,
 				});
 
-				em.persist([teacherRole, course, teacher, schoolExternalToolEntity, contextExternalTool]);
+				em.persist([teacherRole, course, teacher, schoolExternalToolEntity, contextExternalToolEntity]);
 				await em.flush();
 				em.clear();
 
 				return {
-					contextExternalTool,
+					contextExternalToolEntity,
 					teacher,
 				};
 			};
 
 			it('should delete an contextExternalTool', async () => {
-				const { teacher, contextExternalTool } = await setup();
+				const { teacher, contextExternalToolEntity } = await setup();
 				currentUser = mapUserToCurrentUser(teacher);
 
-				await request(app.getHttpServer()).delete(`${basePath}/${contextExternalTool.id}`).expect(200);
+				await request(app.getHttpServer()).delete(`${basePath}/${contextExternalToolEntity.id}`).expect(200);
 
 				const deleted: ContextExternalToolEntity | null = await em.findOne(ContextExternalToolEntity, {
-					contextId: contextExternalTool.id,
+					contextId: contextExternalToolEntity.id,
 				});
 
 				expect(deleted).toBeNull();
@@ -234,26 +234,26 @@ describe('ToolContextController (API)', () => {
 					toolVersion: 1,
 				});
 
-				const contextExternalTool: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
+				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
 					schoolTool: schoolExternalToolEntity,
 					toolVersion: 1,
 				});
 
-				em.persist([course, userWithMissingPermission, schoolExternalToolEntity, contextExternalTool]);
+				em.persist([course, userWithMissingPermission, schoolExternalToolEntity, contextExternalToolEntity]);
 				await em.flush();
 				em.clear();
 
 				return {
-					contextExternalTool,
+					contextExternalToolEntity,
 					userWithMissingPermission,
 				};
 			};
 
 			it('should return forbidden when user is not authorized', async () => {
-				const { userWithMissingPermission, contextExternalTool } = await setup();
+				const { userWithMissingPermission, contextExternalToolEntity } = await setup();
 				currentUser = mapUserToCurrentUser(userWithMissingPermission);
 
-				await request(app.getHttpServer()).delete(`${basePath}/${contextExternalTool.id}`).expect(403);
+				await request(app.getHttpServer()).delete(`${basePath}/${contextExternalToolEntity.id}`).expect(403);
 			});
 		});
 	});

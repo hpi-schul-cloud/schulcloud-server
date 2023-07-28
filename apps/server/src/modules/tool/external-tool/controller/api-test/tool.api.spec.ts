@@ -602,7 +602,7 @@ describe('ToolController (API)', () => {
 					school,
 					tool: externalToolEntity,
 				});
-				const contextExternalTool: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
+				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
 					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,
@@ -615,7 +615,7 @@ describe('ToolController (API)', () => {
 					course,
 					externalToolEntity,
 					schoolExternalToolEntity,
-					contextExternalTool,
+					contextExternalToolEntity,
 				]);
 				em.clear();
 
@@ -652,7 +652,7 @@ describe('ToolController (API)', () => {
 					tool: externalToolEntity,
 					toolVersion: externalToolEntity.version,
 				});
-				const contextExternalTool: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
+				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
 					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,
@@ -667,7 +667,7 @@ describe('ToolController (API)', () => {
 					course,
 					externalToolEntity,
 					schoolExternalToolEntity,
-					contextExternalTool,
+					contextExternalToolEntity,
 				]);
 				em.clear();
 
@@ -678,11 +678,11 @@ describe('ToolController (API)', () => {
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
-				return { loggedInClient, params, contextExternalTool, externalToolEntity };
+				return { loggedInClient, params, contextExternalToolEntity, externalToolEntity };
 			};
 
 			it('should return an ToolReferenceListResponse with data', async () => {
-				const { loggedInClient, params, contextExternalTool, externalToolEntity } = await setup();
+				const { loggedInClient, params, contextExternalToolEntity, externalToolEntity } = await setup();
 
 				const response: Response = await loggedInClient.get(`references/${params.contextType}/${params.contextId}`);
 
@@ -690,8 +690,8 @@ describe('ToolController (API)', () => {
 				expect(response.body).toEqual<ToolReferenceListResponse>({
 					data: [
 						{
-							contextToolId: contextExternalTool.id,
-							displayName: contextExternalTool.displayName as string,
+							contextToolId: contextExternalToolEntity.id,
+							displayName: contextExternalToolEntity.displayName as string,
 							status: ToolConfigurationStatusResponse.LATEST,
 							logoUrl: externalToolEntity.logoUrl,
 							openInNewTab: externalToolEntity.openNewTab,

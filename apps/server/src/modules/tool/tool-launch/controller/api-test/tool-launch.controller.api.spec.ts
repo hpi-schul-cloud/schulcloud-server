@@ -83,13 +83,13 @@ describe('ToolLaunchController (API)', () => {
 					tool: externalToolEntity,
 					school,
 				});
-				const contextExternalTool: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
+				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
 					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,
 				});
 
-				const params: ToolLaunchParams = { contextExternalToolId: contextExternalTool.id };
+				const params: ToolLaunchParams = { contextExternalToolId: contextExternalToolEntity.id };
 
 				await em.persistAndFlush([
 					school,
@@ -97,7 +97,7 @@ describe('ToolLaunchController (API)', () => {
 					course,
 					externalToolEntity,
 					schoolExternalToolEntity,
-					contextExternalTool,
+					contextExternalToolEntity,
 				]);
 				em.clear();
 
@@ -137,14 +137,14 @@ describe('ToolLaunchController (API)', () => {
 					school,
 					toolVersion: 0,
 				});
-				const contextExternalTool: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
+				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
 					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,
 					toolVersion: 0,
 				});
 
-				const params: ToolLaunchParams = { contextExternalToolId: contextExternalTool.id };
+				const params: ToolLaunchParams = { contextExternalToolId: contextExternalToolEntity.id };
 
 				await em.persistAndFlush([
 					school,
@@ -152,7 +152,7 @@ describe('ToolLaunchController (API)', () => {
 					course,
 					externalToolEntity,
 					schoolExternalToolEntity,
-					contextExternalTool,
+					contextExternalToolEntity,
 				]);
 				em.clear();
 
@@ -188,13 +188,13 @@ describe('ToolLaunchController (API)', () => {
 					tool: externalToolEntity,
 					school: toolSchool,
 				});
-				const contextExternalTool: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
+				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
 					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,
 				});
 
-				const params: ToolLaunchParams = { contextExternalToolId: contextExternalTool.id };
+				const params: ToolLaunchParams = { contextExternalToolId: contextExternalToolEntity.id };
 
 				await em.persistAndFlush([
 					toolSchool,
@@ -203,7 +203,7 @@ describe('ToolLaunchController (API)', () => {
 					course,
 					externalToolEntity,
 					schoolExternalToolEntity,
-					contextExternalTool,
+					contextExternalToolEntity,
 				]);
 				em.clear();
 
