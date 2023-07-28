@@ -30,6 +30,7 @@ describe('room board response mapper', () => {
 				displayColor: '#ACACAC',
 				title: 'boardTitle',
 				elements: [],
+				isArchived: false,
 			};
 
 			const result = mapper.mapToResponse(board);
@@ -53,6 +54,7 @@ describe('room board response mapper', () => {
 				displayColor: '#ACACAC',
 				title: 'boardTitle',
 				elements: [{ type: RoomBoardElementTypes.TASK, content: { task, status } }],
+				isArchived: false,
 			};
 
 			const result = mapper.mapToResponse(board);
@@ -78,6 +80,7 @@ describe('room board response mapper', () => {
 				displayColor: '#ACACAC',
 				title: 'boardTitle',
 				elements: [{ type: RoomBoardElementTypes.TASK, content: { task: linkedTask, status } }],
+				isArchived: false,
 			};
 
 			const result = mapper.mapToResponse(board);
@@ -104,6 +107,7 @@ describe('room board response mapper', () => {
 				displayColor: '#ACACAC',
 				title: 'boardTitle',
 				elements: [{ type: RoomBoardElementTypes.LESSON, content: lessonMetadata }],
+				isArchived: false,
 			};
 
 			const result = mapper.mapToResponse(board);
@@ -141,6 +145,7 @@ describe('room board response mapper', () => {
 					{ type: RoomBoardElementTypes.LESSON, content: lessonMetadata },
 					{ type: RoomBoardElementTypes.TASK, content: { task, status } },
 				],
+				isArchived: false,
 			};
 
 			const result = mapper.mapToResponse(board);
@@ -163,6 +168,7 @@ describe('room board response mapper', () => {
 				displayColor: '#ACACAC',
 				title: 'boardTitle',
 				elements: [{ type: RoomBoardElementTypes.COLUMN_BOARD, content: columnBoardMetaData }],
+				isArchived: false,
 			};
 
 			const result = mapper.mapToResponse(board);

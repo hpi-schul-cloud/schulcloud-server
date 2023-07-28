@@ -88,6 +88,7 @@ describe('rooms usecase', () => {
 				displayColor: room.color,
 				title: room.name,
 				elements: [],
+				isArchived: room.isFinished(),
 			};
 
 			board.syncBoardElementReferences([...lessons, ...tasks]);
