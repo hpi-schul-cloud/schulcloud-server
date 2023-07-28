@@ -317,7 +317,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:133</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:151</a></code>
 </div>
                 </td>
             </tr>
@@ -394,7 +394,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:138</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:160</a></code>
 </div>
                 </td>
             </tr>
@@ -466,8 +466,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="150"
-                            class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:150</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="176"
+                            class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:176</a></div>
                 </td>
             </tr>
 
@@ -876,7 +876,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:146</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:172</a></code>
 </div>
                 </td>
             </tr>
@@ -1120,8 +1120,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="75"
-                            class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:75</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="80"
+                            class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:80</a></div>
                 </td>
             </tr>
 
@@ -1375,7 +1375,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:115</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:125</a></code>
 </div>
                 </td>
             </tr>
@@ -1464,7 +1464,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:123</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:136</a></code>
 </div>
                 </td>
             </tr>
@@ -1553,7 +1553,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:109</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:114</a></code>
 </div>
                 </td>
             </tr>
@@ -1642,7 +1642,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:129</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/AbstractAccountService.html#source" target="_self" >AbstractAccountService:147</a></code>
 </div>
                 </td>
             </tr>
@@ -1813,7 +1813,12 @@ export class AccountService extends AbstractAccountService {
 			idmReferenceId: ret.id,
 			password: accountDto.password,
 		};
-		const idmAccount &#x3D; await this.executeIdmMethod(async () &#x3D;&gt; this.accountIdm.save(newAccount));
+		const idmAccount &#x3D; await this.executeIdmMethod(async () &#x3D;&gt; {
+			this.logger.debug(&#x60;Saving account with accountID ${ret.id} ...&#x60;);
+			const account &#x3D; await this.accountIdm.save(newAccount);
+			this.logger.debug(&#x60;Saved account with accountID ${ret.id}&#x60;);
+			return account;
+		});
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
@@ -1853,21 +1858,34 @@ export class AccountService extends AbstractAccountService {
 
 	async updateUsername(accountId: string, username: string): Promise&lt;AccountDto&gt; {
 		const ret &#x3D; await this.accountDb.updateUsername(accountId, username);
-		const idmAccount &#x3D; await this.executeIdmMethod(async () &#x3D;&gt; this.accountIdm.updateUsername(accountId, username));
+		const idmAccount &#x3D; await this.executeIdmMethod(async () &#x3D;&gt; {
+			this.logger.debug(&#x60;Updating username for account with accountID ${accountId} ...&#x60;);
+			const account &#x3D; await this.accountIdm.updateUsername(accountId, username);
+			this.logger.debug(&#x60;Updated username for account with accountID ${accountId}&#x60;);
+			return account;
+		});
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
 	async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise&lt;AccountDto&gt; {
 		const ret &#x3D; await this.accountDb.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
-		const idmAccount &#x3D; await this.executeIdmMethod(async () &#x3D;&gt;
-			this.accountIdm.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin)
-		);
+		const idmAccount &#x3D; await this.executeIdmMethod(async () &#x3D;&gt; {
+			this.logger.debug(&#x60;Updating last tried failed login for account with accountID ${accountId} ...&#x60;);
+			const account &#x3D; await this.accountIdm.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
+			this.logger.debug(&#x60;Updated last tried failed login for account with accountID ${accountId}&#x60;);
+			return account;
+		});
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
 	async updatePassword(accountId: string, password: string): Promise&lt;AccountDto&gt; {
 		const ret &#x3D; await this.accountDb.updatePassword(accountId, password);
-		const idmAccount &#x3D; await this.executeIdmMethod(async () &#x3D;&gt; this.accountIdm.updatePassword(accountId, password));
+		const idmAccount &#x3D; await this.executeIdmMethod(async () &#x3D;&gt; {
+			this.logger.debug(&#x60;Updating password for account with accountID ${accountId} ...&#x60;);
+			const account &#x3D; await this.accountIdm.updatePassword(accountId, password);
+			this.logger.debug(&#x60;Updated password for account with accountID ${accountId}&#x60;);
+			return account;
+		});
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
@@ -1877,12 +1895,20 @@ export class AccountService extends AbstractAccountService {
 
 	async delete(accountId: string): Promise&lt;void&gt; {
 		await this.accountDb.delete(accountId);
-		await this.executeIdmMethod(async () &#x3D;&gt; this.accountIdm.delete(accountId));
+		await this.executeIdmMethod(async () &#x3D;&gt; {
+			this.logger.debug(&#x60;Deleting account with accountId ${accountId} ...&#x60;);
+			await this.accountIdm.delete(accountId);
+			this.logger.debug(&#x60;Deleted account with accountId ${accountId}&#x60;);
+		});
 	}
 
 	async deleteByUserId(userId: string): Promise&lt;void&gt; {
 		await this.accountDb.deleteByUserId(userId);
-		await this.executeIdmMethod(async () &#x3D;&gt; this.accountIdm.deleteByUserId(userId));
+		await this.executeIdmMethod(async () &#x3D;&gt; {
+			this.logger.debug(&#x60;Deleting account with userId ${userId} ...&#x60;);
+			await this.accountIdm.deleteByUserId(userId);
+			this.logger.debug(&#x60;Deleted account with userId ${userId}&#x60;);
+		});
 	}
 
 	/**

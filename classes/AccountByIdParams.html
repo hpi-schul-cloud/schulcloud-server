@@ -136,7 +136,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsMongoId()<br />@ApiProperty({description: &#x27;The id for the account as MongoDB id.&#x27;, required: true, nullable: false})<br />
+                            @IsString()<br />@ApiProperty({description: &#x27;The id for the account.&#x27;, required: true, nullable: false})<br />
                         </code>
                     </td>
                 </tr>
@@ -161,13 +161,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IsMongoId } from &#x27;class-validator&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IsString } from &#x27;class-validator&#x27;;
 import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
 
 export class AccountByIdParams {
-	@IsMongoId()
+	@IsString()
 	@ApiProperty({
-		description: &#x27;The id for the account as MongoDB id.&#x27;,
+		description: &#x27;The id for the account.&#x27;,
 		required: true,
 		nullable: false,
 	})
