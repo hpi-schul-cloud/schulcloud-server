@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import {
 	ContextExternalToolDO,
+	CustomParameterDO,
 	CustomParameterScope,
 	EntityId,
 	Permission,
@@ -46,6 +47,10 @@ export class ExternalToolConfigurationUc {
 			(tool: ExternalToolDO): boolean => !tool.isHidden && !!tool.id && !toolIdsInUse.includes(tool.id)
 		);
 
+		availableTools.forEach((externalTool) => {
+			this.filterParametersForScope(externalTool, CustomParameterScope.SCHOOL);
+		});
+
 		return availableTools;
 	}
 
@@ -80,6 +85,10 @@ export class ExternalToolConfigurationUc {
 			externalTools.data,
 			availableSchoolExternalTools
 		);
+
+		availableToolsForContext.forEach((toolTemplateInfo) => {
+			this.filterParametersForScope(toolTemplateInfo.externalTool, CustomParameterScope.CONTEXT);
+		});
 
 		return availableToolsForContext;
 	}
@@ -145,14 +154,13 @@ export class ExternalToolConfigurationUc {
 
 		await this.ensureSchoolPermission(userId, schoolExternalTool.schoolId);
 
-		const externalTool: ExternalToolDO = await this.externalToolService.getExternalToolForScope(
-			schoolExternalTool.toolId,
-			CustomParameterScope.SCHOOL
-		);
+		const externalTool: ExternalToolDO = await this.externalToolService.findExternalToolById(schoolExternalTool.toolId);
 
 		if (externalTool.isHidden) {
 			throw new NotFoundException('Could not find the Tool Template');
 		}
+
+		this.filterParametersForScope(externalTool, CustomParameterScope.SCHOOL);
 
 		return externalTool;
 	}
@@ -171,19 +179,26 @@ export class ExternalToolConfigurationUc {
 			contextExternalTool.schoolToolRef.schoolToolId
 		);
 
-		const externalTool: ExternalToolDO = await this.externalToolService.getExternalToolForScope(
-			schoolExternalTool.toolId,
-			CustomParameterScope.CONTEXT
-		);
+		const externalTool: ExternalToolDO = await this.externalToolService.findExternalToolById(schoolExternalTool.toolId);
 
 		if (externalTool.isHidden) {
 			throw new NotFoundException('Could not find the Tool Template');
 		}
 
+		this.filterParametersForScope(externalTool, CustomParameterScope.CONTEXT);
+
 		return {
 			externalTool,
 			schoolExternalTool,
 		};
+	}
+
+	private filterParametersForScope(externalTool: ExternalToolDO, scope: CustomParameterScope) {
+		if (externalTool.parameters) {
+			externalTool.parameters = externalTool.parameters.filter(
+				(parameter: CustomParameterDO) => parameter.scope === scope
+			);
+		}
 	}
 
 	private async ensureSchoolPermission(userId: EntityId, schoolId: EntityId) {

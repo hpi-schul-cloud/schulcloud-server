@@ -398,7 +398,7 @@ describe('ExternalToolConfigurationUc', () => {
 				);
 
 				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(schoolExternalTool);
-				externalToolService.getExternalToolForScope.mockResolvedValueOnce(externalTool);
+				externalToolService.findExternalToolById.mockResolvedValueOnce(externalTool);
 
 				return {
 					externalTool,
@@ -474,7 +474,7 @@ describe('ExternalToolConfigurationUc', () => {
 				);
 
 				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(schoolExternalTool);
-				externalToolService.getExternalToolForScope.mockResolvedValueOnce(externalTool);
+				externalToolService.findExternalToolById.mockResolvedValueOnce(externalTool);
 
 				return {
 					schoolExternalToolId,
@@ -516,7 +516,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 				contextExternalToolService.getContextExternalToolById.mockResolvedValueOnce(contextExternalTool);
 				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(schoolExternalTool);
-				externalToolService.getExternalToolForScope.mockResolvedValueOnce(externalTool);
+				externalToolService.findExternalToolById.mockResolvedValueOnce(externalTool);
 
 				return {
 					externalTool,
@@ -599,7 +599,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 				contextExternalToolService.getContextExternalToolById.mockResolvedValueOnce(contextExternalTool);
 				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(schoolExternalTool);
-				externalToolService.getExternalToolForScope.mockResolvedValueOnce(externalTool);
+				externalToolService.findExternalToolById.mockResolvedValueOnce(externalTool);
 
 				return {
 					contextExternalToolId,
