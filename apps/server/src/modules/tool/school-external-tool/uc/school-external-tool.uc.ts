@@ -3,7 +3,7 @@ import { EntityId, Permission } from '@shared/domain';
 import { Action, AuthorizationService, AuthorizableReferenceType } from '@src/modules/authorization';
 import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
 import { ContextExternalToolService } from '../../context-external-tool/service';
-import { SchoolExternalTool, SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
+import { SchoolExternalToolDTO, SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
 import { SchoolExternalToolDO } from '../domain';
 
 @Injectable()
@@ -29,11 +29,11 @@ export class SchoolExternalToolUc {
 
 	async createSchoolExternalTool(
 		userId: EntityId,
-		schoolExternalTool: SchoolExternalTool
+		schoolExternalToolDTO: SchoolExternalToolDTO
 	): Promise<SchoolExternalToolDO> {
-		const schoolExternalToolDO = new SchoolExternalToolDO({ ...schoolExternalTool });
+		const schoolExternalToolDO = new SchoolExternalToolDO({ ...schoolExternalToolDTO });
 
-		await this.ensureSchoolPermission(userId, schoolExternalTool.schoolId);
+		await this.ensureSchoolPermission(userId, schoolExternalToolDTO.schoolId);
 		await this.schoolExternalToolValidationService.validate(schoolExternalToolDO);
 
 		const createdSchoolExternalTool: SchoolExternalToolDO = await this.schoolExternalToolService.saveSchoolExternalTool(
@@ -62,24 +62,24 @@ export class SchoolExternalToolUc {
 	async getSchoolExternalTool(userId: EntityId, schoolExternalToolId: EntityId): Promise<SchoolExternalToolDO> {
 		await this.ensureSchoolExternalToolPermission(userId, schoolExternalToolId);
 
-		const schoolExternalTool: SchoolExternalToolDO = await this.schoolExternalToolService.getSchoolExternalToolById(
+		const schoolExternalToolDO: SchoolExternalToolDO = await this.schoolExternalToolService.getSchoolExternalToolById(
 			schoolExternalToolId
 		);
-		return schoolExternalTool;
+		return schoolExternalToolDO;
 	}
 
 	async updateSchoolExternalTool(
 		userId: EntityId,
 		schoolExternalToolId: string,
-		schoolExternalTool: SchoolExternalTool
+		schoolExternalToolDTO: SchoolExternalToolDTO
 	): Promise<SchoolExternalToolDO> {
-		const schoolExternalToolDO = new SchoolExternalToolDO({ ...schoolExternalTool });
+		const schoolExternalToolDO = new SchoolExternalToolDO({ ...schoolExternalToolDTO });
 
 		await this.ensureSchoolExternalToolPermission(userId, schoolExternalToolId);
 		await this.schoolExternalToolValidationService.validate(schoolExternalToolDO);
 
 		const updated: SchoolExternalToolDO = new SchoolExternalToolDO({
-			...schoolExternalTool,
+			...schoolExternalToolDTO,
 			id: schoolExternalToolId,
 		});
 
@@ -90,7 +90,7 @@ export class SchoolExternalToolUc {
 	private async ensureSchoolExternalToolPermission(userId: EntityId, schoolExternalToolId: EntityId): Promise<void> {
 		return this.authorizationService.checkPermissionByReferences(
 			userId,
-			AuthorizableReferenceType.SchoolExternalTool,
+			AuthorizableReferenceType.SchoolExternalToolEntity,
 			schoolExternalToolId,
 			{
 				action: Action.read,

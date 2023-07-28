@@ -51,12 +51,12 @@ export class ToolReferenceUc {
 			}
 		}
 
-		const schoolExternalTool: SchoolExternalToolDO = await this.fetchSchoolExternalTool(contextExternalTool);
-		const externalToolDO: ExternalToolDO = await this.fetchExternalTool(schoolExternalTool);
+		const schoolExternalToolDO: SchoolExternalToolDO = await this.fetchSchoolExternalTool(contextExternalTool);
+		const externalToolDO: ExternalToolDO = await this.fetchExternalTool(schoolExternalToolDO);
 
 		const status: ToolConfigurationStatus = this.commonToolService.determineToolConfigurationStatus(
 			externalToolDO,
-			schoolExternalTool,
+			schoolExternalToolDO,
 			contextExternalTool
 		);
 

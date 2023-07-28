@@ -23,7 +23,7 @@ import {
 	SchoolExternalToolSearchListResponse,
 	SchoolExternalToolSearchParams,
 } from './dto';
-import { SchoolExternalTool } from '../uc/dto/school-external-tool.types';
+import { SchoolExternalToolDTO } from '../uc/dto/school-external-tool.types';
 import { SchoolExternalToolUc } from '../uc';
 import { SchoolExternalToolDO } from '../domain';
 
@@ -79,11 +79,11 @@ export class ToolSchoolController {
 		@Param() params: SchoolExternalToolIdParams,
 		@Body() body: SchoolExternalToolPostParams
 	): Promise<SchoolExternalToolResponse> {
-		const schoolExternalTool: SchoolExternalTool = this.requestMapper.mapSchoolExternalToolRequest(body);
+		const schoolExternalToolDTO: SchoolExternalToolDTO = this.requestMapper.mapSchoolExternalToolRequest(body);
 		const updated: SchoolExternalToolDO = await this.schoolExternalToolUc.updateSchoolExternalTool(
 			currentUser.userId,
 			params.schoolExternalToolId,
-			schoolExternalTool
+			schoolExternalToolDTO
 		);
 
 		const mapped: SchoolExternalToolResponse = this.responseMapper.mapToSchoolExternalToolResponse(updated);
@@ -117,11 +117,11 @@ export class ToolSchoolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: SchoolExternalToolPostParams
 	): Promise<SchoolExternalToolResponse> {
-		const schoolExternalTool: SchoolExternalTool = this.requestMapper.mapSchoolExternalToolRequest(body);
+		const schoolExternalToolDTO: SchoolExternalToolDTO = this.requestMapper.mapSchoolExternalToolRequest(body);
 
 		const createdSchoolExternalToolDO: SchoolExternalToolDO = await this.schoolExternalToolUc.createSchoolExternalTool(
 			currentUser.userId,
-			schoolExternalTool
+			schoolExternalToolDTO
 		);
 
 		const response: SchoolExternalToolResponse =

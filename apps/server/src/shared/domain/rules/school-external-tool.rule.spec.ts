@@ -10,8 +10,9 @@ import {
 
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
 import { Action } from '@src/modules/authorization/types';
-import { SchoolExternalToolDO } from '../domainobject';
-import { Role, SchoolExternalTool, User } from '../entity';
+import { SchoolExternalToolDO } from '@src/modules/tool/school-external-tool/domain';
+import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
+import { Role, User } from '../entity';
 import { Permission } from '../interface';
 import { SchoolExternalToolRule } from './school-external-tool.rule';
 
@@ -40,7 +41,7 @@ describe('SchoolExternalToolRule', () => {
 		const role: Role = roleFactory.build({ permissions: [permissionA, permissionB] });
 
 		const school = schoolFactory.build();
-		const entity: SchoolExternalTool | SchoolExternalToolDO = schoolExternalToolFactory.build();
+		const entity: SchoolExternalToolEntity | SchoolExternalToolDO = schoolExternalToolFactory.build();
 		entity.school = school;
 		const user: User = userFactory.build({ roles: [role], school });
 		return {
@@ -85,7 +86,7 @@ describe('SchoolExternalToolRule', () => {
 
 			it('should return "false" if user has not some school', () => {
 				const { permissionA, role } = setup();
-				const entity: SchoolExternalTool | SchoolExternalToolDO = schoolExternalToolDOFactory.build();
+				const entity: SchoolExternalToolEntity | SchoolExternalToolDO = schoolExternalToolDOFactory.build();
 				const user: User = userFactory.build({ roles: [role] });
 
 				const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionA] });

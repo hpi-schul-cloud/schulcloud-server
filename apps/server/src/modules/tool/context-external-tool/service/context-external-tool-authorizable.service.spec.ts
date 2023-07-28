@@ -39,11 +39,11 @@ describe('ContextExternalToolAuthorizableService', () => {
 		describe('when id is given', () => {
 			const setup = () => {
 				const schoolId: string = schoolDOFactory.buildWithId().id as string;
-				const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
 					schoolId,
 				});
 				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id as string, schoolExternalTool.schoolId)
+					.withSchoolExternalToolRef(schoolExternalToolDO.id as string, schoolExternalToolDO.schoolId)
 					.build();
 
 				contextExternalToolRepo.findById.mockResolvedValue(contextExternalTool);

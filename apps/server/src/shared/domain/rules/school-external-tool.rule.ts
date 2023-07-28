@@ -2,26 +2,26 @@ import { Injectable } from '@nestjs/common';
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
 import { AuthorizationContext, Rule } from '@src/modules/authorization/types';
 import { SchoolExternalToolDO } from '@src/modules/tool/school-external-tool/domain';
-import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/entity';
+import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
 import { User } from '../entity';
 
 @Injectable()
 export class SchoolExternalToolRule implements Rule {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
-	public isApplicable(user: User, entity: SchoolExternalTool | SchoolExternalToolDO): boolean {
-		const isMatched: boolean = entity instanceof SchoolExternalTool || entity instanceof SchoolExternalToolDO;
+	public isApplicable(user: User, entity: SchoolExternalToolEntity | SchoolExternalToolDO): boolean {
+		const isMatched: boolean = entity instanceof SchoolExternalToolEntity || entity instanceof SchoolExternalToolDO;
 
 		return isMatched;
 	}
 
 	public hasPermission(
 		user: User,
-		entity: SchoolExternalTool | SchoolExternalToolDO,
+		entity: SchoolExternalToolEntity | SchoolExternalToolDO,
 		context: AuthorizationContext
 	): boolean {
 		let hasPermission: boolean;
-		if (entity instanceof SchoolExternalTool) {
+		if (entity instanceof SchoolExternalToolEntity) {
 			hasPermission =
 				this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions) &&
 				user.school.id === entity.school.id;

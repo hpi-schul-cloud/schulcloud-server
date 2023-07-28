@@ -9,12 +9,12 @@ import { ToolVersion } from '../interface';
 export class CommonToolService {
 	determineToolConfigurationStatus(
 		externalToolDO: ExternalToolDO,
-		schoolExternalTool: SchoolExternalToolDO,
+		schoolExternalToolDO: SchoolExternalToolDO,
 		contextExternalTool: ContextExternalToolDO
 	): ToolConfigurationStatus {
 		if (
-			this.isLatest(schoolExternalTool, externalToolDO) &&
-			this.isLatest(contextExternalTool, schoolExternalTool) &&
+			this.isLatest(schoolExternalToolDO, externalToolDO) &&
+			this.isLatest(contextExternalTool, schoolExternalToolDO) &&
 			this.isLatest(contextExternalTool, externalToolDO)
 		) {
 			return ToolConfigurationStatus.LATEST;

@@ -15,8 +15,8 @@ export class SchoolExternalToolService {
 	) {}
 
 	async getSchoolExternalToolById(schoolExternalToolId: EntityId): Promise<SchoolExternalToolDO> {
-		const schoolExternalTool: SchoolExternalToolDO = await this.schoolExternalToolRepo.findById(schoolExternalToolId);
-		return schoolExternalTool;
+		const schoolExternalToolDO: SchoolExternalToolDO = await this.schoolExternalToolRepo.findById(schoolExternalToolId);
+		return schoolExternalToolDO;
 	}
 
 	async findSchoolExternalTools(query: SchoolExternalToolQuery): Promise<SchoolExternalToolDO[]> {
@@ -42,13 +42,13 @@ export class SchoolExternalToolService {
 	private async enrichDataFromExternalTool(tool: SchoolExternalToolDO): Promise<SchoolExternalToolDO> {
 		const externalToolDO: ExternalToolDO = await this.externalToolService.findExternalToolById(tool.toolId);
 		const status: ToolConfigurationStatus = this.determineStatus(tool, externalToolDO);
-		const schoolExternalTool: SchoolExternalToolDO = new SchoolExternalToolDO({
+		const schoolExternalToolDO: SchoolExternalToolDO = new SchoolExternalToolDO({
 			...tool,
 			status,
 			name: externalToolDO.name,
 		});
 
-		return schoolExternalTool;
+		return schoolExternalToolDO;
 	}
 
 	private determineStatus(tool: SchoolExternalToolDO, externalToolDO: ExternalToolDO): ToolConfigurationStatus {
@@ -63,8 +63,8 @@ export class SchoolExternalToolService {
 		await this.schoolExternalToolRepo.deleteById(schoolExternalToolId);
 	}
 
-	async saveSchoolExternalTool(schoolExternalTool: SchoolExternalToolDO): Promise<SchoolExternalToolDO> {
-		let createdSchoolExternalTool: SchoolExternalToolDO = await this.schoolExternalToolRepo.save(schoolExternalTool);
+	async saveSchoolExternalTool(schoolExternalToolDO: SchoolExternalToolDO): Promise<SchoolExternalToolDO> {
+		let createdSchoolExternalTool: SchoolExternalToolDO = await this.schoolExternalToolRepo.save(schoolExternalToolDO);
 		createdSchoolExternalTool = await this.enrichDataFromExternalTool(createdSchoolExternalTool);
 		return createdSchoolExternalTool;
 	}

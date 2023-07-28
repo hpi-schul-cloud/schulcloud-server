@@ -60,7 +60,7 @@ export class ReferenceLoader {
 		this.repos.set(AuthorizableReferenceType.Lesson, { repo: this.lessonRepo });
 		this.repos.set(AuthorizableReferenceType.Team, { repo: this.teamsRepo, populate: true });
 		this.repos.set(AuthorizableReferenceType.Submission, { repo: this.submissionRepo });
-		this.repos.set(AuthorizableReferenceType.SchoolExternalTool, { repo: this.schoolExternalToolRepo });
+		this.repos.set(AuthorizableReferenceType.SchoolExternalToolEntity, { repo: this.schoolExternalToolRepo });
 		this.repos.set(AuthorizableReferenceType.BoardNode, { repo: this.boardNodeAuthorizableService });
 		this.repos.set(AuthorizableReferenceType.ContextExternalTool, {
 			repo: this.contextExternalToolAuthorizableService,

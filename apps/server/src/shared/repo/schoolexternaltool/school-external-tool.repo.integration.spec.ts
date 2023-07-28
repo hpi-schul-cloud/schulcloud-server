@@ -8,7 +8,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { SchoolExternalToolQuery } from '@src/modules/tool/school-external-tool/uc/dto/school-external-tool.types';
 import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
-import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/entity';
+import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
 import { CustomParameterEntryDO } from '@src/modules/tool/common/domain';
 import { SchoolExternalToolDO } from '@src/modules/tool/school-external-tool/domain';
 import { SchoolExternalToolRepo } from './school-external-tool.repo';
@@ -46,12 +46,12 @@ describe('SchoolExternalToolRepo', () => {
 	const createTools = () => {
 		const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId();
 		const school: School = schoolFactory.buildWithId();
-		const schoolExternalTool1: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+		const schoolExternalTool1: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId({
 			tool: externalToolEntity,
 			school,
 		});
-		const schoolExternalTool2: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-		const schoolExternalTool3: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+		const schoolExternalTool2: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId();
+		const schoolExternalTool3: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId({
 			tool: externalToolEntity,
 			school,
 		});
@@ -61,7 +61,7 @@ describe('SchoolExternalToolRepo', () => {
 
 	it('getEntityName should return SchoolExternalTool', () => {
 		const { entityName } = repo;
-		expect(entityName).toEqual(SchoolExternalTool);
+		expect(entityName).toEqual(SchoolExternalToolEntity);
 	});
 
 	describe('deleteByToolId', () => {

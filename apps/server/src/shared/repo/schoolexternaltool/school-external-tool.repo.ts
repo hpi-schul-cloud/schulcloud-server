@@ -5,7 +5,7 @@ import { School } from '@shared/domain';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { LegacyLogger } from '@src/core/logger';
 import { SchoolExternalToolQuery } from '@src/modules/tool/school-external-tool/uc/dto/school-external-tool.types';
-import { ISchoolExternalToolProperties, SchoolExternalTool } from '@src/modules/tool/school-external-tool/entity';
+import { ISchoolExternalToolProperties, SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
 import { SchoolExternalToolDO } from '@src/modules/tool/school-external-tool/domain';
 import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
 import { SchoolExternalToolScope } from './school-external-tool.scope';
@@ -14,36 +14,40 @@ import { ExternalToolRepoMapper } from '../externaltool';
 @Injectable()
 export class SchoolExternalToolRepo extends BaseDORepo<
 	SchoolExternalToolDO,
-	SchoolExternalTool,
+	SchoolExternalToolEntity,
 	ISchoolExternalToolProperties
 > {
 	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
 	}
 
-	get entityName(): EntityName<SchoolExternalTool> {
-		return SchoolExternalTool;
+	get entityName(): EntityName<SchoolExternalToolEntity> {
+		return SchoolExternalToolEntity;
 	}
 
-	entityFactory(props: ISchoolExternalToolProperties): SchoolExternalTool {
-		return new SchoolExternalTool(props);
+	entityFactory(props: ISchoolExternalToolProperties): SchoolExternalToolEntity {
+		return new SchoolExternalToolEntity(props);
 	}
 
 	async findByExternalToolId(toolId: string): Promise<SchoolExternalToolDO[]> {
-		const entities: SchoolExternalTool[] = await this._em.find(this.entityName, { tool: toolId });
-		const domainObjects: SchoolExternalToolDO[] = entities.map((entity: SchoolExternalTool): SchoolExternalToolDO => {
-			const domainObject: SchoolExternalToolDO = this.mapEntityToDO(entity);
-			return domainObject;
-		});
+		const entities: SchoolExternalToolEntity[] = await this._em.find(this.entityName, { tool: toolId });
+		const domainObjects: SchoolExternalToolDO[] = entities.map(
+			(entity: SchoolExternalToolEntity): SchoolExternalToolDO => {
+				const domainObject: SchoolExternalToolDO = this.mapEntityToDO(entity);
+				return domainObject;
+			}
+		);
 		return domainObjects;
 	}
 
 	async findBySchoolId(schoolId: string): Promise<SchoolExternalToolDO[]> {
-		const entities: SchoolExternalTool[] = await this._em.find(this.entityName, { school: schoolId });
-		const domainObjects: SchoolExternalToolDO[] = entities.map((entity: SchoolExternalTool): SchoolExternalToolDO => {
-			const domainObject: SchoolExternalToolDO = this.mapEntityToDO(entity);
-			return domainObject;
-		});
+		const entities: SchoolExternalToolEntity[] = await this._em.find(this.entityName, { school: schoolId });
+		const domainObjects: SchoolExternalToolDO[] = entities.map(
+			(entity: SchoolExternalToolEntity): SchoolExternalToolDO => {
+				const domainObject: SchoolExternalToolDO = this.mapEntityToDO(entity);
+				return domainObject;
+			}
+		);
 		return domainObjects;
 	}
 
@@ -55,9 +59,9 @@ export class SchoolExternalToolRepo extends BaseDORepo<
 	async find(query: SchoolExternalToolQuery): Promise<SchoolExternalToolDO[]> {
 		const scope: SchoolExternalToolScope = this.buildScope(query);
 
-		const entities: SchoolExternalTool[] = await this._em.find(this.entityName, scope.query);
+		const entities: SchoolExternalToolEntity[] = await this._em.find(this.entityName, scope.query);
 
-		const dos: SchoolExternalToolDO[] = entities.map((entity: SchoolExternalTool) => this.mapEntityToDO(entity));
+		const dos: SchoolExternalToolDO[] = entities.map((entity: SchoolExternalToolEntity) => this.mapEntityToDO(entity));
 		return dos;
 	}
 
@@ -71,7 +75,7 @@ export class SchoolExternalToolRepo extends BaseDORepo<
 		return scope;
 	}
 
-	mapEntityToDO(entity: SchoolExternalTool): SchoolExternalToolDO {
+	mapEntityToDO(entity: SchoolExternalToolEntity): SchoolExternalToolDO {
 		return new SchoolExternalToolDO({
 			id: entity.id,
 			toolId: entity.tool.id,

@@ -2,7 +2,7 @@ import { ShareToken } from '@src/modules/sharing/entity/share-token.entity';
 import { ExternalToolPseudonymEntity, PseudonymEntity } from '@src/modules/pseudonym/entity';
 import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
 import { ContextExternalTool } from '@src/modules/tool/context-external-tool/entity';
-import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/entity';
+import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
 import { Account } from './account.entity';
 import {
 	CardNode,
@@ -77,7 +77,7 @@ export const ALL_ENTITIES = [
 	ExternalToolPseudonymEntity,
 	Role,
 	School,
-	SchoolExternalTool,
+	SchoolExternalToolEntity,
 	SchoolNews,
 	SchoolRolePermission,
 	SchoolRoles,

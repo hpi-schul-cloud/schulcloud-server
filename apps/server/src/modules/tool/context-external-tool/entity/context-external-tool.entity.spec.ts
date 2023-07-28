@@ -8,7 +8,7 @@ import {
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '../../common/enum';
 
 import { BasicToolConfig, CustomParameter, ExternalToolEntity, ExternalToolConfig } from '../../external-tool/entity';
-import { SchoolExternalTool } from '../../school-external-tool/entity';
+import { SchoolExternalToolEntity } from '../../school-external-tool/entity';
 import { ContextExternalTool } from './context-external-tool.entity';
 
 describe('ExternalToolEntity', () => {
@@ -49,7 +49,7 @@ describe('ExternalToolEntity', () => {
 				openNewTab: true,
 				version: 1,
 			});
-			const schoolTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+			const schoolTool: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId({
 				tool: externalToolEntity,
 				school: schoolFactory.buildWithId(),
 				schoolParameters: [],

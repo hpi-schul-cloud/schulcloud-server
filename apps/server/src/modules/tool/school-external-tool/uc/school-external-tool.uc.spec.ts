@@ -140,7 +140,7 @@ describe('SchoolExternalToolUc', () => {
 
 				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
-					AuthorizableReferenceType.SchoolExternalTool,
+					AuthorizableReferenceType.SchoolExternalToolEntity,
 					schoolExternalToolId,
 					{
 						action: Action.read,
@@ -216,7 +216,7 @@ describe('SchoolExternalToolUc', () => {
 
 				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
-					AuthorizableReferenceType.SchoolExternalTool,
+					AuthorizableReferenceType.SchoolExternalToolEntity,
 					schoolExternalToolId,
 					{
 						action: Action.read,
@@ -258,7 +258,7 @@ describe('SchoolExternalToolUc', () => {
 
 			expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 				user.id,
-				AuthorizableReferenceType.SchoolExternalTool,
+				AuthorizableReferenceType.SchoolExternalToolEntity,
 				schoolExternalToolId,
 				{
 					action: Action.read,

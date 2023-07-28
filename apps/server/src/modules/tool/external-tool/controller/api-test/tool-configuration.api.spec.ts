@@ -26,7 +26,7 @@ import {
 import { CustomParameter } from '../../uc';
 import { SchoolToolConfigurationListResponse } from '../../../school-external-tool/controller/dto';
 import { CustomParameterResponse, ToolConfigurationListResponse } from '../dto';
-import { SchoolExternalTool } from '../../../school-external-tool/entity';
+import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { ExternalToolEntity } from '../../entity';
 
 describe('ToolSchoolController (API)', () => {
@@ -108,12 +108,12 @@ describe('ToolSchoolController (API)', () => {
 
 				const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId();
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId({
 					school,
 					tool: externalToolEntity,
 				});
 
-				await em.persistAndFlush([user, school, course, adminRole, externalToolEntity, schoolExternalTool]);
+				await em.persistAndFlush([user, school, course, adminRole, externalToolEntity, schoolExternalToolEntity]);
 				em.clear();
 
 				return {
@@ -121,12 +121,12 @@ describe('ToolSchoolController (API)', () => {
 					school,
 					course,
 					externalToolEntity,
-					schoolExternalTool,
+					schoolExternalToolEntity,
 				};
 			};
 
 			it('should return an array of available tools', async () => {
-				const { user, course, externalToolEntity, schoolExternalTool } = await setup();
+				const { user, course, externalToolEntity, schoolExternalToolEntity } = await setup();
 				currentUser = mapUserToCurrentUser(user);
 
 				const response: Response = await request(app.getHttpServer()).get(`/tools/available/course/${course.id}`);
@@ -137,7 +137,7 @@ describe('ToolSchoolController (API)', () => {
 							id: externalToolEntity.id,
 							name: externalToolEntity.name,
 							logoUrl: externalToolEntity.logoUrl,
-							schoolToolId: schoolExternalTool.id,
+							schoolToolId: schoolExternalToolEntity.id,
 						},
 					],
 				});

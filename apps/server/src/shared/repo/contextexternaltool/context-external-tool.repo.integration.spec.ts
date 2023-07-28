@@ -17,7 +17,7 @@ import { ToolContextType } from '@src/modules/tool/common/enum';
 import { ContextExternalToolDO } from '@src/modules/tool/context-external-tool/domain';
 import { ContextExternalTool, ContextExternalToolType } from '@src/modules/tool/context-external-tool/entity';
 import { ContextExternalToolQuery } from '@src/modules/tool/context-external-tool/uc/dto/context-external-tool.types';
-import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/entity';
+import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
 import { ContextExternalToolRepo } from './context-external-tool.repo';
 
 describe('ContextExternalToolRepo', () => {
@@ -52,8 +52,8 @@ describe('ContextExternalToolRepo', () => {
 
 	const createExternalTools = () => {
 		const school: School = schoolFactory.buildWithId();
-		const schoolExternalTool1: SchoolExternalTool = schoolExternalToolFactory.buildWithId({ school });
-		const schoolExternalTool2: SchoolExternalTool = schoolExternalToolFactory.buildWithId({ school });
+		const schoolExternalTool1: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId({ school });
+		const schoolExternalTool2: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId({ school });
 		const contextExternalTool1: ContextExternalTool = contextExternalToolFactory.buildWithId({
 			schoolTool: schoolExternalTool1,
 		});

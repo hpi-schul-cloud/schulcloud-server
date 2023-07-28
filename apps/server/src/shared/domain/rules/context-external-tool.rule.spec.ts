@@ -10,8 +10,11 @@ import {
 
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
 import { Action } from '@src/modules/authorization/types';
-import { ContextExternalToolDO, SchoolExternalToolDO } from '../domainobject';
-import { ContextExternalTool, Role, SchoolExternalTool, User } from '../entity';
+import { ContextExternalToolDO } from '@src/modules/tool/context-external-tool/domain';
+import { ContextExternalTool } from '@src/modules/tool/context-external-tool/entity';
+import { SchoolExternalToolDO } from '@src/modules/tool/school-external-tool/domain';
+import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
+import { Role, User } from '../entity';
 import { Permission } from '../interface';
 import { ContextExternalToolRule } from './context-external-tool.rule';
 
@@ -40,9 +43,11 @@ describe('ContextExternalToolRule', () => {
 		const role: Role = roleFactory.build({ permissions: [permissionA, permissionB] });
 
 		const school = schoolFactory.build();
-		const schoolExternalTool: SchoolExternalTool | SchoolExternalToolDO = schoolExternalToolFactory.build({ school });
+		const schoolExternalToolEntity: SchoolExternalToolEntity | SchoolExternalToolDO = schoolExternalToolFactory.build({
+			school,
+		});
 		const entity: ContextExternalTool | ContextExternalToolDO = contextExternalToolFactory.build({
-			schoolTool: schoolExternalTool,
+			schoolTool: schoolExternalToolEntity,
 		});
 		const user: User = userFactory.build({ roles: [role], school });
 		return {

@@ -12,7 +12,7 @@ export interface ISchoolExternalToolProperties {
 }
 
 @Entity({ tableName: 'school_external_tools' })
-export class SchoolExternalTool extends BaseEntityWithTimestamps {
+export class SchoolExternalToolEntity extends BaseEntityWithTimestamps {
 	@ManyToOne()
 	tool: ExternalToolEntity;
 

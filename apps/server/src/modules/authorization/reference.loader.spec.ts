@@ -166,7 +166,7 @@ describe('reference.loader', () => {
 		});
 
 		it('should call schoolExternalToolRepo.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.SchoolExternalTool, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.SchoolExternalToolEntity, entityId);
 
 			expect(schoolExternalToolRepo.findById).toBeCalledWith(entityId);
 		});

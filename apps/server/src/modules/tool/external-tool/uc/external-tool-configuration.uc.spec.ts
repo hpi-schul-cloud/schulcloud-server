@@ -405,7 +405,7 @@ describe('ExternalToolConfigurationUc', () => {
 				});
 
 				const externalToolDO = unusedTool;
-				const schoolExternalTool = unusedSchoolExternalTool;
+				const schoolExternalToolDO = unusedSchoolExternalTool;
 
 				externalToolService.findExternalTools.mockResolvedValue(
 					new Page<ExternalToolDO>([hiddenTool, usedTool, unusedTool, toolWithoutSchoolTool], 4)
@@ -424,7 +424,7 @@ describe('ExternalToolConfigurationUc', () => {
 					usedSchoolExternalTool,
 					unusedSchoolExternalTool,
 					externalToolDO,
-					schoolExternalTool,
+					schoolExternalToolDO,
 				};
 			};
 
@@ -485,7 +485,7 @@ describe('ExternalToolConfigurationUc', () => {
 			});
 
 			it('should return a list of available external tools', async () => {
-				const { externalToolDO, schoolExternalTool } = setup();
+				const { externalToolDO, schoolExternalToolDO } = setup();
 
 				const availableTools = await uc.getAvailableToolsForContext(
 					'userId',
@@ -497,7 +497,7 @@ describe('ExternalToolConfigurationUc', () => {
 				expect(availableTools).toEqual([
 					{
 						externalToolDO,
-						schoolExternalTool,
+						schoolExternalToolDO,
 					},
 				]);
 			});

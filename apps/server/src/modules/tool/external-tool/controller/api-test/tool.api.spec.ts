@@ -32,7 +32,7 @@ import {
 import { ContextExternalToolContextParams } from '../../../context-external-tool/controller/dto';
 import { ExternalToolEntity } from '../../entity';
 import { ContextExternalTool, ContextExternalToolType } from '../../../context-external-tool/entity';
-import { SchoolExternalTool } from '../../../school-external-tool/entity';
+import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 
 describe('ToolController (API)', () => {
 	let app: INestApplication;
@@ -598,12 +598,12 @@ describe('ToolController (API)', () => {
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school: schoolWithoutTool });
 				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
 				const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId({
 					school,
 					tool: externalToolEntity,
 				});
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
-					schoolTool: schoolExternalTool,
+					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,
 				});
@@ -614,7 +614,7 @@ describe('ToolController (API)', () => {
 					adminUser,
 					course,
 					externalToolEntity,
-					schoolExternalTool,
+					schoolExternalToolEntity,
 					contextExternalTool,
 				]);
 				em.clear();
@@ -647,17 +647,17 @@ describe('ToolController (API)', () => {
 				]);
 				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
 				const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId({
 					school,
 					tool: externalToolEntity,
 					toolVersion: externalToolEntity.version,
 				});
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
-					schoolTool: schoolExternalTool,
+					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,
 					displayName: 'This is a test tool',
-					toolVersion: schoolExternalTool.toolVersion,
+					toolVersion: schoolExternalToolEntity.toolVersion,
 				});
 
 				await em.persistAndFlush([
@@ -666,7 +666,7 @@ describe('ToolController (API)', () => {
 					adminUser,
 					course,
 					externalToolEntity,
-					schoolExternalTool,
+					schoolExternalToolEntity,
 					contextExternalTool,
 				]);
 				em.clear();

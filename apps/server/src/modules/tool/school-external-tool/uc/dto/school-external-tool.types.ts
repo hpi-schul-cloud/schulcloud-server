@@ -1,6 +1,6 @@
 import { SchoolExternalToolProps } from '../../domain';
 
-export type SchoolExternalTool = SchoolExternalToolProps;
+export type SchoolExternalToolDTO = SchoolExternalToolProps;
 
 export type SchoolExternalToolQueryInput = {
 	schoolId?: string;
