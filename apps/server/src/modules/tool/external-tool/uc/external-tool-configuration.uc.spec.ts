@@ -15,7 +15,7 @@ import { SchoolExternalToolService } from '../../school-external-tool/service/sc
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { ExternalToolDO } from '../domain';
 import { ContextExternalTool } from '../../context-external-tool/domain';
-import { SchoolExternalToolDO } from '../../school-external-tool/domain';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
 
 describe('ExternalToolConfigurationUc', () => {
 	let module: TestingModule;
@@ -391,11 +391,11 @@ describe('ExternalToolConfigurationUc', () => {
 					'noSchoolTool'
 				);
 
-				const usedSchoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+				const usedSchoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
 					id: 'usedSchoolExternalToolId',
 					toolId: 'usedToolId',
 				});
-				const unusedSchoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+				const unusedSchoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
 					id: 'unusedSchoolExternalTool',
 					toolId: 'unusedToolId',
 				});
@@ -405,7 +405,7 @@ describe('ExternalToolConfigurationUc', () => {
 				});
 
 				const externalToolDO = unusedTool;
-				const schoolExternalToolDO = unusedSchoolExternalTool;
+				const schoolExternalTool = unusedSchoolExternalTool;
 
 				externalToolService.findExternalTools.mockResolvedValue(
 					new Page<ExternalToolDO>([hiddenTool, usedTool, unusedTool, toolWithoutSchoolTool], 4)
@@ -424,7 +424,7 @@ describe('ExternalToolConfigurationUc', () => {
 					usedSchoolExternalTool,
 					unusedSchoolExternalTool,
 					externalToolDO,
-					schoolExternalToolDO,
+					schoolExternalTool,
 				};
 			};
 
@@ -485,7 +485,7 @@ describe('ExternalToolConfigurationUc', () => {
 			});
 
 			it('should return a list of available external tools', async () => {
-				const { externalToolDO, schoolExternalToolDO } = setup();
+				const { externalToolDO, schoolExternalTool } = setup();
 
 				const availableTools = await uc.getAvailableToolsForContext(
 					'userId',
@@ -497,7 +497,7 @@ describe('ExternalToolConfigurationUc', () => {
 				expect(availableTools).toEqual([
 					{
 						externalToolDO,
-						schoolExternalToolDO,
+						schoolExternalTool,
 					},
 				]);
 			});
@@ -510,7 +510,7 @@ describe('ExternalToolConfigurationUc', () => {
 					'noSchoolTool'
 				);
 
-				const unusedSchoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+				const unusedSchoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
 					id: 'unusedSchoolExternalTool',
 					toolId: 'unusedToolId',
 				});

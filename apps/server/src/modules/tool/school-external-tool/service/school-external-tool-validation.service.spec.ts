@@ -8,7 +8,7 @@ import {
 import { ExternalToolDO } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
-import { SchoolExternalToolDO } from '../domain';
+import { SchoolExternalTool } from '../domain';
 import { CustomParameterDO } from '../../common/domain';
 import { CustomParameterScope, CustomParameterType } from '../../common/enum';
 
@@ -39,9 +39,9 @@ describe('SchoolExternalToolValidationService', () => {
 
 	const setup = (
 		externalToolDoMock?: Partial<ExternalToolDO>,
-		schoolExternalToolDoMock?: Partial<SchoolExternalToolDO>
+		schoolExternalToolDoMock?: Partial<SchoolExternalTool>
 	) => {
-		const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+		const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
 			...schoolExternalToolDOFactory.buildWithId(),
 			...schoolExternalToolDoMock,
 		});
@@ -50,9 +50,9 @@ describe('SchoolExternalToolValidationService', () => {
 			...externalToolDoMock,
 		});
 		externalToolService.findExternalToolById.mockResolvedValue(externalToolDO);
-		const schoolExternalToolId = schoolExternalToolDO.id as string;
+		const schoolExternalToolId = schoolExternalTool.id as string;
 		return {
-			schoolExternalToolDO,
+			schoolExternalTool,
 			externalToolDO,
 			schoolExternalToolId,
 		};
@@ -61,19 +61,19 @@ describe('SchoolExternalToolValidationService', () => {
 	describe('validate is called', () => {
 		describe('when schoolExternalTool is given', () => {
 			it('should call externalToolService.findExternalToolById', async () => {
-				const { schoolExternalToolDO } = setup();
+				const { schoolExternalTool } = setup();
 
-				await service.validate(schoolExternalToolDO);
+				await service.validate(schoolExternalTool);
 
-				expect(externalToolService.findExternalToolById).toHaveBeenCalledWith(schoolExternalToolDO.toolId);
+				expect(externalToolService.findExternalToolById).toHaveBeenCalledWith(schoolExternalTool.toolId);
 			});
 		});
 
 		describe('when version of externalTool and schoolExternalTool are different', () => {
 			it('should throw error', async () => {
-				const { schoolExternalToolDO } = setup({ version: 8383 }, { toolVersion: 1337 });
+				const { schoolExternalTool } = setup({ version: 8383 }, { toolVersion: 1337 });
 
-				const func = () => service.validate(schoolExternalToolDO);
+				const func = () => service.validate(schoolExternalTool);
 
 				await expect(func()).rejects.toThrowError('tool_version_mismatch:');
 			});
@@ -87,7 +87,7 @@ describe('SchoolExternalToolValidationService', () => {
 					type: CustomParameterType.STRING,
 					isOptional: false,
 				});
-				const { schoolExternalToolDO } = setup(
+				const { schoolExternalTool } = setup(
 					{
 						parameters: [requiredParam],
 					},
@@ -96,7 +96,7 @@ describe('SchoolExternalToolValidationService', () => {
 					}
 				);
 
-				const func = () => service.validate(schoolExternalToolDO);
+				const func = () => service.validate(schoolExternalTool);
 
 				await expect(func()).rejects.toThrowError('tool_param_required:');
 			});
@@ -104,40 +104,40 @@ describe('SchoolExternalToolValidationService', () => {
 
 		describe('when checking parameters for duplicates', () => {
 			it('should throw error when given parameters has a case sensitive duplicate', async () => {
-				const { schoolExternalToolDO } = setup(undefined, {
+				const { schoolExternalTool } = setup(undefined, {
 					parameters: [
 						{ name: 'nameDuplicate', value: 'value' },
 						{ name: 'nameDuplicate', value: 'value' },
 					],
 				});
 
-				const func = () => service.validate(schoolExternalToolDO);
+				const func = () => service.validate(schoolExternalTool);
 
 				await expect(func()).rejects.toThrowError('tool_param_duplicate:');
 			});
 
 			it('should throw error when given parameters has case insensitive duplicate', async () => {
-				const { schoolExternalToolDO } = setup(undefined, {
+				const { schoolExternalTool } = setup(undefined, {
 					parameters: [
 						{ name: 'nameDuplicate', value: 'value' },
 						{ name: 'nameduplicate', value: 'value' },
 					],
 				});
 
-				const func = () => service.validate(schoolExternalToolDO);
+				const func = () => service.validate(schoolExternalTool);
 
 				await expect(func()).rejects.toThrowError('tool_param_duplicate:');
 			});
 
 			it('when given parameters has no duplicates should return without error', async () => {
-				const { schoolExternalToolDO } = setup(undefined, {
+				const { schoolExternalTool } = setup(undefined, {
 					parameters: [
 						{ name: 'nameNoDuplicate1', value: 'value' },
 						{ name: 'nameNoDuplicate2', value: 'value' },
 					],
 				});
 
-				const func = () => service.validate(schoolExternalToolDO);
+				const func = () => service.validate(schoolExternalTool);
 
 				await expect(func()).resolves.not.toThrowError('tool_param_duplicate:');
 			});
@@ -150,7 +150,7 @@ describe('SchoolExternalToolValidationService', () => {
 					scope: CustomParameterScope.GLOBAL,
 					type: CustomParameterType.BOOLEAN,
 				});
-				const { schoolExternalToolDO } = setup(
+				const { schoolExternalTool } = setup(
 					{
 						parameters: [notSchoolParam],
 					},
@@ -159,7 +159,7 @@ describe('SchoolExternalToolValidationService', () => {
 					}
 				);
 
-				const func = () => service.validate(schoolExternalToolDO);
+				const func = () => service.validate(schoolExternalTool);
 
 				await expect(func()).resolves.not.toThrowError();
 			});
@@ -172,7 +172,7 @@ describe('SchoolExternalToolValidationService', () => {
 					isOptional: false,
 					scope: CustomParameterScope.SCHOOL,
 				});
-				const { schoolExternalToolDO } = setup(
+				const { schoolExternalTool } = setup(
 					{
 						parameters: [missingParam],
 					},
@@ -181,13 +181,13 @@ describe('SchoolExternalToolValidationService', () => {
 					}
 				);
 
-				const func = () => service.validate(schoolExternalToolDO);
+				const func = () => service.validate(schoolExternalTool);
 
 				await expect(func()).rejects.toThrowError('tool_param_required:');
 			});
 
 			it('should return without error when parameter is optional but is missing on params', async () => {
-				const { schoolExternalToolDO } = setup(
+				const { schoolExternalTool } = setup(
 					{
 						parameters: [
 							customParameterDOFactory.build({
@@ -202,7 +202,7 @@ describe('SchoolExternalToolValidationService', () => {
 					}
 				);
 
-				const func = () => service.validate(schoolExternalToolDO);
+				const func = () => service.validate(schoolExternalTool);
 
 				await expect(func()).resolves.not.toThrowError('tool_param_required:');
 			});
@@ -215,7 +215,7 @@ describe('SchoolExternalToolValidationService', () => {
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.STRING,
 				});
-				const { schoolExternalToolDO } = setup(
+				const { schoolExternalTool } = setup(
 					{
 						parameters: [correctTypeParam],
 					},
@@ -224,7 +224,7 @@ describe('SchoolExternalToolValidationService', () => {
 					}
 				);
 
-				const func = () => service.validate(schoolExternalToolDO);
+				const func = () => service.validate(schoolExternalTool);
 
 				await expect(func()).resolves.not.toThrowError('tool_param_type_mismatch:');
 			});
@@ -237,7 +237,7 @@ describe('SchoolExternalToolValidationService', () => {
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.NUMBER,
 				});
-				const { schoolExternalToolDO } = setup(
+				const { schoolExternalTool } = setup(
 					{
 						parameters: [correctTypeParam],
 					},
@@ -246,7 +246,7 @@ describe('SchoolExternalToolValidationService', () => {
 					}
 				);
 
-				const func = () => service.validate(schoolExternalToolDO);
+				const func = () => service.validate(schoolExternalTool);
 
 				await expect(func()).resolves.not.toThrowError('tool_param_type_mismatch:');
 			});
@@ -257,7 +257,7 @@ describe('SchoolExternalToolValidationService', () => {
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.NUMBER,
 				});
-				const { schoolExternalToolDO } = setup(
+				const { schoolExternalTool } = setup(
 					{
 						parameters: [wrongTypeParam],
 					},
@@ -266,7 +266,7 @@ describe('SchoolExternalToolValidationService', () => {
 					}
 				);
 
-				const func = () => service.validate(schoolExternalToolDO);
+				const func = () => service.validate(schoolExternalTool);
 
 				await expect(func()).rejects.toThrowError('tool_param_type_mismatch:');
 			});
@@ -279,7 +279,7 @@ describe('SchoolExternalToolValidationService', () => {
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.BOOLEAN,
 				});
-				const { schoolExternalToolDO } = setup(
+				const { schoolExternalTool } = setup(
 					{
 						parameters: [correctTypeParam],
 					},
@@ -288,7 +288,7 @@ describe('SchoolExternalToolValidationService', () => {
 					}
 				);
 
-				const func = () => service.validate(schoolExternalToolDO);
+				const func = () => service.validate(schoolExternalTool);
 
 				await expect(func()).resolves.not.toThrowError('tool_param_type_mismatch:');
 			});
@@ -300,7 +300,7 @@ describe('SchoolExternalToolValidationService', () => {
 					type: CustomParameterType.BOOLEAN,
 					isOptional: true,
 				});
-				const { schoolExternalToolDO } = setup(
+				const { schoolExternalTool } = setup(
 					{
 						parameters: [wrongTypeParam],
 					},
@@ -309,7 +309,7 @@ describe('SchoolExternalToolValidationService', () => {
 					}
 				);
 
-				const func = () => service.validate(schoolExternalToolDO);
+				const func = () => service.validate(schoolExternalTool);
 
 				await expect(func()).rejects.toThrowError('tool_param_type_mismatch:');
 			});
@@ -322,7 +322,7 @@ describe('SchoolExternalToolValidationService', () => {
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.AUTO_CONTEXTID,
 				});
-				const { schoolExternalToolDO } = setup(
+				const { schoolExternalTool } = setup(
 					{
 						parameters: [correctTypeParam],
 					},
@@ -331,7 +331,7 @@ describe('SchoolExternalToolValidationService', () => {
 					}
 				);
 
-				const func = () => service.validate(schoolExternalToolDO);
+				const func = () => service.validate(schoolExternalTool);
 
 				await expect(func()).resolves.not.toThrowError('tool_param_type_mismatch:');
 			});
@@ -344,7 +344,7 @@ describe('SchoolExternalToolValidationService', () => {
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.AUTO_CONTEXTNAME,
 				});
-				const { schoolExternalToolDO } = setup(
+				const { schoolExternalTool } = setup(
 					{
 						parameters: [correctTypeParam],
 					},
@@ -353,7 +353,7 @@ describe('SchoolExternalToolValidationService', () => {
 					}
 				);
 
-				const func = () => service.validate(schoolExternalToolDO);
+				const func = () => service.validate(schoolExternalTool);
 
 				await expect(func()).resolves.not.toThrowError('tool_param_type_mismatch:');
 			});
@@ -366,7 +366,7 @@ describe('SchoolExternalToolValidationService', () => {
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.AUTO_SCHOOLID,
 				});
-				const { schoolExternalToolDO } = setup(
+				const { schoolExternalTool } = setup(
 					{
 						parameters: [correctTypeParam],
 					},
@@ -375,7 +375,7 @@ describe('SchoolExternalToolValidationService', () => {
 					}
 				);
 
-				const func = () => service.validate(schoolExternalToolDO);
+				const func = () => service.validate(schoolExternalTool);
 
 				await expect(func()).resolves.not.toThrowError('tool_param_type_mismatch:');
 			});
@@ -388,7 +388,7 @@ describe('SchoolExternalToolValidationService', () => {
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.AUTO_SCHOOLNUMBER,
 				});
-				const { schoolExternalToolDO } = setup(
+				const { schoolExternalTool } = setup(
 					{
 						parameters: [correctTypeParam],
 					},
@@ -397,7 +397,7 @@ describe('SchoolExternalToolValidationService', () => {
 					}
 				);
 
-				const func = () => service.validate(schoolExternalToolDO);
+				const func = () => service.validate(schoolExternalTool);
 
 				await expect(func()).resolves.not.toThrowError('tool_param_type_mismatch:');
 			});
@@ -411,7 +411,7 @@ describe('SchoolExternalToolValidationService', () => {
 					type: CustomParameterType.STRING,
 					regex: undefined,
 				});
-				const { schoolExternalToolDO } = setup(
+				const { schoolExternalTool } = setup(
 					{
 						parameters: [undefinedRegex],
 					},
@@ -420,7 +420,7 @@ describe('SchoolExternalToolValidationService', () => {
 					}
 				);
 
-				const func = () => service.validate(schoolExternalToolDO);
+				const func = () => service.validate(schoolExternalTool);
 
 				await expect(func()).resolves.not.toThrowError(`tool_param_value_regex`);
 			});
@@ -432,7 +432,7 @@ describe('SchoolExternalToolValidationService', () => {
 					type: CustomParameterType.STRING,
 					regex: '[x]',
 				});
-				const { schoolExternalToolDO } = setup(
+				const { schoolExternalTool } = setup(
 					{
 						parameters: [validRegex],
 					},
@@ -441,7 +441,7 @@ describe('SchoolExternalToolValidationService', () => {
 					}
 				);
 
-				const func = () => service.validate(schoolExternalToolDO);
+				const func = () => service.validate(schoolExternalTool);
 
 				await expect(func()).resolves.not.toThrowError('tool_param_value_regex:');
 			});
@@ -453,7 +453,7 @@ describe('SchoolExternalToolValidationService', () => {
 					type: CustomParameterType.STRING,
 					regex: '[x]',
 				});
-				const { schoolExternalToolDO } = setup(
+				const { schoolExternalTool } = setup(
 					{
 						parameters: [validRegex],
 					},
@@ -462,7 +462,7 @@ describe('SchoolExternalToolValidationService', () => {
 					}
 				);
 
-				const func = () => service.validate(schoolExternalToolDO);
+				const func = () => service.validate(schoolExternalTool);
 
 				await expect(func()).rejects.toThrowError('tool_param_value_regex:');
 			});

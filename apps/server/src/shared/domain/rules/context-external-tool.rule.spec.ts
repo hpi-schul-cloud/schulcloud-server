@@ -12,7 +12,7 @@ import { AuthorizationHelper } from '@src/modules/authorization/authorization.he
 import { Action } from '@src/modules/authorization/types';
 import { ContextExternalTool } from '@src/modules/tool/context-external-tool/domain';
 import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity';
-import { SchoolExternalToolDO } from '@src/modules/tool/school-external-tool/domain';
+import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain';
 import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
 import { Role, User } from '../entity';
 import { Permission } from '../interface';
@@ -43,7 +43,7 @@ describe('ContextExternalToolRule', () => {
 		const role: Role = roleFactory.build({ permissions: [permissionA, permissionB] });
 
 		const school = schoolFactory.build();
-		const schoolExternalToolEntity: SchoolExternalToolEntity | SchoolExternalToolDO = schoolExternalToolFactory.build({
+		const schoolExternalToolEntity: SchoolExternalToolEntity | SchoolExternalTool = schoolExternalToolFactory.build({
 			school,
 		});
 		const entity: ContextExternalToolEntity | ContextExternalTool = contextExternalToolFactory.build({

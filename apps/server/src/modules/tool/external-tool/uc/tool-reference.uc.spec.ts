@@ -10,7 +10,7 @@ import { ExternalToolService } from '../service';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { CommonToolService } from '../../common/service';
-import { SchoolExternalToolDO } from '../../school-external-tool/domain';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ExternalToolDO, ToolReference } from '../domain';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 
@@ -64,7 +64,7 @@ describe('ToolReferenceUc', () => {
 				const userId = 'userId';
 
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
 					toolId: externalToolDO.id,
 				});
 				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory
@@ -76,7 +76,7 @@ describe('ToolReferenceUc', () => {
 
 				contextExternalToolService.findAllByContext.mockResolvedValueOnce([contextExternalTool]);
 				contextExternalToolService.ensureContextPermissions.mockResolvedValueOnce();
-				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(schoolExternalToolDO);
+				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(schoolExternalTool);
 				externalToolService.findExternalToolById.mockResolvedValueOnce(externalToolDO);
 				commonToolService.determineToolConfigurationStatus.mockReturnValueOnce(ToolConfigurationStatus.LATEST);
 
@@ -85,7 +85,7 @@ describe('ToolReferenceUc', () => {
 					contextType,
 					contextId,
 					contextExternalTool,
-					schoolExternalToolDO,
+					schoolExternalTool,
 					externalToolDO,
 					externalToolId: externalToolDO.id as string,
 				};
@@ -132,13 +132,13 @@ describe('ToolReferenceUc', () => {
 			});
 
 			it('should call commonToolService.determineToolConfigurationStatus', async () => {
-				const { userId, contextType, contextId, contextExternalTool, schoolExternalToolDO, externalToolDO } = setup();
+				const { userId, contextType, contextId, contextExternalTool, schoolExternalTool, externalToolDO } = setup();
 
 				await uc.getToolReferences(userId, contextType, contextId);
 
 				expect(commonToolService.determineToolConfigurationStatus).toHaveBeenCalledWith(
 					externalToolDO,
-					schoolExternalToolDO,
+					schoolExternalTool,
 					contextExternalTool
 				);
 			});
@@ -165,7 +165,7 @@ describe('ToolReferenceUc', () => {
 				const userId = 'userId';
 
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
 					toolId: externalToolDO.id,
 				});
 				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory
@@ -177,7 +177,7 @@ describe('ToolReferenceUc', () => {
 
 				contextExternalToolService.findAllByContext.mockResolvedValueOnce([contextExternalTool]);
 				contextExternalToolService.ensureContextPermissions.mockRejectedValueOnce(new ForbiddenException());
-				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(schoolExternalToolDO);
+				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(schoolExternalTool);
 				externalToolService.findExternalToolById.mockResolvedValueOnce(externalToolDO);
 
 				return {

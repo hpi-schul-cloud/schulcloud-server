@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
 import { isNaN } from 'lodash';
 import { ExternalToolService } from '../../external-tool/service';
-import { SchoolExternalToolDO } from '../domain';
+import { SchoolExternalTool } from '../domain';
 import { ExternalToolDO } from '../../external-tool/domain';
 import { CustomParameterDO, CustomParameterEntryDO } from '../../common/domain';
 import { CustomParameterScope, CustomParameterType } from '../../common/enum';
@@ -21,16 +21,16 @@ const typeCheckers: { [key in CustomParameterType]: (val: string) => boolean } =
 export class SchoolExternalToolValidationService {
 	constructor(private readonly externalToolService: ExternalToolService) {}
 
-	async validate(schoolExternalToolDO: SchoolExternalToolDO): Promise<void> {
-		this.checkForDuplicateParameters(schoolExternalToolDO);
+	async validate(schoolExternalTool: SchoolExternalTool): Promise<void> {
+		this.checkForDuplicateParameters(schoolExternalTool);
 		const loadedExternalTool: ExternalToolDO = await this.externalToolService.findExternalToolById(
-			schoolExternalToolDO.toolId
+			schoolExternalTool.toolId
 		);
-		this.checkVersionMatch(schoolExternalToolDO.toolVersion, loadedExternalTool.version);
-		this.checkCustomParameterEntries(loadedExternalTool, schoolExternalToolDO);
+		this.checkVersionMatch(schoolExternalTool.toolVersion, loadedExternalTool.version);
+		this.checkCustomParameterEntries(loadedExternalTool, schoolExternalTool);
 	}
 
-	private checkForDuplicateParameters(schoolExternalToolDO: SchoolExternalToolDO): void {
+	private checkForDuplicateParameters(schoolExternalToolDO: SchoolExternalTool): void {
 		const caseInsensitiveNames = schoolExternalToolDO.parameters.map(({ name }: CustomParameterEntryDO) =>
 			name.toLowerCase()
 		);
@@ -52,10 +52,10 @@ export class SchoolExternalToolValidationService {
 		}
 	}
 
-	private checkCustomParameterEntries(loadedExternalTool: ExternalToolDO, schoolExternalToolDO: SchoolExternalToolDO) {
+	private checkCustomParameterEntries(loadedExternalTool: ExternalToolDO, schoolExternalTool: SchoolExternalTool) {
 		if (loadedExternalTool.parameters) {
 			for (const param of loadedExternalTool.parameters) {
-				const foundEntry: CustomParameterEntryDO | undefined = schoolExternalToolDO.parameters.find(
+				const foundEntry: CustomParameterEntryDO | undefined = schoolExternalTool.parameters.find(
 					({ name }: CustomParameterEntryDO) => name.toLowerCase() === param.name.toLowerCase()
 				);
 				if (CustomParameterScope.SCHOOL === param.scope) {

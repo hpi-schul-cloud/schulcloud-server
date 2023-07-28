@@ -10,7 +10,7 @@ import { ContextExternalToolService } from '../../context-external-tool/service'
 import { AvailableToolsForContext } from './dto';
 import { ContextTypeMapper } from '../../common/mapper';
 import { ExternalToolDO } from '../domain';
-import { SchoolExternalToolDO } from '../../school-external-tool/domain';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 
 @Injectable()
@@ -27,13 +27,14 @@ export class ExternalToolConfigurationUc {
 
 		const externalTools: Page<ExternalToolDO> = await this.externalToolService.findExternalTools({});
 
-		const schoolExternalToolsInUse: SchoolExternalToolDO[] =
-			await this.schoolExternalToolService.findSchoolExternalTools({
+		const schoolExternalToolsInUse: SchoolExternalTool[] = await this.schoolExternalToolService.findSchoolExternalTools(
+			{
 				schoolId,
-			});
+			}
+		);
 
 		const toolIdsInUse: EntityId[] = schoolExternalToolsInUse.map(
-			(schoolExternalTool: SchoolExternalToolDO): EntityId => schoolExternalTool.toolId
+			(schoolExternalTool: SchoolExternalTool): EntityId => schoolExternalTool.toolId
 		);
 
 		const availableTools: ExternalToolDO[] = externalTools.data.filter(
@@ -52,7 +53,7 @@ export class ExternalToolConfigurationUc {
 
 		const [externalTools, schoolExternalTools, contextExternalToolsInUse]: [
 			Page<ExternalToolDO>,
-			SchoolExternalToolDO[],
+			SchoolExternalTool[],
 			ContextExternalTool[]
 		] = await Promise.all([
 			this.externalToolService.findExternalTools({}),
@@ -64,7 +65,7 @@ export class ExternalToolConfigurationUc {
 			}),
 		]);
 
-		const availableSchoolExternalTools: SchoolExternalToolDO[] = this.filterForAvailableSchoolExternalTools(
+		const availableSchoolExternalTools: SchoolExternalTool[] = this.filterForAvailableSchoolExternalTools(
 			schoolExternalTools,
 			contextExternalToolsInUse
 		);
@@ -78,11 +79,11 @@ export class ExternalToolConfigurationUc {
 	}
 
 	private filterForAvailableSchoolExternalTools(
-		schoolExternalTools: SchoolExternalToolDO[],
+		schoolExternalTools: SchoolExternalTool[],
 		contextExternalToolsInUse: ContextExternalTool[]
-	): SchoolExternalToolDO[] {
-		const availableSchoolExternalTools: SchoolExternalToolDO[] = schoolExternalTools.filter(
-			(schoolExternalTool: SchoolExternalToolDO): boolean => {
+	): SchoolExternalTool[] {
+		const availableSchoolExternalTools: SchoolExternalTool[] = schoolExternalTools.filter(
+			(schoolExternalTool: SchoolExternalTool): boolean => {
 				const hasContextExternalTool: boolean = contextExternalToolsInUse.some(
 					(contextExternalTool: ContextExternalTool) =>
 						contextExternalTool.schoolToolRef.schoolToolId === schoolExternalTool.id
@@ -98,10 +99,10 @@ export class ExternalToolConfigurationUc {
 	// TODO N21-refactor return null with code coverage
 	private filterForAvailableExternalTools(
 		externalTools: ExternalToolDO[],
-		availableSchoolExternalTools: SchoolExternalToolDO[]
+		availableSchoolExternalTools: SchoolExternalTool[]
 	): AvailableToolsForContext[] {
 		const toolsWithSchoolTool: (AvailableToolsForContext | null)[] = availableSchoolExternalTools.map(
-			(schoolExternalTool: SchoolExternalToolDO) => {
+			(schoolExternalTool: SchoolExternalTool) => {
 				const externalTool: ExternalToolDO | undefined = externalTools.find(
 					(tool: ExternalToolDO) => schoolExternalTool.toolId === tool.id
 				);

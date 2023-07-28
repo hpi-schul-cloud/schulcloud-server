@@ -19,7 +19,7 @@ export interface SchoolExternalToolProps {
 	status?: ToolConfigurationStatus;
 }
 
-export class SchoolExternalToolDO extends BaseDO implements ToolVersion {
+export class SchoolExternalTool extends BaseDO implements ToolVersion {
 	name?: string;
 
 	toolId: string;

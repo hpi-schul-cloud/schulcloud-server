@@ -8,7 +8,7 @@ import { OAuth2ToolLaunchStrategy } from './oauth2-tool-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
 import { ExternalToolDO } from '../../../external-tool/domain';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
-import { SchoolExternalToolDO } from '../../../school-external-tool/domain';
+import { SchoolExternalTool } from '../../../school-external-tool/domain';
 
 describe('OAuth2ToolLaunchStrategy', () => {
 	let module: TestingModule;
@@ -46,7 +46,7 @@ describe('OAuth2ToolLaunchStrategy', () => {
 		describe('when always', () => {
 			const setup = () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.build();
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build();
+				const schoolExternalToolDO: SchoolExternalTool = schoolExternalToolDOFactory.build();
 				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.build();
 
 				const data: IToolLaunchParams = {

@@ -7,7 +7,7 @@ import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types
 import { BasicToolLaunchStrategy } from './basic-tool-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
 import { ExternalToolDO } from '../../../external-tool/domain';
-import { SchoolExternalToolDO } from '../../../school-external-tool/domain';
+import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 
 describe('BasicToolLaunchStrategy', () => {
@@ -103,12 +103,12 @@ describe('BasicToolLaunchStrategy', () => {
 	describe('buildToolLaunchDataFromConcreteConfig', () => {
 		const setup = () => {
 			const externalToolDO: ExternalToolDO = externalToolDOFactory.build();
-			const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build();
+			const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build();
 			const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.build();
 
 			const data: IToolLaunchParams = {
 				contextExternalToolDO,
-				schoolExternalToolDO,
+				schoolExternalToolDO: schoolExternalTool,
 				externalToolDO,
 			};
 

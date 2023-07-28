@@ -19,7 +19,7 @@ import { ExternalToolVersionService } from './external-tool-version.service';
 import { ExternalToolService } from './external-tool.service';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '../domain';
-import { SchoolExternalToolDO } from '../../school-external-tool/domain';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { CustomParameterDO } from '../../common/domain';
 import { CustomParameterScope } from '../../common/enum';
 
@@ -329,7 +329,7 @@ describe('ExternalToolService', () => {
 
 	describe('deleteExternalTool is called', () => {
 		const setupDelete = () => {
-			const schoolExternalToolDO: SchoolExternalToolDO = new SchoolExternalToolDO({
+			const schoolExternalTool: SchoolExternalTool = new SchoolExternalTool({
 				id: 'schoolTool1',
 				toolId: 'tool1',
 				schoolId: 'school1',
@@ -337,20 +337,20 @@ describe('ExternalToolService', () => {
 				toolVersion: 1,
 			});
 
-			schoolToolRepo.findByExternalToolId.mockResolvedValue([schoolExternalToolDO]);
+			schoolToolRepo.findByExternalToolId.mockResolvedValue([schoolExternalTool]);
 
-			return { schoolExternalToolDO };
+			return { schoolExternalTool };
 		};
 
 		describe('when tool id is set', () => {
 			it('should delete all related CourseExternalTools', async () => {
 				const toolId = 'tool1';
 				setup();
-				const { schoolExternalToolDO } = setupDelete();
+				const { schoolExternalTool } = setupDelete();
 
 				await service.deleteExternalTool(toolId);
 
-				expect(courseToolRepo.deleteBySchoolExternalToolIds).toHaveBeenCalledWith([schoolExternalToolDO.id]);
+				expect(courseToolRepo.deleteBySchoolExternalToolIds).toHaveBeenCalledWith([schoolExternalTool.id]);
 			});
 
 			it('should delete all related SchoolExternalTools', async () => {

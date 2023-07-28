@@ -10,7 +10,7 @@ import { ToolConfigurationStatusResponse } from '../../external-tool/controller/
 import { AvailableToolsForContext } from '../../external-tool/uc';
 import { CustomParameterEntry } from '../../common/entity';
 import { ToolConfigurationStatus } from '../../common/enum';
-import { SchoolExternalToolDO } from '../domain';
+import { SchoolExternalTool } from '../domain';
 import { CustomParameterEntryDO } from '../../common/domain';
 
 export const statusMapping: Record<ToolConfigurationStatus, ToolConfigurationStatusResponse> = {
@@ -21,23 +21,23 @@ export const statusMapping: Record<ToolConfigurationStatus, ToolConfigurationSta
 
 @Injectable()
 export class SchoolExternalToolResponseMapper {
-	mapToSearchListResponse(externalToolDOS: SchoolExternalToolDO[]): SchoolExternalToolSearchListResponse {
-		const responses: SchoolExternalToolResponse[] = externalToolDOS.map((toolDO: SchoolExternalToolDO) =>
+	mapToSearchListResponse(externalToolDOS: SchoolExternalTool[]): SchoolExternalToolSearchListResponse {
+		const responses: SchoolExternalToolResponse[] = externalToolDOS.map((toolDO: SchoolExternalTool) =>
 			this.mapToSchoolExternalToolResponse(toolDO)
 		);
 		return new SchoolExternalToolSearchListResponse(responses);
 	}
 
-	mapToSchoolExternalToolResponse(schoolExternalToolDO: SchoolExternalToolDO): SchoolExternalToolResponse {
+	mapToSchoolExternalToolResponse(schoolExternalTool: SchoolExternalTool): SchoolExternalToolResponse {
 		return {
-			id: schoolExternalToolDO.id ?? '',
-			name: schoolExternalToolDO.name ?? '',
-			toolId: schoolExternalToolDO.toolId,
-			schoolId: schoolExternalToolDO.schoolId,
-			parameters: this.mapToCustomParameterEntryResponse(schoolExternalToolDO.parameters),
-			toolVersion: schoolExternalToolDO.toolVersion,
-			status: schoolExternalToolDO.status
-				? statusMapping[schoolExternalToolDO.status]
+			id: schoolExternalTool.id ?? '',
+			name: schoolExternalTool.name ?? '',
+			toolId: schoolExternalTool.toolId,
+			schoolId: schoolExternalTool.schoolId,
+			parameters: this.mapToCustomParameterEntryResponse(schoolExternalTool.parameters),
+			toolVersion: schoolExternalTool.toolVersion,
+			status: schoolExternalTool.status
+				? statusMapping[schoolExternalTool.status]
 				: ToolConfigurationStatusResponse.UNKNOWN,
 		};
 	}

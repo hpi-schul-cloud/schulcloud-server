@@ -33,7 +33,7 @@ import {
 } from '../../../common/enum';
 import { ExternalToolDO } from '../../../external-tool/domain';
 import { CustomParameterEntryDO } from '../../../common/domain';
-import { SchoolExternalToolDO } from '../../../school-external-tool/domain';
+import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 
 const concreteConfigParameter: PropertyData = {
@@ -169,7 +169,7 @@ describe('AbstractLaunchStrategy', () => {
 					name: schoolCustomParameter.name,
 					value: 'true',
 				});
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
 					parameters: [schoolParameterEntry],
 					schoolId,
 				});
@@ -221,7 +221,7 @@ describe('AbstractLaunchStrategy', () => {
 					schoolParameterEntry,
 					contextParameterEntry,
 					externalToolDO,
-					schoolExternalToolDO,
+					schoolExternalTool,
 					contextExternalTool,
 					course,
 					school,
@@ -240,7 +240,7 @@ describe('AbstractLaunchStrategy', () => {
 					autoSchoolNumberCustomParameter,
 					schoolParameterEntry,
 					externalToolDO,
-					schoolExternalToolDO,
+					schoolExternalTool,
 					contextExternalTool,
 					course,
 					school,
@@ -249,7 +249,7 @@ describe('AbstractLaunchStrategy', () => {
 
 				const result: ToolLaunchData = await launchStrategy.createLaunchData('userId', {
 					externalToolDO,
-					schoolExternalToolDO,
+					schoolExternalToolDO: schoolExternalTool,
 					contextExternalToolDO: contextExternalTool,
 				});
 
@@ -310,7 +310,7 @@ describe('AbstractLaunchStrategy', () => {
 					parameters: [],
 				});
 
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
 					parameters: [],
 				});
 
@@ -320,17 +320,17 @@ describe('AbstractLaunchStrategy', () => {
 
 				return {
 					externalToolDO,
-					schoolExternalToolDO,
+					schoolExternalTool,
 					contextExternalTool,
 				};
 			};
 
 			it('should return a ToolLaunchData with no custom parameters', async () => {
-				const { externalToolDO, schoolExternalToolDO, contextExternalTool } = setup();
+				const { externalToolDO, schoolExternalTool, contextExternalTool } = setup();
 
 				const result: ToolLaunchData = await launchStrategy.createLaunchData('userId', {
 					externalToolDO,
-					schoolExternalToolDO,
+					schoolExternalToolDO: schoolExternalTool,
 					contextExternalToolDO: contextExternalTool,
 				});
 
@@ -361,7 +361,7 @@ describe('AbstractLaunchStrategy', () => {
 					parameters: [autoSchoolNumberCustomParameter],
 				});
 
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
 					parameters: [],
 				});
 
@@ -377,18 +377,18 @@ describe('AbstractLaunchStrategy', () => {
 
 				return {
 					externalToolDO,
-					schoolExternalToolDO,
+					schoolExternalTool,
 					contextExternalTool,
 				};
 			};
 
 			it('should throw a MissingToolParameterValueLoggableException', async () => {
-				const { externalToolDO, schoolExternalToolDO, contextExternalTool } = setup();
+				const { externalToolDO, schoolExternalTool, contextExternalTool } = setup();
 
 				const func = async () =>
 					launchStrategy.createLaunchData('userId', {
 						externalToolDO,
-						schoolExternalToolDO,
+						schoolExternalToolDO: schoolExternalTool,
 						contextExternalToolDO: contextExternalTool,
 					});
 
@@ -408,7 +408,7 @@ describe('AbstractLaunchStrategy', () => {
 					parameters: [customParameterWithUnknownType],
 				});
 
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
 					parameters: [],
 				});
 
@@ -418,18 +418,18 @@ describe('AbstractLaunchStrategy', () => {
 
 				return {
 					externalToolDO,
-					schoolExternalToolDO,
+					schoolExternalTool,
 					contextExternalTool,
 				};
 			};
 
 			it('should throw a ParameterNotImplementedLoggableException', async () => {
-				const { externalToolDO, schoolExternalToolDO, contextExternalTool } = setup();
+				const { externalToolDO, schoolExternalTool, contextExternalTool } = setup();
 
 				const func = async () =>
 					launchStrategy.createLaunchData('userId', {
 						externalToolDO,
-						schoolExternalToolDO,
+						schoolExternalToolDO: schoolExternalTool,
 						contextExternalToolDO: contextExternalTool,
 					});
 
@@ -449,7 +449,7 @@ describe('AbstractLaunchStrategy', () => {
 					parameters: [customParameterWithUnknownType],
 				});
 
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
 					parameters: [],
 				});
 
@@ -463,18 +463,18 @@ describe('AbstractLaunchStrategy', () => {
 
 				return {
 					externalToolDO,
-					schoolExternalToolDO,
+					schoolExternalTool,
 					contextExternalTool,
 				};
 			};
 
 			it('should throw a ParameterNotImplementedLoggableException', async () => {
-				const { externalToolDO, schoolExternalToolDO, contextExternalTool } = setup();
+				const { externalToolDO, schoolExternalTool, contextExternalTool } = setup();
 
 				const func = async () =>
 					launchStrategy.createLaunchData('userId', {
 						externalToolDO,
-						schoolExternalToolDO,
+						schoolExternalToolDO: schoolExternalTool,
 						contextExternalToolDO: contextExternalTool,
 					});
 

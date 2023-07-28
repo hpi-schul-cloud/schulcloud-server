@@ -21,7 +21,7 @@ import { Lti11ToolLaunchStrategy } from './lti11-tool-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
 import { ExternalToolDO } from '../../../external-tool/domain';
 import { LtiMessageType, LtiPrivacyPermission, LtiRole, ToolContextType } from '../../../common/enum';
-import { SchoolExternalToolDO } from '../../../school-external-tool/domain';
+import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 
 describe('Lti11ToolLaunchStrategy', () => {
@@ -91,12 +91,12 @@ describe('Lti11ToolLaunchStrategy', () => {
 						resource_link_id: resourceLinkId,
 					})
 					.buildWithId();
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId();
 				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.buildWithId();
 
 				const data: IToolLaunchParams = {
 					contextExternalToolDO,
-					schoolExternalToolDO,
+					schoolExternalToolDO: schoolExternalTool,
 					externalToolDO,
 				};
 
@@ -183,7 +183,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 						resource_link_id: undefined,
 					})
 					.buildWithId();
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId();
 
 				const contextId: string = new ObjectId().toHexString();
 				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.buildWithId({
@@ -192,7 +192,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 
 				const data: IToolLaunchParams = {
 					contextExternalToolDO,
-					schoolExternalToolDO,
+					schoolExternalToolDO: schoolExternalTool,
 					externalToolDO,
 				};
 
@@ -234,12 +234,12 @@ describe('Lti11ToolLaunchStrategy', () => {
 						resource_link_id: 'resourceLinkId',
 					})
 					.buildWithId();
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId();
 				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.buildWithId();
 
 				const data: IToolLaunchParams = {
 					contextExternalToolDO,
-					schoolExternalToolDO,
+					schoolExternalToolDO: schoolExternalTool,
 					externalToolDO,
 				};
 
@@ -283,12 +283,12 @@ describe('Lti11ToolLaunchStrategy', () => {
 						resource_link_id: 'resourceLinkId',
 					})
 					.buildWithId();
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId();
 				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.buildWithId();
 
 				const data: IToolLaunchParams = {
 					contextExternalToolDO,
-					schoolExternalToolDO,
+					schoolExternalToolDO: schoolExternalTool,
 					externalToolDO,
 				};
 
@@ -334,12 +334,12 @@ describe('Lti11ToolLaunchStrategy', () => {
 						resource_link_id: 'resourceLinkId',
 					})
 					.buildWithId();
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId();
 				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.buildWithId();
 
 				const data: IToolLaunchParams = {
 					contextExternalToolDO,
-					schoolExternalToolDO,
+					schoolExternalToolDO: schoolExternalTool,
 					externalToolDO,
 				};
 
@@ -372,12 +372,12 @@ describe('Lti11ToolLaunchStrategy', () => {
 		describe('when tool config is not lti', () => {
 			const setup = () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId();
 				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.buildWithId();
 
 				const data: IToolLaunchParams = {
 					contextExternalToolDO,
-					schoolExternalToolDO,
+					schoolExternalToolDO: schoolExternalTool,
 					externalToolDO,
 				};
 

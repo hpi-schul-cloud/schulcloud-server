@@ -10,7 +10,7 @@ import { SchoolExternalToolQuery } from '@src/modules/tool/school-external-tool/
 import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
 import { CustomParameterEntryDO } from '@src/modules/tool/common/domain';
-import { SchoolExternalToolDO } from '@src/modules/tool/school-external-tool/domain';
+import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain';
 import { SchoolExternalToolRepo } from './school-external-tool.repo';
 
 describe('SchoolExternalToolRepo', () => {
@@ -96,7 +96,7 @@ describe('SchoolExternalToolRepo', () => {
 		it('should find all SchoolExternalTools with reference to a given ExternalTool', async () => {
 			const { externalToolEntity, schoolExternalTool1, schoolExternalTool3 } = await setup();
 
-			const result: SchoolExternalToolDO[] = await repo.findByExternalToolId(externalToolEntity.id);
+			const result: SchoolExternalTool[] = await repo.findByExternalToolId(externalToolEntity.id);
 
 			expect(result).toEqual(
 				expect.arrayContaining([
@@ -121,7 +121,7 @@ describe('SchoolExternalToolRepo', () => {
 			it('should find all SchoolExternalTools with reference to a given school id', async () => {
 				const { school, schoolExternalTool1, schoolExternalTool3 } = await setup();
 
-				const result: SchoolExternalToolDO[] = await repo.findBySchoolId(school.id);
+				const result: SchoolExternalTool[] = await repo.findBySchoolId(school.id);
 
 				expect(result).toEqual(
 					expect.arrayContaining([
@@ -135,7 +135,7 @@ describe('SchoolExternalToolRepo', () => {
 
 	describe('save', () => {
 		function setup() {
-			const domainObject: SchoolExternalToolDO = new SchoolExternalToolDO({
+			const domainObject: SchoolExternalTool = new SchoolExternalTool({
 				toolId: new ObjectId().toHexString(),
 				parameters: [new CustomParameterEntryDO({ name: 'param', value: 'value' })],
 				schoolId: new ObjectId().toHexString(),
@@ -151,7 +151,7 @@ describe('SchoolExternalToolRepo', () => {
 			const { domainObject } = setup();
 			const { id, ...expected } = domainObject;
 
-			const result: SchoolExternalToolDO = await repo.save(domainObject);
+			const result: SchoolExternalTool = await repo.save(domainObject);
 
 			expect(result).toMatchObject(expected);
 			expect(result.id).toBeDefined();
@@ -176,7 +176,7 @@ describe('SchoolExternalToolRepo', () => {
 			it('should return a do', async () => {
 				const { query, schoolExternalTool1 } = await setup();
 
-				const result: SchoolExternalToolDO[] = await repo.find(query);
+				const result: SchoolExternalTool[] = await repo.find(query);
 
 				expect(result[0].schoolId).toEqual(schoolExternalTool1.school.id);
 			});
@@ -199,7 +199,7 @@ describe('SchoolExternalToolRepo', () => {
 			it('should return a do', async () => {
 				const { query, schoolExternalTool1 } = await setup();
 
-				const result: SchoolExternalToolDO[] = await repo.find(query);
+				const result: SchoolExternalTool[] = await repo.find(query);
 
 				expect(result[0].toolId).toEqual(schoolExternalTool1.tool.id);
 			});
@@ -223,7 +223,7 @@ describe('SchoolExternalToolRepo', () => {
 			it('should return all dos', async () => {
 				const { query } = await setup();
 
-				const result: SchoolExternalToolDO[] = await repo.find(query);
+				const result: SchoolExternalTool[] = await repo.find(query);
 
 				expect(result.length).toBeGreaterThan(0);
 			});

@@ -9,7 +9,7 @@ import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalToolVersionService } from './external-tool-version.service';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { ExternalToolDO, Oauth2ToolConfigDO } from '../domain';
-import { SchoolExternalToolDO } from '../../school-external-tool/domain';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { CustomParameterScope, TokenEndpointAuthMethod } from '../../common/enum';
 import { CustomParameterDO } from '../../common/domain';
 
@@ -102,9 +102,9 @@ export class ExternalToolService {
 	}
 
 	async deleteExternalTool(toolId: EntityId): Promise<void> {
-		const schoolExternalTools: SchoolExternalToolDO[] = await this.schoolExternalToolRepo.findByExternalToolId(toolId);
+		const schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolRepo.findByExternalToolId(toolId);
 		const schoolExternalToolIds: string[] = schoolExternalTools.map(
-			(schoolExternalToolDO: SchoolExternalToolDO): string =>
+			(schoolExternalToolDO: SchoolExternalTool): string =>
 				// We can be sure that the repo returns the id
 				schoolExternalToolDO.id as string
 		);

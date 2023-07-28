@@ -20,7 +20,7 @@ import { ToolStatusOutdatedLoggableException } from '../error';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ExternalToolService } from '../../external-tool/service';
 import { CommonToolService } from '../../common/service';
-import { SchoolExternalToolDO } from '../../school-external-tool/domain';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { BasicToolConfigDO, ExternalToolDO } from '../../external-tool/domain';
 import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
 
@@ -82,7 +82,7 @@ describe('ToolLaunchService', () => {
 	describe('getLaunchData', () => {
 		describe('when the tool config type is BASIC', () => {
 			const setup = () => {
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
+				const schoolExternalToolDO: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId();
 				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory
 					.withSchoolExternalToolRef(schoolExternalToolDO.id as string)
 					.build();
@@ -152,7 +152,7 @@ describe('ToolLaunchService', () => {
 
 		describe('when the tool config type is unknown', () => {
 			const setup = () => {
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
+				const schoolExternalToolDO: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId();
 				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory
 					.withSchoolExternalToolRef(schoolExternalToolDO.id as string)
 					.build();
@@ -211,7 +211,7 @@ describe('ToolLaunchService', () => {
 
 		describe('when tool configuration status is not LATEST', () => {
 			const setup = () => {
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
+				const schoolExternalToolDO: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId();
 				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory
 					.withSchoolExternalToolRef(schoolExternalToolDO.id as string)
 					.build();

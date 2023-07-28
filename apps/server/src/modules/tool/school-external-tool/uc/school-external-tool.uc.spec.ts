@@ -7,7 +7,7 @@ import { SchoolExternalToolUc } from './school-external-tool.uc';
 import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
-import { SchoolExternalToolDO } from '../domain';
+import { SchoolExternalTool } from '../domain';
 
 describe('SchoolExternalToolUc', () => {
 	let module: TestingModule;
@@ -58,7 +58,7 @@ describe('SchoolExternalToolUc', () => {
 	});
 
 	const setup = () => {
-		const tool: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
+		const tool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId();
 		const user: User = userFactory.buildWithId();
 
 		return {
@@ -110,9 +110,9 @@ describe('SchoolExternalToolUc', () => {
 
 				it('should return a empty array', async () => {
 					const { user } = setup();
-					const emptyQuery: Partial<SchoolExternalToolDO> = {};
+					const emptyQuery: Partial<SchoolExternalTool> = {};
 
-					const result: SchoolExternalToolDO[] = await uc.findSchoolExternalTools(user.id, emptyQuery);
+					const result: SchoolExternalTool[] = await uc.findSchoolExternalTools(user.id, emptyQuery);
 
 					expect(result).toEqual([]);
 				});
@@ -123,7 +123,7 @@ describe('SchoolExternalToolUc', () => {
 					const { user, tool } = setup();
 					schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([tool, tool]);
 
-					const result: SchoolExternalToolDO[] = await uc.findSchoolExternalTools(user.id, tool);
+					const result: SchoolExternalTool[] = await uc.findSchoolExternalTools(user.id, tool);
 
 					expect(result).toEqual([tool, tool]);
 				});
@@ -230,7 +230,7 @@ describe('SchoolExternalToolUc', () => {
 				const { user, schoolExternalToolId, tool } = setup();
 				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValue(tool);
 
-				const result: SchoolExternalToolDO = await uc.getSchoolExternalTool(user.id, schoolExternalToolId);
+				const result: SchoolExternalTool = await uc.getSchoolExternalTool(user.id, schoolExternalToolId);
 
 				expect(result).toEqual(tool);
 			});
@@ -240,7 +240,7 @@ describe('SchoolExternalToolUc', () => {
 	describe('updateSchoolExternalTool is called', () => {
 		const setupUpdate = () => {
 			const { tool, user } = setup();
-			const updatedTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({ ...tool });
+			const updatedTool: SchoolExternalTool = schoolExternalToolDOFactory.build({ ...tool });
 			updatedTool.parameters[0].value = 'updatedValue';
 
 			schoolExternalToolService.saveSchoolExternalTool.mockResolvedValue(updatedTool);
@@ -286,11 +286,7 @@ describe('SchoolExternalToolUc', () => {
 		it('should return a schoolExternalToolDO', async () => {
 			const { updatedTool, schoolExternalToolId, user } = setupUpdate();
 
-			const result: SchoolExternalToolDO = await uc.updateSchoolExternalTool(
-				user.id,
-				schoolExternalToolId,
-				updatedTool
-			);
+			const result: SchoolExternalTool = await uc.updateSchoolExternalTool(user.id, schoolExternalToolId, updatedTool);
 
 			expect(result).toEqual(updatedTool);
 		});

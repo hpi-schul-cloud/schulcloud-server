@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { ContextExternalToolAuthorizableService } from './context-external-tool-authorizable.service';
-import { SchoolExternalToolDO } from '../../school-external-tool/domain';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ContextExternalTool } from '../domain';
 
 describe('ContextExternalToolAuthorizableService', () => {
@@ -39,11 +39,11 @@ describe('ContextExternalToolAuthorizableService', () => {
 		describe('when id is given', () => {
 			const setup = () => {
 				const schoolId: string = schoolDOFactory.buildWithId().id as string;
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
 					schoolId,
 				});
 				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory
-					.withSchoolExternalToolRef(schoolExternalToolDO.id as string, schoolExternalToolDO.schoolId)
+					.withSchoolExternalToolRef(schoolExternalTool.id as string, schoolExternalTool.schoolId)
 					.build();
 
 				contextExternalToolRepo.findById.mockResolvedValue(contextExternalTool);

@@ -11,7 +11,7 @@ import {
 import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import { ContextExternalToolService } from './context-external-tool.service';
 import { ToolContextType } from '../../common/enum';
-import { SchoolExternalToolDO } from '../../school-external-tool/domain';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ContextExternalTool, ContextRef } from '../domain';
 
 describe('ContextExternalToolService', () => {
@@ -74,8 +74,8 @@ describe('ContextExternalToolService', () => {
 	describe('deleteBySchoolExternalToolId is called', () => {
 		describe('when schoolExternalToolId is given', () => {
 			const setup = () => {
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
-				const schoolExternalToolId = schoolExternalToolDO.id as string;
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId();
+				const schoolExternalToolId = schoolExternalTool.id as string;
 				const contextExternalTool1: ContextExternalTool = contextExternalToolDOFactory
 					.withSchoolExternalToolRef(schoolExternalToolId)
 					.buildWithId();
@@ -85,7 +85,7 @@ describe('ContextExternalToolService', () => {
 				contextExternalToolRepo.find.mockResolvedValueOnce([contextExternalTool1, contextExternalTool2]);
 
 				return {
-					schoolExternalToolDO,
+					schoolExternalTool,
 					schoolExternalToolId,
 					contextExternalTool1,
 					contextExternalTool2,
@@ -137,11 +137,11 @@ describe('ContextExternalToolService', () => {
 		describe('when contextExternalToolId is given', () => {
 			const setup = () => {
 				const schoolId: string = schoolDOFactory.buildWithId().id as string;
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
 					schoolId,
 				});
 				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory
-					.withSchoolExternalToolRef(schoolExternalToolDO.id as string, schoolExternalToolDO.schoolId)
+					.withSchoolExternalToolRef(schoolExternalTool.id as string, schoolExternalTool.schoolId)
 					.build();
 
 				contextExternalToolRepo.findById.mockResolvedValue(contextExternalTool);

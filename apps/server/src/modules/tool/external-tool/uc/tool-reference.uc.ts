@@ -9,7 +9,7 @@ import { ContextExternalToolService } from '../../context-external-tool/service'
 import { CommonToolService } from '../../common/service';
 import { ToolReferenceMapper } from '../mapper/tool-reference.mapper';
 import { ContextExternalTool, ContextRef } from '../../context-external-tool/domain';
-import { SchoolExternalToolDO } from '../../school-external-tool/domain';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
 
 @Injectable()
 export class ToolReferenceUc {
@@ -51,12 +51,12 @@ export class ToolReferenceUc {
 			}
 		}
 
-		const schoolExternalToolDO: SchoolExternalToolDO = await this.fetchSchoolExternalTool(contextExternalTool);
-		const externalToolDO: ExternalToolDO = await this.fetchExternalTool(schoolExternalToolDO);
+		const schoolExternalTool: SchoolExternalTool = await this.fetchSchoolExternalTool(contextExternalTool);
+		const externalToolDO: ExternalToolDO = await this.fetchExternalTool(schoolExternalTool);
 
 		const status: ToolConfigurationStatus = this.commonToolService.determineToolConfigurationStatus(
 			externalToolDO,
-			schoolExternalToolDO,
+			schoolExternalTool,
 			contextExternalTool
 		);
 
@@ -82,11 +82,11 @@ export class ToolReferenceUc {
 		return promise;
 	}
 
-	private async fetchSchoolExternalTool(contextExternalTool: ContextExternalTool): Promise<SchoolExternalToolDO> {
+	private async fetchSchoolExternalTool(contextExternalTool: ContextExternalTool): Promise<SchoolExternalTool> {
 		return this.schoolExternalToolService.getSchoolExternalToolById(contextExternalTool.schoolToolRef.schoolToolId);
 	}
 
-	private async fetchExternalTool(schoolExternalTool: SchoolExternalToolDO): Promise<ExternalToolDO> {
+	private async fetchExternalTool(schoolExternalTool: SchoolExternalTool): Promise<ExternalToolDO> {
 		return this.externalToolService.findExternalToolById(schoolExternalTool.toolId);
 	}
 }

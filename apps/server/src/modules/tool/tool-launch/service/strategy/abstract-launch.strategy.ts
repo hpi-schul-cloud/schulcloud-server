@@ -14,7 +14,7 @@ import { ToolLaunchMapper } from '../../mapper';
 import { LaunchRequestMethod, PropertyData, PropertyLocation, ToolLaunchData, ToolLaunchRequest } from '../../types';
 import { IToolLaunchParams } from './tool-launch-params.interface';
 import { IToolLaunchStrategy } from './tool-launch-strategy.interface';
-import { SchoolExternalToolDO } from '../../../school-external-tool/domain';
+import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { CustomParameterDO, CustomParameterEntryDO } from '../../../common/domain';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { ExternalToolDO } from '../../../external-tool/domain';
@@ -142,7 +142,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 		propertyData: PropertyData[],
 		customParameterDOs: CustomParameterDO[],
 		scopes: { scope: CustomParameterScope; params: CustomParameterEntryDO[] }[],
-		schoolExternalToolDO: SchoolExternalToolDO,
+		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
 	): Promise<void> {
 		await Promise.all(
@@ -157,7 +157,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 					propertyData,
 					parametersToInclude,
 					params,
-					schoolExternalToolDO,
+					schoolExternalTool,
 					contextExternalTool
 				);
 			})
@@ -168,7 +168,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 		propertyData: PropertyData[],
 		parametersToInclude: CustomParameterDO[],
 		params: CustomParameterEntryDO[],
-		schoolExternalToolDO: SchoolExternalToolDO,
+		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
 	): Promise<void> {
 		const missingParameters: CustomParameterDO[] = [];
@@ -182,7 +182,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 				const value: string | undefined = await this.getParameterValue(
 					parameter,
 					matchingParameter,
-					schoolExternalToolDO,
+					schoolExternalTool,
 					contextExternalTool
 				);
 
@@ -204,12 +204,12 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 	private async getParameterValue(
 		customParameter: CustomParameterDO,
 		matchingParameterEntry: CustomParameterEntryDO | undefined,
-		schoolExternalToolDO: SchoolExternalToolDO,
+		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
 	): Promise<string | undefined> {
 		switch (customParameter.type) {
 			case CustomParameterType.AUTO_SCHOOLID: {
-				return schoolExternalToolDO.schoolId;
+				return schoolExternalTool.schoolId;
 			}
 			case CustomParameterType.AUTO_CONTEXTID: {
 				return contextExternalTool.contextRef.id;
@@ -226,7 +226,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 				);
 			}
 			case CustomParameterType.AUTO_SCHOOLNUMBER: {
-				const school: SchoolDO = await this.schoolService.getSchoolById(schoolExternalToolDO.schoolId);
+				const school: SchoolDO = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
 
 				return school.officialSchoolNumber;
 			}
