@@ -1,10 +1,10 @@
+import { BaseFactory } from '@shared/testing/factory/base.factory';
+import { CustomParameterEntry } from '@src/modules/tool/common/entity';
 import {
 	ContextExternalTool,
 	ContextExternalToolType,
-	CustomParameterEntry,
 	IContextExternalToolProperties,
-} from '@shared/domain';
-import { BaseFactory } from '@shared/testing/factory/base.factory';
+} from '@src/modules/tool/context-external-tool/entity';
 import { courseFactory } from './course.factory';
 import { schoolExternalToolFactory } from './school-external-tool.factory';
 

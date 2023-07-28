@@ -1,17 +1,19 @@
 import {
-	BasicToolConfig,
-	CustomParameter,
 	CustomParameterLocation,
 	CustomParameterScope,
 	CustomParameterType,
+	LtiMessageType,
+	LtiPrivacyPermission,
+	ToolConfigType,
+} from '@src/modules/tool/common/enum';
+import {
+	BasicToolConfig,
+	CustomParameter,
 	ExternalTool,
 	IExternalToolProperties,
 	Lti11ToolConfig,
-	LtiMessageType,
-	LtiPrivacyPermission,
 	Oauth2ToolConfig,
-	ToolConfigType,
-} from '@shared/domain';
+} from '@src/modules/tool/external-tool/entity';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 
