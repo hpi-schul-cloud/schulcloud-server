@@ -1,28 +1,22 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CustomParameterScope, IFindOptions, Page, SchoolExternalToolDO, SortOrder } from '@shared/domain';
-import {
-	CustomParameterDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/tool';
+import { IFindOptions, Page, SchoolExternalToolDO, SortOrder } from '@shared/domain';
+import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/tool';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import {
-	customParameterDOFactory,
 	externalToolDOFactory,
 	lti11ToolConfigDOFactory,
 	oauth2ToolConfigDOFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolSearchQuery } from '../../common/interface';
+import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { ExternalToolVersionService } from './external-tool-version.service';
 import { ExternalToolService } from './external-tool.service';
-import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 
 describe('ExternalToolService', () => {
 	let module: TestingModule;
@@ -534,36 +528,6 @@ describe('ExternalToolService', () => {
 				await service.updateExternalTool(externalToolDO, externalToolDO);
 
 				expect(externalToolRepo.save).toHaveBeenCalledWith({ ...externalToolDO, version: 2 });
-			});
-		});
-	});
-
-	describe('getExternalToolForScope is called', () => {
-		describe('when scope school is given', () => {
-			it('should return an external tool with only school scoped custom parameters', async () => {
-				const schoolParameters: CustomParameterDO[] = customParameterDOFactory.buildList(1, {
-					scope: CustomParameterScope.SCHOOL,
-				});
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId(
-					{
-						parameters: [
-							...schoolParameters,
-							...customParameterDOFactory.buildList(1, { scope: CustomParameterScope.CONTEXT }),
-							...customParameterDOFactory.buildList(2, { scope: CustomParameterScope.GLOBAL }),
-						],
-					},
-					'toolId'
-				);
-				const expected: ExternalToolDO = externalToolDOFactory.build({
-					...externalToolDO,
-					parameters: schoolParameters,
-				});
-
-				externalToolRepo.findById.mockResolvedValue(externalToolDO);
-
-				const result: ExternalToolDO = await service.getExternalToolForScope('toolId', CustomParameterScope.SCHOOL);
-
-				expect(result).toEqual(expected);
 			});
 		});
 	});
