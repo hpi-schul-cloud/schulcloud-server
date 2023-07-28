@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
 import { AuthorizationContext, Rule } from '@src/modules/authorization/types';
-import { SchoolExternalTool, User } from '../entity';
-import { SchoolExternalToolDO } from '../domainobject';
+import { SchoolExternalToolDO } from '@src/modules/tool/school-external-tool/domainobject';
+import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/entity';
+import { User } from '../entity';
 
 @Injectable()
 export class SchoolExternalToolRule implements Rule {

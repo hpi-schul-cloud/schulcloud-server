@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { ExternalToolDO } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolService } from '@src/modules/lti-tool/service';
+import { ExternalToolDO } from '@src/modules/tool/external-tool/domainobject';
 import { ExternalToolService } from '@src/modules/tool/external-tool/service';
 
 @Injectable()

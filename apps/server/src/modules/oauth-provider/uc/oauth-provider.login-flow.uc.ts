@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { ExternalToolDO, Oauth2ToolConfigDO, Permission, Pseudonym, User, UserDO } from '@shared/domain';
+import { Permission, Pseudonym, User, UserDO } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import {
@@ -11,6 +11,7 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '@src/modules/oauth-provider/controller/dto';
 import { OauthProviderRequestMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-request.mapper';
 import { PseudonymService } from '@src/modules/pseudonym/service';
+import { ExternalToolDO, Oauth2ToolConfigDO } from '@src/modules/tool/external-tool/domainobject';
 import { UserService } from '@src/modules/user';
 import { OauthProviderLoginFlowService } from '../service/oauth-provider.login-flow.service';
 

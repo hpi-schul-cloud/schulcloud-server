@@ -1,9 +1,5 @@
-import {
-	BasicToolConfigDO,
-	CustomParameterDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/tool';
+import { BasicToolConfigDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '../../domainobject';
+import { CustomParameterDO } from '../../../common/domainobject';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 

@@ -1,8 +1,9 @@
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ExternalToolDO, LtiToolDO, Pseudonym, UserDO } from '@shared/domain';
+import { LtiToolDO, Pseudonym, UserDO } from '@shared/domain';
 import { v4 as uuidv4 } from 'uuid';
 import { IToolFeatures, ToolFeatures } from '@src/modules/tool/tool-config';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ExternalToolDO } from '@src/modules/tool/external-tool/domainobject';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 
 @Injectable()

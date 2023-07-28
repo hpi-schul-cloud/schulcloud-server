@@ -1,9 +1,10 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable } from '@nestjs/common';
-import { ExternalToolDO, LtiToolDO, Pseudonym, Team, UserDO } from '@shared/domain';
+import { LtiToolDO, Pseudonym, Team, UserDO } from '@shared/domain';
 import { TeamsRepo } from '@shared/repo';
 import { PseudonymService } from '@src/modules/pseudonym';
 import { UserService } from '@src/modules/user';
+import { ExternalToolDO } from '@src/modules/tool/external-tool/domainobject';
 import { GroupNameIdTuple, IdToken, OauthScope } from '../interface';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
 import { IdTokenCreationLoggableException } from '../error/id-token-creation-exception.loggable';
