@@ -1,6 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import {
-	ApiBearerAuth,
 	ApiForbiddenResponse,
 	ApiFoundResponse,
 	ApiOkResponse,
@@ -31,7 +30,6 @@ export class ToolConfigurationController {
 	constructor(private readonly externalToolConfigurationUc: ExternalToolConfigurationUc) {}
 
 	@Get('school/:schoolId/available-tools')
-	@ApiBearerAuth()
 	@ApiForbiddenResponse()
 	@ApiOperation({ summary: 'Lists all available tools that can be added for a given school' })
 	@ApiOkResponse({
@@ -54,7 +52,6 @@ export class ToolConfigurationController {
 	}
 
 	@Get(':contextType/:contextId/available-tools')
-	@ApiBearerAuth()
 	@ApiForbiddenResponse()
 	@ApiOperation({ summary: 'Lists all available tools that can be added for a given context' })
 	@ApiOkResponse({
