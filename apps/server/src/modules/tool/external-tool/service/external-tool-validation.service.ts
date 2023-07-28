@@ -8,11 +8,11 @@ import { ExternalToolParameterValidationService } from './external-tool-paramete
 export class ExternalToolValidationService {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
-		private readonly commonToolValidationService: ExternalToolParameterValidationService
+		private readonly externalToolParameterValidationService: ExternalToolParameterValidationService
 	) {}
 
 	async validateCreate(externalToolDO: ExternalToolDO): Promise<void> {
-		await this.commonToolValidationService.validateCommon(externalToolDO);
+		await this.externalToolParameterValidationService.validateCommon(externalToolDO);
 
 		await this.validateOauth2Config(externalToolDO);
 
@@ -58,7 +58,7 @@ export class ExternalToolValidationService {
 			throw new ValidationError(`tool_id_mismatch: The tool has no id or it does not match the path parameter.`);
 		}
 
-		await this.commonToolValidationService.validateCommon(externalToolDO);
+		await this.externalToolParameterValidationService.validateCommon(externalToolDO);
 
 		const loadedTool: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
 		if (
