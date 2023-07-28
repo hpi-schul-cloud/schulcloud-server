@@ -1,30 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Lesson, IComponentProperties, Course } from '@shared/domain';
+import { Course, EntityId, IComponentProperties, Lesson } from '@shared/domain';
 import { LessonService } from '@src/modules/lesson/service';
-import { TaskService } from '@src/modules/task/service/task.service';
 import { ComponentType } from '@src/shared/domain/entity/lesson.entity';
-import { CourseService } from './course.service';
 import {
+	CommonCartridgeFileBuilder,
+	CommonCartridgeResourceType,
+	CommonCartridgeVersion,
 	ICommonCartridgeOrganizationProps,
 	ICommonCartridgeResourceProps,
-	CommonCartridgeFileBuilder,
-	CommonCartridgeVersion,
-	CommonCartridgeResourceType,
 } from '../common-cartridge';
+import { CourseService } from './course.service';
 
 @Injectable()
 export class CommonCartridgeExportService {
-	constructor(
-		private readonly courseService: CourseService,
-		private readonly lessonService: LessonService,
-		private readonly taskService: TaskService
-	) {}
+	constructor(private readonly courseService: CourseService, private readonly lessonService: LessonService) {}
 
-	async exportCourse(
-		courseId: EntityId,
-		userId: EntityId,
-		version: CommonCartridgeVersion = CommonCartridgeVersion.V_1_1_0
-	): Promise<Buffer> {
+	async exportCourse(courseId: EntityId, userId: EntityId, version: CommonCartridgeVersion): Promise<Buffer> {
 		const course = await this.courseService.findById(courseId);
 		const [lessons] = await this.lessonService.findByCourseIds([courseId]);
 		const builder = new CommonCartridgeFileBuilder({
@@ -32,7 +23,7 @@ export class CommonCartridgeExportService {
 			title: course.name,
 			version,
 			copyrightOwners: this.mapCourseTeachersToCopyrightOwners(course),
-			currentYear: course.createdAt.getFullYear().toString(),
+			creationYear: course.createdAt.getFullYear().toString(),
 		});
 		lessons.forEach((lesson) => {
 			const organizationBuilder = builder.addOrganization(this.mapLessonToOrganization(lesson, version));
@@ -71,37 +62,35 @@ export class CommonCartridgeExportService {
 		content: IComponentProperties,
 		version: CommonCartridgeVersion
 	): ICommonCartridgeResourceProps | undefined {
+		const commonProps = {
+			version,
+			identifier: `i${content._id as string}`,
+			href: `i${lessonId}/i${content._id as string}.xml`,
+			title: content.title,
+		};
+
 		if (content.component === ComponentType.TEXT) {
 			return {
 				version,
-				type: CommonCartridgeResourceType.WEB_CONTENT,
 				identifier: `i${content._id as string}`,
 				href: `i${lessonId}/i${content._id as string}.html`,
 				title: content.title,
+				type: CommonCartridgeResourceType.WEB_CONTENT,
 				html: `<h1>${content.title}</h1><p>${content.content.text}</p>`,
 			};
 		}
 
 		if (content.component === ComponentType.GEOGEBRA) {
-			return {
-				version,
-				type: CommonCartridgeResourceType.WEB_LINK,
-				identifier: `i${content._id as string}`,
-				href: `i${lessonId}/i${content._id as string}.xml`,
-				title: content.title,
-				url: `https://www.geogebra.org/m/${content.content.materialId}`,
-			};
+			const url = `https://www.geogebra.org/m/${content.content.materialId}`;
+			return version === CommonCartridgeVersion.V_1_3_0
+				? { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V3, url }
+				: { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V1, url };
 		}
 
 		if (content.component === ComponentType.ETHERPAD) {
-			return {
-				version,
-				type: CommonCartridgeResourceType.WEB_LINK,
-				identifier: `i${content._id as string}`,
-				href: `i${lessonId}/i${content._id as string}.xml`,
-				title: content.title,
-				url: content.content.url,
-			};
+			return version === CommonCartridgeVersion.V_1_3_0
+				? { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V3, url: content.content.url }
+				: { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V1, url: content.content.url };
 		}
 
 		return undefined;

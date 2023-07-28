@@ -1,4 +1,4 @@
-import { SchoolFeatures, SchoolYear } from '@shared/domain/entity';
+import { FederalState, SchoolFeatures, SchoolYear } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseDO } from './base.do';
 
@@ -19,9 +19,13 @@ export class SchoolDO extends BaseDO {
 
 	features?: SchoolFeatures[];
 
+	// TODO: N21-990 Refactoring: Create domain objects for schoolYear and federalState
 	schoolYear?: SchoolYear;
 
 	userLoginMigrationId?: EntityId;
+
+	// TODO: N21-990 Refactoring: Create domain objects for schoolYear and federalState
+	federalState: FederalState;
 
 	constructor(params: SchoolDO) {
 		super();
@@ -36,5 +40,6 @@ export class SchoolDO extends BaseDO {
 		this.schoolYear = params.schoolYear;
 		this.systems = params.systems;
 		this.userLoginMigrationId = params.userLoginMigrationId;
+		this.federalState = params.federalState;
 	}
 }

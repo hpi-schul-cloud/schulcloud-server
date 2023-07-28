@@ -1,6 +1,7 @@
+import { InternalServerErrorException } from '@nestjs/common';
 import { SSOErrorCode } from './sso-error-code.enum';
 
-export class OAuthSSOError extends Error {
+export class OAuthSSOError extends InternalServerErrorException {
 	readonly message: string;
 
 	readonly errorcode: string;

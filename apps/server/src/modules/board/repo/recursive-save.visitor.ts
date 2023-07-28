@@ -15,9 +15,12 @@ import {
 	FileElementNode,
 	RichTextElement,
 	RichTextElementNode,
-	TaskElement,
-	TaskElementNode,
+	SubmissionContainerElement,
+	SubmissionContainerElementNode,
+	SubmissionItem,
+	SubmissionItemNode,
 } from '@shared/domain';
+import { BoardNodeRepo } from './board-node.repo';
 
 type ParentData = {
 	boardNode: BoardNode;
@@ -27,13 +30,13 @@ type ParentData = {
 export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 	private parentsMap: Map<EntityId, ParentData> = new Map();
 
-	constructor(private readonly em: EntityManager) {}
+	constructor(private readonly em: EntityManager, private readonly boardNodeRepo: BoardNodeRepo) {}
 
 	async save(domainObject: AnyBoardDo | AnyBoardDo[], parent?: AnyBoardDo): Promise<void> {
 		const domainObjects = Utils.asArray(domainObject);
 
 		if (parent) {
-			const parentNode = await this.em.findOneOrFail(BoardNode, parent.id);
+			const parentNode = await this.boardNodeRepo.findById(parent.id);
 
 			domainObjects.forEach((child) => {
 				this.registerParentData(parent, child, parentNode);
@@ -116,18 +119,32 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 		this.visitChildren(richTextElement, boardNode);
 	}
 
-	visitTaskElement(taskElement: TaskElement): void {
-		const parentData = this.parentsMap.get(taskElement.id);
+	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void {
+		const parentData = this.parentsMap.get(submissionContainerElement.id);
 
-		const boardNode = new TaskElementNode({
-			id: taskElement.id,
-			dueDate: taskElement.dueDate,
+		const boardNode = new SubmissionContainerElementNode({
+			id: submissionContainerElement.id,
+			dueDate: submissionContainerElement.dueDate,
 			parent: parentData?.boardNode,
 			position: parentData?.position,
 		});
 
 		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(taskElement, boardNode);
+		this.visitChildren(submissionContainerElement, boardNode);
+	}
+
+	visitSubmissionItem(submission: SubmissionItem): void {
+		const parentData = this.parentsMap.get(submission.id);
+		const boardNode = new SubmissionItemNode({
+			id: submission.id,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+			completed: submission.completed,
+			userId: submission.userId,
+		});
+
+		this.createOrUpdateBoardNode(boardNode);
+		this.visitChildren(submission, boardNode);
 	}
 
 	visitChildren(parent: AnyBoardDo, parentNode: BoardNode) {

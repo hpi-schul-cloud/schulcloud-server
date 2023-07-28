@@ -1,17 +1,34 @@
-import { Body, Controller, Delete, ForbiddenException, HttpCode, NotFoundException, Param, Put } from '@nestjs/common';
-import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+	Body,
+	Controller,
+	Delete,
+	ForbiddenException,
+	HttpCode,
+	NotFoundException,
+	Param,
+	Patch,
+	Post,
+	Put,
+} from '@nestjs/common';
+import { ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { CardUc } from '../uc';
 import { ElementUc } from '../uc/element.uc';
-import { ContentElementUrlParams, MoveContentElementBody } from './dto';
 import {
-	ElementContentUpdateBodyParams,
+	ContentElementUrlParams,
+	CreateSubmissionItemBodyParams,
+	MoveContentElementBody,
+	SubmissionItemResponse,
+} from './dto';
+import {
 	FileElementContentBody,
 	RichTextElementContentBody,
-	TaskElementContentBody,
-} from './dto/element/element-content-update.body.params';
+	SubmissionContainerElementContentBody,
+	UpdateElementContentBodyParams,
+} from './dto/element/update-element-content.body.params';
+import { SubmissionItemResponseMapper } from './mapper';
 
 @ApiTags('Board Element')
 @Authenticate('jwt')
@@ -40,16 +57,16 @@ export class ElementController {
 	}
 
 	@ApiOperation({ summary: 'Update a single content element.' })
-	@ApiExtraModels(FileElementContentBody, RichTextElementContentBody, TaskElementContentBody)
+	@ApiExtraModels(FileElementContentBody, RichTextElementContentBody, SubmissionContainerElementContentBody)
 	@ApiResponse({ status: 204 })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
-	@Put(':contentElementId/content')
+	@Patch(':contentElementId/content')
 	async updateElement(
 		@Param() urlParams: ContentElementUrlParams,
-		@Body() bodyParams: ElementContentUpdateBodyParams,
+		@Body() bodyParams: UpdateElementContentBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.elementUc.updateElementContent(currentUser.userId, urlParams.contentElementId, bodyParams.data.content);
@@ -67,5 +84,27 @@ export class ElementController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.cardUc.deleteElement(currentUser.userId, urlParams.contentElementId);
+	}
+
+	@ApiOperation({ summary: 'Create a new submission item in a submission container element.' })
+	@ApiExtraModels(SubmissionItemResponse)
+	@ApiResponse({ status: 201, type: SubmissionItemResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@ApiBody({ required: true, type: CreateSubmissionItemBodyParams })
+	@Post(':contentElementId/submissions')
+	async createSubmission(
+		@Param() urlParams: ContentElementUrlParams,
+		@Body() bodyParams: CreateSubmissionItemBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<SubmissionItemResponse> {
+		const submission = await this.elementUc.createSubmissionItem(currentUser.userId, urlParams.contentElementId);
+		submission.userId = currentUser.userId;
+		submission.completed = false;
+		const mapper = SubmissionItemResponseMapper.getInstance();
+		const response = mapper.mapToResponse(submission);
+
+		return response;
 	}
 }

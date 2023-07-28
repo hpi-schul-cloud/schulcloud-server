@@ -1,48 +1,38 @@
-import { ProviderLoginResponse } from '@shared/infra/oauth-provider/dto';
-import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { LtiToolRepo, PseudonymsRepo } from '@shared/repo';
-import { InternalServerErrorException } from '@nestjs/common';
-import { Permission, PseudonymDO, User } from '@shared/domain';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { AuthorizationService } from '@src/modules/authorization';
+import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
+import { ExternalToolDO } from '@shared/domain';
+import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { LtiToolService } from '@src/modules/lti-tool/service';
+import { ExternalToolService } from '@src/modules/tool/external-tool/service';
 
 @Injectable()
 export class OauthProviderLoginFlowService {
 	constructor(
-		private readonly ltiToolRepo: LtiToolRepo,
-		private readonly pseudonymsRepo: PseudonymsRepo,
-		private readonly authorizationService: AuthorizationService
+		private readonly ltiToolService: LtiToolService,
+		private readonly externalToolService: ExternalToolService
 	) {}
 
-	async getPseudonym(currentUserId: string, loginResponse: ProviderLoginResponse): Promise<PseudonymDO> {
-		if (!loginResponse.client.client_id) {
-			throw new InternalServerErrorException('Could not find oAuthClientId in login response to get the pseudonym');
+	public async findToolByClientId(clientId: string): Promise<ExternalToolDO | LtiToolDO> {
+		const externalTool: ExternalToolDO | null = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(
+			clientId
+		);
+		const ltiTool: LtiToolDO | null = await this.ltiToolService.findByClientIdAndIsLocal(clientId, true);
+
+		if (externalTool) {
+			return externalTool;
 		}
 
-		const ltiToolDO: LtiToolDO = await this.ltiToolRepo.findByClientIdAndIsLocal(loginResponse.client.client_id, true);
-		const pseudonym: PseudonymDO = await this.pseudonymsRepo.findByUserIdAndToolId(
-			currentUserId,
-			ltiToolDO.id as string
-		);
-		return pseudonym;
+		if (ltiTool) {
+			return ltiTool;
+		}
+
+		throw new NotFoundException(`Unable to find ExternalTool or LtiTool for clientId: ${clientId}`);
 	}
 
 	// TODO N21-91. Magic Strings are not desireable
-	private async isNextcloudTool(loginResponse: ProviderLoginResponse): Promise<boolean> {
-		if (!loginResponse.client?.client_id) {
-			throw new InternalServerErrorException('Could not find oAuthClientId in login response to get the LtiTool');
-		}
+	public isNextcloudTool(tool: ExternalToolDO | LtiToolDO): boolean {
+		const isNextcloud: boolean = tool.name === 'SchulcloudNextcloud';
 
-		const ltiToolDO: LtiToolDO = await this.ltiToolRepo.findByClientIdAndIsLocal(loginResponse.client.client_id, true);
-		const isNextcloud: boolean = ltiToolDO.name === 'SchulcloudNextcloud';
 		return isNextcloud;
-	}
-
-	async validateNextcloudPermission(currentUserId: string, loginResponse: ProviderLoginResponse): Promise<void> {
-		const isNextcloudTool: boolean = await this.isNextcloudTool(loginResponse);
-		if (isNextcloudTool) {
-			const user: User = await this.authorizationService.getUserWithPermissions(currentUserId);
-			this.authorizationService.checkAllPermissions(user, [Permission.NEXTCLOUD_USER]);
-		}
 	}
 }
