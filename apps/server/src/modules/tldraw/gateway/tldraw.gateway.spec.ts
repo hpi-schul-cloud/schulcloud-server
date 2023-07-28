@@ -60,10 +60,8 @@ describe('TldrawGateway', () => {
 		expect(closeConSpy).toHaveBeenCalled();
 	});
 
-	it('new test awareness handler', () => {
+	it('awareness change handler testing', () => {
 		class MockAwareness {
-			setLocalState = jest.fn();
-
 			on = jest.fn();
 		}
 		const doc = new WSSharedDoc('TEST');
