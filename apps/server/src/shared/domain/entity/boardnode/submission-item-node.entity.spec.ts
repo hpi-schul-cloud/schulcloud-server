@@ -1,35 +1,36 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { submissionContainerElementFactory } from '@shared/testing';
-import { SubmissionContainerElementNode } from './submission-container-element-node.entity';
+import { submissionItemFactory } from '@shared/testing';
+import { ObjectId } from 'bson';
+import { SubmissionItemNode } from './submission-item-node.entity';
 import { BoardDoBuilder, BoardNodeType } from './types';
 
-const inThreeDays = new Date(Date.now() + 259200000);
-
-describe(SubmissionContainerElementNode.name, () => {
+describe(SubmissionItemNode.name, () => {
 	describe('when trying to create a submission container element', () => {
 		const setup = () => {
-			const elementProps = { dueDate: inThreeDays };
+			const elementProps = { completed: false, userId: ObjectId.toString() };
 			const builder: DeepMocked<BoardDoBuilder> = createMock<BoardDoBuilder>();
 
 			return { elementProps, builder };
 		};
 
-		it('should create a SubmissionContainerElement', () => {
+		it('should create a SubmissionItem', () => {
 			const { elementProps } = setup();
 
-			const element = new SubmissionContainerElementNode(elementProps);
+			const element = new SubmissionItemNode(elementProps);
 
-			expect(element.type).toEqual(BoardNodeType.SUBMISSION_CONTAINER_ELEMENT);
+			expect(element.type).toEqual(BoardNodeType.SUBMISSION_ITEM);
 		});
 	});
 
 	describe('useDoBuilder()', () => {
 		const setup = () => {
-			const element = new SubmissionContainerElementNode({ dueDate: inThreeDays });
-			const builder: DeepMocked<BoardDoBuilder> = createMock<BoardDoBuilder>();
-			const elementDo = submissionContainerElementFactory.build();
+			const elementProps = { completed: false, userId: ObjectId.toString() };
+			const element = new SubmissionItemNode(elementProps);
 
-			builder.buildSubmissionContainerElement.mockReturnValue(elementDo);
+			const builder: DeepMocked<BoardDoBuilder> = createMock<BoardDoBuilder>();
+			const elementDo = submissionItemFactory.build();
+
+			builder.buildSubmissionItem.mockReturnValue(elementDo);
 
 			return { element, builder, elementDo };
 		};
@@ -39,7 +40,7 @@ describe(SubmissionContainerElementNode.name, () => {
 
 			element.useDoBuilder(builder);
 
-			expect(builder.buildSubmissionContainerElement).toHaveBeenCalledWith(element);
+			expect(builder.buildSubmissionItem).toHaveBeenCalledWith(element);
 		});
 
 		it('should return ElementDo', () => {

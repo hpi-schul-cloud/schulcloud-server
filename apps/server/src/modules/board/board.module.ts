@@ -14,6 +14,7 @@ import {
 	ColumnService,
 	ContentElementService,
 } from './service';
+import { SubmissionItemService } from './service/submission-item.service';
 
 @Module({
 	imports: [ConsoleWriterModule, FilesStorageClientModule, LoggerModule],
@@ -25,11 +26,19 @@ import {
 		ColumnBoardService,
 		ColumnService,
 		ContentElementService,
+		SubmissionItemService,
 		RecursiveDeleteVisitor,
 		ContentElementFactory,
 		BoardDoAuthorizableService,
 		CourseRepo, // TODO: import learnroom module instead. This is currently not possible due to dependency cycle with authorisation service
 	],
-	exports: [ColumnBoardService, ColumnService, CardService, ContentElementService, BoardDoAuthorizableService],
+	exports: [
+		ColumnBoardService,
+		ColumnService,
+		CardService,
+		ContentElementService,
+		BoardDoAuthorizableService,
+		SubmissionItemService,
+	],
 })
 export class BoardModule {}

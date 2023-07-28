@@ -1,3 +1,4 @@
+import { SubmissionItem } from '@shared/domain/domainobject/board/submission-item.do';
 import type {
 	Card,
 	Column,
@@ -12,6 +13,7 @@ import type { ColumnNode } from '../column-node.entity';
 import type { FileElementNode } from '../file-element-node.entity';
 import type { RichTextElementNode } from '../rich-text-element-node.entity';
 import type { SubmissionContainerElementNode } from '../submission-container-element-node.entity';
+import type { SubmissionItemNode } from '../submission-item-node.entity';
 
 export interface BoardDoBuilder {
 	buildColumnBoard(boardNode: ColumnBoardNode): ColumnBoard;
@@ -20,4 +22,5 @@ export interface BoardDoBuilder {
 	buildFileElement(boardNode: FileElementNode): FileElement;
 	buildRichTextElement(boardNode: RichTextElementNode): RichTextElement;
 	buildSubmissionContainerElement(boardNode: SubmissionContainerElementNode): SubmissionContainerElement;
+	buildSubmissionItem(boardNode: SubmissionItemNode): SubmissionItem;
 }
