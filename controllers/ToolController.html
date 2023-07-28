@@ -189,8 +189,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="53"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:53</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="52"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:52</a></div>
                 </td>
             </tr>
 
@@ -282,8 +282,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="134"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:134</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="133"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:133</a></div>
                 </td>
             </tr>
 
@@ -376,8 +376,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="72"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:72</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="71"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:71</a></div>
                 </td>
             </tr>
 
@@ -491,8 +491,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="99"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:99</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="98"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:98</a></div>
                 </td>
             </tr>
 
@@ -586,8 +586,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="149"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:149</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="148"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:148</a></div>
                 </td>
             </tr>
 
@@ -681,8 +681,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="114"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:114</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="113"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:113</a></div>
                 </td>
             </tr>
 
@@ -777,8 +777,9 @@ import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { ExternalToolSearchQuery } from &#x27;../../common/interface&#x27;;
-import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate, ToolReferenceUc } from &#x27;../uc&#x27;;
+import { ContextExternalToolContextParams } from &#x27;../../context-external-tool/controller/dto&#x27;;
 import { ExternalToolRequestMapper, ExternalToolResponseMapper } from &#x27;../mapper&#x27;;
+import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate, ToolReferenceUc } from &#x27;../uc&#x27;;
 import {
 	ExternalToolCreateParams,
 	ExternalToolResponse,
@@ -790,7 +791,6 @@ import {
 	ToolReferenceListResponse,
 	ToolReferenceResponse,
 } from &#x27;./dto&#x27;;
-import { ContextExternalToolContextParams } from &#x27;../../context-external-tool/controller/dto&#x27;;
 
 @ApiTags(&#x27;Tool&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
@@ -799,7 +799,6 @@ export class ToolController {
 	constructor(
 		private readonly externalToolUc: ExternalToolUc,
 		private readonly externalToolDOMapper: ExternalToolRequestMapper,
-		private readonly externalResponseMapper: ExternalToolResponseMapper,
 		private readonly toolReferenceUc: ToolReferenceUc,
 		private readonly logger: LegacyLogger
 	) {}
@@ -818,7 +817,7 @@ export class ToolController {
 
 		const created: ExternalToolDO &#x3D; await this.externalToolUc.createExternalTool(currentUser.userId, externalToolDO);
 
-		const mapped: ExternalToolResponse &#x3D; this.externalResponseMapper.mapToExternalToolResponse(created);
+		const mapped: ExternalToolResponse &#x3D; ExternalToolResponseMapper.mapToExternalToolResponse(created);
 
 		this.logger.debug(&#x60;ExternalTool with id ${mapped.id} was created by user with id ${currentUser.userId}&#x60;);
 
@@ -843,7 +842,7 @@ export class ToolController {
 		const tools: Page&lt;ExternalToolDO&gt; &#x3D; await this.externalToolUc.findExternalTool(currentUser.userId, query, options);
 
 		const dtoList: ExternalToolResponse[] &#x3D; tools.data.map(
-			(tool: ExternalToolDO): ExternalToolResponse &#x3D;&gt; this.externalResponseMapper.mapToExternalToolResponse(tool)
+			(tool: ExternalToolDO): ExternalToolResponse &#x3D;&gt; ExternalToolResponseMapper.mapToExternalToolResponse(tool)
 		);
 		const response: ExternalToolSearchListResponse &#x3D; new ExternalToolSearchListResponse(
 			dtoList,
@@ -861,7 +860,7 @@ export class ToolController {
 		@Param() params: ToolIdParams
 	): Promise&lt;ExternalToolResponse&gt; {
 		const externalToolDO: ExternalToolDO &#x3D; await this.externalToolUc.getExternalTool(currentUser.userId, params.toolId);
-		const mapped: ExternalToolResponse &#x3D; this.externalResponseMapper.mapToExternalToolResponse(externalToolDO);
+		const mapped: ExternalToolResponse &#x3D; ExternalToolResponseMapper.mapToExternalToolResponse(externalToolDO);
 
 		return mapped;
 	}
@@ -882,7 +881,7 @@ export class ToolController {
 			params.toolId,
 			externalTool
 		);
-		const mapped: ExternalToolResponse &#x3D; this.externalResponseMapper.mapToExternalToolResponse(updated);
+		const mapped: ExternalToolResponse &#x3D; ExternalToolResponseMapper.mapToExternalToolResponse(updated);
 		this.logger.debug(&#x60;ExternalTool with id ${mapped.id} was updated by user with id ${currentUser.userId}&#x60;);
 
 		return mapped;
@@ -917,7 +916,7 @@ export class ToolController {
 		);
 
 		const toolReferenceResponses: ToolReferenceResponse[] &#x3D;
-			this.externalResponseMapper.mapToToolReferenceResponses(toolReferences);
+			ExternalToolResponseMapper.mapToToolReferenceResponses(toolReferences);
 		const toolReferenceListResponse &#x3D; new ToolReferenceListResponse(toolReferenceResponses);
 
 		return toolReferenceListResponse;

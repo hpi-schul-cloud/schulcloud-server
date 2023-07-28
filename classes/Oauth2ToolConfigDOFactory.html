@@ -1322,22 +1322,22 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DeepPartial } from &#x27;fishery&#x27;;
-import {
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+	BasicToolConfigDO,
+	CustomParameterDO,
 	CustomParameterLocation,
 	CustomParameterScope,
 	CustomParameterType,
+	ExternalToolDO,
+	ExternalToolProps,
+	Lti11ToolConfigDO,
 	LtiMessageType,
 	LtiPrivacyPermission,
-	ToolConfigType,
-	BasicToolConfigDO,
-	CustomParameterDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-	ExternalToolProps,
+	ToolConfigType,
 } from &#x27;@shared/domain&#x27;;
 import { TokenEndpointAuthMethod } from &#x27;@src/modules/tool/common/interface&#x27;;
+import { DeepPartial } from &#x27;fishery&#x27;;
 import { DoBaseFactory } from &#x27;../do-base.factory&#x27;;
 
 export const basicToolConfigDOFactory &#x3D; DoBaseFactory.define&lt;BasicToolConfigDO, BasicToolConfigDO&gt;(
@@ -1388,19 +1388,26 @@ export const lti11ToolConfigDOFactory &#x3D; DoBaseFactory.define&lt;Lti11ToolCo
 	}
 );
 
-export const customParameterDOFactory &#x3D; DoBaseFactory.define&lt;CustomParameterDO, CustomParameterDO&gt;(
-	CustomParameterDO,
-	({ sequence }) &#x3D;&gt; {
-		return {
-			name: &#x60;custom-parameter-${sequence}&#x60;,
-			displayName: &#x27;User Friendly Name&#x27;,
-			type: CustomParameterType.STRING,
-			scope: CustomParameterScope.GLOBAL,
-			location: CustomParameterLocation.BODY,
-			isOptional: false,
-		};
+class CustomParameterFactory extends DoBaseFactory&lt;CustomParameterDO, CustomParameterDO&gt; {
+	buildListWithEachType(params?: DeepPartial&lt;CustomParameterDO&gt;): CustomParameterDO[] {
+		const globalParameter &#x3D; this.build({ ...params, scope: CustomParameterScope.GLOBAL });
+		const schoolParameter &#x3D; this.build({ ...params, scope: CustomParameterScope.SCHOOL });
+		const contextParameter &#x3D; this.build({ ...params, scope: CustomParameterScope.CONTEXT });
+
+		return [globalParameter, schoolParameter, contextParameter];
 	}
-);
+}
+
+export const customParameterDOFactory &#x3D; CustomParameterFactory.define(CustomParameterDO, ({ sequence }) &#x3D;&gt; {
+	return {
+		name: &#x60;custom-parameter-${sequence}&#x60;,
+		displayName: &#x27;User Friendly Name&#x27;,
+		type: CustomParameterType.STRING,
+		scope: CustomParameterScope.GLOBAL,
+		location: CustomParameterLocation.BODY,
+		isOptional: false,
+	};
+});
 
 class ExternalToolDOFactory extends DoBaseFactory&lt;ExternalToolDO, ExternalToolProps&gt; {
 	withOauth2Config(customParam?: DeepPartial&lt;Oauth2ToolConfigDO&gt;): this {

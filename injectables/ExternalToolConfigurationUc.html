@@ -103,6 +103,10 @@
                                 <a href="#filterForAvailableSchoolExternalTools" >filterForAvailableSchoolExternalTools</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#filterParametersForScope" >filterParametersForScope</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#getAvailableToolsForContext" >getAvailableToolsForContext</a>
@@ -115,12 +119,12 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#getExternalToolForContext" >getExternalToolForContext</a>
+                                <a href="#getTemplateForContextExternalTool" >getTemplateForContextExternalTool</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#getExternalToolForSchool" >getExternalToolForSchool</a>
+                                <a href="#getTemplateForSchoolExternalTool" >getTemplateForSchoolExternalTool</a>
                             </li>
                         </ul>
                     </td>
@@ -140,12 +144,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>)</code>
+<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, toolFeatures: <a href="../interfaces/IToolFeatures.html" target="_self">IToolFeatures</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:21</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:23</a></div>
                             </td>
                         </tr>
 
@@ -210,6 +214,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>toolFeatures</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/IToolFeatures.html" target="_self" >IToolFeatures</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -247,8 +263,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="175"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:175</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="211"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:211</a></div>
                 </td>
             </tr>
 
@@ -343,8 +359,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="168"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:168</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="204"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:204</a></div>
                 </td>
             </tr>
 
@@ -426,8 +442,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="103"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:103</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="119"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:119</a></div>
                 </td>
             </tr>
 
@@ -477,7 +493,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#AvailableToolsForContext" target="_self" >AvailableToolsForContext[]</a></code>
+                        <b>Returns : </b>    <code>ContextExternalToolTemplateInfo[]</code>
 
                     </div>
                     <div class="io-description">
@@ -509,8 +525,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="84"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:84</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="96"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:96</a></div>
                 </td>
             </tr>
 
@@ -574,6 +590,89 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="filterParametersForScope"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>filterParametersForScope</b></span>
+                        <a href="#filterParametersForScope"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>filterParametersForScope(externalTool: <a href="../classes/ExternalToolDO.html" target="_self">ExternalToolDO</a>, scope: <a href="../undefineds/CustomParameterScope.html" target="_self">CustomParameterScope</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="196"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:196</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>externalTool</td>
+                                    <td>
+                                                <code><a href="../classes/ExternalToolDO.html" target="_self" >ExternalToolDO</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>scope</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/enumerations.html#CustomParameterScope" target="_self" >CustomParameterScope</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getAvailableToolsForContext"></a>
                     <span class="name">
                         <span class="modifier">Public</span>
@@ -593,8 +692,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="49"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:49</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="57"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:57</a></div>
                 </td>
             </tr>
 
@@ -668,7 +767,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#AvailableToolsForContext" target="_self" >Promise&lt;AvailableToolsForContext[]&gt;</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;ContextExternalToolTemplateInfo[]&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -701,8 +800,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="29"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:29</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="32"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:32</a></div>
                 </td>
             </tr>
 
@@ -766,27 +865,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getExternalToolForContext"></a>
+                    <a name="getTemplateForContextExternalTool"></a>
                     <span class="name">
                         <span class="modifier">Public</span>
                         <span class="modifier">Async</span>
-                        <span ><b>getExternalToolForContext</b></span>
-                        <a href="#getExternalToolForContext"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getTemplateForContextExternalTool</b></span>
+                        <a href="#getTemplateForContextExternalTool"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getExternalToolForContext(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, externalToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, contextType: <a href="../undefineds/ToolContextType.html" target="_self">ToolContextType</a>)</code>
+                    <code>getTemplateForContextExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextExternalToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="149"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:149</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="168"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:168</a></div>
                 </td>
             </tr>
 
@@ -819,33 +918,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>externalToolId</td>
+                                    <td>contextExternalToolId</td>
                                     <td>
                                                 <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>contextId</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>contextType</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/enumerations.html#ToolContextType" target="_self" >ToolContextType</a></code>
                                     </td>
 
                                     <td>
@@ -860,7 +935,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/ExternalToolDO.html" target="_self" >Promise&lt;ExternalToolDO&gt;</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;ContextExternalToolTemplateInfo&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -874,27 +949,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getExternalToolForSchool"></a>
+                    <a name="getTemplateForSchoolExternalTool"></a>
                     <span class="name">
                         <span class="modifier">Public</span>
                         <span class="modifier">Async</span>
-                        <span ><b>getExternalToolForSchool</b></span>
-                        <a href="#getExternalToolForSchool"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getTemplateForSchoolExternalTool</b></span>
+                        <a href="#getTemplateForSchoolExternalTool"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getExternalToolForSchool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, externalToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>getTemplateForSchoolExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolExternalToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="131"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:131</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="147"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:147</a></div>
                 </td>
             </tr>
 
@@ -927,19 +1002,7 @@
 
                                 </tr>
                                 <tr>
-                                    <td>externalToolId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>schoolId</td>
+                                    <td>schoolExternalToolId</td>
                                     <td>
                                                 <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                     </td>
@@ -972,10 +1035,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
 import { NotFoundException } from &#x27;@nestjs/common/exceptions/not-found.exception&#x27;;
 import {
 	ContextExternalToolDO,
+	CustomParameterDO,
 	CustomParameterScope,
 	EntityId,
 	Permission,
@@ -985,11 +1049,12 @@ import { Page } from &#x27;@shared/domain/domainobject/page&#x27;;
 import { ExternalToolDO } from &#x27;@shared/domain/domainobject/tool&#x27;;
 import { Action, AuthorizableReferenceType, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
 import { ToolContextType } from &#x27;../../common/interface&#x27;;
-import { ExternalToolService } from &#x27;../service&#x27;;
-import { SchoolExternalToolService } from &#x27;../../school-external-tool/service&#x27;;
-import { ContextExternalToolService } from &#x27;../../context-external-tool/service&#x27;;
-import { AvailableToolsForContext } from &#x27;./dto&#x27;;
 import { ContextTypeMapper } from &#x27;../../common/mapper&#x27;;
+import { ContextExternalToolService } from &#x27;../../context-external-tool/service&#x27;;
+import { SchoolExternalToolService } from &#x27;../../school-external-tool/service&#x27;;
+import { IToolFeatures, ToolFeatures } from &#x27;../../tool-config&#x27;;
+import { ExternalToolService } from &#x27;../service&#x27;;
+import { ContextExternalToolTemplateInfo } from &#x27;./dto&#x27;;
 
 @Injectable()
 export class ExternalToolConfigurationUc {
@@ -997,7 +1062,8 @@ export class ExternalToolConfigurationUc {
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
 	) {}
 
 	public async getAvailableToolsForSchool(userId: EntityId, schoolId: EntityId): Promise&lt;ExternalToolDO[]&gt; {
@@ -1017,6 +1083,11 @@ export class ExternalToolConfigurationUc {
 		const availableTools: ExternalToolDO[] &#x3D; externalTools.data.filter(
 			(tool: ExternalToolDO): boolean &#x3D;&gt; !tool.isHidden &amp;&amp; !!tool.id &amp;&amp; !toolIdsInUse.includes(tool.id)
 		);
+
+		availableTools.forEach((externalTool) &#x3D;&gt; {
+			this.filterParametersForScope(externalTool, CustomParameterScope.SCHOOL);
+		});
+
 		return availableTools;
 	}
 
@@ -1025,7 +1096,7 @@ export class ExternalToolConfigurationUc {
 		schoolId: EntityId,
 		contextId: EntityId,
 		contextType: ToolContextType
-	): Promise&lt;AvailableToolsForContext[]&gt; {
+	): Promise&lt;ContextExternalToolTemplateInfo[]&gt; {
 		await this.ensureContextPermission(userId, contextId, contextType);
 
 		const [externalTools, schoolExternalTools, contextExternalToolsInUse]: [
@@ -1047,10 +1118,14 @@ export class ExternalToolConfigurationUc {
 			contextExternalToolsInUse
 		);
 
-		const availableToolsForContext: AvailableToolsForContext[] &#x3D; this.filterForAvailableExternalTools(
+		const availableToolsForContext: ContextExternalToolTemplateInfo[] &#x3D; this.filterForAvailableExternalTools(
 			externalTools.data,
 			availableSchoolExternalTools
 		);
+
+		availableToolsForContext.forEach((toolTemplateInfo) &#x3D;&gt; {
+			this.filterParametersForScope(toolTemplateInfo.externalTool, CustomParameterScope.CONTEXT);
+		});
 
 		return availableToolsForContext;
 	}
@@ -1061,6 +1136,10 @@ export class ExternalToolConfigurationUc {
 	): SchoolExternalToolDO[] {
 		const availableSchoolExternalTools: SchoolExternalToolDO[] &#x3D; schoolExternalTools.filter(
 			(schoolExternalTool: SchoolExternalToolDO): boolean &#x3D;&gt; {
+				if (this.toolFeatures.contextConfigurationEnabled) {
+					return true;
+				}
+
 				const hasContextExternalTool: boolean &#x3D; contextExternalToolsInUse.some(
 					(contextExternalTool: ContextExternalToolDO) &#x3D;&gt;
 						contextExternalTool.schoolToolRef.schoolToolId &#x3D;&#x3D;&#x3D; schoolExternalTool.id
@@ -1077,8 +1156,8 @@ export class ExternalToolConfigurationUc {
 	private filterForAvailableExternalTools(
 		externalTools: ExternalToolDO[],
 		availableSchoolExternalTools: SchoolExternalToolDO[]
-	): AvailableToolsForContext[] {
-		const toolsWithSchoolTool: (AvailableToolsForContext | null)[] &#x3D; availableSchoolExternalTools.map(
+	): ContextExternalToolTemplateInfo[] {
+		const toolsWithSchoolTool: (ContextExternalToolTemplateInfo | null)[] &#x3D; availableSchoolExternalTools.map(
 			(schoolExternalTool: SchoolExternalToolDO) &#x3D;&gt; {
 				const externalTool: ExternalToolDO | undefined &#x3D; externalTools.find(
 					(tool: ExternalToolDO) &#x3D;&gt; schoolExternalTool.toolId &#x3D;&#x3D;&#x3D; tool.id
@@ -1095,48 +1174,68 @@ export class ExternalToolConfigurationUc {
 			}
 		);
 
-		const availableTools: AvailableToolsForContext[] &#x3D; toolsWithSchoolTool.filter(
-			(toolRef): toolRef is AvailableToolsForContext &#x3D;&gt; !!toolRef &amp;&amp; !toolRef.externalTool.isHidden
+		const availableTools: ContextExternalToolTemplateInfo[] &#x3D; toolsWithSchoolTool.filter(
+			(toolRef): toolRef is ContextExternalToolTemplateInfo &#x3D;&gt; !!toolRef &amp;&amp; !toolRef.externalTool.isHidden
 		);
 
 		return availableTools;
 	}
 
-	public async getExternalToolForSchool(
+	public async getTemplateForSchoolExternalTool(
 		userId: EntityId,
-		externalToolId: EntityId,
-		schoolId: EntityId
+		schoolExternalToolId: EntityId
 	): Promise&lt;ExternalToolDO&gt; {
-		await this.ensureSchoolPermission(userId, schoolId);
-		const externalToolDO: ExternalToolDO &#x3D; await this.externalToolService.getExternalToolForScope(
-			externalToolId,
-			CustomParameterScope.SCHOOL
+		const schoolExternalTool: SchoolExternalToolDO &#x3D; await this.schoolExternalToolService.getSchoolExternalToolById(
+			schoolExternalToolId
 		);
 
-		if (externalToolDO.isHidden) {
+		await this.ensureSchoolPermission(userId, schoolExternalTool.schoolId);
+
+		const externalTool: ExternalToolDO &#x3D; await this.externalToolService.findExternalToolById(schoolExternalTool.toolId);
+
+		if (externalTool.isHidden) {
 			throw new NotFoundException(&#x27;Could not find the Tool Template&#x27;);
 		}
 
-		return externalToolDO;
+		this.filterParametersForScope(externalTool, CustomParameterScope.SCHOOL);
+
+		return externalTool;
 	}
 
-	public async getExternalToolForContext(
+	public async getTemplateForContextExternalTool(
 		userId: EntityId,
-		externalToolId: EntityId,
-		contextId: string,
-		contextType: ToolContextType
-	): Promise&lt;ExternalToolDO&gt; {
-		await this.ensureContextPermission(userId, contextId, contextType);
-		const externalToolDO: ExternalToolDO &#x3D; await this.externalToolService.getExternalToolForScope(
-			externalToolId,
-			CustomParameterScope.CONTEXT
+		contextExternalToolId: EntityId
+	): Promise&lt;ContextExternalToolTemplateInfo&gt; {
+		const contextExternalTool: ContextExternalToolDO &#x3D; await this.contextExternalToolService.getContextExternalToolById(
+			contextExternalToolId
 		);
 
-		if (externalToolDO.isHidden) {
+		await this.ensureContextPermission(userId, contextExternalTool.contextRef.id, contextExternalTool.contextRef.type);
+
+		const schoolExternalTool: SchoolExternalToolDO &#x3D; await this.schoolExternalToolService.getSchoolExternalToolById(
+			contextExternalTool.schoolToolRef.schoolToolId
+		);
+
+		const externalTool: ExternalToolDO &#x3D; await this.externalToolService.findExternalToolById(schoolExternalTool.toolId);
+
+		if (externalTool.isHidden) {
 			throw new NotFoundException(&#x27;Could not find the Tool Template&#x27;);
 		}
 
-		return externalToolDO;
+		this.filterParametersForScope(externalTool, CustomParameterScope.CONTEXT);
+
+		return {
+			externalTool,
+			schoolExternalTool,
+		};
+	}
+
+	private filterParametersForScope(externalTool: ExternalToolDO, scope: CustomParameterScope) {
+		if (externalTool.parameters) {
+			externalTool.parameters &#x3D; externalTool.parameters.filter(
+				(parameter: CustomParameterDO) &#x3D;&gt; parameter.scope &#x3D;&#x3D;&#x3D; scope
+			);
+		}
 	}
 
 	private async ensureSchoolPermission(userId: EntityId, schoolId: EntityId) {

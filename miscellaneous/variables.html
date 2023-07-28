@@ -1991,19 +1991,16 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>DoBaseFactory.define&lt;CustomParameterDO, CustomParameterDO&gt;(
-	CustomParameterDO,
-	({ sequence }) &#x3D;&gt; {
-		return {
-			name: &#x60;custom-parameter-${sequence}&#x60;,
-			displayName: &#x27;User Friendly Name&#x27;,
-			type: CustomParameterType.STRING,
-			scope: CustomParameterScope.GLOBAL,
-			location: CustomParameterLocation.BODY,
-			isOptional: false,
-		};
-	}
-)</code>
+                        <i>Default value : </i><code>CustomParameterFactory.define(CustomParameterDO, ({ sequence }) &#x3D;&gt; {
+	return {
+		name: &#x60;custom-parameter-${sequence}&#x60;,
+		displayName: &#x27;User Friendly Name&#x27;,
+		type: CustomParameterType.STRING,
+		scope: CustomParameterScope.GLOBAL,
+		location: CustomParameterLocation.BODY,
+		isOptional: false,
+	};
+})</code>
                     </td>
                 </tr>
 

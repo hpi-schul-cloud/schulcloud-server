@@ -94,12 +94,13 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
-                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#getAvailableToolsForContext" >getAvailableToolsForContext</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
@@ -111,17 +112,20 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#getExternalToolForContext" >getExternalToolForContext</a>
+                                <a href="#getConfigurationTemplateForContext" >getConfigurationTemplateForContext</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#getExternalToolForScope" >getExternalToolForScope</a>
+                                <a href="#getConfigurationTemplateForSchool" >getConfigurationTemplateForSchool</a>
                             </li>
                         </ul>
                     </td>
@@ -150,7 +154,6 @@
                         <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
-                        <span class="modifier"></span>
                         <span class="modifier">Public</span>
                         <span class="modifier">Async</span>
                         <span ><b>getAvailableToolsForContext</b></span>
@@ -161,7 +164,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getAvailableToolsForContext(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, contextParams: <a href="../classes/ContextTypeParams.html" target="_self">ContextTypeParams</a>, idParams: <a href="../classes/IdParams.html" target="_self">IdParams</a>)</code>
+                    <code>getAvailableToolsForContext(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/ContextRefParams.html" target="_self">ContextRefParams</a>)</code>
                 </td>
             </tr>
 
@@ -169,14 +172,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;available/:context/:id&#x27;)<br />@ApiBearerAuth()<br />@ApiForbiddenResponse()<br />@ApiOperation({summary: &#x27;Lists all available tools that can be added for a given context&#x27;})<br />@ApiOkResponse({description: &#x27;List of available tools for a context&#x27;, type: SchoolToolConfigurationListResponse})<br /></code>
+                    <code>@Get(&#x27;:contextType/:contextId/available-tools&#x27;)<br />@ApiForbiddenResponse()<br />@ApiOperation({summary: &#x27;Lists all available tools that can be added for a given context&#x27;})<br />@ApiOkResponse({description: &#x27;List of available tools for a context&#x27;, type: ContextExternalToolConfigurationTemplateListResponse})<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="60"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool-configuration.controller.ts:60</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="61"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool-configuration.controller.ts:61</a></div>
                 </td>
             </tr>
 
@@ -209,21 +212,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>contextParams</td>
+                                    <td>params</td>
                                     <td>
-                                                <code><a href="../classes/ContextTypeParams.html" target="_self" >ContextTypeParams</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>idParams</td>
-                                    <td>
-                                                <code><a href="../classes/IdParams.html" target="_self" >IdParams</a></code>
+                                                <code><a href="../classes/ContextRefParams.html" target="_self" >ContextRefParams</a></code>
                                     </td>
 
                                     <td>
@@ -238,7 +229,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/School.html" target="_self" >Promise&lt;SchoolToolConfigurationListResponse&gt;</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;ContextExternalToolConfigurationTemplateListResponse&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -256,6 +247,8 @@
                     <span class="name">
                         <span class="modifier"></span>
                         <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Public</span>
                         <span class="modifier">Async</span>
                         <span ><b>getAvailableToolsForSchool</b></span>
@@ -266,7 +259,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getAvailableToolsForSchool(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, idParams: <a href="../classes/IdParams.html" target="_self">IdParams</a>)</code>
+                    <code>getAvailableToolsForSchool(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/SchoolIdParams.html" target="_self">SchoolIdParams</a>)</code>
                 </td>
             </tr>
 
@@ -274,109 +267,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;available/school/:id&#x27;)<br />@ApiForbiddenResponse()<br /></code>
+                    <code>@Get(&#x27;school/:schoolId/available-tools&#x27;)<br />@ApiForbiddenResponse()<br />@ApiOperation({summary: &#x27;Lists all available tools that can be added for a given school&#x27;})<br />@ApiOkResponse({description: &#x27;List of available tools for a school&#x27;, type: SchoolExternalToolConfigurationTemplateListResponse})<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="37"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool-configuration.controller.ts:37</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>currentUser</td>
-                                    <td>
-                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>idParams</td>
-                                    <td>
-                                                <code><a href="../classes/IdParams.html" target="_self" >IdParams</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;ToolConfigurationListResponse&gt;</code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="getExternalToolForContext"></a>
-                    <span class="name">
-                        <span class="modifier"></span>
-                        <span class="modifier"></span>
-                        <span class="modifier"></span>
-                        <span class="modifier"></span>
-                        <span class="modifier">Public</span>
-                        <span class="modifier">Async</span>
-                        <span ><b>getExternalToolForContext</b></span>
-                        <a href="#getExternalToolForContext"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getExternalToolForContext(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/ToolIdParams.html" target="_self">ToolIdParams</a>, contextParams: <a href="../classes/ContextTypeParams.html" target="_self">ContextTypeParams</a>, idParams: <a href="../classes/IdParams.html" target="_self">IdParams</a>)</code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@Get(&#x27;:toolId/:context/:id/configuration&#x27;)<br />@ApiUnauthorizedResponse()<br />@ApiForbiddenResponse()<br />@ApiFoundResponse({description: &#x27;Configuration has been found.&#x27;, type: ExternalToolConfigurationTemplateResponse})<br /></code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="103"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool-configuration.controller.ts:103</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool-configuration.controller.ts:39</a></div>
                 </td>
             </tr>
 
@@ -411,31 +309,7 @@
                                 <tr>
                                     <td>params</td>
                                     <td>
-                                                <code><a href="../classes/ToolIdParams.html" target="_self" >ToolIdParams</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>contextParams</td>
-                                    <td>
-                                                <code><a href="../classes/ContextTypeParams.html" target="_self" >ContextTypeParams</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>idParams</td>
-                                    <td>
-                                                <code><a href="../classes/IdParams.html" target="_self" >IdParams</a></code>
+                                                <code><a href="../classes/SchoolIdParams.html" target="_self" >SchoolIdParams</a></code>
                                     </td>
 
                                     <td>
@@ -450,7 +324,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/ExternalTool.html" target="_self" >Promise&lt;ExternalToolConfigurationTemplateResponse&gt;</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;SchoolExternalToolConfigurationTemplateListResponse&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -464,22 +338,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getExternalToolForScope"></a>
+                    <a name="getConfigurationTemplateForContext"></a>
                     <span class="name">
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier">Public</span>
                         <span class="modifier">Async</span>
-                        <span ><b>getExternalToolForScope</b></span>
-                        <a href="#getExternalToolForScope"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getConfigurationTemplateForContext</b></span>
+                        <a href="#getConfigurationTemplateForContext"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getExternalToolForScope(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/ToolIdParams.html" target="_self">ToolIdParams</a>)</code>
+                    <code>getConfigurationTemplateForContext(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/ContextExternalToolIdParams.html" target="_self">ContextExternalToolIdParams</a>)</code>
                 </td>
             </tr>
 
@@ -487,14 +363,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;:toolId/configuration&#x27;)<br />@ApiUnauthorizedResponse()<br />@ApiFoundResponse({description: &#x27;Configuration has been found.&#x27;, type: ExternalToolConfigurationTemplateResponse})<br /></code>
+                    <code>@Get(&#x27;context-external-tools/:contextExternalToolId/configuration-template&#x27;)<br />@ApiUnauthorizedResponse()<br />@ApiForbiddenResponse()<br />@ApiOperation({summary: &#x27;Get the latest configuration template for a Context External Tool&#x27;})<br />@ApiFoundResponse({description: &#x27;Configuration template for a Context External Tool&#x27;, type: ContextExternalToolConfigurationTemplateResponse})<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="83"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool-configuration.controller.ts:83</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="110"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool-configuration.controller.ts:110</a></div>
                 </td>
             </tr>
 
@@ -529,7 +405,7 @@
                                 <tr>
                                     <td>params</td>
                                     <td>
-                                                <code><a href="../classes/ToolIdParams.html" target="_self" >ToolIdParams</a></code>
+                                                <code><a href="../classes/ContextExternalToolIdParams.html" target="_self" >ContextExternalToolIdParams</a></code>
                                     </td>
 
                                     <td>
@@ -544,7 +420,103 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/ExternalTool.html" target="_self" >Promise&lt;ExternalToolConfigurationTemplateResponse&gt;</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;ContextExternalToolConfigurationTemplateResponse&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getConfigurationTemplateForSchool"></a>
+                    <span class="name">
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>getConfigurationTemplateForSchool</b></span>
+                        <a href="#getConfigurationTemplateForSchool"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getConfigurationTemplateForSchool(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/SchoolExternalToolIdParams.html" target="_self">SchoolExternalToolIdParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;school-external-tools/:schoolExternalToolId/configuration-template&#x27;)<br />@ApiUnauthorizedResponse()<br />@ApiForbiddenResponse()<br />@ApiOperation({summary: &#x27;Get the latest configuration template for a School External Tool&#x27;})<br />@ApiFoundResponse({description: &#x27;Configuration template for a School External Tool&#x27;, type: SchoolExternalToolConfigurationTemplateResponse})<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="87"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool-configuration.controller.ts:87</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>currentUser</td>
+                                    <td>
+                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>params</td>
+                                    <td>
+                                                <code><a href="../classes/SchoolExternalToolIdParams.html" target="_self" >SchoolExternalToolIdParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;SchoolExternalToolConfigurationTemplateResponse&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -560,7 +532,6 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Get, Param } from &#x27;@nestjs/common&#x27;;
 import {
-	ApiBearerAuth,
 	ApiForbiddenResponse,
 	ApiFoundResponse,
 	ApiOkResponse,
@@ -571,110 +542,115 @@ import {
 import { ExternalToolDO } from &#x27;@shared/domain&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
-import { ExternalToolConfigurationUc } from &#x27;../uc&#x27;;
+import { ToolConfigurationMapper } from &#x27;../mapper/tool-configuration.mapper&#x27;;
+import { ContextExternalToolTemplateInfo, ExternalToolConfigurationUc } from &#x27;../uc&#x27;;
 import {
-	ContextTypeParams,
-	ExternalToolConfigurationTemplateResponse,
-	IdParams,
-	ToolConfigurationListResponse,
-	ToolIdParams,
+	ContextExternalToolConfigurationTemplateListResponse,
+	ContextExternalToolConfigurationTemplateResponse,
+	ContextExternalToolIdParams,
+	ContextRefParams,
+	SchoolExternalToolConfigurationTemplateListResponse,
+	SchoolExternalToolConfigurationTemplateResponse,
+	SchoolExternalToolIdParams,
+	SchoolIdParams,
 } from &#x27;./dto&#x27;;
-import { ExternalToolResponseMapper } from &#x27;../mapper&#x27;;
-import { SchoolToolConfigurationListResponse } from &#x27;../../school-external-tool/controller/dto&#x27;;
-import { SchoolExternalToolResponseMapper } from &#x27;../../school-external-tool/mapper&#x27;;
 
 @ApiTags(&#x27;Tool&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
 @Controller(&#x27;tools&#x27;)
 export class ToolConfigurationController {
-	constructor(
-		private readonly externalToolConfigurationUc: ExternalToolConfigurationUc,
-		private readonly externalToolResponseMapper: ExternalToolResponseMapper
-	) {}
+	constructor(private readonly externalToolConfigurationUc: ExternalToolConfigurationUc) {}
 
-	@Get(&#x27;available/school/:id&#x27;)
+	@Get(&#x27;school/:schoolId/available-tools&#x27;)
 	@ApiForbiddenResponse()
+	@ApiOperation({ summary: &#x27;Lists all available tools that can be added for a given school&#x27; })
+	@ApiOkResponse({
+		description: &#x27;List of available tools for a school&#x27;,
+		type: SchoolExternalToolConfigurationTemplateListResponse,
+	})
 	public async getAvailableToolsForSchool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() idParams: IdParams
-	): Promise&lt;ToolConfigurationListResponse&gt; {
+		@Param() params: SchoolIdParams
+	): Promise&lt;SchoolExternalToolConfigurationTemplateListResponse&gt; {
 		const availableTools: ExternalToolDO[] &#x3D; await this.externalToolConfigurationUc.getAvailableToolsForSchool(
 			currentUser.userId,
-			idParams.id
+			params.schoolId
 		);
 
-		const mapped: ToolConfigurationListResponse &#x3D;
-			this.externalToolResponseMapper.mapExternalToolDOsToToolConfigurationListResponse(availableTools);
+		const mapped: SchoolExternalToolConfigurationTemplateListResponse &#x3D;
+			ToolConfigurationMapper.mapToSchoolExternalToolConfigurationTemplateListResponse(availableTools);
 
 		return mapped;
 	}
 
-	@Get(&#x27;available/:context/:id&#x27;)
-	@ApiBearerAuth()
+	@Get(&#x27;:contextType/:contextId/available-tools&#x27;)
 	@ApiForbiddenResponse()
 	@ApiOperation({ summary: &#x27;Lists all available tools that can be added for a given context&#x27; })
 	@ApiOkResponse({
 		description: &#x27;List of available tools for a context&#x27;,
-		type: SchoolToolConfigurationListResponse,
+		type: ContextExternalToolConfigurationTemplateListResponse,
 	})
 	public async getAvailableToolsForContext(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() contextParams: ContextTypeParams,
-		@Param() idParams: IdParams
-	): Promise&lt;SchoolToolConfigurationListResponse&gt; {
-		const availableToolsForContext &#x3D; await this.externalToolConfigurationUc.getAvailableToolsForContext(
-			currentUser.userId,
-			currentUser.schoolId,
-			idParams.id,
-			contextParams.context
-		);
-
-		const mapped: SchoolToolConfigurationListResponse &#x3D;
-			SchoolExternalToolResponseMapper.mapExternalToolDOsToSchoolToolConfigurationListResponse(
-				availableToolsForContext
+		@Param() params: ContextRefParams
+	): Promise&lt;ContextExternalToolConfigurationTemplateListResponse&gt; {
+		const availableTools: ContextExternalToolTemplateInfo[] &#x3D;
+			await this.externalToolConfigurationUc.getAvailableToolsForContext(
+				currentUser.userId,
+				currentUser.schoolId,
+				params.contextId,
+				params.contextType
 			);
 
-		return mapped;
-	}
-
-	@Get(&#x27;:toolId/configuration&#x27;)
-	@ApiUnauthorizedResponse()
-	@ApiFoundResponse({ description: &#x27;Configuration has been found.&#x27;, type: ExternalToolConfigurationTemplateResponse })
-	public async getExternalToolForScope(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ToolIdParams
-	): Promise&lt;ExternalToolConfigurationTemplateResponse&gt; {
-		const externalToolDO: ExternalToolDO &#x3D; await this.externalToolConfigurationUc.getExternalToolForSchool(
-			currentUser.userId,
-			params.toolId,
-			currentUser.schoolId
-		);
-
-		const mapped: ExternalToolConfigurationTemplateResponse &#x3D;
-			this.externalToolResponseMapper.mapToConfigurationTemplateResponse(externalToolDO);
+		const mapped: ContextExternalToolConfigurationTemplateListResponse &#x3D;
+			ToolConfigurationMapper.mapToContextExternalToolConfigurationTemplateListResponse(availableTools);
 
 		return mapped;
 	}
 
-	@Get(&#x27;:toolId/:context/:id/configuration&#x27;)
+	@Get(&#x27;school-external-tools/:schoolExternalToolId/configuration-template&#x27;)
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
-	@ApiFoundResponse({ description: &#x27;Configuration has been found.&#x27;, type: ExternalToolConfigurationTemplateResponse })
-	public async getExternalToolForContext(
+	@ApiOperation({ summary: &#x27;Get the latest configuration template for a School External Tool&#x27; })
+	@ApiFoundResponse({
+		description: &#x27;Configuration template for a School External Tool&#x27;,
+		type: SchoolExternalToolConfigurationTemplateResponse,
+	})
+	public async getConfigurationTemplateForSchool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ToolIdParams,
-		@Param() contextParams: ContextTypeParams,
-		@Param() idParams: IdParams
-	): Promise&lt;ExternalToolConfigurationTemplateResponse&gt; {
-		const externalToolDO: ExternalToolDO &#x3D; await this.externalToolConfigurationUc.getExternalToolForContext(
+		@Param() params: SchoolExternalToolIdParams
+	): Promise&lt;SchoolExternalToolConfigurationTemplateResponse&gt; {
+		const tool: ExternalToolDO &#x3D; await this.externalToolConfigurationUc.getTemplateForSchoolExternalTool(
 			currentUser.userId,
-			params.toolId,
-			idParams.id,
-			contextParams.context
+			params.schoolExternalToolId
 		);
 
-		const mapped: ExternalToolConfigurationTemplateResponse &#x3D;
-			this.externalToolResponseMapper.mapToConfigurationTemplateResponse(externalToolDO);
+		const mapped: SchoolExternalToolConfigurationTemplateResponse &#x3D;
+			ToolConfigurationMapper.mapToSchoolExternalToolConfigurationTemplateResponse(tool);
+
+		return mapped;
+	}
+
+	@Get(&#x27;context-external-tools/:contextExternalToolId/configuration-template&#x27;)
+	@ApiUnauthorizedResponse()
+	@ApiForbiddenResponse()
+	@ApiOperation({ summary: &#x27;Get the latest configuration template for a Context External Tool&#x27; })
+	@ApiFoundResponse({
+		description: &#x27;Configuration template for a Context External Tool&#x27;,
+		type: ContextExternalToolConfigurationTemplateResponse,
+	})
+	public async getConfigurationTemplateForContext(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ContextExternalToolIdParams
+	): Promise&lt;ContextExternalToolConfigurationTemplateResponse&gt; {
+		const tool: ContextExternalToolTemplateInfo &#x3D;
+			await this.externalToolConfigurationUc.getTemplateForContextExternalTool(
+				currentUser.userId,
+				params.contextExternalToolId
+			);
+
+		const mapped: ContextExternalToolConfigurationTemplateResponse &#x3D;
+			ToolConfigurationMapper.mapToContextExternalToolConfigurationTemplateResponse(tool);
 
 		return mapped;
 	}
