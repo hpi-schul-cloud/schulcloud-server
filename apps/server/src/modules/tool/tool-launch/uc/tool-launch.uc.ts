@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { ContextExternalToolDO, EntityId, Permission } from '@shared/domain';
+import { EntityId, Permission } from '@shared/domain';
 import { Action } from '@src/modules/authorization';
 import { ToolLaunchService } from '../service';
 import { ToolLaunchData, ToolLaunchRequest } from '../types';
 import { ContextExternalToolService } from '../../context-external-tool/service';
+import { ContextExternalToolDO } from '../../context-external-tool/domainobject';
 
 @Injectable()
 export class ToolLaunchUc {

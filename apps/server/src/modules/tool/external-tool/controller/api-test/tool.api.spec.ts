@@ -1,15 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	ContextExternalTool,
-	ContextExternalToolType,
-	Course,
-	ExternalTool,
-	Permission,
-	School,
-	SchoolExternalTool,
-} from '@shared/domain';
+import { Course, Permission, School } from '@shared/domain';
 import {
 	cleanupCollections,
 	contextExternalToolFactory,
@@ -29,7 +21,7 @@ import {
 	CustomParameterTypeParams,
 	ToolConfigType,
 	ToolContextType,
-} from '../../../common/interface';
+} from '../../../common/enum';
 import {
 	ExternalToolCreateParams,
 	ExternalToolResponse,
@@ -38,6 +30,9 @@ import {
 	ToolReferenceListResponse,
 } from '../dto';
 import { ContextExternalToolContextParams } from '../../../context-external-tool/controller/dto';
+import { ExternalTool } from '../../entity';
+import { ContextExternalTool, ContextExternalToolType } from '../../../context-external-tool/entity';
+import { SchoolExternalTool } from '../../../school-external-tool/entity';
 
 describe('ToolController (API)', () => {
 	let app: INestApplication;

@@ -1,26 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import {
-	ContextExternalToolDO,
-	Course,
-	CustomParameterDO,
-	CustomParameterEntryDO,
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	EntityId,
-	ExternalToolDO,
-	SchoolDO,
-	SchoolExternalToolDO,
-} from '@shared/domain';
+import { Course, EntityId, SchoolDO } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
 import { SchoolService } from '@src/modules/school';
 import { URLSearchParams } from 'url';
-import { ToolContextType } from '../../../common/interface';
+import {
+	CustomParameterLocation,
+	CustomParameterScope,
+	CustomParameterType,
+	ToolContextType,
+} from '../../../common/enum';
 import { MissingToolParameterValueLoggableException, ParameterTypeNotImplementedLoggableException } from '../../error';
 import { ToolLaunchMapper } from '../../mapper';
 import { LaunchRequestMethod, PropertyData, PropertyLocation, ToolLaunchData, ToolLaunchRequest } from '../../types';
 import { IToolLaunchParams } from './tool-launch-params.interface';
 import { IToolLaunchStrategy } from './tool-launch-strategy.interface';
+import { SchoolExternalToolDO } from '../../../school-external-tool/domainobject';
+import { CustomParameterDO, CustomParameterEntryDO } from '../../../common/domainobject';
+import { ContextExternalToolDO } from '../../../context-external-tool/domainobject';
+import { ExternalToolDO } from '../../../external-tool/domainobject';
 
 @Injectable()
 export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {

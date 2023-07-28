@@ -9,7 +9,7 @@ import {
 	LtiMessageType,
 	LtiPrivacyPermission,
 	ToolConfigType,
-} from '../../common/interface';
+} from '../../common/enum';
 
 describe('ExternalTool Entity', () => {
 	beforeAll(async () => {

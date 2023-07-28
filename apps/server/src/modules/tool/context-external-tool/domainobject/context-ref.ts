@@ -1,4 +1,4 @@
-import { ToolContextType } from 'apps/server/src/modules/tool/common/interface';
+import { ToolContextType } from '../../common/enum';
 
 export class ContextRef {
 	id: string;

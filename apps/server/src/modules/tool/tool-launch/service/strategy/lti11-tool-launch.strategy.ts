@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, ExternalToolDO, LtiPrivacyPermission, Pseudonym, RoleName, UserDO } from '@shared/domain';
+import { EntityId, LtiPrivacyPermission, Pseudonym, RoleName, UserDO } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
 import { CourseRepo } from '@shared/repo';
 import { PseudonymService } from '@src/modules/pseudonym';
@@ -11,7 +11,8 @@ import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
-import { LtiRole } from '../../../common/interface';
+import { ExternalToolDO } from '../../../external-tool/domainobject';
+import { LtiRole } from '../../../common/enum';
 
 @Injectable()
 export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {

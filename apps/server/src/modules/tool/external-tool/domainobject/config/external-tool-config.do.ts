@@ -1,4 +1,4 @@
-import { ToolConfigType } from './tool-config-type.enum';
+import { ToolConfigType } from '../../../common/enum';
 
 export abstract class ExternalToolConfigDO {
 	type: ToolConfigType;

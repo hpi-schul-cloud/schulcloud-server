@@ -11,7 +11,6 @@ import {
 } from '@nestjs/swagger';
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
-import { ContextExternalToolDO } from '@shared/domain';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { LegacyLogger } from '@src/core/logger';
@@ -25,6 +24,7 @@ import {
 } from './dto';
 import { ContextExternalToolUc } from '../uc';
 import { ContextExternalTool } from '../uc/dto/context-external-tool.types';
+import { ContextExternalToolDO } from '../domainobject';
 
 @ApiTags('Tool')
 @Authenticate('jwt')

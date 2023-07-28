@@ -1,12 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SortOrder, SortOrderMap, ToolConfigType } from '@shared/domain';
-import {
-	BasicToolConfigDO,
-	CustomParameterDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/tool';
+import { SortOrder, SortOrderMap } from '@shared/domain';
+
 import { basicToolConfigDOFactory, customParameterDOFactory, externalToolDOFactory } from '@shared/testing';
 import {
 	CustomParameterLocation,
@@ -15,11 +9,11 @@ import {
 	CustomParameterScopeTypeParams,
 	CustomParameterType,
 	CustomParameterTypeParams,
-	ExternalToolSearchQuery,
 	LtiMessageType,
 	LtiPrivacyPermission,
 	TokenEndpointAuthMethod,
-} from '../../common/interface';
+	ToolConfigType,
+} from '../../common/enum';
 import { ExternalToolRequestMapper } from './external-tool-request.mapper';
 import {
 	BasicToolConfigParams,
@@ -33,6 +27,9 @@ import {
 	Oauth2ToolConfigCreateParams,
 	SortExternalToolParams,
 } from '../controller/dto';
+import { BasicToolConfigDO, ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '../domainobject';
+import { CustomParameterDO } from '../../common/domainobject';
+import { ExternalToolSearchQuery } from '../../common/interface';
 
 describe('ExternalToolRequestMapper', () => {
 	let module: TestingModule;

@@ -1,7 +1,7 @@
-import { CustomParameterEntryDO } from './custom-parameter-entry.do';
-import { BaseDO } from '../base.do';
-import { ToolConfigurationStatus } from './tool-configuration-status';
-import { ToolVersion } from './types';
+import { BaseDO } from '@shared/domain/domainobject/base.do';
+import { CustomParameterEntryDO } from '../../common/domainobject';
+import { ToolConfigurationStatus } from '../../common/enum';
+import { ToolVersion } from '../../common/interface';
 
 export interface SchoolExternalToolProps {
 	id?: string;

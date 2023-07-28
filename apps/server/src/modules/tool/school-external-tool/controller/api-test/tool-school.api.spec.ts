@@ -1,7 +1,7 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalTool, Permission, Role, RoleName, School, SchoolExternalTool, User } from '@shared/domain';
+import { Permission, Role, RoleName, School, User } from '@shared/domain';
 import {
 	externalToolFactory,
 	mapUserToCurrentUser,
@@ -23,6 +23,8 @@ import {
 	SchoolExternalToolSearchParams,
 } from '../dto';
 import { ToolConfigurationStatusResponse } from '../../../external-tool/controller/dto';
+import { SchoolExternalTool } from '../../entity';
+import { ExternalTool } from '../../../external-tool/entity';
 
 describe('ToolSchoolController (API)', () => {
 	let app: INestApplication;

@@ -1,13 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContextExternalToolDO, EntityId, Permission } from '@shared/domain';
+import { EntityId, Permission } from '@shared/domain';
 import { contextExternalToolDOFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { ForbiddenLoggableException } from '@src/modules/authorization/errors/forbidden.loggable-exception';
 import { Action } from '@src/modules/authorization';
 import { ContextExternalToolUc } from './context-external-tool.uc';
 import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
-import { ToolContextType } from '../../common/interface';
+import { ContextExternalToolDO } from '../domainobject';
+import { ToolContextType } from '../../common/enum';
 
 describe('ContextExternalToolUc', () => {
 	let module: TestingModule;

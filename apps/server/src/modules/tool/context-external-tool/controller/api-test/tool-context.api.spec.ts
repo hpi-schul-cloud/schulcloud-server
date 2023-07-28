@@ -1,16 +1,7 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	ContextExternalTool,
-	Course,
-	Permission,
-	Role,
-	RoleName,
-	School,
-	SchoolExternalTool,
-	User,
-} from '@shared/domain';
+import { Course, Permission, Role, RoleName, School, User } from '@shared/domain';
 import {
 	contextExternalToolFactory,
 	courseFactory,
@@ -30,7 +21,9 @@ import {
 	ContextExternalToolResponse,
 	ContextExternalToolSearchListResponse,
 } from '../dto';
-import { ToolContextType } from '../../../common/interface';
+import { SchoolExternalTool } from '../../../school-external-tool/entity';
+import { ToolContextType } from '../../../common/enum';
+import { ContextExternalTool } from '../../entity';
 
 describe('ToolContextController (API)', () => {
 	let app: INestApplication;

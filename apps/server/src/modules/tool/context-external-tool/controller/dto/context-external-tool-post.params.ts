@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, IsEnum, IsMongoId, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { ToolContextType } from '../../../common/interface';
 import { CustomParameterEntryParam } from '../../../school-external-tool/controller/dto';
+import { ToolContextType } from '../../../common/enum';
 
 export class ContextExternalToolPostParams {
 	@ApiProperty()

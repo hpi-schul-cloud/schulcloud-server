@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContextExternalToolDO } from '@shared/domain';
 import { contextExternalToolDOFactory } from '@shared/testing';
 import { ToolLaunchService } from '../service';
 import { ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import { ToolLaunchUc } from './tool-launch.uc';
 import { ContextExternalToolService } from '../../context-external-tool/service';
+import { ContextExternalToolDO } from '../../context-external-tool/domainobject';
 
 describe('ToolLaunchUc', () => {
 	let module: TestingModule;

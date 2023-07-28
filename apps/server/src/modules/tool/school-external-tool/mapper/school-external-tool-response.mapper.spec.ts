@@ -1,5 +1,4 @@
 import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
-import { ExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
 import { externalToolDOFactory } from '@shared/testing';
 import { SchoolExternalToolResponseMapper } from './school-external-tool-response.mapper';
 import { AvailableToolsForContext } from '../../external-tool/uc';
@@ -10,6 +9,8 @@ import {
 	SchoolToolConfigurationListResponse,
 } from '../controller/dto';
 import { ToolConfigurationStatusResponse } from '../../external-tool/controller/dto';
+import { SchoolExternalToolDO } from '../domainobject';
+import { ExternalToolDO } from '../../external-tool/domainobject';
 
 describe('SchoolExternalToolResponseMapper', () => {
 	let mapper: SchoolExternalToolResponseMapper;

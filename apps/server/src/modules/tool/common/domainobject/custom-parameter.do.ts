@@ -1,4 +1,4 @@
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '@shared/domain';
+import { CustomParameterScope, CustomParameterLocation, CustomParameterType } from '../enum';
 
 export class CustomParameterDO {
 	name: string;

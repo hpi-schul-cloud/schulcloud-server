@@ -10,7 +10,6 @@ import {
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Body, Controller, Delete, Get, Param, Post, Query, Put } from '@nestjs/common';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/tool';
 import { ValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { LegacyLogger } from '@src/core/logger';
@@ -26,6 +25,7 @@ import {
 } from './dto';
 import { SchoolExternalTool } from '../uc/dto/school-external-tool.types';
 import { SchoolExternalToolUc } from '../uc';
+import { SchoolExternalToolDO } from '../domainobject';
 
 @ApiTags('Tool')
 @Authenticate('jwt')

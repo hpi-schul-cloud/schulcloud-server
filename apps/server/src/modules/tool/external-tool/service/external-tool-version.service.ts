@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/tool';
+import { ExternalToolDO } from '../domainobject';
+import { CustomParameterDO } from '../../common/domainobject';
 
 @Injectable()
 export class ExternalToolVersionService {

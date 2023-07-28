@@ -5,12 +5,7 @@ import {
 	schoolFactory,
 	setupEntities,
 } from '@shared/testing';
-import {
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	ToolConfigType,
-} from '../../common/interface';
+import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '../../common/enum';
 
 import { BasicToolConfig, CustomParameter, ExternalTool, ExternalToolConfig } from '../../external-tool/entity';
 import { SchoolExternalTool } from '../../school-external-tool/entity';

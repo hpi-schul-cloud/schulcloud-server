@@ -1,14 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CustomParameterDO, ExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
 import {
 	customParameterDOFactory,
 	externalToolDOFactory,
 	schoolExternalToolDOFactory,
 } from '@shared/testing/factory/domainobject/tool';
+import { ExternalToolDO } from '../../external-tool/domainobject';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
-import { CustomParameterScope, CustomParameterType } from '../../common/interface';
+import { SchoolExternalToolDO } from '../domainobject';
+import { CustomParameterDO } from '../../common/domainobject';
+import { CustomParameterScope, CustomParameterType } from '../../common/enum';
 
 describe('SchoolExternalToolValidationService', () => {
 	let module: TestingModule;

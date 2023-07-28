@@ -1,16 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	ContextExternalToolDO,
-	ExternalToolDO,
-	LtiMessageType,
-	LtiPrivacyPermission,
-	Pseudonym,
-	RoleName,
-	SchoolExternalToolDO,
-	UserDO,
-} from '@shared/domain';
+import { Pseudonym, RoleName, UserDO } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
 import {
 	contextExternalToolDOFactory,
@@ -24,11 +15,14 @@ import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
 import { Authorization } from 'oauth-1.0a';
-import { LtiRole, ToolContextType } from '../../../common/interface';
 import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { Lti11ToolLaunchStrategy } from './lti11-tool-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
+import { ExternalToolDO } from '../../../external-tool/domainobject';
+import { LtiMessageType, LtiPrivacyPermission, LtiRole, ToolContextType } from '../../../common/enum';
+import { SchoolExternalToolDO } from '../../../school-external-tool/domainobject';
+import { ContextExternalToolDO } from '../../../context-external-tool/domainobject';
 
 describe('Lti11ToolLaunchStrategy', () => {
 	let module: TestingModule;

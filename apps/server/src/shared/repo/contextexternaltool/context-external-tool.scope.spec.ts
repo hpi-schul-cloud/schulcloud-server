@@ -1,7 +1,7 @@
-import { SchoolExternalTool } from '@shared/domain';
 import { schoolExternalToolFactory } from '@shared/testing';
+import { ToolContextType } from '@src/modules/tool/common/enum';
+import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/entity';
 import { ContextExternalToolScope } from './context-external-tool.scope';
-import { ToolContextType } from '../../../modules/tool/common/interface';
 
 describe('CourseExternalToolScope', () => {
 	let scope: ContextExternalToolScope;

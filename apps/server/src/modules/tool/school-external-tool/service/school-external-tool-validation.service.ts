@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
-import { CustomParameterDO, CustomParameterEntryDO, ExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
 import { isNaN } from 'lodash';
 import { ExternalToolService } from '../../external-tool/service';
-import { CustomParameterType, CustomParameterScope } from '../../common/interface';
+import { SchoolExternalToolDO } from '../domainobject';
+import { ExternalToolDO } from '../../external-tool/domainobject';
+import { CustomParameterDO, CustomParameterEntryDO } from '../../common/domainobject';
+import { CustomParameterScope, CustomParameterType } from '../../common/enum';
 
 const typeCheckers: { [key in CustomParameterType]: (val: string) => boolean } = {
 	[CustomParameterType.STRING]: () => true,

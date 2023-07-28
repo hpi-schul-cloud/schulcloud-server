@@ -1,22 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '@shared/domain';
-import {
-	BasicToolConfigDO,
-	CustomParameterDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/tool';
 import { externalToolDOFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import {
+	CustomParameterLocation,
 	CustomParameterLocationParams,
+	CustomParameterScope,
 	CustomParameterScopeTypeParams,
+	CustomParameterType,
 	CustomParameterTypeParams,
 	LtiMessageType,
 	LtiPrivacyPermission,
 	TokenEndpointAuthMethod,
 	ToolConfigType,
-} from '../../common/interface';
+} from '../../common/enum';
 import { ExternalToolResponseMapper } from './external-tool-response.mapper';
 import {
 	BasicToolConfigResponse,
@@ -28,6 +23,8 @@ import {
 	ToolConfigurationEntryResponse,
 	ToolConfigurationListResponse,
 } from '../controller/dto';
+import { BasicToolConfigDO, ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '../domainobject';
+import { CustomParameterDO } from '../../common/domainobject';
 
 describe('ExternalToolResponseMapper', () => {
 	let module: TestingModule;

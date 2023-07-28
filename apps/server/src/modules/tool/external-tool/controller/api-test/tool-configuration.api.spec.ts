@@ -1,19 +1,7 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	Course,
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	ExternalTool,
-	Permission,
-	Role,
-	RoleName,
-	School,
-	SchoolExternalTool,
-	User,
-} from '@shared/domain';
+import { Course, Permission, Role, RoleName, School, User } from '@shared/domain';
 import {
 	courseFactory,
 	externalToolFactory,
@@ -28,13 +16,18 @@ import request, { Response } from 'supertest';
 import { ICurrentUser, JwtAuthGuard } from '@src/modules/authentication';
 import { ServerTestModule } from '@src/modules/server';
 import {
+	CustomParameterLocation,
 	CustomParameterLocationParams,
+	CustomParameterScope,
 	CustomParameterScopeTypeParams,
+	CustomParameterType,
 	CustomParameterTypeParams,
-} from '../../../common/interface';
+} from '../../../common/enum';
 import { CustomParameter } from '../../uc';
 import { SchoolToolConfigurationListResponse } from '../../../school-external-tool/controller/dto';
 import { CustomParameterResponse, ToolConfigurationListResponse } from '../dto';
+import { SchoolExternalTool } from '../../../school-external-tool/entity';
+import { ExternalTool } from '../../entity';
 
 describe('ToolSchoolController (API)', () => {
 	let app: INestApplication;

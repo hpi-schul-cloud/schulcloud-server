@@ -1,10 +1,10 @@
 import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { ContextRef, EntityId } from '@shared/domain';
-import { ContextExternalToolDO } from '@shared/domain/domainobject/tool';
+import { EntityId } from '@shared/domain';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { AuthorizableReferenceType, AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
 import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
 import { ContextTypeMapper } from '../../common/mapper';
+import { ContextExternalToolDO, ContextRef } from '../domainobject';
 
 @Injectable()
 export class ContextExternalToolService {

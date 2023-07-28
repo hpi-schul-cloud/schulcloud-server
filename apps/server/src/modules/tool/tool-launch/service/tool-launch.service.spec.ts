@@ -2,19 +2,12 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-	BasicToolConfigDO,
-	ExternalToolDO,
-	SchoolExternalToolDO,
-	ToolConfigType,
-	ToolConfigurationStatus,
-} from '@shared/domain';
-import { ContextExternalToolDO } from '@shared/domain/domainobject/tool/context-external-tool.do';
-import {
 	basicToolConfigDOFactory,
 	contextExternalToolDOFactory,
 	externalToolDOFactory,
 	schoolExternalToolDOFactory,
 } from '@shared/testing';
+import { ContextExternalToolDO } from '../../context-external-tool/domainobject';
 import { LaunchRequestMethod, ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import {
 	BasicToolLaunchStrategy,
@@ -27,6 +20,9 @@ import { ToolStatusOutdatedLoggableException } from '../error';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ExternalToolService } from '../../external-tool/service';
 import { CommonToolService } from '../../common/service';
+import { SchoolExternalToolDO } from '../../school-external-tool/domainobject';
+import { BasicToolConfigDO, ExternalToolDO } from '../../external-tool/domainobject';
+import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
 
 describe('ToolLaunchService', () => {
 	let module: TestingModule;

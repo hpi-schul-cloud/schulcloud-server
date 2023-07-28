@@ -1,11 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import {
-	SchoolExternalToolDO,
-	CustomParameterEntryDO,
-	CustomParameterEntry,
-	ToolConfigurationStatus,
-} from '@shared/domain';
-import {
 	CustomParameterEntryResponse,
 	SchoolExternalToolResponse,
 	SchoolExternalToolSearchListResponse,
@@ -14,6 +8,10 @@ import {
 } from '../controller/dto';
 import { ToolConfigurationStatusResponse } from '../../external-tool/controller/dto';
 import { AvailableToolsForContext } from '../../external-tool/uc';
+import { CustomParameterEntry } from '../../common/entity';
+import { ToolConfigurationStatus } from '../../common/enum';
+import { SchoolExternalToolDO } from '../domainobject';
+import { CustomParameterEntryDO } from '../../common/domainobject';
 
 export const statusMapping: Record<ToolConfigurationStatus, ToolConfigurationStatusResponse> = {
 	[ToolConfigurationStatus.LATEST]: ToolConfigurationStatusResponse.LATEST,

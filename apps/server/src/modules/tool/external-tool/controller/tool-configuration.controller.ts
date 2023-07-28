@@ -8,7 +8,6 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { ExternalToolDO } from '@shared/domain';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ExternalToolConfigurationUc } from '../uc';
@@ -22,6 +21,7 @@ import {
 import { ExternalToolResponseMapper } from '../mapper';
 import { SchoolToolConfigurationListResponse } from '../../school-external-tool/controller/dto';
 import { SchoolExternalToolResponseMapper } from '../../school-external-tool/mapper';
+import { ExternalToolDO } from '../domainobject';
 
 @ApiTags('Tool')
 @Authenticate('jwt')

@@ -1,7 +1,10 @@
-import { ContextExternalToolDO, ExternalToolDO, SchoolExternalToolDO, ToolConfigurationStatus } from '@shared/domain';
 import { Test, TestingModule } from '@nestjs/testing';
 import { contextExternalToolDOFactory, externalToolDOFactory, schoolExternalToolDOFactory } from '@shared/testing';
 import { CommonToolService } from './common-tool.service';
+import { ExternalToolDO } from '../../external-tool/domainobject';
+import { SchoolExternalToolDO } from '../../school-external-tool/domainobject';
+import { ToolConfigurationStatus } from '../enum';
+import { ContextExternalToolDO } from '../../context-external-tool/domainobject';
 
 describe('CommonToolService', () => {
 	let module: TestingModule;

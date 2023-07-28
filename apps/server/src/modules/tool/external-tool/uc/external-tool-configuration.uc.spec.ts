@@ -3,24 +3,19 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	ContextExternalToolDO,
-	CustomParameterScope,
-	ExternalToolDO,
-	Page,
-	Permission,
-	SchoolExternalToolDO,
-	User,
-} from '@shared/domain';
+import { Page, Permission, User } from '@shared/domain';
 import { contextExternalToolDOFactory, setupEntities, userFactory } from '@shared/testing';
 import { externalToolDOFactory, schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/tool';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Action, AuthorizableReferenceType, AuthorizationService } from '../../../authorization';
 import { ExternalToolConfigurationUc } from './external-tool-configuration.uc';
-import { ToolContextType } from '../../common/interface';
+import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ExternalToolService } from '../service';
 import { SchoolExternalToolService } from '../../school-external-tool/service/school-external-tool.service';
 import { ContextExternalToolService } from '../../context-external-tool/service';
+import { ExternalToolDO } from '../domainobject';
+import { ContextExternalToolDO } from '../../context-external-tool/domainobject';
+import { SchoolExternalToolDO } from '../../school-external-tool/domainobject';
 
 describe('ExternalToolConfigurationUc', () => {
 	let module: TestingModule;

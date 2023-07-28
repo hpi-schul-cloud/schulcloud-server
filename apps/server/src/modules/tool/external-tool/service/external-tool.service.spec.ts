@@ -1,13 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IFindOptions, Page, SchoolExternalToolDO, SortOrder } from '@shared/domain';
-import {
-	CustomParameterDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/tool';
+import { IFindOptions, Page, SortOrder } from '@shared/domain';
+
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
@@ -19,10 +14,14 @@ import {
 	oauth2ToolConfigDOFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { LegacyLogger } from '@src/core/logger';
-import { CustomParameterScope, ExternalToolSearchQuery } from '../../common/interface';
+import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalToolVersionService } from './external-tool-version.service';
 import { ExternalToolService } from './external-tool.service';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
+import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '../domainobject';
+import { SchoolExternalToolDO } from '../../school-external-tool/domainobject';
+import { CustomParameterDO } from '../../common/domainobject';
+import { CustomParameterScope } from '../../common/enum';
 
 describe('ExternalToolService', () => {
 	let module: TestingModule;

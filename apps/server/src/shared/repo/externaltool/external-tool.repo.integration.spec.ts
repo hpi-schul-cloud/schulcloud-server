@@ -1,28 +1,28 @@
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	BasicToolConfigDO,
-	CustomParameterDO,
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	ExternalTool,
-	ExternalToolDO,
-	IFindOptions,
-	Lti11ToolConfigDO,
-	LtiMessageType,
-	LtiPrivacyPermission,
-	Oauth2ToolConfigDO,
-	Page,
-	SortOrder,
-	ToolConfigType,
-} from '@shared/domain';
+import { IFindOptions, Page, SortOrder } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo';
 import { cleanupCollections, externalToolFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolSearchQuery } from '@src/modules/tool';
+import { CustomParameterDO } from '@src/modules/tool/common/domainobject';
+import {
+	ToolConfigType,
+	LtiPrivacyPermission,
+	CustomParameterLocation,
+	CustomParameterScope,
+	CustomParameterType,
+	LtiMessageType,
+} from '@src/modules/tool/common/enum';
+import {
+	BasicToolConfigDO,
+	ExternalToolDO,
+	Lti11ToolConfigDO,
+	Oauth2ToolConfigDO,
+} from '@src/modules/tool/external-tool/domainobject';
+import { ExternalTool } from '@src/modules/tool/external-tool/entity';
 
 describe('ExternalToolRepo', () => {
 	let module: TestingModule;

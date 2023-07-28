@@ -1,4 +1,6 @@
-import { ContextExternalToolDO, ExternalToolDO, ToolConfigurationStatus, ToolReference } from '@shared/domain';
+import { ExternalToolDO, ToolReference } from '../domainobject';
+import { ContextExternalToolDO } from '../../context-external-tool/domainobject';
+import { ToolConfigurationStatus } from '../../common/enum';
 
 export class ToolReferenceMapper {
 	static mapToToolReference(

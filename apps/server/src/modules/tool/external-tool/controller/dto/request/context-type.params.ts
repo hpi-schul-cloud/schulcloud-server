@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
-import { ToolContextType } from '../../../../common/interface';
+import { ToolContextType } from '../../../../common/enum';
 
 export class ContextTypeParams {
 	@IsEnum(ToolContextType)

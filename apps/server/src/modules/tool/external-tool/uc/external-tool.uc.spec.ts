@@ -3,7 +3,6 @@ import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/com
 import { Test, TestingModule } from '@nestjs/testing';
 import { IFindOptions, Permission, SortOrder, User } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
-import { ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/tool';
 import { setupEntities, userFactory } from '@shared/testing';
 import {
 	externalToolDOFactory,
@@ -16,6 +15,7 @@ import { ExternalToolUc } from './external-tool.uc';
 import { ExternalToolService, ExternalToolValidationService } from '../service';
 
 import { ExternalToolUpdate } from './dto';
+import { ExternalToolDO, Oauth2ToolConfigDO } from '../domainobject';
 
 describe('ExternalToolUc', () => {
 	let module: TestingModule;

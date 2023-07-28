@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/tool/school-external-tool.do';
 import { ICurrentUser } from '@src/modules/authentication';
 import { LegacyLogger } from '@src/core/logger';
+import { SchoolExternalToolDO } from '../domainobject';
 import { ToolSchoolController } from './tool-school.controller';
 import { SchoolExternalToolUc } from '../uc';
 import { SchoolExternalToolResponseMapper, SchoolExternalToolRequestMapper } from '../mapper';

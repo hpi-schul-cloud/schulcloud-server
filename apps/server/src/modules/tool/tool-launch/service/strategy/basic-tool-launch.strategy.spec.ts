@@ -1,12 +1,14 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContextExternalToolDO, ExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
 import { contextExternalToolDOFactory, externalToolDOFactory, schoolExternalToolDOFactory } from '@shared/testing';
 import { SchoolService } from '@src/modules/school';
 import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
 import { BasicToolLaunchStrategy } from './basic-tool-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
+import { ExternalToolDO } from '../../../external-tool/domainobject';
+import { SchoolExternalToolDO } from '../../../school-external-tool/domainobject';
+import { ContextExternalToolDO } from '../../../context-external-tool/domainobject';
 
 describe('BasicToolLaunchStrategy', () => {
 	let module: TestingModule;

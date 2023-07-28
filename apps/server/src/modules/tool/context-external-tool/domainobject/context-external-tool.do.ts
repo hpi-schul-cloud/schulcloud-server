@@ -1,8 +1,8 @@
-import { BaseDO } from '../base.do';
-import { CustomParameterEntryDO } from './custom-parameter-entry.do';
-import { SchoolExternalToolRefDO } from './school-external-tool-ref.do';
+import { BaseDO } from '@shared/domain/domainobject/base.do';
+import { SchoolExternalToolRefDO } from '../../school-external-tool/domainobject/school-external-tool-ref.do';
 import { ContextRef } from './context-ref';
-import { ToolVersion } from './types';
+import { CustomParameterEntryDO } from '../../common/domainobject';
+import { ToolVersion } from '../../common/interface';
 
 export interface ContextExternalToolProps {
 	id?: string;

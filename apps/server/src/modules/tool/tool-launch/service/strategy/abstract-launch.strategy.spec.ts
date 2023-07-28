@@ -2,18 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	ContextExternalToolDO,
-	Course,
-	CustomParameterEntryDO,
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	EntityId,
-	ExternalToolDO,
-	SchoolDO,
-	SchoolExternalToolDO,
-} from '@shared/domain';
+import { Course, EntityId, SchoolDO } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
 import {
 	contextExternalToolDOFactory,
@@ -25,7 +14,6 @@ import {
 	setupEntities,
 } from '@shared/testing';
 import { SchoolService } from '@src/modules/school';
-import { ToolContextType } from '../../../common/interface';
 import { MissingToolParameterValueLoggableException, ParameterTypeNotImplementedLoggableException } from '../../error';
 import {
 	LaunchRequestMethod,
@@ -37,6 +25,16 @@ import {
 } from '../../types';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
+import {
+	CustomParameterLocation,
+	CustomParameterScope,
+	CustomParameterType,
+	ToolContextType,
+} from '../../../common/enum';
+import { ExternalToolDO } from '../../../external-tool/domainobject';
+import { CustomParameterEntryDO } from '../../../common/domainobject';
+import { SchoolExternalToolDO } from '../../../school-external-tool/domainobject';
+import { ContextExternalToolDO } from '../../../context-external-tool/domainobject';
 
 const concreteConfigParameter: PropertyData = {
 	location: PropertyLocation.QUERY,

@@ -1,11 +1,12 @@
 import { EntityName, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { IFindOptions, IPagination, Page, SortOrder, ToolConfigType } from '@shared/domain';
-import { ExternalToolDO } from '@shared/domain/domainobject/tool';
+import { IFindOptions, IPagination, Page, SortOrder } from '@shared/domain';
 import { BaseDORepo, ExternalToolRepoMapper, ExternalToolSortingMapper, Scope } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
+import { ToolConfigType } from '@src/modules/tool/common/enum';
 import { ExternalToolSearchQuery } from '@src/modules/tool/common/interface';
+import { ExternalToolDO } from '@src/modules/tool/external-tool/domainobject';
 import { ExternalTool, IExternalToolProperties } from '@src/modules/tool/external-tool/entity';
 import { ExternalToolScope } from './external-tool.scope';
 

@@ -1,14 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	ContextExternalTool,
-	ContextExternalToolDO,
-	ContextExternalToolType,
-	CustomParameterEntryDO,
-	School,
-	SchoolExternalTool,
-} from '@shared/domain';
+import { School } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
 import {
@@ -19,8 +12,12 @@ import {
 	schoolFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
+import { CustomParameterEntryDO } from '@src/modules/tool/common/domainobject';
+import { ToolContextType } from '@src/modules/tool/common/enum';
+import { ContextExternalToolDO } from '@src/modules/tool/context-external-tool/domainobject';
+import { ContextExternalTool, ContextExternalToolType } from '@src/modules/tool/context-external-tool/entity';
 import { ContextExternalToolQuery } from '@src/modules/tool/context-external-tool/uc/dto/context-external-tool.types';
-import { ToolContextType } from '@src/modules/tool/common/interface';
+import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/entity';
 import { ContextExternalToolRepo } from './context-external-tool.repo';
 
 describe('ContextExternalToolRepo', () => {

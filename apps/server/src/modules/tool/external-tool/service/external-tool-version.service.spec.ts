@@ -1,7 +1,8 @@
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '@shared/domain';
-import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/tool';
 import { customParameterDOFactory, externalToolDOFactory } from '@shared/testing/factory/domainobject/tool';
 import { ExternalToolVersionService } from './external-tool-version.service';
+import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '../../common/enum';
+import { CustomParameterDO } from '../../common/domainobject';
+import { ExternalToolDO } from '../domainobject';
 
 describe('ExternalToolVersionService', () => {
 	let service: ExternalToolVersionService;

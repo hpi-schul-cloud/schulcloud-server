@@ -1,18 +1,7 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	ContextExternalTool,
-	ContextExternalToolType,
-	Course,
-	ExternalTool,
-	Permission,
-	Role,
-	School,
-	SchoolExternalTool,
-	ToolConfigType,
-	User,
-} from '@shared/domain';
+import { Course, Permission, Role, School, User } from '@shared/domain';
 import {
 	basicToolConfigDOFactory,
 	contextExternalToolDOFactory,
@@ -32,6 +21,10 @@ import { Request } from 'express';
 import request, { Response } from 'supertest';
 import { LaunchRequestMethod } from '../../types';
 import { ToolLaunchRequestResponse, ToolLaunchParams } from '../dto';
+import { ContextExternalTool, ContextExternalToolType } from '../../../context-external-tool/entity';
+import { SchoolExternalTool } from '../../../school-external-tool/entity';
+import { ExternalTool } from '../../../external-tool/entity';
+import { ToolConfigType } from '../../../common/enum';
 
 // TODO Refactor to use api testHelpers
 describe('ToolLaunchController (API)', () => {

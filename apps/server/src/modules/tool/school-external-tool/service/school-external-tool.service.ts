@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { SchoolExternalToolRepo } from '@shared/repo';
-import { SchoolExternalToolDO, ExternalToolDO, ToolConfigurationStatus, EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain';
 import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
 import { ExternalToolService } from '../../external-tool/service';
+import { SchoolExternalToolDO } from '../domainobject';
+import { ExternalToolDO } from '../../external-tool/domainobject';
+import { ToolConfigurationStatus } from '../../common/enum';
 
 @Injectable()
 export class SchoolExternalToolService {
@@ -12,7 +15,7 @@ export class SchoolExternalToolService {
 	) {}
 
 	async getSchoolExternalToolById(schoolExternalToolId: EntityId): Promise<SchoolExternalToolDO> {
-		const schoolExternalTool = await this.schoolExternalToolRepo.findById(schoolExternalToolId);
+		const schoolExternalTool: SchoolExternalToolDO = await this.schoolExternalToolRepo.findById(schoolExternalToolId);
 		return schoolExternalTool;
 	}
 

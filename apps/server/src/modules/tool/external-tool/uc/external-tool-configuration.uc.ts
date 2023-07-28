@@ -1,21 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import {
-	ContextExternalToolDO,
-	CustomParameterScope,
-	EntityId,
-	Permission,
-	SchoolExternalToolDO,
-} from '@shared/domain';
+import { EntityId, Permission } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
-import { ExternalToolDO } from '@shared/domain/domainobject/tool';
 import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
-import { ToolContextType } from '../../common/interface';
+import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ExternalToolService } from '../service';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { AvailableToolsForContext } from './dto';
 import { ContextTypeMapper } from '../../common/mapper';
+import { ExternalToolDO } from '../domainobject';
+import { SchoolExternalToolDO } from '../../school-external-tool/domainobject';
+import { ContextExternalToolDO } from '../../context-external-tool/domainobject';
 
 @Injectable()
 export class ExternalToolConfigurationUc {

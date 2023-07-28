@@ -1,11 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import {
-	ContextExternalToolDO,
-	ExternalToolDO,
-	SchoolExternalToolDO,
-	ToolConfigurationStatus,
-	ToolVersion,
-} from '@shared/domain';
+import { ExternalToolDO } from '../../external-tool/domainobject';
+import { SchoolExternalToolDO } from '../../school-external-tool/domainobject';
+import { ContextExternalToolDO } from '../../context-external-tool/domainobject';
+import { ToolConfigurationStatus } from '../enum/tool-configuration-status';
+import { ToolVersion } from '../interface';
 
 @Injectable()
 export class CommonToolService {
