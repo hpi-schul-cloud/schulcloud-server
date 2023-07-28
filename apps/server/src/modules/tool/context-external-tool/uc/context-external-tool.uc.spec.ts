@@ -7,7 +7,7 @@ import { ForbiddenLoggableException } from '@src/modules/authorization/errors/fo
 import { Action } from '@src/modules/authorization';
 import { ContextExternalToolUc } from './context-external-tool.uc';
 import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
-import { ContextExternalToolDO } from '../domainobject';
+import { ContextExternalToolDO } from '../domain';
 import { ToolContextType } from '../../common/enum';
 
 describe('ContextExternalToolUc', () => {

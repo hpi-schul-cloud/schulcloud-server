@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
 import { ExternalToolService } from './external-tool.service';
 import { autoParameters, CustomParameterScope } from '../../common/enum';
-import { ExternalToolDO } from '../domainobject';
-import { CustomParameterDO } from '../../common/domainobject';
+import { ExternalToolDO } from '../domain';
+import { CustomParameterDO } from '../../common/domain';
 
 @Injectable()
 export class ExternalToolParameterValidationService {

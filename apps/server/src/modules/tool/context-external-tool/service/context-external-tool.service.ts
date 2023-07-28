@@ -4,7 +4,7 @@ import { ContextExternalToolRepo } from '@shared/repo';
 import { AuthorizableReferenceType, AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
 import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
 import { ContextTypeMapper } from '../../common/mapper';
-import { ContextExternalToolDO, ContextRef } from '../domainobject';
+import { ContextExternalToolDO, ContextRef } from '../domain';
 
 @Injectable()
 export class ContextExternalToolService {

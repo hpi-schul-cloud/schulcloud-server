@@ -12,9 +12,9 @@ import {
 	schoolFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { CustomParameterEntryDO } from '@src/modules/tool/common/domainobject';
+import { CustomParameterEntryDO } from 'apps/server/src/modules/tool/common/domain';
 import { ToolContextType } from '@src/modules/tool/common/enum';
-import { ContextExternalToolDO } from '@src/modules/tool/context-external-tool/domainobject';
+import { ContextExternalToolDO } from 'apps/server/src/modules/tool/context-external-tool/domain';
 import { ContextExternalTool, ContextExternalToolType } from '@src/modules/tool/context-external-tool/entity';
 import { ContextExternalToolQuery } from '@src/modules/tool/context-external-tool/uc/dto/context-external-tool.types';
 import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/entity';

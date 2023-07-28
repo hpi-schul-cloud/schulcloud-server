@@ -1,7 +1,7 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { ContextExternalTool } from '../uc/dto/context-external-tool.types';
-import { ContextExternalToolDO } from '../domainobject';
+import { ContextExternalToolDO } from '../domain';
 
 @Injectable()
 export class ContextExternalToolValidationService {

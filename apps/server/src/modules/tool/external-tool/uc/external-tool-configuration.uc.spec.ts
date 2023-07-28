@@ -13,9 +13,9 @@ import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ExternalToolService } from '../service';
 import { SchoolExternalToolService } from '../../school-external-tool/service/school-external-tool.service';
 import { ContextExternalToolService } from '../../context-external-tool/service';
-import { ExternalToolDO } from '../domainobject';
-import { ContextExternalToolDO } from '../../context-external-tool/domainobject';
-import { SchoolExternalToolDO } from '../../school-external-tool/domainobject';
+import { ExternalToolDO } from '../domain';
+import { ContextExternalToolDO } from '../../context-external-tool/domain';
+import { SchoolExternalToolDO } from '../../school-external-tool/domain';
 
 describe('ExternalToolConfigurationUc', () => {
 	let module: TestingModule;

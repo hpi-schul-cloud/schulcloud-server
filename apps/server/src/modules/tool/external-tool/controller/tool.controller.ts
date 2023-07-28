@@ -31,7 +31,7 @@ import {
 	ToolReferenceResponse,
 } from './dto';
 import { ContextExternalToolContextParams } from '../../context-external-tool/controller/dto';
-import { ExternalToolDO, ToolReference } from '../domainobject';
+import { ExternalToolDO, ToolReference } from '../domain';
 
 @ApiTags('Tool')
 @Authenticate('jwt')

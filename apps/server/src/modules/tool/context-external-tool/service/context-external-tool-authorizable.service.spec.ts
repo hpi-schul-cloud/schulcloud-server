@@ -3,8 +3,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { ContextExternalToolAuthorizableService } from './context-external-tool-authorizable.service';
-import { SchoolExternalToolDO } from '../../school-external-tool/domainobject';
-import { ContextExternalToolDO } from '../domainobject';
+import { SchoolExternalToolDO } from '../../school-external-tool/domain';
+import { ContextExternalToolDO } from '../domain';
 
 describe('ContextExternalToolAuthorizableService', () => {
 	let module: TestingModule;

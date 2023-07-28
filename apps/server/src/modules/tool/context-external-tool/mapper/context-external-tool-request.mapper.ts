@@ -1,7 +1,7 @@
 import { ContextExternalToolPostParams } from '../controller/dto';
 import { CustomParameterEntryParam } from '../../school-external-tool/controller/dto';
 import { ContextExternalTool } from '../uc/dto/context-external-tool.types';
-import { CustomParameterEntryDO } from '../../common/domainobject';
+import { CustomParameterEntryDO } from '../../common/domain';
 
 export class ContextExternalToolRequestMapper {
 	static mapContextExternalToolRequest(request: ContextExternalToolPostParams): ContextExternalTool {

@@ -9,8 +9,8 @@ import { createMock } from '@golevelup/ts-jest';
 import { SchoolExternalToolQuery } from '@src/modules/tool/school-external-tool/uc/dto/school-external-tool.types';
 import { ExternalTool } from '@src/modules/tool/external-tool/entity';
 import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/entity';
-import { CustomParameterEntryDO } from '@src/modules/tool/common/domainobject';
-import { SchoolExternalToolDO } from '@src/modules/tool/school-external-tool/domainobject';
+import { CustomParameterEntryDO } from 'apps/server/src/modules/tool/common/domain';
+import { SchoolExternalToolDO } from 'apps/server/src/modules/tool/school-external-tool/domain';
 import { SchoolExternalToolRepo } from './school-external-tool.repo';
 
 describe('SchoolExternalToolRepo', () => {

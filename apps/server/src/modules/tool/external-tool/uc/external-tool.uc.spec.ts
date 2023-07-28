@@ -15,7 +15,7 @@ import { ExternalToolUc } from './external-tool.uc';
 import { ExternalToolService, ExternalToolValidationService } from '../service';
 
 import { ExternalToolUpdate } from './dto';
-import { ExternalToolDO, Oauth2ToolConfigDO } from '../domainobject';
+import { ExternalToolDO, Oauth2ToolConfigDO } from '../domain';
 
 describe('ExternalToolUc', () => {
 	let module: TestingModule;

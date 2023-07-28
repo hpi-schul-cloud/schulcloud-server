@@ -21,7 +21,7 @@ import {
 import { ExternalToolResponseMapper } from '../mapper';
 import { SchoolToolConfigurationListResponse } from '../../school-external-tool/controller/dto';
 import { SchoolExternalToolResponseMapper } from '../../school-external-tool/mapper';
-import { ExternalToolDO } from '../domainobject';
+import { ExternalToolDO } from '../domain';
 
 @ApiTags('Tool')
 @Authenticate('jwt')

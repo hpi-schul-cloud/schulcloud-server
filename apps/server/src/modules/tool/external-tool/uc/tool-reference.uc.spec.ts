@@ -10,9 +10,9 @@ import { ExternalToolService } from '../service';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { CommonToolService } from '../../common/service';
-import { SchoolExternalToolDO } from '../../school-external-tool/domainobject';
-import { ExternalToolDO, ToolReference } from '../domainobject';
-import { ContextExternalToolDO } from '../../context-external-tool/domainobject';
+import { SchoolExternalToolDO } from '../../school-external-tool/domain';
+import { ExternalToolDO, ToolReference } from '../domain';
+import { ContextExternalToolDO } from '../../context-external-tool/domain';
 
 describe('ToolReferenceUc', () => {
 	let module: TestingModule;

@@ -6,9 +6,9 @@ import { SchoolService } from '@src/modules/school';
 import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
 import { BasicToolLaunchStrategy } from './basic-tool-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
-import { ExternalToolDO } from '../../../external-tool/domainobject';
-import { SchoolExternalToolDO } from '../../../school-external-tool/domainobject';
-import { ContextExternalToolDO } from '../../../context-external-tool/domainobject';
+import { ExternalToolDO } from '../../../external-tool/domain';
+import { SchoolExternalToolDO } from '../../../school-external-tool/domain';
+import { ContextExternalToolDO } from '../../../context-external-tool/domain';
 
 describe('BasicToolLaunchStrategy', () => {
 	let module: TestingModule;

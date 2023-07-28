@@ -4,7 +4,7 @@ import { Action } from '@src/modules/authorization';
 import { ToolLaunchService } from '../service';
 import { ToolLaunchData, ToolLaunchRequest } from '../types';
 import { ContextExternalToolService } from '../../context-external-tool/service';
-import { ContextExternalToolDO } from '../../context-external-tool/domainobject';
+import { ContextExternalToolDO } from '../../context-external-tool/domain';
 
 @Injectable()
 export class ToolLaunchUc {

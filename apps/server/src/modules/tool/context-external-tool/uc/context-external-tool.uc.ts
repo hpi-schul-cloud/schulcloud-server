@@ -5,7 +5,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { ForbiddenLoggableException } from '@src/modules/authorization/errors/forbidden.loggable-exception';
 import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
 import { ContextExternalTool } from './dto/context-external-tool.types';
-import { ContextExternalToolDO, ContextRef } from '../domainobject';
+import { ContextExternalToolDO, ContextRef } from '../domain';
 import { ToolContextType } from '../../common/enum';
 
 @Injectable()

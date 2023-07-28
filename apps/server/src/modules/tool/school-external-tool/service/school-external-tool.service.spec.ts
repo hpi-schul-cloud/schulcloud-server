@@ -5,8 +5,8 @@ import { externalToolDOFactory } from '@shared/testing/factory/domainobject/tool
 import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalToolService } from './school-external-tool.service';
-import { ExternalToolDO } from '../../external-tool/domainobject';
-import { SchoolExternalToolDO } from '../domainobject';
+import { ExternalToolDO } from '../../external-tool/domain';
+import { SchoolExternalToolDO } from '../domain';
 import { ToolConfigurationStatus } from '../../common/enum';
 
 describe('SchoolExternalToolService', () => {

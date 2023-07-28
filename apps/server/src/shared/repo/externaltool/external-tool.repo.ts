@@ -6,7 +6,7 @@ import { BaseDORepo, ExternalToolRepoMapper, ExternalToolSortingMapper, Scope } 
 import { LegacyLogger } from '@src/core/logger';
 import { ToolConfigType } from '@src/modules/tool/common/enum';
 import { ExternalToolSearchQuery } from '@src/modules/tool/common/interface';
-import { ExternalToolDO } from '@src/modules/tool/external-tool/domainobject';
+import { ExternalToolDO } from 'apps/server/src/modules/tool/external-tool/domain';
 import { ExternalTool, IExternalToolProperties } from '@src/modules/tool/external-tool/entity';
 import { ExternalToolScope } from './external-tool.scope';
 

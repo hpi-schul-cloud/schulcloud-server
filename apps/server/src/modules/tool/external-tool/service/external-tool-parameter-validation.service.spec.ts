@@ -5,11 +5,11 @@ import {
 	customParameterDOFactory,
 	externalToolDOFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { CustomParameterDO } from '../../common/domainobject';
+import { CustomParameterDO } from '../../common/domain';
 import { CustomParameterScope, CustomParameterType } from '../../common/enum';
 import { ExternalToolService } from './index';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
-import { ExternalToolDO } from '../domainobject';
+import { ExternalToolDO } from '../domain';
 
 describe('ExternalToolParameterValidationService', () => {
 	let module: TestingModule;

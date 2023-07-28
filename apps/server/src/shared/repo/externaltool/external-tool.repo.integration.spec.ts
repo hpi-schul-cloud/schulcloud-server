@@ -7,7 +7,7 @@ import { ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo';
 import { cleanupCollections, externalToolFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolSearchQuery } from '@src/modules/tool';
-import { CustomParameterDO } from '@src/modules/tool/common/domainobject';
+import { CustomParameterDO } from 'apps/server/src/modules/tool/common/domain';
 import {
 	ToolConfigType,
 	LtiPrivacyPermission,
@@ -21,7 +21,7 @@ import {
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-} from '@src/modules/tool/external-tool/domainobject';
+} from 'apps/server/src/modules/tool/external-tool/domain';
 import { ExternalTool } from '@src/modules/tool/external-tool/entity';
 
 describe('ExternalToolRepo', () => {

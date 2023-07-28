@@ -31,10 +31,10 @@ import {
 	CustomParameterType,
 	ToolContextType,
 } from '../../../common/enum';
-import { ExternalToolDO } from '../../../external-tool/domainobject';
-import { CustomParameterEntryDO } from '../../../common/domainobject';
-import { SchoolExternalToolDO } from '../../../school-external-tool/domainobject';
-import { ContextExternalToolDO } from '../../../context-external-tool/domainobject';
+import { ExternalToolDO } from '../../../external-tool/domain';
+import { CustomParameterEntryDO } from '../../../common/domain';
+import { SchoolExternalToolDO } from '../../../school-external-tool/domain';
+import { ContextExternalToolDO } from '../../../context-external-tool/domain';
 
 const concreteConfigParameter: PropertyData = {
 	location: PropertyLocation.QUERY,

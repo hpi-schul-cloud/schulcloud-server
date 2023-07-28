@@ -19,14 +19,8 @@ import {
 	ToolReferenceResponse,
 } from '../controller/dto';
 import { statusMapping } from '../../school-external-tool/mapper';
-import {
-	BasicToolConfigDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
-	ToolReference,
-} from '../domainobject';
-import { CustomParameterDO } from '../../common/domainobject';
+import { BasicToolConfigDO, ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO, ToolReference } from '../domain';
+import { CustomParameterDO } from '../../common/domain';
 
 const scopeMapping: Record<CustomParameterScope, CustomParameterScopeTypeParams> = {
 	[CustomParameterScope.GLOBAL]: CustomParameterScopeTypeParams.GLOBAL,

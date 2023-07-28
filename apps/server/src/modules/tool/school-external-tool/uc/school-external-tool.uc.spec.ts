@@ -7,7 +7,7 @@ import { SchoolExternalToolUc } from './school-external-tool.uc';
 import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
-import { SchoolExternalToolDO } from '../domainobject';
+import { SchoolExternalToolDO } from '../domain';
 
 describe('SchoolExternalToolUc', () => {
 	let module: TestingModule;

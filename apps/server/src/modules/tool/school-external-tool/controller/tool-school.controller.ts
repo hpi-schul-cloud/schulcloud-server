@@ -25,7 +25,7 @@ import {
 } from './dto';
 import { SchoolExternalTool } from '../uc/dto/school-external-tool.types';
 import { SchoolExternalToolUc } from '../uc';
-import { SchoolExternalToolDO } from '../domainobject';
+import { SchoolExternalToolDO } from '../domain';
 
 @ApiTags('Tool')
 @Authenticate('jwt')

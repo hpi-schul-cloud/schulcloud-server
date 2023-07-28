@@ -18,9 +18,9 @@ import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalToolVersionService } from './external-tool-version.service';
 import { ExternalToolService } from './external-tool.service';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
-import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '../domainobject';
-import { SchoolExternalToolDO } from '../../school-external-tool/domainobject';
-import { CustomParameterDO } from '../../common/domainobject';
+import { ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '../domain';
+import { SchoolExternalToolDO } from '../../school-external-tool/domain';
+import { CustomParameterDO } from '../../common/domain';
 import { CustomParameterScope } from '../../common/enum';
 
 describe('ExternalToolService', () => {

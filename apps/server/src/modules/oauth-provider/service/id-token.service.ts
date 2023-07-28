@@ -4,7 +4,7 @@ import { LtiToolDO, Pseudonym, Team, UserDO } from '@shared/domain';
 import { TeamsRepo } from '@shared/repo';
 import { PseudonymService } from '@src/modules/pseudonym';
 import { UserService } from '@src/modules/user';
-import { ExternalToolDO } from '@src/modules/tool/external-tool/domainobject';
+import { ExternalToolDO } from 'apps/server/src/modules/tool/external-tool/domain';
 import { GroupNameIdTuple, IdToken, OauthScope } from '../interface';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
 import { IdTokenCreationLoggableException } from '../error/id-token-creation-exception.loggable';

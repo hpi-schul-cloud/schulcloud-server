@@ -8,10 +8,10 @@ import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalToolVersionService } from './external-tool-version.service';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
-import { ExternalToolDO, Oauth2ToolConfigDO } from '../domainobject';
-import { SchoolExternalToolDO } from '../../school-external-tool/domainobject';
+import { ExternalToolDO, Oauth2ToolConfigDO } from '../domain';
+import { SchoolExternalToolDO } from '../../school-external-tool/domain';
 import { CustomParameterScope, TokenEndpointAuthMethod } from '../../common/enum';
-import { CustomParameterDO } from '../../common/domainobject';
+import { CustomParameterDO } from '../../common/domain';
 
 @Injectable()
 export class ExternalToolService {

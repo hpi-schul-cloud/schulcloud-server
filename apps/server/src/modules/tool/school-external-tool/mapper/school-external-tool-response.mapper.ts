@@ -10,8 +10,8 @@ import { ToolConfigurationStatusResponse } from '../../external-tool/controller/
 import { AvailableToolsForContext } from '../../external-tool/uc';
 import { CustomParameterEntry } from '../../common/entity';
 import { ToolConfigurationStatus } from '../../common/enum';
-import { SchoolExternalToolDO } from '../domainobject';
-import { CustomParameterEntryDO } from '../../common/domainobject';
+import { SchoolExternalToolDO } from '../domain';
+import { CustomParameterEntryDO } from '../../common/domain';
 
 export const statusMapping: Record<ToolConfigurationStatus, ToolConfigurationStatusResponse> = {
 	[ToolConfigurationStatus.LATEST]: ToolConfigurationStatusResponse.LATEST,

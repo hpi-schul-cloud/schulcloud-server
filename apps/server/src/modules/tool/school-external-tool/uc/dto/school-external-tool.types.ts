@@ -1,4 +1,4 @@
-import { SchoolExternalToolProps } from '../../domainobject';
+import { SchoolExternalToolProps } from '../../domain';
 
 export type SchoolExternalTool = SchoolExternalToolProps;
 

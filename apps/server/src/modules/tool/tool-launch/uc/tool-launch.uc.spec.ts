@@ -5,7 +5,7 @@ import { ToolLaunchService } from '../service';
 import { ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import { ToolLaunchUc } from './tool-launch.uc';
 import { ContextExternalToolService } from '../../context-external-tool/service';
-import { ContextExternalToolDO } from '../../context-external-tool/domainobject';
+import { ContextExternalToolDO } from '../../context-external-tool/domain';
 
 describe('ToolLaunchUc', () => {
 	let module: TestingModule;

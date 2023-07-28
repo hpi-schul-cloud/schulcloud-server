@@ -9,8 +9,8 @@ import {
 	SchoolToolConfigurationListResponse,
 } from '../controller/dto';
 import { ToolConfigurationStatusResponse } from '../../external-tool/controller/dto';
-import { SchoolExternalToolDO } from '../domainobject';
-import { ExternalToolDO } from '../../external-tool/domainobject';
+import { SchoolExternalToolDO } from '../domain';
+import { ExternalToolDO } from '../../external-tool/domain';
 
 describe('SchoolExternalToolResponseMapper', () => {
 	let mapper: SchoolExternalToolResponseMapper;

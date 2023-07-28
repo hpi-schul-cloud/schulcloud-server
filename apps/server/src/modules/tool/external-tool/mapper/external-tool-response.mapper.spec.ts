@@ -23,8 +23,8 @@ import {
 	ToolConfigurationEntryResponse,
 	ToolConfigurationListResponse,
 } from '../controller/dto';
-import { BasicToolConfigDO, ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '../domainobject';
-import { CustomParameterDO } from '../../common/domainobject';
+import { BasicToolConfigDO, ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '../domain';
+import { CustomParameterDO } from '../../common/domain';
 
 describe('ExternalToolResponseMapper', () => {
 	let module: TestingModule;

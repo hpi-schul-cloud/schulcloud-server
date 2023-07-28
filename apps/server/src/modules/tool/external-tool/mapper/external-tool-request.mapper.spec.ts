@@ -27,8 +27,8 @@ import {
 	Oauth2ToolConfigCreateParams,
 	SortExternalToolParams,
 } from '../controller/dto';
-import { BasicToolConfigDO, ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '../domainobject';
-import { CustomParameterDO } from '../../common/domainobject';
+import { BasicToolConfigDO, ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '../domain';
+import { CustomParameterDO } from '../../common/domain';
 import { ExternalToolSearchQuery } from '../../common/interface';
 
 describe('ExternalToolRequestMapper', () => {

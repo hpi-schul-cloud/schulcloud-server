@@ -1,5 +1,5 @@
 import { BaseDO } from '@shared/domain/domainobject/base.do';
-import { CustomParameterEntryDO } from '../../common/domainobject';
+import { CustomParameterEntryDO } from '../../common/domain';
 import { ToolConfigurationStatus } from '../../common/enum';
 import { ToolVersion } from '../../common/interface';
 

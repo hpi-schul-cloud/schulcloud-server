@@ -3,8 +3,8 @@ import { SchoolExternalToolRepo } from '@shared/repo';
 import { EntityId } from '@shared/domain';
 import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
 import { ExternalToolService } from '../../external-tool/service';
-import { SchoolExternalToolDO } from '../domainobject';
-import { ExternalToolDO } from '../../external-tool/domainobject';
+import { SchoolExternalToolDO } from '../domain';
+import { ExternalToolDO } from '../../external-tool/domain';
 import { ToolConfigurationStatus } from '../../common/enum';
 
 @Injectable()

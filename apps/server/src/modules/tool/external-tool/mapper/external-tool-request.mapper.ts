@@ -30,7 +30,7 @@ import {
 	Oauth2ToolConfigCreate,
 	Oauth2ToolConfigUpdate,
 } from '../uc';
-import { ExternalToolDO } from '../domainobject';
+import { ExternalToolDO } from '../domain';
 import { ExternalToolSearchQuery } from '../../common/interface';
 
 const scopeMapping: Record<CustomParameterScopeTypeParams, CustomParameterScope> = {

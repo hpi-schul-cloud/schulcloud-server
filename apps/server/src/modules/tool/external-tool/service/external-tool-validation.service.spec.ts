@@ -5,7 +5,7 @@ import { ValidationError } from '@shared/common';
 import { ExternalToolService } from './external-tool.service';
 import { ExternalToolValidationService } from './external-tool-validation.service';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
-import { ExternalToolDO } from '../domainobject';
+import { ExternalToolDO } from '../domain';
 
 describe('ExternalToolValidationService', () => {
 	let module: TestingModule;

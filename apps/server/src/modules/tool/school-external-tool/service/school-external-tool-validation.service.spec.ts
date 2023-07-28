@@ -5,11 +5,11 @@ import {
 	externalToolDOFactory,
 	schoolExternalToolDOFactory,
 } from '@shared/testing/factory/domainobject/tool';
-import { ExternalToolDO } from '../../external-tool/domainobject';
+import { ExternalToolDO } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
-import { SchoolExternalToolDO } from '../domainobject';
-import { CustomParameterDO } from '../../common/domainobject';
+import { SchoolExternalToolDO } from '../domain';
+import { CustomParameterDO } from '../../common/domain';
 import { CustomParameterScope, CustomParameterType } from '../../common/enum';
 
 describe('SchoolExternalToolValidationService', () => {

@@ -11,7 +11,7 @@ import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
-import { ExternalToolDO } from '../../../external-tool/domainobject';
+import { ExternalToolDO } from '../../../external-tool/domain';
 import { LtiRole } from '../../../common/enum';
 
 @Injectable()

@@ -13,9 +13,9 @@ import {
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-} from '@src/modules/tool/external-tool/domainobject';
+} from 'apps/server/src/modules/tool/external-tool/domain';
 import { ToolConfigType } from '@src/modules/tool/common/enum';
-import { CustomParameterDO, CustomParameterEntryDO } from '@src/modules/tool/common/domainobject';
+import { CustomParameterDO, CustomParameterEntryDO } from 'apps/server/src/modules/tool/common/domain';
 
 // TODO: maybe rename because of usage in external tool repo and school external tool repo
 export class ExternalToolRepoMapper {

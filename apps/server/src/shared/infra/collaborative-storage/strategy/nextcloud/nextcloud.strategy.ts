@@ -7,7 +7,7 @@ import { TeamDto, TeamUserDto } from '@src/modules/collaborative-storage';
 import { PseudonymService } from '@src/modules/pseudonym';
 import { UserService } from '@src/modules/user';
 import { ExternalToolService } from '@src/modules/tool/external-tool/service';
-import { ExternalToolDO } from '@src/modules/tool/external-tool/domainobject';
+import { ExternalToolDO } from 'apps/server/src/modules/tool/external-tool/domain';
 import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
 import { ICollaborativeStorageStrategy } from '../base.interface.strategy';
 import { NextcloudClient } from './nextcloud.client';

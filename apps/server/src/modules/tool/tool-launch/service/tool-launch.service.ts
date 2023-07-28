@@ -13,9 +13,9 @@ import { ToolStatusOutdatedLoggableException } from '../error';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ExternalToolService } from '../../external-tool/service';
 import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
-import { ContextExternalToolDO } from '../../context-external-tool/domainobject';
-import { ExternalToolDO } from '../../external-tool/domainobject';
-import { SchoolExternalToolDO } from '../../school-external-tool/domainobject';
+import { ContextExternalToolDO } from '../../context-external-tool/domain';
+import { ExternalToolDO } from '../../external-tool/domain';
+import { SchoolExternalToolDO } from '../../school-external-tool/domain';
 
 @Injectable()
 export class ToolLaunchService {

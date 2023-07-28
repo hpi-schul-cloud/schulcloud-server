@@ -19,10 +19,10 @@ import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { Lti11ToolLaunchStrategy } from './lti11-tool-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
-import { ExternalToolDO } from '../../../external-tool/domainobject';
+import { ExternalToolDO } from '../../../external-tool/domain';
 import { LtiMessageType, LtiPrivacyPermission, LtiRole, ToolContextType } from '../../../common/enum';
-import { SchoolExternalToolDO } from '../../../school-external-tool/domainobject';
-import { ContextExternalToolDO } from '../../../context-external-tool/domainobject';
+import { SchoolExternalToolDO } from '../../../school-external-tool/domain';
+import { ContextExternalToolDO } from '../../../context-external-tool/domain';
 
 describe('Lti11ToolLaunchStrategy', () => {
 	let module: TestingModule;

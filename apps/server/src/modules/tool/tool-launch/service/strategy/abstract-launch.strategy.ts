@@ -14,10 +14,10 @@ import { ToolLaunchMapper } from '../../mapper';
 import { LaunchRequestMethod, PropertyData, PropertyLocation, ToolLaunchData, ToolLaunchRequest } from '../../types';
 import { IToolLaunchParams } from './tool-launch-params.interface';
 import { IToolLaunchStrategy } from './tool-launch-strategy.interface';
-import { SchoolExternalToolDO } from '../../../school-external-tool/domainobject';
-import { CustomParameterDO, CustomParameterEntryDO } from '../../../common/domainobject';
-import { ContextExternalToolDO } from '../../../context-external-tool/domainobject';
-import { ExternalToolDO } from '../../../external-tool/domainobject';
+import { SchoolExternalToolDO } from '../../../school-external-tool/domain';
+import { CustomParameterDO, CustomParameterEntryDO } from '../../../common/domain';
+import { ContextExternalToolDO } from '../../../context-external-tool/domain';
+import { ExternalToolDO } from '../../../external-tool/domain';
 
 @Injectable()
 export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {

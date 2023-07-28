@@ -3,7 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
 import { ICurrentUser } from '@src/modules/authentication';
 import { LegacyLogger } from '@src/core/logger';
-import { SchoolExternalToolDO } from '../domainobject';
+import { SchoolExternalToolDO } from '../domain';
 import { ToolSchoolController } from './tool-school.controller';
 import { SchoolExternalToolUc } from '../uc';
 import { SchoolExternalToolResponseMapper, SchoolExternalToolRequestMapper } from '../mapper';

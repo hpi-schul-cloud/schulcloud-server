@@ -7,7 +7,7 @@ import {
 	externalToolDOFactory,
 	schoolExternalToolDOFactory,
 } from '@shared/testing';
-import { ContextExternalToolDO } from '../../context-external-tool/domainobject';
+import { ContextExternalToolDO } from '../../context-external-tool/domain';
 import { LaunchRequestMethod, ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import {
 	BasicToolLaunchStrategy,
@@ -20,8 +20,8 @@ import { ToolStatusOutdatedLoggableException } from '../error';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ExternalToolService } from '../../external-tool/service';
 import { CommonToolService } from '../../common/service';
-import { SchoolExternalToolDO } from '../../school-external-tool/domainobject';
-import { BasicToolConfigDO, ExternalToolDO } from '../../external-tool/domainobject';
+import { SchoolExternalToolDO } from '../../school-external-tool/domain';
+import { BasicToolConfigDO, ExternalToolDO } from '../../external-tool/domain';
 import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
 
 describe('ToolLaunchService', () => {

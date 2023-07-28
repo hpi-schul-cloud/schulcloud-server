@@ -4,7 +4,7 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
-import { ExternalToolConfigDO, ExternalToolDO } from '../domainobject';
+import { ExternalToolConfigDO, ExternalToolDO } from '../domain';
 
 @Injectable()
 export class ExternalToolUc {

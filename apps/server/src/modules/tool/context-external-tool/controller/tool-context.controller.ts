@@ -24,7 +24,7 @@ import {
 } from './dto';
 import { ContextExternalToolUc } from '../uc';
 import { ContextExternalTool } from '../uc/dto/context-external-tool.types';
-import { ContextExternalToolDO } from '../domainobject';
+import { ContextExternalToolDO } from '../domain';
 
 @ApiTags('Tool')
 @Authenticate('jwt')

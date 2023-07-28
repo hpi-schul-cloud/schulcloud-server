@@ -4,7 +4,7 @@ import { Action, AuthorizationService, AuthorizableReferenceType } from '@src/mo
 import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { SchoolExternalTool, SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
-import { SchoolExternalToolDO } from '../domainobject';
+import { SchoolExternalToolDO } from '../domain';
 
 @Injectable()
 export class SchoolExternalToolUc {

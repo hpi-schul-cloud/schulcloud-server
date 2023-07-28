@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { ExternalToolDO } from '../../external-tool/domainobject';
-import { SchoolExternalToolDO } from '../../school-external-tool/domainobject';
-import { ContextExternalToolDO } from '../../context-external-tool/domainobject';
+import { ExternalToolDO } from '../../external-tool/domain';
+import { SchoolExternalToolDO } from '../../school-external-tool/domain';
+import { ContextExternalToolDO } from '../../context-external-tool/domain';
 import { ToolConfigurationStatus } from '../enum/tool-configuration-status';
 import { ToolVersion } from '../interface';
 

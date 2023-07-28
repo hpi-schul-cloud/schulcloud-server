@@ -9,9 +9,9 @@ import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { AvailableToolsForContext } from './dto';
 import { ContextTypeMapper } from '../../common/mapper';
-import { ExternalToolDO } from '../domainobject';
-import { SchoolExternalToolDO } from '../../school-external-tool/domainobject';
-import { ContextExternalToolDO } from '../../context-external-tool/domainobject';
+import { ExternalToolDO } from '../domain';
+import { SchoolExternalToolDO } from '../../school-external-tool/domain';
+import { ContextExternalToolDO } from '../../context-external-tool/domain';
 
 @Injectable()
 export class ExternalToolConfigurationUc {

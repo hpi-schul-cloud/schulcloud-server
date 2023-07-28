@@ -1,15 +1,15 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
 import { Action } from '@src/modules/authorization';
-import { ExternalToolDO, ToolReference } from '../domainobject';
+import { ExternalToolDO, ToolReference } from '../domain';
 import { ToolConfigurationStatus, ToolContextType } from '../../common/enum';
 import { ExternalToolService } from '../service';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { CommonToolService } from '../../common/service';
 import { ToolReferenceMapper } from '../mapper/tool-reference.mapper';
-import { ContextExternalToolDO, ContextRef } from '../../context-external-tool/domainobject';
-import { SchoolExternalToolDO } from '../../school-external-tool/domainobject';
+import { ContextExternalToolDO, ContextRef } from '../../context-external-tool/domain';
+import { SchoolExternalToolDO } from '../../school-external-tool/domain';
 
 @Injectable()
 export class ToolReferenceUc {
