@@ -1203,7 +1203,7 @@
 		"FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "Enables the configuration of context parameters"
+			"description": "Enables the configuration of custom parameters for context external tools"
 		},
 		"TSP_SCHOOL_SYNCER": {
 			"type": "object",
