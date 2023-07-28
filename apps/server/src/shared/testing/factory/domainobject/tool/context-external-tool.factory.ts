@@ -1,10 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CustomParameterEntryDO } from 'apps/server/src/modules/tool/common/domain';
+import { CustomParameterEntryDO } from '@src/modules/tool/common/domain';
 import { ToolContextType } from '@src/modules/tool/common/enum';
-import {
-	ContextExternalToolDO,
-	ContextExternalToolProps,
-} from 'apps/server/src/modules/tool/context-external-tool/domain';
+import { ContextExternalToolDO, ContextExternalToolProps } from '@src/modules/tool/context-external-tool/domain';
 import { DeepPartial } from 'fishery';
 import { DoBaseFactory } from '../do-base.factory';
 

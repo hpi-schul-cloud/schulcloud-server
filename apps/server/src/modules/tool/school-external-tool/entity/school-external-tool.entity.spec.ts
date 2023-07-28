@@ -1,10 +1,10 @@
 import { schoolFactory, setupEntities } from '@shared/testing';
 import { schoolExternalToolFactory } from '@shared/testing/factory/school-external-tool.factory';
-import { BasicToolConfig, CustomParameter, ExternalTool, ExternalToolConfig } from '../../external-tool/entity';
+import { BasicToolConfig, CustomParameter, ExternalToolEntity, ExternalToolConfig } from '../../external-tool/entity';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '../../common/enum';
 import { SchoolExternalTool } from './school-external-tool.entity';
 
-describe('ExternalTool Entity', () => {
+describe('SchoolExternalToolEntity', () => {
 	beforeAll(async () => {
 		await setupEntities();
 	});
@@ -37,7 +37,7 @@ describe('ExternalTool Entity', () => {
 				regexComment: 'mockComment',
 				isOptional: false,
 			});
-			const externalTool: ExternalTool = new ExternalTool({
+			const externalToolEntity: ExternalToolEntity = new ExternalToolEntity({
 				name: 'toolName',
 				url: 'mockUrl',
 				logoUrl: 'mockLogoUrl',
@@ -48,7 +48,7 @@ describe('ExternalTool Entity', () => {
 				version: 1,
 			});
 			const schoolExternalTool: SchoolExternalTool = new SchoolExternalTool({
-				tool: externalTool,
+				tool: externalToolEntity,
 				school: schoolFactory.buildWithId(),
 				schoolParameters: [],
 				toolVersion: 1,

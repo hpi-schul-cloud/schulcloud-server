@@ -11,8 +11,8 @@ import {
 	IContextExternalToolProperties,
 } from '@src/modules/tool/context-external-tool/entity';
 import { ToolContextType } from '@src/modules/tool/common/enum/tool-context-type.enum';
-import { ContextExternalToolDO, ContextRef } from 'apps/server/src/modules/tool/context-external-tool/domain';
-import { SchoolExternalToolRefDO } from 'apps/server/src/modules/tool/school-external-tool/domain';
+import { ContextExternalToolDO, ContextRef } from '@src/modules/tool/context-external-tool/domain';
+import { SchoolExternalToolRefDO } from '@src/modules/tool/school-external-tool/domain';
 import { ExternalToolRepoMapper } from '../externaltool';
 import { ContextExternalToolScope } from './context-external-tool.scope';
 

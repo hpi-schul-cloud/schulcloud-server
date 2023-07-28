@@ -6,8 +6,8 @@ import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { LegacyLogger } from '@src/core/logger';
 import { SchoolExternalToolQuery } from '@src/modules/tool/school-external-tool/uc/dto/school-external-tool.types';
 import { ISchoolExternalToolProperties, SchoolExternalTool } from '@src/modules/tool/school-external-tool/entity';
-import { SchoolExternalToolDO } from 'apps/server/src/modules/tool/school-external-tool/domain';
-import { ExternalTool } from '@src/modules/tool/external-tool/entity';
+import { SchoolExternalToolDO } from '@src/modules/tool/school-external-tool/domain';
+import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
 import { SchoolExternalToolScope } from './school-external-tool.scope';
 import { ExternalToolRepoMapper } from '../externaltool';
 
@@ -84,7 +84,7 @@ export class SchoolExternalToolRepo extends BaseDORepo<
 	mapDOToEntityProperties(entityDO: SchoolExternalToolDO): ISchoolExternalToolProperties {
 		return {
 			school: this._em.getReference(School, entityDO.schoolId),
-			tool: this._em.getReference(ExternalTool, entityDO.toolId),
+			tool: this._em.getReference(ExternalToolEntity, entityDO.toolId),
 			toolVersion: entityDO.toolVersion,
 			schoolParameters: ExternalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),
 		};

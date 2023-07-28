@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolService } from '@src/modules/lti-tool/service';
-import { ExternalToolDO } from 'apps/server/src/modules/tool/external-tool/domain';
+import { ExternalToolDO } from '@src/modules/tool/external-tool/domain';
 import { ExternalToolService } from '@src/modules/tool/external-tool/service';
 
 @Injectable()
@@ -13,13 +13,12 @@ export class OauthProviderLoginFlowService {
 	) {}
 
 	public async findToolByClientId(clientId: string): Promise<ExternalToolDO | LtiToolDO> {
-		const externalTool: ExternalToolDO | null = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(
-			clientId
-		);
+		const externalToolEntity: ExternalToolDO | null =
+			await this.externalToolService.findExternalToolByOAuth2ConfigClientId(clientId);
 		const ltiTool: LtiToolDO | null = await this.ltiToolService.findByClientIdAndIsLocal(clientId, true);
 
-		if (externalTool) {
-			return externalTool;
+		if (externalToolEntity) {
+			return externalToolEntity;
 		}
 
 		if (ltiTool) {

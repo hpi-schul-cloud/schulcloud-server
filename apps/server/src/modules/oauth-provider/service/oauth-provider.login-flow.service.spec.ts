@@ -1,9 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalToolDO, LtiToolDO } from '@shared/domain';
+import { LtiToolDO } from '@shared/domain';
 import { externalToolDOFactory, ltiToolDOFactory, setupEntities } from '@shared/testing';
 import { LtiToolService } from '@src/modules/lti-tool';
+import { ExternalToolDO } from '@src/modules/tool/external-tool/domain';
 import { ExternalToolService } from '@src/modules/tool/external-tool/service';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
 

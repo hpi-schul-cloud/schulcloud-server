@@ -387,8 +387,8 @@ describe('ExternalToolService', () => {
 		});
 		describe('when tool was found', () => {
 			it('should return externalToolDO ', async () => {
-				const externalTool: ExternalToolDO = externalToolDOFactory.build();
-				externalToolRepo.findByName.mockResolvedValue(externalTool);
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.build();
+				externalToolRepo.findByName.mockResolvedValue(externalToolDO);
 
 				const result: ExternalToolDO | null = await service.findExternalToolByName('toolName');
 
@@ -417,8 +417,8 @@ describe('ExternalToolService', () => {
 			});
 
 			it('should return externalToolDO when tool was found', async () => {
-				const externalTool: ExternalToolDO = externalToolDOFactory.build();
-				externalToolRepo.findByOAuth2ConfigClientId.mockResolvedValue(externalTool);
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.build();
+				externalToolRepo.findByOAuth2ConfigClientId.mockResolvedValue(externalToolDO);
 
 				const result: ExternalToolDO | null = await service.findExternalToolByOAuth2ConfigClientId('clientId');
 

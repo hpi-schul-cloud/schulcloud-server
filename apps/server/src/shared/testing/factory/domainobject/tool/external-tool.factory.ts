@@ -14,8 +14,8 @@ import {
 	ExternalToolProps,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-} from 'apps/server/src/modules/tool/external-tool/domain';
-import { CustomParameterDO } from 'apps/server/src/modules/tool/common/domain';
+} from '@src/modules/tool/external-tool/domain';
+import { CustomParameterDO } from '@src/modules/tool/common/domain';
 import { DoBaseFactory } from '../do-base.factory';
 
 export const basicToolConfigDOFactory = DoBaseFactory.define<BasicToolConfigDO, BasicToolConfigDO>(

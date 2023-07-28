@@ -9,7 +9,7 @@ import {
 import {
 	BasicToolConfig,
 	CustomParameter,
-	ExternalTool,
+	ExternalToolEntity,
 	IExternalToolProperties,
 	Lti11ToolConfig,
 	Oauth2ToolConfig,
@@ -17,7 +17,7 @@ import {
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 
-export class ExternalToolFactory extends BaseFactory<ExternalTool, IExternalToolProperties> {
+export class ExternalToolFactory extends BaseFactory<ExternalToolEntity, IExternalToolProperties> {
 	withName(name: string): this {
 		const params: DeepPartial<IExternalToolProperties> = {
 			name,
@@ -63,31 +63,34 @@ export class ExternalToolFactory extends BaseFactory<ExternalTool, IExternalTool
 	}
 }
 
-export const externalToolFactory = ExternalToolFactory.define(ExternalTool, ({ sequence }): IExternalToolProperties => {
-	return {
-		name: `external-tool-${sequence}`,
-		url: '',
-		logoUrl: '',
-		config: new BasicToolConfig({
-			type: ToolConfigType.BASIC,
-			baseUrl: 'mockBaseUrl',
-		}),
-		parameters: [
-			new CustomParameter({
-				name: 'name',
-				displayName: 'User Friendly Name',
-				description: 'This is a mock parameter.',
-				default: 'default',
-				location: CustomParameterLocation.PATH,
-				regex: 'regex',
-				regexComment: 'mockComment',
-				scope: CustomParameterScope.SCHOOL,
-				type: CustomParameterType.STRING,
-				isOptional: false,
+export const externalToolFactory = ExternalToolFactory.define(
+	ExternalToolEntity,
+	({ sequence }): IExternalToolProperties => {
+		return {
+			name: `external-tool-${sequence}`,
+			url: '',
+			logoUrl: '',
+			config: new BasicToolConfig({
+				type: ToolConfigType.BASIC,
+				baseUrl: 'mockBaseUrl',
 			}),
-		],
-		isHidden: false,
-		openNewTab: true,
-		version: 1,
-	};
-});
+			parameters: [
+				new CustomParameter({
+					name: 'name',
+					displayName: 'User Friendly Name',
+					description: 'This is a mock parameter.',
+					default: 'default',
+					location: CustomParameterLocation.PATH,
+					regex: 'regex',
+					regexComment: 'mockComment',
+					scope: CustomParameterScope.SCHOOL,
+					type: CustomParameterType.STRING,
+					isOptional: false,
+				}),
+			],
+			isHidden: false,
+			openNewTab: true,
+			version: 1,
+		};
+	}
+);

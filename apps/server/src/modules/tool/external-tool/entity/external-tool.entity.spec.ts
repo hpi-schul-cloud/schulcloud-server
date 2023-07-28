@@ -1,7 +1,7 @@
 import { setupEntities } from '@shared/testing';
 import { BasicToolConfig, Lti11ToolConfig, Oauth2ToolConfig } from './config';
 import { CustomParameter } from './custom-parameter';
-import { ExternalTool } from './external-tool.entity';
+import { ExternalToolEntity } from './external-tool.entity';
 import {
 	CustomParameterLocation,
 	CustomParameterScope,
@@ -11,7 +11,7 @@ import {
 	ToolConfigType,
 } from '../../common/enum';
 
-describe('ExternalTool Entity', () => {
+describe('ExternalToolEntity', () => {
 	beforeAll(async () => {
 		await setupEntities();
 	});
@@ -48,7 +48,7 @@ describe('ExternalTool Entity', () => {
 				regexComment: 'mockComment',
 				isOptional: false,
 			});
-			const externalTool: ExternalTool = new ExternalTool({
+			const externalToolEntity: ExternalToolEntity = new ExternalToolEntity({
 				name: 'toolName',
 				url: 'mockUrl',
 				logoUrl: 'mockLogoUrl',
@@ -59,7 +59,7 @@ describe('ExternalTool Entity', () => {
 				version: 1,
 			});
 			return {
-				externalTool,
+				externalToolEntity,
 				oauth2ToolConfig,
 				lti11ToolConfig,
 			};
@@ -67,34 +67,34 @@ describe('ExternalTool Entity', () => {
 
 		it('should throw an error by empty constructor', () => {
 			// @ts-expect-error: Test case
-			const test = () => new ExternalTool();
+			const test = () => new ExternalToolEntity();
 			expect(test).toThrow();
 		});
 
 		it('should create an external Tool by passing required properties', () => {
-			const { externalTool } = setup();
+			const { externalToolEntity } = setup();
 
-			expect(externalTool instanceof ExternalTool).toEqual(true);
+			expect(externalToolEntity instanceof ExternalToolEntity).toEqual(true);
 		});
 
 		it('should create an external Tool with basic configuration by passing required properties', () => {
-			const { externalTool } = setup();
+			const { externalToolEntity } = setup();
 
-			expect(externalTool.config instanceof BasicToolConfig).toEqual(true);
+			expect(externalToolEntity.config instanceof BasicToolConfig).toEqual(true);
 		});
 
 		it('should create an external Tool with oauth2 configuration by passing required properties', () => {
-			const { externalTool, oauth2ToolConfig } = setup();
-			externalTool.config = oauth2ToolConfig;
+			const { externalToolEntity, oauth2ToolConfig } = setup();
+			externalToolEntity.config = oauth2ToolConfig;
 
-			expect(externalTool.config instanceof Oauth2ToolConfig).toEqual(true);
+			expect(externalToolEntity.config instanceof Oauth2ToolConfig).toEqual(true);
 		});
 
 		it('should create an external Tool with LTI 1.1 configuration by passing required properties', () => {
-			const { externalTool, lti11ToolConfig } = setup();
-			externalTool.config = lti11ToolConfig;
+			const { externalToolEntity, lti11ToolConfig } = setup();
+			externalToolEntity.config = lti11ToolConfig;
 
-			expect(externalTool.config instanceof Lti11ToolConfig).toEqual(true);
+			expect(externalToolEntity.config instanceof Lti11ToolConfig).toEqual(true);
 		});
 	});
 });

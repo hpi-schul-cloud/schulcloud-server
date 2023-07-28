@@ -2,10 +2,10 @@ import { Embedded, Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { School } from '@shared/domain/entity/school.entity';
 import { CustomParameterEntry } from '../../common/entity';
-import { ExternalTool } from '../../external-tool/entity';
+import { ExternalToolEntity } from '../../external-tool/entity';
 
 export interface ISchoolExternalToolProperties {
-	tool: ExternalTool;
+	tool: ExternalToolEntity;
 	school: School;
 	schoolParameters?: CustomParameterEntry[];
 	toolVersion: number;
@@ -14,7 +14,7 @@ export interface ISchoolExternalToolProperties {
 @Entity({ tableName: 'school_external_tools' })
 export class SchoolExternalTool extends BaseEntityWithTimestamps {
 	@ManyToOne()
-	tool: ExternalTool;
+	tool: ExternalToolEntity;
 
 	@ManyToOne(() => School, { eager: true })
 	school: School;

@@ -1,6 +1,6 @@
 import { ShareToken } from '@src/modules/sharing/entity/share-token.entity';
 import { ExternalToolPseudonymEntity, PseudonymEntity } from '@src/modules/pseudonym/entity';
-import { ExternalTool } from '@src/modules/tool/external-tool/entity';
+import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
 import { ContextExternalTool } from '@src/modules/tool/context-external-tool/entity';
 import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/entity';
 import { Account } from './account.entity';
@@ -64,7 +64,7 @@ export const ALL_ENTITIES = [
 	CourseNews,
 	DashboardGridElementModel,
 	DashboardModelEntity,
-	ExternalTool,
+	ExternalToolEntity,
 	FederalState,
 	File,
 	ImportUser,

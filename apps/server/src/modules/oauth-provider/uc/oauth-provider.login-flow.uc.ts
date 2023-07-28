@@ -11,7 +11,7 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '@src/modules/oauth-provider/controller/dto';
 import { OauthProviderRequestMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-request.mapper';
 import { PseudonymService } from '@src/modules/pseudonym/service';
-import { ExternalToolDO, Oauth2ToolConfigDO } from 'apps/server/src/modules/tool/external-tool/domain';
+import { ExternalToolDO, Oauth2ToolConfigDO } from '@src/modules/tool/external-tool/domain';
 import { UserService } from '@src/modules/user';
 import { OauthProviderLoginFlowService } from '../service/oauth-provider.login-flow.service';
 

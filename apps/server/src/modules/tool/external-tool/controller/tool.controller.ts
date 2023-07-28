@@ -117,11 +117,11 @@ export class ToolController {
 		@Param() params: ToolIdParams,
 		@Body() externalToolParams: ExternalToolUpdateParams
 	): Promise<ExternalToolResponse> {
-		const externalTool: ExternalToolUpdate = this.externalToolDOMapper.mapUpdateRequest(externalToolParams);
+		const externalToolUpdate: ExternalToolUpdate = this.externalToolDOMapper.mapUpdateRequest(externalToolParams);
 		const updated: ExternalToolDO = await this.externalToolUc.updateExternalTool(
 			currentUser.userId,
 			params.toolId,
-			externalTool
+			externalToolUpdate
 		);
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToExternalToolResponse(updated);
 		this.logger.debug(`ExternalTool with id ${mapped.id} was updated by user with id ${currentUser.userId}`);

@@ -3,7 +3,7 @@ import { LtiToolDO, Pseudonym, UserDO } from '@shared/domain';
 import { v4 as uuidv4 } from 'uuid';
 import { IToolFeatures, ToolFeatures } from '@src/modules/tool/tool-config';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ExternalToolDO } from 'apps/server/src/modules/tool/external-tool/domain';
+import { ExternalToolDO } from '@src/modules/tool/external-tool/domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 
 @Injectable()

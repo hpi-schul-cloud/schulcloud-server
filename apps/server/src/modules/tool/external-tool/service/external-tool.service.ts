@@ -45,8 +45,8 @@ export class ExternalToolService {
 	async updateExternalTool(toUpdate: ExternalToolDO, loadedTool: ExternalToolDO): Promise<ExternalToolDO> {
 		await this.updateOauth2ToolConfig(toUpdate);
 		this.externalToolVersionService.increaseVersionOfNewToolIfNecessary(loadedTool, toUpdate);
-		const externalTool: ExternalToolDO = await this.externalToolRepo.save(toUpdate);
-		return externalTool;
+		const externalToolDO: ExternalToolDO = await this.externalToolRepo.save(toUpdate);
+		return externalToolDO;
 	}
 
 	async findExternalTools(
@@ -92,13 +92,13 @@ export class ExternalToolService {
 	}
 
 	findExternalToolByName(name: string): Promise<ExternalToolDO | null> {
-		const externalTool: Promise<ExternalToolDO | null> = this.externalToolRepo.findByName(name);
-		return externalTool;
+		const externalToolDO: Promise<ExternalToolDO | null> = this.externalToolRepo.findByName(name);
+		return externalToolDO;
 	}
 
 	findExternalToolByOAuth2ConfigClientId(clientId: string): Promise<ExternalToolDO | null> {
-		const externalTool: Promise<ExternalToolDO | null> = this.externalToolRepo.findByOAuth2ConfigClientId(clientId);
-		return externalTool;
+		const externalToolDO: Promise<ExternalToolDO | null> = this.externalToolRepo.findByOAuth2ConfigClientId(clientId);
+		return externalToolDO;
 	}
 
 	async deleteExternalTool(toolId: EntityId): Promise<void> {
@@ -117,13 +117,13 @@ export class ExternalToolService {
 	}
 
 	async getExternalToolForScope(externalToolId: EntityId, scope: CustomParameterScope): Promise<ExternalToolDO> {
-		const externalTool: ExternalToolDO = await this.externalToolRepo.findById(externalToolId);
-		if (externalTool.parameters) {
-			externalTool.parameters = externalTool.parameters.filter(
+		const externalToolDO: ExternalToolDO = await this.externalToolRepo.findById(externalToolId);
+		if (externalToolDO.parameters) {
+			externalToolDO.parameters = externalToolDO.parameters.filter(
 				(parameter: CustomParameterDO) => parameter.scope === scope
 			);
 		}
-		return externalTool;
+		return externalToolDO;
 	}
 
 	private async updateOauth2ToolConfig(toUpdate: ExternalToolDO) {

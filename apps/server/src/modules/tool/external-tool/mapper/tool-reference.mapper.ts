@@ -4,16 +4,16 @@ import { ToolConfigurationStatus } from '../../common/enum';
 
 export class ToolReferenceMapper {
 	static mapToToolReference(
-		externalTool: ExternalToolDO,
+		externalToolDO: ExternalToolDO,
 		contextExternalTool: ContextExternalToolDO,
 		status: ToolConfigurationStatus
 	): ToolReference {
 		const toolReference = new ToolReference({
 			contextToolId: contextExternalTool.id ?? '',
-			logoUrl: externalTool.logoUrl,
-			displayName: contextExternalTool.displayName ?? externalTool.name,
+			logoUrl: externalToolDO.logoUrl,
+			displayName: contextExternalTool.displayName ?? externalToolDO.name,
 			status,
-			openInNewTab: externalTool.openNewTab,
+			openInNewTab: externalToolDO.openNewTab,
 		});
 
 		return toolReference;

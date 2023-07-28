@@ -7,7 +7,7 @@ import { ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo';
 import { cleanupCollections, externalToolFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolSearchQuery } from '@src/modules/tool';
-import { CustomParameterDO } from 'apps/server/src/modules/tool/common/domain';
+import { CustomParameterDO } from '@src/modules/tool/common/domain';
 import {
 	ToolConfigType,
 	LtiPrivacyPermission,
@@ -21,8 +21,8 @@ import {
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-} from 'apps/server/src/modules/tool/external-tool/domain';
-import { ExternalTool } from '@src/modules/tool/external-tool/entity';
+} from '@src/modules/tool/external-tool/domain';
+import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
 
 describe('ExternalToolRepo', () => {
 	let module: TestingModule;
@@ -58,18 +58,18 @@ describe('ExternalToolRepo', () => {
 		const client1Id = 'client-1';
 		const client2Id = 'client-2';
 
-		const externalTool: ExternalTool = externalToolFactory.withBasicConfig().buildWithId();
-		const externalOauthTool: ExternalTool = externalToolFactory.withOauth2Config('client-1').buildWithId();
-		const externalOauthTool2: ExternalTool = externalToolFactory.withOauth2Config('client-2').buildWithId();
-		const externalLti11Tool: ExternalTool = externalToolFactory.withLti11Config().buildWithId();
+		const externalToolEntity: ExternalToolEntity = externalToolFactory.withBasicConfig().buildWithId();
+		const externalOauthTool: ExternalToolEntity = externalToolFactory.withOauth2Config('client-1').buildWithId();
+		const externalOauthTool2: ExternalToolEntity = externalToolFactory.withOauth2Config('client-2').buildWithId();
+		const externalLti11Tool: ExternalToolEntity = externalToolFactory.withLti11Config().buildWithId();
 
-		await em.persistAndFlush([externalTool, externalOauthTool, externalOauthTool2, externalLti11Tool]);
+		await em.persistAndFlush([externalToolEntity, externalOauthTool, externalOauthTool2, externalLti11Tool]);
 		em.clear();
 
 		const queryExternalToolDO: ExternalToolSearchQuery = { name: 'external-tool-*' };
 
 		return {
-			externalTool,
+			externalToolEntity,
 			externalOauthTool,
 			externalOauthTool2,
 			externalLti11Tool,
@@ -81,16 +81,16 @@ describe('ExternalToolRepo', () => {
 
 	it('getEntityName should return ExternalTool', () => {
 		const { entityName } = repo;
-		expect(entityName).toEqual(ExternalTool);
+		expect(entityName).toEqual(ExternalToolEntity);
 	});
 
 	describe('findByName', () => {
 		it('should find an external tool with given toolName', async () => {
-			const { externalTool } = await setup();
+			const { externalToolEntity } = await setup();
 
-			const result: ExternalToolDO | null = await repo.findByName(externalTool.name);
+			const result: ExternalToolDO | null = await repo.findByName(externalToolEntity.name);
 
-			expect(result?.name).toEqual(externalTool.name);
+			expect(result?.name).toEqual(externalToolEntity.name);
 		});
 
 		it('should return null when no external tool with the given name was found', async () => {
@@ -224,11 +224,11 @@ describe('ExternalToolRepo', () => {
 
 			const options: IFindOptions<ExternalToolDO> = {};
 
-			await em.nativeDelete(ExternalTool, {});
-			const ltiToolA: ExternalTool = externalToolFactory.withName('A').buildWithId();
-			const ltiToolB: ExternalTool = externalToolFactory.withName('B').buildWithId();
-			const ltiToolC: ExternalTool = externalToolFactory.withName('B').buildWithId();
-			const ltiTools: ExternalTool[] = [ltiToolA, ltiToolB, ltiToolC];
+			await em.nativeDelete(ExternalToolEntity, {});
+			const ltiToolA: ExternalToolEntity = externalToolFactory.withName('A').buildWithId();
+			const ltiToolB: ExternalToolEntity = externalToolFactory.withName('B').buildWithId();
+			const ltiToolC: ExternalToolEntity = externalToolFactory.withName('B').buildWithId();
+			const ltiTools: ExternalToolEntity[] = [ltiToolA, ltiToolB, ltiToolC];
 			await em.persistAndFlush([ltiToolA, ltiToolB, ltiToolC]);
 
 			return { queryExternalToolDO, options, ltiTools };

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
 import { AuthorizationContext, Rule } from '@src/modules/authorization/types';
-import { ContextExternalToolDO } from 'apps/server/src/modules/tool/context-external-tool/domain';
+import { ContextExternalToolDO } from '@src/modules/tool/context-external-tool/domain';
 import { ContextExternalTool } from '@src/modules/tool/context-external-tool/entity';
 import { User } from '../entity';
 

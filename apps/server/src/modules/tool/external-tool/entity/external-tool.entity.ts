@@ -4,10 +4,10 @@ import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { CustomParameter } from './custom-parameter';
 import { BasicToolConfig, Lti11ToolConfig, Oauth2ToolConfig } from './config';
 
-export type IExternalToolProperties = Readonly<Omit<ExternalTool, keyof BaseEntityWithTimestamps>>;
+export type IExternalToolProperties = Readonly<Omit<ExternalToolEntity, keyof BaseEntityWithTimestamps>>;
 
 @Entity({ tableName: 'external_tools' })
-export class ExternalTool extends BaseEntityWithTimestamps {
+export class ExternalToolEntity extends BaseEntityWithTimestamps {
 	@Unique()
 	@Property()
 	name: string;

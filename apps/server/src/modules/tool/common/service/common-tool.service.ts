@@ -2,20 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { ExternalToolDO } from '../../external-tool/domain';
 import { SchoolExternalToolDO } from '../../school-external-tool/domain';
 import { ContextExternalToolDO } from '../../context-external-tool/domain';
-import { ToolConfigurationStatus } from '../enum/tool-configuration-status';
+import { ToolConfigurationStatus } from '../enum';
 import { ToolVersion } from '../interface';
 
 @Injectable()
 export class CommonToolService {
 	determineToolConfigurationStatus(
-		externalTool: ExternalToolDO,
+		externalToolDO: ExternalToolDO,
 		schoolExternalTool: SchoolExternalToolDO,
 		contextExternalTool: ContextExternalToolDO
 	): ToolConfigurationStatus {
 		if (
-			this.isLatest(schoolExternalTool, externalTool) &&
+			this.isLatest(schoolExternalTool, externalToolDO) &&
 			this.isLatest(contextExternalTool, schoolExternalTool) &&
-			this.isLatest(contextExternalTool, externalTool)
+			this.isLatest(contextExternalTool, externalToolDO)
 		) {
 			return ToolConfigurationStatus.LATEST;
 		}
