@@ -79,7 +79,7 @@ export class ToolConfigurationController {
 		return mapped;
 	}
 
-	@Get('school-external-tool/:schoolExternalToolId/configuration-template')
+	@Get('school-external-tools/:schoolExternalToolId/configuration-template')
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
 	@ApiOperation({ summary: 'Get the latest configuration template for a School External Tool' })
@@ -102,7 +102,7 @@ export class ToolConfigurationController {
 		return mapped;
 	}
 
-	@Get('context-external-tool/:contextExternalToolId/configuration-template')
+	@Get('context-external-tools/:contextExternalToolId/configuration-template')
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
 	@ApiOperation({ summary: 'Get the latest configuration template for a Context External Tool' })
