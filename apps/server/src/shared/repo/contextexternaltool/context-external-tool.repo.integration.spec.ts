@@ -6,7 +6,7 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
 import {
 	cleanupCollections,
-	contextExternalToolDOFactory,
+	contextExternalToolFactory,
 	contextExternalToolEntityFactory,
 	schoolExternalToolEntityFactory,
 	schoolFactory,
@@ -129,7 +129,7 @@ describe('ContextExternalToolRepo', () => {
 	describe('save', () => {
 		describe('when context is known', () => {
 			function setup() {
-				const domainObject: ContextExternalTool = contextExternalToolDOFactory.build({
+				const domainObject: ContextExternalTool = contextExternalToolFactory.build({
 					displayName: 'displayName',
 					contextRef: {
 						id: new ObjectId().toHexString(),
@@ -161,7 +161,7 @@ describe('ContextExternalToolRepo', () => {
 
 		describe('when context is unknown', () => {
 			const setup = () => {
-				const domainObject: ContextExternalTool = contextExternalToolDOFactory.build({
+				const domainObject: ContextExternalTool = contextExternalToolFactory.build({
 					contextRef: {
 						id: new ObjectId().toHexString(),
 						type: 'UNKNOWN' as ToolContextType,

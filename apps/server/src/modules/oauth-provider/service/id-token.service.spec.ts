@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Pseudonym, Team, UserDO } from '@shared/domain';
 import { TeamsRepo } from '@shared/repo';
-import { externalToolDOFactory, setupEntities, userDoFactory, pseudonymFactory } from '@shared/testing';
+import { externalToolFactory, setupEntities, userDoFactory, pseudonymFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { IdToken } from '@src/modules/oauth-provider/interface/id-token';
 import { OauthScope } from '@src/modules/oauth-provider/interface/oauth-scope.enum';
@@ -83,7 +83,7 @@ describe('IdTokenService', () => {
 
 				const displayName = 'display name';
 
-				const tool: ExternalTool = externalToolDOFactory.withOauth2Config().buildWithId();
+				const tool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId();
 
 				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({ pseudonym: 'pseudonym' });
 
@@ -121,7 +121,7 @@ describe('IdTokenService', () => {
 
 				const displayName = 'display name';
 
-				const tool: ExternalTool = externalToolDOFactory.withOauth2Config().buildWithId();
+				const tool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId();
 
 				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({ pseudonym: 'pseudonym' });
 
@@ -165,7 +165,7 @@ describe('IdTokenService', () => {
 
 				const displayName = 'display name';
 
-				const tool: ExternalTool = externalToolDOFactory.withOauth2Config().buildWithId();
+				const tool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId();
 
 				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({ pseudonym: 'pseudonym' });
 
@@ -202,7 +202,7 @@ describe('IdTokenService', () => {
 
 				const displayName = 'display name';
 
-				const tool: ExternalTool = externalToolDOFactory.withOauth2Config().buildWithId();
+				const tool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId();
 
 				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({ pseudonym: 'pseudonym' });
 
@@ -240,7 +240,7 @@ describe('IdTokenService', () => {
 
 				const displayName = 'display name';
 
-				const tool: ExternalTool = externalToolDOFactory.withOauth2Config().build({ id: undefined });
+				const tool: ExternalTool = externalToolFactory.withOauth2Config().build({ id: undefined });
 
 				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({ pseudonym: 'pseudonym' });
 

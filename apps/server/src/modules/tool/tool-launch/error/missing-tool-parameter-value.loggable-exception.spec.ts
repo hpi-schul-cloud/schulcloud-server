@@ -1,4 +1,4 @@
-import { contextExternalToolDOFactory, customParameterDOFactory } from '@shared/testing';
+import { contextExternalToolFactory, customParameterDOFactory } from '@shared/testing';
 import { MissingToolParameterValueLoggableException } from './missing-tool-parameter-value.loggable-exception';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { CustomParameter } from '../../common/domain';
@@ -6,7 +6,7 @@ import { CustomParameter } from '../../common/domain';
 describe('MissingToolParameterValueLoggableException', () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.build();
+			const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
 
 			const customParameters: CustomParameter[] = customParameterDOFactory.buildList(2);
 

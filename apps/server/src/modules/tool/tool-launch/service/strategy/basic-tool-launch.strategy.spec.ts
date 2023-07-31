@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CourseRepo } from '@shared/repo';
-import { contextExternalToolDOFactory, externalToolDOFactory, schoolExternalToolDOFactory } from '@shared/testing';
+import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
 import { SchoolService } from '@src/modules/school';
 import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
 import { BasicToolLaunchStrategy } from './basic-tool-launch.strategy';
@@ -102,9 +102,9 @@ describe('BasicToolLaunchStrategy', () => {
 
 	describe('buildToolLaunchDataFromConcreteConfig', () => {
 		const setup = () => {
-			const externalTool: ExternalTool = externalToolDOFactory.build();
-			const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build();
-			const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.build();
+			const externalTool: ExternalTool = externalToolFactory.build();
+			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+			const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
 
 			const data: IToolLaunchParams = {
 				contextExternalTool,

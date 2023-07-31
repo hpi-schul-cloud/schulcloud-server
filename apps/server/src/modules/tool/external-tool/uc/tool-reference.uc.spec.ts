@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Permission } from '@shared/domain';
-import { contextExternalToolDOFactory, externalToolDOFactory, schoolExternalToolDOFactory } from '@shared/testing';
+import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Action } from '@src/modules/authorization';
 import { ToolReferenceUc } from './tool-reference.uc';
@@ -63,11 +63,11 @@ describe('ToolReferenceUc', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const externalTool: ExternalTool = externalToolDOFactory.buildWithId();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					toolId: externalTool.id,
 				});
-				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef('schoolToolId', 'schoolId')
 					.buildWithId();
 
@@ -164,11 +164,11 @@ describe('ToolReferenceUc', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const externalTool: ExternalTool = externalToolDOFactory.buildWithId();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					toolId: externalTool.id,
 				});
-				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef('schoolToolId', 'schoolId')
 					.buildWithId();
 

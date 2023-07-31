@@ -5,12 +5,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Course, EntityId, SchoolDO } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
 import {
-	contextExternalToolDOFactory,
+	contextExternalToolFactory,
 	courseFactory,
 	customParameterDOFactory,
-	externalToolDOFactory,
+	externalToolFactory,
 	schoolDOFactory,
-	schoolExternalToolDOFactory,
+	schoolExternalToolFactory,
 	setupEntities,
 } from '@shared/testing';
 import { SchoolService } from '@src/modules/school';
@@ -152,7 +152,7 @@ describe('AbstractLaunchStrategy', () => {
 					type: CustomParameterType.AUTO_SCHOOLNUMBER,
 				});
 
-				const externalTool: ExternalTool = externalToolDOFactory.build({
+				const externalTool: ExternalTool = externalToolFactory.build({
 					parameters: [
 						globalCustomParameter,
 						schoolCustomParameter,
@@ -169,7 +169,7 @@ describe('AbstractLaunchStrategy', () => {
 					name: schoolCustomParameter.name,
 					value: 'true',
 				});
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					parameters: [schoolParameterEntry],
 					schoolId,
 				});
@@ -179,7 +179,7 @@ describe('AbstractLaunchStrategy', () => {
 					name: contextCustomParameter.name,
 					value: 'anyValue2',
 				});
-				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.build({
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
 					parameters: [contextParameterEntry],
 				});
 
@@ -306,15 +306,15 @@ describe('AbstractLaunchStrategy', () => {
 
 		describe('when no parameters were defined', () => {
 			const setup = () => {
-				const externalTool: ExternalTool = externalToolDOFactory.build({
+				const externalTool: ExternalTool = externalToolFactory.build({
 					parameters: [],
 				});
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					parameters: [],
 				});
 
-				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.build({
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
 					parameters: [],
 				});
 
@@ -357,15 +357,15 @@ describe('AbstractLaunchStrategy', () => {
 					name: 'autoSchoolNumberParam',
 					type: CustomParameterType.AUTO_SCHOOLNUMBER,
 				});
-				const externalTool: ExternalTool = externalToolDOFactory.build({
+				const externalTool: ExternalTool = externalToolFactory.build({
 					parameters: [autoSchoolNumberCustomParameter],
 				});
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					parameters: [],
 				});
 
-				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.build({
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
 					parameters: [],
 				});
 
@@ -404,15 +404,15 @@ describe('AbstractLaunchStrategy', () => {
 					name: 'unknownTypeParam',
 					type: 'unknownType' as unknown as CustomParameterType,
 				});
-				const externalTool: ExternalTool = externalToolDOFactory.build({
+				const externalTool: ExternalTool = externalToolFactory.build({
 					parameters: [customParameterWithUnknownType],
 				});
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					parameters: [],
 				});
 
-				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.build({
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
 					parameters: [],
 				});
 
@@ -445,15 +445,15 @@ describe('AbstractLaunchStrategy', () => {
 					name: 'autoContextNameParam',
 					type: CustomParameterType.AUTO_CONTEXTNAME,
 				});
-				const externalTool: ExternalTool = externalToolDOFactory.build({
+				const externalTool: ExternalTool = externalToolFactory.build({
 					parameters: [customParameterWithUnknownType],
 				});
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					parameters: [],
 				});
 
-				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.build({
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
 					contextRef: {
 						id: new ObjectId().toHexString(),
 						type: 'unknownContext' as unknown as ToolContextType,

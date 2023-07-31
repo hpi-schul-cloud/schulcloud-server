@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId, Permission, User } from '@shared/domain';
-import { setupEntities, userFactory, schoolExternalToolDOFactory } from '@shared/testing';
+import { setupEntities, userFactory, schoolExternalToolFactory } from '@shared/testing';
 import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import { SchoolExternalToolUc } from './school-external-tool.uc';
 import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
@@ -58,7 +58,7 @@ describe('SchoolExternalToolUc', () => {
 	});
 
 	const setup = () => {
-		const tool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId();
+		const tool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 		const user: User = userFactory.buildWithId();
 
 		return {
@@ -240,7 +240,7 @@ describe('SchoolExternalToolUc', () => {
 	describe('updateSchoolExternalTool is called', () => {
 		const setupUpdate = () => {
 			const { tool, user } = setup();
-			const updatedTool: SchoolExternalTool = schoolExternalToolDOFactory.build({ ...tool });
+			const updatedTool: SchoolExternalTool = schoolExternalToolFactory.build({ ...tool });
 			updatedTool.parameters[0].value = 'updatedValue';
 
 			schoolExternalToolService.saveSchoolExternalTool.mockResolvedValue(updatedTool);

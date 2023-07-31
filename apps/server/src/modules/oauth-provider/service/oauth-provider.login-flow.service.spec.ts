@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LtiToolDO } from '@shared/domain';
-import { externalToolDOFactory, ltiToolDOFactory, setupEntities } from '@shared/testing';
+import { externalToolFactory, ltiToolDOFactory, setupEntities } from '@shared/testing';
 import { LtiToolService } from '@src/modules/lti-tool';
 import { ExternalTool } from '@src/modules/tool/external-tool/domain';
 import { ExternalToolService } from '@src/modules/tool/external-tool/service';
@@ -44,7 +44,7 @@ describe('OauthProviderLoginFlowService', () => {
 	describe('findToolByClientId', () => {
 		describe('when it finds a ctl tool', () => {
 			const setup = () => {
-				const tool: ExternalTool = externalToolDOFactory.buildWithId({ name: 'SchulcloudNextcloud' });
+				const tool: ExternalTool = externalToolFactory.buildWithId({ name: 'SchulcloudNextcloud' });
 
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(tool);
 				ltiToolService.findByClientIdAndIsLocal.mockResolvedValue(null);
@@ -105,7 +105,7 @@ describe('OauthProviderLoginFlowService', () => {
 	describe('isNextcloudTool', () => {
 		describe('when it is Nextcloud', () => {
 			const setup = () => {
-				const tool: ExternalTool = externalToolDOFactory.buildWithId({ name: 'SchulcloudNextcloud' });
+				const tool: ExternalTool = externalToolFactory.buildWithId({ name: 'SchulcloudNextcloud' });
 
 				return {
 					tool,
@@ -123,7 +123,7 @@ describe('OauthProviderLoginFlowService', () => {
 
 		describe('when it is not Nextcloud', () => {
 			const setup = () => {
-				const tool: ExternalTool = externalToolDOFactory.buildWithId({ name: 'NotSchulcloudNextcloud' });
+				const tool: ExternalTool = externalToolFactory.buildWithId({ name: 'NotSchulcloudNextcloud' });
 
 				return {
 					tool,

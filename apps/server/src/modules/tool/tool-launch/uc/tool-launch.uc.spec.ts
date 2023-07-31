@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { contextExternalToolDOFactory } from '@shared/testing';
+import { contextExternalToolFactory } from '@shared/testing';
 import { ToolLaunchService } from '../service';
 import { ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import { ToolLaunchUc } from './tool-launch.uc';
@@ -45,7 +45,7 @@ describe('ToolLaunchUc', () => {
 	describe('getToolLaunchRequest', () => {
 		const setup = () => {
 			const contextExternalToolId = 'contextExternalToolId';
-			const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.build({
+			const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
 				id: contextExternalToolId,
 			});
 			const toolLaunchData: ToolLaunchData = new ToolLaunchData({

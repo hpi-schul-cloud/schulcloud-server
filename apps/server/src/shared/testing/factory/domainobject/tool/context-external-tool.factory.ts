@@ -5,7 +5,7 @@ import { ContextExternalTool, ContextExternalToolProps } from '@src/modules/tool
 import { DeepPartial } from 'fishery';
 import { DoBaseFactory } from '../do-base.factory';
 
-class ContextExternalToolDOFactory extends DoBaseFactory<ContextExternalTool, ContextExternalToolProps> {
+class ContextExternalToolFactory extends DoBaseFactory<ContextExternalTool, ContextExternalToolProps> {
 	withSchoolExternalToolRef(schoolToolId: string, schoolId?: string | undefined): this {
 		const params: DeepPartial<ContextExternalTool> = {
 			schoolToolRef: { schoolToolId, schoolId },
@@ -14,7 +14,7 @@ class ContextExternalToolDOFactory extends DoBaseFactory<ContextExternalTool, Co
 	}
 }
 
-export const contextExternalToolDOFactory = ContextExternalToolDOFactory.define(ContextExternalTool, ({ sequence }) => {
+export const contextExternalToolFactory = ContextExternalToolFactory.define(ContextExternalTool, ({ sequence }) => {
 	return {
 		schoolToolRef: { schoolToolId: `schoolToolId-${sequence}`, schoolId: 'schoolId' },
 		contextRef: { id: new ObjectId().toHexString(), type: ToolContextType.COURSE },

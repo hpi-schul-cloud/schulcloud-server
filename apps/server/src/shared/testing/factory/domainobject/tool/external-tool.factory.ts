@@ -74,7 +74,7 @@ export const customParameterDOFactory = DoBaseFactory.define<CustomParameter, Cu
 	}
 );
 
-class ExternalToolDOFactory extends DoBaseFactory<ExternalTool, ExternalToolProps> {
+class ExternalToolFactory extends DoBaseFactory<ExternalTool, ExternalToolProps> {
 	withOauth2Config(customParam?: DeepPartial<Oauth2ToolConfig>): this {
 		const params: DeepPartial<ExternalTool> = {
 			config: oauth2ToolConfigDOFactory.build(customParam),
@@ -97,7 +97,7 @@ class ExternalToolDOFactory extends DoBaseFactory<ExternalTool, ExternalToolProp
 	}
 }
 
-export const externalToolDOFactory = ExternalToolDOFactory.define(ExternalTool, ({ sequence }) => {
+export const externalToolFactory = ExternalToolFactory.define(ExternalTool, ({ sequence }) => {
 	return {
 		name: `external-tool-${sequence}`,
 		url: 'https://url.com/',

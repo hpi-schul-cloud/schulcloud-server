@@ -5,7 +5,7 @@ import {
 	schoolFactory,
 	setupEntities,
 	userFactory,
-	schoolExternalToolDOFactory,
+	schoolExternalToolFactory,
 } from '@shared/testing';
 
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
@@ -86,7 +86,7 @@ describe('SchoolExternalToolRule', () => {
 
 			it('should return "false" if user has not some school', () => {
 				const { permissionA, role } = setup();
-				const entity: SchoolExternalToolEntity | SchoolExternalTool = schoolExternalToolDOFactory.build();
+				const entity: SchoolExternalToolEntity | SchoolExternalTool = schoolExternalToolFactory.build();
 				const user: User = userFactory.build({ roles: [role] });
 
 				const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionA] });

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
+import { schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
 import { ICurrentUser } from '@src/modules/authentication';
 import { LegacyLogger } from '@src/core/logger';
 import { SchoolExternalTool } from '../domain';
@@ -77,7 +77,7 @@ describe('ToolSchoolController', () => {
 			],
 		};
 
-		const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId();
+		const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 
 		return {
 			currentUser,
@@ -102,7 +102,7 @@ describe('ToolSchoolController', () => {
 
 			it('should call the response mapper', async () => {
 				const { currentUser, searchParams } = setup();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 				schoolExternalToolUc.findSchoolExternalTools.mockResolvedValue([schoolExternalTool]);
 
 				await controller.getSchoolExternalTools(currentUser, searchParams);

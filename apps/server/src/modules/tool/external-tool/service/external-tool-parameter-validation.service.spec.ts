@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
 import {
 	customParameterDOFactory,
-	externalToolDOFactory,
+	externalToolFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope, CustomParameterType } from '../../common/enum';
@@ -43,7 +43,7 @@ describe('ExternalToolParameterValidationService', () => {
 	describe('validateCommon is called', () => {
 		describe('when tool is valid', () => {
 			it('should return without exception', async () => {
-				const externalTool: ExternalTool = externalToolDOFactory
+				const externalTool: ExternalTool = externalToolFactory
 					.withCustomParameters(1, { default: 'test', regex: '[t]', regexComment: 'testComment' })
 					.buildWithId();
 				externalToolService.findExternalToolByName.mockResolvedValue(externalTool);
@@ -56,8 +56,8 @@ describe('ExternalToolParameterValidationService', () => {
 
 		describe('when checking if tool name is unique', () => {
 			it('should throw an exception when name already exists', async () => {
-				const externalTool: ExternalTool = externalToolDOFactory.build({ name: 'sameName' });
-				const existingExternalToolDO: ExternalTool = externalToolDOFactory.buildWithId({ name: 'sameName' });
+				const externalTool: ExternalTool = externalToolFactory.build({ name: 'sameName' });
+				const existingExternalToolDO: ExternalTool = externalToolFactory.buildWithId({ name: 'sameName' });
 				externalToolService.findExternalToolByName.mockResolvedValue(existingExternalToolDO);
 
 				const result: Promise<void> = service.validateCommon(externalTool);
@@ -68,7 +68,7 @@ describe('ExternalToolParameterValidationService', () => {
 			});
 
 			it('should return when tool name is undefined', async () => {
-				const externalTool: ExternalTool = externalToolDOFactory.build({
+				const externalTool: ExternalTool = externalToolFactory.build({
 					name: undefined,
 					parameters: [
 						customParameterDOFactory.build({ name: 'sameKey', scope: CustomParameterScope.SCHOOL }),
@@ -84,7 +84,7 @@ describe('ExternalToolParameterValidationService', () => {
 
 		describe('when there is an empty parameter name', () => {
 			it('should throw ValidationError', async () => {
-				const externalTool: ExternalTool = externalToolDOFactory.build({
+				const externalTool: ExternalTool = externalToolFactory.build({
 					parameters: [customParameterDOFactory.build({ name: '' })],
 				});
 				externalToolService.findExternalToolByName.mockResolvedValue(null);
@@ -101,7 +101,7 @@ describe('ExternalToolParameterValidationService', () => {
 
 		describe('when there are duplicate attributes', () => {
 			it('should fail for two equal parameters', async () => {
-				const externalTool: ExternalTool = externalToolDOFactory.build({
+				const externalTool: ExternalTool = externalToolFactory.build({
 					parameters: [
 						customParameterDOFactory.build({ name: 'paramEqual' }),
 						customParameterDOFactory.build({ name: 'paramEqual' }),
@@ -119,7 +119,7 @@ describe('ExternalToolParameterValidationService', () => {
 			});
 
 			it('should fail for names that only differ in capitalisation', async () => {
-				const externalTool: ExternalTool = externalToolDOFactory.build({
+				const externalTool: ExternalTool = externalToolFactory.build({
 					parameters: [
 						customParameterDOFactory.build({ name: 'param1CaseSensitive' }),
 						customParameterDOFactory.build({ name: 'Param1casesensitive' }),
@@ -139,7 +139,7 @@ describe('ExternalToolParameterValidationService', () => {
 
 		describe('when regex is invalid', () => {
 			it('throw when external tools has a faulty regular expression', async () => {
-				const externalTool: ExternalTool = externalToolDOFactory.withCustomParameters(1, { regex: '[' }).build();
+				const externalTool: ExternalTool = externalToolFactory.withCustomParameters(1, { regex: '[' }).build();
 				externalToolService.findExternalToolByName.mockResolvedValue(null);
 
 				const func = () => service.validateCommon(externalTool);
@@ -154,7 +154,7 @@ describe('ExternalToolParameterValidationService', () => {
 
 		describe('when default value does not match regex', () => {
 			it('should throw', async () => {
-				const externalTool: ExternalTool = externalToolDOFactory
+				const externalTool: ExternalTool = externalToolFactory
 					.withCustomParameters(1, { default: 'es', regex: '[t]', regexComment: 'mockComment' })
 					.buildWithId();
 				externalToolService.findExternalToolByName.mockResolvedValue(null);
@@ -167,7 +167,7 @@ describe('ExternalToolParameterValidationService', () => {
 
 		describe('when regex is set but regex comment is missing', () => {
 			it('should throw exception', async () => {
-				const externalTool: ExternalTool = externalToolDOFactory
+				const externalTool: ExternalTool = externalToolFactory
 					.withCustomParameters(1, { regex: '.', scope: CustomParameterScope.SCHOOL })
 					.build();
 				externalToolService.findExternalToolByName.mockResolvedValue(null);
@@ -187,7 +187,7 @@ describe('ExternalToolParameterValidationService', () => {
 		describe('when parameters has a parameter with scope global', () => {
 			describe('when parameter has a default value', () => {
 				const setup = () => {
-					const externalTool: ExternalTool = externalToolDOFactory
+					const externalTool: ExternalTool = externalToolFactory
 						.withCustomParameters(1, {
 							scope: CustomParameterScope.GLOBAL,
 							default: 'defaultValue',
@@ -212,7 +212,7 @@ describe('ExternalToolParameterValidationService', () => {
 
 			describe('when defaultValue is empty', () => {
 				const setup = () => {
-					const externalTool: ExternalTool = externalToolDOFactory
+					const externalTool: ExternalTool = externalToolFactory
 						.withCustomParameters(1, {
 							scope: CustomParameterScope.GLOBAL,
 							default: undefined,
@@ -243,7 +243,7 @@ describe('ExternalToolParameterValidationService', () => {
 
 			describe('when the defaultValue is undefined', () => {
 				const setup = () => {
-					const externalTool: ExternalTool = externalToolDOFactory
+					const externalTool: ExternalTool = externalToolFactory
 						.withCustomParameters(1, {
 							scope: CustomParameterScope.GLOBAL,
 							default: '',
@@ -274,7 +274,7 @@ describe('ExternalToolParameterValidationService', () => {
 
 			describe('when the type is an auto type', () => {
 				const setup = () => {
-					const externalTool: ExternalTool = externalToolDOFactory
+					const externalTool: ExternalTool = externalToolFactory
 						.withCustomParameters(1, {
 							scope: CustomParameterScope.GLOBAL,
 							type: CustomParameterType.AUTO_CONTEXTID,
@@ -306,7 +306,7 @@ describe('ExternalToolParameterValidationService', () => {
 					scope: CustomParameterScope.SCHOOL,
 				});
 
-				const externalTool: ExternalTool = externalToolDOFactory.build({ parameters: [parameter] });
+				const externalTool: ExternalTool = externalToolFactory.build({ parameters: [parameter] });
 
 				externalToolService.findExternalToolByName.mockResolvedValue(null);
 

@@ -4,8 +4,8 @@ import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page, Permission, User } from '@shared/domain';
-import { contextExternalToolDOFactory, setupEntities, userFactory } from '@shared/testing';
-import { externalToolDOFactory, schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/tool';
+import { contextExternalToolFactory, setupEntities, userFactory } from '@shared/testing';
+import { externalToolFactory, schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Action, AuthorizableReferenceType, AuthorizationService } from '../../../authorization';
 import { ExternalToolConfigurationUc } from './external-tool-configuration.uc';
@@ -78,7 +78,7 @@ describe('ExternalToolConfigurationUc', () => {
 		};
 		const setupForSchool = () => {
 			const externalToolId: string = new ObjectId().toHexString();
-			const externalTool: ExternalTool = externalToolDOFactory.buildWithId(undefined, externalToolId);
+			const externalTool: ExternalTool = externalToolFactory.buildWithId(undefined, externalToolId);
 
 			externalToolService.getExternalToolForScope.mockResolvedValue(externalTool);
 
@@ -157,7 +157,7 @@ describe('ExternalToolConfigurationUc', () => {
 				const user: User = userFactory.buildWithId();
 				const currentUser: ICurrentUser = { userId: user.id, schoolId: user.school.id } as ICurrentUser;
 				const externalToolId: string = new ObjectId().toHexString();
-				const externalTool: ExternalTool = externalToolDOFactory.buildWithId(undefined, externalToolId);
+				const externalTool: ExternalTool = externalToolFactory.buildWithId(undefined, externalToolId);
 				const contextType: ToolContextType = ToolContextType.COURSE;
 				const contextId: string = new ObjectId().toHexString();
 
@@ -205,7 +205,7 @@ describe('ExternalToolConfigurationUc', () => {
 				const user: User = userFactory.buildWithId();
 				const currentUser: ICurrentUser = { userId: user.id, schoolId: user.school.id } as ICurrentUser;
 				const externalToolId: string = new ObjectId().toHexString();
-				const externalTool: ExternalTool = externalToolDOFactory.buildWithId(undefined, externalToolId);
+				const externalTool: ExternalTool = externalToolFactory.buildWithId(undefined, externalToolId);
 				const contextType: ToolContextType = ToolContextType.COURSE;
 				const contextId: string = new ObjectId().toHexString();
 
@@ -242,7 +242,7 @@ describe('ExternalToolConfigurationUc', () => {
 				const user: User = userFactory.buildWithId();
 				const currentUser: ICurrentUser = { userId: user.id, schoolId: user.school.id } as ICurrentUser;
 				const externalToolId: string = new ObjectId().toHexString();
-				const externalTool: ExternalTool = externalToolDOFactory.buildWithId(undefined, externalToolId);
+				const externalTool: ExternalTool = externalToolFactory.buildWithId(undefined, externalToolId);
 				const contextType: ToolContextType = ToolContextType.COURSE;
 				const contextId: string = new ObjectId().toHexString();
 
@@ -315,13 +315,13 @@ describe('ExternalToolConfigurationUc', () => {
 		describe('when getting the list of external tools that can be added to a school', () => {
 			it('should filter tools that are already in use', async () => {
 				const externalToolDOs: ExternalTool[] = [
-					externalToolDOFactory.buildWithId(undefined, 'usedToolId'),
-					externalToolDOFactory.buildWithId(undefined, 'unusedToolId'),
+					externalToolFactory.buildWithId(undefined, 'usedToolId'),
+					externalToolFactory.buildWithId(undefined, 'unusedToolId'),
 				];
 
 				externalToolService.findExternalTools.mockResolvedValue(new Page<ExternalTool>(externalToolDOs, 2));
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue(
-					schoolExternalToolDOFactory.buildList(1, { toolId: 'usedToolId' })
+					schoolExternalToolFactory.buildList(1, { toolId: 'usedToolId' })
 				);
 
 				const result: ExternalTool[] = await uc.getAvailableToolsForSchool('userId', 'schoolId');
@@ -331,8 +331,8 @@ describe('ExternalToolConfigurationUc', () => {
 
 			it('should filter tools that are hidden', async () => {
 				const externalToolDOs: ExternalTool[] = [
-					externalToolDOFactory.buildWithId({ isHidden: true }),
-					externalToolDOFactory.buildWithId({ isHidden: false }),
+					externalToolFactory.buildWithId({ isHidden: true }),
+					externalToolFactory.buildWithId({ isHidden: false }),
 				];
 
 				externalToolService.findExternalTools.mockResolvedValue(new Page<ExternalTool>(externalToolDOs, 2));
@@ -344,7 +344,7 @@ describe('ExternalToolConfigurationUc', () => {
 			});
 
 			it('should return a list of available external tools', async () => {
-				const externalToolDOs: ExternalTool[] = externalToolDOFactory.buildListWithId(2);
+				const externalToolDOs: ExternalTool[] = externalToolFactory.buildListWithId(2);
 
 				externalToolService.findExternalTools.mockResolvedValue(new Page<ExternalTool>(externalToolDOs, 2));
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([]);
@@ -383,24 +383,24 @@ describe('ExternalToolConfigurationUc', () => {
 
 		describe('when getting the list of external tools that can be added to a school', () => {
 			const setup = () => {
-				const hiddenTool: ExternalTool = externalToolDOFactory.buildWithId({ isHidden: true });
-				const usedTool: ExternalTool = externalToolDOFactory.buildWithId({ isHidden: false }, 'usedToolId');
-				const unusedTool: ExternalTool = externalToolDOFactory.buildWithId({ isHidden: false }, 'unusedToolId');
-				const toolWithoutSchoolTool: ExternalTool = externalToolDOFactory.buildWithId(
+				const hiddenTool: ExternalTool = externalToolFactory.buildWithId({ isHidden: true });
+				const usedTool: ExternalTool = externalToolFactory.buildWithId({ isHidden: false }, 'usedToolId');
+				const unusedTool: ExternalTool = externalToolFactory.buildWithId({ isHidden: false }, 'unusedToolId');
+				const toolWithoutSchoolTool: ExternalTool = externalToolFactory.buildWithId(
 					{ isHidden: false },
 					'noSchoolTool'
 				);
 
-				const usedSchoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
+				const usedSchoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					id: 'usedSchoolExternalToolId',
 					toolId: 'usedToolId',
 				});
-				const unusedSchoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
+				const unusedSchoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					id: 'unusedSchoolExternalTool',
 					toolId: 'unusedToolId',
 				});
 
-				const usedContextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId({
+				const usedContextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 					schoolToolRef: { schoolToolId: 'usedSchoolExternalToolId' },
 				});
 
@@ -505,12 +505,12 @@ describe('ExternalToolConfigurationUc', () => {
 
 		describe('when there are no available tools', () => {
 			const setup = () => {
-				const toolWithoutSchoolTool: ExternalTool = externalToolDOFactory.buildWithId(
+				const toolWithoutSchoolTool: ExternalTool = externalToolFactory.buildWithId(
 					{ isHidden: false },
 					'noSchoolTool'
 				);
 
-				const unusedSchoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
+				const unusedSchoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					id: 'unusedSchoolExternalTool',
 					toolId: 'unusedToolId',
 				});

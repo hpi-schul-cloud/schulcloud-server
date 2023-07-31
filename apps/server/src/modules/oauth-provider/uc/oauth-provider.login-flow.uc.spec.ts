@@ -5,7 +5,7 @@ import { LtiToolDO, Permission, Pseudonym, UserDO } from '@shared/domain';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { ProviderLoginResponse, ProviderRedirectResponse } from '@shared/infra/oauth-provider/dto';
 import {
-	externalToolDOFactory,
+	externalToolFactory,
 	ltiToolDOFactory,
 	pseudonymFactory,
 	setupEntities,
@@ -138,7 +138,7 @@ describe('OauthProviderLoginFlowUc', () => {
 				};
 
 				const user: UserDO = userDoFactory.buildWithId();
-				const tool: ExternalTool = externalToolDOFactory.withOauth2Config({ skipConsent: true }).buildWithId();
+				const tool: ExternalTool = externalToolFactory.withOauth2Config({ skipConsent: true }).buildWithId();
 
 				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
@@ -290,9 +290,7 @@ describe('OauthProviderLoginFlowUc', () => {
 					subject: 'subject',
 				};
 
-				const tool: ExternalTool = externalToolDOFactory
-					.withOauth2Config()
-					.buildWithId({ name: 'SchulcloudNextcloud' });
+				const tool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId({ name: 'SchulcloudNextcloud' });
 
 				const user = userFactory.buildWithId();
 
@@ -382,7 +380,7 @@ describe('OauthProviderLoginFlowUc', () => {
 					subject: 'subject',
 				};
 
-				const tool: ExternalTool = externalToolDOFactory.withOauth2Config().build({ id: undefined });
+				const tool: ExternalTool = externalToolFactory.withOauth2Config().build({ id: undefined });
 
 				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
@@ -425,7 +423,7 @@ describe('OauthProviderLoginFlowUc', () => {
 					subject: 'subject',
 				};
 
-				const tool: ExternalTool = externalToolDOFactory.buildWithId();
+				const tool: ExternalTool = externalToolFactory.buildWithId();
 
 				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);

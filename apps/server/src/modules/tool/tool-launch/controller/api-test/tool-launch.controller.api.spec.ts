@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Course, Permission, Role, School, User } from '@shared/domain';
 import {
 	basicToolConfigDOFactory,
-	contextExternalToolDOFactory,
+	contextExternalToolFactory,
 	contextExternalToolEntityFactory,
 	courseFactory,
 	externalToolEntityFactory,
@@ -221,7 +221,7 @@ describe('ToolLaunchController (API)', () => {
 
 		describe('when user is not authenticated', () => {
 			it('should return unauthorized', async () => {
-				const contextExternalTool = contextExternalToolDOFactory.buildWithId();
+				const contextExternalTool = contextExternalToolFactory.buildWithId();
 				const params: ToolLaunchParams = {
 					contextExternalToolId: contextExternalTool.id as string,
 				};

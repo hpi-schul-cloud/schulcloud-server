@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SortOrder, SortOrderMap } from '@shared/domain';
 
-import { basicToolConfigDOFactory, customParameterDOFactory, externalToolDOFactory } from '@shared/testing';
+import { basicToolConfigDOFactory, customParameterDOFactory, externalToolFactory } from '@shared/testing';
 import {
 	CustomParameterLocation,
 	CustomParameterLocationParams,
@@ -99,7 +99,7 @@ describe('ExternalToolRequestMapper', () => {
 			isOptional: false,
 		});
 
-		const externalToolDOCreate: ExternalTool = externalToolDOFactory.build({
+		const externalToolDOCreate: ExternalTool = externalToolFactory.build({
 			name: 'mockName',
 			url: 'mockUrl',
 			logoUrl: 'mockLogoUrl',
@@ -110,7 +110,7 @@ describe('ExternalToolRequestMapper', () => {
 			config: basicToolConfigDO,
 		});
 
-		const externalToolDOUpdate: ExternalTool = externalToolDOFactory.buildWithId(
+		const externalToolDOUpdate: ExternalTool = externalToolFactory.buildWithId(
 			{
 				name: 'mockName',
 				url: 'mockUrl',

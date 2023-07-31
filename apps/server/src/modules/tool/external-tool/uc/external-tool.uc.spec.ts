@@ -5,7 +5,7 @@ import { IFindOptions, Permission, SortOrder, User } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
 import { setupEntities, userFactory } from '@shared/testing';
 import {
-	externalToolDOFactory,
+	externalToolFactory,
 	oauth2ToolConfigDOFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { AuthorizationService } from '@src/modules/authorization';
@@ -75,7 +75,7 @@ describe('ExternalToolUc', () => {
 	const setup = () => {
 		const toolId = 'toolId';
 
-		const externalTool: ExternalTool = externalToolDOFactory.withCustomParameters(1).buildWithId();
+		const externalTool: ExternalTool = externalToolFactory.withCustomParameters(1).buildWithId();
 		const oauth2ConfigWithoutExternalData: Oauth2ToolConfig = oauth2ToolConfigDOFactory.build();
 
 		const query: ExternalToolSearchQuery = {
@@ -92,7 +92,7 @@ describe('ExternalToolUc', () => {
 			},
 		};
 		const page: Page<ExternalTool> = new Page<ExternalTool>(
-			[externalToolDOFactory.build({ ...externalTool, config: oauth2ConfigWithoutExternalData })],
+			[externalToolFactory.build({ ...externalTool, config: oauth2ConfigWithoutExternalData })],
 			1
 		);
 
@@ -290,7 +290,7 @@ describe('ExternalToolUc', () => {
 				url: undefined,
 				version: 1,
 			};
-			const updatedExternalToolDO: ExternalTool = externalToolDOFactory.build({
+			const updatedExternalToolDO: ExternalTool = externalToolFactory.build({
 				...externalTool,
 				name: 'newName',
 				url: undefined,

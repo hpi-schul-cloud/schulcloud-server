@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { externalToolDOFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+import { externalToolFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import {
 	CustomParameterLocation,
 	CustomParameterLocationParams,
@@ -202,7 +202,7 @@ describe('ExternalToolResponseMapper', () => {
 	describe('mapExternalToolDOsToToolConfigurationListResponse is called', () => {
 		describe('when mapping from ExternalToolDOs to ToolConfigurationListResponse', () => {
 			it('should map from ExternalToolDOs to ToolConfigurationListResponse', () => {
-				const externalToolDOs: ExternalTool[] = externalToolDOFactory.buildList(3, {
+				const externalToolDOs: ExternalTool[] = externalToolFactory.buildList(3, {
 					id: 'toolId',
 					name: 'toolName',
 					logoUrl: 'logoUrl',
@@ -224,7 +224,7 @@ describe('ExternalToolResponseMapper', () => {
 	describe('mapToConfigurationTemplateResponse is called', () => {
 		describe('when  ExternalToolDO is given', () => {
 			it('should map ExternalToolDO to ExternalToolConfigurationTemplateResponse', () => {
-				const externalTool: ExternalTool = externalToolDOFactory
+				const externalTool: ExternalTool = externalToolFactory
 					.withCustomParameters(1, {
 						displayName: 'displayName',
 						description: 'description',

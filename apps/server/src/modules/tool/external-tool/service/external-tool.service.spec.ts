@@ -9,7 +9,7 @@ import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import {
 	customParameterDOFactory,
-	externalToolDOFactory,
+	externalToolFactory,
 	lti11ToolConfigDOFactory,
 	oauth2ToolConfigDOFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
@@ -93,7 +93,7 @@ describe('ExternalToolService', () => {
 	});
 
 	const setup = () => {
-		const externalTool: ExternalTool = externalToolDOFactory.withCustomParameters(1).buildWithId();
+		const externalTool: ExternalTool = externalToolFactory.withCustomParameters(1).buildWithId();
 		const oauth2ToolConfigDO: Oauth2ToolConfig = oauth2ToolConfigDOFactory.withExternalData().build();
 		const oauth2ToolConfigDOWithoutExternalData: Oauth2ToolConfig = oauth2ToolConfigDOFactory.build();
 		const lti11ToolConfigDO: Lti11ToolConfig = lti11ToolConfigDOFactory.build();
@@ -177,7 +177,7 @@ describe('ExternalToolService', () => {
 				const { externalTool, lti11ToolConfigDO } = setup();
 				externalTool.config = lti11ToolConfigDO;
 				const lti11ToolConfigDOEncrypted: Lti11ToolConfig = { ...lti11ToolConfigDO, secret: encryptedSecret };
-				const externalToolDOEncrypted: ExternalTool = externalToolDOFactory.build({
+				const externalToolDOEncrypted: ExternalTool = externalToolFactory.build({
 					...externalTool,
 					config: lti11ToolConfigDOEncrypted,
 				});
@@ -272,7 +272,7 @@ describe('ExternalToolService', () => {
 				const { externalTool, oauth2ToolConfigDOWithoutExternalData, oauth2ToolConfigDO, oauthClient } = setup();
 				oauth2ToolConfigDO.clientSecret = undefined;
 				externalTool.config = oauth2ToolConfigDOWithoutExternalData;
-				page.data = [externalTool, externalToolDOFactory.withOauth2Config().build()];
+				page.data = [externalTool, externalToolFactory.withOauth2Config().build()];
 				externalToolRepo.find.mockResolvedValue(page);
 				oauthProviderService.getOAuth2Client.mockResolvedValueOnce(oauthClient);
 				oauthProviderService.getOAuth2Client.mockRejectedValue(new Error('some error occurred during fetching data'));
@@ -387,7 +387,7 @@ describe('ExternalToolService', () => {
 		});
 		describe('when tool was found', () => {
 			it('should return externalToolDO ', async () => {
-				const externalTool: ExternalTool = externalToolDOFactory.build();
+				const externalTool: ExternalTool = externalToolFactory.build();
 				externalToolRepo.findByName.mockResolvedValue(externalTool);
 
 				const result: ExternalTool | null = await service.findExternalToolByName('toolName');
@@ -417,7 +417,7 @@ describe('ExternalToolService', () => {
 			});
 
 			it('should return externalToolDO when tool was found', async () => {
-				const externalTool: ExternalTool = externalToolDOFactory.build();
+				const externalTool: ExternalTool = externalToolFactory.build();
 				externalToolRepo.findByOAuth2ConfigClientId.mockResolvedValue(externalTool);
 
 				const result: ExternalTool | null = await service.findExternalToolByOAuth2ConfigClientId('clientId');
@@ -438,8 +438,8 @@ describe('ExternalToolService', () => {
 
 	describe('updateExternalTool is called', () => {
 		const setupOauthConfig = () => {
-			const existingTool: ExternalTool = externalToolDOFactory.withOauth2Config().buildWithId();
-			const changedTool: ExternalTool = externalToolDOFactory
+			const existingTool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId();
+			const changedTool: ExternalTool = externalToolFactory
 				.withOauth2Config()
 				.build({ id: existingTool.id, name: 'newName' });
 
@@ -504,7 +504,7 @@ describe('ExternalToolService', () => {
 
 		describe('when external tool is given', () => {
 			it('should save the externalTool', async () => {
-				const externalTool: ExternalTool = externalToolDOFactory.buildWithId();
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
 				await service.updateExternalTool(externalTool, externalTool);
 
@@ -514,8 +514,8 @@ describe('ExternalToolService', () => {
 
 		describe('externalToolVersionService is called', () => {
 			it('should call increaseVersionOfNewToolIfNecessary', async () => {
-				const tool1: ExternalTool = externalToolDOFactory.buildWithId();
-				const tool2: ExternalTool = externalToolDOFactory.buildWithId();
+				const tool1: ExternalTool = externalToolFactory.buildWithId();
+				const tool2: ExternalTool = externalToolFactory.buildWithId();
 
 				await service.updateExternalTool(tool1, tool2);
 
@@ -523,7 +523,7 @@ describe('ExternalToolService', () => {
 			});
 
 			it('should increase the version of the externalTool', async () => {
-				const externalTool: ExternalTool = externalToolDOFactory.buildWithId();
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 				externalTool.version = 1;
 				versionService.increaseVersionOfNewToolIfNecessary.mockImplementation((toolDO: ExternalTool) => {
 					toolDO.version = 2;
@@ -543,7 +543,7 @@ describe('ExternalToolService', () => {
 				const schoolParameters: CustomParameter[] = customParameterDOFactory.buildList(1, {
 					scope: CustomParameterScope.SCHOOL,
 				});
-				const externalTool: ExternalTool = externalToolDOFactory.buildWithId(
+				const externalTool: ExternalTool = externalToolFactory.buildWithId(
 					{
 						parameters: [
 							...schoolParameters,
@@ -553,7 +553,7 @@ describe('ExternalToolService', () => {
 					},
 					'toolId'
 				);
-				const expected: ExternalTool = externalToolDOFactory.build({
+				const expected: ExternalTool = externalToolFactory.build({
 					...externalTool,
 					parameters: schoolParameters,
 				});

@@ -1,4 +1,4 @@
-import { customParameterDOFactory, externalToolDOFactory } from '@shared/testing/factory/domainobject/tool';
+import { customParameterDOFactory, externalToolFactory } from '@shared/testing/factory/domainobject/tool';
 import { ExternalToolVersionService } from './external-tool-version.service';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '../../common/enum';
 import { CustomParameter } from '../../common/domain';
@@ -23,13 +23,13 @@ describe('ExternalToolVersionService', () => {
 			scope: CustomParameterScope.GLOBAL,
 			type: CustomParameterType.STRING,
 		});
-		const oldTool: ExternalTool = externalToolDOFactory
+		const oldTool: ExternalTool = externalToolFactory
 			.params({
 				parameters: [param1],
 				version: 1,
 			})
 			.build();
-		const newTool: ExternalTool = externalToolDOFactory.build({ ...oldTool, parameters: [{ ...param1 }] });
+		const newTool: ExternalTool = externalToolFactory.build({ ...oldTool, parameters: [{ ...param1 }] });
 
 		return {
 			oldTool,

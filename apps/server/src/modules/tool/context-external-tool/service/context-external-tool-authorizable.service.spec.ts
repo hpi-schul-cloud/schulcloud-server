@@ -1,4 +1,4 @@
-import { contextExternalToolDOFactory, schoolDOFactory, schoolExternalToolDOFactory } from '@shared/testing';
+import { contextExternalToolFactory, schoolDOFactory, schoolExternalToolFactory } from '@shared/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ContextExternalToolRepo } from '@shared/repo';
@@ -39,10 +39,10 @@ describe('ContextExternalToolAuthorizableService', () => {
 		describe('when id is given', () => {
 			const setup = () => {
 				const schoolId: string = schoolDOFactory.buildWithId().id as string;
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					schoolId,
 				});
-				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef(schoolExternalTool.id as string, schoolExternalTool.schoolId)
 					.build();
 

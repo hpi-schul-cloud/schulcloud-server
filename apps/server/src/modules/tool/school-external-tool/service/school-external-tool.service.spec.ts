@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolExternalToolRepo } from '@shared/repo';
-import { externalToolDOFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
+import { externalToolFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+import { schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalToolService } from './school-external-tool.service';
 import { ExternalTool } from '../../external-tool/domain';
@@ -37,8 +37,8 @@ describe('SchoolExternalToolService', () => {
 	});
 
 	const setup = () => {
-		const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build();
-		const externalTool: ExternalTool = externalToolDOFactory.buildWithId();
+		const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+		const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
 		schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
 
