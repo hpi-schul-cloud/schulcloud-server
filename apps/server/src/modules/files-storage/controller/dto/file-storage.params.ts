@@ -1,7 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain';
-import { Allow, IsEnum, IsInt, IsMongoId, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import { Allow, IsEnum, IsInt, IsMongoId, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { FileRecordParentType } from '../../entity';
+import { PreviewInputMimeTypes } from '../../interface/preview-input-mime-types.enum';
+import { PreviewOutputMimeTypes } from '../../interface/preview-output-mime-types.enum';
 
 export class FileRecordParams {
 	@ApiProperty()
@@ -112,7 +114,15 @@ export class PreviewParams {
 	@IsInt()
 	height!: number;
 
-	@ApiProperty()
-	@IsInt()
-	ratio!: number;
+	@ApiProperty({ enum: PreviewOutputMimeTypes })
+	@IsEnum(PreviewOutputMimeTypes)
+	outputFormat!: PreviewOutputMimeTypes;
+
+	@ApiPropertyOptional({
+		required: false,
+		enum: PreviewInputMimeTypes,
+	})
+	@IsEnum(PreviewInputMimeTypes)
+	@IsOptional()
+	inputFormat?: PreviewInputMimeTypes;
 }

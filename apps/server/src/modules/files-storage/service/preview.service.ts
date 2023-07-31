@@ -8,6 +8,7 @@ import { DownloadFileParams, PreviewParams } from '../controller/dto';
 import { FileRecord } from '../entity';
 import { ErrorType } from '../error';
 import { IGetFileResponse } from '../interface';
+import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
 import { FileDtoBuilder } from '../mapper';
 import { FilesStorageService } from './files-storage.service';
 
@@ -59,7 +60,7 @@ export class PreviewService {
 	}
 
 	private createNameHash(params: DownloadFileParams, previewParams: PreviewParams): string {
-		const fileParamsString = `${params.fileRecordId}${previewParams.width}${previewParams.height}${previewParams.ratio}`;
+		const fileParamsString = `${params.fileRecordId}${previewParams.width}${previewParams.height}${previewParams.outputFormat}`;
 		const hash = crypto.createHash('md5').update(fileParamsString).digest('hex');
 
 		return hash;
@@ -74,9 +75,9 @@ export class PreviewService {
 		bytesRange?: string
 	): Promise<IGetFileResponse> {
 		const original = await this.fileStorageService.download(fileRecord, params, bytesRange);
-		const preview = this.resizeAndConvertToWebP(original, fileRecord, previewParams);
+		const preview = this.resizeAndConvert(original, fileRecord, previewParams);
 
-		const fileDto = FileDtoBuilder.build(hash, preview, 'image/webp');
+		const fileDto = FileDtoBuilder.build(hash, preview, previewParams.outputFormat);
 		await this.storageClient.create(filePath, fileDto);
 
 		return {
@@ -88,14 +89,21 @@ export class PreviewService {
 		};
 	}
 
-	private resizeAndConvertToWebP(
+	private resizeAndConvert(
 		original: IGetFileResponse,
 		fileRecord: FileRecord,
 		previewParams: PreviewParams
 	): PassThrough {
+		const format = this.getFormat(previewParams.outputFormat);
 		const im = subClass({ imageMagick: true });
-		const preview = im(original.data, fileRecord.name).resize(previewParams.width, previewParams.height).stream('webp');
+		const preview = im(original.data, fileRecord.name).resize(previewParams.width, previewParams.height).stream(format);
 
 		return preview;
+	}
+
+	private getFormat(mimeType: PreviewOutputMimeTypes): string {
+		const format = mimeType.split('/')[1];
+
+		return format;
 	}
 }

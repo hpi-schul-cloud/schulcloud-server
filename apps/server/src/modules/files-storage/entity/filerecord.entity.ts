@@ -4,6 +4,7 @@ import { BadRequestException } from '@nestjs/common';
 import { BaseEntityWithTimestamps, type EntityId } from '@shared/domain';
 import { v4 as uuid } from 'uuid';
 import { ErrorType } from '../error';
+import { PreviewInputMimeTypes } from '../interface/preview-input-mime-types.enum';
 
 export enum ScanStatus {
 	PENDING = 'pending',
@@ -241,13 +242,10 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	}
 
 	public isPreviewPossible(): boolean {
-		const result =
-			this.mimeType === 'image/bmp' ||
-			this.mimeType === 'image/gif' ||
-			this.mimeType === 'image/jpeg' ||
-			this.mimeType === 'image/png' ||
-			this.mimeType === 'image/svg+xml';
+		if (Object.values<string>(PreviewInputMimeTypes).includes(this.mimeType)) {
+			return true;
+		}
 
-		return result;
+		return false;
 	}
 }
