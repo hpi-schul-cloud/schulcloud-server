@@ -1,11 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContextExternalToolDO, ExternalToolDO } from '@shared/domain';
-import { contextExternalToolDOFactory, externalToolFactory } from '@shared/testing';
+import { contextExternalToolFactory, externalToolFactory } from '@shared/testing';
 import { CommonToolValidationService } from '../../common/service';
+import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { ContextExternalTool } from '../domain';
 import { ContextExternalToolValidationService } from './context-external-tool-validation.service';
 import { ContextExternalToolService } from './context-external-tool.service';
 
@@ -59,10 +60,10 @@ describe('ContextExternalToolValidationService', () => {
 	describe('validate', () => {
 		describe('when check duplication of contextExternalTool is successfully ', () => {
 			const setup = () => {
-				const externalTool: ExternalToolDO = externalToolFactory.buildWithId();
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 				externalToolService.findExternalToolById.mockResolvedValue(externalTool);
 
-				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
 				contextExternalToolService.findContextExternalTools.mockResolvedValue([]);
 
 				return {
@@ -114,7 +115,7 @@ describe('ContextExternalToolValidationService', () => {
 
 		describe('when check duplication of contextExternalTool failed ', () => {
 			const setup = () => {
-				const contextExternalTool = contextExternalToolDOFactory.buildWithId();
+				const contextExternalTool = contextExternalToolFactory.buildWithId();
 				contextExternalToolService.findContextExternalTools.mockResolvedValue([contextExternalTool]);
 
 				return {
