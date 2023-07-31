@@ -110,7 +110,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="186" class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:186</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="187" class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:187</a></div>
                             </td>
                         </tr>
 
@@ -185,8 +185,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="192"
-                            class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:192</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="193"
+                            class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:193</a></div>
                 </td>
             </tr>
 
@@ -418,6 +418,7 @@ class DtoCreator {
 			displayColor: this.room.color,
 			title: this.room.name,
 			elements,
+			isArchived: this.room.isFinished(),
 		};
 		return dto;
 	}
