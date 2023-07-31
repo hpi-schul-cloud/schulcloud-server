@@ -7,7 +7,12 @@ import {
 } from '@shared/testing';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '../../common/enum';
 
-import { BasicToolConfig, CustomParameter, ExternalToolEntity, ExternalToolConfig } from '../../external-tool/entity';
+import {
+	BasicToolConfig,
+	CustomParameter,
+	ExternalToolEntity,
+	ExternalToolConfigEntity,
+} from '../../external-tool/entity';
 import { SchoolExternalToolEntity } from '../../school-external-tool/entity';
 import { ContextExternalToolEntity } from './context-external-tool.entity';
 
@@ -24,7 +29,7 @@ describe('ExternalToolEntity', () => {
 		});
 
 		it('should create an external course Tool by passing required properties', () => {
-			const externalToolConfig: ExternalToolConfig = new BasicToolConfig({
+			const externalToolConfigEntity: ExternalToolConfigEntity = new BasicToolConfig({
 				type: ToolConfigType.BASIC,
 				baseUrl: 'mockBaseUrl',
 			});
@@ -43,7 +48,7 @@ describe('ExternalToolEntity', () => {
 				name: 'toolName',
 				url: 'mockUrl',
 				logoUrl: 'mockLogoUrl',
-				config: externalToolConfig,
+				config: externalToolConfigEntity,
 				parameters: [customParameter],
 				isHidden: true,
 				openNewTab: true,

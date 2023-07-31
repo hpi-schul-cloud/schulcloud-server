@@ -1,9 +1,9 @@
 import { Embeddable, Property } from '@mikro-orm/core';
-import { ExternalToolConfig } from './external-tool-config';
+import { ExternalToolConfigEntity } from './external-tool-config';
 import { ToolConfigType } from '../../../common/enum';
 
 @Embeddable({ discriminatorValue: ToolConfigType.OAUTH2 })
-export class Oauth2ToolConfig extends ExternalToolConfig {
+export class Oauth2ToolConfig extends ExternalToolConfigEntity {
 	@Property()
 	clientId: string;
 

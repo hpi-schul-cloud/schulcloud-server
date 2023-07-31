@@ -1,6 +1,11 @@
 import { schoolFactory, setupEntities } from '@shared/testing';
 import { schoolExternalToolFactory } from '@shared/testing/factory/school-external-tool.factory';
-import { BasicToolConfig, CustomParameter, ExternalToolEntity, ExternalToolConfig } from '../../external-tool/entity';
+import {
+	BasicToolConfig,
+	CustomParameter,
+	ExternalToolEntity,
+	ExternalToolConfigEntity,
+} from '../../external-tool/entity';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '../../common/enum';
 import { SchoolExternalToolEntity } from './school-external-tool.entity';
 
@@ -22,7 +27,7 @@ describe('SchoolExternalToolEntity', () => {
 		});
 
 		it('should set schoolParameters to empty when is undefined', () => {
-			const externalToolConfig: ExternalToolConfig = new BasicToolConfig({
+			const externalToolConfigEntity: ExternalToolConfigEntity = new BasicToolConfig({
 				type: ToolConfigType.OAUTH2,
 				baseUrl: 'mockBaseUrl',
 			});
@@ -41,7 +46,7 @@ describe('SchoolExternalToolEntity', () => {
 				name: 'toolName',
 				url: 'mockUrl',
 				logoUrl: 'mockLogoUrl',
-				config: externalToolConfig,
+				config: externalToolConfigEntity,
 				parameters: [customParameter],
 				isHidden: true,
 				openNewTab: true,
