@@ -3,7 +3,7 @@ import { EntityId, Permission } from '@shared/domain';
 import { Action, AuthorizationService, AuthorizableReferenceType } from '@src/modules/authorization';
 import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
 import { ContextExternalToolService } from '../../context-external-tool/service';
-import { SchoolExternalToolDTO, SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
+import { SchoolExternalToolDto, SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
 import { SchoolExternalTool } from '../domain';
 
 @Injectable()
@@ -26,11 +26,11 @@ export class SchoolExternalToolUc {
 
 	async createSchoolExternalTool(
 		userId: EntityId,
-		schoolExternalToolDTO: SchoolExternalToolDTO
+		schoolExternalToolDto: SchoolExternalToolDto
 	): Promise<SchoolExternalTool> {
-		const schoolExternalTool = new SchoolExternalTool({ ...schoolExternalToolDTO });
+		const schoolExternalTool = new SchoolExternalTool({ ...schoolExternalToolDto });
 
-		await this.ensureSchoolPermission(userId, schoolExternalToolDTO.schoolId);
+		await this.ensureSchoolPermission(userId, schoolExternalToolDto.schoolId);
 		await this.schoolExternalToolValidationService.validate(schoolExternalTool);
 
 		const createdSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.saveSchoolExternalTool(
@@ -68,15 +68,15 @@ export class SchoolExternalToolUc {
 	async updateSchoolExternalTool(
 		userId: EntityId,
 		schoolExternalToolId: string,
-		schoolExternalToolDTO: SchoolExternalToolDTO
+		schoolExternalToolDto: SchoolExternalToolDto
 	): Promise<SchoolExternalTool> {
-		const schoolExternalTool = new SchoolExternalTool({ ...schoolExternalToolDTO });
+		const schoolExternalTool = new SchoolExternalTool({ ...schoolExternalToolDto });
 
 		await this.ensureSchoolExternalToolPermission(userId, schoolExternalToolId);
 		await this.schoolExternalToolValidationService.validate(schoolExternalTool);
 
 		const updated: SchoolExternalTool = new SchoolExternalTool({
-			...schoolExternalToolDTO,
+			...schoolExternalToolDto,
 			id: schoolExternalToolId,
 		});
 
