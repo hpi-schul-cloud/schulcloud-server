@@ -1,5 +1,5 @@
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import {
-	ApiBearerAuth,
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiOkResponse,
@@ -9,13 +9,14 @@ import {
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
 import { ContextExternalToolDO } from '@shared/domain';
+import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { LegacyLogger } from '@src/core/logger';
 import { ContextExternalToolRequestMapper, ContextExternalToolResponseMapper } from '../mapper';
+import { ContextExternalToolUc } from '../uc';
+import { ContextExternalTool } from '../uc/dto/context-external-tool.types';
 import {
 	ContextExternalToolContextParams,
 	ContextExternalToolIdParams,
@@ -23,8 +24,6 @@ import {
 	ContextExternalToolResponse,
 	ContextExternalToolSearchListResponse,
 } from './dto';
-import { ContextExternalToolUc } from '../uc';
-import { ContextExternalTool } from '../uc/dto/context-external-tool.types';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -77,7 +76,6 @@ export class ToolContextController {
 	}
 
 	@Get(':contextType/:contextId')
-	@ApiBearerAuth()
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
 	@ApiOkResponse({

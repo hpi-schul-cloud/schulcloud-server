@@ -1,19 +1,19 @@
-import { DeepPartial } from 'fishery';
 import {
+	BasicToolConfigDO,
+	CustomParameterDO,
 	CustomParameterLocation,
 	CustomParameterScope,
 	CustomParameterType,
+	ExternalToolDO,
+	ExternalToolProps,
+	Lti11ToolConfigDO,
 	LtiMessageType,
 	LtiPrivacyPermission,
-	ToolConfigType,
-	BasicToolConfigDO,
-	CustomParameterDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-	ExternalToolProps,
+	ToolConfigType,
 } from '@shared/domain';
 import { TokenEndpointAuthMethod } from '@src/modules/tool/common/interface';
+import { DeepPartial } from 'fishery';
 import { DoBaseFactory } from '../do-base.factory';
 
 export const basicToolConfigDOFactory = DoBaseFactory.define<BasicToolConfigDO, BasicToolConfigDO>(
@@ -64,19 +64,26 @@ export const lti11ToolConfigDOFactory = DoBaseFactory.define<Lti11ToolConfigDO, 
 	}
 );
 
-export const customParameterDOFactory = DoBaseFactory.define<CustomParameterDO, CustomParameterDO>(
-	CustomParameterDO,
-	({ sequence }) => {
-		return {
-			name: `custom-parameter-${sequence}`,
-			displayName: 'User Friendly Name',
-			type: CustomParameterType.STRING,
-			scope: CustomParameterScope.GLOBAL,
-			location: CustomParameterLocation.BODY,
-			isOptional: false,
-		};
+class CustomParameterFactory extends DoBaseFactory<CustomParameterDO, CustomParameterDO> {
+	buildListWithEachType(params?: DeepPartial<CustomParameterDO>): CustomParameterDO[] {
+		const globalParameter = this.build({ ...params, scope: CustomParameterScope.GLOBAL });
+		const schoolParameter = this.build({ ...params, scope: CustomParameterScope.SCHOOL });
+		const contextParameter = this.build({ ...params, scope: CustomParameterScope.CONTEXT });
+
+		return [globalParameter, schoolParameter, contextParameter];
 	}
-);
+}
+
+export const customParameterDOFactory = CustomParameterFactory.define(CustomParameterDO, ({ sequence }) => {
+	return {
+		name: `custom-parameter-${sequence}`,
+		displayName: 'User Friendly Name',
+		type: CustomParameterType.STRING,
+		scope: CustomParameterScope.GLOBAL,
+		location: CustomParameterLocation.BODY,
+		isOptional: false,
+	};
+});
 
 class ExternalToolDOFactory extends DoBaseFactory<ExternalToolDO, ExternalToolProps> {
 	withOauth2Config(customParam?: DeepPartial<Oauth2ToolConfigDO>): this {
