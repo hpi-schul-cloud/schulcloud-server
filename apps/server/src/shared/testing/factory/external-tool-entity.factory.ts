@@ -17,7 +17,7 @@ import {
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 
-export class ExternalToolFactory extends BaseFactory<ExternalToolEntity, IExternalToolProperties> {
+export class ExternalToolEntityFactory extends BaseFactory<ExternalToolEntity, IExternalToolProperties> {
 	withName(name: string): this {
 		const params: DeepPartial<IExternalToolProperties> = {
 			name,
@@ -63,7 +63,7 @@ export class ExternalToolFactory extends BaseFactory<ExternalToolEntity, IExtern
 	}
 }
 
-export const externalToolFactory = ExternalToolFactory.define(
+export const externalToolEntityFactory = ExternalToolEntityFactory.define(
 	ExternalToolEntity,
 	({ sequence }): IExternalToolProperties => {
 		return {

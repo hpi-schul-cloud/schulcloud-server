@@ -1,7 +1,7 @@
 import {
-	contextExternalToolFactory,
-	externalToolFactory,
-	schoolExternalToolFactory,
+	contextExternalToolEntityFactory,
+	externalToolEntityFactory,
+	schoolExternalToolEntityFactory,
 	schoolFactory,
 	setupEntities,
 } from '@shared/testing';
@@ -44,7 +44,7 @@ describe('ExternalToolEntity', () => {
 				regexComment: 'mockComment',
 				isOptional: false,
 			});
-			const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId({
+			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 				name: 'toolName',
 				url: 'mockUrl',
 				logoUrl: 'mockLogoUrl',
@@ -54,13 +54,13 @@ describe('ExternalToolEntity', () => {
 				openNewTab: true,
 				version: 1,
 			});
-			const schoolTool: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId({
+			const schoolTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 				tool: externalToolEntity,
 				school: schoolFactory.buildWithId(),
 				schoolParameters: [],
 				toolVersion: 1,
 			});
-			const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
+			const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
 				schoolTool,
 				parameters: [],
 				toolVersion: 1,

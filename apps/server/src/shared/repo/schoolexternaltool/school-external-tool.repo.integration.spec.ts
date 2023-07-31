@@ -3,7 +3,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { type School } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
-import { cleanupCollections, externalToolFactory, schoolExternalToolFactory, schoolFactory } from '@shared/testing';
+import {
+	cleanupCollections,
+	externalToolEntityFactory,
+	schoolExternalToolEntityFactory,
+	schoolFactory,
+} from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { SchoolExternalToolQuery } from '@src/modules/tool/school-external-tool/uc/dto/school-external-tool.types';
@@ -44,14 +49,14 @@ describe('SchoolExternalToolRepo', () => {
 	});
 
 	const createTools = () => {
-		const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId();
+		const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
 		const school: School = schoolFactory.buildWithId();
-		const schoolExternalTool1: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId({
+		const schoolExternalTool1: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 			tool: externalToolEntity,
 			school,
 		});
-		const schoolExternalTool2: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId();
-		const schoolExternalTool3: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId({
+		const schoolExternalTool2: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId();
+		const schoolExternalTool3: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 			tool: externalToolEntity,
 			school,
 		});

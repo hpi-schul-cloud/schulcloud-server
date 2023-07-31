@@ -3,10 +3,10 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, Role, RoleName, School, User } from '@shared/domain';
 import {
-	externalToolFactory,
+	externalToolEntityFactory,
 	mapUserToCurrentUser,
 	roleFactory,
-	schoolExternalToolFactory,
+	schoolExternalToolEntityFactory,
 	schoolFactory,
 	userFactory,
 } from '@shared/testing';
@@ -73,10 +73,16 @@ describe('ToolSchoolController (API)', () => {
 		const adminUser: User = userFactory.buildWithId({ school, roles: [adminRole] });
 		const userWithMissingPermission: User = userFactory.buildWithId({ school });
 
-		const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId({ version: 1, parameters: [] });
-		const externalToolEntity2: ExternalToolEntity = externalToolFactory.buildWithId({ version: 1, parameters: [] });
+		const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+			version: 1,
+			parameters: [],
+		});
+		const externalToolEntity2: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+			version: 1,
+			parameters: [],
+		});
 
-		const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId({
+		const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 			tool: externalToolEntity2,
 			school,
 		});

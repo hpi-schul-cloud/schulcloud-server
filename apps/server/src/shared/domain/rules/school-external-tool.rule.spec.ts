@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	roleFactory,
-	schoolExternalToolFactory,
+	schoolExternalToolEntityFactory,
 	schoolFactory,
 	setupEntities,
 	userFactory,
@@ -41,7 +41,7 @@ describe('SchoolExternalToolRule', () => {
 		const role: Role = roleFactory.build({ permissions: [permissionA, permissionB] });
 
 		const school = schoolFactory.build();
-		const entity: SchoolExternalToolEntity | SchoolExternalTool = schoolExternalToolFactory.build();
+		const entity: SchoolExternalToolEntity | SchoolExternalTool = schoolExternalToolEntityFactory.build();
 		entity.school = school;
 		const user: User = userFactory.build({ roles: [role], school });
 		return {

@@ -5,12 +5,12 @@ import { Course, Permission, Role, School, User } from '@shared/domain';
 import {
 	basicToolConfigDOFactory,
 	contextExternalToolDOFactory,
-	contextExternalToolFactory,
+	contextExternalToolEntityFactory,
 	courseFactory,
-	externalToolFactory,
+	externalToolEntityFactory,
 	mapUserToCurrentUser,
 	roleFactory,
-	schoolExternalToolFactory,
+	schoolExternalToolEntityFactory,
 	schoolFactory,
 	userFactory,
 } from '@shared/testing';
@@ -75,15 +75,15 @@ describe('ToolLaunchController (API)', () => {
 				const course: Course = courseFactory.buildWithId({ school, teachers: [user] });
 				currentUser = mapUserToCurrentUser(user);
 
-				const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId({
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 					config: basicToolConfigDOFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
 					version: 0,
 				});
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId({
+				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					tool: externalToolEntity,
 					school,
 				});
-				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
+				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
 					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,
@@ -128,16 +128,16 @@ describe('ToolLaunchController (API)', () => {
 				const course: Course = courseFactory.buildWithId({ school, teachers: [user] });
 				currentUser = mapUserToCurrentUser(user);
 
-				const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId({
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 					config: basicToolConfigDOFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
 					version: 1,
 				});
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId({
+				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					tool: externalToolEntity,
 					school,
 					toolVersion: 0,
 				});
-				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
+				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
 					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,
@@ -181,14 +181,14 @@ describe('ToolLaunchController (API)', () => {
 				const course: Course = courseFactory.buildWithId({ school: usersSchool, teachers: [user] });
 				currentUser = mapUserToCurrentUser(user);
 
-				const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId({
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 					config: basicToolConfigDOFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
 				});
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId({
+				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					tool: externalToolEntity,
 					school: toolSchool,
 				});
-				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
+				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
 					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,

@@ -3,7 +3,7 @@ import { CustomParameter } from '../../../common/domain';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
-export type BasicToolConfig = BasicToolConfig;
+export type BasicToolConfigDto = BasicToolConfig;
 
 export type Lti11ToolConfigCreate = Lti11ToolConfig;
 
@@ -13,9 +13,9 @@ export type Oauth2ToolConfigCreate = Oauth2ToolConfig;
 
 export type Oauth2ToolConfigUpdate = PartialBy<Oauth2ToolConfig, 'clientSecret'>;
 
-export type CustomParameter = CustomParameter;
+export type CustomParameterDto = CustomParameter;
 
-export type ExternalTool<T> = {
+export type ExternalToolDto<T> = {
 	name: string;
 
 	url?: string;
@@ -24,7 +24,7 @@ export type ExternalTool<T> = {
 
 	config: T;
 
-	parameters?: CustomParameter[];
+	parameters?: CustomParameterDto[];
 
 	isHidden: boolean;
 
@@ -33,8 +33,10 @@ export type ExternalTool<T> = {
 	version: number;
 };
 
-export type ExternalToolCreate = ExternalTool<BasicToolConfig | Lti11ToolConfigCreate | Oauth2ToolConfigCreate>;
+export type ExternalToolCreate = ExternalToolDto<BasicToolConfigDto | Lti11ToolConfigCreate | Oauth2ToolConfigCreate>;
 
-export type ExternalToolUpdate = ExternalTool<BasicToolConfig | Lti11ToolConfigUpdate | Oauth2ToolConfigUpdate> & {
+export type ExternalToolUpdate = ExternalToolDto<
+	BasicToolConfigDto | Lti11ToolConfigUpdate | Oauth2ToolConfigUpdate
+> & {
 	id: string;
 };

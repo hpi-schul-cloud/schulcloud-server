@@ -1,4 +1,4 @@
-import { schoolExternalToolFactory } from '@shared/testing';
+import { schoolExternalToolEntityFactory } from '@shared/testing';
 import { ToolContextType } from '@src/modules/tool/common/enum';
 import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
 import { ContextExternalToolScope } from './context-external-tool.scope';
@@ -21,7 +21,7 @@ describe('CourseExternalToolScope', () => {
 
 		describe('when id parameter is defined', () => {
 			it('should return scope with added id to query', () => {
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId();
+				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId();
 
 				scope.byId(schoolExternalToolEntity.id);
 
@@ -40,7 +40,7 @@ describe('CourseExternalToolScope', () => {
 
 		describe('when schoolToolId parameter is defined', () => {
 			it('should return scope with added schoolToolId to query', () => {
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId();
+				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId();
 
 				scope.bySchoolToolId(schoolExternalToolEntity.id);
 
@@ -59,7 +59,7 @@ describe('CourseExternalToolScope', () => {
 
 		describe('when contextId parameter is defined', () => {
 			it('should return scope with added contextId to query', () => {
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId();
+				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId();
 
 				scope.byContextId(schoolExternalToolEntity.id);
 

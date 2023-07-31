@@ -4,10 +4,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Course, Permission, School } from '@shared/domain';
 import {
 	cleanupCollections,
-	contextExternalToolFactory,
+	contextExternalToolEntityFactory,
 	courseFactory,
-	externalToolFactory,
-	schoolExternalToolFactory,
+	externalToolEntityFactory,
+	schoolExternalToolEntityFactory,
 	schoolFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
@@ -215,7 +215,7 @@ describe('ToolController (API)', () => {
 		describe('when requesting tools', () => {
 			const setup = async () => {
 				const toolId: string = new ObjectId().toHexString();
-				const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId(undefined, toolId);
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
 				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
@@ -251,7 +251,7 @@ describe('ToolController (API)', () => {
 		describe('when permission is missing', () => {
 			const setup = async () => {
 				const toolId: string = new ObjectId().toHexString();
-				const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId(undefined, toolId);
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin();
 				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
@@ -276,7 +276,7 @@ describe('ToolController (API)', () => {
 		describe('when toolId is given', () => {
 			const setup = async () => {
 				const toolId: string = new ObjectId().toHexString();
-				const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId(undefined, toolId);
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin(undefined, [Permission.TOOL_ADMIN]);
 				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
@@ -381,7 +381,7 @@ describe('ToolController (API)', () => {
 			const setup = async () => {
 				const toolId: string = new ObjectId().toHexString();
 				const params = { ...postParams, id: toolId };
-				const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId({ version: 1 }, toolId);
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({ version: 1 }, toolId);
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
 				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
@@ -484,7 +484,7 @@ describe('ToolController (API)', () => {
 			const setup = async () => {
 				const toolId: string = new ObjectId().toHexString();
 				const params = { ...postParams, id: toolId };
-				const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId({ version: 1 }, toolId);
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({ version: 1 }, toolId);
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin();
 				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
@@ -509,7 +509,7 @@ describe('ToolController (API)', () => {
 		describe('when valid data is given', () => {
 			const setup = async () => {
 				const toolId: string = new ObjectId().toHexString();
-				const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId(undefined, toolId);
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
 				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
@@ -597,12 +597,12 @@ describe('ToolController (API)', () => {
 				const school: School = schoolFactory.buildWithId();
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school: schoolWithoutTool });
 				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
-				const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId();
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId({
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
+				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
 					tool: externalToolEntity,
 				});
-				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
+				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
 					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,
@@ -646,13 +646,13 @@ describe('ToolController (API)', () => {
 					Permission.CONTEXT_TOOL_USER,
 				]);
 				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
-				const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId();
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId({
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
+				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
 					tool: externalToolEntity,
 					toolVersion: externalToolEntity.version,
 				});
-				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
+				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
 					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,

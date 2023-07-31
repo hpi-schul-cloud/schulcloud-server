@@ -7,8 +7,8 @@ import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.
 import {
 	cleanupCollections,
 	contextExternalToolDOFactory,
-	contextExternalToolFactory,
-	schoolExternalToolFactory,
+	contextExternalToolEntityFactory,
+	schoolExternalToolEntityFactory,
 	schoolFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
@@ -52,15 +52,15 @@ describe('ContextExternalToolRepo', () => {
 
 	const createExternalTools = () => {
 		const school: School = schoolFactory.buildWithId();
-		const schoolExternalTool1: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId({ school });
-		const schoolExternalTool2: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId({ school });
-		const contextExternalTool1: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
+		const schoolExternalTool1: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({ school });
+		const schoolExternalTool2: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({ school });
+		const contextExternalTool1: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
 			schoolTool: schoolExternalTool1,
 		});
-		const contextExternalTool2: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
+		const contextExternalTool2: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
 			schoolTool: schoolExternalTool2,
 		});
-		const contextExternalTool3: ContextExternalToolEntity = contextExternalToolFactory.buildWithId({
+		const contextExternalTool3: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
 			schoolTool: schoolExternalTool1,
 		});
 

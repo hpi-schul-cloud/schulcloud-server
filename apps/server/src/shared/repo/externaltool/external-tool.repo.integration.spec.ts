@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { IFindOptions, Page, SortOrder } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo';
-import { cleanupCollections, externalToolFactory } from '@shared/testing';
+import { cleanupCollections, externalToolEntityFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolSearchQuery } from '@src/modules/tool';
 import { CustomParameter } from '@src/modules/tool/common/domain';
@@ -58,10 +58,10 @@ describe('ExternalToolRepo', () => {
 		const client1Id = 'client-1';
 		const client2Id = 'client-2';
 
-		const externalToolEntity: ExternalToolEntity = externalToolFactory.withBasicConfig().buildWithId();
-		const externalOauthTool: ExternalToolEntity = externalToolFactory.withOauth2Config('client-1').buildWithId();
-		const externalOauthTool2: ExternalToolEntity = externalToolFactory.withOauth2Config('client-2').buildWithId();
-		const externalLti11Tool: ExternalToolEntity = externalToolFactory.withLti11Config().buildWithId();
+		const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.withBasicConfig().buildWithId();
+		const externalOauthTool: ExternalToolEntity = externalToolEntityFactory.withOauth2Config('client-1').buildWithId();
+		const externalOauthTool2: ExternalToolEntity = externalToolEntityFactory.withOauth2Config('client-2').buildWithId();
+		const externalLti11Tool: ExternalToolEntity = externalToolEntityFactory.withLti11Config().buildWithId();
 
 		await em.persistAndFlush([externalToolEntity, externalOauthTool, externalOauthTool2, externalLti11Tool]);
 		em.clear();
@@ -225,9 +225,9 @@ describe('ExternalToolRepo', () => {
 			const options: IFindOptions<ExternalTool> = {};
 
 			await em.nativeDelete(ExternalToolEntity, {});
-			const ltiToolA: ExternalToolEntity = externalToolFactory.withName('A').buildWithId();
-			const ltiToolB: ExternalToolEntity = externalToolFactory.withName('B').buildWithId();
-			const ltiToolC: ExternalToolEntity = externalToolFactory.withName('B').buildWithId();
+			const ltiToolA: ExternalToolEntity = externalToolEntityFactory.withName('A').buildWithId();
+			const ltiToolB: ExternalToolEntity = externalToolEntityFactory.withName('B').buildWithId();
+			const ltiToolC: ExternalToolEntity = externalToolEntityFactory.withName('B').buildWithId();
 			const ltiTools: ExternalToolEntity[] = [ltiToolA, ltiToolB, ltiToolC];
 			await em.persistAndFlush([ltiToolA, ltiToolB, ltiToolC]);
 

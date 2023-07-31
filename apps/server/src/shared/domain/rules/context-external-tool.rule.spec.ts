@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-	contextExternalToolFactory,
+	contextExternalToolEntityFactory,
 	roleFactory,
-	schoolExternalToolFactory,
+	schoolExternalToolEntityFactory,
 	schoolFactory,
 	setupEntities,
 	userFactory,
@@ -43,10 +43,11 @@ describe('ContextExternalToolRule', () => {
 		const role: Role = roleFactory.build({ permissions: [permissionA, permissionB] });
 
 		const school = schoolFactory.build();
-		const schoolExternalToolEntity: SchoolExternalToolEntity | SchoolExternalTool = schoolExternalToolFactory.build({
-			school,
-		});
-		const entity: ContextExternalToolEntity | ContextExternalTool = contextExternalToolFactory.build({
+		const schoolExternalToolEntity: SchoolExternalToolEntity | SchoolExternalTool =
+			schoolExternalToolEntityFactory.build({
+				school,
+			});
+		const entity: ContextExternalToolEntity | ContextExternalTool = contextExternalToolEntityFactory.build({
 			schoolTool: schoolExternalToolEntity,
 		});
 		const user: User = userFactory.build({ roles: [role], school });
@@ -92,7 +93,7 @@ describe('ContextExternalToolRule', () => {
 
 			it('should return "false" if user has not some school', () => {
 				const { permissionA, role } = setup();
-				const entity: ContextExternalToolEntity | ContextExternalTool = contextExternalToolFactory.build();
+				const entity: ContextExternalToolEntity | ContextExternalTool = contextExternalToolEntityFactory.build();
 				const user: User = userFactory.build({ roles: [role] });
 
 				const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionA] });

@@ -4,10 +4,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Course, Permission, Role, RoleName, School, User } from '@shared/domain';
 import {
 	courseFactory,
-	externalToolFactory,
+	externalToolEntityFactory,
 	mapUserToCurrentUser,
 	roleFactory,
-	schoolExternalToolFactory,
+	schoolExternalToolEntityFactory,
 	schoolFactory,
 	userFactory,
 } from '@shared/testing';
@@ -23,7 +23,7 @@ import {
 	CustomParameterType,
 	CustomParameterTypeParams,
 } from '../../../common/enum';
-import { CustomParameter } from '../../uc';
+import { CustomParameterDto } from '../../uc';
 import { SchoolToolConfigurationListResponse } from '../../../school-external-tool/controller/dto';
 import { CustomParameterResponse, ToolConfigurationListResponse } from '../dto';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
@@ -106,9 +106,9 @@ describe('ToolSchoolController (API)', () => {
 
 				const course: Course = courseFactory.buildWithId({ teachers: [user], school });
 
-				const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId();
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
 
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId({
+				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
 					tool: externalToolEntity,
 				});
@@ -157,7 +157,7 @@ describe('ToolSchoolController (API)', () => {
 
 				const course: Course = courseFactory.buildWithId({ teachers: [user], school });
 
-				const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId();
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
 
 				await em.persistAndFlush([user, school, course, adminRole, externalToolEntity]);
 				em.clear();
@@ -220,7 +220,7 @@ describe('ToolSchoolController (API)', () => {
 
 				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
 
-				const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId();
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
 
 				await em.persistAndFlush([user, school, adminRole, externalToolEntity]);
 				em.clear();
@@ -290,7 +290,7 @@ describe('ToolSchoolController (API)', () => {
 
 				const user: User = userFactory.buildWithId({ school, roles: [] });
 
-				const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId();
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
 
 				await em.persistAndFlush([user, school, externalToolEntity]);
 				em.clear();
@@ -324,7 +324,7 @@ describe('ToolSchoolController (API)', () => {
 
 				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
 
-				const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId();
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
 
 				const customParameterResponse: CustomParameterResponse[] = [
 					{
@@ -381,7 +381,7 @@ describe('ToolSchoolController (API)', () => {
 
 				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
 
-				const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId({ isHidden: true });
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({ isHidden: true });
 
 				await em.persistAndFlush([user, school, adminRole, externalToolEntity]);
 				em.clear();
@@ -415,7 +415,7 @@ describe('ToolSchoolController (API)', () => {
 
 				const user: User = userFactory.buildWithId({ school, roles: [] });
 
-				const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId();
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
 
 				await em.persistAndFlush([user, school, externalToolEntity, course]);
 				em.clear();
@@ -467,7 +467,7 @@ describe('ToolSchoolController (API)', () => {
 					},
 				];
 
-				const customParameters: CustomParameter[] = [
+				const customParameters: CustomParameterDto[] = [
 					{
 						name: 'name',
 						displayName: 'User Friendly Name',
@@ -482,7 +482,7 @@ describe('ToolSchoolController (API)', () => {
 					},
 				];
 
-				const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId({
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 					parameters: customParameters,
 				});
 
@@ -529,7 +529,7 @@ describe('ToolSchoolController (API)', () => {
 
 				const course: Course = courseFactory.buildWithId({ school, teachers: [user] });
 
-				const externalToolEntity: ExternalToolEntity = externalToolFactory.buildWithId({ isHidden: true });
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({ isHidden: true });
 
 				await em.persistAndFlush([user, school, teacherRole, externalToolEntity, course]);
 				em.clear();

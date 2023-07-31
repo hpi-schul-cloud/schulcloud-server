@@ -1,5 +1,5 @@
 import { schoolFactory, setupEntities } from '@shared/testing';
-import { schoolExternalToolFactory } from '@shared/testing/factory/school-external-tool.factory';
+import { schoolExternalToolEntityFactory } from '@shared/testing/factory/school-external-tool-entity.factory';
 import {
 	BasicToolConfigEntity,
 	CustomParameterEntity,
@@ -22,7 +22,7 @@ describe('SchoolExternalToolEntity', () => {
 		});
 
 		it('should create an external school Tool by passing required properties', () => {
-			const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolFactory.buildWithId();
+			const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId();
 			expect(schoolExternalToolEntity instanceof SchoolExternalToolEntity).toEqual(true);
 		});
 
