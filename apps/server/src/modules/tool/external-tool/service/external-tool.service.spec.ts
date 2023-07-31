@@ -18,7 +18,7 @@ import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalToolVersionService } from './external-tool-version.service';
 import { ExternalToolService } from './external-tool.service';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
-import { ExternalTool, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '../domain';
+import { ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope } from '../../common/enum';
@@ -94,9 +94,9 @@ describe('ExternalToolService', () => {
 
 	const setup = () => {
 		const externalTool: ExternalTool = externalToolDOFactory.withCustomParameters(1).buildWithId();
-		const oauth2ToolConfigDO: Oauth2ToolConfigDO = oauth2ToolConfigDOFactory.withExternalData().build();
-		const oauth2ToolConfigDOWithoutExternalData: Oauth2ToolConfigDO = oauth2ToolConfigDOFactory.build();
-		const lti11ToolConfigDO: Lti11ToolConfigDO = lti11ToolConfigDOFactory.build();
+		const oauth2ToolConfigDO: Oauth2ToolConfig = oauth2ToolConfigDOFactory.withExternalData().build();
+		const oauth2ToolConfigDOWithoutExternalData: Oauth2ToolConfig = oauth2ToolConfigDOFactory.build();
+		const lti11ToolConfigDO: Lti11ToolConfig = lti11ToolConfigDOFactory.build();
 
 		const oauthClient: ProviderOauthClient = {
 			client_id: oauth2ToolConfigDO.clientId,
@@ -176,7 +176,7 @@ describe('ExternalToolService', () => {
 				const encryptedSecret = 'encryptedSecret';
 				const { externalTool, lti11ToolConfigDO } = setup();
 				externalTool.config = lti11ToolConfigDO;
-				const lti11ToolConfigDOEncrypted: Lti11ToolConfigDO = { ...lti11ToolConfigDO, secret: encryptedSecret };
+				const lti11ToolConfigDOEncrypted: Lti11ToolConfig = { ...lti11ToolConfigDO, secret: encryptedSecret };
 				const externalToolDOEncrypted: ExternalTool = externalToolDOFactory.build({
 					...externalTool,
 					config: lti11ToolConfigDOEncrypted,
@@ -444,7 +444,7 @@ describe('ExternalToolService', () => {
 				.build({ id: existingTool.id, name: 'newName' });
 
 			const oauthClientId: string =
-				existingTool.config instanceof Oauth2ToolConfigDO ? existingTool.config.clientId : 'undefined';
+				existingTool.config instanceof Oauth2ToolConfig ? existingTool.config.clientId : 'undefined';
 			const providerOauthClient: ProviderOauthClient = {
 				client_id: oauthClientId,
 			};

@@ -9,10 +9,10 @@ import {
 	Oauth2ToolConfigEntity,
 } from '@src/modules/tool/external-tool/entity';
 import {
-	BasicToolConfigDO,
+	BasicToolConfig,
 	ExternalTool,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
+	Lti11ToolConfig,
+	Oauth2ToolConfig,
 } from '@src/modules/tool/external-tool/domain';
 import { ToolConfigType } from '@src/modules/tool/common/enum';
 import { CustomParameter, CustomParameterEntryDO } from '@src/modules/tool/common/domain';
@@ -20,16 +20,16 @@ import { CustomParameter, CustomParameterEntryDO } from '@src/modules/tool/commo
 // TODO: maybe rename because of usage in external tool repo and school external tool repo
 export class ExternalToolRepoMapper {
 	static mapEntityToDO(entity: ExternalToolEntity): ExternalTool {
-		let config: BasicToolConfigDO | Oauth2ToolConfigDO | Lti11ToolConfigDO;
+		let config: BasicToolConfig | Oauth2ToolConfig | Lti11ToolConfig;
 		switch (entity.config.type) {
 			case ToolConfigType.BASIC:
-				config = this.mapBasicToolConfigToDO(entity.config as BasicToolConfigDO);
+				config = this.mapBasicToolConfigToDO(entity.config as BasicToolConfig);
 				break;
 			case ToolConfigType.OAUTH2:
-				config = this.mapOauth2ConfigToDO(entity.config as Oauth2ToolConfigDO);
+				config = this.mapOauth2ConfigToDO(entity.config as Oauth2ToolConfig);
 				break;
 			case ToolConfigType.LTI11:
-				config = this.mapLti11ToolConfigToDO(entity.config as Lti11ToolConfigDO);
+				config = this.mapLti11ToolConfigToDO(entity.config as Lti11ToolConfig);
 				break;
 			default:
 				/* istanbul ignore next */
@@ -49,15 +49,15 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapBasicToolConfigToDO(lti11Config: BasicToolConfigEntity): BasicToolConfigDO {
-		return new BasicToolConfigDO({
+	static mapBasicToolConfigToDO(lti11Config: BasicToolConfigEntity): BasicToolConfig {
+		return new BasicToolConfig({
 			type: lti11Config.type,
 			baseUrl: lti11Config.baseUrl,
 		});
 	}
 
-	static mapOauth2ConfigToDO(oauth2Config: Oauth2ToolConfigEntity): Oauth2ToolConfigDO {
-		return new Oauth2ToolConfigDO({
+	static mapOauth2ConfigToDO(oauth2Config: Oauth2ToolConfigEntity): Oauth2ToolConfig {
+		return new Oauth2ToolConfig({
 			type: oauth2Config.type,
 			baseUrl: oauth2Config.baseUrl,
 			clientId: oauth2Config.clientId,
@@ -65,8 +65,8 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapLti11ToolConfigToDO(lti11Config: Lti11ToolConfigEntity): Lti11ToolConfigDO {
-		return new Lti11ToolConfigDO({
+	static mapLti11ToolConfigToDO(lti11Config: Lti11ToolConfigEntity): Lti11ToolConfig {
+		return new Lti11ToolConfig({
 			type: lti11Config.type,
 			baseUrl: lti11Config.baseUrl,
 			key: lti11Config.key,
@@ -81,13 +81,13 @@ export class ExternalToolRepoMapper {
 		let config: BasicToolConfigEntity | Oauth2ToolConfigEntity | Lti11ToolConfigEntity;
 		switch (entityDO.config.type) {
 			case ToolConfigType.BASIC:
-				config = this.mapBasicToolConfigDOToEntity(entityDO.config as BasicToolConfigDO);
+				config = this.mapBasicToolConfigDOToEntity(entityDO.config as BasicToolConfig);
 				break;
 			case ToolConfigType.OAUTH2:
-				config = this.mapOauth2ConfigDOToEntity(entityDO.config as Oauth2ToolConfigDO);
+				config = this.mapOauth2ConfigDOToEntity(entityDO.config as Oauth2ToolConfig);
 				break;
 			case ToolConfigType.LTI11:
-				config = this.mapLti11ToolConfigDOToEntity(entityDO.config as Lti11ToolConfigDO);
+				config = this.mapLti11ToolConfigDOToEntity(entityDO.config as Lti11ToolConfig);
 				break;
 			default:
 				/* istanbul ignore next */
@@ -106,14 +106,14 @@ export class ExternalToolRepoMapper {
 		};
 	}
 
-	static mapBasicToolConfigDOToEntity(lti11Config: BasicToolConfigDO): BasicToolConfigEntity {
+	static mapBasicToolConfigDOToEntity(lti11Config: BasicToolConfig): BasicToolConfigEntity {
 		return new BasicToolConfigEntity({
 			type: lti11Config.type,
 			baseUrl: lti11Config.baseUrl,
 		});
 	}
 
-	static mapOauth2ConfigDOToEntity(oauth2Config: Oauth2ToolConfigDO): Oauth2ToolConfigEntity {
+	static mapOauth2ConfigDOToEntity(oauth2Config: Oauth2ToolConfig): Oauth2ToolConfigEntity {
 		return new Oauth2ToolConfigEntity({
 			type: oauth2Config.type,
 			baseUrl: oauth2Config.baseUrl,
@@ -122,7 +122,7 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapLti11ToolConfigDOToEntity(lti11Config: Lti11ToolConfigDO): Lti11ToolConfigEntity {
+	static mapLti11ToolConfigDOToEntity(lti11Config: Lti11ToolConfig): Lti11ToolConfigEntity {
 		return new Lti11ToolConfigEntity({
 			type: lti11Config.type,
 			baseUrl: lti11Config.baseUrl,

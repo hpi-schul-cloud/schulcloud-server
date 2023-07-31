@@ -17,10 +17,10 @@ import {
 	LtiMessageType,
 } from '@src/modules/tool/common/enum';
 import {
-	BasicToolConfigDO,
+	BasicToolConfig,
 	ExternalTool,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
+	Lti11ToolConfig,
+	Oauth2ToolConfig,
 } from '@src/modules/tool/external-tool/domain';
 import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
 
@@ -124,7 +124,7 @@ describe('ExternalToolRepo', () => {
 
 			const result: ExternalTool | null = await repo.findByOAuth2ConfigClientId(client1Id);
 
-			expect((result?.config as Oauth2ToolConfigDO).clientId).toEqual(client1Id);
+			expect((result?.config as Oauth2ToolConfig).clientId).toEqual(client1Id);
 		});
 
 		it('should return an empty array when no externalTools were found', async () => {
@@ -137,7 +137,7 @@ describe('ExternalToolRepo', () => {
 	});
 
 	describe('save', () => {
-		const setupDO = (config: BasicToolConfigDO | Lti11ToolConfigDO | Oauth2ToolConfigDO) => {
+		const setupDO = (config: BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig) => {
 			const domainObject: ExternalTool = new ExternalTool({
 				name: 'name',
 				url: 'url',
@@ -168,7 +168,7 @@ describe('ExternalToolRepo', () => {
 		};
 
 		it('should save an basic tool correctly', async () => {
-			const config: BasicToolConfigDO = new BasicToolConfigDO({
+			const config: BasicToolConfig = new BasicToolConfig({
 				type: ToolConfigType.BASIC,
 				baseUrl: 'baseUrl',
 			});
@@ -182,7 +182,7 @@ describe('ExternalToolRepo', () => {
 		});
 
 		it('should save an oauth2 tool correctly', async () => {
-			const config: Oauth2ToolConfigDO = new Oauth2ToolConfigDO({
+			const config: Oauth2ToolConfig = new Oauth2ToolConfig({
 				type: ToolConfigType.BASIC,
 				baseUrl: 'baseUrl',
 				clientId: 'clientId',
@@ -198,7 +198,7 @@ describe('ExternalToolRepo', () => {
 		});
 
 		it('should save an lti11 tool correctly', async () => {
-			const config: Lti11ToolConfigDO = new Lti11ToolConfigDO({
+			const config: Lti11ToolConfig = new Lti11ToolConfig({
 				type: ToolConfigType.BASIC,
 				baseUrl: 'baseUrl',
 				secret: 'secret',

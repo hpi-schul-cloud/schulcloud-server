@@ -23,7 +23,7 @@ import {
 	ToolConfigurationEntryResponse,
 	ToolConfigurationListResponse,
 } from '../controller/dto';
-import { BasicToolConfigDO, ExternalTool, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '../domain';
+import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
 import { CustomParameter } from '../../common/domain';
 
 describe('ExternalToolResponseMapper', () => {
@@ -72,7 +72,7 @@ describe('ExternalToolResponseMapper', () => {
 			config: basicToolConfigResponse,
 		});
 
-		const basicToolConfigDO: BasicToolConfigDO = new BasicToolConfigDO({
+		const basicToolConfigDO: BasicToolConfig = new BasicToolConfig({
 			type: ToolConfigType.BASIC,
 			baseUrl: 'mockUrl',
 		});
@@ -124,7 +124,7 @@ describe('ExternalToolResponseMapper', () => {
 
 		describe('when mapping oauth tool DO', () => {
 			const oauthSetup = () => {
-				const oauth2ToolConfigDO: Oauth2ToolConfigDO = new Oauth2ToolConfigDO({
+				const oauth2ToolConfigDO: Oauth2ToolConfig = new Oauth2ToolConfig({
 					clientId: 'mockId',
 					skipConsent: false,
 					type: ToolConfigType.OAUTH2,
@@ -167,7 +167,7 @@ describe('ExternalToolResponseMapper', () => {
 
 		describe('when mapping lti tool DO', () => {
 			const ltiSetup = () => {
-				const lti11ToolConfigDO: Lti11ToolConfigDO = new Lti11ToolConfigDO({
+				const lti11ToolConfigDO: Lti11ToolConfig = new Lti11ToolConfig({
 					secret: 'mockSecret',
 					key: 'mockKey',
 					lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,

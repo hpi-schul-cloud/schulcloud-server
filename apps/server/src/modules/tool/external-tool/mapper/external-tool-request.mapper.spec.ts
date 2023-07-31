@@ -27,7 +27,7 @@ import {
 	Oauth2ToolConfigCreateParams,
 	SortExternalToolParams,
 } from '../controller/dto';
-import { BasicToolConfigDO, ExternalTool, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '../domain';
+import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
 import { CustomParameter } from '../../common/domain';
 import { ExternalToolSearchQuery } from '../../common/interface';
 
@@ -81,7 +81,7 @@ describe('ExternalToolRequestMapper', () => {
 		externalToolUpdateParams.isHidden = true;
 		externalToolUpdateParams.openNewTab = true;
 
-		const basicToolConfigDO: BasicToolConfigDO = basicToolConfigDOFactory.build({
+		const basicToolConfigDO: BasicToolConfig = basicToolConfigDOFactory.build({
 			type: ToolConfigType.BASIC,
 			baseUrl: 'mockUrl',
 		});
@@ -157,7 +157,7 @@ describe('ExternalToolRequestMapper', () => {
 				lti11ConfigParams.lti_message_type = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
 				lti11ConfigParams.privacy_permission = LtiPrivacyPermission.NAME;
 
-				const lti11ToolConfigDO: Lti11ToolConfigDO = new Lti11ToolConfigDO({
+				const lti11ToolConfigDO: Lti11ToolConfig = new Lti11ToolConfig({
 					privacy_permission: LtiPrivacyPermission.NAME,
 					secret: 'mockSecret',
 					key: 'mockKey',
@@ -194,7 +194,7 @@ describe('ExternalToolRequestMapper', () => {
 				oauth2ConfigParams.redirectUris = ['mockUri'];
 				oauth2ConfigParams.tokenEndpointAuthMethod = TokenEndpointAuthMethod.CLIENT_SECRET_POST;
 
-				const oauth2ToolConfigDO: Oauth2ToolConfigDO = new Oauth2ToolConfigDO({
+				const oauth2ToolConfigDO: Oauth2ToolConfig = new Oauth2ToolConfig({
 					clientId: 'mockId',
 					type: ToolConfigType.OAUTH2,
 					baseUrl: 'mockUrl',
@@ -248,7 +248,7 @@ describe('ExternalToolRequestMapper', () => {
 				lti11ConfigParams.lti_message_type = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
 				lti11ConfigParams.privacy_permission = LtiPrivacyPermission.NAME;
 
-				const lti11ToolConfigDO: Lti11ToolConfigDO = new Lti11ToolConfigDO({
+				const lti11ToolConfigDO: Lti11ToolConfig = new Lti11ToolConfig({
 					privacy_permission: LtiPrivacyPermission.NAME,
 					secret: 'mockSecret',
 					key: 'mockKey',
@@ -286,7 +286,7 @@ describe('ExternalToolRequestMapper', () => {
 				oauth2ConfigParams.redirectUris = ['mockUri'];
 				oauth2ConfigParams.tokenEndpointAuthMethod = TokenEndpointAuthMethod.CLIENT_SECRET_POST;
 
-				const oauth2ToolConfigDO: Oauth2ToolConfigDO = new Oauth2ToolConfigDO({
+				const oauth2ToolConfigDO: Oauth2ToolConfig = new Oauth2ToolConfig({
 					clientId: 'mockId',
 					type: ToolConfigType.OAUTH2,
 					baseUrl: 'mockUrl',

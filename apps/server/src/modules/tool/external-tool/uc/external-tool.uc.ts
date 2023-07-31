@@ -4,7 +4,7 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
-import { ExternalToolConfigDO, ExternalTool } from '../domain';
+import { ExternalToolConfig, ExternalTool } from '../domain';
 
 @Injectable()
 export class ExternalToolUc {
@@ -30,7 +30,7 @@ export class ExternalToolUc {
 		await this.toolValidationService.validateUpdate(toolId, externalTool);
 
 		const loaded: ExternalTool = await this.externalToolService.findExternalToolById(toolId);
-		const configToUpdate: ExternalToolConfigDO = { ...loaded.config, ...externalTool.config };
+		const configToUpdate: ExternalToolConfig = { ...loaded.config, ...externalTool.config };
 		const toUpdate: ExternalTool = new ExternalTool({
 			...loaded,
 			...externalTool,

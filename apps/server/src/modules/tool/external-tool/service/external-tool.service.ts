@@ -8,7 +8,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalToolVersionService } from './external-tool-version.service';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
-import { ExternalTool, Oauth2ToolConfigDO } from '../domain';
+import { ExternalTool, Oauth2ToolConfig } from '../domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { CustomParameterScope, TokenEndpointAuthMethod } from '../../common/enum';
 import { CustomParameter } from '../../common/domain';
@@ -151,7 +151,7 @@ export class ExternalToolService {
 		}
 	}
 
-	private async addExternalOauth2DataToConfig(config: Oauth2ToolConfigDO) {
+	private async addExternalOauth2DataToConfig(config: Oauth2ToolConfig) {
 		const oauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(config.clientId);
 
 		config.scope = oauthClient.scope;

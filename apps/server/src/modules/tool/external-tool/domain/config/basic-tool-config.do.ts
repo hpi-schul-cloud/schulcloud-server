@@ -1,8 +1,8 @@
 import { ToolConfigType } from '../../../common/enum';
-import { ExternalToolConfigDO } from './external-tool-config.do';
+import { ExternalToolConfig } from './external-tool-config.do';
 
-export class BasicToolConfigDO extends ExternalToolConfigDO {
-	constructor(props: BasicToolConfigDO) {
+export class BasicToolConfig extends ExternalToolConfig {
+	constructor(props: BasicToolConfig) {
 		super({
 			type: ToolConfigType.BASIC,
 			baseUrl: props.baseUrl,

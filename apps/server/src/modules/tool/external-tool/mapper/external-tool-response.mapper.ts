@@ -19,7 +19,7 @@ import {
 	ToolReferenceResponse,
 } from '../controller/dto';
 import { statusMapping } from '../../school-external-tool/mapper';
-import { BasicToolConfigDO, ExternalTool, Lti11ToolConfigDO, Oauth2ToolConfigDO, ToolReference } from '../domain';
+import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig, ToolReference } from '../domain';
 import { CustomParameter } from '../../common/domain';
 
 const scopeMapping: Record<CustomParameterScope, CustomParameterScopeTypeParams> = {
@@ -48,9 +48,9 @@ const typeMapping: Record<CustomParameterType, CustomParameterTypeParams> = {
 export class ExternalToolResponseMapper {
 	mapToExternalToolResponse(externalTool: ExternalTool): ExternalToolResponse {
 		let mappedConfig: BasicToolConfigResponse | Lti11ToolConfigResponse | Oauth2ToolConfigResponse;
-		if (externalTool.config instanceof BasicToolConfigDO) {
+		if (externalTool.config instanceof BasicToolConfig) {
 			mappedConfig = this.mapBasicToolConfigDOToResponse(externalTool.config);
-		} else if (externalTool.config instanceof Lti11ToolConfigDO) {
+		} else if (externalTool.config instanceof Lti11ToolConfig) {
 			mappedConfig = this.mapLti11ToolConfigDOToResponse(externalTool.config);
 		} else {
 			mappedConfig = this.mapOauth2ToolConfigDOToResponse(externalTool.config);
@@ -73,15 +73,15 @@ export class ExternalToolResponseMapper {
 		});
 	}
 
-	private mapBasicToolConfigDOToResponse(externalToolConfigDO: BasicToolConfigDO): BasicToolConfigResponse {
+	private mapBasicToolConfigDOToResponse(externalToolConfigDO: BasicToolConfig): BasicToolConfigResponse {
 		return new BasicToolConfigResponse({ ...externalToolConfigDO });
 	}
 
-	private mapLti11ToolConfigDOToResponse(externalToolConfigDO: Lti11ToolConfigDO): Lti11ToolConfigResponse {
+	private mapLti11ToolConfigDOToResponse(externalToolConfigDO: Lti11ToolConfig): Lti11ToolConfigResponse {
 		return new Lti11ToolConfigResponse({ ...externalToolConfigDO });
 	}
 
-	private mapOauth2ToolConfigDOToResponse(externalToolConfigDO: Oauth2ToolConfigDO): Oauth2ToolConfigResponse {
+	private mapOauth2ToolConfigDOToResponse(externalToolConfigDO: Oauth2ToolConfig): Oauth2ToolConfigResponse {
 		return new Oauth2ToolConfigResponse({ ...externalToolConfigDO });
 	}
 

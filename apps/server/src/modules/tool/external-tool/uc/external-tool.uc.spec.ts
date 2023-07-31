@@ -15,7 +15,7 @@ import { ExternalToolUc } from './external-tool.uc';
 import { ExternalToolService, ExternalToolValidationService } from '../service';
 
 import { ExternalToolUpdate } from './dto';
-import { ExternalTool, Oauth2ToolConfigDO } from '../domain';
+import { ExternalTool, Oauth2ToolConfig } from '../domain';
 
 describe('ExternalToolUc', () => {
 	let module: TestingModule;
@@ -76,7 +76,7 @@ describe('ExternalToolUc', () => {
 		const toolId = 'toolId';
 
 		const externalTool: ExternalTool = externalToolDOFactory.withCustomParameters(1).buildWithId();
-		const oauth2ConfigWithoutExternalData: Oauth2ToolConfigDO = oauth2ToolConfigDOFactory.build();
+		const oauth2ConfigWithoutExternalData: Oauth2ToolConfig = oauth2ToolConfigDOFactory.build();
 
 		const query: ExternalToolSearchQuery = {
 			name: externalTool.name,

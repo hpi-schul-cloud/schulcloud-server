@@ -1,7 +1,7 @@
-import { ExternalToolConfigDO } from './external-tool-config.do';
+import { ExternalToolConfig } from './external-tool-config.do';
 import { TokenEndpointAuthMethod, ToolConfigType } from '../../../common/enum';
 
-export class Oauth2ToolConfigDO extends ExternalToolConfigDO {
+export class Oauth2ToolConfig extends ExternalToolConfig {
 	clientId: string;
 
 	clientSecret?: string;
@@ -16,7 +16,7 @@ export class Oauth2ToolConfigDO extends ExternalToolConfigDO {
 
 	redirectUris?: string[];
 
-	constructor(props: Oauth2ToolConfigDO) {
+	constructor(props: Oauth2ToolConfig) {
 		super({
 			type: ToolConfigType.OAUTH2,
 			baseUrl: props.baseUrl,

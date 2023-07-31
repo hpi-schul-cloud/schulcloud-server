@@ -1,7 +1,7 @@
 import { LtiMessageType, ToolConfigType, LtiPrivacyPermission } from '../../../common/enum';
-import { ExternalToolConfigDO } from './external-tool-config.do';
+import { ExternalToolConfig } from './external-tool-config.do';
 
-export class Lti11ToolConfigDO extends ExternalToolConfigDO {
+export class Lti11ToolConfig extends ExternalToolConfig {
 	key: string;
 
 	secret: string;
@@ -12,7 +12,7 @@ export class Lti11ToolConfigDO extends ExternalToolConfigDO {
 
 	privacy_permission: LtiPrivacyPermission;
 
-	constructor(props: Lti11ToolConfigDO) {
+	constructor(props: Lti11ToolConfig) {
 		super({
 			type: ToolConfigType.LTI11,
 			baseUrl: props.baseUrl,

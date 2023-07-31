@@ -1,6 +1,6 @@
 import { BaseDO } from '@shared/domain/domainobject/base.do';
 import { ToolVersion } from '../../common/interface';
-import { Oauth2ToolConfigDO, BasicToolConfigDO, Lti11ToolConfigDO, ExternalToolConfigDO } from './config';
+import { Oauth2ToolConfig, BasicToolConfig, Lti11ToolConfig, ExternalToolConfig } from './config';
 import { CustomParameter } from '../../common/domain';
 import { ToolConfigType } from '../../common/enum';
 
@@ -13,7 +13,7 @@ export interface ExternalToolProps {
 
 	logoUrl?: string;
 
-	config: BasicToolConfigDO | Lti11ToolConfigDO | Oauth2ToolConfigDO;
+	config: BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig;
 
 	parameters?: CustomParameter[];
 
@@ -31,7 +31,7 @@ export class ExternalTool extends BaseDO implements ToolVersion {
 
 	logoUrl?: string;
 
-	config: BasicToolConfigDO | Lti11ToolConfigDO | Oauth2ToolConfigDO;
+	config: BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig;
 
 	parameters?: CustomParameter[];
 
@@ -58,11 +58,11 @@ export class ExternalTool extends BaseDO implements ToolVersion {
 		return this.version;
 	}
 
-	static isOauth2Config(config: ExternalToolConfigDO): config is Oauth2ToolConfigDO {
+	static isOauth2Config(config: ExternalToolConfig): config is Oauth2ToolConfig {
 		return ToolConfigType.OAUTH2 === config.type;
 	}
 
-	static isLti11Config(config: ExternalToolConfigDO): config is Lti11ToolConfigDO {
+	static isLti11Config(config: ExternalToolConfig): config is Lti11ToolConfig {
 		return ToolConfigType.LTI11 === config.type;
 	}
 }

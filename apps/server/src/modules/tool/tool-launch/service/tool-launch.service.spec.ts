@@ -21,7 +21,7 @@ import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ExternalToolService } from '../../external-tool/service';
 import { CommonToolService } from '../../common/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { BasicToolConfigDO, ExternalTool } from '../../external-tool/domain';
+import { BasicToolConfig, ExternalTool } from '../../external-tool/domain';
 import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
 
 describe('ToolLaunchService', () => {
@@ -86,7 +86,7 @@ describe('ToolLaunchService', () => {
 				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory
 					.withSchoolExternalToolRef(schoolExternalTool.id as string)
 					.build();
-				const basicToolConfigDO: BasicToolConfigDO = basicToolConfigDOFactory.build();
+				const basicToolConfigDO: BasicToolConfig = basicToolConfigDOFactory.build();
 				const externalTool: ExternalTool = externalToolDOFactory.build({
 					config: basicToolConfigDO,
 				});
@@ -215,7 +215,7 @@ describe('ToolLaunchService', () => {
 				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory
 					.withSchoolExternalToolRef(schoolExternalTool.id as string)
 					.build();
-				const basicToolConfigDO: BasicToolConfigDO = basicToolConfigDOFactory.build();
+				const basicToolConfigDO: BasicToolConfig = basicToolConfigDOFactory.build();
 				const externalTool: ExternalTool = externalToolDOFactory.build({
 					config: basicToolConfigDO,
 				});
