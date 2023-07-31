@@ -7,7 +7,7 @@ export interface TldrawConfig {
 	NODE_ENV: string;
 	TLDRAW_DB_COLLECTION_NAME: string;
 	TLDRAW_DB_FLUSH_SIZE: string;
-	TLDRAW_DB_MULTIPLE_COLLECTIONS: string;
+	TLDRAW_DB_MULTIPLE_COLLECTIONS: boolean;
 	CONNECTION_STRING: string;
 }
 
