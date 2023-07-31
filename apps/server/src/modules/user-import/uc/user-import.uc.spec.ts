@@ -21,6 +21,8 @@ import { federalStateFactory, importUserFactory, schoolFactory, userFactory } fr
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AuthorizationService } from '@src/modules/authorization';
+import { LoggerModule } from '@src/core/logger';
+import { ConfigModule } from '@nestjs/config';
 import { SchoolService } from '../../school';
 import {
 	LdapAlreadyPersistedException,
@@ -43,7 +45,11 @@ describe('[ImportUserModule]', () => {
 
 		beforeAll(async () => {
 			module = await Test.createTestingModule({
-				imports: [MongoMemoryDatabaseModule.forRoot()],
+				imports: [
+					MongoMemoryDatabaseModule.forRoot(),
+					LoggerModule,
+					ConfigModule.forRoot({ isGlobal: true, ignoreEnvFile: true, ignoreEnvVars: true }),
+				],
 				providers: [
 					{
 						provide: AccountService,
