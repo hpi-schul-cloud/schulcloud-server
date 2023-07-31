@@ -7,7 +7,6 @@ export class GetH5PContentParams {
 	@ApiPropertyOptional()
 	@Matches('([a-z]+-[a-z]+)')
 	@IsString()
-	@SanitizeHtml()
 	@IsOptional()
 	language?: string;
 
