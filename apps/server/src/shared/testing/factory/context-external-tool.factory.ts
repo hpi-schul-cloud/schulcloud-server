@@ -1,5 +1,5 @@
 import { BaseFactory } from '@shared/testing/factory/base.factory';
-import { CustomParameterEntry } from '@src/modules/tool/common/entity';
+import { CustomParameterEntryEntity } from '@src/modules/tool/common/entity';
 import {
 	ContextExternalToolEntity,
 	ContextExternalToolType,
@@ -16,7 +16,7 @@ export const contextExternalToolFactory = BaseFactory.define<ContextExternalTool
 			contextType: ContextExternalToolType.COURSE,
 			displayName: 'My Course Tool 1',
 			schoolTool: schoolExternalToolFactory.buildWithId(),
-			parameters: [new CustomParameterEntry({ name: 'mockParamater', value: 'mockValue' })],
+			parameters: [new CustomParameterEntryEntity({ name: 'mockParamater', value: 'mockValue' })],
 			toolVersion: 1,
 		};
 	}

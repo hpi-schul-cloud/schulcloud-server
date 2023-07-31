@@ -1,6 +1,6 @@
 import { Embedded, Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { CustomParameterEntry } from '../../common/entity';
+import { CustomParameterEntryEntity } from '../../common/entity';
 import { SchoolExternalToolEntity } from '../../school-external-tool/entity';
 import { ContextExternalToolType } from './context-external-tool-type.enum';
 
@@ -13,7 +13,7 @@ export interface IContextExternalToolProperties {
 
 	displayName?: string;
 
-	parameters?: CustomParameterEntry[];
+	parameters?: CustomParameterEntryEntity[];
 
 	toolVersion: number;
 }
@@ -32,8 +32,8 @@ export class ContextExternalToolEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	displayName?: string;
 
-	@Embedded(() => CustomParameterEntry, { array: true })
-	parameters: CustomParameterEntry[];
+	@Embedded(() => CustomParameterEntryEntity, { array: true })
+	parameters: CustomParameterEntryEntity[];
 
 	@Property()
 	toolVersion: number;

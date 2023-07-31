@@ -8,7 +8,7 @@ import {
 } from '../controller/dto';
 import { ToolConfigurationStatusResponse } from '../../external-tool/controller/dto';
 import { AvailableToolsForContext } from '../../external-tool/uc';
-import { CustomParameterEntry } from '../../common/entity';
+import { CustomParameterEntryEntity } from '../../common/entity';
 import { ToolConfigurationStatus } from '../../common/enum';
 import { SchoolExternalTool } from '../domain';
 import { CustomParameterEntryDO } from '../../common/domain';
@@ -70,7 +70,7 @@ export class SchoolExternalToolResponseMapper {
 
 	private mapToCustomParameterEntryResponse(entries: CustomParameterEntryDO[]): CustomParameterEntryResponse[] {
 		return entries.map(
-			(entry: CustomParameterEntry): CustomParameterEntryDO =>
+			(entry: CustomParameterEntryEntity): CustomParameterEntryDO =>
 				new CustomParameterEntryResponse({
 					name: entry.name,
 					value: entry.value,

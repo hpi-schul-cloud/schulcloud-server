@@ -1,1 +1,1 @@
-export * from './custom-parameter-entry';
+export * from './custom-parameter-entry.entity';
