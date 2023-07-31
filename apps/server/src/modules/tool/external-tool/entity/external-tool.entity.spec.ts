@@ -1,6 +1,6 @@
 import { setupEntities } from '@shared/testing';
 import { BasicToolConfigEntity, Lti11ToolConfigEntity, Oauth2ToolConfigEntity } from './config';
-import { CustomParameter } from './custom-parameter';
+import { CustomParameterEntity } from './custom-parameter';
 import { ExternalToolEntity } from './external-tool.entity';
 import {
 	CustomParameterLocation,
@@ -37,7 +37,7 @@ describe('ExternalToolEntity', () => {
 				lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 				privacy_permission: LtiPrivacyPermission.ANONYMOUS,
 			});
-			const customParameter: CustomParameter = new CustomParameter({
+			const customParameter: CustomParameterEntity = new CustomParameterEntity({
 				name: 'parameterName',
 				displayName: 'User Friendly Name',
 				default: 'mock',

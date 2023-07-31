@@ -8,7 +8,7 @@ import {
 } from '@src/modules/tool/common/enum';
 import {
 	BasicToolConfigEntity,
-	CustomParameter,
+	CustomParameterEntity,
 	ExternalToolEntity,
 	IExternalToolProperties,
 	Lti11ToolConfigEntity,
@@ -75,7 +75,7 @@ export const externalToolFactory = ExternalToolFactory.define(
 				baseUrl: 'mockBaseUrl',
 			}),
 			parameters: [
-				new CustomParameter({
+				new CustomParameterEntity({
 					name: 'name',
 					displayName: 'User Friendly Name',
 					description: 'This is a mock parameter.',

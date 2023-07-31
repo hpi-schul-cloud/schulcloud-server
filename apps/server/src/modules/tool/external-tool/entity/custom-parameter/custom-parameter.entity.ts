@@ -2,7 +2,7 @@ import { Embeddable, Enum, Property } from '@mikro-orm/core';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '../../../common/enum';
 
 @Embeddable()
-export class CustomParameter {
+export class CustomParameterEntity {
 	@Property()
 	name: string;
 
@@ -33,7 +33,7 @@ export class CustomParameter {
 	@Property()
 	isOptional: boolean;
 
-	constructor(props: CustomParameter) {
+	constructor(props: CustomParameterEntity) {
 		this.name = props.name;
 		this.displayName = props.displayName;
 		this.description = props.description;

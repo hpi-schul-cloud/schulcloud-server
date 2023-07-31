@@ -9,7 +9,7 @@ import { CustomParameterLocation, CustomParameterScope, CustomParameterType, Too
 
 import {
 	BasicToolConfigEntity,
-	CustomParameter,
+	CustomParameterEntity,
 	ExternalToolEntity,
 	ExternalToolConfigEntity,
 } from '../../external-tool/entity';
@@ -33,7 +33,7 @@ describe('ExternalToolEntity', () => {
 				type: ToolConfigType.BASIC,
 				baseUrl: 'mockBaseUrl',
 			});
-			const customParameter: CustomParameter = new CustomParameter({
+			const customParameter: CustomParameterEntity = new CustomParameterEntity({
 				name: 'parameterName',
 				displayName: 'User Friendly Name',
 				default: 'mock',

@@ -2,7 +2,7 @@ import { UnprocessableEntityException } from '@nestjs/common';
 import { CustomParameterEntry } from '@src/modules/tool/common/entity';
 import {
 	BasicToolConfigEntity,
-	CustomParameter,
+	CustomParameterEntity,
 	ExternalToolEntity,
 	IExternalToolProperties,
 	Lti11ToolConfigEntity,
@@ -134,9 +134,9 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapCustomParametersToDOs(customParameters: CustomParameter[]): CustomParameterDO[] {
+	static mapCustomParametersToDOs(customParameters: CustomParameterEntity[]): CustomParameterDO[] {
 		return customParameters.map(
-			(param: CustomParameter) =>
+			(param: CustomParameterEntity) =>
 				new CustomParameterDO({
 					name: param.name,
 					displayName: param.displayName,
@@ -152,10 +152,10 @@ export class ExternalToolRepoMapper {
 		);
 	}
 
-	static mapCustomParameterDOsToEntities(customParameters: CustomParameterDO[]): CustomParameter[] {
+	static mapCustomParameterDOsToEntities(customParameters: CustomParameterDO[]): CustomParameterEntity[] {
 		return customParameters.map(
 			(param: CustomParameterDO) =>
-				new CustomParameter({
+				new CustomParameterEntity({
 					name: param.name,
 					displayName: param.displayName,
 					description: param.description,

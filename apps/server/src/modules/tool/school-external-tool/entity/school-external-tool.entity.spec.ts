@@ -2,7 +2,7 @@ import { schoolFactory, setupEntities } from '@shared/testing';
 import { schoolExternalToolFactory } from '@shared/testing/factory/school-external-tool.factory';
 import {
 	BasicToolConfigEntity,
-	CustomParameter,
+	CustomParameterEntity,
 	ExternalToolEntity,
 	ExternalToolConfigEntity,
 } from '../../external-tool/entity';
@@ -31,7 +31,7 @@ describe('SchoolExternalToolEntity', () => {
 				type: ToolConfigType.OAUTH2,
 				baseUrl: 'mockBaseUrl',
 			});
-			const customParameter: CustomParameter = new CustomParameter({
+			const customParameter: CustomParameterEntity = new CustomParameterEntity({
 				name: 'parameterName',
 				displayName: 'User Friendly Name',
 				default: 'mock',
