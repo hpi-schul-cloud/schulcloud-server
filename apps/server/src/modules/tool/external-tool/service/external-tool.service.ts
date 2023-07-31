@@ -1,22 +1,13 @@
 import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
-import {
-	CustomParameterDO,
-	CustomParameterScope,
-	EntityId,
-	ExternalToolDO,
-	IFindOptions,
-	Oauth2ToolConfigDO,
-	Page,
-	SchoolExternalToolDO,
-} from '@shared/domain';
+import { EntityId, ExternalToolDO, IFindOptions, Oauth2ToolConfigDO, Page, SchoolExternalToolDO } from '@shared/domain';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolSearchQuery, TokenEndpointAuthMethod } from '../../common/interface';
-import { ExternalToolVersionService } from './external-tool-version.service';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
+import { ExternalToolVersionService } from './external-tool-version.service';
 
 @Injectable()
 export class ExternalToolService {
@@ -119,16 +110,6 @@ export class ExternalToolService {
 			this.schoolExternalToolRepo.deleteByExternalToolId(toolId),
 			this.externalToolRepo.deleteById(toolId),
 		]);
-	}
-
-	async getExternalToolForScope(externalToolId: EntityId, scope: CustomParameterScope): Promise<ExternalToolDO> {
-		const externalTool: ExternalToolDO = await this.externalToolRepo.findById(externalToolId);
-		if (externalTool.parameters) {
-			externalTool.parameters = externalTool.parameters.filter(
-				(parameter: CustomParameterDO) => parameter.scope === scope
-			);
-		}
-		return externalTool;
 	}
 
 	private async updateOauth2ToolConfig(toUpdate: ExternalToolDO) {
