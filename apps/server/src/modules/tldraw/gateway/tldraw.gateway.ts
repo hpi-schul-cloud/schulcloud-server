@@ -35,8 +35,8 @@ export class TldrawGateway implements OnGatewayInit, OnGatewayConnection {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call
 		const mdb = new MongodbPersistence(this.connectionString, {
 			collectionName: this.configService.get<string>('TLDRAW_DB_COLLECTION_NAME') ?? 'drawings',
-			flushSize: this.configService.get<string>('TLDRAW_DB_FLUSH_SIZE') ?? 400,
-			multipleCollections: this.configService.get<string>('TLDRAW_DB_MULTIPLE_COLLECTIONS'),
+			flushSize: this.configService.get<number>('TLDRAW_DB_FLUSH_SIZE') ?? 400,
+			multipleCollections: this.configService.get<boolean>('TLDRAW_DB_MULTIPLE_COLLECTIONS'),
 		});
 
 		setPersistence({
