@@ -6,7 +6,7 @@ import { Page } from '@shared/domain/domainobject/page';
 import { setupEntities, userFactory } from '@shared/testing';
 import {
 	externalToolFactory,
-	oauth2ToolConfigDOFactory,
+	oauth2ToolConfigFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { AuthorizationService } from '@src/modules/authorization';
 import { ICurrentUser } from '@src/modules/authentication';
@@ -76,7 +76,7 @@ describe('ExternalToolUc', () => {
 		const toolId = 'toolId';
 
 		const externalTool: ExternalTool = externalToolFactory.withCustomParameters(1).buildWithId();
-		const oauth2ConfigWithoutExternalData: Oauth2ToolConfig = oauth2ToolConfigDOFactory.build();
+		const oauth2ConfigWithoutExternalData: Oauth2ToolConfig = oauth2ToolConfigFactory.build();
 
 		const query: ExternalToolSearchQuery = {
 			name: externalTool.name,

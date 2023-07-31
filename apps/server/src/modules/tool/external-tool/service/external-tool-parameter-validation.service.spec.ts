@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
 import {
-	customParameterDOFactory,
+	customParameterFactory,
 	externalToolFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { CustomParameter } from '../../common/domain';
@@ -71,8 +71,8 @@ describe('ExternalToolParameterValidationService', () => {
 				const externalTool: ExternalTool = externalToolFactory.build({
 					name: undefined,
 					parameters: [
-						customParameterDOFactory.build({ name: 'sameKey', scope: CustomParameterScope.SCHOOL }),
-						customParameterDOFactory.build({ name: 'notSameKey', scope: CustomParameterScope.SCHOOL }),
+						customParameterFactory.build({ name: 'sameKey', scope: CustomParameterScope.SCHOOL }),
+						customParameterFactory.build({ name: 'notSameKey', scope: CustomParameterScope.SCHOOL }),
 					],
 				});
 
@@ -85,7 +85,7 @@ describe('ExternalToolParameterValidationService', () => {
 		describe('when there is an empty parameter name', () => {
 			it('should throw ValidationError', async () => {
 				const externalTool: ExternalTool = externalToolFactory.build({
-					parameters: [customParameterDOFactory.build({ name: '' })],
+					parameters: [customParameterFactory.build({ name: '' })],
 				});
 				externalToolService.findExternalToolByName.mockResolvedValue(null);
 
@@ -103,8 +103,8 @@ describe('ExternalToolParameterValidationService', () => {
 			it('should fail for two equal parameters', async () => {
 				const externalTool: ExternalTool = externalToolFactory.build({
 					parameters: [
-						customParameterDOFactory.build({ name: 'paramEqual' }),
-						customParameterDOFactory.build({ name: 'paramEqual' }),
+						customParameterFactory.build({ name: 'paramEqual' }),
+						customParameterFactory.build({ name: 'paramEqual' }),
 					],
 				});
 				externalToolService.findExternalToolByName.mockResolvedValue(null);
@@ -121,8 +121,8 @@ describe('ExternalToolParameterValidationService', () => {
 			it('should fail for names that only differ in capitalisation', async () => {
 				const externalTool: ExternalTool = externalToolFactory.build({
 					parameters: [
-						customParameterDOFactory.build({ name: 'param1CaseSensitive' }),
-						customParameterDOFactory.build({ name: 'Param1casesensitive' }),
+						customParameterFactory.build({ name: 'param1CaseSensitive' }),
+						customParameterFactory.build({ name: 'Param1casesensitive' }),
 					],
 				});
 				externalToolService.findExternalToolByName.mockResolvedValue(null);
@@ -301,7 +301,7 @@ describe('ExternalToolParameterValidationService', () => {
 
 		describe('when a auto parameter is not in scope global', () => {
 			const setup = () => {
-				const parameter: CustomParameter = customParameterDOFactory.build({
+				const parameter: CustomParameter = customParameterFactory.build({
 					type: CustomParameterType.AUTO_SCHOOLID,
 					scope: CustomParameterScope.SCHOOL,
 				});

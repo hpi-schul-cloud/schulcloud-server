@@ -17,7 +17,7 @@ import {
 import {
 	contextExternalToolFactory,
 	courseFactory,
-	customParameterDOFactory,
+	customParameterFactory,
 	externalToolFactory,
 	mapUserToCurrentUser,
 	roleFactory,
@@ -118,7 +118,7 @@ describe('ToolSchoolController (API)', () => {
 
 				const course: Course = courseFactory.buildWithId({ teachers: [user], school });
 
-				const [globalParameter, schoolParameter, contextParameter] = customParameterDOFactory.buildListWithEachType();
+				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 				const externalTool: ExternalTool = externalToolFactory.buildWithId({
 					parameters: [globalParameter, schoolParameter, contextParameter],
 				});
@@ -251,7 +251,7 @@ describe('ToolSchoolController (API)', () => {
 
 				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
 
-				const [globalParameter, schoolParameter, contextParameter] = customParameterDOFactory.buildListWithEachType();
+				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 				const externalTool: ExternalTool = externalToolFactory.buildWithId({
 					parameters: [globalParameter, schoolParameter, contextParameter],
 				});
@@ -379,7 +379,7 @@ describe('ToolSchoolController (API)', () => {
 
 				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
 
-				const [globalParameter, schoolParameter, contextParameter] = customParameterDOFactory.buildListWithEachType();
+				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 				const externalTool: ExternalTool = externalToolFactory.buildWithId({
 					parameters: [globalParameter, schoolParameter, contextParameter],
 				});
@@ -522,7 +522,7 @@ describe('ToolSchoolController (API)', () => {
 
 				const course: Course = courseFactory.buildWithId({ school, teachers: [user] });
 
-				const [globalParameter, schoolParameter, contextParameter] = customParameterDOFactory.buildListWithEachType();
+				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 				const externalTool: ExternalTool = externalToolFactory.buildWithId({
 					parameters: [globalParameter, schoolParameter, contextParameter],
 				});

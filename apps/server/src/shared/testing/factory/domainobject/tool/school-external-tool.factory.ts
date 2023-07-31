@@ -1,4 +1,4 @@
-import { CustomParameterEntryDO, ToolConfigurationStatus } from '@src/modules/tool/common/domain';
+import { CustomParameterEntry, ToolConfigurationStatus } from '@src/modules/tool/common/domain';
 import { SchoolExternalTool, SchoolExternalToolProps } from '@src/modules/tool/school-external-tool/domain';
 import { DeepPartial } from 'fishery';
 import { DoBaseFactory } from '../do-base.factory';
@@ -18,7 +18,7 @@ export const schoolExternalToolFactory = SchoolExternalToolFactory.define(School
 		schoolId: `schoolId-${sequence}`,
 		toolVersion: 1,
 		parameters: [
-			new CustomParameterEntryDO({
+			new CustomParameterEntry({
 				name: 'name',
 				value: 'value',
 			}),

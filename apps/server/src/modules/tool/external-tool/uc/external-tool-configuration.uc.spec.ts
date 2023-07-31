@@ -3,8 +3,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ContextExternalToolDO, ExternalToolDO, Page, Permission, SchoolExternalToolDO, User } from '@shared/domain';
-import { contextExternalToolDOFactory, customParameterDOFactory, setupEntities, userFactory } from '@shared/testing';
-import { externalToolDOFactory, schoolExternalToolDOFactory } from '@shared/testing/factory';
+import { contextExternalToolDOFactory, customParameterFactory, setupEntities, userFactory } from '@shared/testing';
+import { externalToolFactory, schoolExternalToolDOFactory } from '@shared/testing/factory';
 import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import { ToolContextType } from '../../common/interface';
 import { ContextExternalToolService } from '../../context-external-tool/service';
@@ -118,8 +118,8 @@ describe('ExternalToolConfigurationUc', () => {
 		describe('when getting the list of external tools that can be added to a school', () => {
 			it('should filter tools that are already in use', async () => {
 				const externalToolDOs: ExternalToolDO[] = [
-					externalToolDOFactory.buildWithId(undefined, 'usedToolId'),
-					externalToolDOFactory.buildWithId(undefined, 'unusedToolId'),
+					externalToolFactory.buildWithId(undefined, 'usedToolId'),
+					externalToolFactory.buildWithId(undefined, 'unusedToolId'),
 				];
 
 				externalToolService.findExternalTools.mockResolvedValue(new Page<ExternalToolDO>(externalToolDOs, 2));
@@ -134,8 +134,8 @@ describe('ExternalToolConfigurationUc', () => {
 
 			it('should filter tools that are hidden', async () => {
 				const externalToolDOs: ExternalToolDO[] = [
-					externalToolDOFactory.buildWithId({ isHidden: true }),
-					externalToolDOFactory.buildWithId({ isHidden: false }),
+					externalToolFactory.buildWithId({ isHidden: true }),
+					externalToolFactory.buildWithId({ isHidden: false }),
 				];
 
 				externalToolService.findExternalTools.mockResolvedValue(new Page<ExternalToolDO>(externalToolDOs, 2));
@@ -147,7 +147,7 @@ describe('ExternalToolConfigurationUc', () => {
 			});
 
 			it('should return a list of available external tools with parameters for only for scope school', async () => {
-				const externalToolDOs: ExternalToolDO[] = externalToolDOFactory.buildListWithId(2);
+				const externalToolDOs: ExternalToolDO[] = externalToolFactory.buildListWithId(2);
 
 				externalToolService.findExternalTools.mockResolvedValue(new Page<ExternalToolDO>(externalToolDOs, 1));
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([]);
@@ -160,9 +160,9 @@ describe('ExternalToolConfigurationUc', () => {
 
 		describe('when an available external tool has parameters', () => {
 			const setup = () => {
-				const [globalParameter, schoolParameter, contextParameter] = customParameterDOFactory.buildListWithEachType();
+				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 
-				const externalTool: ExternalToolDO = externalToolDOFactory.buildWithId({
+				const externalTool: ExternalToolDO = externalToolFactory.buildWithId({
 					parameters: [globalParameter, schoolParameter, contextParameter],
 				});
 
@@ -211,10 +211,10 @@ describe('ExternalToolConfigurationUc', () => {
 
 		describe('when getting the list of external tools that can be added to a school', () => {
 			const setup = () => {
-				const hiddenTool: ExternalToolDO = externalToolDOFactory.buildWithId({ isHidden: true });
-				const usedTool: ExternalToolDO = externalToolDOFactory.buildWithId({ isHidden: false }, 'usedToolId');
-				const unusedTool: ExternalToolDO = externalToolDOFactory.buildWithId({ isHidden: false }, 'unusedToolId');
-				const toolWithoutSchoolTool: ExternalToolDO = externalToolDOFactory.buildWithId(
+				const hiddenTool: ExternalToolDO = externalToolFactory.buildWithId({ isHidden: true });
+				const usedTool: ExternalToolDO = externalToolFactory.buildWithId({ isHidden: false }, 'usedToolId');
+				const unusedTool: ExternalToolDO = externalToolFactory.buildWithId({ isHidden: false }, 'unusedToolId');
+				const toolWithoutSchoolTool: ExternalToolDO = externalToolFactory.buildWithId(
 					{ isHidden: false },
 					'noSchoolTool'
 				);
@@ -328,7 +328,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 		describe('when there are no available tools', () => {
 			const setup = () => {
-				const toolWithoutSchoolTool: ExternalToolDO = externalToolDOFactory.buildWithId(
+				const toolWithoutSchoolTool: ExternalToolDO = externalToolFactory.buildWithId(
 					{ isHidden: false },
 					'noSchoolTool'
 				);
@@ -363,7 +363,7 @@ describe('ExternalToolConfigurationUc', () => {
 			const setup = () => {
 				toolFeatures.contextConfigurationEnabled = true;
 
-				const usedTool: ExternalToolDO = externalToolDOFactory.buildWithId({ isHidden: false }, 'usedToolId');
+				const usedTool: ExternalToolDO = externalToolFactory.buildWithId({ isHidden: false }, 'usedToolId');
 
 				const usedSchoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
 					id: 'usedSchoolExternalToolId',
@@ -405,9 +405,9 @@ describe('ExternalToolConfigurationUc', () => {
 
 		describe('when an available external tool has parameters', () => {
 			const setup = () => {
-				const [globalParameter, schoolParameter, contextParameter] = customParameterDOFactory.buildListWithEachType();
+				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 
-				const externalTool: ExternalToolDO = externalToolDOFactory.buildWithId({
+				const externalTool: ExternalToolDO = externalToolFactory.buildWithId({
 					parameters: [globalParameter, schoolParameter, contextParameter],
 				});
 				const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
@@ -441,7 +441,7 @@ describe('ExternalToolConfigurationUc', () => {
 	describe('getTemplateForSchoolExternalTool is called', () => {
 		describe('when the user has permission to read an external tool', () => {
 			const setup = () => {
-				const externalTool: ExternalToolDO = externalToolDOFactory.buildWithId();
+				const externalTool: ExternalToolDO = externalToolFactory.buildWithId();
 
 				const schoolExternalToolId: string = new ObjectId().toHexString();
 				const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId(
@@ -515,7 +515,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 		describe('when tool is hidden', () => {
 			const setup = () => {
-				const externalTool: ExternalToolDO = externalToolDOFactory.buildWithId({
+				const externalTool: ExternalToolDO = externalToolFactory.buildWithId({
 					isHidden: true,
 				});
 
@@ -547,9 +547,9 @@ describe('ExternalToolConfigurationUc', () => {
 
 		describe('when an available external tool has parameters', () => {
 			const setup = () => {
-				const [globalParameter, schoolParameter, contextParameter] = customParameterDOFactory.buildListWithEachType();
+				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 
-				const externalTool: ExternalToolDO = externalToolDOFactory.buildWithId({
+				const externalTool: ExternalToolDO = externalToolFactory.buildWithId({
 					parameters: [globalParameter, schoolParameter, contextParameter],
 				});
 				const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
@@ -577,7 +577,7 @@ describe('ExternalToolConfigurationUc', () => {
 	describe('getTemplateForContextExternalTool is called', () => {
 		describe('when the user has permission to read an external tool', () => {
 			const setup = () => {
-				const externalTool: ExternalToolDO = externalToolDOFactory.buildWithId();
+				const externalTool: ExternalToolDO = externalToolFactory.buildWithId();
 
 				const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId({
 					toolId: externalTool.id,
@@ -662,7 +662,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 		describe('when tool is hidden', () => {
 			const setup = () => {
-				const externalTool: ExternalToolDO = externalToolDOFactory.buildWithId({
+				const externalTool: ExternalToolDO = externalToolFactory.buildWithId({
 					isHidden: true,
 				});
 
@@ -700,9 +700,9 @@ describe('ExternalToolConfigurationUc', () => {
 
 		describe('when an available external tool has parameters', () => {
 			const setup = () => {
-				const [globalParameter, schoolParameter, contextParameter] = customParameterDOFactory.buildListWithEachType();
+				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 
-				const externalTool: ExternalToolDO = externalToolDOFactory.buildWithId({
+				const externalTool: ExternalToolDO = externalToolFactory.buildWithId({
 					parameters: [globalParameter, schoolParameter, contextParameter],
 				});
 				const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({

@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-	basicToolConfigDOFactory,
+	basicToolConfigFactory,
 	contextExternalToolFactory,
 	externalToolFactory,
 	schoolExternalToolFactory,
@@ -86,7 +86,7 @@ describe('ToolLaunchService', () => {
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef(schoolExternalTool.id as string)
 					.build();
-				const basicToolConfigDO: BasicToolConfig = basicToolConfigDOFactory.build();
+				const basicToolConfigDO: BasicToolConfig = basicToolConfigFactory.build();
 				const externalTool: ExternalTool = externalToolFactory.build({
 					config: basicToolConfigDO,
 				});
@@ -215,7 +215,7 @@ describe('ToolLaunchService', () => {
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef(schoolExternalTool.id as string)
 					.build();
-				const basicToolConfigDO: BasicToolConfig = basicToolConfigDOFactory.build();
+				const basicToolConfigDO: BasicToolConfig = basicToolConfigFactory.build();
 				const externalTool: ExternalTool = externalToolFactory.build({
 					config: basicToolConfigDO,
 				});

@@ -15,7 +15,7 @@ import { LaunchRequestMethod, PropertyData, PropertyLocation, ToolLaunchData, To
 import { IToolLaunchParams } from './tool-launch-params.interface';
 import { IToolLaunchStrategy } from './tool-launch-strategy.interface';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
-import { CustomParameter, CustomParameterEntryDO } from '../../../common/domain';
+import { CustomParameter, CustomParameterEntry } from '../../../common/domain';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { ExternalTool } from '../../../external-tool/domain';
 
@@ -127,7 +127,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 		const { externalTool, schoolExternalTool, contextExternalTool } = data;
 		const customParameters = externalTool.parameters || [];
 
-		const scopes: { scope: CustomParameterScope; params: CustomParameterEntryDO[] }[] = [
+		const scopes: { scope: CustomParameterScope; params: CustomParameterEntry[] }[] = [
 			{ scope: CustomParameterScope.GLOBAL, params: customParameters },
 			{ scope: CustomParameterScope.SCHOOL, params: schoolExternalTool.parameters || [] },
 			{ scope: CustomParameterScope.CONTEXT, params: contextExternalTool.parameters || [] },
@@ -141,13 +141,13 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 	private async addParameters(
 		propertyData: PropertyData[],
 		customParameterDOs: CustomParameter[],
-		scopes: { scope: CustomParameterScope; params: CustomParameterEntryDO[] }[],
+		scopes: { scope: CustomParameterScope; params: CustomParameterEntry[] }[],
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
 	): Promise<void> {
 		await Promise.all(
 			scopes.map(async ({ scope, params }): Promise<void> => {
-				const parameterNames: string[] = params.map((parameter: CustomParameterEntryDO) => parameter.name);
+				const parameterNames: string[] = params.map((parameter: CustomParameterEntry) => parameter.name);
 
 				const parametersToInclude: CustomParameter[] = customParameterDOs.filter(
 					(parameter: CustomParameter) => parameter.scope === scope && parameterNames.includes(parameter.name)
@@ -167,7 +167,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 	private async handleParametersToInclude(
 		propertyData: PropertyData[],
 		parametersToInclude: CustomParameter[],
-		params: CustomParameterEntryDO[],
+		params: CustomParameterEntry[],
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
 	): Promise<void> {
@@ -175,8 +175,8 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 
 		await Promise.all(
 			parametersToInclude.map(async (parameter): Promise<void> => {
-				const matchingParameter: CustomParameterEntryDO | undefined = params.find(
-					(param: CustomParameterEntryDO) => param.name === parameter.name
+				const matchingParameter: CustomParameterEntry | undefined = params.find(
+					(param: CustomParameterEntry) => param.name === parameter.name
 				);
 
 				const value: string | undefined = await this.getParameterValue(
@@ -203,7 +203,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 
 	private async getParameterValue(
 		customParameter: CustomParameter,
-		matchingParameterEntry: CustomParameterEntryDO | undefined,
+		matchingParameterEntry: CustomParameterEntry | undefined,
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
 	): Promise<string | undefined> {

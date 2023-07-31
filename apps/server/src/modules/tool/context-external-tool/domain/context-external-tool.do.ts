@@ -1,7 +1,7 @@
 import { BaseDO } from '@shared/domain/domainobject/base.do';
 import { SchoolExternalToolRefDO } from '../../school-external-tool/domain/school-external-tool-ref.do';
 import { ContextRef } from './context-ref';
-import { CustomParameterEntryDO } from '../../common/domain';
+import { CustomParameterEntry } from '../../common/domain';
 import { ToolVersion } from '../../common/interface';
 
 export interface ContextExternalToolProps {
@@ -13,7 +13,7 @@ export interface ContextExternalToolProps {
 
 	displayName?: string;
 
-	parameters: CustomParameterEntryDO[];
+	parameters: CustomParameterEntry[];
 
 	toolVersion: number;
 }
@@ -25,7 +25,7 @@ export class ContextExternalTool extends BaseDO implements ToolVersion {
 
 	displayName?: string;
 
-	parameters: CustomParameterEntryDO[];
+	parameters: CustomParameterEntry[];
 
 	toolVersion: number;
 

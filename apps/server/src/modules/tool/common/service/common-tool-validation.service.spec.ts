@@ -9,8 +9,8 @@ import {
 } from '@shared/domain';
 import {
 	contextExternalToolDOFactory,
-	customParameterDOFactory,
-	externalToolDOFactory,
+	customParameterFactory,
+	externalToolFactory,
 	schoolExternalToolDOFactory,
 } from '@shared/testing';
 import { CommonToolValidationService } from './common-tool-validation.service';
@@ -104,7 +104,7 @@ describe('CommonToolValidationService', () => {
 			contextExternalToolMock?: Partial<ContextExternalToolDO>
 		) => {
 			const externalTool: ExternalToolDO = new ExternalToolDO({
-				...externalToolDOFactory.buildWithId(),
+				...externalToolFactory.buildWithId(),
 				...externalToolMock,
 			});
 			const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
@@ -128,7 +128,7 @@ describe('CommonToolValidationService', () => {
 		describe('when checking parameter is required', () => {
 			describe('and given parameter is not optional and parameter value is empty', () => {
 				const setup = () => {
-					const requiredParam: CustomParameterDO = customParameterDOFactory.build({
+					const requiredParam: CustomParameterDO = customParameterFactory.build({
 						name: 'requiredParam',
 						scope: CustomParameterScope.SCHOOL,
 						type: CustomParameterType.STRING,
@@ -161,13 +161,13 @@ describe('CommonToolValidationService', () => {
 
 		describe('when checking parameters of school external tool', () => {
 			const setup = () => {
-				const requiredContextParam: CustomParameterDO = customParameterDOFactory.build({
+				const requiredContextParam: CustomParameterDO = customParameterFactory.build({
 					name: 'missingContextParam',
 					isOptional: false,
 					scope: CustomParameterScope.CONTEXT,
 					type: CustomParameterType.BOOLEAN,
 				});
-				const schoolParam: CustomParameterDO = customParameterDOFactory.build({
+				const schoolParam: CustomParameterDO = customParameterFactory.build({
 					name: 'schoolParam',
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.BOOLEAN,
@@ -197,7 +197,7 @@ describe('CommonToolValidationService', () => {
 
 		describe('when parameter is not school or context', () => {
 			const setup = () => {
-				const notSchoolParam: CustomParameterDO = customParameterDOFactory.build({
+				const notSchoolParam: CustomParameterDO = customParameterFactory.build({
 					name: 'notSchoolParam',
 					scope: CustomParameterScope.GLOBAL,
 					type: CustomParameterType.BOOLEAN,
@@ -228,7 +228,7 @@ describe('CommonToolValidationService', () => {
 		describe('when parameter scope is school', () => {
 			describe('when required parameter is missing', () => {
 				const setup = () => {
-					const missingParam: CustomParameterDO = customParameterDOFactory.build({
+					const missingParam: CustomParameterDO = customParameterFactory.build({
 						name: 'isMissing',
 						isOptional: false,
 						scope: CustomParameterScope.SCHOOL,
@@ -258,7 +258,7 @@ describe('CommonToolValidationService', () => {
 
 			describe('when parameter is optional but is missing on params', () => {
 				const setup = () => {
-					const param: CustomParameterDO = customParameterDOFactory.build({
+					const param: CustomParameterDO = customParameterFactory.build({
 						name: 'notChecked',
 						scope: CustomParameterScope.SCHOOL,
 						isOptional: true,
@@ -290,7 +290,7 @@ describe('CommonToolValidationService', () => {
 		describe('when parameter scope is context', () => {
 			describe('when required parameter is missing', () => {
 				const setup = () => {
-					const missingParam: CustomParameterDO = customParameterDOFactory.build({
+					const missingParam: CustomParameterDO = customParameterFactory.build({
 						name: 'isMissing',
 						isOptional: false,
 						scope: CustomParameterScope.CONTEXT,
@@ -323,7 +323,7 @@ describe('CommonToolValidationService', () => {
 
 			describe('when parameter is optional but is missing on params', () => {
 				const setup = () => {
-					const param: CustomParameterDO = customParameterDOFactory.build({
+					const param: CustomParameterDO = customParameterFactory.build({
 						name: 'notChecked',
 						scope: CustomParameterScope.CONTEXT,
 						isOptional: true,
@@ -357,7 +357,7 @@ describe('CommonToolValidationService', () => {
 
 		describe('when checking parameter type string', () => {
 			const setup = () => {
-				const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
+				const correctTypeParam: CustomParameterDO = customParameterFactory.build({
 					name: 'correctType',
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.STRING,
@@ -388,7 +388,7 @@ describe('CommonToolValidationService', () => {
 		describe('when checking parameter type number', () => {
 			describe('when type matches param value', () => {
 				const setup = () => {
-					const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
+					const correctTypeParam: CustomParameterDO = customParameterFactory.build({
 						name: 'correctType',
 						scope: CustomParameterScope.SCHOOL,
 						type: CustomParameterType.NUMBER,
@@ -418,7 +418,7 @@ describe('CommonToolValidationService', () => {
 
 			describe('when type not matches param value', () => {
 				const setup = () => {
-					const wrongTypeParam: CustomParameterDO = customParameterDOFactory.build({
+					const wrongTypeParam: CustomParameterDO = customParameterFactory.build({
 						name: 'wrongType',
 						scope: CustomParameterScope.SCHOOL,
 						type: CustomParameterType.NUMBER,
@@ -450,7 +450,7 @@ describe('CommonToolValidationService', () => {
 		describe('when checking parameter type boolean', () => {
 			describe('when type matches param value', () => {
 				const setup = () => {
-					const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
+					const correctTypeParam: CustomParameterDO = customParameterFactory.build({
 						name: 'correctType',
 						scope: CustomParameterScope.SCHOOL,
 						type: CustomParameterType.BOOLEAN,
@@ -480,7 +480,7 @@ describe('CommonToolValidationService', () => {
 
 			describe('when type not matches param value', () => {
 				const setup = () => {
-					const wrongTypeParam: CustomParameterDO = customParameterDOFactory.build({
+					const wrongTypeParam: CustomParameterDO = customParameterFactory.build({
 						name: 'wrongType',
 						scope: CustomParameterScope.SCHOOL,
 						type: CustomParameterType.BOOLEAN,
@@ -511,7 +511,7 @@ describe('CommonToolValidationService', () => {
 
 		describe('when checking parameter type auto_contextId', () => {
 			const setup = () => {
-				const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
+				const correctTypeParam: CustomParameterDO = customParameterFactory.build({
 					name: 'correctType',
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.AUTO_CONTEXTID,
@@ -541,7 +541,7 @@ describe('CommonToolValidationService', () => {
 
 		describe('when checking parameter type auto_contextName', () => {
 			const setup = () => {
-				const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
+				const correctTypeParam: CustomParameterDO = customParameterFactory.build({
 					name: 'correctType',
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.AUTO_CONTEXTNAME,
@@ -571,7 +571,7 @@ describe('CommonToolValidationService', () => {
 
 		describe('when checking parameter type auto_schoolId', () => {
 			const setup = () => {
-				const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
+				const correctTypeParam: CustomParameterDO = customParameterFactory.build({
 					name: 'correctType',
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.AUTO_SCHOOLID,
@@ -601,7 +601,7 @@ describe('CommonToolValidationService', () => {
 
 		describe('when checking parameter type auto_schoolnumber', () => {
 			const setup = () => {
-				const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
+				const correctTypeParam: CustomParameterDO = customParameterFactory.build({
 					name: 'correctType',
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.AUTO_SCHOOLNUMBER,
@@ -632,7 +632,7 @@ describe('CommonToolValidationService', () => {
 		describe('when validating regex', () => {
 			describe('when no regex is given', () => {
 				const setup = () => {
-					const undefinedRegex: CustomParameterDO = customParameterDOFactory.build({
+					const undefinedRegex: CustomParameterDO = customParameterFactory.build({
 						name: 'undefinedRegex',
 						scope: CustomParameterScope.SCHOOL,
 						type: CustomParameterType.STRING,
@@ -664,7 +664,7 @@ describe('CommonToolValidationService', () => {
 
 			describe('when regex is given and param value is valid', () => {
 				const setup = () => {
-					const validRegex: CustomParameterDO = customParameterDOFactory.build({
+					const validRegex: CustomParameterDO = customParameterFactory.build({
 						name: 'validRegex',
 						scope: CustomParameterScope.SCHOOL,
 						type: CustomParameterType.STRING,
@@ -696,7 +696,7 @@ describe('CommonToolValidationService', () => {
 
 			describe('when regex is given and param value is invalid', () => {
 				const setup = () => {
-					const validRegex: CustomParameterDO = customParameterDOFactory.build({
+					const validRegex: CustomParameterDO = customParameterFactory.build({
 						name: 'validRegex',
 						scope: CustomParameterScope.SCHOOL,
 						type: CustomParameterType.STRING,

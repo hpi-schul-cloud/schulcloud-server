@@ -7,7 +7,7 @@ import { CourseRepo } from '@shared/repo';
 import {
 	contextExternalToolFactory,
 	courseFactory,
-	customParameterDOFactory,
+	customParameterFactory,
 	externalToolFactory,
 	schoolDOFactory,
 	schoolExternalToolFactory,
@@ -32,7 +32,7 @@ import {
 	ToolContextType,
 } from '../../../common/enum';
 import { ExternalTool } from '../../../external-tool/domain';
-import { CustomParameterEntryDO } from '../../../common/domain';
+import { CustomParameterEntry } from '../../../common/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 
@@ -108,44 +108,44 @@ describe('AbstractLaunchStrategy', () => {
 				const schoolId: string = new ObjectId().toHexString();
 
 				// External Tool
-				const globalCustomParameter = customParameterDOFactory.build({
+				const globalCustomParameter = customParameterFactory.build({
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.PATH,
 					default: 'value',
 					name: 'globalParam',
 					type: CustomParameterType.STRING,
 				});
-				const schoolCustomParameter = customParameterDOFactory.build({
+				const schoolCustomParameter = customParameterFactory.build({
 					scope: CustomParameterScope.SCHOOL,
 					location: CustomParameterLocation.BODY,
 					name: 'schoolParam',
 					type: CustomParameterType.BOOLEAN,
 				});
-				const contextCustomParameter = customParameterDOFactory.build({
+				const contextCustomParameter = customParameterFactory.build({
 					scope: CustomParameterScope.CONTEXT,
 					location: CustomParameterLocation.QUERY,
 					name: 'contextParam',
 					type: CustomParameterType.NUMBER,
 				});
-				const autoSchoolIdCustomParameter = customParameterDOFactory.build({
+				const autoSchoolIdCustomParameter = customParameterFactory.build({
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.BODY,
 					name: 'autoSchoolIdParam',
 					type: CustomParameterType.AUTO_SCHOOLID,
 				});
-				const autoCourseIdCustomParameter = customParameterDOFactory.build({
+				const autoCourseIdCustomParameter = customParameterFactory.build({
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.BODY,
 					name: 'autoCourseIdParam',
 					type: CustomParameterType.AUTO_CONTEXTID,
 				});
-				const autoCourseNameCustomParameter = customParameterDOFactory.build({
+				const autoCourseNameCustomParameter = customParameterFactory.build({
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.BODY,
 					name: 'autoCourseNameParam',
 					type: CustomParameterType.AUTO_CONTEXTNAME,
 				});
-				const autoSchoolNumberCustomParameter = customParameterDOFactory.build({
+				const autoSchoolNumberCustomParameter = customParameterFactory.build({
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.BODY,
 					name: 'autoSchoolNumberParam',
@@ -165,7 +165,7 @@ describe('AbstractLaunchStrategy', () => {
 				});
 
 				// School External Tool
-				const schoolParameterEntry: CustomParameterEntryDO = new CustomParameterEntryDO({
+				const schoolParameterEntry: CustomParameterEntry = new CustomParameterEntry({
 					name: schoolCustomParameter.name,
 					value: 'true',
 				});
@@ -175,7 +175,7 @@ describe('AbstractLaunchStrategy', () => {
 				});
 
 				// Context External Tool
-				const contextParameterEntry: CustomParameterEntryDO = new CustomParameterEntryDO({
+				const contextParameterEntry: CustomParameterEntry = new CustomParameterEntry({
 					name: contextCustomParameter.name,
 					value: 'anyValue2',
 				});
@@ -351,7 +351,7 @@ describe('AbstractLaunchStrategy', () => {
 
 		describe('when a parameter has no value, but is required', () => {
 			const setup = () => {
-				const autoSchoolNumberCustomParameter = customParameterDOFactory.build({
+				const autoSchoolNumberCustomParameter = customParameterFactory.build({
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.BODY,
 					name: 'autoSchoolNumberParam',
@@ -398,7 +398,7 @@ describe('AbstractLaunchStrategy', () => {
 
 		describe('when a parameter type is not implemented ', () => {
 			const setup = () => {
-				const customParameterWithUnknownType = customParameterDOFactory.build({
+				const customParameterWithUnknownType = customParameterFactory.build({
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.BODY,
 					name: 'unknownTypeParam',
@@ -439,7 +439,7 @@ describe('AbstractLaunchStrategy', () => {
 
 		describe('when a lookup for a context name is not implemented', () => {
 			const setup = () => {
-				const customParameterWithUnknownType = customParameterDOFactory.build({
+				const customParameterWithUnknownType = customParameterFactory.build({
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.BODY,
 					name: 'autoContextNameParam',

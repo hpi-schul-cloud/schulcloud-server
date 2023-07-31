@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CustomParameterEntryDO } from '@src/modules/tool/common/domain';
+import { CustomParameterEntry } from '@src/modules/tool/common/domain';
 import { ToolContextType } from '@src/modules/tool/common/enum';
 import { ContextExternalTool, ContextExternalToolProps } from '@src/modules/tool/context-external-tool/domain';
 import { DeepPartial } from 'fishery';
@@ -19,7 +19,7 @@ export const contextExternalToolFactory = ContextExternalToolFactory.define(Cont
 		schoolToolRef: { schoolToolId: `schoolToolId-${sequence}`, schoolId: 'schoolId' },
 		contextRef: { id: new ObjectId().toHexString(), type: ToolContextType.COURSE },
 		displayName: 'My Course Tool 1',
-		parameters: [new CustomParameterEntryDO({ name: 'param', value: 'value' })],
+		parameters: [new CustomParameterEntry({ name: 'param', value: 'value' })],
 		toolVersion: 1,
 	};
 });

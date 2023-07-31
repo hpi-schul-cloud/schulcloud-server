@@ -1,5 +1,5 @@
 import { BaseDO } from '@shared/domain/domainobject/base.do';
-import { CustomParameterEntryDO } from '../../common/domain';
+import { CustomParameterEntry } from '../../common/domain';
 import { ToolConfigurationStatus } from '../../common/enum';
 import { ToolVersion } from '../../common/interface';
 
@@ -12,7 +12,7 @@ export interface SchoolExternalToolProps {
 
 	schoolId: string;
 
-	parameters: CustomParameterEntryDO[];
+	parameters: CustomParameterEntry[];
 
 	toolVersion: number;
 
@@ -26,7 +26,7 @@ export class SchoolExternalTool extends BaseDO implements ToolVersion {
 
 	schoolId: string;
 
-	parameters: CustomParameterEntryDO[];
+	parameters: CustomParameterEntry[];
 
 	toolVersion: number;
 

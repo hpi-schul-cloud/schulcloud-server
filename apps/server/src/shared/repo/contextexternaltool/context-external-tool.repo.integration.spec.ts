@@ -12,7 +12,7 @@ import {
 	schoolFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { CustomParameterEntryDO } from '@src/modules/tool/common/domain';
+import { CustomParameterEntry } from '@src/modules/tool/common/domain';
 import { ToolContextType } from '@src/modules/tool/common/enum';
 import { ContextExternalTool } from '@src/modules/tool/context-external-tool/domain';
 import { ContextExternalToolEntity, ContextExternalToolType } from '@src/modules/tool/context-external-tool/entity';
@@ -135,7 +135,7 @@ describe('ContextExternalToolRepo', () => {
 						id: new ObjectId().toHexString(),
 						type: ToolContextType.COURSE,
 					},
-					parameters: [new CustomParameterEntryDO({ name: 'param', value: 'value' })],
+					parameters: [new CustomParameterEntry({ name: 'param', value: 'value' })],
 					schoolToolRef: {
 						schoolToolId: new ObjectId().toHexString(),
 						schoolId: undefined,
@@ -167,7 +167,7 @@ describe('ContextExternalToolRepo', () => {
 						type: 'UNKNOWN' as ToolContextType,
 					},
 					displayName: 'displayName',
-					parameters: [new CustomParameterEntryDO({ name: 'param', value: 'value' })],
+					parameters: [new CustomParameterEntry({ name: 'param', value: 'value' })],
 					schoolToolRef: {
 						schoolToolId: new ObjectId().toHexString(),
 					},

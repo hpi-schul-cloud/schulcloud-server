@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ContextExternalToolDO, ExternalToolDO } from '@shared/domain';
-import { contextExternalToolDOFactory, externalToolDOFactory } from '@shared/testing';
+import { contextExternalToolDOFactory, externalToolFactory } from '@shared/testing';
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
@@ -59,7 +59,7 @@ describe('ContextExternalToolValidationService', () => {
 	describe('validate', () => {
 		describe('when check duplication of contextExternalTool is successfully ', () => {
 			const setup = () => {
-				const externalTool: ExternalToolDO = externalToolDOFactory.buildWithId();
+				const externalTool: ExternalToolDO = externalToolFactory.buildWithId();
 				externalToolService.findExternalToolById.mockResolvedValue(externalTool);
 
 				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId();

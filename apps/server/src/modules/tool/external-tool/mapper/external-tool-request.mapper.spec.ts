@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SortOrder, SortOrderMap } from '@shared/domain';
 
-import { basicToolConfigDOFactory, customParameterDOFactory, externalToolFactory } from '@shared/testing';
+import { basicToolConfigFactory, customParameterFactory, externalToolFactory } from '@shared/testing';
 import {
 	CustomParameterLocation,
 	CustomParameterLocationParams,
@@ -81,12 +81,12 @@ describe('ExternalToolRequestMapper', () => {
 		externalToolUpdateParams.isHidden = true;
 		externalToolUpdateParams.openNewTab = true;
 
-		const basicToolConfigDO: BasicToolConfig = basicToolConfigDOFactory.build({
+		const basicToolConfigDO: BasicToolConfig = basicToolConfigFactory.build({
 			type: ToolConfigType.BASIC,
 			baseUrl: 'mockUrl',
 		});
 
-		const customParameterDO: CustomParameter = customParameterDOFactory.build({
+		const customParameterDO: CustomParameter = customParameterFactory.build({
 			name: 'mockName',
 			displayName: 'displayName',
 			description: 'description',

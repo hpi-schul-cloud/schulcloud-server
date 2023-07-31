@@ -3,7 +3,7 @@ import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, Permission, Role, School, User } from '@shared/domain';
 import {
-	basicToolConfigDOFactory,
+	basicToolConfigFactory,
 	contextExternalToolFactory,
 	contextExternalToolEntityFactory,
 	courseFactory,
@@ -76,7 +76,7 @@ describe('ToolLaunchController (API)', () => {
 				currentUser = mapUserToCurrentUser(user);
 
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
-					config: basicToolConfigDOFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
+					config: basicToolConfigFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
 					version: 0,
 				});
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
@@ -129,7 +129,7 @@ describe('ToolLaunchController (API)', () => {
 				currentUser = mapUserToCurrentUser(user);
 
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
-					config: basicToolConfigDOFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
+					config: basicToolConfigFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
 					version: 1,
 				});
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
@@ -182,7 +182,7 @@ describe('ToolLaunchController (API)', () => {
 				currentUser = mapUserToCurrentUser(user);
 
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
-					config: basicToolConfigDOFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
+					config: basicToolConfigFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
 				});
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					tool: externalToolEntity,
@@ -223,7 +223,7 @@ describe('ToolLaunchController (API)', () => {
 			it('should return unauthorized', async () => {
 				const contextExternalTool = contextExternalToolFactory.buildWithId();
 				const params: ToolLaunchParams = {
-					contextExternalToolId: contextExternalTool.id as string,
+					contextExternalToolId: contextExternalTool.id,
 				};
 				currentUser = undefined;
 
