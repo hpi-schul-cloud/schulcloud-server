@@ -1,9 +1,9 @@
 import { ContextExternalToolResponse } from '../controller/dto';
 import { CustomParameterEntryParam, CustomParameterEntryResponse } from '../../school-external-tool/controller/dto';
-import { ContextExternalTool } from '../uc/dto/context-external-tool.types';
+import { ContextExternalToolDto } from '../uc/dto/context-external-tool.types';
 
 export class ContextExternalToolResponseMapper {
-	static mapContextExternalToolResponse(contextExternalTool: ContextExternalTool): ContextExternalToolResponse {
+	static mapContextExternalToolResponse(contextExternalTool: ContextExternalToolDto): ContextExternalToolResponse {
 		const mapped: ContextExternalToolResponse = new ContextExternalToolResponse({
 			id: contextExternalTool.id ?? '',
 			contextId: contextExternalTool.contextRef.id,
