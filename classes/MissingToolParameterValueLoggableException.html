@@ -163,12 +163,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(contextExternalTool: <a href="../classes/ContextExternalToolDO.html" target="_self">ContextExternalToolDO</a>, parameters: <a href="../undefineds/CustomParameter.html" target="_self">CustomParameterDO[]</a>)</code>
+<code>constructor(contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>, parameters: <a href="../classes/CustomParameter.html" target="_self">CustomParameter[]</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/tool/tool-launch/error/missing-tool-parameter-value.loggable-exception.ts:6</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/tool/tool-launch/error/missing-tool-parameter-value.loggable-exception.ts:7</a></div>
                             </td>
                         </tr>
 
@@ -189,7 +189,7 @@
                                                         <td>contextExternalTool</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../classes/ContextExternalToolDO.html" target="_self" >ContextExternalToolDO</a></code>
+                                                                        <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -201,7 +201,7 @@
                                                         <td>parameters</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../miscellaneous/typealiases.html#CustomParameter" target="_self" >CustomParameterDO[]</a></code>
+                                                                        <code><a href="../classes/CustomParameter.html" target="_self" >CustomParameter[]</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -471,8 +471,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="25"
-                            class="link-to-prism">apps/server/src/modules/tool/tool-launch/error/missing-tool-parameter-value.loggable-exception.ts:25</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="26"
+                            class="link-to-prism">apps/server/src/modules/tool/tool-launch/error/missing-tool-parameter-value.loggable-exception.ts:26</a></div>
                 </td>
             </tr>
 
@@ -545,13 +545,14 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpStatus } from &#x27;@nestjs/common&#x27;;
 import { BusinessError } from &#x27;@shared/common&#x27;;
-import { ContextExternalToolDO, CustomParameterDO } from &#x27;@shared/domain&#x27;;
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
+import { ContextExternalTool } from &#x27;../../context-external-tool/domain&#x27;;
+import { CustomParameter } from &#x27;../../common/domain&#x27;;
 
 export class MissingToolParameterValueLoggableException extends BusinessError implements Loggable {
 	constructor(
-		private readonly contextExternalTool: ContextExternalToolDO,
-		private readonly parameters: CustomParameterDO[]
+		private readonly contextExternalTool: ContextExternalTool,
+		private readonly parameters: CustomParameter[]
 	) {
 		super(
 			{

@@ -132,7 +132,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapContextExternalToolResponse(contextExternalTool: <a href="../entitys/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
+                    <code>mapContextExternalToolResponse(contextExternalTool: <a href="../undefineds/ContextExternalToolDto.html" target="_self">ContextExternalToolDto</a>)</code>
                 </td>
             </tr>
 
@@ -163,7 +163,7 @@
                                 <tr>
                                     <td>contextExternalTool</td>
                                     <td>
-                                                <code><a href="../entitys/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#ContextExternalToolDto" target="_self" >ContextExternalToolDto</a></code>
                                     </td>
 
                                     <td>
@@ -204,7 +204,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapRequestToCustomParameterEntryDO(customParameterParams: <a href="../undefineds/CustomParameter.html" target="_self">CustomParameterEntryParam[]</a>)</code>
+                    <code>mapRequestToCustomParameterEntryDO(customParameterParams: CustomParameterEntryParam[])</code>
                 </td>
             </tr>
 
@@ -235,7 +235,7 @@
                                 <tr>
                                     <td>customParameterParams</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#CustomParameter" target="_self" >CustomParameterEntryParam[]</a></code>
+                                            <code>CustomParameterEntryParam[]</code>
                                     </td>
 
                                     <td>
@@ -250,7 +250,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CustomParameter" target="_self" >CustomParameterEntryResponse[]</a></code>
+                        <b>Returns : </b>    <code>CustomParameterEntryResponse[]</code>
 
                     </div>
                     <div class="io-description">
@@ -272,10 +272,10 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ContextExternalToolResponse } from &#x27;../controller/dto&#x27;;
 import { CustomParameterEntryParam, CustomParameterEntryResponse } from &#x27;../../school-external-tool/controller/dto&#x27;;
-import { ContextExternalTool } from &#x27;../uc/dto/context-external-tool.types&#x27;;
+import { ContextExternalToolDto } from &#x27;../uc/dto/context-external-tool.types&#x27;;
 
 export class ContextExternalToolResponseMapper {
-	static mapContextExternalToolResponse(contextExternalTool: ContextExternalTool): ContextExternalToolResponse {
+	static mapContextExternalToolResponse(contextExternalTool: ContextExternalToolDto): ContextExternalToolResponse {
 		const mapped: ContextExternalToolResponse &#x3D; new ContextExternalToolResponse({
 			id: contextExternalTool.id ?? &#x27;&#x27;,
 			contextId: contextExternalTool.contextRef.id,

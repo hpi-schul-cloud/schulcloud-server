@@ -129,7 +129,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:19</a></div>
                             </td>
                         </tr>
 
@@ -243,8 +243,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="47"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:47</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="48"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:48</a></div>
                 </td>
             </tr>
 
@@ -338,8 +338,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="27"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:27</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="28"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:28</a></div>
                 </td>
             </tr>
 
@@ -409,8 +409,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="32"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:32</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="33"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:33</a></div>
                 </td>
             </tr>
 
@@ -517,8 +517,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="105"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:105</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="106"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:106</a></div>
                 </td>
             </tr>
 
@@ -593,15 +593,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>shouldSkipConsent(tool: <a href="../undefineds/ExternalTool.html" target="_self">ExternalToolDO | LtiToolDO</a>)</code>
+                    <code>shouldSkipConsent(tool: <a href="../entitys/LtiTool.html" target="_self">ExternalTool | LtiToolDO</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="93"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:93</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="94"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/uc/oauth-provider.login-flow.uc.ts:94</a></div>
                 </td>
             </tr>
 
@@ -624,7 +624,7 @@
                                 <tr>
                                     <td>tool</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#ExternalTool" target="_self" >ExternalToolDO | LtiToolDO</a></code>
+                                                <code><a href="../entitys/LtiTool.html" target="_self" >ExternalTool | LtiToolDO</a></code>
                                     </td>
 
                                     <td>
@@ -656,7 +656,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, InternalServerErrorException, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
-import { ExternalToolDO, Oauth2ToolConfigDO, Permission, Pseudonym, User, UserDO } from &#x27;@shared/domain&#x27;;
+import { Permission, Pseudonym, User, UserDO } from &#x27;@shared/domain&#x27;;
 import { LtiToolDO } from &#x27;@shared/domain/domainobject/ltitool.do&#x27;;
 import { OauthProviderService } from &#x27;@shared/infra/oauth-provider&#x27;;
 import {
@@ -668,6 +668,7 @@ import { AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
 import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from &#x27;@src/modules/oauth-provider/controller/dto&#x27;;
 import { OauthProviderRequestMapper } from &#x27;@src/modules/oauth-provider/mapper/oauth-provider-request.mapper&#x27;;
 import { PseudonymService } from &#x27;@src/modules/pseudonym/service&#x27;;
+import { ExternalTool, Oauth2ToolConfig } from &#x27;@src/modules/tool/external-tool/domain&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
 import { OauthProviderLoginFlowService } from &#x27;../service/oauth-provider.login-flow.service&#x27;;
 
@@ -712,7 +713,7 @@ export class OauthProviderLoginFlowUc {
 			throw new InternalServerErrorException(&#x60;Cannot find oAuthClientId in login response for challenge: ${challenge}&#x60;);
 		}
 
-		const tool: ExternalToolDO | LtiToolDO &#x3D; await this.oauthProviderLoginFlowService.findToolByClientId(
+		const tool: ExternalTool | LtiToolDO &#x3D; await this.oauthProviderLoginFlowService.findToolByClientId(
 			loginResponse.client.client_id
 		);
 
@@ -747,11 +748,11 @@ export class OauthProviderLoginFlowUc {
 		return redirectResponse;
 	}
 
-	private shouldSkipConsent(tool: ExternalToolDO | LtiToolDO): boolean {
+	private shouldSkipConsent(tool: ExternalTool | LtiToolDO): boolean {
 		if (tool instanceof LtiToolDO) {
 			return !!tool.skipConsent;
 		}
-		if (tool.config instanceof Oauth2ToolConfigDO) {
+		if (tool.config instanceof Oauth2ToolConfig) {
 			return tool.config.skipConsent;
 		}
 		throw new UnprocessableEntityException(

@@ -118,7 +118,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>mapDoToProviderOauthClient(name: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, oauth2Config: <a href="../classes/Oauth2ToolConfigDO.html" target="_self">Oauth2ToolConfigDO</a>)</code>
+<code>mapDoToProviderOauthClient(name: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, oauth2Config: <a href="../classes/Oauth2ToolConfig.html" target="_self">Oauth2ToolConfig</a>)</code>
                 </td>
             </tr>
 
@@ -161,7 +161,7 @@
                                 <tr>
                                     <td>oauth2Config</td>
                                     <td>
-                                                <code><a href="../classes/Oauth2ToolConfigDO.html" target="_self" >Oauth2ToolConfigDO</a></code>
+                                                <code><a href="../classes/Oauth2ToolConfig.html" target="_self" >Oauth2ToolConfig</a></code>
                                     </td>
 
                                     <td>
@@ -193,12 +193,12 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ProviderOauthClient } from &#x27;@shared/infra/oauth-provider/dto&#x27;;
-import { Oauth2ToolConfigDO } from &#x27;@shared/domain/domainobject/tool&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { Oauth2ToolConfig } from &#x27;../domain&#x27;;
 
 @Injectable()
 export class ExternalToolServiceMapper {
-	mapDoToProviderOauthClient(name: string, oauth2Config: Oauth2ToolConfigDO): ProviderOauthClient {
+	mapDoToProviderOauthClient(name: string, oauth2Config: Oauth2ToolConfig): ProviderOauthClient {
 		return {
 			client_name: name,
 			client_id: oauth2Config.clientId,

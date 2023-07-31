@@ -324,7 +324,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;SchoolExternalToolConfigurationTemplateListResponse&gt;</code>
+                        <b>Returns : </b>        <code><a href="../entitys/School.html" target="_self" >Promise&lt;SchoolExternalToolConfigurationTemplateListResponse&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -516,7 +516,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;SchoolExternalToolConfigurationTemplateResponse&gt;</code>
+                        <b>Returns : </b>        <code><a href="../entitys/School.html" target="_self" >Promise&lt;SchoolExternalToolConfigurationTemplateResponse&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -539,9 +539,9 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from &#x27;@nestjs/swagger&#x27;;
-import { ExternalToolDO } from &#x27;@shared/domain&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
+import { ExternalTool } from &#x27;../domain&#x27;;
 import { ToolConfigurationMapper } from &#x27;../mapper/tool-configuration.mapper&#x27;;
 import { ContextExternalToolTemplateInfo, ExternalToolConfigurationUc } from &#x27;../uc&#x27;;
 import {
@@ -572,7 +572,7 @@ export class ToolConfigurationController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolIdParams
 	): Promise&lt;SchoolExternalToolConfigurationTemplateListResponse&gt; {
-		const availableTools: ExternalToolDO[] &#x3D; await this.externalToolConfigurationUc.getAvailableToolsForSchool(
+		const availableTools: ExternalTool[] &#x3D; await this.externalToolConfigurationUc.getAvailableToolsForSchool(
 			currentUser.userId,
 			params.schoolId
 		);
@@ -620,7 +620,7 @@ export class ToolConfigurationController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams
 	): Promise&lt;SchoolExternalToolConfigurationTemplateResponse&gt; {
-		const tool: ExternalToolDO &#x3D; await this.externalToolConfigurationUc.getTemplateForSchoolExternalTool(
+		const tool: ExternalTool &#x3D; await this.externalToolConfigurationUc.getTemplateForSchoolExternalTool(
 			currentUser.userId,
 			params.schoolExternalToolId
 		);

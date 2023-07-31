@@ -127,15 +127,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToToolReference(externalTool: <a href="../classes/ExternalToolDO.html" target="_self">ExternalToolDO</a>, contextExternalTool: <a href="../classes/ContextExternalToolDO.html" target="_self">ContextExternalToolDO</a>, status: <a href="../undefineds/ToolConfigurationStatus.html" target="_self">ToolConfigurationStatus</a>)</code>
+                    <code>mapToToolReference(externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>, status: <a href="../undefineds/ToolConfigurationStatus.html" target="_self">ToolConfigurationStatus</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="4"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/tool-reference.mapper.ts:4</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="6"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/mapper/tool-reference.mapper.ts:6</a></div>
                 </td>
             </tr>
 
@@ -158,7 +158,7 @@
                                 <tr>
                                     <td>externalTool</td>
                                     <td>
-                                                <code><a href="../classes/ExternalToolDO.html" target="_self" >ExternalToolDO</a></code>
+                                                <code><a href="../classes/ExternalTool.html" target="_self" >ExternalTool</a></code>
                                     </td>
 
                                     <td>
@@ -170,7 +170,7 @@
                                 <tr>
                                     <td>contextExternalTool</td>
                                     <td>
-                                                <code><a href="../classes/ContextExternalToolDO.html" target="_self" >ContextExternalToolDO</a></code>
+                                                <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
                                     </td>
 
                                     <td>
@@ -217,12 +217,14 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ContextExternalToolDO, ExternalToolDO, ToolConfigurationStatus, ToolReference } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ExternalTool, ToolReference } from &#x27;../domain&#x27;;
+import { ContextExternalTool } from &#x27;../../context-external-tool/domain&#x27;;
+import { ToolConfigurationStatus } from &#x27;../../common/enum&#x27;;
 
 export class ToolReferenceMapper {
 	static mapToToolReference(
-		externalTool: ExternalToolDO,
-		contextExternalTool: ContextExternalToolDO,
+		externalTool: ExternalTool,
+		contextExternalTool: ContextExternalTool,
 		status: ToolConfigurationStatus
 	): ToolReference {
 		const toolReference &#x3D; new ToolReference({

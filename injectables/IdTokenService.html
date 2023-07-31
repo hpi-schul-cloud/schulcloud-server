@@ -140,7 +140,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:16</a></div>
                             </td>
                         </tr>
 
@@ -241,8 +241,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="48"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:48</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="49"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:49</a></div>
                 </td>
             </tr>
 
@@ -312,8 +312,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="27"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:27</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="28"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:28</a></div>
                 </td>
             </tr>
 
@@ -408,8 +408,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="58"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:58</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="59"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:59</a></div>
                 </td>
             </tr>
 
@@ -496,7 +496,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -523,7 +523,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -538,10 +538,11 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { ExternalToolDO, LtiToolDO, Pseudonym, Team, UserDO } from &#x27;@shared/domain&#x27;;
+import { LtiToolDO, Pseudonym, Team, UserDO } from &#x27;@shared/domain&#x27;;
 import { TeamsRepo } from &#x27;@shared/repo&#x27;;
 import { PseudonymService } from &#x27;@src/modules/pseudonym&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
+import { ExternalTool } from &#x27;@src/modules/tool/external-tool/domain&#x27;;
 import { GroupNameIdTuple, IdToken, OauthScope } from &#x27;../interface&#x27;;
 import { OauthProviderLoginFlowService } from &#x27;./oauth-provider.login-flow.service&#x27;;
 import { IdTokenCreationLoggableException } from &#x27;../error/id-token-creation-exception.loggable&#x27;;
@@ -594,7 +595,7 @@ export class IdTokenService {
 
 	// TODO N21-335 How we can refactor the iframe in the id token?
 	private async createIframeSubject(user: UserDO, clientId: string): Promise&lt;string&gt; {
-		const tool: ExternalToolDO | LtiToolDO &#x3D; await this.oauthProviderLoginFlowService.findToolByClientId(clientId);
+		const tool: ExternalTool | LtiToolDO &#x3D; await this.oauthProviderLoginFlowService.findToolByClientId(clientId);
 
 		if (!tool.id) {
 			throw new IdTokenCreationLoggableException(clientId, user.id);

@@ -139,7 +139,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToContextExternalToolConfigurationTemplateListResponse(toolInfos: ContextExternalToolTemplateInfo[])</code>
+                    <code>mapToContextExternalToolConfigurationTemplateListResponse(toolInfos: <a href="../undefineds/ContextExternalToolTemplateInfo.html" target="_self">ContextExternalToolTemplateInfo[]</a>)</code>
                 </td>
             </tr>
 
@@ -170,7 +170,7 @@
                                 <tr>
                                     <td>toolInfos</td>
                                     <td>
-                                            <code>ContextExternalToolTemplateInfo[]</code>
+                                                <code><a href="../miscellaneous/typealiases.html#ContextExternalToolTemplateInfo" target="_self" >ContextExternalToolTemplateInfo[]</a></code>
                                     </td>
 
                                     <td>
@@ -281,7 +281,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToSchoolExternalToolConfigurationTemplateListResponse(externalTools: <a href="../classes/ExternalToolDO.html" target="_self">ExternalToolDO[]</a>)</code>
+                    <code>mapToSchoolExternalToolConfigurationTemplateListResponse(externalTools: <a href="../classes/ExternalTool.html" target="_self">ExternalTool[]</a>)</code>
                 </td>
             </tr>
 
@@ -312,7 +312,7 @@
                                 <tr>
                                     <td>externalTools</td>
                                     <td>
-                                                <code><a href="../classes/ExternalToolDO.html" target="_self" >ExternalToolDO[]</a></code>
+                                                <code><a href="../classes/ExternalTool.html" target="_self" >ExternalTool[]</a></code>
                                     </td>
 
                                     <td>
@@ -352,7 +352,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToSchoolExternalToolConfigurationTemplateResponse(externalTool: <a href="../classes/ExternalToolDO.html" target="_self">ExternalToolDO</a>)</code>
+                    <code>mapToSchoolExternalToolConfigurationTemplateResponse(externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>)</code>
                 </td>
             </tr>
 
@@ -383,7 +383,7 @@
                                 <tr>
                                     <td>externalTool</td>
                                     <td>
-                                                <code><a href="../classes/ExternalToolDO.html" target="_self" >ExternalToolDO</a></code>
+                                                <code><a href="../classes/ExternalTool.html" target="_self" >ExternalTool</a></code>
                                     </td>
 
                                     <td>
@@ -418,19 +418,19 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ExternalToolDO } from &#x27;@shared/domain&#x27;;
-import {
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
 	ContextExternalToolConfigurationTemplateListResponse,
 	ContextExternalToolConfigurationTemplateResponse,
 	SchoolExternalToolConfigurationTemplateListResponse,
 	SchoolExternalToolConfigurationTemplateResponse,
 } from &#x27;../controller/dto&#x27;;
+import { ExternalTool } from &#x27;../domain&#x27;;
 import { ContextExternalToolTemplateInfo } from &#x27;../uc&#x27;;
 import { ExternalToolResponseMapper } from &#x27;./external-tool-response.mapper&#x27;;
 
 export class ToolConfigurationMapper {
 	static mapToSchoolExternalToolConfigurationTemplateResponse(
-		externalTool: ExternalToolDO
+		externalTool: ExternalTool
 	): SchoolExternalToolConfigurationTemplateResponse {
 		const mapped &#x3D; new SchoolExternalToolConfigurationTemplateResponse({
 			externalToolId: externalTool.id ?? &#x27;&#x27;,
@@ -446,7 +446,7 @@ export class ToolConfigurationMapper {
 	}
 
 	static mapToSchoolExternalToolConfigurationTemplateListResponse(
-		externalTools: ExternalToolDO[]
+		externalTools: ExternalTool[]
 	): SchoolExternalToolConfigurationTemplateListResponse {
 		const mappedTools &#x3D; externalTools.map(
 			(tool): SchoolExternalToolConfigurationTemplateResponse &#x3D;&gt;

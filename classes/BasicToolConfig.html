@@ -68,7 +68,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/entity/tools/external-tool/config/basic-tool-config.ts</code>
+            <code>apps/server/src/modules/tool/external-tool/domain/config/basic-tool-config.do.ts</code>
         </p>
 
 
@@ -95,11 +95,9 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier"></span>
                                 <a href="#baseUrl" >baseUrl</a>
                             </li>
                             <li>
-                                    <span class="modifier"></span>
                                 <a href="#type" >type</a>
                             </li>
                         </ul>
@@ -126,7 +124,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/shared/domain/entity/tools/external-tool/config/basic-tool-config.ts:6</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/tool/external-tool/domain/config/basic-tool-config.do.ts:4</a></div>
                             </td>
                         </tr>
 
@@ -175,7 +173,6 @@
                 <td class="col-md-4">
                     <a name="baseUrl"></a>
                     <span class="name">
-                            <span class="modifier"></span>
                         <span ><b>baseUrl</b></span>
                         <a href="#baseUrl"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -187,15 +184,6 @@
 
                     </td>
                 </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @Property()<br />
-                        </code>
-                    </td>
-                </tr>
                         <tr>
                             <td class="col-md-4">
                                 <div class="io-line">Inherited from         <code><a href="../classes/ExternalToolConfig.html" target="_self" >ExternalToolConfig</a></code>
@@ -204,7 +192,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/ExternalToolConfig.html#source" target="_self" >ExternalToolConfig:10</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/ExternalToolConfig.html#source" target="_self" >ExternalToolConfig:6</a></code>
 </div>
                         </td>
                     </tr>
@@ -218,7 +206,6 @@
                 <td class="col-md-4">
                     <a name="type"></a>
                     <span class="name">
-                            <span class="modifier"></span>
                         <span ><b>type</b></span>
                         <a href="#type"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -230,15 +217,6 @@
 
                     </td>
                 </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @Enum()<br />
-                        </code>
-                    </td>
-                </tr>
                         <tr>
                             <td class="col-md-4">
                                 <div class="io-line">Inherited from         <code><a href="../classes/ExternalToolConfig.html" target="_self" >ExternalToolConfig</a></code>
@@ -247,7 +225,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/ExternalToolConfig.html#source" target="_self" >ExternalToolConfig:7</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/ExternalToolConfig.html#source" target="_self" >ExternalToolConfig:4</a></code>
 </div>
                         </td>
                     </tr>
@@ -267,16 +245,15 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Embeddable } from &#x27;@mikro-orm/core&#x27;;
-import { ToolConfigType } from &#x27;./tool-config-type.enum&#x27;;
-import { ExternalToolConfig } from &#x27;./external-tool-config&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ToolConfigType } from &#x27;../../../common/enum&#x27;;
+import { ExternalToolConfig } from &#x27;./external-tool-config.do&#x27;;
 
-@Embeddable({ discriminatorValue: ToolConfigType.BASIC })
 export class BasicToolConfig extends ExternalToolConfig {
 	constructor(props: BasicToolConfig) {
-		super(props);
-		this.type &#x3D; ToolConfigType.BASIC;
-		this.baseUrl &#x3D; props.baseUrl;
+		super({
+			type: ToolConfigType.BASIC,
+			baseUrl: props.baseUrl,
+		});
 	}
 }
 </code></pre>

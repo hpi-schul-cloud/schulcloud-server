@@ -71,7 +71,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/domainobject/tool/external-tool.do.ts</code>
+            <code>apps/server/src/modules/tool/external-tool/domain/external-tool.do.ts</code>
         </p>
 
 
@@ -172,7 +172,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>config:         <code><a href="../miscellaneous/typealiases.html#BasicToolConfig" target="_self" >BasicToolConfigDO | Lti11ToolConfigDO | Oauth2ToolConfigDO</a></code>
+                                        <code>config:     <code>BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig</code>
 </code>
                                     </td>
                                 </tr>
@@ -180,7 +180,7 @@
 
                                     <tr>
                                         <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#BasicToolConfig" target="_self" >BasicToolConfigDO | Lti11ToolConfigDO | Oauth2ToolConfigDO</a></code>
+                                            <i>Type : </i>    <code>BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig</code>
 
                                         </td>
                                     </tr>
@@ -380,7 +380,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>parameters:         <code><a href="../miscellaneous/typealiases.html#CustomParameter" target="_self" >CustomParameterDO[]</a></code>
+                                        <code>parameters:         <code><a href="../classes/CustomParameter.html" target="_self" >CustomParameter[]</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -388,7 +388,7 @@
 
                                     <tr>
                                         <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#CustomParameter" target="_self" >CustomParameterDO[]</a></code>
+                                            <i>Type : </i>        <code><a href="../classes/CustomParameter.html" target="_self" >CustomParameter[]</a></code>
 
                                         </td>
                                     </tr>
@@ -480,16 +480,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BaseDO } from &#x27;../base.do&#x27;;
-import {
-	Oauth2ToolConfigDO,
-	BasicToolConfigDO,
-	Lti11ToolConfigDO,
-	ExternalToolConfigDO,
-	ToolConfigType,
-} from &#x27;./config&#x27;;
-import { CustomParameterDO } from &#x27;./custom-parameter.do&#x27;;
-import { ToolVersion } from &#x27;./types&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BaseDO } from &#x27;@shared/domain/domainobject/base.do&#x27;;
+import { ToolVersion } from &#x27;../../common/interface&#x27;;
+import { Oauth2ToolConfig, BasicToolConfig, Lti11ToolConfig, ExternalToolConfig } from &#x27;./config&#x27;;
+import { CustomParameter } from &#x27;../../common/domain&#x27;;
+import { ToolConfigType } from &#x27;../../common/enum&#x27;;
 
 export interface ExternalToolProps {
 	id?: string;
@@ -500,9 +495,9 @@ export interface ExternalToolProps {
 
 	logoUrl?: string;
 
-	config: BasicToolConfigDO | Lti11ToolConfigDO | Oauth2ToolConfigDO;
+	config: BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig;
 
-	parameters?: CustomParameterDO[];
+	parameters?: CustomParameter[];
 
 	isHidden: boolean;
 
@@ -511,16 +506,16 @@ export interface ExternalToolProps {
 	version: number;
 }
 
-export class ExternalToolDO extends BaseDO implements ToolVersion {
+export class ExternalTool extends BaseDO implements ToolVersion {
 	name: string;
 
 	url?: string;
 
 	logoUrl?: string;
 
-	config: BasicToolConfigDO | Lti11ToolConfigDO | Oauth2ToolConfigDO;
+	config: BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig;
 
-	parameters?: CustomParameterDO[];
+	parameters?: CustomParameter[];
 
 	isHidden: boolean;
 
@@ -545,11 +540,11 @@ export class ExternalToolDO extends BaseDO implements ToolVersion {
 		return this.version;
 	}
 
-	static isOauth2Config(config: ExternalToolConfigDO): config is Oauth2ToolConfigDO {
+	static isOauth2Config(config: ExternalToolConfig): config is Oauth2ToolConfig {
 		return ToolConfigType.OAUTH2 &#x3D;&#x3D;&#x3D; config.type;
 	}
 
-	static isLti11Config(config: ExternalToolConfigDO): config is Lti11ToolConfigDO {
+	static isLti11Config(config: ExternalToolConfig): config is Lti11ToolConfig {
 		return ToolConfigType.LTI11 &#x3D;&#x3D;&#x3D; config.type;
 	}
 }

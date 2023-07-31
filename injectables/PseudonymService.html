@@ -121,7 +121,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:10</a></div>
                             </td>
                         </tr>
 
@@ -204,15 +204,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findByUserAndTool(user: <a href="../classes/UserDO.html" target="_self">UserDO</a>, tool: <a href="../undefineds/ExternalTool.html" target="_self">ExternalToolDO | LtiToolDO</a>)</code>
+                    <code>findByUserAndTool(user: <a href="../classes/UserDO.html" target="_self">UserDO</a>, tool: <a href="../entitys/LtiTool.html" target="_self">ExternalTool | LtiToolDO</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="16"
-                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:16</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="17"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:17</a></div>
                 </td>
             </tr>
 
@@ -247,7 +247,7 @@
                                 <tr>
                                     <td>tool</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#ExternalTool" target="_self" >ExternalToolDO | LtiToolDO</a></code>
+                                                <code><a href="../entitys/LtiTool.html" target="_self" >ExternalTool | LtiToolDO</a></code>
                                     </td>
 
                                     <td>
@@ -288,15 +288,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findOrCreatePseudonym(user: <a href="../classes/UserDO.html" target="_self">UserDO</a>, tool: <a href="../undefineds/ExternalTool.html" target="_self">ExternalToolDO | LtiToolDO</a>)</code>
+                    <code>findOrCreatePseudonym(user: <a href="../classes/UserDO.html" target="_self">UserDO</a>, tool: <a href="../entitys/LtiTool.html" target="_self">ExternalTool | LtiToolDO</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="26"
-                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:26</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="27"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:27</a></div>
                 </td>
             </tr>
 
@@ -331,7 +331,7 @@
                                 <tr>
                                     <td>tool</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#ExternalTool" target="_self" >ExternalToolDO | LtiToolDO</a></code>
+                                                <code><a href="../entitys/LtiTool.html" target="_self" >ExternalTool | LtiToolDO</a></code>
                                     </td>
 
                                     <td>
@@ -371,15 +371,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getRepository(tool: <a href="../undefineds/ExternalTool.html" target="_self">ExternalToolDO | LtiToolDO</a>)</code>
+                    <code>getRepository(tool: <a href="../entitys/LtiTool.html" target="_self">ExternalTool | LtiToolDO</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="50"
-                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:50</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="51"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:51</a></div>
                 </td>
             </tr>
 
@@ -402,7 +402,7 @@
                                 <tr>
                                     <td>tool</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#ExternalTool" target="_self" >ExternalToolDO | LtiToolDO</a></code>
+                                                <code><a href="../entitys/LtiTool.html" target="_self" >ExternalTool | LtiToolDO</a></code>
                                     </td>
 
                                     <td>
@@ -417,7 +417,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/Pseudonym.html" target="_self" >PseudonymsRepo | ExternalToolPseudonymRepo</a></code>
+                        <b>Returns : </b>    <code>PseudonymsRepo | ExternalToolPseudonymRepo</code>
 
                     </div>
                     <div class="io-description">
@@ -434,10 +434,11 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
-import { ExternalToolDO, LtiToolDO, Pseudonym, UserDO } from &#x27;@shared/domain&#x27;;
+import { LtiToolDO, Pseudonym, UserDO } from &#x27;@shared/domain&#x27;;
 import { v4 as uuidv4 } from &#x27;uuid&#x27;;
 import { IToolFeatures, ToolFeatures } from &#x27;@src/modules/tool/tool-config&#x27;;
 import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+import { ExternalTool } from &#x27;@src/modules/tool/external-tool/domain&#x27;;
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from &#x27;../repo&#x27;;
 
 @Injectable()
@@ -448,7 +449,7 @@ export class PseudonymService {
 		private readonly externalToolPseudonymRepo: ExternalToolPseudonymRepo
 	) {}
 
-	public async findByUserAndTool(user: UserDO, tool: ExternalToolDO | LtiToolDO): Promise&lt;Pseudonym&gt; {
+	public async findByUserAndTool(user: UserDO, tool: ExternalTool | LtiToolDO): Promise&lt;Pseudonym&gt; {
 		if (!user.id || !tool.id) {
 			throw new InternalServerErrorException(&#x27;User or tool id is missing&#x27;);
 		}
@@ -458,7 +459,7 @@ export class PseudonymService {
 		return pseudonymPromise;
 	}
 
-	public async findOrCreatePseudonym(user: UserDO, tool: ExternalToolDO | LtiToolDO): Promise&lt;Pseudonym&gt; {
+	public async findOrCreatePseudonym(user: UserDO, tool: ExternalTool | LtiToolDO): Promise&lt;Pseudonym&gt; {
 		if (!user.id || !tool.id) {
 			throw new InternalServerErrorException(&#x27;User or tool id is missing&#x27;);
 		}
@@ -482,8 +483,8 @@ export class PseudonymService {
 		return pseudonym;
 	}
 
-	private getRepository(tool: ExternalToolDO | LtiToolDO): PseudonymsRepo | ExternalToolPseudonymRepo {
-		if (this.toolFeatures.ctlToolsTabEnabled &amp;&amp; tool instanceof ExternalToolDO) {
+	private getRepository(tool: ExternalTool | LtiToolDO): PseudonymsRepo | ExternalToolPseudonymRepo {
+		if (this.toolFeatures.ctlToolsTabEnabled &amp;&amp; tool instanceof ExternalTool) {
 			return this.externalToolPseudonymRepo;
 		}
 		return this.pseudonymRepo;

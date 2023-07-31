@@ -124,7 +124,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapRequestToCustomParameterEntryDO(customParameterParams: <a href="../undefineds/CustomParameter.html" target="_self">CustomParameterEntryParam[]</a>)</code>
+                    <code>mapRequestToCustomParameterEntryDO(customParameterParams: CustomParameterEntryParam[])</code>
                 </td>
             </tr>
 
@@ -155,7 +155,7 @@
                                 <tr>
                                     <td>customParameterParams</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#CustomParameter" target="_self" >CustomParameterEntryParam[]</a></code>
+                                            <code>CustomParameterEntryParam[]</code>
                                     </td>
 
                                     <td>
@@ -170,7 +170,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CustomParameter" target="_self" >CustomParameterEntryDO[]</a></code>
+                        <b>Returns : </b>    <code>CustomParameterEntry[]</code>
 
                     </div>
                     <div class="io-description">
@@ -239,7 +239,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/SchoolExternalTool.html" target="_self" >SchoolExternalTool</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#SchoolExternalToolDto" target="_self" >SchoolExternalToolDto</a></code>
 
                     </div>
                     <div class="io-description">
@@ -256,13 +256,13 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { CustomParameterEntryDO } from &#x27;@shared/domain&#x27;;
 import { CustomParameterEntryParam, SchoolExternalToolPostParams } from &#x27;../controller/dto&#x27;;
-import { SchoolExternalTool } from &#x27;../uc/dto/school-external-tool.types&#x27;;
+import { SchoolExternalToolDto } from &#x27;../uc/dto/school-external-tool.types&#x27;;
+import { CustomParameterEntry } from &#x27;../../common/domain&#x27;;
 
 @Injectable()
 export class SchoolExternalToolRequestMapper {
-	mapSchoolExternalToolRequest(request: SchoolExternalToolPostParams): SchoolExternalTool {
+	mapSchoolExternalToolRequest(request: SchoolExternalToolPostParams): SchoolExternalToolDto {
 		return {
 			toolId: request.toolId,
 			schoolId: request.schoolId,
@@ -273,7 +273,7 @@ export class SchoolExternalToolRequestMapper {
 
 	private mapRequestToCustomParameterEntryDO(
 		customParameterParams: CustomParameterEntryParam[]
-	): CustomParameterEntryDO[] {
+	): CustomParameterEntry[] {
 		return customParameterParams.map((customParameterParam: CustomParameterEntryParam) &#x3D;&gt; {
 			return {
 				name: customParameterParam.name,

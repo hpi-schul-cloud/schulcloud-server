@@ -127,15 +127,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToCustomParameterEntryResponse(entries: <a href="../undefineds/CustomParameter.html" target="_self">CustomParameterEntryDO[]</a>)</code>
+                    <code>mapToCustomParameterEntryResponse(entries: CustomParameterEntry[])</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="44"
-                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-response.mapper.ts:44</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="41"
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-response.mapper.ts:41</a></div>
                 </td>
             </tr>
 
@@ -158,7 +158,7 @@
                                 <tr>
                                     <td>entries</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#CustomParameter" target="_self" >CustomParameterEntryDO[]</a></code>
+                                            <code>CustomParameterEntry[]</code>
                                     </td>
 
                                     <td>
@@ -173,7 +173,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CustomParameter" target="_self" >CustomParameterEntryResponse[]</a></code>
+                        <b>Returns : </b>    <code>CustomParameterEntryResponse[]</code>
 
                     </div>
                     <div class="io-description">
@@ -196,15 +196,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>mapToSchoolExternalToolResponse(schoolExternalToolDO: <a href="../classes/SchoolExternalToolDO.html" target="_self">SchoolExternalToolDO</a>)</code>
+<code>mapToSchoolExternalToolResponse(schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="30"
-                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-response.mapper.ts:30</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="27"
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-response.mapper.ts:27</a></div>
                 </td>
             </tr>
 
@@ -225,9 +225,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>schoolExternalToolDO</td>
+                                    <td>schoolExternalTool</td>
                                     <td>
-                                                <code><a href="../classes/SchoolExternalToolDO.html" target="_self" >SchoolExternalToolDO</a></code>
+                                                <code><a href="../classes/SchoolExternalTool.html" target="_self" >SchoolExternalTool</a></code>
                                     </td>
 
                                     <td>
@@ -265,15 +265,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>mapToSearchListResponse(externalToolDOS: SchoolExternalToolDO[])</code>
+<code>mapToSearchListResponse(externalTools: <a href="../entitys/School.html" target="_self">SchoolExternalTool[]</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="23"
-                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-response.mapper.ts:23</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="20"
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-response.mapper.ts:20</a></div>
                 </td>
             </tr>
 
@@ -294,9 +294,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>externalToolDOS</td>
+                                    <td>externalTools</td>
                                     <td>
-                                            <code>SchoolExternalToolDO[]</code>
+                                                <code><a href="../entitys/School.html" target="_self" >SchoolExternalTool[]</a></code>
                                     </td>
 
                                     <td>
@@ -328,18 +328,15 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import {
-	CustomParameterEntry,
-	CustomParameterEntryDO,
-	SchoolExternalToolDO,
-	ToolConfigurationStatus,
-} from &#x27;@shared/domain&#x27;;
+import { CustomParameterEntry } from &#x27;../../common/domain&#x27;;
+import { ToolConfigurationStatus } from &#x27;../../common/enum&#x27;;
 import { ToolConfigurationStatusResponse } from &#x27;../../external-tool/controller/dto&#x27;;
 import {
 	CustomParameterEntryResponse,
 	SchoolExternalToolResponse,
 	SchoolExternalToolSearchListResponse,
 } from &#x27;../controller/dto&#x27;;
+import { SchoolExternalTool } from &#x27;../domain&#x27;;
 
 export const statusMapping: Record&lt;ToolConfigurationStatus, ToolConfigurationStatusResponse&gt; &#x3D; {
 	[ToolConfigurationStatus.LATEST]: ToolConfigurationStatusResponse.LATEST,
@@ -349,30 +346,30 @@ export const statusMapping: Record&lt;ToolConfigurationStatus, ToolConfiguration
 
 @Injectable()
 export class SchoolExternalToolResponseMapper {
-	mapToSearchListResponse(externalToolDOS: SchoolExternalToolDO[]): SchoolExternalToolSearchListResponse {
-		const responses: SchoolExternalToolResponse[] &#x3D; externalToolDOS.map((toolDO: SchoolExternalToolDO) &#x3D;&gt;
+	mapToSearchListResponse(externalTools: SchoolExternalTool[]): SchoolExternalToolSearchListResponse {
+		const responses: SchoolExternalToolResponse[] &#x3D; externalTools.map((toolDO: SchoolExternalTool) &#x3D;&gt;
 			this.mapToSchoolExternalToolResponse(toolDO)
 		);
 		return new SchoolExternalToolSearchListResponse(responses);
 	}
 
-	mapToSchoolExternalToolResponse(schoolExternalToolDO: SchoolExternalToolDO): SchoolExternalToolResponse {
+	mapToSchoolExternalToolResponse(schoolExternalTool: SchoolExternalTool): SchoolExternalToolResponse {
 		return {
-			id: schoolExternalToolDO.id ?? &#x27;&#x27;,
-			name: schoolExternalToolDO.name ?? &#x27;&#x27;,
-			toolId: schoolExternalToolDO.toolId,
-			schoolId: schoolExternalToolDO.schoolId,
-			parameters: this.mapToCustomParameterEntryResponse(schoolExternalToolDO.parameters),
-			toolVersion: schoolExternalToolDO.toolVersion,
-			status: schoolExternalToolDO.status
-				? statusMapping[schoolExternalToolDO.status]
+			id: schoolExternalTool.id ?? &#x27;&#x27;,
+			name: schoolExternalTool.name ?? &#x27;&#x27;,
+			toolId: schoolExternalTool.toolId,
+			schoolId: schoolExternalTool.schoolId,
+			parameters: this.mapToCustomParameterEntryResponse(schoolExternalTool.parameters),
+			toolVersion: schoolExternalTool.toolVersion,
+			status: schoolExternalTool.status
+				? statusMapping[schoolExternalTool.status]
 				: ToolConfigurationStatusResponse.UNKNOWN,
 		};
 	}
 
-	private mapToCustomParameterEntryResponse(entries: CustomParameterEntryDO[]): CustomParameterEntryResponse[] {
+	private mapToCustomParameterEntryResponse(entries: CustomParameterEntry[]): CustomParameterEntryResponse[] {
 		return entries.map(
-			(entry: CustomParameterEntry): CustomParameterEntryDO &#x3D;&gt;
+			(entry: CustomParameterEntry): CustomParameterEntry &#x3D;&gt;
 				new CustomParameterEntryResponse({
 					name: entry.name,
 					value: entry.value,

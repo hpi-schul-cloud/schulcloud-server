@@ -68,7 +68,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/testing/factory/external-tool.factory.ts</code>
+            <code>apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts</code>
         </p>
 
 
@@ -77,7 +77,7 @@
                 <h3>Extends</h3>
             </p>
             <p class="comment">
-                        <code><a href="../classes/BaseFactory.html" target="_self" >BaseFactory</a></code>
+                        <code><a href="../classes/DoBaseFactory.html" target="_self" >DoBaseFactory</a></code>
             </p>
 
 
@@ -112,16 +112,17 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#withBasicConfig" >withBasicConfig</a>
+                                <a href="#withCustomParameters" >withCustomParameters</a>
                             </li>
                             <li>
                                 <a href="#withLti11Config" >withLti11Config</a>
                             </li>
                             <li>
-                                <a href="#withName" >withName</a>
+                                <a href="#withOauth2Config" >withOauth2Config</a>
                             </li>
                             <li>
-                                <a href="#withOauth2Config" >withOauth2Config</a>
+                                    <span class="modifier"></span>
+                                <a href="#buildWithId" >buildWithId</a>
                             </li>
                             <li>
                                 <a href="#afterBuild" >afterBuild</a>
@@ -137,9 +138,6 @@
                             </li>
                             <li>
                                 <a href="#buildListWithId" >buildListWithId</a>
-                            </li>
-                            <li>
-                                <a href="#buildWithId" >buildWithId</a>
                             </li>
                             <li>
                                     <span class="modifier">Protected</span>
@@ -226,80 +224,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="withBasicConfig"></a>
+                    <a name="withCustomParameters"></a>
                     <span class="name">
-                        <span ><b>withBasicConfig</b></span>
-                        <a href="#withBasicConfig"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>withCustomParameters</b></span>
+                        <a href="#withCustomParameters"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>withBasicConfig()</code>
+<code>withCustomParameters(number: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, customParam?: <a href="../classes/CustomParameter.html" target="_self">DeepPartial&lt;CustomParameter&gt;</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="26"
-                            class="link-to-prism">apps/server/src/shared/testing/factory/external-tool.factory.ts:26</a></div>
-                </td>
-            </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="withLti11Config"></a>
-                    <span class="name">
-                        <span ><b>withLti11Config</b></span>
-                        <a href="#withLti11Config"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>withLti11Config()</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="48"
-                            class="link-to-prism">apps/server/src/shared/testing/factory/external-tool.factory.ts:48</a></div>
-                </td>
-            </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="withName"></a>
-                    <span class="name">
-                        <span ><b>withName</b></span>
-                        <a href="#withName"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>withName(name: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="19"
-                            class="link-to-prism">apps/server/src/shared/testing/factory/external-tool.factory.ts:19</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="99"
+                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:99</a></div>
                 </td>
             </tr>
 
@@ -320,13 +262,87 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>name</td>
+                                    <td>number</td>
                                     <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
                                     </td>
 
                                     <td>
                                         No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>customParam</td>
+                                    <td>
+                                                <code><a href="../classes/CustomParameter.html" target="_self" >DeepPartial&lt;CustomParameter&gt;</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="withLti11Config"></a>
+                    <span class="name">
+                        <span ><b>withLti11Config</b></span>
+                        <a href="#withLti11Config"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>withLti11Config(customParam?: <a href="../classes/Lti11ToolConfig.html" target="_self">DeepPartial&lt;Lti11ToolConfig&gt;</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="92"
+                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:92</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>customParam</td>
+                                    <td>
+                                                <code><a href="../classes/Lti11ToolConfig.html" target="_self" >DeepPartial&lt;Lti11ToolConfig&gt;</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
                                     </td>
 
 
@@ -353,15 +369,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>withOauth2Config(clientId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+<code>withOauth2Config(customParam?: <a href="../classes/Oauth2ToolConfig.html" target="_self">DeepPartial&lt;Oauth2ToolConfig&gt;</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="36"
-                            class="link-to-prism">apps/server/src/shared/testing/factory/external-tool.factory.ts:36</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="85"
+                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:85</a></div>
                 </td>
             </tr>
 
@@ -382,13 +398,13 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>clientId</td>
+                                    <td>customParam</td>
                                     <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                <code><a href="../classes/Oauth2ToolConfig.html" target="_self" >DeepPartial&lt;Oauth2ToolConfig&gt;</a></code>
                                     </td>
 
                                     <td>
-                                        No
+                                        Yes
                                     </td>
 
 
@@ -397,6 +413,115 @@
                         </table>
                     </div>
                     <div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildWithId"></a>
+                    <span class="name">
+                        <span class="modifier"></span>
+                        <span ><b>buildWithId</b></span>
+                        <a href="#buildWithId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildWithId(params?: DeepPartial<U>, id?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options: <a href="../interfaces/Options.html" target="_self">BuildOptions&lt;U | I&gt;</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Inherited from         <code><a href="../classes/BaseFactory.html" target="_self" >BaseFactory</a></code>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-line">Defined in         <code><a href="../classes/BaseFactory.html#source" target="_self" >BaseFactory:7</a></code>
+</div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>params</td>
+                                    <td>
+                                            <code>DeepPartial&lt;U&gt;</code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>id</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>options</td>
+                                    <td>
+                                                <code><a href="../interfaces/Options.html" target="_self" >BuildOptions&lt;U | I&gt;</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>{}</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>T</code>
+
+                    </div>
+                    <div class="io-description">
+                        
                     </div>
                 </td>
             </tr>
@@ -857,116 +982,6 @@
                     </div>
                     <div class="io-description">
                         
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="buildWithId"></a>
-                    <span class="name">
-                        <span ><b>buildWithId</b></span>
-                        <a href="#buildWithId"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>buildWithId(params?: DeepPartial<U>, id?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options: <a href="../interfaces/Options.html" target="_self">BuildOptions&lt;U | I&gt;</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Inherited from         <code><a href="../classes/BaseFactory.html" target="_self" >BaseFactory</a></code>
-</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BaseFactory.html#source" target="_self" >BaseFactory:60</a></code>
-</div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-description"><p>Build an entity using your factory and generate a id for it.</p>
-</div>
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                    <td>Default value</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>params</td>
-                                    <td>
-                                            <code>DeepPartial&lt;U&gt;</code>
-                                    </td>
-
-                                    <td>
-                                        Yes
-                                    </td>
-
-                                    <td>
-                                    </td>
-
-                                </tr>
-                                <tr>
-                                    <td>id</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        Yes
-                                    </td>
-
-                                    <td>
-                                    </td>
-
-                                </tr>
-                                <tr>
-                                    <td>options</td>
-                                    <td>
-                                                <code><a href="../interfaces/Options.html" target="_self" >BuildOptions&lt;U | I&gt;</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-                                    <td>
-                                        <code>{}</code>
-                                    </td>
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>    <code>T</code>
-
-                    </div>
-                    <div class="io-description">
-                        <p>an entity</p>
-
                     </div>
                 </td>
             </tr>
@@ -1449,94 +1464,120 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
-	BasicToolConfig,
-	CustomParameter,
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CustomParameter } from &#x27;@src/modules/tool/common/domain&#x27;;
+import {
 	CustomParameterLocation,
 	CustomParameterScope,
 	CustomParameterType,
-	ExternalTool,
-	IExternalToolProperties,
-	Lti11ToolConfig,
 	LtiMessageType,
 	LtiPrivacyPermission,
-	Oauth2ToolConfig,
+	TokenEndpointAuthMethod,
 	ToolConfigType,
-} from &#x27;@shared/domain&#x27;;
+} from &#x27;@src/modules/tool/common/enum&#x27;;
+import {
+	BasicToolConfig,
+	ExternalTool,
+	ExternalToolProps,
+	Lti11ToolConfig,
+	Oauth2ToolConfig,
+} from &#x27;@src/modules/tool/external-tool/domain&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
-import { BaseFactory } from &#x27;./base.factory&#x27;;
+import { DoBaseFactory } from &#x27;../do-base.factory&#x27;;
 
-export class ExternalToolFactory extends BaseFactory&lt;ExternalTool, IExternalToolProperties&gt; {
-	withName(name: string): this {
-		const params: DeepPartial&lt;IExternalToolProperties&gt; &#x3D; {
-			name,
+export const basicToolConfigFactory &#x3D; DoBaseFactory.define&lt;BasicToolConfig, BasicToolConfig&gt;(BasicToolConfig, () &#x3D;&gt; {
+	return {
+		type: ToolConfigType.BASIC,
+		baseUrl: &#x27;https://www.basic-baseUrl.com/&#x27;,
+	};
+});
+
+class Oauth2ToolConfigFactory extends DoBaseFactory&lt;Oauth2ToolConfig, Oauth2ToolConfig&gt; {
+	withExternalData(oauth2Params?: DeepPartial&lt;Oauth2ToolConfig&gt;): this {
+		const params: DeepPartial&lt;Oauth2ToolConfig&gt; &#x3D; {
+			clientSecret: &#x27;clientSecret&#x27;,
+			scope: &#x27;offline openid&#x27;,
+			frontchannelLogoutUri: &#x27;https://www.frontchannel.com/&#x27;,
+			redirectUris: [&#x27;https://www.redirect.com/&#x27;],
+			tokenEndpointAuthMethod: TokenEndpointAuthMethod.CLIENT_SECRET_POST,
+		};
+
+		return this.params({ ...params, ...oauth2Params });
+	}
+}
+
+export const oauth2ToolConfigFactory &#x3D; Oauth2ToolConfigFactory.define(Oauth2ToolConfig, () &#x3D;&gt; {
+	return {
+		type: ToolConfigType.OAUTH2,
+		baseUrl: &#x27;https://www.oauth2-baseUrl.com/&#x27;,
+		clientId: &#x27;clientId&#x27;,
+		skipConsent: false,
+	};
+});
+
+export const lti11ToolConfigFactory &#x3D; DoBaseFactory.define&lt;Lti11ToolConfig, Lti11ToolConfig&gt;(Lti11ToolConfig, () &#x3D;&gt; {
+	return {
+		type: ToolConfigType.LTI11,
+		baseUrl: &#x27;https://www.lti11-baseUrl.com/&#x27;,
+		key: &#x27;key&#x27;,
+		secret: &#x27;secret&#x27;,
+		privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
+		lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
+		resource_link_id: &#x27;linkId&#x27;,
+	};
+});
+
+class CustomParameterFactory extends DoBaseFactory&lt;CustomParameter, CustomParameter&gt; {
+	buildListWithEachType(params?: DeepPartial&lt;CustomParameter&gt;): CustomParameter[] {
+		const globalParameter &#x3D; this.build({ ...params, scope: CustomParameterScope.GLOBAL });
+		const schoolParameter &#x3D; this.build({ ...params, scope: CustomParameterScope.SCHOOL });
+		const contextParameter &#x3D; this.build({ ...params, scope: CustomParameterScope.CONTEXT });
+
+		return [globalParameter, schoolParameter, contextParameter];
+	}
+}
+
+export const customParameterFactory &#x3D; CustomParameterFactory.define(CustomParameter, ({ sequence }) &#x3D;&gt; {
+	return {
+		name: &#x60;custom-parameter-${sequence}&#x60;,
+		displayName: &#x27;User Friendly Name&#x27;,
+		type: CustomParameterType.STRING,
+		scope: CustomParameterScope.GLOBAL,
+		location: CustomParameterLocation.BODY,
+		isOptional: false,
+	};
+});
+
+class ExternalToolFactory extends DoBaseFactory&lt;ExternalTool, ExternalToolProps&gt; {
+	withOauth2Config(customParam?: DeepPartial&lt;Oauth2ToolConfig&gt;): this {
+		const params: DeepPartial&lt;ExternalTool&gt; &#x3D; {
+			config: oauth2ToolConfigFactory.build(customParam),
 		};
 		return this.params(params);
 	}
 
-	withBasicConfig(): this {
-		const params: DeepPartial&lt;IExternalToolProperties&gt; &#x3D; {
-			config: new BasicToolConfig({
-				type: ToolConfigType.BASIC,
-				baseUrl: &#x27;mockBaseUrl&#x27;,
-			}),
+	withLti11Config(customParam?: DeepPartial&lt;Lti11ToolConfig&gt;): this {
+		const params: DeepPartial&lt;ExternalTool&gt; &#x3D; {
+			config: lti11ToolConfigFactory.build(customParam),
 		};
 		return this.params(params);
 	}
 
-	withOauth2Config(clientId: string): this {
-		const params: DeepPartial&lt;IExternalToolProperties&gt; &#x3D; {
-			config: new Oauth2ToolConfig({
-				type: ToolConfigType.OAUTH2,
-				baseUrl: &#x27;mockBaseUrl&#x27;,
-				clientId,
-				skipConsent: false,
-			}),
-		};
-		return this.params(params);
-	}
-
-	withLti11Config(): this {
-		const params: DeepPartial&lt;IExternalToolProperties&gt; &#x3D; {
-			config: new Lti11ToolConfig({
-				type: ToolConfigType.BASIC,
-				baseUrl: &#x27;mockBaseUrl&#x27;,
-				key: &#x27;key&#x27;,
-				lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
-				resource_link_id: &#x27;resource_link_id&#x27;,
-				secret: &#x27;secret&#x27;,
-				privacy_permission: LtiPrivacyPermission.ANONYMOUS,
-			}),
+	withCustomParameters(number: number, customParam?: DeepPartial&lt;CustomParameter&gt;): this {
+		const params: DeepPartial&lt;ExternalTool&gt; &#x3D; {
+			parameters: customParameterFactory.buildList(number, customParam),
 		};
 		return this.params(params);
 	}
 }
 
-export const externalToolFactory &#x3D; ExternalToolFactory.define(ExternalTool, ({ sequence }): IExternalToolProperties &#x3D;&gt; {
+export const externalToolFactory &#x3D; ExternalToolFactory.define(ExternalTool, ({ sequence }) &#x3D;&gt; {
 	return {
 		name: &#x60;external-tool-${sequence}&#x60;,
-		url: &#x27;&#x27;,
-		logoUrl: &#x27;&#x27;,
-		config: new BasicToolConfig({
-			type: ToolConfigType.BASIC,
-			baseUrl: &#x27;mockBaseUrl&#x27;,
-		}),
-		parameters: [
-			new CustomParameter({
-				name: &#x27;name&#x27;,
-				displayName: &#x27;User Friendly Name&#x27;,
-				description: &#x27;This is a mock parameter.&#x27;,
-				default: &#x27;default&#x27;,
-				location: CustomParameterLocation.PATH,
-				regex: &#x27;regex&#x27;,
-				regexComment: &#x27;mockComment&#x27;,
-				scope: CustomParameterScope.SCHOOL,
-				type: CustomParameterType.STRING,
-				isOptional: false,
-			}),
-		],
+		url: &#x27;https://url.com/&#x27;,
+		config: basicToolConfigFactory.build(),
+		logoUrl: &#x27;https://logo.com/&#x27;,
 		isHidden: false,
-		openNewTab: true,
+		openNewTab: false,
 		version: 1,
 	};
 });

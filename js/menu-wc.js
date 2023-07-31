@@ -2468,7 +2468,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="entities/ColumnNode.html" data-type="entity-link" >ColumnNode</a>
                                 </li>
                                 <li class="link">
-                                    <a href="entities/ContextExternalTool.html" data-type="entity-link" >ContextExternalTool</a>
+                                    <a href="entities/ContextExternalToolEntity.html" data-type="entity-link" >ContextExternalToolEntity</a>
                                 </li>
                                 <li class="link">
                                     <a href="entities/Course.html" data-type="entity-link" >Course</a>
@@ -2486,7 +2486,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="entities/DashboardModelEntity.html" data-type="entity-link" >DashboardModelEntity</a>
                                 </li>
                                 <li class="link">
-                                    <a href="entities/ExternalTool.html" data-type="entity-link" >ExternalTool</a>
+                                    <a href="entities/ExternalToolEntity.html" data-type="entity-link" >ExternalToolEntity</a>
                                 </li>
                                 <li class="link">
                                     <a href="entities/ExternalToolPseudonymEntity.html" data-type="entity-link" >ExternalToolPseudonymEntity</a>
@@ -2537,7 +2537,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="entities/School.html" data-type="entity-link" >School</a>
                                 </li>
                                 <li class="link">
-                                    <a href="entities/SchoolExternalTool.html" data-type="entity-link" >SchoolExternalTool</a>
+                                    <a href="entities/SchoolExternalToolEntity.html" data-type="entity-link" >SchoolExternalToolEntity</a>
                                 </li>
                                 <li class="link">
                                     <a href="entities/SchoolNews.html" data-type="entity-link" >SchoolNews</a>
@@ -2682,7 +2682,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/BasicToolConfig.html" data-type="entity-link" >BasicToolConfig</a>
                             </li>
                             <li class="link">
-                                <a href="classes/BasicToolConfigDO.html" data-type="entity-link" >BasicToolConfigDO</a>
+                                <a href="classes/BasicToolConfigEntity.html" data-type="entity-link" >BasicToolConfigEntity</a>
                             </li>
                             <li class="link">
                                 <a href="classes/BasicToolConfigParams.html" data-type="entity-link" >BasicToolConfigParams</a>
@@ -2871,6 +2871,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ContentElementUrlParams.html" data-type="entity-link" >ContentElementUrlParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ContextExternalTool.html" data-type="entity-link" >ContextExternalTool</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ContextExternalToolConfigurationTemplateListResponse.html" data-type="entity-link" >ContextExternalToolConfigurationTemplateListResponse</a>
                             </li>
                             <li class="link">
@@ -2880,10 +2883,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ContextExternalToolContextParams.html" data-type="entity-link" >ContextExternalToolContextParams</a>
                             </li>
                             <li class="link">
-                                <a href="classes/ContextExternalToolDO.html" data-type="entity-link" >ContextExternalToolDO</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/ContextExternalToolDOFactory.html" data-type="entity-link" >ContextExternalToolDOFactory</a>
+                                <a href="classes/ContextExternalToolFactory.html" data-type="entity-link" >ContextExternalToolFactory</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ContextExternalToolIdParams.html" data-type="entity-link" >ContextExternalToolIdParams</a>
@@ -3006,13 +3006,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/CustomParameter.html" data-type="entity-link" >CustomParameter</a>
                             </li>
                             <li class="link">
-                                <a href="classes/CustomParameterDO.html" data-type="entity-link" >CustomParameterDO</a>
+                                <a href="classes/CustomParameterEntity.html" data-type="entity-link" >CustomParameterEntity</a>
                             </li>
                             <li class="link">
                                 <a href="classes/CustomParameterEntry.html" data-type="entity-link" >CustomParameterEntry</a>
                             </li>
                             <li class="link">
-                                <a href="classes/CustomParameterEntryDO.html" data-type="entity-link" >CustomParameterEntryDO</a>
+                                <a href="classes/CustomParameterEntryEntity.html" data-type="entity-link" >CustomParameterEntryEntity</a>
                             </li>
                             <li class="link">
                                 <a href="classes/CustomParameterEntryParam.html" data-type="entity-link" >CustomParameterEntryParam</a>
@@ -3093,13 +3093,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ExternalSchoolDto.html" data-type="entity-link" >ExternalSchoolDto</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ExternalTool.html" data-type="entity-link" >ExternalTool</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ExternalToolConfig.html" data-type="entity-link" >ExternalToolConfig</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ExternalToolConfigCreateParams.html" data-type="entity-link" >ExternalToolConfigCreateParams</a>
                             </li>
                             <li class="link">
-                                <a href="classes/ExternalToolConfigDO.html" data-type="entity-link" >ExternalToolConfigDO</a>
+                                <a href="classes/ExternalToolConfigEntity.html" data-type="entity-link" >ExternalToolConfigEntity</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ExternalToolConfigResponse.html" data-type="entity-link" >ExternalToolConfigResponse</a>
@@ -3108,10 +3111,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ExternalToolCreateParams.html" data-type="entity-link" >ExternalToolCreateParams</a>
                             </li>
                             <li class="link">
-                                <a href="classes/ExternalToolDO.html" data-type="entity-link" >ExternalToolDO</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/ExternalToolDOFactory.html" data-type="entity-link" >ExternalToolDOFactory</a>
+                                <a href="classes/ExternalToolEntityFactory.html" data-type="entity-link" >ExternalToolEntityFactory</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ExternalToolFactory.html" data-type="entity-link" >ExternalToolFactory</a>
@@ -3366,7 +3366,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/Lti11ToolConfigCreateParams.html" data-type="entity-link" >Lti11ToolConfigCreateParams</a>
                             </li>
                             <li class="link">
-                                <a href="classes/Lti11ToolConfigDO.html" data-type="entity-link" >Lti11ToolConfigDO</a>
+                                <a href="classes/Lti11ToolConfigEntity.html" data-type="entity-link" >Lti11ToolConfigEntity</a>
                             </li>
                             <li class="link">
                                 <a href="classes/Lti11ToolConfigResponse.html" data-type="entity-link" >Lti11ToolConfigResponse</a>
@@ -3459,10 +3459,10 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/Oauth2ToolConfigCreateParams.html" data-type="entity-link" >Oauth2ToolConfigCreateParams</a>
                             </li>
                             <li class="link">
-                                <a href="classes/Oauth2ToolConfigDO.html" data-type="entity-link" >Oauth2ToolConfigDO</a>
+                                <a href="classes/Oauth2ToolConfigEntity.html" data-type="entity-link" >Oauth2ToolConfigEntity</a>
                             </li>
                             <li class="link">
-                                <a href="classes/Oauth2ToolConfigDOFactory.html" data-type="entity-link" >Oauth2ToolConfigDOFactory</a>
+                                <a href="classes/Oauth2ToolConfigFactory.html" data-type="entity-link" >Oauth2ToolConfigFactory</a>
                             </li>
                             <li class="link">
                                 <a href="classes/Oauth2ToolConfigResponse.html" data-type="entity-link" >Oauth2ToolConfigResponse</a>
@@ -3699,16 +3699,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/SchoolDO.html" data-type="entity-link" >SchoolDO</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SchoolExternalTool.html" data-type="entity-link" >SchoolExternalTool</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/SchoolExternalToolConfigurationTemplateListResponse.html" data-type="entity-link" >SchoolExternalToolConfigurationTemplateListResponse</a>
                             </li>
                             <li class="link">
                                 <a href="classes/SchoolExternalToolConfigurationTemplateResponse.html" data-type="entity-link" >SchoolExternalToolConfigurationTemplateResponse</a>
                             </li>
                             <li class="link">
-                                <a href="classes/SchoolExternalToolDO.html" data-type="entity-link" >SchoolExternalToolDO</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/SchoolExternalToolDOFactory.html" data-type="entity-link" >SchoolExternalToolDOFactory</a>
+                                <a href="classes/SchoolExternalToolFactory.html" data-type="entity-link" >SchoolExternalToolFactory</a>
                             </li>
                             <li class="link">
                                 <a href="classes/SchoolExternalToolIdParams.html" data-type="entity-link" >SchoolExternalToolIdParams</a>

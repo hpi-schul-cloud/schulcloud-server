@@ -206,7 +206,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createContextExternalTool(contextExternalTool: <a href="../classes/ContextExternalToolDO.html" target="_self">ContextExternalToolDO</a>)</code>
+                    <code>createContextExternalTool(contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
                 </td>
             </tr>
 
@@ -237,7 +237,7 @@
                                 <tr>
                                     <td>contextExternalTool</td>
                                     <td>
-                                                <code><a href="../classes/ContextExternalToolDO.html" target="_self" >ContextExternalToolDO</a></code>
+                                                <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
                                     </td>
 
                                     <td>
@@ -252,7 +252,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;ContextExternalToolDO&gt;</code>
+                        <b>Returns : </b>    <code>Promise&lt;ContextExternalTool&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -348,7 +348,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteContextExternalTool(contextExternalTool: <a href="../classes/ContextExternalToolDO.html" target="_self">ContextExternalToolDO</a>)</code>
+                    <code>deleteContextExternalTool(contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
                 </td>
             </tr>
 
@@ -379,7 +379,7 @@
                                 <tr>
                                     <td>contextExternalTool</td>
                                     <td>
-                                                <code><a href="../classes/ContextExternalToolDO.html" target="_self" >ContextExternalToolDO</a></code>
+                                                <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
                                     </td>
 
                                     <td>
@@ -420,7 +420,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>ensureContextPermissions(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextExternalToolDO: <a href="../classes/ContextExternalToolDO.html" target="_self">ContextExternalToolDO</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+                    <code>ensureContextPermissions(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                 </td>
             </tr>
 
@@ -461,9 +461,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>contextExternalToolDO</td>
+                                    <td>contextExternalTool</td>
                                     <td>
-                                                <code><a href="../classes/ContextExternalToolDO.html" target="_self" >ContextExternalToolDO</a></code>
+                                                <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
                                     </td>
 
                                     <td>
@@ -561,7 +561,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;ContextExternalToolDO[]&gt;</code>
+                        <b>Returns : </b>    <code>Promise&lt;ContextExternalTool[]&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -632,7 +632,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;ContextExternalToolDO[]&gt;</code>
+                        <b>Returns : </b>    <code>Promise&lt;ContextExternalTool[]&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -703,7 +703,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;ContextExternalToolDO&gt;</code>
+                        <b>Returns : </b>    <code>Promise&lt;ContextExternalTool&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -720,12 +720,12 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { forwardRef, Inject, Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
-import { ContextRef, EntityId } from &#x27;@shared/domain&#x27;;
-import { ContextExternalToolDO } from &#x27;@shared/domain/domainobject/tool&#x27;;
+import { EntityId } from &#x27;@shared/domain&#x27;;
 import { ContextExternalToolRepo } from &#x27;@shared/repo&#x27;;
 import { AuthorizableReferenceType, AuthorizationContext, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
 import { ContextExternalToolQuery } from &#x27;../uc/dto/context-external-tool.types&#x27;;
 import { ContextTypeMapper } from &#x27;../../common/mapper&#x27;;
+import { ContextExternalTool, ContextRef } from &#x27;../domain&#x27;;
 
 @Injectable()
 export class ContextExternalToolService {
@@ -735,14 +735,14 @@ export class ContextExternalToolService {
 		private readonly authorizationService: AuthorizationService
 	) {}
 
-	async findContextExternalTools(query: ContextExternalToolQuery): Promise&lt;ContextExternalToolDO[]&gt; {
-		const contextExternalTools: ContextExternalToolDO[] &#x3D; await this.contextExternalToolRepo.find(query);
+	async findContextExternalTools(query: ContextExternalToolQuery): Promise&lt;ContextExternalTool[]&gt; {
+		const contextExternalTools: ContextExternalTool[] &#x3D; await this.contextExternalToolRepo.find(query);
 
 		return contextExternalTools;
 	}
 
-	async getContextExternalToolById(contextExternalToolId: EntityId): Promise&lt;ContextExternalToolDO&gt; {
-		const contextExternalTools: ContextExternalToolDO[] &#x3D; await this.contextExternalToolRepo.find({
+	async getContextExternalToolById(contextExternalToolId: EntityId): Promise&lt;ContextExternalTool&gt; {
+		const contextExternalTools: ContextExternalTool[] &#x3D; await this.contextExternalToolRepo.find({
 			id: contextExternalToolId,
 		});
 
@@ -753,8 +753,8 @@ export class ContextExternalToolService {
 		return contextExternalTools[0];
 	}
 
-	async createContextExternalTool(contextExternalTool: ContextExternalToolDO): Promise&lt;ContextExternalToolDO&gt; {
-		const newContextExternalTool: ContextExternalToolDO &#x3D; new ContextExternalToolDO({
+	async createContextExternalTool(contextExternalTool: ContextExternalTool): Promise&lt;ContextExternalTool&gt; {
+		const newContextExternalTool: ContextExternalTool &#x3D; new ContextExternalTool({
 			displayName: contextExternalTool.displayName,
 			contextRef: contextExternalTool.contextRef,
 			toolVersion: contextExternalTool.toolVersion,
@@ -762,7 +762,7 @@ export class ContextExternalToolService {
 			schoolToolRef: contextExternalTool.schoolToolRef,
 		});
 
-		const createdContextExternalTool: ContextExternalToolDO &#x3D; await this.contextExternalToolRepo.save(
+		const createdContextExternalTool: ContextExternalTool &#x3D; await this.contextExternalToolRepo.save(
 			newContextExternalTool
 		);
 
@@ -770,7 +770,7 @@ export class ContextExternalToolService {
 	}
 
 	async deleteBySchoolExternalToolId(schoolExternalToolId: EntityId) {
-		const contextExternalTools: ContextExternalToolDO[] &#x3D; await this.contextExternalToolRepo.find({
+		const contextExternalTools: ContextExternalTool[] &#x3D; await this.contextExternalToolRepo.find({
 			schoolToolRef: {
 				schoolToolId: schoolExternalToolId,
 			},
@@ -779,34 +779,34 @@ export class ContextExternalToolService {
 		await this.contextExternalToolRepo.delete(contextExternalTools);
 	}
 
-	async deleteContextExternalTool(contextExternalTool: ContextExternalToolDO): Promise&lt;void&gt; {
+	async deleteContextExternalTool(contextExternalTool: ContextExternalTool): Promise&lt;void&gt; {
 		await this.contextExternalToolRepo.delete(contextExternalTool);
 	}
 
 	public async ensureContextPermissions(
 		userId: EntityId,
-		contextExternalToolDO: ContextExternalToolDO,
+		contextExternalTool: ContextExternalTool,
 		context: AuthorizationContext
 	): Promise&lt;void&gt; {
-		if (contextExternalToolDO.id) {
+		if (contextExternalTool.id) {
 			await this.authorizationService.checkPermissionByReferences(
 				userId,
-				AuthorizableReferenceType.ContextExternalTool,
-				contextExternalToolDO.id,
+				AuthorizableReferenceType.ContextExternalToolEntity,
+				contextExternalTool.id,
 				context
 			);
 		}
 
 		await this.authorizationService.checkPermissionByReferences(
 			userId,
-			ContextTypeMapper.mapContextTypeToAllowedAuthorizationEntityType(contextExternalToolDO.contextRef.type),
-			contextExternalToolDO.contextRef.id,
+			ContextTypeMapper.mapContextTypeToAllowedAuthorizationEntityType(contextExternalTool.contextRef.type),
+			contextExternalTool.contextRef.id,
 			context
 		);
 	}
 
-	async findAllByContext(contextRef: ContextRef): Promise&lt;ContextExternalToolDO[]&gt; {
-		const contextExternalTools: ContextExternalToolDO[] &#x3D; await this.contextExternalToolRepo.find({
+	async findAllByContext(contextRef: ContextRef): Promise&lt;ContextExternalTool[]&gt; {
+		const contextExternalTools: ContextExternalTool[] &#x3D; await this.contextExternalToolRepo.find({
 			context: contextRef,
 		});
 

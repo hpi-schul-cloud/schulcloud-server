@@ -611,10 +611,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ExternalTool } from &#x27;@shared/domain/entity/tools/external-tool/external-tool.entity&#x27;;
-import { Scope } from &#x27;@shared/repo/scope&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Scope } from &#x27;@shared/repo/scope&#x27;;
+import { ExternalToolEntity } from &#x27;@src/modules/tool/external-tool/entity&#x27;;
 
-export class ExternalToolScope extends Scope&lt;ExternalTool&gt; {
+export class ExternalToolScope extends Scope&lt;ExternalToolEntity&gt; {
 	byName(name: string | undefined): this {
 		if (name) {
 			this.addQuery({ name: { $re: name } });

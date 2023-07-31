@@ -111,7 +111,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool-authorizable.service.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool-authorizable.service.ts:8</a></div>
                             </td>
                         </tr>
 
@@ -176,8 +176,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="10"
-                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool-authorizable.service.ts:10</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="11"
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool-authorizable.service.ts:11</a></div>
                 </td>
             </tr>
 
@@ -215,7 +215,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;ContextExternalToolDO&gt;</code>
+                        <b>Returns : </b>    <code>Promise&lt;ContextExternalTool&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -232,16 +232,17 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationLoaderService } from &#x27;@src/modules/authorization&#x27;;
-import { ContextExternalToolDO, EntityId } from &#x27;@shared/domain&#x27;;
+import { EntityId } from &#x27;@shared/domain&#x27;;
 import { ContextExternalToolRepo } from &#x27;@shared/repo&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { ContextExternalTool } from &#x27;../domain&#x27;;
 
 @Injectable()
 export class ContextExternalToolAuthorizableService implements AuthorizationLoaderService {
 	constructor(private readonly contextExternalToolRepo: ContextExternalToolRepo) {}
 
-	async findById(id: EntityId): Promise&lt;ContextExternalToolDO&gt; {
-		const contextExternalTool: ContextExternalToolDO &#x3D; await this.contextExternalToolRepo.findById(id);
+	async findById(id: EntityId): Promise&lt;ContextExternalTool&gt; {
+		const contextExternalTool: ContextExternalTool &#x3D; await this.contextExternalToolRepo.findById(id);
 
 		return contextExternalTool;
 	}

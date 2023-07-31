@@ -226,7 +226,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IsEnum, IsString } from &#x27;class-validator&#x27;;
 import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
 import { ExternalToolConfigCreateParams } from &#x27;./external-tool-config.params&#x27;;
-import { ToolConfigType } from &#x27;../../../../../common/interface&#x27;;
+import { ToolConfigType } from &#x27;../../../../../common/enum&#x27;;
 
 export class BasicToolConfigParams extends ExternalToolConfigCreateParams {
 	@IsEnum(ToolConfigType)

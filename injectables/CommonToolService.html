@@ -122,15 +122,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>determineToolConfigurationStatus(externalTool: <a href="../classes/ExternalToolDO.html" target="_self">ExternalToolDO</a>, schoolExternalTool: <a href="../classes/SchoolExternalToolDO.html" target="_self">SchoolExternalToolDO</a>, contextExternalTool: <a href="../classes/ContextExternalToolDO.html" target="_self">ContextExternalToolDO</a>)</code>
+<code>determineToolConfigurationStatus(externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>, schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="12"
-                            class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool.service.ts:12</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="10"
+                            class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool.service.ts:10</a></div>
                 </td>
             </tr>
 
@@ -153,7 +153,7 @@
                                 <tr>
                                     <td>externalTool</td>
                                     <td>
-                                                <code><a href="../classes/ExternalToolDO.html" target="_self" >ExternalToolDO</a></code>
+                                                <code><a href="../classes/ExternalTool.html" target="_self" >ExternalTool</a></code>
                                     </td>
 
                                     <td>
@@ -165,7 +165,7 @@
                                 <tr>
                                     <td>schoolExternalTool</td>
                                     <td>
-                                                <code><a href="../classes/SchoolExternalToolDO.html" target="_self" >SchoolExternalToolDO</a></code>
+                                                <code><a href="../classes/SchoolExternalTool.html" target="_self" >SchoolExternalTool</a></code>
                                     </td>
 
                                     <td>
@@ -177,7 +177,7 @@
                                 <tr>
                                     <td>contextExternalTool</td>
                                     <td>
-                                                <code><a href="../classes/ContextExternalToolDO.html" target="_self" >ContextExternalToolDO</a></code>
+                                                <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
                                     </td>
 
                                     <td>
@@ -224,8 +224,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="28"
-                            class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool.service.ts:28</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="26"
+                            class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool.service.ts:26</a></div>
                 </td>
             </tr>
 
@@ -292,20 +292,18 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import {
-	ContextExternalToolDO,
-	ExternalToolDO,
-	SchoolExternalToolDO,
-	ToolConfigurationStatus,
-	ToolVersion,
-} from &#x27;@shared/domain&#x27;;
+import { ExternalTool } from &#x27;../../external-tool/domain&#x27;;
+import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
+import { ContextExternalTool } from &#x27;../../context-external-tool/domain&#x27;;
+import { ToolConfigurationStatus } from &#x27;../enum&#x27;;
+import { ToolVersion } from &#x27;../interface&#x27;;
 
 @Injectable()
 export class CommonToolService {
 	determineToolConfigurationStatus(
-		externalTool: ExternalToolDO,
-		schoolExternalTool: SchoolExternalToolDO,
-		contextExternalTool: ContextExternalToolDO
+		externalTool: ExternalTool,
+		schoolExternalTool: SchoolExternalTool,
+		contextExternalTool: ContextExternalTool
 	): ToolConfigurationStatus {
 		if (
 			this.isLatest(schoolExternalTool, externalTool) &amp;&amp;

@@ -115,7 +115,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/shared/domain/rules/school-external-tool.rule.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/shared/domain/rules/school-external-tool.rule.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -173,15 +173,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: SchoolExternalTool | SchoolExternalToolDO, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: SchoolExternalToolEntity | SchoolExternalTool, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="17"
-                            class="link-to-prism">apps/server/src/shared/domain/rules/school-external-tool.rule.ts:17</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="18"
+                            class="link-to-prism">apps/server/src/shared/domain/rules/school-external-tool.rule.ts:18</a></div>
                 </td>
             </tr>
 
@@ -216,7 +216,7 @@
                                 <tr>
                                     <td>entity</td>
                                     <td>
-                                            <code>SchoolExternalTool | SchoolExternalToolDO</code>
+                                            <code>SchoolExternalToolEntity | SchoolExternalTool</code>
                                     </td>
 
                                     <td>
@@ -268,15 +268,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: SchoolExternalTool | SchoolExternalToolDO)</code>
+                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: SchoolExternalToolEntity | SchoolExternalTool)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="11"
-                            class="link-to-prism">apps/server/src/shared/domain/rules/school-external-tool.rule.ts:11</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="12"
+                            class="link-to-prism">apps/server/src/shared/domain/rules/school-external-tool.rule.ts:12</a></div>
                 </td>
             </tr>
 
@@ -311,7 +311,7 @@
                                 <tr>
                                     <td>entity</td>
                                     <td>
-                                            <code>SchoolExternalTool | SchoolExternalToolDO</code>
+                                            <code>SchoolExternalToolEntity | SchoolExternalTool</code>
                                     </td>
 
                                     <td>
@@ -345,26 +345,27 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { AuthorizationHelper } from &#x27;@src/modules/authorization/authorization.helper&#x27;;
 import { AuthorizationContext, Rule } from &#x27;@src/modules/authorization/types&#x27;;
-import { SchoolExternalTool, User } from &#x27;../entity&#x27;;
-import { SchoolExternalToolDO } from &#x27;../domainobject&#x27;;
+import { SchoolExternalTool } from &#x27;@src/modules/tool/school-external-tool/domain&#x27;;
+import { SchoolExternalToolEntity } from &#x27;@src/modules/tool/school-external-tool/entity&#x27;;
+import { User } from &#x27;../entity&#x27;;
 
 @Injectable()
 export class SchoolExternalToolRule implements Rule {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
-	public isApplicable(user: User, entity: SchoolExternalTool | SchoolExternalToolDO): boolean {
-		const isMatched: boolean &#x3D; entity instanceof SchoolExternalTool || entity instanceof SchoolExternalToolDO;
+	public isApplicable(user: User, entity: SchoolExternalToolEntity | SchoolExternalTool): boolean {
+		const isMatched: boolean &#x3D; entity instanceof SchoolExternalToolEntity || entity instanceof SchoolExternalTool;
 
 		return isMatched;
 	}
 
 	public hasPermission(
 		user: User,
-		entity: SchoolExternalTool | SchoolExternalToolDO,
+		entity: SchoolExternalToolEntity | SchoolExternalTool,
 		context: AuthorizationContext
 	): boolean {
 		let hasPermission: boolean;
-		if (entity instanceof SchoolExternalTool) {
+		if (entity instanceof SchoolExternalToolEntity) {
 			hasPermission &#x3D;
 				this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions) &amp;&amp;
 				user.school.id &#x3D;&#x3D;&#x3D; entity.school.id;

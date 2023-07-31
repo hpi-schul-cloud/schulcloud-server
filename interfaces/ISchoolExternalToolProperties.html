@@ -71,7 +71,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/entity/tools/school-external-tool/school-external-tool.entity.ts</code>
+            <code>apps/server/src/modules/tool/school-external-tool/entity/school-external-tool.entity.ts</code>
         </p>
 
 
@@ -172,7 +172,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>schoolParameters:         <code><a href="../miscellaneous/typealiases.html#CustomParameter" target="_self" >CustomParameterEntry[]</a></code>
+                                        <code>schoolParameters:     <code>CustomParameterEntryEntity[]</code>
 </code>
                                     </td>
                                 </tr>
@@ -180,7 +180,7 @@
 
                                     <tr>
                                         <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#CustomParameter" target="_self" >CustomParameterEntry[]</a></code>
+                                            <i>Type : </i>    <code>CustomParameterEntryEntity[]</code>
 
                                         </td>
                                     </tr>
@@ -210,7 +210,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>tool:         <code><a href="../entitys/ExternalTool.html" target="_self" >ExternalTool</a></code>
+                                        <code>tool:         <code><a href="../entitys/ExternalToolEntity.html" target="_self" >ExternalToolEntity</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -218,7 +218,7 @@
 
                                     <tr>
                                         <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="../entitys/ExternalTool.html" target="_self" >ExternalTool</a></code>
+                                            <i>Type : </i>        <code><a href="../entitys/ExternalToolEntity.html" target="_self" >ExternalToolEntity</a></code>
 
                                         </td>
                                     </tr>
@@ -268,28 +268,28 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Embedded, Entity, ManyToOne, Property } from &#x27;@mikro-orm/core&#x27;;
-import { BaseEntityWithTimestamps } from &#x27;../../base.entity&#x27;;
-import { School } from &#x27;../../school.entity&#x27;;
-import { CustomParameterEntry } from &#x27;../custom-parameter-entry&#x27;;
-import { ExternalTool } from &#x27;../external-tool&#x27;;
+import { BaseEntityWithTimestamps } from &#x27;@shared/domain/entity/base.entity&#x27;;
+import { School } from &#x27;@shared/domain/entity/school.entity&#x27;;
+import { CustomParameterEntryEntity } from &#x27;../../common/entity&#x27;;
+import { ExternalToolEntity } from &#x27;../../external-tool/entity&#x27;;
 
 export interface ISchoolExternalToolProperties {
-	tool: ExternalTool;
+	tool: ExternalToolEntity;
 	school: School;
-	schoolParameters?: CustomParameterEntry[];
+	schoolParameters?: CustomParameterEntryEntity[];
 	toolVersion: number;
 }
 
 @Entity({ tableName: &#x27;school_external_tools&#x27; })
-export class SchoolExternalTool extends BaseEntityWithTimestamps {
+export class SchoolExternalToolEntity extends BaseEntityWithTimestamps {
 	@ManyToOne()
-	tool: ExternalTool;
+	tool: ExternalToolEntity;
 
 	@ManyToOne(() &#x3D;&gt; School, { eager: true })
 	school: School;
 
-	@Embedded(() &#x3D;&gt; CustomParameterEntry, { array: true })
-	schoolParameters: CustomParameterEntry[];
+	@Embedded(() &#x3D;&gt; CustomParameterEntryEntity, { array: true })
+	schoolParameters: CustomParameterEntryEntity[];
 
 	@Property()
 	toolVersion: number;

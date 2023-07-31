@@ -200,7 +200,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isClientIdUnique(externalToolDO: <a href="../classes/ExternalToolDO.html" target="_self">ExternalToolDO</a>)</code>
+                    <code>isClientIdUnique(externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>)</code>
                 </td>
             </tr>
 
@@ -229,9 +229,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>externalToolDO</td>
+                                    <td>externalTool</td>
                                     <td>
-                                                <code><a href="../classes/ExternalToolDO.html" target="_self" >ExternalToolDO</a></code>
+                                                <code><a href="../classes/ExternalTool.html" target="_self" >ExternalTool</a></code>
                                     </td>
 
                                     <td>
@@ -271,7 +271,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>validateCreate(externalToolDO: <a href="../classes/ExternalToolDO.html" target="_self">ExternalToolDO</a>)</code>
+                    <code>validateCreate(externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>)</code>
                 </td>
             </tr>
 
@@ -300,9 +300,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>externalToolDO</td>
+                                    <td>externalTool</td>
                                     <td>
-                                                <code><a href="../classes/ExternalToolDO.html" target="_self" >ExternalToolDO</a></code>
+                                                <code><a href="../classes/ExternalTool.html" target="_self" >ExternalTool</a></code>
                                     </td>
 
                                     <td>
@@ -342,7 +342,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>validateLti11Config(externalToolDO: <a href="../classes/ExternalToolDO.html" target="_self">ExternalToolDO</a>)</code>
+                    <code>validateLti11Config(externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>)</code>
                 </td>
             </tr>
 
@@ -371,9 +371,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>externalToolDO</td>
+                                    <td>externalTool</td>
                                     <td>
-                                                <code><a href="../classes/ExternalToolDO.html" target="_self" >ExternalToolDO</a></code>
+                                                <code><a href="../classes/ExternalTool.html" target="_self" >ExternalTool</a></code>
                                     </td>
 
                                     <td>
@@ -414,7 +414,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>validateOauth2Config(externalToolDO: <a href="../classes/ExternalToolDO.html" target="_self">ExternalToolDO</a>)</code>
+                    <code>validateOauth2Config(externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>)</code>
                 </td>
             </tr>
 
@@ -443,9 +443,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>externalToolDO</td>
+                                    <td>externalTool</td>
                                     <td>
-                                                <code><a href="../classes/ExternalToolDO.html" target="_self" >ExternalToolDO</a></code>
+                                                <code><a href="../classes/ExternalTool.html" target="_self" >ExternalTool</a></code>
                                     </td>
 
                                     <td>
@@ -485,7 +485,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>validateUpdate(toolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, externalToolDO: <a href="../classes/ExternalToolDO.html" target="_self">Partial&lt;ExternalToolDO&gt;</a>)</code>
+                    <code>validateUpdate(toolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, externalTool: <a href="../classes/ExternalTool.html" target="_self">Partial&lt;ExternalTool&gt;</a>)</code>
                 </td>
             </tr>
 
@@ -526,9 +526,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>externalToolDO</td>
+                                    <td>externalTool</td>
                                     <td>
-                                                <code><a href="../classes/ExternalToolDO.html" target="_self" >Partial&lt;ExternalToolDO&gt;</a></code>
+                                                <code><a href="../classes/ExternalTool.html" target="_self" >Partial&lt;ExternalTool&gt;</a></code>
                                     </td>
 
                                     <td>
@@ -560,10 +560,10 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { ExternalToolDO } from &#x27;@shared/domain/domainobject/tool&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
-import { ExternalToolService } from &#x27;./external-tool.service&#x27;;
+import { ExternalTool } from &#x27;../domain&#x27;;
 import { ExternalToolParameterValidationService } from &#x27;./external-tool-parameter-validation.service&#x27;;
+import { ExternalToolService } from &#x27;./external-tool.service&#x27;;
 
 @Injectable()
 export class ExternalToolValidationService {
@@ -572,74 +572,74 @@ export class ExternalToolValidationService {
 		private readonly externalToolParameterValidationService: ExternalToolParameterValidationService
 	) {}
 
-	async validateCreate(externalToolDO: ExternalToolDO): Promise&lt;void&gt; {
-		await this.externalToolParameterValidationService.validateCommon(externalToolDO);
+	async validateCreate(externalTool: ExternalTool): Promise&lt;void&gt; {
+		await this.externalToolParameterValidationService.validateCommon(externalTool);
 
-		await this.validateOauth2Config(externalToolDO);
+		await this.validateOauth2Config(externalTool);
 
-		this.validateLti11Config(externalToolDO);
+		this.validateLti11Config(externalTool);
 	}
 
-	private async validateOauth2Config(externalToolDO: ExternalToolDO): Promise&lt;void&gt; {
-		if (ExternalToolDO.isOauth2Config(externalToolDO.config)) {
-			if (!externalToolDO.config.clientSecret) {
+	private async validateOauth2Config(externalTool: ExternalTool): Promise&lt;void&gt; {
+		if (ExternalTool.isOauth2Config(externalTool.config)) {
+			if (!externalTool.config.clientSecret) {
 				throw new ValidationError(
-					&#x60;tool_clientSecret_missing: The Client Secret of the tool ${externalToolDO.name || &#x27;&#x27;} is missing.&#x60;
+					&#x60;tool_clientSecret_missing: The Client Secret of the tool ${externalTool.name || &#x27;&#x27;} is missing.&#x60;
 				);
 			}
 
-			if (!(await this.isClientIdUnique(externalToolDO))) {
+			if (!(await this.isClientIdUnique(externalTool))) {
 				throw new ValidationError(
-					&#x60;tool_clientId_duplicate: The Client Id of the tool ${externalToolDO.name || &#x27;&#x27;} is already used.&#x60;
-				);
-			}
-		}
-	}
-
-	private validateLti11Config(externalToolDO: ExternalToolDO): void {
-		if (ExternalToolDO.isLti11Config(externalToolDO.config)) {
-			if (!externalToolDO.config.secret) {
-				throw new ValidationError(
-					&#x60;tool_secret_missing: The secret of the LTI tool ${externalToolDO.name || &#x27;&#x27;} is missing.&#x60;
+					&#x60;tool_clientId_duplicate: The Client Id of the tool ${externalTool.name || &#x27;&#x27;} is already used.&#x60;
 				);
 			}
 		}
 	}
 
-	private async isClientIdUnique(externalToolDO: ExternalToolDO): Promise&lt;boolean&gt; {
-		let duplicate: ExternalToolDO | null &#x3D; null;
-		if (ExternalToolDO.isOauth2Config(externalToolDO.config)) {
-			duplicate &#x3D; await this.externalToolService.findExternalToolByOAuth2ConfigClientId(externalToolDO.config.clientId);
+	private validateLti11Config(externalTool: ExternalTool): void {
+		if (ExternalTool.isLti11Config(externalTool.config)) {
+			if (!externalTool.config.secret) {
+				throw new ValidationError(
+					&#x60;tool_secret_missing: The secret of the LTI tool ${externalTool.name || &#x27;&#x27;} is missing.&#x60;
+				);
+			}
 		}
-		return duplicate &#x3D;&#x3D; null || duplicate.id &#x3D;&#x3D;&#x3D; externalToolDO.id;
 	}
 
-	async validateUpdate(toolId: string, externalToolDO: Partial&lt;ExternalToolDO&gt;): Promise&lt;void&gt; {
-		if (toolId !&#x3D;&#x3D; externalToolDO.id) {
+	private async isClientIdUnique(externalTool: ExternalTool): Promise&lt;boolean&gt; {
+		let duplicate: ExternalTool | null &#x3D; null;
+		if (ExternalTool.isOauth2Config(externalTool.config)) {
+			duplicate &#x3D; await this.externalToolService.findExternalToolByOAuth2ConfigClientId(externalTool.config.clientId);
+		}
+		return duplicate &#x3D;&#x3D; null || duplicate.id &#x3D;&#x3D;&#x3D; externalTool.id;
+	}
+
+	async validateUpdate(toolId: string, externalTool: Partial&lt;ExternalTool&gt;): Promise&lt;void&gt; {
+		if (toolId !&#x3D;&#x3D; externalTool.id) {
 			throw new ValidationError(&#x60;tool_id_mismatch: The tool has no id or it does not match the path parameter.&#x60;);
 		}
 
-		await this.externalToolParameterValidationService.validateCommon(externalToolDO);
+		await this.externalToolParameterValidationService.validateCommon(externalTool);
 
-		const loadedTool: ExternalToolDO &#x3D; await this.externalToolService.findExternalToolById(toolId);
+		const loadedTool: ExternalTool &#x3D; await this.externalToolService.findExternalToolById(toolId);
 		if (
-			ExternalToolDO.isOauth2Config(loadedTool.config) &amp;&amp;
-			externalToolDO.config &amp;&amp;
-			externalToolDO.config.type !&#x3D;&#x3D; loadedTool.config.type
+			ExternalTool.isOauth2Config(loadedTool.config) &amp;&amp;
+			externalTool.config &amp;&amp;
+			externalTool.config.type !&#x3D;&#x3D; loadedTool.config.type
 		) {
 			throw new ValidationError(
-				&#x60;tool_type_immutable: The Config Type of the tool ${externalToolDO.name || &#x27;&#x27;} is immutable.&#x60;
+				&#x60;tool_type_immutable: The Config Type of the tool ${externalTool.name || &#x27;&#x27;} is immutable.&#x60;
 			);
 		}
 
 		if (
-			externalToolDO.config &amp;&amp;
-			ExternalToolDO.isOauth2Config(externalToolDO.config) &amp;&amp;
-			ExternalToolDO.isOauth2Config(loadedTool.config) &amp;&amp;
-			externalToolDO.config.clientId !&#x3D;&#x3D; loadedTool.config.clientId
+			externalTool.config &amp;&amp;
+			ExternalTool.isOauth2Config(externalTool.config) &amp;&amp;
+			ExternalTool.isOauth2Config(loadedTool.config) &amp;&amp;
+			externalTool.config.clientId !&#x3D;&#x3D; loadedTool.config.clientId
 		) {
 			throw new ValidationError(
-				&#x60;tool_clientId_immutable: The Client Id of the tool ${externalToolDO.name || &#x27;&#x27;} is immutable.&#x60;
+				&#x60;tool_clientId_immutable: The Client Id of the tool ${externalTool.name || &#x27;&#x27;} is immutable.&#x60;
 			);
 		}
 	}

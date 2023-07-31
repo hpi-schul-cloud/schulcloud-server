@@ -233,7 +233,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#ExternalTool" target="_self" >Promise&lt;ExternalToolDO | LtiToolDO&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../entitys/LtiTool.html" target="_self" >Promise&lt;ExternalTool | LtiToolDO&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -258,7 +258,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isNextcloudTool(tool: <a href="../undefineds/ExternalTool.html" target="_self">ExternalToolDO | LtiToolDO</a>)</code>
+                    <code>isNextcloudTool(tool: <a href="../entitys/LtiTool.html" target="_self">ExternalTool | LtiToolDO</a>)</code>
                 </td>
             </tr>
 
@@ -289,7 +289,7 @@
                                 <tr>
                                     <td>tool</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#ExternalTool" target="_self" >ExternalToolDO | LtiToolDO</a></code>
+                                                <code><a href="../entitys/LtiTool.html" target="_self" >ExternalTool | LtiToolDO</a></code>
                                     </td>
 
                                     <td>
@@ -322,9 +322,9 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
 import { NotFoundException } from &#x27;@nestjs/common/exceptions/not-found.exception&#x27;;
-import { ExternalToolDO } from &#x27;@shared/domain&#x27;;
 import { LtiToolDO } from &#x27;@shared/domain/domainobject/ltitool.do&#x27;;
 import { LtiToolService } from &#x27;@src/modules/lti-tool/service&#x27;;
+import { ExternalTool } from &#x27;@src/modules/tool/external-tool/domain&#x27;;
 import { ExternalToolService } from &#x27;@src/modules/tool/external-tool/service&#x27;;
 
 @Injectable()
@@ -334,8 +334,8 @@ export class OauthProviderLoginFlowService {
 		private readonly externalToolService: ExternalToolService
 	) {}
 
-	public async findToolByClientId(clientId: string): Promise&lt;ExternalToolDO | LtiToolDO&gt; {
-		const externalTool: ExternalToolDO | null &#x3D; await this.externalToolService.findExternalToolByOAuth2ConfigClientId(
+	public async findToolByClientId(clientId: string): Promise&lt;ExternalTool | LtiToolDO&gt; {
+		const externalTool: ExternalTool | null &#x3D; await this.externalToolService.findExternalToolByOAuth2ConfigClientId(
 			clientId
 		);
 		const ltiTool: LtiToolDO | null &#x3D; await this.ltiToolService.findByClientIdAndIsLocal(clientId, true);
@@ -352,7 +352,7 @@ export class OauthProviderLoginFlowService {
 	}
 
 	// TODO N21-91. Magic Strings are not desireable
-	public isNextcloudTool(tool: ExternalToolDO | LtiToolDO): boolean {
+	public isNextcloudTool(tool: ExternalTool | LtiToolDO): boolean {
 		const isNextcloud: boolean &#x3D; tool.name &#x3D;&#x3D;&#x3D; &#x27;SchulcloudNextcloud&#x27;;
 
 		return isNextcloud;

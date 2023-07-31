@@ -68,7 +68,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/entity/tools/custom-parameter-entry.ts</code>
+            <code>apps/server/src/modules/tool/common/domain/custom-parameter-entry.do.ts</code>
         </p>
 
 
@@ -89,11 +89,9 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier"></span>
                                 <a href="#name" >name</a>
                             </li>
                             <li>
-                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#value" >value</a>
                             </li>
@@ -121,7 +119,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/shared/domain/entity/tools/custom-parameter-entry.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/tool/common/domain/custom-parameter-entry.do.ts:4</a></div>
                             </td>
                         </tr>
 
@@ -170,7 +168,6 @@
                 <td class="col-md-4">
                     <a name="name"></a>
                     <span class="name">
-                            <span class="modifier"></span>
                         <span ><b>name</b></span>
                         <a href="#name"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -182,18 +179,9 @@
 
                     </td>
                 </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @Property()<br />
-                        </code>
-                    </td>
-                </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/shared/domain/entity/tools/custom-parameter-entry.ts:6</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="2" class="link-to-prism">apps/server/src/modules/tool/common/domain/custom-parameter-entry.do.ts:2</a></div>
                         </td>
                     </tr>
 
@@ -206,7 +194,6 @@
                 <td class="col-md-4">
                     <a name="value"></a>
                     <span class="name">
-                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>value</b></span>
                         <a href="#value"><span class="icon ion-ios-link"></span></a>
@@ -219,18 +206,9 @@
 
                     </td>
                 </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @Property()<br />
-                        </code>
-                    </td>
-                </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/shared/domain/entity/tools/custom-parameter-entry.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/tool/common/domain/custom-parameter-entry.do.ts:4</a></div>
                         </td>
                     </tr>
 
@@ -249,14 +227,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Embeddable, Property } from &#x27;@mikro-orm/core&#x27;;
-
-@Embeddable()
-export class CustomParameterEntry {
-	@Property()
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export class CustomParameterEntry {
 	name: string;
 
-	@Property()
 	value?: string;
 
 	constructor(props: CustomParameterEntry) {

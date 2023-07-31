@@ -189,8 +189,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="52"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:52</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="53"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:53</a></div>
                 </td>
             </tr>
 
@@ -240,7 +240,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/ExternalToolResponse.html" target="_self" >Promise&lt;ExternalToolResponse&gt;</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;ExternalToolResponse&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -282,8 +282,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="133"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:133</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="134"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:134</a></div>
                 </td>
             </tr>
 
@@ -376,8 +376,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="71"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:71</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="72"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:72</a></div>
                 </td>
             </tr>
 
@@ -451,7 +451,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/ExternalToolSearchListResponse.html" target="_self" >Promise&lt;ExternalToolSearchListResponse&gt;</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;ExternalToolSearchListResponse&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -491,8 +491,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="98"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:98</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="99"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:99</a></div>
                 </td>
             </tr>
 
@@ -542,7 +542,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/ExternalToolResponse.html" target="_self" >Promise&lt;ExternalToolResponse&gt;</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;ExternalToolResponse&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -586,8 +586,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="148"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:148</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="149"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:149</a></div>
                 </td>
             </tr>
 
@@ -681,8 +681,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="113"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:113</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="114"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:114</a></div>
                 </td>
             </tr>
 
@@ -744,7 +744,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/ExternalToolResponse.html" target="_self" >Promise&lt;ExternalToolResponse&gt;</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;ExternalToolResponse&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -772,12 +772,13 @@ import {
 } from &#x27;@nestjs/swagger&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
 import { PaginationParams } from &#x27;@shared/controller&#x27;;
-import { ExternalToolDO, IFindOptions, Page, ToolReference } from &#x27;@shared/domain&#x27;;
+import { IFindOptions, Page } from &#x27;@shared/domain&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { ExternalToolSearchQuery } from &#x27;../../common/interface&#x27;;
 import { ContextExternalToolContextParams } from &#x27;../../context-external-tool/controller/dto&#x27;;
+import { ExternalTool, ToolReference } from &#x27;../domain&#x27;;
 import { ExternalToolRequestMapper, ExternalToolResponseMapper } from &#x27;../mapper&#x27;;
 import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate, ToolReferenceUc } from &#x27;../uc&#x27;;
 import {
@@ -813,9 +814,9 @@ export class ToolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() externalToolParams: ExternalToolCreateParams
 	): Promise&lt;ExternalToolResponse&gt; {
-		const externalToolDO: ExternalToolCreate &#x3D; this.externalToolDOMapper.mapCreateRequest(externalToolParams);
+		const externalTool: ExternalToolCreate &#x3D; this.externalToolDOMapper.mapCreateRequest(externalToolParams);
 
-		const created: ExternalToolDO &#x3D; await this.externalToolUc.createExternalTool(currentUser.userId, externalToolDO);
+		const created: ExternalTool &#x3D; await this.externalToolUc.createExternalTool(currentUser.userId, externalTool);
 
 		const mapped: ExternalToolResponse &#x3D; ExternalToolResponseMapper.mapToExternalToolResponse(created);
 
@@ -834,15 +835,15 @@ export class ToolController {
 		@Query() pagination: PaginationParams,
 		@Query() sortingQuery: SortExternalToolParams
 	): Promise&lt;ExternalToolSearchListResponse&gt; {
-		const options: IFindOptions&lt;ExternalToolDO&gt; &#x3D; { pagination };
+		const options: IFindOptions&lt;ExternalTool&gt; &#x3D; { pagination };
 		options.order &#x3D; this.externalToolDOMapper.mapSortingQueryToDomain(sortingQuery);
 		const query: ExternalToolSearchQuery &#x3D;
 			this.externalToolDOMapper.mapExternalToolFilterQueryToExternalToolSearchQuery(filterQuery);
 
-		const tools: Page&lt;ExternalToolDO&gt; &#x3D; await this.externalToolUc.findExternalTool(currentUser.userId, query, options);
+		const tools: Page&lt;ExternalTool&gt; &#x3D; await this.externalToolUc.findExternalTool(currentUser.userId, query, options);
 
 		const dtoList: ExternalToolResponse[] &#x3D; tools.data.map(
-			(tool: ExternalToolDO): ExternalToolResponse &#x3D;&gt; ExternalToolResponseMapper.mapToExternalToolResponse(tool)
+			(tool: ExternalTool): ExternalToolResponse &#x3D;&gt; ExternalToolResponseMapper.mapToExternalToolResponse(tool)
 		);
 		const response: ExternalToolSearchListResponse &#x3D; new ExternalToolSearchListResponse(
 			dtoList,
@@ -859,8 +860,8 @@ export class ToolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolIdParams
 	): Promise&lt;ExternalToolResponse&gt; {
-		const externalToolDO: ExternalToolDO &#x3D; await this.externalToolUc.getExternalTool(currentUser.userId, params.toolId);
-		const mapped: ExternalToolResponse &#x3D; ExternalToolResponseMapper.mapToExternalToolResponse(externalToolDO);
+		const externalTool: ExternalTool &#x3D; await this.externalToolUc.getExternalTool(currentUser.userId, params.toolId);
+		const mapped: ExternalToolResponse &#x3D; ExternalToolResponseMapper.mapToExternalToolResponse(externalTool);
 
 		return mapped;
 	}
@@ -876,7 +877,7 @@ export class ToolController {
 		@Body() externalToolParams: ExternalToolUpdateParams
 	): Promise&lt;ExternalToolResponse&gt; {
 		const externalTool: ExternalToolUpdate &#x3D; this.externalToolDOMapper.mapUpdateRequest(externalToolParams);
-		const updated: ExternalToolDO &#x3D; await this.externalToolUc.updateExternalTool(
+		const updated: ExternalTool &#x3D; await this.externalToolUc.updateExternalTool(
 			currentUser.userId,
 			params.toolId,
 			externalTool

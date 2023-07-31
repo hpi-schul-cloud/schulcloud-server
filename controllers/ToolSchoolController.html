@@ -182,8 +182,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="116"
-                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:116</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="115"
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:115</a></div>
                 </td>
             </tr>
 
@@ -233,7 +233,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;SchoolExternalToolResponse&gt;</code>
+                        <b>Returns : </b>        <code><a href="../entitys/School.html" target="_self" >Promise&lt;SchoolExternalToolResponse&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -275,8 +275,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="97"
-                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:97</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="96"
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:96</a></div>
                 </td>
             </tr>
 
@@ -419,7 +419,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;SchoolExternalToolResponse&gt;</code>
+                        <b>Returns : </b>        <code><a href="../entitys/School.html" target="_self" >Promise&lt;SchoolExternalToolResponse&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -513,7 +513,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;SchoolExternalToolSearchListResponse&gt;</code>
+                        <b>Returns : </b>        <code><a href="../entitys/School.html" target="_self" >Promise&lt;SchoolExternalToolSearchListResponse&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -557,8 +557,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="77"
-                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:77</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="76"
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:76</a></div>
                 </td>
             </tr>
 
@@ -620,7 +620,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;SchoolExternalToolResponse&gt;</code>
+                        <b>Returns : </b>        <code><a href="../entitys/School.html" target="_self" >Promise&lt;SchoolExternalToolResponse&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -646,7 +646,6 @@
 	ApiUnprocessableEntityResponse,
 } from &#x27;@nestjs/swagger&#x27;;
 import { Body, Controller, Delete, Get, Param, Post, Query, Put } from &#x27;@nestjs/common&#x27;;
-import { SchoolExternalToolDO } from &#x27;@shared/domain/domainobject/tool&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
@@ -660,8 +659,9 @@ import {
 	SchoolExternalToolSearchListResponse,
 	SchoolExternalToolSearchParams,
 } from &#x27;./dto&#x27;;
-import { SchoolExternalTool } from &#x27;../uc/dto/school-external-tool.types&#x27;;
+import { SchoolExternalToolDto } from &#x27;../uc/dto/school-external-tool.types&#x27;;
 import { SchoolExternalToolUc } from &#x27;../uc&#x27;;
+import { SchoolExternalTool } from &#x27;../domain&#x27;;
 
 @ApiTags(&#x27;Tool&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
@@ -682,7 +682,7 @@ export class ToolSchoolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() schoolExternalToolParams: SchoolExternalToolSearchParams
 	): Promise&lt;SchoolExternalToolSearchListResponse&gt; {
-		const found: SchoolExternalToolDO[] &#x3D; await this.schoolExternalToolUc.findSchoolExternalTools(currentUser.userId, {
+		const found: SchoolExternalTool[] &#x3D; await this.schoolExternalToolUc.findSchoolExternalTools(currentUser.userId, {
 			schoolId: schoolExternalToolParams.schoolId,
 		});
 		const response: SchoolExternalToolSearchListResponse &#x3D; this.responseMapper.mapToSearchListResponse(found);
@@ -696,12 +696,11 @@ export class ToolSchoolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams
 	): Promise&lt;SchoolExternalToolResponse&gt; {
-		const schoolExternalToolDO: SchoolExternalToolDO &#x3D; await this.schoolExternalToolUc.getSchoolExternalTool(
+		const schoolExternalTool: SchoolExternalTool &#x3D; await this.schoolExternalToolUc.getSchoolExternalTool(
 			currentUser.userId,
 			params.schoolExternalToolId
 		);
-		const mapped: SchoolExternalToolResponse &#x3D;
-			this.responseMapper.mapToSchoolExternalToolResponse(schoolExternalToolDO);
+		const mapped: SchoolExternalToolResponse &#x3D; this.responseMapper.mapToSchoolExternalToolResponse(schoolExternalTool);
 		return mapped;
 	}
 
@@ -715,11 +714,11 @@ export class ToolSchoolController {
 		@Param() params: SchoolExternalToolIdParams,
 		@Body() body: SchoolExternalToolPostParams
 	): Promise&lt;SchoolExternalToolResponse&gt; {
-		const schoolExternalTool: SchoolExternalTool &#x3D; this.requestMapper.mapSchoolExternalToolRequest(body);
-		const updated: SchoolExternalToolDO &#x3D; await this.schoolExternalToolUc.updateSchoolExternalTool(
+		const schoolExternalToolDto: SchoolExternalToolDto &#x3D; this.requestMapper.mapSchoolExternalToolRequest(body);
+		const updated: SchoolExternalTool &#x3D; await this.schoolExternalToolUc.updateSchoolExternalTool(
 			currentUser.userId,
 			params.schoolExternalToolId,
-			schoolExternalTool
+			schoolExternalToolDto
 		);
 
 		const mapped: SchoolExternalToolResponse &#x3D; this.responseMapper.mapToSchoolExternalToolResponse(updated);
@@ -753,11 +752,11 @@ export class ToolSchoolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: SchoolExternalToolPostParams
 	): Promise&lt;SchoolExternalToolResponse&gt; {
-		const schoolExternalTool: SchoolExternalTool &#x3D; this.requestMapper.mapSchoolExternalToolRequest(body);
+		const schoolExternalToolDto: SchoolExternalToolDto &#x3D; this.requestMapper.mapSchoolExternalToolRequest(body);
 
-		const createdSchoolExternalToolDO: SchoolExternalToolDO &#x3D; await this.schoolExternalToolUc.createSchoolExternalTool(
+		const createdSchoolExternalToolDO: SchoolExternalTool &#x3D; await this.schoolExternalToolUc.createSchoolExternalTool(
 			currentUser.userId,
-			schoolExternalTool
+			schoolExternalToolDto
 		);
 
 		const response: SchoolExternalToolResponse &#x3D;

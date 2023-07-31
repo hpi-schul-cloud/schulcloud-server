@@ -436,13 +436,13 @@ import {
 	ApiUnprocessableEntityResponse,
 } from &#x27;@nestjs/swagger&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
-import { ContextExternalToolDO } from &#x27;@shared/domain&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
+import { ContextExternalTool } from &#x27;../domain&#x27;;
 import { ContextExternalToolRequestMapper, ContextExternalToolResponseMapper } from &#x27;../mapper&#x27;;
 import { ContextExternalToolUc } from &#x27;../uc&#x27;;
-import { ContextExternalTool } from &#x27;../uc/dto/context-external-tool.types&#x27;;
+import { ContextExternalToolDto } from &#x27;../uc/dto/context-external-tool.types&#x27;;
 import {
 	ContextExternalToolContextParams,
 	ContextExternalToolIdParams,
@@ -471,10 +471,10 @@ export class ToolContextController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: ContextExternalToolPostParams
 	): Promise&lt;ContextExternalToolResponse&gt; {
-		const contextExternalTool: ContextExternalTool &#x3D;
+		const contextExternalTool: ContextExternalToolDto &#x3D;
 			ContextExternalToolRequestMapper.mapContextExternalToolRequest(body);
 
-		const createdTool: ContextExternalToolDO &#x3D; await this.contextExternalToolUc.createContextExternalTool(
+		const createdTool: ContextExternalTool &#x3D; await this.contextExternalToolUc.createContextExternalTool(
 			currentUser.userId,
 			contextExternalTool
 		);
