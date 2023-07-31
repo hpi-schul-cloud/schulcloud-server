@@ -655,11 +655,21 @@ describe('[ImportUserModule]', () => {
 				const result = uc.startSchoolInUserMigration(currentUser.id);
 				await expect(result).rejects.toThrowError(MigrationAlreadyActivatedException);
 			});
+			it('should throw migrationAlreadyActivatedException with correct properties', () => {
+				const logMessage = new MigrationAlreadyActivatedException().getLogMessage();
+				expect(logMessage).toBeDefined();
+				expect(logMessage).toHaveProperty('message', 'Migration is already activated for this school');
+			});
 			it('should throw if school has no officialSchoolNumber ', async () => {
 				school.officialSchoolNumber = undefined;
 				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValueOnce(createMockSchoolDo(school));
 				const result = uc.startSchoolInUserMigration(currentUser.id);
 				await expect(result).rejects.toThrowError(MissingSchoolNumberException);
+			});
+			it('should throw missingSchoolNumberException with correct properties', () => {
+				const logMessage = new MissingSchoolNumberException().getLogMessage();
+				expect(logMessage).toBeDefined();
+				expect(logMessage).toHaveProperty('message', 'The school is missing a official school number');
 			});
 			it('should throw if school already has a persisted LDAP ', async () => {
 				dateSpy.mockRestore();
@@ -667,6 +677,11 @@ describe('[ImportUserModule]', () => {
 				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValueOnce(createMockSchoolDo(school));
 				const result = uc.startSchoolInUserMigration(currentUser.id, false);
 				await expect(result).rejects.toThrowError(LdapAlreadyPersistedException);
+			});
+			it('should throw ldapAlreadyPersistedException with correct properties', () => {
+				const logMessage = new LdapAlreadyPersistedException().getLogMessage();
+				expect(logMessage).toBeDefined();
+				expect(logMessage).toHaveProperty('message', 'LDAP is already Persisted');
 			});
 			it('should not throw if school has no school number but its own LDAP', async () => {
 				school.officialSchoolNumber = undefined;
