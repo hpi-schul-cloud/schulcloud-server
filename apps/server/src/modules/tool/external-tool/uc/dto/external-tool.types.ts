@@ -1,5 +1,5 @@
 import { BasicToolConfigDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '../../domain';
-import { CustomParameterDO } from '../../../common/domain';
+import { CustomParameter } from '../../../common/domain';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -13,7 +13,7 @@ export type Oauth2ToolConfigCreate = Oauth2ToolConfigDO;
 
 export type Oauth2ToolConfigUpdate = PartialBy<Oauth2ToolConfigDO, 'clientSecret'>;
 
-export type CustomParameter = CustomParameterDO;
+export type CustomParameter = CustomParameter;
 
 export type ExternalTool<T> = {
 	name: string;

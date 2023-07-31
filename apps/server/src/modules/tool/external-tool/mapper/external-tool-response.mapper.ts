@@ -20,7 +20,7 @@ import {
 } from '../controller/dto';
 import { statusMapping } from '../../school-external-tool/mapper';
 import { BasicToolConfigDO, ExternalTool, Lti11ToolConfigDO, Oauth2ToolConfigDO, ToolReference } from '../domain';
-import { CustomParameterDO } from '../../common/domain';
+import { CustomParameter } from '../../common/domain';
 
 const scopeMapping: Record<CustomParameterScope, CustomParameterScopeTypeParams> = {
 	[CustomParameterScope.GLOBAL]: CustomParameterScopeTypeParams.GLOBAL,
@@ -85,8 +85,8 @@ export class ExternalToolResponseMapper {
 		return new Oauth2ToolConfigResponse({ ...externalToolConfigDO });
 	}
 
-	private mapCustomParameterDOToResponse(customParameterDOS: CustomParameterDO[]): CustomParameterResponse[] {
-		return customParameterDOS.map((customParameterDO: CustomParameterDO) => {
+	private mapCustomParameterDOToResponse(customParameterDOS: CustomParameter[]): CustomParameterResponse[] {
+		return customParameterDOS.map((customParameterDO: CustomParameter) => {
 			return {
 				name: customParameterDO.name,
 				displayName: customParameterDO.displayName,

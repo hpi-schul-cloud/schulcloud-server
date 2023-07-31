@@ -11,7 +11,7 @@ import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { ExternalTool, Oauth2ToolConfigDO } from '../domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { CustomParameterScope, TokenEndpointAuthMethod } from '../../common/enum';
-import { CustomParameterDO } from '../../common/domain';
+import { CustomParameter } from '../../common/domain';
 
 @Injectable()
 export class ExternalToolService {
@@ -120,7 +120,7 @@ export class ExternalToolService {
 		const externalTool: ExternalTool = await this.externalToolRepo.findById(externalToolId);
 		if (externalTool.parameters) {
 			externalTool.parameters = externalTool.parameters.filter(
-				(parameter: CustomParameterDO) => parameter.scope === scope
+				(parameter: CustomParameter) => parameter.scope === scope
 			);
 		}
 		return externalTool;

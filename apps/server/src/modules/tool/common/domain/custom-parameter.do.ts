@@ -1,6 +1,6 @@
 import { CustomParameterScope, CustomParameterLocation, CustomParameterType } from '../enum';
 
-export class CustomParameterDO {
+export class CustomParameter {
 	name: string;
 
 	displayName: string;
@@ -21,7 +21,7 @@ export class CustomParameterDO {
 
 	isOptional: boolean;
 
-	constructor(props: CustomParameterDO) {
+	constructor(props: CustomParameter) {
 		this.name = props.name;
 		this.displayName = props.displayName;
 		this.description = props.description;

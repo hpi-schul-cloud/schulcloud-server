@@ -5,7 +5,7 @@ import {
 	customParameterDOFactory,
 	externalToolDOFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { CustomParameterDO } from '../../common/domain';
+import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope, CustomParameterType } from '../../common/enum';
 import { ExternalToolService } from './index';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
@@ -177,7 +177,7 @@ describe('ExternalToolParameterValidationService', () => {
 				await expect(result).rejects.toThrow(
 					new ValidationError(
 						`tool_param_regexComment: The "${
-							(externalTool.parameters as CustomParameterDO[])[0].name
+							(externalTool.parameters as CustomParameter[])[0].name
 						}" parameter is missing a regex comment.`
 					)
 				);
@@ -234,7 +234,7 @@ describe('ExternalToolParameterValidationService', () => {
 					await expect(result).rejects.toThrow(
 						new ValidationError(
 							`tool_param_default_required: The "${
-								(externalTool.parameters as CustomParameterDO[])[0].name
+								(externalTool.parameters as CustomParameter[])[0].name
 							}" is a global parameter and requires a default value.`
 						)
 					);
@@ -265,7 +265,7 @@ describe('ExternalToolParameterValidationService', () => {
 					await expect(result).rejects.toThrow(
 						new ValidationError(
 							`tool_param_default_required: The "${
-								(externalTool.parameters as CustomParameterDO[])[0].name
+								(externalTool.parameters as CustomParameter[])[0].name
 							}" is a global parameter and requires a default value.`
 						)
 					);
@@ -301,7 +301,7 @@ describe('ExternalToolParameterValidationService', () => {
 
 		describe('when a auto parameter is not in scope global', () => {
 			const setup = () => {
-				const parameter: CustomParameterDO = customParameterDOFactory.build({
+				const parameter: CustomParameter = customParameterDOFactory.build({
 					type: CustomParameterType.AUTO_SCHOOLID,
 					scope: CustomParameterScope.SCHOOL,
 				});

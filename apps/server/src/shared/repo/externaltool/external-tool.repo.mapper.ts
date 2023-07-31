@@ -15,7 +15,7 @@ import {
 	Oauth2ToolConfigDO,
 } from '@src/modules/tool/external-tool/domain';
 import { ToolConfigType } from '@src/modules/tool/common/enum';
-import { CustomParameterDO, CustomParameterEntryDO } from '@src/modules/tool/common/domain';
+import { CustomParameter, CustomParameterEntryDO } from '@src/modules/tool/common/domain';
 
 // TODO: maybe rename because of usage in external tool repo and school external tool repo
 export class ExternalToolRepoMapper {
@@ -134,10 +134,10 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapCustomParametersToDOs(customParameters: CustomParameterEntity[]): CustomParameterDO[] {
+	static mapCustomParametersToDOs(customParameters: CustomParameterEntity[]): CustomParameter[] {
 		return customParameters.map(
 			(param: CustomParameterEntity) =>
-				new CustomParameterDO({
+				new CustomParameter({
 					name: param.name,
 					displayName: param.displayName,
 					description: param.description,
@@ -152,9 +152,9 @@ export class ExternalToolRepoMapper {
 		);
 	}
 
-	static mapCustomParameterDOsToEntities(customParameters: CustomParameterDO[]): CustomParameterEntity[] {
+	static mapCustomParameterDOsToEntities(customParameters: CustomParameter[]): CustomParameterEntity[] {
 		return customParameters.map(
-			(param: CustomParameterDO) =>
+			(param: CustomParameter) =>
 				new CustomParameterEntity({
 					name: param.name,
 					displayName: param.displayName,

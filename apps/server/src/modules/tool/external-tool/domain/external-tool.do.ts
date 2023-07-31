@@ -1,7 +1,7 @@
 import { BaseDO } from '@shared/domain/domainobject/base.do';
 import { ToolVersion } from '../../common/interface';
 import { Oauth2ToolConfigDO, BasicToolConfigDO, Lti11ToolConfigDO, ExternalToolConfigDO } from './config';
-import { CustomParameterDO } from '../../common/domain';
+import { CustomParameter } from '../../common/domain';
 import { ToolConfigType } from '../../common/enum';
 
 export interface ExternalToolProps {
@@ -15,7 +15,7 @@ export interface ExternalToolProps {
 
 	config: BasicToolConfigDO | Lti11ToolConfigDO | Oauth2ToolConfigDO;
 
-	parameters?: CustomParameterDO[];
+	parameters?: CustomParameter[];
 
 	isHidden: boolean;
 
@@ -33,7 +33,7 @@ export class ExternalTool extends BaseDO implements ToolVersion {
 
 	config: BasicToolConfigDO | Lti11ToolConfigDO | Oauth2ToolConfigDO;
 
-	parameters?: CustomParameterDO[];
+	parameters?: CustomParameter[];
 
 	isHidden: boolean;
 

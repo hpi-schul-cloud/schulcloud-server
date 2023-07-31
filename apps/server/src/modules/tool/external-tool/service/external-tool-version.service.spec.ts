@@ -1,7 +1,7 @@
 import { customParameterDOFactory, externalToolDOFactory } from '@shared/testing/factory/domainobject/tool';
 import { ExternalToolVersionService } from './external-tool-version.service';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '../../common/enum';
-import { CustomParameterDO } from '../../common/domain';
+import { CustomParameter } from '../../common/domain';
 import { ExternalTool } from '../domain';
 
 describe('ExternalToolVersionService', () => {
@@ -12,7 +12,7 @@ describe('ExternalToolVersionService', () => {
 	});
 
 	const setup = () => {
-		const param1: CustomParameterDO = new CustomParameterDO({
+		const param1: CustomParameter = new CustomParameter({
 			name: 'param1',
 			displayName: 'displayName',
 			default: 'defaulValueParam1',
@@ -35,7 +35,7 @@ describe('ExternalToolVersionService', () => {
 			oldTool,
 			newTool,
 			param1,
-			newToolParams: newTool.parameters as CustomParameterDO[],
+			newToolParams: newTool.parameters as CustomParameter[],
 		};
 	};
 
@@ -116,7 +116,7 @@ describe('ExternalToolVersionService', () => {
 			describe('when a new optional custom parameter added', () => {
 				it('should not increase version', () => {
 					const { oldTool, newTool, newToolParams } = setup();
-					const newOptionalParam: CustomParameterDO = customParameterDOFactory.build({ isOptional: true });
+					const newOptionalParam: CustomParameter = customParameterDOFactory.build({ isOptional: true });
 					newToolParams.push(newOptionalParam);
 
 					service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);

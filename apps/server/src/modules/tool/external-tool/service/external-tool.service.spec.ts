@@ -20,7 +20,7 @@ import { ExternalToolService } from './external-tool.service';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { ExternalTool, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '../domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { CustomParameterDO } from '../../common/domain';
+import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope } from '../../common/enum';
 
 describe('ExternalToolService', () => {
@@ -540,7 +540,7 @@ describe('ExternalToolService', () => {
 	describe('getExternalToolForScope is called', () => {
 		describe('when scope school is given', () => {
 			it('should return an external tool with only school scoped custom parameters', async () => {
-				const schoolParameters: CustomParameterDO[] = customParameterDOFactory.buildList(1, {
+				const schoolParameters: CustomParameter[] = customParameterDOFactory.buildList(1, {
 					scope: CustomParameterScope.SCHOOL,
 				});
 				const externalTool: ExternalTool = externalToolDOFactory.buildWithId(

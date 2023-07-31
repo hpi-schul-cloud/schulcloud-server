@@ -9,7 +9,7 @@ import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
 import { SchoolExternalTool } from '../domain';
-import { CustomParameterDO } from '../../common/domain';
+import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope, CustomParameterType } from '../../common/enum';
 
 describe('SchoolExternalToolValidationService', () => {
@@ -81,7 +81,7 @@ describe('SchoolExternalToolValidationService', () => {
 
 		describe('when checking parameter is required', () => {
 			it('should throw error when given parameter is not optional and parameter value is empty', async () => {
-				const requiredParam: CustomParameterDO = customParameterDOFactory.build({
+				const requiredParam: CustomParameter = customParameterDOFactory.build({
 					name: 'requiredParam',
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.STRING,
@@ -145,7 +145,7 @@ describe('SchoolExternalToolValidationService', () => {
 
 		describe('when parameter scope is not school', () => {
 			it('should return without any error', async () => {
-				const notSchoolParam: CustomParameterDO = customParameterDOFactory.build({
+				const notSchoolParam: CustomParameter = customParameterDOFactory.build({
 					name: 'notSchoolParam',
 					scope: CustomParameterScope.GLOBAL,
 					type: CustomParameterType.BOOLEAN,
@@ -167,7 +167,7 @@ describe('SchoolExternalToolValidationService', () => {
 
 		describe('when parameter scope is school', () => {
 			it('should throw exception when required parameter is missing', async () => {
-				const missingParam: CustomParameterDO = customParameterDOFactory.build({
+				const missingParam: CustomParameter = customParameterDOFactory.build({
 					name: 'isMissing',
 					isOptional: false,
 					scope: CustomParameterScope.SCHOOL,
@@ -210,7 +210,7 @@ describe('SchoolExternalToolValidationService', () => {
 
 		describe('when checking parameter type string', () => {
 			it('should return without error', async () => {
-				const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
+				const correctTypeParam: CustomParameter = customParameterDOFactory.build({
 					name: 'correctType',
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.STRING,
@@ -232,7 +232,7 @@ describe('SchoolExternalToolValidationService', () => {
 
 		describe('when checking parameter type number', () => {
 			it('should return without error when type matches param value', async () => {
-				const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
+				const correctTypeParam: CustomParameter = customParameterDOFactory.build({
 					name: 'correctType',
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.NUMBER,
@@ -252,7 +252,7 @@ describe('SchoolExternalToolValidationService', () => {
 			});
 
 			it('should throw exception when type not matches param value', async () => {
-				const wrongTypeParam: CustomParameterDO = customParameterDOFactory.build({
+				const wrongTypeParam: CustomParameter = customParameterDOFactory.build({
 					name: 'wrongType',
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.NUMBER,
@@ -274,7 +274,7 @@ describe('SchoolExternalToolValidationService', () => {
 
 		describe('when checking parameter type boolean', () => {
 			it('should return without error when type matches param value', async () => {
-				const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
+				const correctTypeParam: CustomParameter = customParameterDOFactory.build({
 					name: 'correctType',
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.BOOLEAN,
@@ -294,7 +294,7 @@ describe('SchoolExternalToolValidationService', () => {
 			});
 
 			it('should throw exception when type not matches param value', async () => {
-				const wrongTypeParam: CustomParameterDO = customParameterDOFactory.build({
+				const wrongTypeParam: CustomParameter = customParameterDOFactory.build({
 					name: 'wrongType',
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.BOOLEAN,
@@ -317,7 +317,7 @@ describe('SchoolExternalToolValidationService', () => {
 
 		describe('when checking parameter type auto_contextId', () => {
 			it('should return without error when type matches param value', async () => {
-				const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
+				const correctTypeParam: CustomParameter = customParameterDOFactory.build({
 					name: 'correctType',
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.AUTO_CONTEXTID,
@@ -339,7 +339,7 @@ describe('SchoolExternalToolValidationService', () => {
 
 		describe('when checking parameter type auto_contextName', () => {
 			it('should return without error when type matches param value', async () => {
-				const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
+				const correctTypeParam: CustomParameter = customParameterDOFactory.build({
 					name: 'correctType',
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.AUTO_CONTEXTNAME,
@@ -361,7 +361,7 @@ describe('SchoolExternalToolValidationService', () => {
 
 		describe('when checking parameter type auto_schoolId', () => {
 			it('should return without error when type matches param value', async () => {
-				const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
+				const correctTypeParam: CustomParameter = customParameterDOFactory.build({
 					name: 'correctType',
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.AUTO_SCHOOLID,
@@ -383,7 +383,7 @@ describe('SchoolExternalToolValidationService', () => {
 
 		describe('when checking parameter type auto_schoolnumber', () => {
 			it('should return without error when type matches param value', async () => {
-				const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
+				const correctTypeParam: CustomParameter = customParameterDOFactory.build({
 					name: 'correctType',
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.AUTO_SCHOOLNUMBER,
@@ -405,7 +405,7 @@ describe('SchoolExternalToolValidationService', () => {
 
 		describe('when validating regex', () => {
 			it('should skip validation when no regex is given', async () => {
-				const undefinedRegex: CustomParameterDO = customParameterDOFactory.build({
+				const undefinedRegex: CustomParameter = customParameterDOFactory.build({
 					name: 'undefinedRegex',
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.STRING,
@@ -426,7 +426,7 @@ describe('SchoolExternalToolValidationService', () => {
 			});
 
 			it('should return without error when param value is valid', async () => {
-				const validRegex: CustomParameterDO = customParameterDOFactory.build({
+				const validRegex: CustomParameter = customParameterDOFactory.build({
 					name: 'validRegex',
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.STRING,
@@ -447,7 +447,7 @@ describe('SchoolExternalToolValidationService', () => {
 			});
 
 			it('should throw exception when param value is not valid', async () => {
-				const validRegex: CustomParameterDO = customParameterDOFactory.build({
+				const validRegex: CustomParameter = customParameterDOFactory.build({
 					name: 'validRegex',
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.STRING,

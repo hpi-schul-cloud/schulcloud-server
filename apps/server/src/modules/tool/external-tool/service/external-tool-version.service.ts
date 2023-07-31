@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ExternalTool } from '../domain';
-import { CustomParameterDO } from '../../common/domain';
+import { CustomParameter } from '../../common/domain';
 
 @Injectable()
 export class ExternalToolVersionService {
@@ -13,8 +13,8 @@ export class ExternalToolVersionService {
 		}
 	}
 
-	private compareParameters(oldParams: CustomParameterDO[], newParams: CustomParameterDO[]): boolean {
-		const matchingParams: CustomParameterDO[] = oldParams.filter((oldParam) =>
+	private compareParameters(oldParams: CustomParameter[], newParams: CustomParameter[]): boolean {
+		const matchingParams: CustomParameter[] = oldParams.filter((oldParam) =>
 			newParams.some((newParam) => oldParam.name === newParam.name)
 		);
 
@@ -29,14 +29,14 @@ export class ExternalToolVersionService {
 		return shouldIncrementVersion;
 	}
 
-	private hasNewRequiredParameter(oldParams: CustomParameterDO[], newParams: CustomParameterDO[]): boolean {
+	private hasNewRequiredParameter(oldParams: CustomParameter[], newParams: CustomParameter[]): boolean {
 		const increase = newParams.some(
 			(newParam) => !newParam.isOptional && oldParams.every((oldParam) => oldParam.name !== newParam.name)
 		);
 		return increase;
 	}
 
-	private hasChangedParameterNames(oldParams: CustomParameterDO[], newParams: CustomParameterDO[]): boolean {
+	private hasChangedParameterNames(oldParams: CustomParameter[], newParams: CustomParameter[]): boolean {
 		const nonOptionalParams = oldParams.filter((parameter) => !parameter.isOptional);
 		const nonOptionalParamNames = nonOptionalParams.map((parameter) => parameter.name);
 
@@ -49,7 +49,7 @@ export class ExternalToolVersionService {
 		return increase;
 	}
 
-	private hasChangedRequiredParameters(newParams: CustomParameterDO[], matchingParams: CustomParameterDO[]): boolean {
+	private hasChangedRequiredParameters(newParams: CustomParameter[], matchingParams: CustomParameter[]): boolean {
 		const increase = matchingParams.some((param) => {
 			const newParam = newParams.find((p) => p.name === param.name);
 			return newParam && param.isOptional !== newParam.isOptional;
@@ -57,7 +57,7 @@ export class ExternalToolVersionService {
 		return increase;
 	}
 
-	private hasChangedParameterRegex(newParams: CustomParameterDO[], matchingParams: CustomParameterDO[]): boolean {
+	private hasChangedParameterRegex(newParams: CustomParameter[], matchingParams: CustomParameter[]): boolean {
 		const increase = matchingParams.some((param) => {
 			const newParam = newParams.find((p) => p.name === param.name);
 			return newParam && param.regex !== newParam.regex;
@@ -65,7 +65,7 @@ export class ExternalToolVersionService {
 		return increase;
 	}
 
-	private hasChangedParameterTypes(newParams: CustomParameterDO[], matchingParams: CustomParameterDO[]): boolean {
+	private hasChangedParameterTypes(newParams: CustomParameter[], matchingParams: CustomParameter[]): boolean {
 		const increase = matchingParams.some((param) => {
 			const newParam = newParams.find((p) => p.name === param.name);
 			return newParam && param.type !== newParam.type;
@@ -73,7 +73,7 @@ export class ExternalToolVersionService {
 		return increase;
 	}
 
-	private hasChangedParameterScope(newParams: CustomParameterDO[], matchingParams: CustomParameterDO[]): boolean {
+	private hasChangedParameterScope(newParams: CustomParameter[], matchingParams: CustomParameter[]): boolean {
 		const increase = matchingParams.some((param) => {
 			const newParam = newParams.find((p) => p.name === param.name);
 			return newParam && param.scope !== newParam.scope;

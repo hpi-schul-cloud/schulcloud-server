@@ -7,7 +7,7 @@ import { ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo';
 import { cleanupCollections, externalToolFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolSearchQuery } from '@src/modules/tool';
-import { CustomParameterDO } from '@src/modules/tool/common/domain';
+import { CustomParameter } from '@src/modules/tool/common/domain';
 import {
 	ToolConfigType,
 	LtiPrivacyPermission,
@@ -144,7 +144,7 @@ describe('ExternalToolRepo', () => {
 				logoUrl: 'logoUrl',
 				config,
 				parameters: [
-					new CustomParameterDO({
+					new CustomParameter({
 						name: 'name',
 						regex: 'regex',
 						displayName: 'displayName',

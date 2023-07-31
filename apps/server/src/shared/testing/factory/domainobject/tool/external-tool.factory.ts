@@ -15,7 +15,7 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@src/modules/tool/external-tool/domain';
-import { CustomParameterDO } from '@src/modules/tool/common/domain';
+import { CustomParameter } from '@src/modules/tool/common/domain';
 import { DoBaseFactory } from '../do-base.factory';
 
 export const basicToolConfigDOFactory = DoBaseFactory.define<BasicToolConfigDO, BasicToolConfigDO>(
@@ -66,8 +66,8 @@ export const lti11ToolConfigDOFactory = DoBaseFactory.define<Lti11ToolConfigDO, 
 	}
 );
 
-export const customParameterDOFactory = DoBaseFactory.define<CustomParameterDO, CustomParameterDO>(
-	CustomParameterDO,
+export const customParameterDOFactory = DoBaseFactory.define<CustomParameter, CustomParameter>(
+	CustomParameter,
 	({ sequence }) => {
 		return {
 			name: `custom-parameter-${sequence}`,
@@ -95,7 +95,7 @@ class ExternalToolDOFactory extends DoBaseFactory<ExternalTool, ExternalToolProp
 		return this.params(params);
 	}
 
-	withCustomParameters(number: number, customParam?: DeepPartial<CustomParameterDO>): this {
+	withCustomParameters(number: number, customParam?: DeepPartial<CustomParameter>): this {
 		const params: DeepPartial<ExternalTool> = {
 			parameters: customParameterDOFactory.buildList(number, customParam),
 		};

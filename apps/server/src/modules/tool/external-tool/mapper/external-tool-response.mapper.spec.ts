@@ -24,7 +24,7 @@ import {
 	ToolConfigurationListResponse,
 } from '../controller/dto';
 import { BasicToolConfigDO, ExternalTool, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '../domain';
-import { CustomParameterDO } from '../../common/domain';
+import { CustomParameter } from '../../common/domain';
 
 describe('ExternalToolResponseMapper', () => {
 	let module: TestingModule;
@@ -77,7 +77,7 @@ describe('ExternalToolResponseMapper', () => {
 			baseUrl: 'mockUrl',
 		});
 
-		const customParameterDO: CustomParameterDO = new CustomParameterDO({
+		const customParameterDO: CustomParameter = new CustomParameter({
 			name: 'mockName',
 			displayName: 'displayName',
 			description: 'description',

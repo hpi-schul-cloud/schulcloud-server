@@ -28,7 +28,7 @@ import {
 	SortExternalToolParams,
 } from '../controller/dto';
 import { BasicToolConfigDO, ExternalTool, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '../domain';
-import { CustomParameterDO } from '../../common/domain';
+import { CustomParameter } from '../../common/domain';
 import { ExternalToolSearchQuery } from '../../common/interface';
 
 describe('ExternalToolRequestMapper', () => {
@@ -86,7 +86,7 @@ describe('ExternalToolRequestMapper', () => {
 			baseUrl: 'mockUrl',
 		});
 
-		const customParameterDO: CustomParameterDO = customParameterDOFactory.build({
+		const customParameterDO: CustomParameter = customParameterDOFactory.build({
 			name: 'mockName',
 			displayName: 'displayName',
 			description: 'description',
