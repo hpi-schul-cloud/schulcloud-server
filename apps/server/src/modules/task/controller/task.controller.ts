@@ -27,6 +27,15 @@ export class TaskController {
 		return this.findAllTasks(currentUser, pagination);
 	}
 
+	@Get(':taskId')
+	async findTask(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
+		const taskWithSatusVo = await this.taskUc.find(currentUser.userId, urlParams.taskId);
+
+		const response = TaskMapper.mapToResponse(taskWithSatusVo);
+
+		return response;
+	}
+
 	@Get('finished')
 	async findAllFinished(
 		@CurrentUser() currentUser: ICurrentUser,
@@ -130,16 +139,6 @@ export class TaskController {
 
 		const response = TaskMapper.mapToResponse(taskWithSatusVo);
 
-		return response;
-	}
-
-	@Get(':taskId')
-	async findTask(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
-		this.FeatureTaskCardEnabled();
-
-		const taskWithSatusVo = await this.taskUc.find(currentUser.userId, urlParams.taskId);
-
-		const response = TaskMapper.mapToResponse(taskWithSatusVo);
 		return response;
 	}
 

@@ -90,6 +90,20 @@ export class TaskUC {
 		return response;
 	}
 
+	async find(userId: EntityId, taskId: EntityId): Promise<TaskWithStatusVo> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const task = await this.taskService.findById(taskId);
+		this.authorizationService.checkPermission(user, task, AuthorizationContextBuilder.read([Permission.HOMEWORK_VIEW]));
+
+		const status = this.authorizationService.hasOneOfPermissions(user, [Permission.HOMEWORK_EDIT])
+			? task.createTeacherStatusForUser(user)
+			: task.createStudentStatusForUser(user);
+
+		const result = new TaskWithStatusVo(task, status);
+
+		return result;
+	}
+
 	async changeFinishedForUser(userId: EntityId, taskId: EntityId, isFinished: boolean): Promise<TaskWithStatusVo> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
@@ -247,9 +261,5 @@ export class TaskUC {
 
 	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate): Promise<TaskWithStatusVo> {
 		return this.taskService.update(userId, taskId, params, true);
-	}
-
-	async find(userId: EntityId, taskId: EntityId) {
-		return this.taskService.find(userId, taskId);
 	}
 }
