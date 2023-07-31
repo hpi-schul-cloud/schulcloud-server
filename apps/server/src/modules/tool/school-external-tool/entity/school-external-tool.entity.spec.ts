@@ -1,7 +1,7 @@
 import { schoolFactory, setupEntities } from '@shared/testing';
 import { schoolExternalToolFactory } from '@shared/testing/factory/school-external-tool.factory';
 import {
-	BasicToolConfig,
+	BasicToolConfigEntity,
 	CustomParameter,
 	ExternalToolEntity,
 	ExternalToolConfigEntity,
@@ -27,7 +27,7 @@ describe('SchoolExternalToolEntity', () => {
 		});
 
 		it('should set schoolParameters to empty when is undefined', () => {
-			const externalToolConfigEntity: ExternalToolConfigEntity = new BasicToolConfig({
+			const externalToolConfigEntity: ExternalToolConfigEntity = new BasicToolConfigEntity({
 				type: ToolConfigType.OAUTH2,
 				baseUrl: 'mockBaseUrl',
 			});

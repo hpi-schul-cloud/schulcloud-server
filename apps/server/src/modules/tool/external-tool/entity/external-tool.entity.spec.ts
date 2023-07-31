@@ -1,5 +1,5 @@
 import { setupEntities } from '@shared/testing';
-import { BasicToolConfig, Lti11ToolConfig, Oauth2ToolConfig } from './config';
+import { BasicToolConfigEntity, Lti11ToolConfigEntity, Oauth2ToolConfigEntity } from './config';
 import { CustomParameter } from './custom-parameter';
 import { ExternalToolEntity } from './external-tool.entity';
 import {
@@ -18,17 +18,17 @@ describe('ExternalToolEntity', () => {
 
 	describe('constructor', () => {
 		const setup = () => {
-			const basicToolConfig: BasicToolConfig = new BasicToolConfig({
+			const basicToolConfig: BasicToolConfigEntity = new BasicToolConfigEntity({
 				type: ToolConfigType.BASIC,
 				baseUrl: 'mockBaseUrl',
 			});
-			const oauth2ToolConfig: Oauth2ToolConfig = new Oauth2ToolConfig({
+			const oauth2ToolConfig: Oauth2ToolConfigEntity = new Oauth2ToolConfigEntity({
 				type: ToolConfigType.OAUTH2,
 				baseUrl: 'mockBaseUrl',
 				clientId: 'mockClientId',
 				skipConsent: true,
 			});
-			const lti11ToolConfig: Lti11ToolConfig = new Lti11ToolConfig({
+			const lti11ToolConfig: Lti11ToolConfigEntity = new Lti11ToolConfigEntity({
 				type: ToolConfigType.LTI11,
 				baseUrl: 'mockBaseUrl',
 				key: 'mockKey',
@@ -80,21 +80,21 @@ describe('ExternalToolEntity', () => {
 		it('should create an external Tool with basic configuration by passing required properties', () => {
 			const { externalToolEntity } = setup();
 
-			expect(externalToolEntity.config instanceof BasicToolConfig).toEqual(true);
+			expect(externalToolEntity.config instanceof BasicToolConfigEntity).toEqual(true);
 		});
 
 		it('should create an external Tool with oauth2 configuration by passing required properties', () => {
 			const { externalToolEntity, oauth2ToolConfig } = setup();
 			externalToolEntity.config = oauth2ToolConfig;
 
-			expect(externalToolEntity.config instanceof Oauth2ToolConfig).toEqual(true);
+			expect(externalToolEntity.config instanceof Oauth2ToolConfigEntity).toEqual(true);
 		});
 
 		it('should create an external Tool with LTI 1.1 configuration by passing required properties', () => {
 			const { externalToolEntity, lti11ToolConfig } = setup();
 			externalToolEntity.config = lti11ToolConfig;
 
-			expect(externalToolEntity.config instanceof Lti11ToolConfig).toEqual(true);
+			expect(externalToolEntity.config instanceof Lti11ToolConfigEntity).toEqual(true);
 		});
 	});
 });

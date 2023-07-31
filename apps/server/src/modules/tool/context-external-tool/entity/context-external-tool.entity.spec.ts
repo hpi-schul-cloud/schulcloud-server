@@ -8,7 +8,7 @@ import {
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '../../common/enum';
 
 import {
-	BasicToolConfig,
+	BasicToolConfigEntity,
 	CustomParameter,
 	ExternalToolEntity,
 	ExternalToolConfigEntity,
@@ -29,7 +29,7 @@ describe('ExternalToolEntity', () => {
 		});
 
 		it('should create an external course Tool by passing required properties', () => {
-			const externalToolConfigEntity: ExternalToolConfigEntity = new BasicToolConfig({
+			const externalToolConfigEntity: ExternalToolConfigEntity = new BasicToolConfigEntity({
 				type: ToolConfigType.BASIC,
 				baseUrl: 'mockBaseUrl',
 			});

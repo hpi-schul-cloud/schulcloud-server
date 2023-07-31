@@ -1,12 +1,12 @@
 import { UnprocessableEntityException } from '@nestjs/common';
 import { CustomParameterEntry } from '@src/modules/tool/common/entity';
 import {
-	BasicToolConfig,
+	BasicToolConfigEntity,
 	CustomParameter,
 	ExternalToolEntity,
 	IExternalToolProperties,
-	Lti11ToolConfig,
-	Oauth2ToolConfig,
+	Lti11ToolConfigEntity,
+	Oauth2ToolConfigEntity,
 } from '@src/modules/tool/external-tool/entity';
 import {
 	BasicToolConfigDO,
@@ -49,14 +49,14 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapBasicToolConfigToDO(lti11Config: BasicToolConfig): BasicToolConfigDO {
+	static mapBasicToolConfigToDO(lti11Config: BasicToolConfigEntity): BasicToolConfigDO {
 		return new BasicToolConfigDO({
 			type: lti11Config.type,
 			baseUrl: lti11Config.baseUrl,
 		});
 	}
 
-	static mapOauth2ConfigToDO(oauth2Config: Oauth2ToolConfig): Oauth2ToolConfigDO {
+	static mapOauth2ConfigToDO(oauth2Config: Oauth2ToolConfigEntity): Oauth2ToolConfigDO {
 		return new Oauth2ToolConfigDO({
 			type: oauth2Config.type,
 			baseUrl: oauth2Config.baseUrl,
@@ -65,7 +65,7 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapLti11ToolConfigToDO(lti11Config: Lti11ToolConfig): Lti11ToolConfigDO {
+	static mapLti11ToolConfigToDO(lti11Config: Lti11ToolConfigEntity): Lti11ToolConfigDO {
 		return new Lti11ToolConfigDO({
 			type: lti11Config.type,
 			baseUrl: lti11Config.baseUrl,
@@ -78,7 +78,7 @@ export class ExternalToolRepoMapper {
 	}
 
 	static mapDOToEntityProperties(entityDO: ExternalTool): IExternalToolProperties {
-		let config: BasicToolConfig | Oauth2ToolConfig | Lti11ToolConfig;
+		let config: BasicToolConfigEntity | Oauth2ToolConfigEntity | Lti11ToolConfigEntity;
 		switch (entityDO.config.type) {
 			case ToolConfigType.BASIC:
 				config = this.mapBasicToolConfigDOToEntity(entityDO.config as BasicToolConfigDO);
@@ -106,15 +106,15 @@ export class ExternalToolRepoMapper {
 		};
 	}
 
-	static mapBasicToolConfigDOToEntity(lti11Config: BasicToolConfigDO): BasicToolConfig {
-		return new BasicToolConfig({
+	static mapBasicToolConfigDOToEntity(lti11Config: BasicToolConfigDO): BasicToolConfigEntity {
+		return new BasicToolConfigEntity({
 			type: lti11Config.type,
 			baseUrl: lti11Config.baseUrl,
 		});
 	}
 
-	static mapOauth2ConfigDOToEntity(oauth2Config: Oauth2ToolConfigDO): Oauth2ToolConfig {
-		return new Oauth2ToolConfig({
+	static mapOauth2ConfigDOToEntity(oauth2Config: Oauth2ToolConfigDO): Oauth2ToolConfigEntity {
+		return new Oauth2ToolConfigEntity({
 			type: oauth2Config.type,
 			baseUrl: oauth2Config.baseUrl,
 			clientId: oauth2Config.clientId,
@@ -122,8 +122,8 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapLti11ToolConfigDOToEntity(lti11Config: Lti11ToolConfigDO): Lti11ToolConfig {
-		return new Lti11ToolConfig({
+	static mapLti11ToolConfigDOToEntity(lti11Config: Lti11ToolConfigDO): Lti11ToolConfigEntity {
+		return new Lti11ToolConfigEntity({
 			type: lti11Config.type,
 			baseUrl: lti11Config.baseUrl,
 			key: lti11Config.key,

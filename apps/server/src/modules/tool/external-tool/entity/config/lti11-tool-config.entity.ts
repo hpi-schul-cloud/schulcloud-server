@@ -1,10 +1,10 @@
 import { Embeddable, Enum, Property } from '@mikro-orm/core';
 import { LtiPrivacyPermission } from '@shared/domain/entity/ltitool.entity';
-import { ExternalToolConfigEntity } from './external-tool-config';
+import { ExternalToolConfigEntity } from './external-tool-config.entity';
 import { LtiMessageType, ToolConfigType } from '../../../common/enum';
 
 @Embeddable({ discriminatorValue: ToolConfigType.LTI11 })
-export class Lti11ToolConfig extends ExternalToolConfigEntity {
+export class Lti11ToolConfigEntity extends ExternalToolConfigEntity {
 	@Property()
 	key: string;
 
@@ -20,7 +20,7 @@ export class Lti11ToolConfig extends ExternalToolConfigEntity {
 	@Enum()
 	privacy_permission: LtiPrivacyPermission;
 
-	constructor(props: Lti11ToolConfig) {
+	constructor(props: Lti11ToolConfigEntity) {
 		super(props);
 		this.type = ToolConfigType.LTI11;
 		this.key = props.key;
