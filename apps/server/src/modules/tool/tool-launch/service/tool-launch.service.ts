@@ -14,7 +14,7 @@ import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ExternalToolService } from '../../external-tool/service';
 import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ExternalToolDO } from '../../external-tool/domain';
+import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 
 @Injectable()
@@ -72,12 +72,12 @@ export class ToolLaunchService {
 
 	private async loadToolHierarchy(
 		schoolExternalToolId: string
-	): Promise<{ schoolExternalToolDO: SchoolExternalTool; externalToolDO: ExternalToolDO }> {
+	): Promise<{ schoolExternalToolDO: SchoolExternalTool; externalToolDO: ExternalTool }> {
 		const schoolExternalToolDO: SchoolExternalTool = await this.schoolExternalToolService.getSchoolExternalToolById(
 			schoolExternalToolId
 		);
 
-		const externalToolDO: ExternalToolDO = await this.externalToolService.findExternalToolById(
+		const externalToolDO: ExternalTool = await this.externalToolService.findExternalToolById(
 			schoolExternalToolDO.toolId
 		);
 
@@ -89,7 +89,7 @@ export class ToolLaunchService {
 
 	private isToolStatusLatestOrThrow(
 		userId: EntityId,
-		externalToolDO: ExternalToolDO,
+		externalToolDO: ExternalTool,
 		schoolExternalToolDO: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
 	): void {

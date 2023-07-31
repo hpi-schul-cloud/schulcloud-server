@@ -11,7 +11,7 @@ import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { CommonToolService } from '../../common/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ExternalToolDO, ToolReference } from '../domain';
+import { ExternalTool, ToolReference } from '../domain';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 
 describe('ToolReferenceUc', () => {
@@ -63,7 +63,7 @@ describe('ToolReferenceUc', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
+				const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
 					toolId: externalToolDO.id,
 				});
@@ -164,7 +164,7 @@ describe('ToolReferenceUc', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
+				const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
 					toolId: externalToolDO.id,
 				});

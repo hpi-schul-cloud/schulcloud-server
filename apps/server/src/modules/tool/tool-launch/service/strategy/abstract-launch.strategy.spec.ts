@@ -31,7 +31,7 @@ import {
 	CustomParameterType,
 	ToolContextType,
 } from '../../../common/enum';
-import { ExternalToolDO } from '../../../external-tool/domain';
+import { ExternalTool } from '../../../external-tool/domain';
 import { CustomParameterEntryDO } from '../../../common/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
@@ -152,7 +152,7 @@ describe('AbstractLaunchStrategy', () => {
 					type: CustomParameterType.AUTO_SCHOOLNUMBER,
 				});
 
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
+				const externalToolDO: ExternalTool = externalToolDOFactory.build({
 					parameters: [
 						globalCustomParameter,
 						schoolCustomParameter,
@@ -306,7 +306,7 @@ describe('AbstractLaunchStrategy', () => {
 
 		describe('when no parameters were defined', () => {
 			const setup = () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
+				const externalToolDO: ExternalTool = externalToolDOFactory.build({
 					parameters: [],
 				});
 
@@ -357,7 +357,7 @@ describe('AbstractLaunchStrategy', () => {
 					name: 'autoSchoolNumberParam',
 					type: CustomParameterType.AUTO_SCHOOLNUMBER,
 				});
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
+				const externalToolDO: ExternalTool = externalToolDOFactory.build({
 					parameters: [autoSchoolNumberCustomParameter],
 				});
 
@@ -404,7 +404,7 @@ describe('AbstractLaunchStrategy', () => {
 					name: 'unknownTypeParam',
 					type: 'unknownType' as unknown as CustomParameterType,
 				});
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
+				const externalToolDO: ExternalTool = externalToolDOFactory.build({
 					parameters: [customParameterWithUnknownType],
 				});
 
@@ -445,7 +445,7 @@ describe('AbstractLaunchStrategy', () => {
 					name: 'autoContextNameParam',
 					type: CustomParameterType.AUTO_CONTEXTNAME,
 				});
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
+				const externalToolDO: ExternalTool = externalToolDOFactory.build({
 					parameters: [customParameterWithUnknownType],
 				});
 

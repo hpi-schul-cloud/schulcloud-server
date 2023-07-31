@@ -18,7 +18,7 @@ import {
 } from '@src/modules/tool/common/enum';
 import {
 	BasicToolConfigDO,
-	ExternalToolDO,
+	ExternalTool,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@src/modules/tool/external-tool/domain';
@@ -88,7 +88,7 @@ describe('ExternalToolRepo', () => {
 		it('should find an external tool with given toolName', async () => {
 			const { externalToolEntity } = await setup();
 
-			const result: ExternalToolDO | null = await repo.findByName(externalToolEntity.name);
+			const result: ExternalTool | null = await repo.findByName(externalToolEntity.name);
 
 			expect(result?.name).toEqual(externalToolEntity.name);
 		});
@@ -96,7 +96,7 @@ describe('ExternalToolRepo', () => {
 		it('should return null when no external tool with the given name was found', async () => {
 			await setup();
 
-			const result: ExternalToolDO | null = await repo.findByName('notExisting');
+			const result: ExternalTool | null = await repo.findByName('notExisting');
 
 			expect(result).toBeNull();
 		});
@@ -106,13 +106,13 @@ describe('ExternalToolRepo', () => {
 		it('should find all external tools with given toolConfigType', async () => {
 			await setup();
 
-			const result: ExternalToolDO[] = await repo.findAllByConfigType(ToolConfigType.OAUTH2);
+			const result: ExternalTool[] = await repo.findAllByConfigType(ToolConfigType.OAUTH2);
 
 			expect(result.length).toEqual(2);
 		});
 
 		it('should return an empty array when no externalTools were found', async () => {
-			const result: ExternalToolDO[] = await repo.findAllByConfigType(ToolConfigType.LTI11);
+			const result: ExternalTool[] = await repo.findAllByConfigType(ToolConfigType.LTI11);
 
 			expect(result.length).toEqual(0);
 		});
@@ -122,7 +122,7 @@ describe('ExternalToolRepo', () => {
 		it('should find external tool with given client id', async () => {
 			const { client1Id } = await setup();
 
-			const result: ExternalToolDO | null = await repo.findByOAuth2ConfigClientId(client1Id);
+			const result: ExternalTool | null = await repo.findByOAuth2ConfigClientId(client1Id);
 
 			expect((result?.config as Oauth2ToolConfigDO).clientId).toEqual(client1Id);
 		});
@@ -130,7 +130,7 @@ describe('ExternalToolRepo', () => {
 		it('should return an empty array when no externalTools were found', async () => {
 			await setup();
 
-			const result: ExternalToolDO | null = await repo.findByOAuth2ConfigClientId('unknown-client');
+			const result: ExternalTool | null = await repo.findByOAuth2ConfigClientId('unknown-client');
 
 			expect(result).toBeNull();
 		});
@@ -138,7 +138,7 @@ describe('ExternalToolRepo', () => {
 
 	describe('save', () => {
 		const setupDO = (config: BasicToolConfigDO | Lti11ToolConfigDO | Oauth2ToolConfigDO) => {
-			const domainObject: ExternalToolDO = new ExternalToolDO({
+			const domainObject: ExternalTool = new ExternalTool({
 				name: 'name',
 				url: 'url',
 				logoUrl: 'logoUrl',
@@ -175,7 +175,7 @@ describe('ExternalToolRepo', () => {
 			const { domainObject } = setupDO(config);
 			const { id, ...expected } = domainObject;
 
-			const result: ExternalToolDO = await repo.save(domainObject);
+			const result: ExternalTool = await repo.save(domainObject);
 
 			expect(result).toMatchObject(expected);
 			expect(result.id).toBeDefined();
@@ -191,7 +191,7 @@ describe('ExternalToolRepo', () => {
 			const { domainObject } = setupDO(config);
 			const { id, ...expected } = domainObject;
 
-			const result: ExternalToolDO = await repo.save(domainObject);
+			const result: ExternalTool = await repo.save(domainObject);
 
 			expect(result).toMatchObject(expected);
 			expect(result.id).toBeDefined();
@@ -210,7 +210,7 @@ describe('ExternalToolRepo', () => {
 			const { domainObject } = setupDO(config);
 			const { id, ...expected } = domainObject;
 
-			const result: ExternalToolDO = await repo.save(domainObject);
+			const result: ExternalTool = await repo.save(domainObject);
 
 			expect(result).toMatchObject(expected);
 			expect(result.id).toBeDefined();
@@ -222,7 +222,7 @@ describe('ExternalToolRepo', () => {
 			const { queryExternalToolDO } = await setup();
 			queryExternalToolDO.name = '.';
 
-			const options: IFindOptions<ExternalToolDO> = {};
+			const options: IFindOptions<ExternalTool> = {};
 
 			await em.nativeDelete(ExternalToolEntity, {});
 			const ltiToolA: ExternalToolEntity = externalToolFactory.withName('A').buildWithId();
@@ -238,7 +238,7 @@ describe('ExternalToolRepo', () => {
 			it('should return all ltiTools when options with pagination is set to undefined', async () => {
 				const { queryExternalToolDO, ltiTools } = await setupFind();
 
-				const page: Page<ExternalToolDO> = await repo.find(queryExternalToolDO, undefined);
+				const page: Page<ExternalTool> = await repo.find(queryExternalToolDO, undefined);
 
 				expect(page.data.length).toBe(ltiTools.length);
 			});
@@ -247,7 +247,7 @@ describe('ExternalToolRepo', () => {
 				const { queryExternalToolDO, options } = await setupFind();
 				options.pagination = { limit: 1 };
 
-				const page: Page<ExternalToolDO> = await repo.find(queryExternalToolDO, options);
+				const page: Page<ExternalTool> = await repo.find(queryExternalToolDO, options);
 
 				expect(page.data.length).toBe(1);
 			});
@@ -256,7 +256,7 @@ describe('ExternalToolRepo', () => {
 				const { queryExternalToolDO, options } = await setupFind();
 				options.pagination = { limit: 1, skip: 3 };
 
-				const page: Page<ExternalToolDO> = await repo.find(queryExternalToolDO, options);
+				const page: Page<ExternalTool> = await repo.find(queryExternalToolDO, options);
 
 				expect(page.data.length).toBe(0);
 			});
@@ -266,7 +266,7 @@ describe('ExternalToolRepo', () => {
 			it('should return ltiTools ordered by default _id when no order is specified', async () => {
 				const { queryExternalToolDO, options, ltiTools } = await setupFind();
 
-				const page: Page<ExternalToolDO> = await repo.find(queryExternalToolDO, options);
+				const page: Page<ExternalTool> = await repo.find(queryExternalToolDO, options);
 
 				expect(page.data[0].name).toEqual(ltiTools[0].name);
 				expect(page.data[1].name).toEqual(ltiTools[1].name);
@@ -280,7 +280,7 @@ describe('ExternalToolRepo', () => {
 					name: SortOrder.asc,
 				};
 
-				const page: Page<ExternalToolDO> = await repo.find(queryExternalToolDO, options);
+				const page: Page<ExternalTool> = await repo.find(queryExternalToolDO, options);
 
 				expect(page.data[0].name).toEqual(ltiTools[0].name);
 				expect(page.data[1].name).toEqual(ltiTools[1].name);

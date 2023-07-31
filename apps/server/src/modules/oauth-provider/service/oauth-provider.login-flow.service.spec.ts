@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LtiToolDO } from '@shared/domain';
 import { externalToolDOFactory, ltiToolDOFactory, setupEntities } from '@shared/testing';
 import { LtiToolService } from '@src/modules/lti-tool';
-import { ExternalToolDO } from '@src/modules/tool/external-tool/domain';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain';
 import { ExternalToolService } from '@src/modules/tool/external-tool/service';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
 
@@ -44,7 +44,7 @@ describe('OauthProviderLoginFlowService', () => {
 	describe('findToolByClientId', () => {
 		describe('when it finds a ctl tool', () => {
 			const setup = () => {
-				const tool: ExternalToolDO = externalToolDOFactory.buildWithId({ name: 'SchulcloudNextcloud' });
+				const tool: ExternalTool = externalToolDOFactory.buildWithId({ name: 'SchulcloudNextcloud' });
 
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(tool);
 				ltiToolService.findByClientIdAndIsLocal.mockResolvedValue(null);
@@ -57,7 +57,7 @@ describe('OauthProviderLoginFlowService', () => {
 			it('should return a ctl tool', async () => {
 				const { tool } = setup();
 
-				const result: ExternalToolDO | LtiToolDO = await service.findToolByClientId('clientId');
+				const result: ExternalTool | LtiToolDO = await service.findToolByClientId('clientId');
 
 				expect(result).toEqual(tool);
 			});
@@ -78,7 +78,7 @@ describe('OauthProviderLoginFlowService', () => {
 			it('should return a lti tool', async () => {
 				const { tool } = setup();
 
-				const result: ExternalToolDO | LtiToolDO = await service.findToolByClientId('clientId');
+				const result: ExternalTool | LtiToolDO = await service.findToolByClientId('clientId');
 
 				expect(result).toEqual(tool);
 			});
@@ -105,7 +105,7 @@ describe('OauthProviderLoginFlowService', () => {
 	describe('isNextcloudTool', () => {
 		describe('when it is Nextcloud', () => {
 			const setup = () => {
-				const tool: ExternalToolDO = externalToolDOFactory.buildWithId({ name: 'SchulcloudNextcloud' });
+				const tool: ExternalTool = externalToolDOFactory.buildWithId({ name: 'SchulcloudNextcloud' });
 
 				return {
 					tool,
@@ -123,7 +123,7 @@ describe('OauthProviderLoginFlowService', () => {
 
 		describe('when it is not Nextcloud', () => {
 			const setup = () => {
-				const tool: ExternalToolDO = externalToolDOFactory.buildWithId({ name: 'NotSchulcloudNextcloud' });
+				const tool: ExternalTool = externalToolDOFactory.buildWithId({ name: 'NotSchulcloudNextcloud' });
 
 				return {
 					tool,

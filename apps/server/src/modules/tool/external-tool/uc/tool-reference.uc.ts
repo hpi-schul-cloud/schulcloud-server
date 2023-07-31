@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
 import { Action } from '@src/modules/authorization';
-import { ExternalToolDO, ToolReference } from '../domain';
+import { ExternalTool, ToolReference } from '../domain';
 import { ToolConfigurationStatus, ToolContextType } from '../../common/enum';
 import { ExternalToolService } from '../service';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
@@ -52,7 +52,7 @@ export class ToolReferenceUc {
 		}
 
 		const schoolExternalTool: SchoolExternalTool = await this.fetchSchoolExternalTool(contextExternalTool);
-		const externalToolDO: ExternalToolDO = await this.fetchExternalTool(schoolExternalTool);
+		const externalToolDO: ExternalTool = await this.fetchExternalTool(schoolExternalTool);
 
 		const status: ToolConfigurationStatus = this.commonToolService.determineToolConfigurationStatus(
 			externalToolDO,
@@ -86,7 +86,7 @@ export class ToolReferenceUc {
 		return this.schoolExternalToolService.getSchoolExternalToolById(contextExternalTool.schoolToolRef.schoolToolId);
 	}
 
-	private async fetchExternalTool(schoolExternalTool: SchoolExternalTool): Promise<ExternalToolDO> {
+	private async fetchExternalTool(schoolExternalTool: SchoolExternalTool): Promise<ExternalTool> {
 		return this.externalToolService.findExternalToolById(schoolExternalTool.toolId);
 	}
 }

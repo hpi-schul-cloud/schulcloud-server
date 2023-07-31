@@ -15,7 +15,7 @@ import { ExternalToolUc } from './external-tool.uc';
 import { ExternalToolService, ExternalToolValidationService } from '../service';
 
 import { ExternalToolUpdate } from './dto';
-import { ExternalToolDO, Oauth2ToolConfigDO } from '../domain';
+import { ExternalTool, Oauth2ToolConfigDO } from '../domain';
 
 describe('ExternalToolUc', () => {
 	let module: TestingModule;
@@ -75,13 +75,13 @@ describe('ExternalToolUc', () => {
 	const setup = () => {
 		const toolId = 'toolId';
 
-		const externalToolDO: ExternalToolDO = externalToolDOFactory.withCustomParameters(1).buildWithId();
+		const externalToolDO: ExternalTool = externalToolDOFactory.withCustomParameters(1).buildWithId();
 		const oauth2ConfigWithoutExternalData: Oauth2ToolConfigDO = oauth2ToolConfigDOFactory.build();
 
 		const query: ExternalToolSearchQuery = {
 			name: externalToolDO.name,
 		};
-		const options: IFindOptions<ExternalToolDO> = {
+		const options: IFindOptions<ExternalTool> = {
 			order: {
 				id: SortOrder.asc,
 				name: SortOrder.asc,
@@ -91,7 +91,7 @@ describe('ExternalToolUc', () => {
 				skip: 1,
 			},
 		};
-		const page: Page<ExternalToolDO> = new Page<ExternalToolDO>(
+		const page: Page<ExternalTool> = new Page<ExternalTool>(
 			[externalToolDOFactory.build({ ...externalToolDO, config: oauth2ConfigWithoutExternalData })],
 			1
 		);
@@ -136,7 +136,7 @@ describe('ExternalToolUc', () => {
 					throw new UnauthorizedException();
 				});
 
-				const result: Promise<ExternalToolDO> = uc.createExternalTool(currentUser.userId, externalToolDO);
+				const result: Promise<ExternalTool> = uc.createExternalTool(currentUser.userId, externalToolDO);
 
 				await expect(result).rejects.toThrow(UnauthorizedException);
 			});
@@ -158,7 +158,7 @@ describe('ExternalToolUc', () => {
 				throw new UnprocessableEntityException();
 			});
 
-			const result: Promise<ExternalToolDO> = uc.createExternalTool(currentUser.userId, externalToolDO);
+			const result: Promise<ExternalTool> = uc.createExternalTool(currentUser.userId, externalToolDO);
 
 			await expect(result).rejects.toThrow(UnprocessableEntityException);
 		});
@@ -176,7 +176,7 @@ describe('ExternalToolUc', () => {
 			const { currentUser } = setupAuthorization();
 			const { externalToolDO } = setup();
 
-			const result: ExternalToolDO = await uc.createExternalTool(currentUser.userId, externalToolDO);
+			const result: ExternalTool = await uc.createExternalTool(currentUser.userId, externalToolDO);
 
 			expect(result).toEqual(externalToolDO);
 		});
@@ -209,7 +209,7 @@ describe('ExternalToolUc', () => {
 					throw new UnauthorizedException();
 				});
 
-				const result: Promise<Page<ExternalToolDO>> = uc.findExternalTool(currentUser.userId, query, options);
+				const result: Promise<Page<ExternalTool>> = uc.findExternalTool(currentUser.userId, query, options);
 
 				await expect(result).rejects.toThrow(UnauthorizedException);
 			});
@@ -229,7 +229,7 @@ describe('ExternalToolUc', () => {
 			const { query, options, page } = setup();
 			externalToolService.findExternalTools.mockResolvedValue(page);
 
-			const resultPage: Page<ExternalToolDO> = await uc.findExternalTool(currentUser.userId, query, options);
+			const resultPage: Page<ExternalTool> = await uc.findExternalTool(currentUser.userId, query, options);
 
 			expect(resultPage).toEqual(page);
 		});
@@ -262,7 +262,7 @@ describe('ExternalToolUc', () => {
 					throw new UnauthorizedException();
 				});
 
-				const result: Promise<ExternalToolDO> = uc.getExternalTool(currentUser.userId, toolId);
+				const result: Promise<ExternalTool> = uc.getExternalTool(currentUser.userId, toolId);
 
 				await expect(result).rejects.toThrow(UnauthorizedException);
 			});
@@ -273,7 +273,7 @@ describe('ExternalToolUc', () => {
 			const { externalToolDO, toolId } = setup();
 			externalToolService.findExternalToolById.mockResolvedValue(externalToolDO);
 
-			const result: ExternalToolDO = await uc.getExternalTool(currentUser.userId, toolId);
+			const result: ExternalTool = await uc.getExternalTool(currentUser.userId, toolId);
 
 			expect(result).toEqual(externalToolDO);
 		});
@@ -290,14 +290,14 @@ describe('ExternalToolUc', () => {
 				url: undefined,
 				version: 1,
 			};
-			const updatedExternalToolDO: ExternalToolDO = externalToolDOFactory.build({
+			const updatedExternalToolDO: ExternalTool = externalToolDOFactory.build({
 				...externalToolDO,
 				name: 'newName',
 				url: undefined,
 			});
 
 			externalToolService.updateExternalTool.mockResolvedValue(updatedExternalToolDO);
-			externalToolService.findExternalToolById.mockResolvedValue(new ExternalToolDO(externalToolDOtoUpdate));
+			externalToolService.findExternalToolById.mockResolvedValue(new ExternalTool(externalToolDOtoUpdate));
 
 			return {
 				externalToolDO,
@@ -333,11 +333,7 @@ describe('ExternalToolUc', () => {
 					throw new UnauthorizedException();
 				});
 
-				const result: Promise<ExternalToolDO> = uc.updateExternalTool(
-					currentUser.userId,
-					toolId,
-					externalToolDOtoUpdate
-				);
+				const result: Promise<ExternalTool> = uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate);
 
 				await expect(result).rejects.toThrow(UnauthorizedException);
 			});
@@ -359,7 +355,7 @@ describe('ExternalToolUc', () => {
 				throw new UnprocessableEntityException();
 			});
 
-			const result: Promise<ExternalToolDO> = uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate);
+			const result: Promise<ExternalTool> = uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate);
 
 			await expect(result).rejects.toThrow(UnprocessableEntityException);
 		});
@@ -380,7 +376,7 @@ describe('ExternalToolUc', () => {
 			const { currentUser } = setupAuthorization();
 			const { toolId, externalToolDOtoUpdate, updatedExternalToolDO } = setupUpdate();
 
-			const result: ExternalToolDO = await uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate);
+			const result: ExternalTool = await uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate);
 
 			expect(result).toEqual(updatedExternalToolDO);
 		});

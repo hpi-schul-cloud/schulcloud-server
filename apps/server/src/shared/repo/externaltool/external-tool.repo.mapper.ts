@@ -10,7 +10,7 @@ import {
 } from '@src/modules/tool/external-tool/entity';
 import {
 	BasicToolConfigDO,
-	ExternalToolDO,
+	ExternalTool,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@src/modules/tool/external-tool/domain';
@@ -19,7 +19,7 @@ import { CustomParameterDO, CustomParameterEntryDO } from '@src/modules/tool/com
 
 // TODO: maybe rename because of usage in external tool repo and school external tool repo
 export class ExternalToolRepoMapper {
-	static mapEntityToDO(entity: ExternalToolEntity): ExternalToolDO {
+	static mapEntityToDO(entity: ExternalToolEntity): ExternalTool {
 		let config: BasicToolConfigDO | Oauth2ToolConfigDO | Lti11ToolConfigDO;
 		switch (entity.config.type) {
 			case ToolConfigType.BASIC:
@@ -36,7 +36,7 @@ export class ExternalToolRepoMapper {
 				throw new UnprocessableEntityException(`Unknown config type.`);
 		}
 
-		return new ExternalToolDO({
+		return new ExternalTool({
 			id: entity.id,
 			name: entity.name,
 			url: entity.url,
@@ -77,7 +77,7 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapDOToEntityProperties(entityDO: ExternalToolDO): IExternalToolProperties {
+	static mapDOToEntityProperties(entityDO: ExternalTool): IExternalToolProperties {
 		let config: BasicToolConfig | Oauth2ToolConfig | Lti11ToolConfig;
 		switch (entityDO.config.type) {
 			case ToolConfigType.BASIC:

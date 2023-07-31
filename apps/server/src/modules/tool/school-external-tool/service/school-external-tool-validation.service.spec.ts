@@ -5,7 +5,7 @@ import {
 	externalToolDOFactory,
 	schoolExternalToolDOFactory,
 } from '@shared/testing/factory/domainobject/tool';
-import { ExternalToolDO } from '../../external-tool/domain';
+import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
 import { SchoolExternalTool } from '../domain';
@@ -38,14 +38,14 @@ describe('SchoolExternalToolValidationService', () => {
 	});
 
 	const setup = (
-		externalToolDoMock?: Partial<ExternalToolDO>,
+		externalToolDoMock?: Partial<ExternalTool>,
 		schoolExternalToolDoMock?: Partial<SchoolExternalTool>
 	) => {
 		const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({
 			...schoolExternalToolDOFactory.buildWithId(),
 			...schoolExternalToolDoMock,
 		});
-		const externalToolDO: ExternalToolDO = new ExternalToolDO({
+		const externalToolDO: ExternalTool = new ExternalTool({
 			...externalToolDOFactory.buildWithId(),
 			...externalToolDoMock,
 		});

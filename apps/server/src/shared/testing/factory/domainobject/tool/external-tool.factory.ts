@@ -10,7 +10,7 @@ import {
 } from '@src/modules/tool/common/enum';
 import {
 	BasicToolConfigDO,
-	ExternalToolDO,
+	ExternalTool,
 	ExternalToolProps,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
@@ -80,30 +80,30 @@ export const customParameterDOFactory = DoBaseFactory.define<CustomParameterDO, 
 	}
 );
 
-class ExternalToolDOFactory extends DoBaseFactory<ExternalToolDO, ExternalToolProps> {
+class ExternalToolDOFactory extends DoBaseFactory<ExternalTool, ExternalToolProps> {
 	withOauth2Config(customParam?: DeepPartial<Oauth2ToolConfigDO>): this {
-		const params: DeepPartial<ExternalToolDO> = {
+		const params: DeepPartial<ExternalTool> = {
 			config: oauth2ToolConfigDOFactory.build(customParam),
 		};
 		return this.params(params);
 	}
 
 	withLti11Config(customParam?: DeepPartial<Lti11ToolConfigDO>): this {
-		const params: DeepPartial<ExternalToolDO> = {
+		const params: DeepPartial<ExternalTool> = {
 			config: lti11ToolConfigDOFactory.build(customParam),
 		};
 		return this.params(params);
 	}
 
 	withCustomParameters(number: number, customParam?: DeepPartial<CustomParameterDO>): this {
-		const params: DeepPartial<ExternalToolDO> = {
+		const params: DeepPartial<ExternalTool> = {
 			parameters: customParameterDOFactory.buildList(number, customParam),
 		};
 		return this.params(params);
 	}
 }
 
-export const externalToolDOFactory = ExternalToolDOFactory.define(ExternalToolDO, ({ sequence }) => {
+export const externalToolDOFactory = ExternalToolDOFactory.define(ExternalTool, ({ sequence }) => {
 	return {
 		name: `external-tool-${sequence}`,
 		url: 'https://url.com/',

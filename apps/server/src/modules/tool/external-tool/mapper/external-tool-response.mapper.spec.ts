@@ -23,7 +23,7 @@ import {
 	ToolConfigurationEntryResponse,
 	ToolConfigurationListResponse,
 } from '../controller/dto';
-import { BasicToolConfigDO, ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '../domain';
+import { BasicToolConfigDO, ExternalTool, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '../domain';
 import { CustomParameterDO } from '../../common/domain';
 
 describe('ExternalToolResponseMapper', () => {
@@ -89,7 +89,7 @@ describe('ExternalToolResponseMapper', () => {
 			regexComment: 'mockComment',
 			isOptional: false,
 		});
-		const externalToolDO: ExternalToolDO = new ExternalToolDO({
+		const externalToolDO: ExternalTool = new ExternalTool({
 			id: '1',
 			name: 'mockName',
 			url: 'mockUrl',
@@ -202,7 +202,7 @@ describe('ExternalToolResponseMapper', () => {
 	describe('mapExternalToolDOsToToolConfigurationListResponse is called', () => {
 		describe('when mapping from ExternalToolDOs to ToolConfigurationListResponse', () => {
 			it('should map from ExternalToolDOs to ToolConfigurationListResponse', () => {
-				const externalToolDOs: ExternalToolDO[] = externalToolDOFactory.buildList(3, {
+				const externalToolDOs: ExternalTool[] = externalToolDOFactory.buildList(3, {
 					id: 'toolId',
 					name: 'toolName',
 					logoUrl: 'logoUrl',
@@ -224,7 +224,7 @@ describe('ExternalToolResponseMapper', () => {
 	describe('mapToConfigurationTemplateResponse is called', () => {
 		describe('when  ExternalToolDO is given', () => {
 			it('should map ExternalToolDO to ExternalToolConfigurationTemplateResponse', () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory
+				const externalToolDO: ExternalTool = externalToolDOFactory
 					.withCustomParameters(1, {
 						displayName: 'displayName',
 						description: 'description',

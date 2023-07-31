@@ -2,7 +2,7 @@ import { customParameterDOFactory, externalToolDOFactory } from '@shared/testing
 import { ExternalToolVersionService } from './external-tool-version.service';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '../../common/enum';
 import { CustomParameterDO } from '../../common/domain';
-import { ExternalToolDO } from '../domain';
+import { ExternalTool } from '../domain';
 
 describe('ExternalToolVersionService', () => {
 	let service: ExternalToolVersionService;
@@ -23,13 +23,13 @@ describe('ExternalToolVersionService', () => {
 			scope: CustomParameterScope.GLOBAL,
 			type: CustomParameterType.STRING,
 		});
-		const oldTool: ExternalToolDO = externalToolDOFactory
+		const oldTool: ExternalTool = externalToolDOFactory
 			.params({
 				parameters: [param1],
 				version: 1,
 			})
 			.build();
-		const newTool: ExternalToolDO = externalToolDOFactory.build({ ...oldTool, parameters: [{ ...param1 }] });
+		const newTool: ExternalTool = externalToolDOFactory.build({ ...oldTool, parameters: [{ ...param1 }] });
 
 		return {
 			oldTool,
@@ -39,8 +39,8 @@ describe('ExternalToolVersionService', () => {
 		};
 	};
 
-	const expectIncreasement = (newTool: ExternalToolDO) => expect(newTool.version).toEqual(2);
-	const expectNoIncreasement = (newTool: ExternalToolDO) => expect(newTool.version).toEqual(1);
+	const expectIncreasement = (newTool: ExternalTool) => expect(newTool.version).toEqual(2);
+	const expectNoIncreasement = (newTool: ExternalTool) => expect(newTool.version).toEqual(1);
 
 	describe('increaseVersionOfNewToolIfNecessary is called', () => {
 		describe('when customParameters on old tool is not defined', () => {

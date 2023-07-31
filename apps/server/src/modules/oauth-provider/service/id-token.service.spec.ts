@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalToolDO, Pseudonym, Team, UserDO } from '@shared/domain';
+import { Pseudonym, Team, UserDO } from '@shared/domain';
 import { TeamsRepo } from '@shared/repo';
 import { externalToolDOFactory, setupEntities, userDoFactory, pseudonymFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
@@ -10,6 +10,7 @@ import { OauthScope } from '@src/modules/oauth-provider/interface/oauth-scope.en
 import { IdTokenService } from '@src/modules/oauth-provider/service/id-token.service';
 import { PseudonymService } from '@src/modules/pseudonym/service';
 import { UserService } from '@src/modules/user/service/user.service';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
 import { IdTokenCreationLoggableException } from '../error/id-token-creation-exception.loggable';
 import resetAllMocks = jest.resetAllMocks;
@@ -82,7 +83,7 @@ describe('IdTokenService', () => {
 
 				const displayName = 'display name';
 
-				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
+				const tool: ExternalTool = externalToolDOFactory.withOauth2Config().buildWithId();
 
 				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({ pseudonym: 'pseudonym' });
 
@@ -120,7 +121,7 @@ describe('IdTokenService', () => {
 
 				const displayName = 'display name';
 
-				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
+				const tool: ExternalTool = externalToolDOFactory.withOauth2Config().buildWithId();
 
 				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({ pseudonym: 'pseudonym' });
 
@@ -164,7 +165,7 @@ describe('IdTokenService', () => {
 
 				const displayName = 'display name';
 
-				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
+				const tool: ExternalTool = externalToolDOFactory.withOauth2Config().buildWithId();
 
 				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({ pseudonym: 'pseudonym' });
 
@@ -201,7 +202,7 @@ describe('IdTokenService', () => {
 
 				const displayName = 'display name';
 
-				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config().buildWithId();
+				const tool: ExternalTool = externalToolDOFactory.withOauth2Config().buildWithId();
 
 				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({ pseudonym: 'pseudonym' });
 
@@ -239,7 +240,7 @@ describe('IdTokenService', () => {
 
 				const displayName = 'display name';
 
-				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config().build({ id: undefined });
+				const tool: ExternalTool = externalToolDOFactory.withOauth2Config().build({ id: undefined });
 
 				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({ pseudonym: 'pseudonym' });
 

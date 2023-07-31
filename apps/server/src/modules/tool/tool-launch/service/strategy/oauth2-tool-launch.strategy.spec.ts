@@ -6,7 +6,7 @@ import { SchoolService } from '@src/modules/school';
 import { LaunchRequestMethod, PropertyData } from '../../types';
 import { OAuth2ToolLaunchStrategy } from './oauth2-tool-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
-import { ExternalToolDO } from '../../../external-tool/domain';
+import { ExternalTool } from '../../../external-tool/domain';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 
@@ -45,7 +45,7 @@ describe('OAuth2ToolLaunchStrategy', () => {
 	describe('buildToolLaunchDataFromConcreteConfig', () => {
 		describe('when always', () => {
 			const setup = () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.build();
+				const externalToolDO: ExternalTool = externalToolDOFactory.build();
 				const schoolExternalToolDO: SchoolExternalTool = schoolExternalToolDOFactory.build();
 				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.build();
 

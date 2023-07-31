@@ -3,7 +3,7 @@ import { ValidationError } from '@shared/common';
 import { isNaN } from 'lodash';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalTool } from '../domain';
-import { ExternalToolDO } from '../../external-tool/domain';
+import { ExternalTool } from '../../external-tool/domain';
 import { CustomParameterDO, CustomParameterEntryDO } from '../../common/domain';
 import { CustomParameterScope, CustomParameterType } from '../../common/enum';
 
@@ -23,7 +23,7 @@ export class SchoolExternalToolValidationService {
 
 	async validate(schoolExternalTool: SchoolExternalTool): Promise<void> {
 		this.checkForDuplicateParameters(schoolExternalTool);
-		const loadedExternalTool: ExternalToolDO = await this.externalToolService.findExternalToolById(
+		const loadedExternalTool: ExternalTool = await this.externalToolService.findExternalToolById(
 			schoolExternalTool.toolId
 		);
 		this.checkVersionMatch(schoolExternalTool.toolVersion, loadedExternalTool.version);
@@ -52,7 +52,7 @@ export class SchoolExternalToolValidationService {
 		}
 	}
 
-	private checkCustomParameterEntries(loadedExternalTool: ExternalToolDO, schoolExternalTool: SchoolExternalTool) {
+	private checkCustomParameterEntries(loadedExternalTool: ExternalTool, schoolExternalTool: SchoolExternalTool) {
 		if (loadedExternalTool.parameters) {
 			for (const param of loadedExternalTool.parameters) {
 				const foundEntry: CustomParameterEntryDO | undefined = schoolExternalTool.parameters.find(

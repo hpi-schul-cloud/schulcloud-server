@@ -11,7 +11,7 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '@src/modules/oauth-provider/controller/dto';
 import { OauthProviderRequestMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-request.mapper';
 import { PseudonymService } from '@src/modules/pseudonym/service';
-import { ExternalToolDO, Oauth2ToolConfigDO } from '@src/modules/tool/external-tool/domain';
+import { ExternalTool, Oauth2ToolConfigDO } from '@src/modules/tool/external-tool/domain';
 import { UserService } from '@src/modules/user';
 import { OauthProviderLoginFlowService } from '../service/oauth-provider.login-flow.service';
 
@@ -56,7 +56,7 @@ export class OauthProviderLoginFlowUc {
 			throw new InternalServerErrorException(`Cannot find oAuthClientId in login response for challenge: ${challenge}`);
 		}
 
-		const tool: ExternalToolDO | LtiToolDO = await this.oauthProviderLoginFlowService.findToolByClientId(
+		const tool: ExternalTool | LtiToolDO = await this.oauthProviderLoginFlowService.findToolByClientId(
 			loginResponse.client.client_id
 		);
 
@@ -91,7 +91,7 @@ export class OauthProviderLoginFlowUc {
 		return redirectResponse;
 	}
 
-	private shouldSkipConsent(tool: ExternalToolDO | LtiToolDO): boolean {
+	private shouldSkipConsent(tool: ExternalTool | LtiToolDO): boolean {
 		if (tool instanceof LtiToolDO) {
 			return !!tool.skipConsent;
 		}

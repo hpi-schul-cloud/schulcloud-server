@@ -10,7 +10,7 @@ import {
 } from '../controller/dto';
 import { ToolConfigurationStatusResponse } from '../../external-tool/controller/dto';
 import { SchoolExternalTool } from '../domain';
-import { ExternalToolDO } from '../../external-tool/domain';
+import { ExternalTool } from '../../external-tool/domain';
 
 describe('SchoolExternalToolResponseMapper', () => {
 	let mapper: SchoolExternalToolResponseMapper;
@@ -104,7 +104,7 @@ describe('SchoolExternalToolResponseMapper', () => {
 	describe('mapExternalToolDOsToSchoolToolConfigurationListResponse is called', () => {
 		describe('when mapping from ExternalToolDOs and SchoolToolIds to SchoolToolConfigurationListResponse', () => {
 			const setup = () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
+				const externalToolDO: ExternalTool = externalToolDOFactory.build({
 					id: 'toolId',
 					name: 'toolName',
 					logoUrl: 'logoUrl',

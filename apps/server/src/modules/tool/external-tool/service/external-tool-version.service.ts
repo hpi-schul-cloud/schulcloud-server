@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { ExternalToolDO } from '../domain';
+import { ExternalTool } from '../domain';
 import { CustomParameterDO } from '../../common/domain';
 
 @Injectable()
 export class ExternalToolVersionService {
-	increaseVersionOfNewToolIfNecessary(oldTool: ExternalToolDO, newTool: ExternalToolDO): void {
+	increaseVersionOfNewToolIfNecessary(oldTool: ExternalTool, newTool: ExternalTool): void {
 		if (!oldTool.parameters || !newTool.parameters) {
 			return;
 		}

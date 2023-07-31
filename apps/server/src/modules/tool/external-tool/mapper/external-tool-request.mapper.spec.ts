@@ -27,7 +27,7 @@ import {
 	Oauth2ToolConfigCreateParams,
 	SortExternalToolParams,
 } from '../controller/dto';
-import { BasicToolConfigDO, ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '../domain';
+import { BasicToolConfigDO, ExternalTool, Lti11ToolConfigDO, Oauth2ToolConfigDO } from '../domain';
 import { CustomParameterDO } from '../../common/domain';
 import { ExternalToolSearchQuery } from '../../common/interface';
 
@@ -99,7 +99,7 @@ describe('ExternalToolRequestMapper', () => {
 			isOptional: false,
 		});
 
-		const externalToolDOCreate: ExternalToolDO = externalToolDOFactory.build({
+		const externalToolDOCreate: ExternalTool = externalToolDOFactory.build({
 			name: 'mockName',
 			url: 'mockUrl',
 			logoUrl: 'mockLogoUrl',
@@ -110,7 +110,7 @@ describe('ExternalToolRequestMapper', () => {
 			config: basicToolConfigDO,
 		});
 
-		const externalToolDOUpdate: ExternalToolDO = externalToolDOFactory.buildWithId(
+		const externalToolDOUpdate: ExternalTool = externalToolDOFactory.buildWithId(
 			{
 				name: 'mockName',
 				url: 'mockUrl',
@@ -324,7 +324,7 @@ describe('ExternalToolRequestMapper', () => {
 				sortOrder: SortOrder.asc,
 			};
 
-			const result: SortOrderMap<ExternalToolDO> | undefined = mapper.mapSortingQueryToDomain(sortingQuery);
+			const result: SortOrderMap<ExternalTool> | undefined = mapper.mapSortingQueryToDomain(sortingQuery);
 
 			expect(result).toEqual({ id: SortOrder.asc });
 		});
@@ -334,7 +334,7 @@ describe('ExternalToolRequestMapper', () => {
 				sortOrder: SortOrder.asc,
 			};
 
-			const result: SortOrderMap<ExternalToolDO> | undefined = mapper.mapSortingQueryToDomain(sortingQuery);
+			const result: SortOrderMap<ExternalTool> | undefined = mapper.mapSortingQueryToDomain(sortingQuery);
 
 			expect(result).toBeUndefined();
 		});

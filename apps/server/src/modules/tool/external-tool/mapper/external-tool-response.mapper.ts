@@ -19,7 +19,7 @@ import {
 	ToolReferenceResponse,
 } from '../controller/dto';
 import { statusMapping } from '../../school-external-tool/mapper';
-import { BasicToolConfigDO, ExternalToolDO, Lti11ToolConfigDO, Oauth2ToolConfigDO, ToolReference } from '../domain';
+import { BasicToolConfigDO, ExternalTool, Lti11ToolConfigDO, Oauth2ToolConfigDO, ToolReference } from '../domain';
 import { CustomParameterDO } from '../../common/domain';
 
 const scopeMapping: Record<CustomParameterScope, CustomParameterScopeTypeParams> = {
@@ -46,7 +46,7 @@ const typeMapping: Record<CustomParameterType, CustomParameterTypeParams> = {
 
 @Injectable()
 export class ExternalToolResponseMapper {
-	mapToExternalToolResponse(externalToolDO: ExternalToolDO): ExternalToolResponse {
+	mapToExternalToolResponse(externalToolDO: ExternalTool): ExternalToolResponse {
 		let mappedConfig: BasicToolConfigResponse | Lti11ToolConfigResponse | Oauth2ToolConfigResponse;
 		if (externalToolDO.config instanceof BasicToolConfigDO) {
 			mappedConfig = this.mapBasicToolConfigDOToResponse(externalToolDO.config);
@@ -102,15 +102,15 @@ export class ExternalToolResponseMapper {
 		});
 	}
 
-	mapExternalToolDOsToToolConfigurationListResponse(externalTools: ExternalToolDO[]): ToolConfigurationListResponse {
+	mapExternalToolDOsToToolConfigurationListResponse(externalTools: ExternalTool[]): ToolConfigurationListResponse {
 		return new ToolConfigurationListResponse(this.mapExternalToolDOsToToolConfigurationResponses(externalTools));
 	}
 
 	private mapExternalToolDOsToToolConfigurationResponses(
-		externalTools: ExternalToolDO[]
+		externalTools: ExternalTool[]
 	): ToolConfigurationEntryResponse[] {
 		return externalTools.map(
-			(tool: ExternalToolDO) =>
+			(tool: ExternalTool) =>
 				new ToolConfigurationEntryResponse({
 					id: tool.id ?? '',
 					name: tool.name,
@@ -119,7 +119,7 @@ export class ExternalToolResponseMapper {
 		);
 	}
 
-	mapToConfigurationTemplateResponse(externalToolDO: ExternalToolDO): ExternalToolConfigurationTemplateResponse {
+	mapToConfigurationTemplateResponse(externalToolDO: ExternalTool): ExternalToolConfigurationTemplateResponse {
 		const mappedCustomParameter: CustomParameterResponse[] = this.mapCustomParameterDOToResponse(
 			externalToolDO.parameters ?? []
 		);

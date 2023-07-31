@@ -5,7 +5,7 @@ import { ValidationError } from '@shared/common';
 import { ExternalToolService } from './external-tool.service';
 import { ExternalToolValidationService } from './external-tool-validation.service';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
-import { ExternalToolDO } from '../domain';
+import { ExternalTool } from '../domain';
 
 describe('ExternalToolValidationService', () => {
 	let module: TestingModule;
@@ -42,7 +42,7 @@ describe('ExternalToolValidationService', () => {
 		jest.clearAllMocks();
 	});
 
-	const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
+	const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId();
 
 	describe('validateCreate is called', () => {
 		it('should call the common validation service', async () => {
@@ -55,7 +55,7 @@ describe('ExternalToolValidationService', () => {
 			describe('when client id is unique', () => {
 				describe('when tool with oauth2 config not exists', () => {
 					const setup = () => {
-						const externalOauthToolDO: ExternalToolDO = externalToolDOFactory
+						const externalOauthToolDO: ExternalTool = externalToolDOFactory
 							.withOauth2Config({ clientId: 'ClientId', clientSecret: 'secret' })
 							.buildWithId();
 						externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(null);
@@ -74,7 +74,7 @@ describe('ExternalToolValidationService', () => {
 
 				describe('when tool with oauth2 config exists', () => {
 					const setup = () => {
-						const externalOauthToolDO: ExternalToolDO = externalToolDOFactory
+						const externalOauthToolDO: ExternalTool = externalToolDOFactory
 							.withOauth2Config({ clientId: 'ClientId', clientSecret: 'secret' })
 							.buildWithId();
 						externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalOauthToolDO);
@@ -94,10 +94,10 @@ describe('ExternalToolValidationService', () => {
 
 			describe('when client id already exists', () => {
 				const setup = () => {
-					const externalOauthToolDO: ExternalToolDO = externalToolDOFactory
+					const externalOauthToolDO: ExternalTool = externalToolDOFactory
 						.withOauth2Config({ clientId: 'ClientId', clientSecret: 'secret' })
 						.buildWithId();
-					const existingExternalOauthToolDO: ExternalToolDO = externalToolDOFactory
+					const existingExternalOauthToolDO: ExternalTool = externalToolDOFactory
 						.withOauth2Config({ clientId: 'ClientId', clientSecret: 'secret' })
 						.buildWithId();
 
@@ -123,7 +123,7 @@ describe('ExternalToolValidationService', () => {
 
 			describe('when there is no client secret', () => {
 				const setup = () => {
-					const externalOauthToolDOWithoutSecret: ExternalToolDO = externalToolDOFactory
+					const externalOauthToolDOWithoutSecret: ExternalTool = externalToolDOFactory
 						.withOauth2Config({ clientId: 'ClientId' })
 						.buildWithId();
 					return { externalOauthToolDOWithoutSecret };
@@ -146,7 +146,7 @@ describe('ExternalToolValidationService', () => {
 		describe('when external tool config is lti11Config', () => {
 			describe('when there is no secret', () => {
 				const setup = () => {
-					const externalLti11ToolDOWithoutSecret: ExternalToolDO = externalToolDOFactory
+					const externalLti11ToolDOWithoutSecret: ExternalTool = externalToolDOFactory
 						.withLti11Config({ key: 'lti11Key', secret: undefined })
 						.buildWithId();
 					return { externalLti11ToolDOWithoutSecret };
@@ -184,7 +184,7 @@ describe('ExternalToolValidationService', () => {
 
 		describe('when checking if parameter id matches toolId', () => {
 			const setup = () => {
-				const externalOauthToolDO: ExternalToolDO = externalToolDOFactory
+				const externalOauthToolDO: ExternalTool = externalToolDOFactory
 					.withOauth2Config({ clientId: 'ClientId', clientSecret: 'secret' })
 					.buildWithId();
 
@@ -217,7 +217,7 @@ describe('ExternalToolValidationService', () => {
 		describe('when external tool config has oauth config', () => {
 			describe('when config type was changed', () => {
 				const setup = () => {
-					const existingExternalOauthToolDO: ExternalToolDO = externalToolDOFactory
+					const existingExternalOauthToolDO: ExternalTool = externalToolDOFactory
 						.withOauth2Config({ clientId: 'ClientId', clientSecret: 'secret' })
 						.buildWithId();
 
@@ -237,7 +237,7 @@ describe('ExternalToolValidationService', () => {
 
 			describe('when clientId is the same', () => {
 				const setup = () => {
-					const externalOauthToolDO: ExternalToolDO = externalToolDOFactory
+					const externalOauthToolDO: ExternalTool = externalToolDOFactory
 						.withOauth2Config({ clientId: 'ClientId', clientSecret: 'secret' })
 						.buildWithId();
 
@@ -257,10 +257,10 @@ describe('ExternalToolValidationService', () => {
 
 			describe('when clientID was changed', () => {
 				const setup = () => {
-					const externalOauthToolDO: ExternalToolDO = externalToolDOFactory
+					const externalOauthToolDO: ExternalTool = externalToolDOFactory
 						.withOauth2Config({ clientId: 'ClientId', clientSecret: 'secret' })
 						.buildWithId();
-					const existingExternalOauthToolDOWithDifferentClientId: ExternalToolDO = externalToolDOFactory
+					const existingExternalOauthToolDOWithDifferentClientId: ExternalTool = externalToolDOFactory
 						.withOauth2Config({ clientId: 'DifferentClientId', clientSecret: 'secret' })
 						.buildWithId();
 					externalToolService.findExternalToolById.mockResolvedValue(existingExternalOauthToolDOWithDifferentClientId);
@@ -286,7 +286,7 @@ describe('ExternalToolValidationService', () => {
 
 		describe('when external tool has another config type then oauth', () => {
 			const setup = () => {
-				const externalLtiToolDO: ExternalToolDO = externalToolDOFactory.withLti11Config().buildWithId();
+				const externalLtiToolDO: ExternalTool = externalToolDOFactory.withLti11Config().buildWithId();
 				externalLtiToolDO.id = 'toolId';
 
 				externalToolService.findExternalToolById.mockResolvedValue(externalLtiToolDO);

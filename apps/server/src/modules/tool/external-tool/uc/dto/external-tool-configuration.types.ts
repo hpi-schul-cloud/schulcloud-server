@@ -1,7 +1,7 @@
-import { ExternalToolDO } from '../../domain';
+import { ExternalTool } from '../../domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 
 export type AvailableToolsForContext = {
-	externalTool: ExternalToolDO;
+	externalTool: ExternalTool;
 	schoolExternalTool: SchoolExternalTool;
 };

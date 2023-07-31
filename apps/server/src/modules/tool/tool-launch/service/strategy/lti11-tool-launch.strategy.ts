@@ -11,7 +11,7 @@ import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
-import { ExternalToolDO } from '../../../external-tool/domain';
+import { ExternalTool } from '../../../external-tool/domain';
 import { LtiRole } from '../../../common/enum';
 
 @Injectable()
@@ -34,7 +34,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		const { config } = data.externalToolDO;
 		const contextId: EntityId = data.contextExternalToolDO.contextRef.id;
 
-		if (!ExternalToolDO.isLti11Config(config)) {
+		if (!ExternalTool.isLti11Config(config)) {
 			throw new UnprocessableEntityException(
 				`Unable to build LTI 1.1 launch data. Tool configuration is of type ${config.type}. Expected "lti11"`
 			);

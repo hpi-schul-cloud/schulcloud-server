@@ -24,7 +24,7 @@ export interface ExternalToolProps {
 	version: number;
 }
 
-export class ExternalToolDO extends BaseDO implements ToolVersion {
+export class ExternalTool extends BaseDO implements ToolVersion {
 	name: string;
 
 	url?: string;

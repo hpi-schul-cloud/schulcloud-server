@@ -1,13 +1,13 @@
 import { QueryOrderMap } from '@mikro-orm/core';
 import { LtiTool, SortOrder, SortOrderMap } from '@shared/domain';
 import { ExternalToolSortingMapper } from '@shared/repo';
-import { ExternalToolDO } from '@src/modules/tool/external-tool/domain';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain';
 import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
 
 describe('ExternalToolSortingMapper', () => {
 	describe('mapDOSortOrderToQueryOrder', () => {
 		it('should map sortOrderMap of DO to queryOrderMap of entity', () => {
-			const doSortOrderMap: SortOrderMap<ExternalToolDO> = {
+			const doSortOrderMap: SortOrderMap<ExternalTool> = {
 				id: SortOrder.asc,
 				name: SortOrder.asc,
 			};
@@ -23,7 +23,7 @@ describe('ExternalToolSortingMapper', () => {
 		});
 
 		it('should return queryOrderMap without undefined fields', () => {
-			const doSortOrderMap: SortOrderMap<ExternalToolDO> = {
+			const doSortOrderMap: SortOrderMap<ExternalTool> = {
 				id: SortOrder.asc,
 				name: undefined,
 			};

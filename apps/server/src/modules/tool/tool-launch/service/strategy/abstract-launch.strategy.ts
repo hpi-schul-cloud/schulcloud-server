@@ -17,7 +17,7 @@ import { IToolLaunchStrategy } from './tool-launch-strategy.interface';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { CustomParameterDO, CustomParameterEntryDO } from '../../../common/domain';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
-import { ExternalToolDO } from '../../../external-tool/domain';
+import { ExternalTool } from '../../../external-tool/domain';
 
 @Injectable()
 export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
@@ -111,7 +111,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 		url.pathname = filledPathParams.join('/');
 	}
 
-	private buildToolLaunchDataFromExternalTool(externalToolDO: ExternalToolDO): ToolLaunchData {
+	private buildToolLaunchDataFromExternalTool(externalToolDO: ExternalTool): ToolLaunchData {
 		const launchData = new ToolLaunchData({
 			baseUrl: externalToolDO.config.baseUrl,
 			type: ToolLaunchMapper.mapToToolLaunchDataType(externalToolDO.config.type),

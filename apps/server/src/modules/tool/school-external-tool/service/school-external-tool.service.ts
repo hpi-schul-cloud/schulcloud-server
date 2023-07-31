@@ -4,7 +4,7 @@ import { EntityId } from '@shared/domain';
 import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalTool } from '../domain';
-import { ExternalToolDO } from '../../external-tool/domain';
+import { ExternalTool } from '../../external-tool/domain';
 import { ToolConfigurationStatus } from '../../common/enum';
 
 @Injectable()
@@ -38,7 +38,7 @@ export class SchoolExternalToolService {
 	}
 
 	private async enrichDataFromExternalTool(tool: SchoolExternalTool): Promise<SchoolExternalTool> {
-		const externalToolDO: ExternalToolDO = await this.externalToolService.findExternalToolById(tool.toolId);
+		const externalToolDO: ExternalTool = await this.externalToolService.findExternalToolById(tool.toolId);
 		const status: ToolConfigurationStatus = this.determineStatus(tool, externalToolDO);
 		const schoolExternalTool: SchoolExternalTool = new SchoolExternalTool({
 			...tool,
@@ -49,7 +49,7 @@ export class SchoolExternalToolService {
 		return schoolExternalTool;
 	}
 
-	private determineStatus(tool: SchoolExternalTool, externalToolDO: ExternalToolDO): ToolConfigurationStatus {
+	private determineStatus(tool: SchoolExternalTool, externalToolDO: ExternalTool): ToolConfigurationStatus {
 		if (externalToolDO.version <= tool.toolVersion) {
 			return ToolConfigurationStatus.LATEST;
 		}

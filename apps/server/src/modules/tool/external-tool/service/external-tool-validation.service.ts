@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
 import { ExternalToolService } from './external-tool.service';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
-import { ExternalToolDO } from '../domain';
+import { ExternalTool } from '../domain';
 
 @Injectable()
 export class ExternalToolValidationService {
@@ -11,7 +11,7 @@ export class ExternalToolValidationService {
 		private readonly commonToolValidationService: ExternalToolParameterValidationService
 	) {}
 
-	async validateCreate(externalToolDO: ExternalToolDO): Promise<void> {
+	async validateCreate(externalToolDO: ExternalTool): Promise<void> {
 		await this.commonToolValidationService.validateCommon(externalToolDO);
 
 		await this.validateOauth2Config(externalToolDO);
@@ -19,8 +19,8 @@ export class ExternalToolValidationService {
 		this.validateLti11Config(externalToolDO);
 	}
 
-	private async validateOauth2Config(externalToolDO: ExternalToolDO): Promise<void> {
-		if (ExternalToolDO.isOauth2Config(externalToolDO.config)) {
+	private async validateOauth2Config(externalToolDO: ExternalTool): Promise<void> {
+		if (ExternalTool.isOauth2Config(externalToolDO.config)) {
 			if (!externalToolDO.config.clientSecret) {
 				throw new ValidationError(
 					`tool_clientSecret_missing: The Client Secret of the tool ${externalToolDO.name || ''} is missing.`
@@ -35,8 +35,8 @@ export class ExternalToolValidationService {
 		}
 	}
 
-	private validateLti11Config(externalToolDO: ExternalToolDO): void {
-		if (ExternalToolDO.isLti11Config(externalToolDO.config)) {
+	private validateLti11Config(externalToolDO: ExternalTool): void {
+		if (ExternalTool.isLti11Config(externalToolDO.config)) {
 			if (!externalToolDO.config.secret) {
 				throw new ValidationError(
 					`tool_secret_missing: The secret of the LTI tool ${externalToolDO.name || ''} is missing.`
@@ -45,24 +45,24 @@ export class ExternalToolValidationService {
 		}
 	}
 
-	private async isClientIdUnique(externalToolDO: ExternalToolDO): Promise<boolean> {
-		let duplicate: ExternalToolDO | null = null;
-		if (ExternalToolDO.isOauth2Config(externalToolDO.config)) {
+	private async isClientIdUnique(externalToolDO: ExternalTool): Promise<boolean> {
+		let duplicate: ExternalTool | null = null;
+		if (ExternalTool.isOauth2Config(externalToolDO.config)) {
 			duplicate = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(externalToolDO.config.clientId);
 		}
 		return duplicate == null || duplicate.id === externalToolDO.id;
 	}
 
-	async validateUpdate(toolId: string, externalToolDO: Partial<ExternalToolDO>): Promise<void> {
+	async validateUpdate(toolId: string, externalToolDO: Partial<ExternalTool>): Promise<void> {
 		if (toolId !== externalToolDO.id) {
 			throw new ValidationError(`tool_id_mismatch: The tool has no id or it does not match the path parameter.`);
 		}
 
 		await this.commonToolValidationService.validateCommon(externalToolDO);
 
-		const loadedTool: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
+		const loadedTool: ExternalTool = await this.externalToolService.findExternalToolById(toolId);
 		if (
-			ExternalToolDO.isOauth2Config(loadedTool.config) &&
+			ExternalTool.isOauth2Config(loadedTool.config) &&
 			externalToolDO.config &&
 			externalToolDO.config.type !== loadedTool.config.type
 		) {
@@ -73,8 +73,8 @@ export class ExternalToolValidationService {
 
 		if (
 			externalToolDO.config &&
-			ExternalToolDO.isOauth2Config(externalToolDO.config) &&
-			ExternalToolDO.isOauth2Config(loadedTool.config) &&
+			ExternalTool.isOauth2Config(externalToolDO.config) &&
+			ExternalTool.isOauth2Config(loadedTool.config) &&
 			externalToolDO.config.clientId !== loadedTool.config.clientId
 		) {
 			throw new ValidationError(

@@ -21,7 +21,7 @@ import {
 import { ExternalToolResponseMapper } from '../mapper';
 import { SchoolToolConfigurationListResponse } from '../../school-external-tool/controller/dto';
 import { SchoolExternalToolResponseMapper } from '../../school-external-tool/mapper';
-import { ExternalToolDO } from '../domain';
+import { ExternalTool } from '../domain';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -38,7 +38,7 @@ export class ToolConfigurationController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() idParams: IdParams
 	): Promise<ToolConfigurationListResponse> {
-		const availableTools: ExternalToolDO[] = await this.externalToolConfigurationUc.getAvailableToolsForSchool(
+		const availableTools: ExternalTool[] = await this.externalToolConfigurationUc.getAvailableToolsForSchool(
 			currentUser.userId,
 			idParams.id
 		);
@@ -84,7 +84,7 @@ export class ToolConfigurationController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolIdParams
 	): Promise<ExternalToolConfigurationTemplateResponse> {
-		const externalToolDO: ExternalToolDO = await this.externalToolConfigurationUc.getExternalToolForSchool(
+		const externalToolDO: ExternalTool = await this.externalToolConfigurationUc.getExternalToolForSchool(
 			currentUser.userId,
 			params.toolId,
 			currentUser.schoolId
@@ -106,7 +106,7 @@ export class ToolConfigurationController {
 		@Param() contextParams: ContextTypeParams,
 		@Param() idParams: IdParams
 	): Promise<ExternalToolConfigurationTemplateResponse> {
-		const externalToolDO: ExternalToolDO = await this.externalToolConfigurationUc.getExternalToolForContext(
+		const externalToolDO: ExternalTool = await this.externalToolConfigurationUc.getExternalToolForContext(
 			currentUser.userId,
 			params.toolId,
 			idParams.id,

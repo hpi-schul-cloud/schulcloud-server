@@ -5,7 +5,7 @@ import { externalToolDOFactory } from '@shared/testing/factory/domainobject/tool
 import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalToolService } from './school-external-tool.service';
-import { ExternalToolDO } from '../../external-tool/domain';
+import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalTool } from '../domain';
 import { ToolConfigurationStatus } from '../../common/enum';
 
@@ -38,7 +38,7 @@ describe('SchoolExternalToolService', () => {
 
 	const setup = () => {
 		const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build();
-		const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
+		const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId();
 
 		schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
 

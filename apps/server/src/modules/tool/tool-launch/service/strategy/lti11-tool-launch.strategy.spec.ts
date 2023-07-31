@@ -19,7 +19,7 @@ import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { Lti11ToolLaunchStrategy } from './lti11-tool-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
-import { ExternalToolDO } from '../../../external-tool/domain';
+import { ExternalTool } from '../../../external-tool/domain';
 import { LtiMessageType, LtiPrivacyPermission, LtiRole, ToolContextType } from '../../../common/enum';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
@@ -82,7 +82,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 				const ltiMessageType = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
 				const resourceLinkId = 'resourceLinkId';
 
-				const externalToolDO: ExternalToolDO = externalToolDOFactory
+				const externalToolDO: ExternalTool = externalToolDOFactory
 					.withLti11Config({
 						key: mockKey,
 						secret: mockSecret,
@@ -174,7 +174,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 
 		describe('when no resource link id is available', () => {
 			const setup = () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory
+				const externalToolDO: ExternalTool = externalToolDOFactory
 					.withLti11Config({
 						key: 'mockKey',
 						secret: 'mockSecret',
@@ -225,7 +225,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 
 		describe('when lti privacyPermission is name', () => {
 			const setup = () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory
+				const externalToolDO: ExternalTool = externalToolDOFactory
 					.withLti11Config({
 						key: 'mockKey',
 						secret: 'mockSecret',
@@ -274,7 +274,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 
 		describe('when lti privacyPermission is email', () => {
 			const setup = () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory
+				const externalToolDO: ExternalTool = externalToolDOFactory
 					.withLti11Config({
 						key: 'mockKey',
 						secret: 'mockSecret',
@@ -325,7 +325,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 
 		describe('when lti privacyPermission is pseudonymous', () => {
 			const setup = () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory
+				const externalToolDO: ExternalTool = externalToolDOFactory
 					.withLti11Config({
 						key: 'mockKey',
 						secret: 'mockSecret',
@@ -371,7 +371,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 
 		describe('when tool config is not lti', () => {
 			const setup = () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.buildWithId();
+				const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId();
 				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.buildWithId();
 

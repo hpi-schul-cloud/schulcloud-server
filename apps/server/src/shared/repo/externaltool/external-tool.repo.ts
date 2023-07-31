@@ -6,12 +6,12 @@ import { BaseDORepo, ExternalToolRepoMapper, ExternalToolSortingMapper, Scope } 
 import { LegacyLogger } from '@src/core/logger';
 import { ToolConfigType } from '@src/modules/tool/common/enum';
 import { ExternalToolSearchQuery } from '@src/modules/tool/common/interface';
-import { ExternalToolDO } from '@src/modules/tool/external-tool/domain';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain';
 import { ExternalToolEntity, IExternalToolProperties } from '@src/modules/tool/external-tool/entity';
 import { ExternalToolScope } from './external-tool.scope';
 
 @Injectable()
-export class ExternalToolRepo extends BaseDORepo<ExternalToolDO, ExternalToolEntity, IExternalToolProperties> {
+export class ExternalToolRepo extends BaseDORepo<ExternalTool, ExternalToolEntity, IExternalToolProperties> {
 	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
 	}
@@ -24,34 +24,34 @@ export class ExternalToolRepo extends BaseDORepo<ExternalToolDO, ExternalToolEnt
 		return new ExternalToolEntity(props);
 	}
 
-	async findByName(name: string): Promise<ExternalToolDO | null> {
+	async findByName(name: string): Promise<ExternalTool | null> {
 		const entity: ExternalToolEntity | null = await this._em.findOne(this.entityName, { name });
 		if (entity !== null) {
-			const domainObject: ExternalToolDO = this.mapEntityToDO(entity);
+			const domainObject: ExternalTool = this.mapEntityToDO(entity);
 			return domainObject;
 		}
 		return null;
 	}
 
-	async findAllByConfigType(type: ToolConfigType): Promise<ExternalToolDO[]> {
+	async findAllByConfigType(type: ToolConfigType): Promise<ExternalTool[]> {
 		const entities: ExternalToolEntity[] = await this._em.find(this.entityName, { config: { type } });
-		const domainObjects: ExternalToolDO[] = entities.map((entity: ExternalToolEntity): ExternalToolDO => {
-			const domainObject: ExternalToolDO = this.mapEntityToDO(entity);
+		const domainObjects: ExternalTool[] = entities.map((entity: ExternalToolEntity): ExternalTool => {
+			const domainObject: ExternalTool = this.mapEntityToDO(entity);
 			return domainObject;
 		});
 		return domainObjects;
 	}
 
-	async findByOAuth2ConfigClientId(clientId: string): Promise<ExternalToolDO | null> {
+	async findByOAuth2ConfigClientId(clientId: string): Promise<ExternalTool | null> {
 		const entity: ExternalToolEntity | null = await this._em.findOne(this.entityName, { config: { clientId } });
 		if (entity !== null) {
-			const domainObject: ExternalToolDO = this.mapEntityToDO(entity);
+			const domainObject: ExternalTool = this.mapEntityToDO(entity);
 			return domainObject;
 		}
 		return null;
 	}
 
-	async find(query: ExternalToolSearchQuery, options?: IFindOptions<ExternalToolDO>): Promise<Page<ExternalToolDO>> {
+	async find(query: ExternalToolSearchQuery, options?: IFindOptions<ExternalTool>): Promise<Page<ExternalTool>> {
 		const pagination: IPagination = options?.pagination || {};
 		const order: QueryOrderMap<ExternalToolEntity> = ExternalToolSortingMapper.mapDOSortOrderToQueryOrder(
 			options?.order || {}
@@ -76,16 +76,16 @@ export class ExternalToolRepo extends BaseDORepo<ExternalToolDO, ExternalToolEnt
 			}
 		);
 
-		const entityDos: ExternalToolDO[] = entities.map((entity) => this.mapEntityToDO(entity));
-		const page: Page<ExternalToolDO> = new Page<ExternalToolDO>(entityDos, total);
+		const entityDos: ExternalTool[] = entities.map((entity) => this.mapEntityToDO(entity));
+		const page: Page<ExternalTool> = new Page<ExternalTool>(entityDos, total);
 		return page;
 	}
 
-	mapEntityToDO(entity: ExternalToolEntity): ExternalToolDO {
+	mapEntityToDO(entity: ExternalToolEntity): ExternalTool {
 		return ExternalToolRepoMapper.mapEntityToDO(entity);
 	}
 
-	mapDOToEntityProperties(entityDO: ExternalToolDO): IExternalToolProperties {
+	mapDOToEntityProperties(entityDO: ExternalTool): IExternalToolProperties {
 		return ExternalToolRepoMapper.mapDOToEntityProperties(entityDO);
 	}
 }

@@ -30,7 +30,7 @@ import {
 	Oauth2ToolConfigCreate,
 	Oauth2ToolConfigUpdate,
 } from '../uc';
-import { ExternalToolDO } from '../domain';
+import { ExternalTool } from '../domain';
 import { ExternalToolSearchQuery } from '../../common/interface';
 
 const scopeMapping: Record<CustomParameterScopeTypeParams, CustomParameterScope> = {
@@ -155,13 +155,13 @@ export class ExternalToolRequestMapper {
 		});
 	}
 
-	mapSortingQueryToDomain(sortingQuery: SortExternalToolParams): SortOrderMap<ExternalToolDO> | undefined {
+	mapSortingQueryToDomain(sortingQuery: SortExternalToolParams): SortOrderMap<ExternalTool> | undefined {
 		const { sortBy } = sortingQuery;
 		if (sortBy == null) {
 			return undefined;
 		}
 
-		const result: SortOrderMap<ExternalToolDO> = {
+		const result: SortOrderMap<ExternalTool> = {
 			[sortBy]: sortingQuery.sortOrder,
 		};
 		return result;
