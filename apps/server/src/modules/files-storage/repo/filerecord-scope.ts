@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { EntityId } from '@shared/domain';
 import { Scope } from '@shared/repo';
 import { FileRecord } from '../entity';
 
@@ -31,12 +31,6 @@ export class FileRecordScope extends Scope<FileRecord> {
 	byMarkedForDelete(isMarked = true): FileRecordScope {
 		const query = isMarked ? { deletedSince: { $ne: null } } : { deletedSince: null };
 		this.addQuery(query);
-
-		return this;
-	}
-
-	byName(fileName: string): FileRecordScope {
-		this.addQuery({ name: fileName });
 
 		return this;
 	}

@@ -74,12 +74,6 @@ export class FilesStorageService {
 		return countedFileRecords;
 	}
 
-	public async getFileRecordByName(params: RenameFileParams): Promise<Counted<FileRecord[]>> {
-		const countedFileRecords = await this.fileRecordRepo.findByName(params.fileName);
-
-		return countedFileRecords;
-	}
-
 	// upload
 	public async uploadFile(
 		userId: EntityId,
