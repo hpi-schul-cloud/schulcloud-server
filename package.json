@@ -186,7 +186,6 @@
 		"passport-jwt": "^4.0.1",
 		"passport-local": "^1.0.0",
 		"prom-client": "^13.1.0",
-		"prometheus-api-metrics": "^3.1.0",
 		"qs": "^6.9.7",
 		"read-chunk": "^3.0.0",
 		"redis": "^3.0.0",

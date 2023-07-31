@@ -5,4 +5,5 @@ export enum BoardNodeType {
 	FILE_ELEMENT = 'file-element',
 	RICH_TEXT_ELEMENT = 'rich-text-element',
 	SUBMISSION_CONTAINER_ELEMENT = 'submission-container-element',
+	SUBMISSION_ITEM = 'submission-item',
 }

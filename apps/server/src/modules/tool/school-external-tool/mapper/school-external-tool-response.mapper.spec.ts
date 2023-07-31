@@ -1,16 +1,8 @@
-import { schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
-import { externalToolFactory } from '@shared/testing';
-import { SchoolExternalToolResponseMapper } from './school-external-tool-response.mapper';
-import { AvailableToolsForContext } from '../../external-tool/uc';
-import {
-	SchoolExternalToolResponse,
-	SchoolExternalToolSearchListResponse,
-	SchoolToolConfigurationEntryResponse,
-	SchoolToolConfigurationListResponse,
-} from '../controller/dto';
+import { SchoolExternalToolDO } from '@shared/domain';
+import { schoolExternalToolDOFactory } from '@shared/testing/factory';
 import { ToolConfigurationStatusResponse } from '../../external-tool/controller/dto';
-import { SchoolExternalTool } from '../domain';
-import { ExternalTool } from '../../external-tool/domain';
+import { SchoolExternalToolResponse, SchoolExternalToolSearchListResponse } from '../controller/dto';
+import { SchoolExternalToolResponseMapper } from './school-external-tool-response.mapper';
 
 describe('SchoolExternalToolResponseMapper', () => {
 	let mapper: SchoolExternalToolResponseMapper;
@@ -21,10 +13,10 @@ describe('SchoolExternalToolResponseMapper', () => {
 
 	describe('mapToSearchListResponse is called', () => {
 		const setup = () => {
-			const do1: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-			const do2: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+			const do1: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
+			const do2: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
 
-			const dos: SchoolExternalTool[] = [do1, do2];
+			const dos: SchoolExternalToolDO[] = [do1, do2];
 
 			return {
 				dos,
@@ -97,45 +89,6 @@ describe('SchoolExternalToolResponseMapper', () => {
 						status: ToolConfigurationStatusResponse.UNKNOWN,
 					})
 				);
-			});
-		});
-	});
-
-	describe('mapExternalToolDOsToSchoolToolConfigurationListResponse is called', () => {
-		describe('when mapping from ExternalToolDOs and SchoolToolIds to SchoolToolConfigurationListResponse', () => {
-			const setup = () => {
-				const externalTool: ExternalTool = externalToolFactory.build({
-					id: 'toolId',
-					name: 'toolName',
-					logoUrl: 'logoUrl',
-				});
-
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({ id: 'SchoolToolId' });
-
-				const availableTools: AvailableToolsForContext[] = [{ externalTool, schoolExternalTool }];
-
-				const expectedResponse: SchoolToolConfigurationEntryResponse = new SchoolToolConfigurationEntryResponse(
-					{
-						id: 'toolId',
-						name: 'toolName',
-						logoUrl: 'logoUrl',
-					},
-					'SchoolToolId'
-				);
-
-				return {
-					availableTools,
-					expectedResponse,
-				};
-			};
-
-			it('should map from ExternalToolDOs and SchoolToolids to SchoolToolConfigurationListResponse', () => {
-				const { availableTools, expectedResponse } = setup();
-
-				const result: SchoolToolConfigurationListResponse =
-					SchoolExternalToolResponseMapper.mapExternalToolDOsToSchoolToolConfigurationListResponse(availableTools);
-
-				expect(result.data).toEqual(expect.arrayContaining([expectedResponse]));
 			});
 		});
 	});

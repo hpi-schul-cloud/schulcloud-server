@@ -3,13 +3,13 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType, ContentElementType, RichTextElementNode } from '@shared/domain';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	cardNodeFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
 	columnNodeFactory,
 	courseFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { AnyContentElementResponse } from '../dto';
@@ -81,6 +81,16 @@ describe(`content element create (api)`, () => {
 			const response = await loggedInClient.post(`${cardNode.id}/elements`, { type: ContentElementType.FILE });
 
 			expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.FILE);
+		});
+
+		it('should return the created content element of type SUBMISSION_CONTAINER', async () => {
+			const { loggedInClient, cardNode } = await setup();
+
+			const response = await loggedInClient.post(`${cardNode.id}/elements`, {
+				type: ContentElementType.SUBMISSION_CONTAINER,
+			});
+
+			expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.SUBMISSION_CONTAINER);
 		});
 
 		it('should actually create the content element', async () => {

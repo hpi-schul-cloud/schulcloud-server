@@ -1,10 +1,13 @@
-import { EntityId } from '@shared/domain';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { EntityId } from '@shared/domain';
 import { CustomParameterResponse } from './custom-parameter.response';
 
-export class ExternalToolConfigurationTemplateResponse {
+export class ContextExternalToolConfigurationTemplateResponse {
 	@ApiProperty()
-	id: EntityId;
+	externalToolId: EntityId;
+
+	@ApiProperty()
+	schoolExternalToolId: EntityId;
 
 	@ApiProperty()
 	name: string;
@@ -18,8 +21,9 @@ export class ExternalToolConfigurationTemplateResponse {
 	@ApiProperty()
 	version: number;
 
-	constructor(configuration: ExternalToolConfigurationTemplateResponse) {
-		this.id = configuration.id;
+	constructor(configuration: ContextExternalToolConfigurationTemplateResponse) {
+		this.externalToolId = configuration.externalToolId;
+		this.schoolExternalToolId = configuration.schoolExternalToolId;
 		this.name = configuration.name;
 		this.logoUrl = configuration.logoUrl;
 		this.parameters = configuration.parameters;

@@ -1,20 +1,39 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { ContextExternalToolRepo } from '@shared/repo';
-import { ContextExternalToolDto } from '../uc/dto/context-external-tool.types';
-import { ContextExternalTool } from '../domain';
+import { ContextExternalToolDO, ExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
+import { CommonToolValidationService } from '../../common/service';
+import { ExternalToolService } from '../../external-tool/service';
+import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { ContextExternalTool } from '../uc/dto/context-external-tool.types';
+import { ContextExternalToolService } from './context-external-tool.service';
 
 @Injectable()
 export class ContextExternalToolValidationService {
-	constructor(private readonly contextExternalToolRepo: ContextExternalToolRepo) {}
+	constructor(
+		private readonly contextExternalToolService: ContextExternalToolService,
+		private readonly externalToolService: ExternalToolService,
+		private readonly schoolExternalToolService: SchoolExternalToolService,
+		private readonly commonToolValidationService: CommonToolValidationService
+	) {}
 
-	async validate(contextExternalToolDto: ContextExternalToolDto): Promise<void> {
-		await this.checkDuplicateInContext(contextExternalToolDto);
+	async validate(toValidate: ContextExternalTool): Promise<void> {
+		const contextExternalTool: ContextExternalToolDO = new ContextExternalToolDO(toValidate);
+
+		await this.checkDuplicateInContext(contextExternalTool);
+
+		const loadedSchoolExternalTool: SchoolExternalToolDO =
+			await this.schoolExternalToolService.getSchoolExternalToolById(contextExternalTool.schoolToolRef.schoolToolId);
+
+		const loadedExternalTool: ExternalToolDO = await this.externalToolService.findExternalToolById(
+			loadedSchoolExternalTool.toolId
+		);
+
+		this.commonToolValidationService.checkCustomParameterEntries(loadedExternalTool, contextExternalTool);
 	}
 
-	private async checkDuplicateInContext(contextExternalToolDto: ContextExternalToolDto) {
-		const duplicate: ContextExternalTool[] = await this.contextExternalToolRepo.find({
-			schoolToolRef: contextExternalToolDto.schoolToolRef,
-			context: contextExternalToolDto.contextRef,
+	private async checkDuplicateInContext(contextExternalTool: ContextExternalToolDO) {
+		const duplicate: ContextExternalToolDO[] = await this.contextExternalToolService.findContextExternalTools({
+			schoolToolRef: contextExternalTool.schoolToolRef,
+			context: contextExternalTool.contextRef,
 		});
 
 		if (duplicate.length > 0) {
