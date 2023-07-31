@@ -52,16 +52,16 @@ export class ToolReferenceUc {
 		}
 
 		const schoolExternalTool: SchoolExternalTool = await this.fetchSchoolExternalTool(contextExternalTool);
-		const externalToolDO: ExternalTool = await this.fetchExternalTool(schoolExternalTool);
+		const externalTool: ExternalTool = await this.fetchExternalTool(schoolExternalTool);
 
 		const status: ToolConfigurationStatus = this.commonToolService.determineToolConfigurationStatus(
-			externalToolDO,
+			externalTool,
 			schoolExternalTool,
 			contextExternalTool
 		);
 
 		const toolReference: ToolReference = ToolReferenceMapper.mapToToolReference(
-			externalToolDO,
+			externalTool,
 			contextExternalTool,
 			status
 		);

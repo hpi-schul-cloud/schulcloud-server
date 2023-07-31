@@ -82,7 +82,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 				const ltiMessageType = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
 				const resourceLinkId = 'resourceLinkId';
 
-				const externalToolDO: ExternalTool = externalToolDOFactory
+				const externalTool: ExternalTool = externalToolDOFactory
 					.withLti11Config({
 						key: mockKey,
 						secret: mockSecret,
@@ -92,12 +92,12 @@ describe('Lti11ToolLaunchStrategy', () => {
 					})
 					.buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId();
-				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.buildWithId();
+				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId();
 
 				const data: IToolLaunchParams = {
-					contextExternalToolDO,
-					schoolExternalToolDO: schoolExternalTool,
-					externalToolDO,
+					contextExternalTool,
+					schoolExternalTool,
+					externalTool,
 				};
 
 				const user: UserDO = userDoFactory.buildWithId({
@@ -174,7 +174,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 
 		describe('when no resource link id is available', () => {
 			const setup = () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory
+				const externalTool: ExternalTool = externalToolDOFactory
 					.withLti11Config({
 						key: 'mockKey',
 						secret: 'mockSecret',
@@ -186,14 +186,14 @@ describe('Lti11ToolLaunchStrategy', () => {
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId();
 
 				const contextId: string = new ObjectId().toHexString();
-				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.buildWithId({
+				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId({
 					contextRef: { id: contextId, type: ToolContextType.COURSE },
 				});
 
 				const data: IToolLaunchParams = {
-					contextExternalToolDO,
-					schoolExternalToolDO: schoolExternalTool,
-					externalToolDO,
+					contextExternalTool,
+					schoolExternalTool,
+					externalTool,
 				};
 
 				const user: UserDO = userDoFactory.buildWithId();
@@ -225,7 +225,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 
 		describe('when lti privacyPermission is name', () => {
 			const setup = () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory
+				const externalTool: ExternalTool = externalToolDOFactory
 					.withLti11Config({
 						key: 'mockKey',
 						secret: 'mockSecret',
@@ -235,12 +235,12 @@ describe('Lti11ToolLaunchStrategy', () => {
 					})
 					.buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId();
-				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.buildWithId();
+				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId();
 
 				const data: IToolLaunchParams = {
-					contextExternalToolDO,
-					schoolExternalToolDO: schoolExternalTool,
-					externalToolDO,
+					contextExternalTool,
+					schoolExternalTool,
+					externalTool,
 				};
 
 				const userId: string = new ObjectId().toHexString();
@@ -274,7 +274,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 
 		describe('when lti privacyPermission is email', () => {
 			const setup = () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory
+				const externalTool: ExternalTool = externalToolDOFactory
 					.withLti11Config({
 						key: 'mockKey',
 						secret: 'mockSecret',
@@ -284,12 +284,12 @@ describe('Lti11ToolLaunchStrategy', () => {
 					})
 					.buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId();
-				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.buildWithId();
+				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId();
 
 				const data: IToolLaunchParams = {
-					contextExternalToolDO,
-					schoolExternalToolDO: schoolExternalTool,
-					externalToolDO,
+					contextExternalTool,
+					schoolExternalTool,
+					externalTool,
 				};
 
 				const userId: string = new ObjectId().toHexString();
@@ -325,7 +325,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 
 		describe('when lti privacyPermission is pseudonymous', () => {
 			const setup = () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory
+				const externalTool: ExternalTool = externalToolDOFactory
 					.withLti11Config({
 						key: 'mockKey',
 						secret: 'mockSecret',
@@ -335,12 +335,12 @@ describe('Lti11ToolLaunchStrategy', () => {
 					})
 					.buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId();
-				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.buildWithId();
+				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId();
 
 				const data: IToolLaunchParams = {
-					contextExternalToolDO,
-					schoolExternalToolDO: schoolExternalTool,
-					externalToolDO,
+					contextExternalTool,
+					schoolExternalTool,
+					externalTool,
 				};
 
 				const user: UserDO = userDoFactory.buildWithId();
@@ -371,14 +371,14 @@ describe('Lti11ToolLaunchStrategy', () => {
 
 		describe('when tool config is not lti', () => {
 			const setup = () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId();
+				const externalTool: ExternalTool = externalToolDOFactory.buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId();
-				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.buildWithId();
+				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId();
 
 				const data: IToolLaunchParams = {
-					contextExternalToolDO,
-					schoolExternalToolDO: schoolExternalTool,
-					externalToolDO,
+					contextExternalTool,
+					schoolExternalTool,
+					externalTool,
 				};
 
 				return {

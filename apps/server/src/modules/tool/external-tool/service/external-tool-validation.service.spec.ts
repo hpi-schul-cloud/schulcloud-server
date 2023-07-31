@@ -42,13 +42,13 @@ describe('ExternalToolValidationService', () => {
 		jest.clearAllMocks();
 	});
 
-	const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId();
+	const externalTool: ExternalTool = externalToolDOFactory.buildWithId();
 
 	describe('validateCreate is called', () => {
 		it('should call the common validation service', async () => {
-			await service.validateCreate(externalToolDO);
+			await service.validateCreate(externalTool);
 
-			expect(commonToolValidationService.validateCommon).toHaveBeenCalledWith(externalToolDO);
+			expect(commonToolValidationService.validateCommon).toHaveBeenCalledWith(externalTool);
 		});
 
 		describe('when external tool config has oauth config', () => {
@@ -175,11 +175,11 @@ describe('ExternalToolValidationService', () => {
 		});
 
 		it('should call the common validation service', async () => {
-			externalToolDO.id = 'toolId';
+			externalTool.id = 'toolId';
 
-			await service.validateUpdate(externalToolDO.id, externalToolDO);
+			await service.validateUpdate(externalTool.id, externalTool);
 
-			expect(commonToolValidationService.validateCommon).toHaveBeenCalledWith(externalToolDO);
+			expect(commonToolValidationService.validateCommon).toHaveBeenCalledWith(externalTool);
 		});
 
 		describe('when checking if parameter id matches toolId', () => {
@@ -198,7 +198,7 @@ describe('ExternalToolValidationService', () => {
 			};
 
 			it('should throw an error if not matches', async () => {
-				const func = () => service.validateUpdate('notMatchToolId', externalToolDO);
+				const func = () => service.validateUpdate('notMatchToolId', externalTool);
 
 				await expect(func).rejects.toThrow(
 					new ValidationError(`tool_id_mismatch: The tool has no id or it does not match the path parameter.`)
@@ -227,10 +227,10 @@ describe('ExternalToolValidationService', () => {
 				it('should throw', async () => {
 					setup();
 
-					const result: Promise<void> = service.validateUpdate(externalToolDO.id as string, externalToolDO);
+					const result: Promise<void> = service.validateUpdate(externalTool.id as string, externalTool);
 
 					await expect(result).rejects.toThrow(
-						new ValidationError(`tool_type_immutable: The Config Type of the tool ${externalToolDO.name} is immutable.`)
+						new ValidationError(`tool_type_immutable: The Config Type of the tool ${externalTool.name} is immutable.`)
 					);
 				});
 			});

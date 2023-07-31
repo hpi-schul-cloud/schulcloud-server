@@ -84,14 +84,14 @@ export class ToolConfigurationController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolIdParams
 	): Promise<ExternalToolConfigurationTemplateResponse> {
-		const externalToolDO: ExternalTool = await this.externalToolConfigurationUc.getExternalToolForSchool(
+		const externalTool: ExternalTool = await this.externalToolConfigurationUc.getExternalToolForSchool(
 			currentUser.userId,
 			params.toolId,
 			currentUser.schoolId
 		);
 
 		const mapped: ExternalToolConfigurationTemplateResponse =
-			this.externalToolResponseMapper.mapToConfigurationTemplateResponse(externalToolDO);
+			this.externalToolResponseMapper.mapToConfigurationTemplateResponse(externalTool);
 
 		return mapped;
 	}
@@ -106,7 +106,7 @@ export class ToolConfigurationController {
 		@Param() contextParams: ContextTypeParams,
 		@Param() idParams: IdParams
 	): Promise<ExternalToolConfigurationTemplateResponse> {
-		const externalToolDO: ExternalTool = await this.externalToolConfigurationUc.getExternalToolForContext(
+		const externalTool: ExternalTool = await this.externalToolConfigurationUc.getExternalToolForContext(
 			currentUser.userId,
 			params.toolId,
 			idParams.id,
@@ -114,7 +114,7 @@ export class ToolConfigurationController {
 		);
 
 		const mapped: ExternalToolConfigurationTemplateResponse =
-			this.externalToolResponseMapper.mapToConfigurationTemplateResponse(externalToolDO);
+			this.externalToolResponseMapper.mapToConfigurationTemplateResponse(externalTool);
 
 		return mapped;
 	}

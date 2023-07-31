@@ -3,9 +3,9 @@ import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 
 export interface IToolLaunchParams {
-	externalToolDO: ExternalTool;
+	externalTool: ExternalTool;
 
-	schoolExternalToolDO: SchoolExternalTool;
+	schoolExternalTool: SchoolExternalTool;
 
-	contextExternalToolDO: ContextExternalTool;
+	contextExternalTool: ContextExternalTool;
 }

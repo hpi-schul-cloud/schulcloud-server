@@ -46,30 +46,30 @@ const typeMapping: Record<CustomParameterType, CustomParameterTypeParams> = {
 
 @Injectable()
 export class ExternalToolResponseMapper {
-	mapToExternalToolResponse(externalToolDO: ExternalTool): ExternalToolResponse {
+	mapToExternalToolResponse(externalTool: ExternalTool): ExternalToolResponse {
 		let mappedConfig: BasicToolConfigResponse | Lti11ToolConfigResponse | Oauth2ToolConfigResponse;
-		if (externalToolDO.config instanceof BasicToolConfigDO) {
-			mappedConfig = this.mapBasicToolConfigDOToResponse(externalToolDO.config);
-		} else if (externalToolDO.config instanceof Lti11ToolConfigDO) {
-			mappedConfig = this.mapLti11ToolConfigDOToResponse(externalToolDO.config);
+		if (externalTool.config instanceof BasicToolConfigDO) {
+			mappedConfig = this.mapBasicToolConfigDOToResponse(externalTool.config);
+		} else if (externalTool.config instanceof Lti11ToolConfigDO) {
+			mappedConfig = this.mapLti11ToolConfigDOToResponse(externalTool.config);
 		} else {
-			mappedConfig = this.mapOauth2ToolConfigDOToResponse(externalToolDO.config);
+			mappedConfig = this.mapOauth2ToolConfigDOToResponse(externalTool.config);
 		}
 
 		const mappedCustomParameter: CustomParameterResponse[] = this.mapCustomParameterDOToResponse(
-			externalToolDO.parameters ?? []
+			externalTool.parameters ?? []
 		);
 
 		return new ExternalToolResponse({
-			id: externalToolDO.id ?? '',
-			name: externalToolDO.name,
-			url: externalToolDO.url,
-			logoUrl: externalToolDO.logoUrl,
+			id: externalTool.id ?? '',
+			name: externalTool.name,
+			url: externalTool.url,
+			logoUrl: externalTool.logoUrl,
 			config: mappedConfig,
 			parameters: mappedCustomParameter,
-			isHidden: externalToolDO.isHidden,
-			openNewTab: externalToolDO.openNewTab,
-			version: externalToolDO.version,
+			isHidden: externalTool.isHidden,
+			openNewTab: externalTool.openNewTab,
+			version: externalTool.version,
 		});
 	}
 
@@ -119,17 +119,17 @@ export class ExternalToolResponseMapper {
 		);
 	}
 
-	mapToConfigurationTemplateResponse(externalToolDO: ExternalTool): ExternalToolConfigurationTemplateResponse {
+	mapToConfigurationTemplateResponse(externalTool: ExternalTool): ExternalToolConfigurationTemplateResponse {
 		const mappedCustomParameter: CustomParameterResponse[] = this.mapCustomParameterDOToResponse(
-			externalToolDO.parameters ?? []
+			externalTool.parameters ?? []
 		);
 
 		return new ExternalToolConfigurationTemplateResponse({
-			id: externalToolDO.id ?? '',
-			name: externalToolDO.name,
-			logoUrl: externalToolDO.logoUrl,
+			id: externalTool.id ?? '',
+			name: externalTool.name,
+			logoUrl: externalTool.logoUrl,
 			parameters: mappedCustomParameter,
-			version: externalToolDO.version,
+			version: externalTool.version,
 		});
 	}
 

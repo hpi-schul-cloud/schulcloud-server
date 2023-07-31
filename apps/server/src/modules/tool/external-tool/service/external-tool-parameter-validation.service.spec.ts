@@ -43,12 +43,12 @@ describe('ExternalToolParameterValidationService', () => {
 	describe('validateCommon is called', () => {
 		describe('when tool is valid', () => {
 			it('should return without exception', async () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory
+				const externalTool: ExternalTool = externalToolDOFactory
 					.withCustomParameters(1, { default: 'test', regex: '[t]', regexComment: 'testComment' })
 					.buildWithId();
-				externalToolService.findExternalToolByName.mockResolvedValue(externalToolDO);
+				externalToolService.findExternalToolByName.mockResolvedValue(externalTool);
 
-				const result: Promise<void> = service.validateCommon(externalToolDO);
+				const result: Promise<void> = service.validateCommon(externalTool);
 
 				await expect(result).resolves.not.toThrow();
 			});
@@ -56,19 +56,19 @@ describe('ExternalToolParameterValidationService', () => {
 
 		describe('when checking if tool name is unique', () => {
 			it('should throw an exception when name already exists', async () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory.build({ name: 'sameName' });
+				const externalTool: ExternalTool = externalToolDOFactory.build({ name: 'sameName' });
 				const existingExternalToolDO: ExternalTool = externalToolDOFactory.buildWithId({ name: 'sameName' });
 				externalToolService.findExternalToolByName.mockResolvedValue(existingExternalToolDO);
 
-				const result: Promise<void> = service.validateCommon(externalToolDO);
+				const result: Promise<void> = service.validateCommon(externalTool);
 
 				await expect(result).rejects.toThrow(
-					new ValidationError(`tool_name_duplicate: The tool name "${externalToolDO.name}" is already used.`)
+					new ValidationError(`tool_name_duplicate: The tool name "${externalTool.name}" is already used.`)
 				);
 			});
 
 			it('should return when tool name is undefined', async () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory.build({
+				const externalTool: ExternalTool = externalToolDOFactory.build({
 					name: undefined,
 					parameters: [
 						customParameterDOFactory.build({ name: 'sameKey', scope: CustomParameterScope.SCHOOL }),
@@ -76,7 +76,7 @@ describe('ExternalToolParameterValidationService', () => {
 					],
 				});
 
-				const func = () => service.validateCommon(externalToolDO);
+				const func = () => service.validateCommon(externalTool);
 
 				await expect(func()).resolves.not.toThrow();
 			});
@@ -84,16 +84,16 @@ describe('ExternalToolParameterValidationService', () => {
 
 		describe('when there is an empty parameter name', () => {
 			it('should throw ValidationError', async () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory.build({
+				const externalTool: ExternalTool = externalToolDOFactory.build({
 					parameters: [customParameterDOFactory.build({ name: '' })],
 				});
 				externalToolService.findExternalToolByName.mockResolvedValue(null);
 
-				const func = () => service.validateCommon(externalToolDO);
+				const func = () => service.validateCommon(externalTool);
 
 				await expect(func()).rejects.toThrow(
 					new ValidationError(
-						`tool_param_name: The tool ${externalToolDO.name} is missing at least one custom parameter name.`
+						`tool_param_name: The tool ${externalTool.name} is missing at least one custom parameter name.`
 					)
 				);
 			});
@@ -101,7 +101,7 @@ describe('ExternalToolParameterValidationService', () => {
 
 		describe('when there are duplicate attributes', () => {
 			it('should fail for two equal parameters', async () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory.build({
+				const externalTool: ExternalTool = externalToolDOFactory.build({
 					parameters: [
 						customParameterDOFactory.build({ name: 'paramEqual' }),
 						customParameterDOFactory.build({ name: 'paramEqual' }),
@@ -109,17 +109,17 @@ describe('ExternalToolParameterValidationService', () => {
 				});
 				externalToolService.findExternalToolByName.mockResolvedValue(null);
 
-				const func = () => service.validateCommon(externalToolDO);
+				const func = () => service.validateCommon(externalTool);
 
 				await expect(func()).rejects.toThrow(
 					new ValidationError(
-						`tool_param_duplicate: The tool ${externalToolDO.name} contains multiple of the same custom parameters.`
+						`tool_param_duplicate: The tool ${externalTool.name} contains multiple of the same custom parameters.`
 					)
 				);
 			});
 
 			it('should fail for names that only differ in capitalisation', async () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory.build({
+				const externalTool: ExternalTool = externalToolDOFactory.build({
 					parameters: [
 						customParameterDOFactory.build({ name: 'param1CaseSensitive' }),
 						customParameterDOFactory.build({ name: 'Param1casesensitive' }),
@@ -127,11 +127,11 @@ describe('ExternalToolParameterValidationService', () => {
 				});
 				externalToolService.findExternalToolByName.mockResolvedValue(null);
 
-				const result: Promise<void> = service.validateCommon(externalToolDO);
+				const result: Promise<void> = service.validateCommon(externalTool);
 
 				await expect(result).rejects.toThrow(
 					new ValidationError(
-						`tool_param_duplicate: The tool ${externalToolDO.name} contains multiple of the same custom parameters.`
+						`tool_param_duplicate: The tool ${externalTool.name} contains multiple of the same custom parameters.`
 					)
 				);
 			});
@@ -139,14 +139,14 @@ describe('ExternalToolParameterValidationService', () => {
 
 		describe('when regex is invalid', () => {
 			it('throw when external tools has a faulty regular expression', async () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory.withCustomParameters(1, { regex: '[' }).build();
+				const externalTool: ExternalTool = externalToolDOFactory.withCustomParameters(1, { regex: '[' }).build();
 				externalToolService.findExternalToolByName.mockResolvedValue(null);
 
-				const func = () => service.validateCommon(externalToolDO);
+				const func = () => service.validateCommon(externalTool);
 
 				await expect(func()).rejects.toThrow(
 					new ValidationError(
-						`tool_param_regex_invalid: A custom Parameter of the tool ${externalToolDO.name} has wrong regex attribute.`
+						`tool_param_regex_invalid: A custom Parameter of the tool ${externalTool.name} has wrong regex attribute.`
 					)
 				);
 			});
@@ -154,12 +154,12 @@ describe('ExternalToolParameterValidationService', () => {
 
 		describe('when default value does not match regex', () => {
 			it('should throw', async () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory
+				const externalTool: ExternalTool = externalToolDOFactory
 					.withCustomParameters(1, { default: 'es', regex: '[t]', regexComment: 'mockComment' })
 					.buildWithId();
 				externalToolService.findExternalToolByName.mockResolvedValue(null);
 
-				const func = () => service.validateCommon(externalToolDO);
+				const func = () => service.validateCommon(externalTool);
 
 				await expect(func()).rejects.toThrow('tool_param_default_regex:');
 			});
@@ -167,17 +167,17 @@ describe('ExternalToolParameterValidationService', () => {
 
 		describe('when regex is set but regex comment is missing', () => {
 			it('should throw exception', async () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory
+				const externalTool: ExternalTool = externalToolDOFactory
 					.withCustomParameters(1, { regex: '.', scope: CustomParameterScope.SCHOOL })
 					.build();
 				externalToolService.findExternalToolByName.mockResolvedValue(null);
 
-				const result: Promise<void> = service.validateCommon(externalToolDO);
+				const result: Promise<void> = service.validateCommon(externalTool);
 
 				await expect(result).rejects.toThrow(
 					new ValidationError(
 						`tool_param_regexComment: The "${
-							(externalToolDO.parameters as CustomParameterDO[])[0].name
+							(externalTool.parameters as CustomParameterDO[])[0].name
 						}" parameter is missing a regex comment.`
 					)
 				);
@@ -187,7 +187,7 @@ describe('ExternalToolParameterValidationService', () => {
 		describe('when parameters has a parameter with scope global', () => {
 			describe('when parameter has a default value', () => {
 				const setup = () => {
-					const externalToolDO: ExternalTool = externalToolDOFactory
+					const externalTool: ExternalTool = externalToolDOFactory
 						.withCustomParameters(1, {
 							scope: CustomParameterScope.GLOBAL,
 							default: 'defaultValue',
@@ -197,14 +197,14 @@ describe('ExternalToolParameterValidationService', () => {
 					externalToolService.findExternalToolByName.mockResolvedValue(null);
 
 					return {
-						externalToolDO,
+						externalTool,
 					};
 				};
 
 				it('should pass', async () => {
-					const { externalToolDO } = setup();
+					const { externalTool } = setup();
 
-					const result: Promise<void> = service.validateCommon(externalToolDO);
+					const result: Promise<void> = service.validateCommon(externalTool);
 
 					await expect(result).resolves.not.toThrow();
 				});
@@ -212,7 +212,7 @@ describe('ExternalToolParameterValidationService', () => {
 
 			describe('when defaultValue is empty', () => {
 				const setup = () => {
-					const externalToolDO: ExternalTool = externalToolDOFactory
+					const externalTool: ExternalTool = externalToolDOFactory
 						.withCustomParameters(1, {
 							scope: CustomParameterScope.GLOBAL,
 							default: undefined,
@@ -222,19 +222,19 @@ describe('ExternalToolParameterValidationService', () => {
 					externalToolService.findExternalToolByName.mockResolvedValue(null);
 
 					return {
-						externalToolDO,
+						externalTool,
 					};
 				};
 
 				it('should throw an exception', async () => {
-					const { externalToolDO } = setup();
+					const { externalTool } = setup();
 
-					const result: Promise<void> = service.validateCommon(externalToolDO);
+					const result: Promise<void> = service.validateCommon(externalTool);
 
 					await expect(result).rejects.toThrow(
 						new ValidationError(
 							`tool_param_default_required: The "${
-								(externalToolDO.parameters as CustomParameterDO[])[0].name
+								(externalTool.parameters as CustomParameterDO[])[0].name
 							}" is a global parameter and requires a default value.`
 						)
 					);
@@ -243,7 +243,7 @@ describe('ExternalToolParameterValidationService', () => {
 
 			describe('when the defaultValue is undefined', () => {
 				const setup = () => {
-					const externalToolDO: ExternalTool = externalToolDOFactory
+					const externalTool: ExternalTool = externalToolDOFactory
 						.withCustomParameters(1, {
 							scope: CustomParameterScope.GLOBAL,
 							default: '',
@@ -253,19 +253,19 @@ describe('ExternalToolParameterValidationService', () => {
 					externalToolService.findExternalToolByName.mockResolvedValue(null);
 
 					return {
-						externalToolDO,
+						externalTool,
 					};
 				};
 
 				it('should throw an exception', async () => {
-					const { externalToolDO } = setup();
+					const { externalTool } = setup();
 
-					const result: Promise<void> = service.validateCommon(externalToolDO);
+					const result: Promise<void> = service.validateCommon(externalTool);
 
 					await expect(result).rejects.toThrow(
 						new ValidationError(
 							`tool_param_default_required: The "${
-								(externalToolDO.parameters as CustomParameterDO[])[0].name
+								(externalTool.parameters as CustomParameterDO[])[0].name
 							}" is a global parameter and requires a default value.`
 						)
 					);
@@ -274,7 +274,7 @@ describe('ExternalToolParameterValidationService', () => {
 
 			describe('when the type is an auto type', () => {
 				const setup = () => {
-					const externalToolDO: ExternalTool = externalToolDOFactory
+					const externalTool: ExternalTool = externalToolDOFactory
 						.withCustomParameters(1, {
 							scope: CustomParameterScope.GLOBAL,
 							type: CustomParameterType.AUTO_CONTEXTID,
@@ -285,14 +285,14 @@ describe('ExternalToolParameterValidationService', () => {
 					externalToolService.findExternalToolByName.mockResolvedValue(null);
 
 					return {
-						externalToolDO,
+						externalTool,
 					};
 				};
 
 				it('should pass without a default', async () => {
-					const { externalToolDO } = setup();
+					const { externalTool } = setup();
 
-					const result: Promise<void> = service.validateCommon(externalToolDO);
+					const result: Promise<void> = service.validateCommon(externalTool);
 
 					await expect(result).resolves.not.toThrow();
 				});
@@ -306,20 +306,20 @@ describe('ExternalToolParameterValidationService', () => {
 					scope: CustomParameterScope.SCHOOL,
 				});
 
-				const externalToolDO: ExternalTool = externalToolDOFactory.build({ parameters: [parameter] });
+				const externalTool: ExternalTool = externalToolDOFactory.build({ parameters: [parameter] });
 
 				externalToolService.findExternalToolByName.mockResolvedValue(null);
 
 				return {
-					externalToolDO,
+					externalTool,
 					parameter,
 				};
 			};
 
 			it('should throw exception', async () => {
-				const { externalToolDO, parameter } = setup();
+				const { externalTool, parameter } = setup();
 
-				const result: Promise<void> = service.validateCommon(externalToolDO);
+				const result: Promise<void> = service.validateCommon(externalTool);
 
 				await expect(result).rejects.toThrow(
 					new ValidationError(

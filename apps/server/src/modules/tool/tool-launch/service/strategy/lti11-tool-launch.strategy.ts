@@ -31,8 +31,8 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		userId: EntityId,
 		data: IToolLaunchParams
 	): Promise<PropertyData[]> {
-		const { config } = data.externalToolDO;
-		const contextId: EntityId = data.contextExternalToolDO.contextRef.id;
+		const { config } = data.externalTool;
+		const contextId: EntityId = data.contextExternalTool.contextRef.id;
 
 		if (!ExternalTool.isLti11Config(config)) {
 			throw new UnprocessableEntityException(
@@ -96,7 +96,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		}
 
 		if (config.privacy_permission === LtiPrivacyPermission.PSEUDONYMOUS) {
-			const pseudonym: Pseudonym = await this.pseudonymService.findOrCreatePseudonym(user, data.externalToolDO);
+			const pseudonym: Pseudonym = await this.pseudonymService.findOrCreatePseudonym(user, data.externalTool);
 
 			additionalProperties.push(
 				new PropertyData({

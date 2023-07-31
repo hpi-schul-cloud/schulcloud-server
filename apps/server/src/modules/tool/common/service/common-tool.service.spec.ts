@@ -25,22 +25,22 @@ describe('CommonToolService', () => {
 	describe('determineToolConfigurationStatus', () => {
 		describe('when all versions are equal', () => {
 			const setup = () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId({ version: 0 });
+				const externalTool: ExternalTool = externalToolDOFactory.buildWithId({ version: 0 });
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId({ toolVersion: 0 });
 				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId({ toolVersion: 0 });
 
 				return {
-					externalToolDO,
+					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
 				};
 			};
 
 			it('should return ToolConfigurationStatus.LATEST', () => {
-				const { externalToolDO, schoolExternalTool, contextExternalTool } = setup();
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
 				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
-					externalToolDO,
+					externalTool,
 					schoolExternalTool,
 					contextExternalTool
 				);
@@ -51,22 +51,22 @@ describe('CommonToolService', () => {
 
 		describe('when externalTool version is greater than schoolExternalTool version', () => {
 			const setup = () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId({ version: 1 });
+				const externalTool: ExternalTool = externalToolDOFactory.buildWithId({ version: 1 });
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId({ toolVersion: 0 });
 				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId({ toolVersion: 0 });
 
 				return {
-					externalToolDO,
+					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
 				};
 			};
 
 			it('should return ToolConfigurationStatus.OUTDATED', () => {
-				const { externalToolDO, schoolExternalTool, contextExternalTool } = setup();
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
 				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
-					externalToolDO,
+					externalTool,
 					schoolExternalTool,
 					contextExternalTool
 				);
@@ -77,22 +77,22 @@ describe('CommonToolService', () => {
 
 		describe('when schoolExternalTool version is greater than contextExternalTool version', () => {
 			const setup = () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId({ version: 1 });
+				const externalTool: ExternalTool = externalToolDOFactory.buildWithId({ version: 1 });
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId({ toolVersion: 1 });
 				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId({ toolVersion: 0 });
 
 				return {
-					externalToolDO,
+					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
 				};
 			};
 
 			it('should return ToolConfigurationStatus.OUTDATED', () => {
-				const { externalToolDO, schoolExternalTool, contextExternalTool } = setup();
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
 				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
-					externalToolDO,
+					externalTool,
 					schoolExternalTool,
 					contextExternalTool
 				);
@@ -103,22 +103,22 @@ describe('CommonToolService', () => {
 
 		describe('when externalTool version is greater than contextExternalTool version', () => {
 			const setup = () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId({ version: 1 });
+				const externalTool: ExternalTool = externalToolDOFactory.buildWithId({ version: 1 });
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId({ toolVersion: 1 });
 				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId({ toolVersion: 0 });
 
 				return {
-					externalToolDO,
+					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
 				};
 			};
 
 			it('should return ToolConfigurationStatus.OUTDATED', () => {
-				const { externalToolDO, schoolExternalTool, contextExternalTool } = setup();
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
 				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
-					externalToolDO,
+					externalTool,
 					schoolExternalTool,
 					contextExternalTool
 				);
@@ -129,22 +129,22 @@ describe('CommonToolService', () => {
 
 		describe('when contextExternalTool version is greater than schoolExternalTool version', () => {
 			const setup = () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId({ version: 1 });
+				const externalTool: ExternalTool = externalToolDOFactory.buildWithId({ version: 1 });
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId({ toolVersion: 1 });
 				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId({ toolVersion: 2 });
 
 				return {
-					externalToolDO,
+					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
 				};
 			};
 
 			it('should return ToolConfigurationStatus.LATEST', () => {
-				const { externalToolDO, schoolExternalTool, contextExternalTool } = setup();
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
 				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
-					externalToolDO,
+					externalTool,
 					schoolExternalTool,
 					contextExternalTool
 				);
@@ -155,22 +155,22 @@ describe('CommonToolService', () => {
 
 		describe('when contextExternalTool version is greater than externalTool version', () => {
 			const setup = () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId({ version: 1 });
+				const externalTool: ExternalTool = externalToolDOFactory.buildWithId({ version: 1 });
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId({ toolVersion: 1 });
 				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId({ toolVersion: 2 });
 
 				return {
-					externalToolDO,
+					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
 				};
 			};
 
 			it('should return ToolConfigurationStatus.LATEST', () => {
-				const { externalToolDO, schoolExternalTool, contextExternalTool } = setup();
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
 				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
-					externalToolDO,
+					externalTool,
 					schoolExternalTool,
 					contextExternalTool
 				);
@@ -181,22 +181,22 @@ describe('CommonToolService', () => {
 
 		describe('when schoolExternalTool version is greater than externalTool version', () => {
 			const setup = () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId({ version: 1 });
+				const externalTool: ExternalTool = externalToolDOFactory.buildWithId({ version: 1 });
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.buildWithId({ toolVersion: 2 });
 				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.buildWithId({ toolVersion: 2 });
 
 				return {
-					externalToolDO,
+					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
 				};
 			};
 
 			it('should return ToolConfigurationStatus.LATEST', () => {
-				const { externalToolDO, schoolExternalTool, contextExternalTool } = setup();
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
 				const result: ToolConfigurationStatus = service.determineToolConfigurationStatus(
-					externalToolDO,
+					externalTool,
 					schoolExternalTool,
 					contextExternalTool
 				);

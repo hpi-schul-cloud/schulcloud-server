@@ -56,20 +56,18 @@ describe('PseudonymService', () => {
 		describe('when user or tool is missing', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.build({ id: undefined });
-				const externalToolDO: ExternalTool = externalToolDOFactory.build({ id: undefined });
+				const externalTool: ExternalTool = externalToolDOFactory.build({ id: undefined });
 
 				return {
 					user,
-					externalToolDO,
+					externalTool,
 				};
 			};
 
 			it('should throw an error', async () => {
-				const { user, externalToolDO } = setup();
+				const { user, externalTool } = setup();
 
-				await expect(service.findByUserAndTool(user, externalToolDO)).rejects.toThrowError(
-					InternalServerErrorException
-				);
+				await expect(service.findByUserAndTool(user, externalTool)).rejects.toThrowError(InternalServerErrorException);
 			});
 		});
 
@@ -77,45 +75,42 @@ describe('PseudonymService', () => {
 			describe('when ctl tools tab feature is enabled', () => {
 				const setup = () => {
 					const user: UserDO = userDoFactory.buildWithId();
-					const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId();
+					const externalTool: ExternalTool = externalToolDOFactory.buildWithId();
 
 					return {
 						user,
-						externalToolDO,
+						externalTool,
 					};
 				};
 
 				it('should call externalToolPseudonymRepo', async () => {
-					const { user, externalToolDO } = setup();
+					const { user, externalTool } = setup();
 
-					await service.findByUserAndTool(user, externalToolDO);
+					await service.findByUserAndTool(user, externalTool);
 
-					expect(externalToolPseudonymRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(
-						user.id,
-						externalToolDO.id
-					);
+					expect(externalToolPseudonymRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(user.id, externalTool.id);
 				});
 			});
 
 			describe('when tools feature ctl tools tab is disabled', () => {
 				const setup = () => {
 					const user: UserDO = userDoFactory.buildWithId();
-					const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId();
+					const externalTool: ExternalTool = externalToolDOFactory.buildWithId();
 
 					toolFeatures.ctlToolsTabEnabled = false;
 
 					return {
 						user,
-						externalToolDO,
+						externalTool,
 					};
 				};
 
 				it('should call pseudonymRepo', async () => {
-					const { user, externalToolDO } = setup();
+					const { user, externalTool } = setup();
 
-					await service.findByUserAndTool(user, externalToolDO);
+					await service.findByUserAndTool(user, externalTool);
 
-					expect(pseudonymRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(user.id, externalToolDO.id);
+					expect(pseudonymRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(user.id, externalTool.id);
 				});
 			});
 		});
@@ -144,29 +139,29 @@ describe('PseudonymService', () => {
 			const setup = () => {
 				const pseudonym: Pseudonym = pseudonymFactory.buildWithId();
 				const user: UserDO = userDoFactory.buildWithId();
-				const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId();
+				const externalTool: ExternalTool = externalToolDOFactory.buildWithId();
 
 				externalToolPseudonymRepo.findByUserIdAndToolIdOrFail.mockResolvedValueOnce(pseudonym);
 
 				return {
 					pseudonym,
 					user,
-					externalToolDO,
+					externalTool,
 				};
 			};
 
 			it('should call pseudonymRepo.findByUserIdAndToolId', async () => {
-				const { user, externalToolDO } = setup();
+				const { user, externalTool } = setup();
 
-				await service.findByUserAndTool(user, externalToolDO);
+				await service.findByUserAndTool(user, externalTool);
 
-				expect(externalToolPseudonymRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(user.id, externalToolDO.id);
+				expect(externalToolPseudonymRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(user.id, externalTool.id);
 			});
 
 			it('should return a pseudonym', async () => {
-				const { pseudonym, user, externalToolDO } = setup();
+				const { pseudonym, user, externalTool } = setup();
 
-				const result: Pseudonym = await service.findByUserAndTool(user, externalToolDO);
+				const result: Pseudonym = await service.findByUserAndTool(user, externalTool);
 
 				expect(result).toEqual(pseudonym);
 			});
@@ -176,18 +171,18 @@ describe('PseudonymService', () => {
 			const setup = () => {
 				externalToolPseudonymRepo.findByUserIdAndToolIdOrFail.mockRejectedValueOnce(new NotFoundException());
 				const user: UserDO = userDoFactory.buildWithId();
-				const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId();
+				const externalTool: ExternalTool = externalToolDOFactory.buildWithId();
 
 				return {
 					user,
-					externalToolDO,
+					externalTool,
 				};
 			};
 
 			it('should pass the error without catching', async () => {
-				const { user, externalToolDO } = setup();
+				const { user, externalTool } = setup();
 
-				const func = async () => service.findByUserAndTool(user, externalToolDO);
+				const func = async () => service.findByUserAndTool(user, externalTool);
 
 				await expect(func).rejects.toThrow(NotFoundException);
 			});
@@ -198,18 +193,18 @@ describe('PseudonymService', () => {
 		describe('when user or tool is missing', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.build({ id: undefined });
-				const externalToolDO: ExternalTool = externalToolDOFactory.build({ id: undefined });
+				const externalTool: ExternalTool = externalToolDOFactory.build({ id: undefined });
 
 				return {
 					user,
-					externalToolDO,
+					externalTool,
 				};
 			};
 
 			it('should throw an error', async () => {
-				const { user, externalToolDO } = setup();
+				const { user, externalTool } = setup();
 
-				await expect(service.findOrCreatePseudonym(user, externalToolDO)).rejects.toThrowError(
+				await expect(service.findOrCreatePseudonym(user, externalTool)).rejects.toThrowError(
 					InternalServerErrorException
 				);
 			});
@@ -218,20 +213,20 @@ describe('PseudonymService', () => {
 		describe('when tool parameter is an ExternalToolDO', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.buildWithId();
-				const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId();
+				const externalTool: ExternalTool = externalToolDOFactory.buildWithId();
 
 				return {
 					user,
-					externalToolDO,
+					externalTool,
 				};
 			};
 
 			it('should call externalToolPseudonymRepo', async () => {
-				const { user, externalToolDO } = setup();
+				const { user, externalTool } = setup();
 
-				await service.findOrCreatePseudonym(user, externalToolDO);
+				await service.findOrCreatePseudonym(user, externalTool);
 
-				expect(externalToolPseudonymRepo.findByUserIdAndToolId).toHaveBeenCalledWith(user.id, externalToolDO.id);
+				expect(externalToolPseudonymRepo.findByUserIdAndToolId).toHaveBeenCalledWith(user.id, externalTool.id);
 			});
 		});
 
@@ -259,21 +254,21 @@ describe('PseudonymService', () => {
 			const setup = () => {
 				const pseudonym: Pseudonym = pseudonymFactory.buildWithId();
 				const user: UserDO = userDoFactory.buildWithId();
-				const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId();
+				const externalTool: ExternalTool = externalToolDOFactory.buildWithId();
 
 				externalToolPseudonymRepo.findByUserIdAndToolId.mockResolvedValueOnce(pseudonym);
 
 				return {
 					pseudonym,
 					user,
-					externalToolDO,
+					externalTool,
 				};
 			};
 
 			it('should return the pseudonym', async () => {
-				const { pseudonym, user, externalToolDO } = setup();
+				const { pseudonym, user, externalTool } = setup();
 
-				const result: Pseudonym = await service.findOrCreatePseudonym(user, externalToolDO);
+				const result: Pseudonym = await service.findOrCreatePseudonym(user, externalTool);
 
 				expect(result.id).toEqual(pseudonym.id);
 				expect(result.toolId).toEqual(pseudonym.toolId);
@@ -288,7 +283,7 @@ describe('PseudonymService', () => {
 			const setup = () => {
 				const pseudonym: Pseudonym = pseudonymFactory.buildWithId();
 				const user: UserDO = userDoFactory.buildWithId();
-				const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId();
+				const externalTool: ExternalTool = externalToolDOFactory.buildWithId();
 
 				externalToolPseudonymRepo.findByUserIdAndToolId.mockResolvedValueOnce(null);
 				externalToolPseudonymRepo.createOrUpdate.mockResolvedValueOnce(pseudonym);
@@ -296,27 +291,27 @@ describe('PseudonymService', () => {
 				return {
 					pseudonym,
 					user,
-					externalToolDO,
+					externalTool,
 				};
 			};
 
 			it('should create and save a new pseudonym', async () => {
-				const { user, externalToolDO } = setup();
+				const { user, externalTool } = setup();
 
-				await service.findOrCreatePseudonym(user, externalToolDO);
+				await service.findOrCreatePseudonym(user, externalTool);
 
 				expect(externalToolPseudonymRepo.createOrUpdate).toHaveBeenCalledWith(
 					expect.objectContaining({
 						userId: user.id,
-						toolId: externalToolDO.id,
+						toolId: externalTool.id,
 					})
 				);
 			});
 
 			it('should return the pseudonym', async () => {
-				const { pseudonym, user, externalToolDO } = setup();
+				const { pseudonym, user, externalTool } = setup();
 
-				const result: Pseudonym = await service.findOrCreatePseudonym(user, externalToolDO);
+				const result: Pseudonym = await service.findOrCreatePseudonym(user, externalTool);
 
 				expect(result).toEqual<Pseudonym>(pseudonym);
 			});

@@ -89,7 +89,7 @@ describe('ExternalToolResponseMapper', () => {
 			regexComment: 'mockComment',
 			isOptional: false,
 		});
-		const externalToolDO: ExternalTool = new ExternalTool({
+		const externalTool: ExternalTool = new ExternalTool({
 			id: '1',
 			name: 'mockName',
 			url: 'mockUrl',
@@ -103,7 +103,7 @@ describe('ExternalToolResponseMapper', () => {
 
 		return {
 			externalToolResponse,
-			externalToolDO,
+			externalTool,
 			basicToolConfigDO,
 			basicToolConfigResponse,
 		};
@@ -112,11 +112,11 @@ describe('ExternalToolResponseMapper', () => {
 	describe('mapToResponse', () => {
 		describe('when mapping basic tool DO', () => {
 			it('should map a basic tool do to a basic tool response', () => {
-				const { externalToolDO, externalToolResponse, basicToolConfigDO, basicToolConfigResponse } = setup();
-				externalToolDO.config = basicToolConfigDO;
+				const { externalTool, externalToolResponse, basicToolConfigDO, basicToolConfigResponse } = setup();
+				externalTool.config = basicToolConfigDO;
 				externalToolResponse.config = basicToolConfigResponse;
 
-				const result: ExternalToolResponse = mapper.mapToExternalToolResponse(externalToolDO);
+				const result: ExternalToolResponse = mapper.mapToExternalToolResponse(externalTool);
 
 				expect(result).toEqual(externalToolResponse);
 			});
@@ -155,11 +155,11 @@ describe('ExternalToolResponseMapper', () => {
 
 			it('should map a oauth2 tool do to a oauth2 tool response', () => {
 				const { oauth2ToolConfigDO, oauth2ToolConfigResponse } = oauthSetup();
-				const { externalToolDO, externalToolResponse } = setup();
-				externalToolDO.config = oauth2ToolConfigDO;
+				const { externalTool, externalToolResponse } = setup();
+				externalTool.config = oauth2ToolConfigDO;
 				externalToolResponse.config = oauth2ToolConfigResponse;
 
-				const result: ExternalToolResponse = mapper.mapToExternalToolResponse(externalToolDO);
+				const result: ExternalToolResponse = mapper.mapToExternalToolResponse(externalTool);
 
 				expect(result).toEqual(externalToolResponse);
 			});
@@ -188,11 +188,11 @@ describe('ExternalToolResponseMapper', () => {
 			};
 			it('should map a lti11 tool DO to a lti11 tool response', () => {
 				const { lti11ToolConfigDO, lti11ToolConfigResponse } = ltiSetup();
-				const { externalToolDO, externalToolResponse } = setup();
-				externalToolDO.config = lti11ToolConfigDO;
+				const { externalTool, externalToolResponse } = setup();
+				externalTool.config = lti11ToolConfigDO;
 				externalToolResponse.config = lti11ToolConfigResponse;
 
-				const result: ExternalToolResponse = mapper.mapToExternalToolResponse(externalToolDO);
+				const result: ExternalToolResponse = mapper.mapToExternalToolResponse(externalTool);
 
 				expect(result).toEqual(externalToolResponse);
 			});
@@ -224,7 +224,7 @@ describe('ExternalToolResponseMapper', () => {
 	describe('mapToConfigurationTemplateResponse is called', () => {
 		describe('when  ExternalToolDO is given', () => {
 			it('should map ExternalToolDO to ExternalToolConfigurationTemplateResponse', () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory
+				const externalTool: ExternalTool = externalToolDOFactory
 					.withCustomParameters(1, {
 						displayName: 'displayName',
 						description: 'description',
@@ -263,7 +263,7 @@ describe('ExternalToolResponseMapper', () => {
 				});
 
 				const result: ExternalToolConfigurationTemplateResponse =
-					mapper.mapToConfigurationTemplateResponse(externalToolDO);
+					mapper.mapToConfigurationTemplateResponse(externalTool);
 
 				expect(result).toEqual(expected);
 			});

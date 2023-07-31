@@ -102,14 +102,14 @@ describe('BasicToolLaunchStrategy', () => {
 
 	describe('buildToolLaunchDataFromConcreteConfig', () => {
 		const setup = () => {
-			const externalToolDO: ExternalTool = externalToolDOFactory.build();
+			const externalTool: ExternalTool = externalToolDOFactory.build();
 			const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build();
-			const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.build();
+			const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.build();
 
 			const data: IToolLaunchParams = {
-				contextExternalToolDO,
-				schoolExternalToolDO: schoolExternalTool,
-				externalToolDO,
+				contextExternalTool,
+				schoolExternalTool,
+				externalTool,
 			};
 
 			return { data };

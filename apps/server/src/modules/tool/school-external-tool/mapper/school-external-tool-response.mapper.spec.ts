@@ -104,7 +104,7 @@ describe('SchoolExternalToolResponseMapper', () => {
 	describe('mapExternalToolDOsToSchoolToolConfigurationListResponse is called', () => {
 		describe('when mapping from ExternalToolDOs and SchoolToolIds to SchoolToolConfigurationListResponse', () => {
 			const setup = () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory.build({
+				const externalTool: ExternalTool = externalToolDOFactory.build({
 					id: 'toolId',
 					name: 'toolName',
 					logoUrl: 'logoUrl',
@@ -112,7 +112,7 @@ describe('SchoolExternalToolResponseMapper', () => {
 
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build({ id: 'SchoolToolId' });
 
-				const availableTools: AvailableToolsForContext[] = [{ externalTool: externalToolDO, schoolExternalTool }];
+				const availableTools: AvailableToolsForContext[] = [{ externalTool, schoolExternalTool }];
 
 				const expectedResponse: SchoolToolConfigurationEntryResponse = new SchoolToolConfigurationEntryResponse(
 					{

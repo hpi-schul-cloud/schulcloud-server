@@ -38,19 +38,19 @@ export class SchoolExternalToolService {
 	}
 
 	private async enrichDataFromExternalTool(tool: SchoolExternalTool): Promise<SchoolExternalTool> {
-		const externalToolDO: ExternalTool = await this.externalToolService.findExternalToolById(tool.toolId);
-		const status: ToolConfigurationStatus = this.determineStatus(tool, externalToolDO);
+		const externalTool: ExternalTool = await this.externalToolService.findExternalToolById(tool.toolId);
+		const status: ToolConfigurationStatus = this.determineStatus(tool, externalTool);
 		const schoolExternalTool: SchoolExternalTool = new SchoolExternalTool({
 			...tool,
 			status,
-			name: externalToolDO.name,
+			name: externalTool.name,
 		});
 
 		return schoolExternalTool;
 	}
 
-	private determineStatus(tool: SchoolExternalTool, externalToolDO: ExternalTool): ToolConfigurationStatus {
-		if (externalToolDO.version <= tool.toolVersion) {
+	private determineStatus(tool: SchoolExternalTool, externalTool: ExternalTool): ToolConfigurationStatus {
+		if (externalTool.version <= tool.toolVersion) {
 			return ToolConfigurationStatus.LATEST;
 		}
 

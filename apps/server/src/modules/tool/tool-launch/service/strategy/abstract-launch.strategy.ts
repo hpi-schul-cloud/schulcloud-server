@@ -24,7 +24,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 	constructor(private readonly schoolService: SchoolService, private readonly courseRepo: CourseRepo) {}
 
 	public async createLaunchData(userId: EntityId, data: IToolLaunchParams): Promise<ToolLaunchData> {
-		const launchData: ToolLaunchData = this.buildToolLaunchDataFromExternalTool(data.externalToolDO);
+		const launchData: ToolLaunchData = this.buildToolLaunchDataFromExternalTool(data.externalTool);
 
 		const launchDataProperties: PropertyData[] = await this.buildToolLaunchDataFromTools(data);
 		const additionalLaunchDataProperties: PropertyData[] = await this.buildToolLaunchDataFromConcreteConfig(
@@ -111,12 +111,12 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 		url.pathname = filledPathParams.join('/');
 	}
 
-	private buildToolLaunchDataFromExternalTool(externalToolDO: ExternalTool): ToolLaunchData {
+	private buildToolLaunchDataFromExternalTool(externalTool: ExternalTool): ToolLaunchData {
 		const launchData = new ToolLaunchData({
-			baseUrl: externalToolDO.config.baseUrl,
-			type: ToolLaunchMapper.mapToToolLaunchDataType(externalToolDO.config.type),
+			baseUrl: externalTool.config.baseUrl,
+			type: ToolLaunchMapper.mapToToolLaunchDataType(externalTool.config.type),
 			properties: [],
-			openNewTab: externalToolDO.openNewTab,
+			openNewTab: externalTool.openNewTab,
 		});
 
 		return launchData;
@@ -124,16 +124,16 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 
 	private async buildToolLaunchDataFromTools(data: IToolLaunchParams): Promise<PropertyData[]> {
 		const propertyData: PropertyData[] = [];
-		const { externalToolDO, schoolExternalToolDO, contextExternalToolDO } = data;
-		const customParameters = externalToolDO.parameters || [];
+		const { externalTool, schoolExternalTool, contextExternalTool } = data;
+		const customParameters = externalTool.parameters || [];
 
 		const scopes: { scope: CustomParameterScope; params: CustomParameterEntryDO[] }[] = [
 			{ scope: CustomParameterScope.GLOBAL, params: customParameters },
-			{ scope: CustomParameterScope.SCHOOL, params: schoolExternalToolDO.parameters || [] },
-			{ scope: CustomParameterScope.CONTEXT, params: contextExternalToolDO.parameters || [] },
+			{ scope: CustomParameterScope.SCHOOL, params: schoolExternalTool.parameters || [] },
+			{ scope: CustomParameterScope.CONTEXT, params: contextExternalTool.parameters || [] },
 		];
 
-		await this.addParameters(propertyData, customParameters, scopes, schoolExternalToolDO, contextExternalToolDO);
+		await this.addParameters(propertyData, customParameters, scopes, schoolExternalTool, contextExternalTool);
 
 		return propertyData;
 	}

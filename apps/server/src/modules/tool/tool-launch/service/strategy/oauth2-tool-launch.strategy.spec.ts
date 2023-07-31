@@ -45,14 +45,14 @@ describe('OAuth2ToolLaunchStrategy', () => {
 	describe('buildToolLaunchDataFromConcreteConfig', () => {
 		describe('when always', () => {
 			const setup = () => {
-				const externalToolDO: ExternalTool = externalToolDOFactory.build();
-				const schoolExternalToolDO: SchoolExternalTool = schoolExternalToolDOFactory.build();
-				const contextExternalToolDO: ContextExternalTool = contextExternalToolDOFactory.build();
+				const externalTool: ExternalTool = externalToolDOFactory.build();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolDOFactory.build();
+				const contextExternalTool: ContextExternalTool = contextExternalToolDOFactory.build();
 
 				const data: IToolLaunchParams = {
-					contextExternalToolDO,
-					schoolExternalToolDO,
-					externalToolDO,
+					contextExternalTool,
+					schoolExternalTool,
+					externalTool,
 				};
 
 				return { data };

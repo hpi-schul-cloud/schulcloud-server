@@ -55,9 +55,9 @@ export class ToolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() externalToolParams: ExternalToolCreateParams
 	): Promise<ExternalToolResponse> {
-		const externalToolDO: ExternalToolCreate = this.externalToolDOMapper.mapCreateRequest(externalToolParams);
+		const externalTool: ExternalToolCreate = this.externalToolDOMapper.mapCreateRequest(externalToolParams);
 
-		const created: ExternalTool = await this.externalToolUc.createExternalTool(currentUser.userId, externalToolDO);
+		const created: ExternalTool = await this.externalToolUc.createExternalTool(currentUser.userId, externalTool);
 
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToExternalToolResponse(created);
 
@@ -101,8 +101,8 @@ export class ToolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolIdParams
 	): Promise<ExternalToolResponse> {
-		const externalToolDO: ExternalTool = await this.externalToolUc.getExternalTool(currentUser.userId, params.toolId);
-		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToExternalToolResponse(externalToolDO);
+		const externalTool: ExternalTool = await this.externalToolUc.getExternalTool(currentUser.userId, params.toolId);
+		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToExternalToolResponse(externalTool);
 
 		return mapped;
 	}

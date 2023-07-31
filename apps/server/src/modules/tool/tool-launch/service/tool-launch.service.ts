@@ -48,23 +48,23 @@ export class ToolLaunchService {
 		return launchRequest;
 	}
 
-	async getLaunchData(userId: EntityId, contextExternalToolDO: ContextExternalTool): Promise<ToolLaunchData> {
-		const schoolExternalToolId: EntityId = contextExternalToolDO.schoolToolRef.schoolToolId;
+	async getLaunchData(userId: EntityId, contextExternalTool: ContextExternalTool): Promise<ToolLaunchData> {
+		const schoolExternalToolId: EntityId = contextExternalTool.schoolToolRef.schoolToolId;
 
-		const { externalToolDO, schoolExternalToolDO } = await this.loadToolHierarchy(schoolExternalToolId);
+		const { externalTool, schoolExternalTool } = await this.loadToolHierarchy(schoolExternalToolId);
 
-		this.isToolStatusLatestOrThrow(userId, externalToolDO, schoolExternalToolDO, contextExternalToolDO);
+		this.isToolStatusLatestOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
 
-		const strategy: IToolLaunchStrategy | undefined = this.strategies.get(externalToolDO.config.type);
+		const strategy: IToolLaunchStrategy | undefined = this.strategies.get(externalTool.config.type);
 
 		if (!strategy) {
 			throw new InternalServerErrorException('Unknown tool config type');
 		}
 
 		const launchData: ToolLaunchData = await strategy.createLaunchData(userId, {
-			externalToolDO,
-			schoolExternalToolDO,
-			contextExternalToolDO,
+			externalTool,
+			schoolExternalTool,
+			contextExternalTool,
 		});
 
 		return launchData;
@@ -72,30 +72,28 @@ export class ToolLaunchService {
 
 	private async loadToolHierarchy(
 		schoolExternalToolId: string
-	): Promise<{ schoolExternalToolDO: SchoolExternalTool; externalToolDO: ExternalTool }> {
-		const schoolExternalToolDO: SchoolExternalTool = await this.schoolExternalToolService.getSchoolExternalToolById(
+	): Promise<{ schoolExternalTool: SchoolExternalTool; externalTool: ExternalTool }> {
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.getSchoolExternalToolById(
 			schoolExternalToolId
 		);
 
-		const externalToolDO: ExternalTool = await this.externalToolService.findExternalToolById(
-			schoolExternalToolDO.toolId
-		);
+		const externalTool: ExternalTool = await this.externalToolService.findExternalToolById(schoolExternalTool.toolId);
 
 		return {
-			schoolExternalToolDO,
-			externalToolDO,
+			schoolExternalTool,
+			externalTool,
 		};
 	}
 
 	private isToolStatusLatestOrThrow(
 		userId: EntityId,
-		externalToolDO: ExternalTool,
-		schoolExternalToolDO: SchoolExternalTool,
+		externalTool: ExternalTool,
+		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
 	): void {
 		const status: ToolConfigurationStatus = this.commonToolService.determineToolConfigurationStatus(
-			externalToolDO,
-			schoolExternalToolDO,
+			externalTool,
+			schoolExternalTool,
 			contextExternalTool
 		);
 		if (status !== ToolConfigurationStatus.LATEST) {

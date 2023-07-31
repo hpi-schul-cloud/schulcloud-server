@@ -30,15 +30,15 @@ export class SchoolExternalToolValidationService {
 		this.checkCustomParameterEntries(loadedExternalTool, schoolExternalTool);
 	}
 
-	private checkForDuplicateParameters(schoolExternalToolDO: SchoolExternalTool): void {
-		const caseInsensitiveNames = schoolExternalToolDO.parameters.map(({ name }: CustomParameterEntryDO) =>
+	private checkForDuplicateParameters(schoolExternalTool: SchoolExternalTool): void {
+		const caseInsensitiveNames = schoolExternalTool.parameters.map(({ name }: CustomParameterEntryDO) =>
 			name.toLowerCase()
 		);
 		const uniqueNames = new Set(caseInsensitiveNames);
-		if (!(uniqueNames.size === schoolExternalToolDO.parameters.length)) {
+		if (!(uniqueNames.size === schoolExternalTool.parameters.length)) {
 			throw new ValidationError(
 				`tool_param_duplicate: The tool ${
-					schoolExternalToolDO.name || ''
+					schoolExternalTool.name || ''
 				} contains multiple of the same custom parameters.`
 			);
 		}

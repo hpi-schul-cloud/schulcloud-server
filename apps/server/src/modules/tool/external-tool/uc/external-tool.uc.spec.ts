@@ -75,11 +75,11 @@ describe('ExternalToolUc', () => {
 	const setup = () => {
 		const toolId = 'toolId';
 
-		const externalToolDO: ExternalTool = externalToolDOFactory.withCustomParameters(1).buildWithId();
+		const externalTool: ExternalTool = externalToolDOFactory.withCustomParameters(1).buildWithId();
 		const oauth2ConfigWithoutExternalData: Oauth2ToolConfigDO = oauth2ToolConfigDOFactory.build();
 
 		const query: ExternalToolSearchQuery = {
-			name: externalToolDO.name,
+			name: externalTool.name,
 		};
 		const options: IFindOptions<ExternalTool> = {
 			order: {
@@ -92,15 +92,15 @@ describe('ExternalToolUc', () => {
 			},
 		};
 		const page: Page<ExternalTool> = new Page<ExternalTool>(
-			[externalToolDOFactory.build({ ...externalToolDO, config: oauth2ConfigWithoutExternalData })],
+			[externalToolDOFactory.build({ ...externalTool, config: oauth2ConfigWithoutExternalData })],
 			1
 		);
 
-		externalToolService.createExternalTool.mockResolvedValue(externalToolDO);
+		externalToolService.createExternalTool.mockResolvedValue(externalTool);
 		externalToolService.findExternalTools.mockResolvedValue(page);
 
 		return {
-			externalToolDO,
+			externalTool,
 			oauth2ConfigWithoutExternalData,
 			options,
 			page,
@@ -113,30 +113,30 @@ describe('ExternalToolUc', () => {
 		describe('Authorization', () => {
 			it('should call getUserWithPermissions', async () => {
 				const { currentUser } = setupAuthorization();
-				const { externalToolDO } = setup();
+				const { externalTool } = setup();
 
-				await uc.createExternalTool(currentUser.userId, externalToolDO);
+				await uc.createExternalTool(currentUser.userId, externalTool);
 
 				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(currentUser.userId);
 			});
 
 			it('should successfully check the user permission with the authorization service', async () => {
 				const { currentUser, user } = setupAuthorization();
-				const { externalToolDO } = setup();
+				const { externalTool } = setup();
 
-				await uc.createExternalTool(currentUser.userId, externalToolDO);
+				await uc.createExternalTool(currentUser.userId, externalTool);
 
 				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
 			});
 
 			it('should throw if the user has insufficient permission to create an external tool', async () => {
 				const { currentUser } = setupAuthorization();
-				const { externalToolDO } = setup();
+				const { externalTool } = setup();
 				authorizationService.checkAllPermissions.mockImplementation(() => {
 					throw new UnauthorizedException();
 				});
 
-				const result: Promise<ExternalTool> = uc.createExternalTool(currentUser.userId, externalToolDO);
+				const result: Promise<ExternalTool> = uc.createExternalTool(currentUser.userId, externalTool);
 
 				await expect(result).rejects.toThrow(UnauthorizedException);
 			});
@@ -144,41 +144,41 @@ describe('ExternalToolUc', () => {
 
 		it('should validate the tool', async () => {
 			const { currentUser } = setupAuthorization();
-			const { externalToolDO } = setup();
+			const { externalTool } = setup();
 
-			await uc.createExternalTool(currentUser.userId, externalToolDO);
+			await uc.createExternalTool(currentUser.userId, externalTool);
 
-			expect(toolValidationService.validateCreate).toHaveBeenCalledWith(externalToolDO);
+			expect(toolValidationService.validateCreate).toHaveBeenCalledWith(externalTool);
 		});
 
 		it('should throw if validation of the tool fails', async () => {
 			const { currentUser } = setupAuthorization();
-			const { externalToolDO } = setup();
+			const { externalTool } = setup();
 			toolValidationService.validateCreate.mockImplementation(() => {
 				throw new UnprocessableEntityException();
 			});
 
-			const result: Promise<ExternalTool> = uc.createExternalTool(currentUser.userId, externalToolDO);
+			const result: Promise<ExternalTool> = uc.createExternalTool(currentUser.userId, externalTool);
 
 			await expect(result).rejects.toThrow(UnprocessableEntityException);
 		});
 
 		it('should call the service to save a tool', async () => {
 			const { currentUser } = setupAuthorization();
-			const { externalToolDO } = setup();
+			const { externalTool } = setup();
 
-			await uc.createExternalTool(currentUser.userId, externalToolDO);
+			await uc.createExternalTool(currentUser.userId, externalTool);
 
-			expect(externalToolService.createExternalTool).toHaveBeenCalledWith(externalToolDO);
+			expect(externalToolService.createExternalTool).toHaveBeenCalledWith(externalTool);
 		});
 
 		it('should return saved a tool', async () => {
 			const { currentUser } = setupAuthorization();
-			const { externalToolDO } = setup();
+			const { externalTool } = setup();
 
-			const result: ExternalTool = await uc.createExternalTool(currentUser.userId, externalToolDO);
+			const result: ExternalTool = await uc.createExternalTool(currentUser.userId, externalTool);
 
-			expect(result).toEqual(externalToolDO);
+			expect(result).toEqual(externalTool);
 		});
 	});
 
@@ -270,28 +270,28 @@ describe('ExternalToolUc', () => {
 
 		it('should fetch a tool', async () => {
 			const { currentUser } = setupAuthorization();
-			const { externalToolDO, toolId } = setup();
-			externalToolService.findExternalToolById.mockResolvedValue(externalToolDO);
+			const { externalTool, toolId } = setup();
+			externalToolService.findExternalToolById.mockResolvedValue(externalTool);
 
 			const result: ExternalTool = await uc.getExternalTool(currentUser.userId, toolId);
 
-			expect(result).toEqual(externalToolDO);
+			expect(result).toEqual(externalTool);
 		});
 	});
 
 	describe('updateExternalTool', () => {
 		const setupUpdate = () => {
-			const { externalToolDO, toolId } = setup();
+			const { externalTool, toolId } = setup();
 
 			const externalToolDOtoUpdate: ExternalToolUpdate = {
 				id: toolId,
-				...externalToolDO,
+				...externalTool,
 				name: 'newName',
 				url: undefined,
 				version: 1,
 			};
 			const updatedExternalToolDO: ExternalTool = externalToolDOFactory.build({
-				...externalToolDO,
+				...externalTool,
 				name: 'newName',
 				url: undefined,
 			});
@@ -300,7 +300,7 @@ describe('ExternalToolUc', () => {
 			externalToolService.findExternalToolById.mockResolvedValue(new ExternalTool(externalToolDOtoUpdate));
 
 			return {
-				externalToolDO,
+				externalTool,
 				updatedExternalToolDO,
 				externalToolDOtoUpdate,
 				toolId,

@@ -131,16 +131,16 @@ export class ExternalToolConfigurationUc {
 		schoolId: EntityId
 	): Promise<ExternalTool> {
 		await this.ensureSchoolPermission(userId, schoolId);
-		const externalToolDO: ExternalTool = await this.externalToolService.getExternalToolForScope(
+		const externalTool: ExternalTool = await this.externalToolService.getExternalToolForScope(
 			externalToolId,
 			CustomParameterScope.SCHOOL
 		);
 
-		if (externalToolDO.isHidden) {
+		if (externalTool.isHidden) {
 			throw new NotFoundException('Could not find the Tool Template');
 		}
 
-		return externalToolDO;
+		return externalTool;
 	}
 
 	public async getExternalToolForContext(
@@ -150,16 +150,16 @@ export class ExternalToolConfigurationUc {
 		contextType: ToolContextType
 	): Promise<ExternalTool> {
 		await this.ensureContextPermission(userId, contextId, contextType);
-		const externalToolDO: ExternalTool = await this.externalToolService.getExternalToolForScope(
+		const externalTool: ExternalTool = await this.externalToolService.getExternalToolForScope(
 			externalToolId,
 			CustomParameterScope.CONTEXT
 		);
 
-		if (externalToolDO.isHidden) {
+		if (externalTool.isHidden) {
 			throw new NotFoundException('Could not find the Tool Template');
 		}
 
-		return externalToolDO;
+		return externalTool;
 	}
 
 	private async ensureSchoolPermission(userId: EntityId, schoolId: EntityId) {

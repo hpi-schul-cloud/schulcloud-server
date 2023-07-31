@@ -11,74 +11,74 @@ export class ExternalToolValidationService {
 		private readonly commonToolValidationService: ExternalToolParameterValidationService
 	) {}
 
-	async validateCreate(externalToolDO: ExternalTool): Promise<void> {
-		await this.commonToolValidationService.validateCommon(externalToolDO);
+	async validateCreate(externalTool: ExternalTool): Promise<void> {
+		await this.commonToolValidationService.validateCommon(externalTool);
 
-		await this.validateOauth2Config(externalToolDO);
+		await this.validateOauth2Config(externalTool);
 
-		this.validateLti11Config(externalToolDO);
+		this.validateLti11Config(externalTool);
 	}
 
-	private async validateOauth2Config(externalToolDO: ExternalTool): Promise<void> {
-		if (ExternalTool.isOauth2Config(externalToolDO.config)) {
-			if (!externalToolDO.config.clientSecret) {
+	private async validateOauth2Config(externalTool: ExternalTool): Promise<void> {
+		if (ExternalTool.isOauth2Config(externalTool.config)) {
+			if (!externalTool.config.clientSecret) {
 				throw new ValidationError(
-					`tool_clientSecret_missing: The Client Secret of the tool ${externalToolDO.name || ''} is missing.`
+					`tool_clientSecret_missing: The Client Secret of the tool ${externalTool.name || ''} is missing.`
 				);
 			}
 
-			if (!(await this.isClientIdUnique(externalToolDO))) {
+			if (!(await this.isClientIdUnique(externalTool))) {
 				throw new ValidationError(
-					`tool_clientId_duplicate: The Client Id of the tool ${externalToolDO.name || ''} is already used.`
-				);
-			}
-		}
-	}
-
-	private validateLti11Config(externalToolDO: ExternalTool): void {
-		if (ExternalTool.isLti11Config(externalToolDO.config)) {
-			if (!externalToolDO.config.secret) {
-				throw new ValidationError(
-					`tool_secret_missing: The secret of the LTI tool ${externalToolDO.name || ''} is missing.`
+					`tool_clientId_duplicate: The Client Id of the tool ${externalTool.name || ''} is already used.`
 				);
 			}
 		}
 	}
 
-	private async isClientIdUnique(externalToolDO: ExternalTool): Promise<boolean> {
+	private validateLti11Config(externalTool: ExternalTool): void {
+		if (ExternalTool.isLti11Config(externalTool.config)) {
+			if (!externalTool.config.secret) {
+				throw new ValidationError(
+					`tool_secret_missing: The secret of the LTI tool ${externalTool.name || ''} is missing.`
+				);
+			}
+		}
+	}
+
+	private async isClientIdUnique(externalTool: ExternalTool): Promise<boolean> {
 		let duplicate: ExternalTool | null = null;
-		if (ExternalTool.isOauth2Config(externalToolDO.config)) {
-			duplicate = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(externalToolDO.config.clientId);
+		if (ExternalTool.isOauth2Config(externalTool.config)) {
+			duplicate = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(externalTool.config.clientId);
 		}
-		return duplicate == null || duplicate.id === externalToolDO.id;
+		return duplicate == null || duplicate.id === externalTool.id;
 	}
 
-	async validateUpdate(toolId: string, externalToolDO: Partial<ExternalTool>): Promise<void> {
-		if (toolId !== externalToolDO.id) {
+	async validateUpdate(toolId: string, externalTool: Partial<ExternalTool>): Promise<void> {
+		if (toolId !== externalTool.id) {
 			throw new ValidationError(`tool_id_mismatch: The tool has no id or it does not match the path parameter.`);
 		}
 
-		await this.commonToolValidationService.validateCommon(externalToolDO);
+		await this.commonToolValidationService.validateCommon(externalTool);
 
 		const loadedTool: ExternalTool = await this.externalToolService.findExternalToolById(toolId);
 		if (
 			ExternalTool.isOauth2Config(loadedTool.config) &&
-			externalToolDO.config &&
-			externalToolDO.config.type !== loadedTool.config.type
+			externalTool.config &&
+			externalTool.config.type !== loadedTool.config.type
 		) {
 			throw new ValidationError(
-				`tool_type_immutable: The Config Type of the tool ${externalToolDO.name || ''} is immutable.`
+				`tool_type_immutable: The Config Type of the tool ${externalTool.name || ''} is immutable.`
 			);
 		}
 
 		if (
-			externalToolDO.config &&
-			ExternalTool.isOauth2Config(externalToolDO.config) &&
+			externalTool.config &&
+			ExternalTool.isOauth2Config(externalTool.config) &&
 			ExternalTool.isOauth2Config(loadedTool.config) &&
-			externalToolDO.config.clientId !== loadedTool.config.clientId
+			externalTool.config.clientId !== loadedTool.config.clientId
 		) {
 			throw new ValidationError(
-				`tool_clientId_immutable: The Client Id of the tool ${externalToolDO.name || ''} is immutable.`
+				`tool_clientId_immutable: The Client Id of the tool ${externalTool.name || ''} is immutable.`
 			);
 		}
 	}

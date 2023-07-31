@@ -78,12 +78,12 @@ describe('ExternalToolConfigurationUc', () => {
 		};
 		const setupForSchool = () => {
 			const externalToolId: string = new ObjectId().toHexString();
-			const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId(undefined, externalToolId);
+			const externalTool: ExternalTool = externalToolDOFactory.buildWithId(undefined, externalToolId);
 
-			externalToolService.getExternalToolForScope.mockResolvedValue(externalToolDO);
+			externalToolService.getExternalToolForScope.mockResolvedValue(externalTool);
 
 			return {
-				externalToolDO,
+				externalTool,
 				externalToolId,
 			};
 		};
@@ -141,8 +141,8 @@ describe('ExternalToolConfigurationUc', () => {
 		describe('when tool is hidden', () => {
 			it(' should throw NotFoundException', async () => {
 				const { currentUser } = setupAuthorization();
-				const { externalToolId, externalToolDO } = setupForSchool();
-				externalToolDO.isHidden = true;
+				const { externalToolId, externalTool } = setupForSchool();
+				externalTool.isHidden = true;
 
 				const result = uc.getExternalToolForSchool(currentUser.userId, externalToolId, 'schoolId');
 
@@ -157,11 +157,11 @@ describe('ExternalToolConfigurationUc', () => {
 				const user: User = userFactory.buildWithId();
 				const currentUser: ICurrentUser = { userId: user.id, schoolId: user.school.id } as ICurrentUser;
 				const externalToolId: string = new ObjectId().toHexString();
-				const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId(undefined, externalToolId);
+				const externalTool: ExternalTool = externalToolDOFactory.buildWithId(undefined, externalToolId);
 				const contextType: ToolContextType = ToolContextType.COURSE;
 				const contextId: string = new ObjectId().toHexString();
 
-				externalToolService.getExternalToolForScope.mockResolvedValue(externalToolDO);
+				externalToolService.getExternalToolForScope.mockResolvedValue(externalTool);
 
 				return {
 					user,
@@ -205,11 +205,11 @@ describe('ExternalToolConfigurationUc', () => {
 				const user: User = userFactory.buildWithId();
 				const currentUser: ICurrentUser = { userId: user.id, schoolId: user.school.id } as ICurrentUser;
 				const externalToolId: string = new ObjectId().toHexString();
-				const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId(undefined, externalToolId);
+				const externalTool: ExternalTool = externalToolDOFactory.buildWithId(undefined, externalToolId);
 				const contextType: ToolContextType = ToolContextType.COURSE;
 				const contextId: string = new ObjectId().toHexString();
 
-				externalToolService.getExternalToolForScope.mockResolvedValue(externalToolDO);
+				externalToolService.getExternalToolForScope.mockResolvedValue(externalTool);
 
 				return {
 					currentUser,
@@ -242,15 +242,15 @@ describe('ExternalToolConfigurationUc', () => {
 				const user: User = userFactory.buildWithId();
 				const currentUser: ICurrentUser = { userId: user.id, schoolId: user.school.id } as ICurrentUser;
 				const externalToolId: string = new ObjectId().toHexString();
-				const externalToolDO: ExternalTool = externalToolDOFactory.buildWithId(undefined, externalToolId);
+				const externalTool: ExternalTool = externalToolDOFactory.buildWithId(undefined, externalToolId);
 				const contextType: ToolContextType = ToolContextType.COURSE;
 				const contextId: string = new ObjectId().toHexString();
 
-				externalToolService.getExternalToolForScope.mockResolvedValue(externalToolDO);
+				externalToolService.getExternalToolForScope.mockResolvedValue(externalTool);
 
 				return {
 					currentUser,
-					externalToolDO,
+					externalTool,
 					externalToolId,
 					contextType,
 					contextId,
@@ -258,8 +258,8 @@ describe('ExternalToolConfigurationUc', () => {
 			};
 
 			it(' should throw NotFoundException', async () => {
-				const { currentUser, externalToolId, externalToolDO, contextId, contextType } = setup();
-				externalToolDO.isHidden = true;
+				const { currentUser, externalToolId, externalTool, contextId, contextType } = setup();
+				externalTool.isHidden = true;
 
 				const result = uc.getExternalToolForContext(currentUser.userId, externalToolId, contextId, contextType);
 
@@ -404,7 +404,7 @@ describe('ExternalToolConfigurationUc', () => {
 					schoolToolRef: { schoolToolId: 'usedSchoolExternalToolId' },
 				});
 
-				const externalToolDO = unusedTool;
+				const externalTool = unusedTool;
 				const schoolExternalTool = unusedSchoolExternalTool;
 
 				externalToolService.findExternalTools.mockResolvedValue(
@@ -423,7 +423,7 @@ describe('ExternalToolConfigurationUc', () => {
 					toolWithoutSchoolTool,
 					usedSchoolExternalTool,
 					unusedSchoolExternalTool,
-					externalToolDO,
+					externalTool,
 					schoolExternalTool,
 				};
 			};
@@ -485,7 +485,7 @@ describe('ExternalToolConfigurationUc', () => {
 			});
 
 			it('should return a list of available external tools', async () => {
-				const { externalToolDO, schoolExternalTool } = setup();
+				const { externalTool, schoolExternalTool } = setup();
 
 				const availableTools = await uc.getAvailableToolsForContext(
 					'userId',
@@ -496,7 +496,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 				expect(availableTools).toEqual([
 					{
-						externalToolDO,
+						externalTool,
 						schoolExternalTool,
 					},
 				]);

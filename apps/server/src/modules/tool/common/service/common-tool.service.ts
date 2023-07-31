@@ -8,14 +8,14 @@ import { ToolVersion } from '../interface';
 @Injectable()
 export class CommonToolService {
 	determineToolConfigurationStatus(
-		externalToolDO: ExternalTool,
+		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
 	): ToolConfigurationStatus {
 		if (
-			this.isLatest(schoolExternalTool, externalToolDO) &&
+			this.isLatest(schoolExternalTool, externalTool) &&
 			this.isLatest(contextExternalTool, schoolExternalTool) &&
-			this.isLatest(contextExternalTool, externalToolDO)
+			this.isLatest(contextExternalTool, externalTool)
 		) {
 			return ToolConfigurationStatus.LATEST;
 		}
