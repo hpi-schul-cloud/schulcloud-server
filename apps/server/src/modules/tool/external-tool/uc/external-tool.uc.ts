@@ -14,8 +14,8 @@ export class ExternalToolUc {
 		private readonly toolValidationService: ExternalToolValidationService
 	) {}
 
-	async createExternalTool(userId: EntityId, externalToolDO: ExternalToolCreate): Promise<ExternalTool> {
-		const externalTool = new ExternalTool({ ...externalToolDO });
+	async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
+		const externalTool = new ExternalTool({ ...externalToolCreate });
 
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 		await this.toolValidationService.validateCreate(externalTool);

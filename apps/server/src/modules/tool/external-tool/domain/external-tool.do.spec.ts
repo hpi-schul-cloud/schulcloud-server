@@ -1,7 +1,7 @@
 import { externalToolFactory } from '@shared/testing';
 import { ExternalTool } from './external-tool.do';
 
-describe('ExternalToolDO', () => {
+describe('ExternalTool', () => {
 	describe('isLti11Config', () => {
 		describe('when external tool with config.type Lti11 is given', () => {
 			it('should return true', () => {

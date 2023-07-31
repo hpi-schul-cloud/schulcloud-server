@@ -59,7 +59,7 @@ describe('SchoolExternalToolService', () => {
 				expect(schoolExternalToolRepo.find).toHaveBeenCalledWith({ schoolId: schoolExternalTool.schoolId });
 			});
 
-			it('should return schoolExternalToolDO array', async () => {
+			it('should return schoolExternalTool array', async () => {
 				const { schoolExternalTool } = setup();
 				schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool, schoolExternalTool]);
 

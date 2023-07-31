@@ -19,10 +19,10 @@ import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server';
 import { Request } from 'express';
 import request, { Response } from 'supertest';
+import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { LaunchRequestMethod } from '../../types';
 import { ToolLaunchRequestResponse, ToolLaunchParams } from '../dto';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
-import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { ExternalToolEntity } from '../../../external-tool/entity';
 import { ToolConfigType } from '../../../common/enum';
 
@@ -223,7 +223,7 @@ describe('ToolLaunchController (API)', () => {
 			it('should return unauthorized', async () => {
 				const contextExternalTool = contextExternalToolFactory.buildWithId();
 				const params: ToolLaunchParams = {
-					contextExternalToolId: contextExternalTool.id,
+					contextExternalToolId: contextExternalTool.id as string,
 				};
 				currentUser = undefined;
 

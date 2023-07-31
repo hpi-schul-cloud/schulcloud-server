@@ -224,7 +224,7 @@ describe('ExternalToolUc', () => {
 			expect(externalToolService.findExternalTools).toHaveBeenCalledWith(query, options);
 		});
 
-		it('should return a page of externalToolDO', async () => {
+		it('should return a page of externalTool', async () => {
 			const { currentUser } = setupAuthorization();
 			const { query, options, page } = setup();
 			externalToolService.findExternalTools.mockResolvedValue(page);
