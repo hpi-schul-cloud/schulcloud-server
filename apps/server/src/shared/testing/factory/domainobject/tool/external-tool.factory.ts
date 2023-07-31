@@ -82,7 +82,7 @@ export const customParameterFactory = CustomParameterFactory.define(CustomParame
 });
 
 class ExternalToolFactory extends DoBaseFactory<ExternalTool, ExternalToolProps> {
-	withOauth2Config(customParam?: DeepPartial<BasicToolConfig>): this {
+	withOauth2Config(customParam?: DeepPartial<Oauth2ToolConfig>): this {
 		const params: DeepPartial<ExternalTool> = {
 			config: oauth2ToolConfigFactory.build(customParam),
 		};

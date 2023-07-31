@@ -67,7 +67,7 @@ export class ExternalToolValidationService {
 			externalTool.config.type !== loadedTool.config.type
 		) {
 			throw new ValidationError(
-				`tool_type_immutable: The Config Type of the tool ${ExternalTool.name || ''} is immutable.`
+				`tool_type_immutable: The Config Type of the tool ${externalTool.name || ''} is immutable.`
 			);
 		}
 
@@ -78,7 +78,7 @@ export class ExternalToolValidationService {
 			externalTool.config.clientId !== loadedTool.config.clientId
 		) {
 			throw new ValidationError(
-				`tool_clientId_immutable: The Client Id of the tool ${ExternalTool.name || ''} is immutable.`
+				`tool_clientId_immutable: The Client Id of the tool ${externalTool.name || ''} is immutable.`
 			);
 		}
 	}
