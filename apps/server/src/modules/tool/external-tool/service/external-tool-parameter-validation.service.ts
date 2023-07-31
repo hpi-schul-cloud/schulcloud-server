@@ -1,44 +1,45 @@
 import { Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
-import { autoParameters, CustomParameterScope } from '@shared/domain';
-import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/tool';
 import { ExternalToolService } from './external-tool.service';
+import { autoParameters, CustomParameterScope } from '../../common/enum';
+import { ExternalTool } from '../domain';
+import { CustomParameter } from '../../common/domain';
 
 @Injectable()
 export class ExternalToolParameterValidationService {
 	constructor(private readonly externalToolService: ExternalToolService) {}
 
-	async validateCommon(externalToolDO: ExternalToolDO | Partial<ExternalToolDO>): Promise<void> {
-		if (!(await this.isNameUnique(externalToolDO))) {
-			throw new ValidationError(`tool_name_duplicate: The tool name "${externalToolDO.name || ''}" is already used.`);
+	async validateCommon(externalTool: ExternalTool | Partial<ExternalTool>): Promise<void> {
+		if (!(await this.isNameUnique(externalTool))) {
+			throw new ValidationError(`tool_name_duplicate: The tool name "${externalTool.name || ''}" is already used.`);
 		}
-		if (externalToolDO.parameters) {
-			if (this.isCustomParameterNameEmpty(externalToolDO.parameters)) {
+		if (externalTool.parameters) {
+			if (this.isCustomParameterNameEmpty(externalTool.parameters)) {
 				throw new ValidationError(
-					`tool_param_name: The tool ${externalToolDO.name || ''} is missing at least one custom parameter name.`
+					`tool_param_name: The tool ${externalTool.name || ''} is missing at least one custom parameter name.`
 				);
 			}
 
-			if (this.hasDuplicateAttributes(externalToolDO.parameters)) {
+			if (this.hasDuplicateAttributes(externalTool.parameters)) {
 				throw new ValidationError(
-					`tool_param_duplicate: The tool ${externalToolDO.name || ''} contains multiple of the same custom parameters.`
+					`tool_param_duplicate: The tool ${externalTool.name || ''} contains multiple of the same custom parameters.`
 				);
 			}
-			if (!this.validateByRegex(externalToolDO.parameters)) {
+			if (!this.validateByRegex(externalTool.parameters)) {
 				throw new ValidationError(
 					`tool_param_regex_invalid: A custom Parameter of the tool ${
-						externalToolDO.name || ''
+						externalTool.name || ''
 					} has wrong regex attribute.`
 				);
 			}
-			if (!this.validateDefaultValue(externalToolDO.parameters)) {
+			if (!this.validateDefaultValue(externalTool.parameters)) {
 				throw new ValidationError(
 					`tool_param_default_regex: The default value of a custom parameter of the tool: ${
-						externalToolDO.name || ''
+						externalTool.name || ''
 					} does not match its regex`
 				);
 			}
-			externalToolDO.parameters.forEach((param: CustomParameterDO) => {
+			externalTool.parameters.forEach((param: CustomParameter) => {
 				if (!this.isGlobalParameterValid(param)) {
 					throw new ValidationError(
 						`tool_param_default_required: The "${param.name}" is a global parameter and requires a default value.`
@@ -58,23 +59,23 @@ export class ExternalToolParameterValidationService {
 		}
 	}
 
-	private isCustomParameterNameEmpty(customParameters: CustomParameterDO[]): boolean {
-		const isEmpty = customParameters.some((param: CustomParameterDO) => !param.name);
+	private isCustomParameterNameEmpty(customParameters: CustomParameter[]): boolean {
+		const isEmpty = customParameters.some((param: CustomParameter) => !param.name);
 
 		return isEmpty;
 	}
 
-	private async isNameUnique(externalToolDO: ExternalToolDO | Partial<ExternalToolDO>): Promise<boolean> {
-		if (!externalToolDO.name) {
+	private async isNameUnique(externalTool: ExternalTool | Partial<ExternalTool>): Promise<boolean> {
+		if (!externalTool.name) {
 			return true;
 		}
 
-		const duplicate: ExternalToolDO | null = await this.externalToolService.findExternalToolByName(externalToolDO.name);
+		const duplicate: ExternalTool | null = await this.externalToolService.findExternalToolByName(externalTool.name);
 
-		return duplicate == null || duplicate.id === externalToolDO.id;
+		return duplicate == null || duplicate.id === externalTool.id;
 	}
 
-	private hasDuplicateAttributes(customParameter: CustomParameterDO[]): boolean {
+	private hasDuplicateAttributes(customParameter: CustomParameter[]): boolean {
 		return customParameter.some((item, itemIndex) =>
 			customParameter.some(
 				(other, otherIndex) =>
@@ -83,8 +84,8 @@ export class ExternalToolParameterValidationService {
 		);
 	}
 
-	private validateByRegex(customParameter: CustomParameterDO[]): boolean {
-		return customParameter.every((param: CustomParameterDO) => {
+	private validateByRegex(customParameter: CustomParameter[]): boolean {
+		return customParameter.every((param: CustomParameter) => {
 			if (param.regex) {
 				try {
 					// eslint-disable-next-line no-new
@@ -97,8 +98,8 @@ export class ExternalToolParameterValidationService {
 		});
 	}
 
-	private validateDefaultValue(customParameter: CustomParameterDO[]): boolean {
-		const isValid: boolean = customParameter.every((param: CustomParameterDO) => {
+	private validateDefaultValue(customParameter: CustomParameter[]): boolean {
+		const isValid: boolean = customParameter.every((param: CustomParameter) => {
 			if (param.regex && param.default) {
 				const reg = new RegExp(param.regex);
 				const match: boolean = reg.test(param.default);
@@ -110,7 +111,7 @@ export class ExternalToolParameterValidationService {
 		return isValid;
 	}
 
-	private isRegexCommentMandatoryAndFilled(customParameter: CustomParameterDO): boolean {
+	private isRegexCommentMandatoryAndFilled(customParameter: CustomParameter): boolean {
 		if (customParameter.regex && !customParameter.regexComment) {
 			return false;
 		}
@@ -118,7 +119,7 @@ export class ExternalToolParameterValidationService {
 		return true;
 	}
 
-	private isGlobalParameterValid(customParameter: CustomParameterDO): boolean {
+	private isGlobalParameterValid(customParameter: CustomParameter): boolean {
 		if (customParameter.scope !== CustomParameterScope.GLOBAL) {
 			return true;
 		}
@@ -134,7 +135,7 @@ export class ExternalToolParameterValidationService {
 		return false;
 	}
 
-	private isAutoParameterGlobal(customParameter: CustomParameterDO): boolean {
+	private isAutoParameterGlobal(customParameter: CustomParameter): boolean {
 		if (!autoParameters.includes(customParameter.type)) {
 			return true;
 		}
