@@ -1,9 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
-import { externalToolFactory, schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/tool';
+import { externalToolFactory, schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool';
 import { CommonToolValidationService } from '../../common/service';
+import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
+import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
 
 describe('SchoolExternalToolValidationService', () => {
@@ -39,22 +40,22 @@ describe('SchoolExternalToolValidationService', () => {
 
 	describe('validate', () => {
 		const setup = (
-			externalToolDoMock?: Partial<ExternalToolDO>,
-			schoolExternalToolDoMock?: Partial<SchoolExternalToolDO>
+			externalToolDoMock?: Partial<ExternalTool>,
+			schoolExternalToolDoMock?: Partial<SchoolExternalTool>
 		) => {
-			const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
-				...schoolExternalToolDOFactory.buildWithId(),
+			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+				...schoolExternalToolFactory.buildWithId(),
 				...schoolExternalToolDoMock,
 			});
-			const externalToolDO: ExternalToolDO = new ExternalToolDO({
+			const externalTool: ExternalTool = new ExternalTool({
 				...externalToolFactory.buildWithId(),
 				...externalToolDoMock,
 			});
-			externalToolService.findExternalToolById.mockResolvedValue(externalToolDO);
-			const schoolExternalToolId = schoolExternalToolDO.id as string;
+			externalToolService.findExternalToolById.mockResolvedValue(externalTool);
+			const schoolExternalToolId = schoolExternalTool.id as string;
 			return {
-				schoolExternalToolDO,
-				externalToolDO,
+				schoolExternalToolDO: schoolExternalTool,
+				ExternalTool,
 				schoolExternalToolId,
 			};
 		};

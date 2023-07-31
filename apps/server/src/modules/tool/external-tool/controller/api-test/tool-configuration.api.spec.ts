@@ -8,7 +8,6 @@ import {
 	courseFactory,
 	customParameterFactory,
 	externalToolEntityFactory,
-	externalToolFactory,
 	mapUserToCurrentUser,
 	roleFactory,
 	schoolExternalToolEntityFactory,
