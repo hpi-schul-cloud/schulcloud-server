@@ -5,7 +5,7 @@ import { UserLoginMigrationRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
-import { OAuthMigrationError } from '@src/modules/user-login-migration';
+import { OAuthMigrationError } from '../error';
 
 @Injectable()
 export class SchoolMigrationService {
@@ -156,6 +156,25 @@ export class SchoolMigrationService {
 		if (sourceExternalId === targetExternalId) {
 			return true;
 		}
+		return false;
+	}
+
+	async hasSchoolMigratedUser(schoolId: string): Promise<boolean> {
+		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
+
+		if (!userLoginMigration) {
+			return false;
+		}
+
+		const users: Page<UserDO> = await this.userService.findUsers({
+			lastLoginSystemChangeBetweenStart: userLoginMigration.startedAt,
+			lastLoginSystemChangeBetweenEnd: userLoginMigration.closedAt,
+		});
+
+		if (users.total > 0) {
+			return true;
+		}
+
 		return false;
 	}
 }

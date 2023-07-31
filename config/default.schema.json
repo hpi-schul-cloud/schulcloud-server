@@ -359,17 +359,17 @@
 		"FEATURE_IDENTITY_MANAGEMENT_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "Enables the Identity Management (ErWIn IDM) feature."
+			"description": "Enables the Identity Management (ErWIn IDM) feature. Determines if Keycloak related modules will be loaded during startup. Prerequisite to set further FEATURE_IDENTITY_MANAGEMENT_X flags"
 		},
 		"FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "Enables the Identity Management (ErWIn IDM) as account storage."
+			"description": "Enables the Identity Management (ErWIn IDM) as account storage. If activated, account related create, update and delete operations are mirrored into Keycloak. Prerequisite to set FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED flag."
 		},
 		"FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "Enables the login via OIDC with the Identity Management (ErWIn IDM) for users managed by dBildungscloud."
+			"description": "Enables the login via Keycloak with the Identity Management (ErWIn IDM) for users managed by dBildungscloud. If activated, Keycloak will be used as the primary source to read for the dBildungscloud login."
 		},
 		"IDENTITY_MANAGEMENT": {
 			"type": "object",
@@ -839,37 +839,35 @@
 			"description": "when set, this is interpreted as a regex to extend the ignorelist for the API validation with any routes matching the regex.",
 			"examples": [".*/courses/[0-9a-f]{24}($|/$)"]
 		},
-		"FEATURE_PROMETHEUS_ENABLED": {
+		"FEATURE_PROMETHEUS_METRICS_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "Enable prometheus api metrics, if enabled, PROMETHEUS must be defined."
+			"description": "Feature flag for collecting and exporting Prometheus metrics."
+		},
+		"PROMETHEUS_METRICS_ROUTE": {
+			"type": "string",
+			"default": "/metrics",
+			"description": "Route at which Prometheus metrics are exported (if enabled by the feature flag)."
+		},
+		"PROMETHEUS_METRICS_PORT": {
+			"type": "number",
+			"default": 9090,
+			"description": "Port number on which the additional server (that exports Prometheus metrics) is listening on (if enabled by the feature flag). Please remember that it must be different than the main app listening port as the Prometheus app server will run on a different port and you can't run two servers on the same port."
+		},
+		"PROMETHEUS_METRICS_COLLECT_DEFAULT_METRICS": {
+			"type": "boolean",
+			"default": true,
+			"description": "Toggle that enables/disables collecting default Prometheus client metrics (e.g. NodeJS or OS-related ones)."
+		},
+		"PROMETHEUS_METRICS_COLLECT_METRICS_ROUTE_METRICS": {
+			"type": "boolean",
+			"default": true,
+			"description": "Toggle that enables/disables collecting metrics of the metrics route itself (like metrics route calls count or response time)."
 		},
 		"FEATURE_MONGOOSE_LOGGING_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Enable logging for mongoose database calls."
-		},
-		"PROMETHEUS": {
-			"type": "object",
-			"description": "Prometheus metrics options used by prometheus-api-metrics",
-			"properties": {
-				"METRICS_PATH": {
-					"type": "string",
-					"default": "/metrics",
-					"description": "public metrics route",
-					"pattern": ".*(?<!/)$"
-				},
-				"DURATION_BUCKETS_SECONDS": {
-					"type": "array",
-					"items": {
-						"type": "number",
-						"minimum": 0
-					},
-					"default": [0.01, 0.05, 0.1, 0.2, 0.5, 0.75, 1, 3, 5, 8, 15, 30, 60, 120],
-					"description": "Times to define buckets by seconds which contain all requests with max. the given amount of time. Must be in ascending order. "
-				}
-			},
-			"required": ["METRICS_PATH", "DURATION_BUCKETS_SECONDS"]
 		},
 		"INCOMING_REQUEST_TIMEOUT_API": {
 			"type": "integer",
@@ -1002,6 +1000,15 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for activating the column board."
+		},
+		"COLUMN_BOARD_HELP_LINK": {
+			"type": "string",
+			"default": "https://docs.dbildungscloud.de/pages/viewpage.action?pageId=270827606",
+			"description": "link to userfacing documentation of the column board feature"
+		},
+		"COLUMN_BOARD_FEEDBACK_LINK": {
+			"type": "string",
+			"description": "link to a page that gathers feedback about the column board feature"
 		},
 		"FEATURE_COURSE_SHARE": {
 			"type": "boolean",
@@ -1206,6 +1213,11 @@
 			"default": true,
 			"description": "Enables old LTI-tool tab in a course"
 		},
+		"FEATURE_SHOW_OUTDATED_USERS":{
+			"type": "boolean",
+			"default": false,
+			"description": "This feature flag controls whether the outdated user accounts are displayed or not. After a migration, all user accounts which were not migrated will be marked as outdated."
+		},
 		"TSP_SCHOOL_SYNCER": {
 			"type": "object",
 			"description": "TSP School Syncer properties",
@@ -1233,24 +1245,11 @@
 	],
 	"allOf": [
 		{
-			"$ref": "#/definitions/FEATURE_PROMETHEUS_ENABLED",
 			"$ref": "#/definitions/FEATURE_ES_MERLIN_ENABLED",
 			"$ref": "#/definitions/ANTIVIRUS"
 		}
 	],
 	"definitions": {
-		"FEATURE_PROMETHEUS_ENABLED": {
-			"if": {
-				"properties": {
-					"FEATURE_PROMETHEUS_ENABLED": {
-						"const": true
-					}
-				}
-			},
-			"then": {
-				"required": ["PROMETHEUS"]
-			}
-		},
 		"FEATURE_USER_MIGRATION_ENABLED": {
 			"if": {
 				"properties": {

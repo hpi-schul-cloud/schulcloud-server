@@ -1,4 +1,5 @@
 import { ShareToken } from '@src/modules/sharing/entity/share-token.entity';
+import { ExternalToolPseudonymEntity, PseudonymEntity } from '@src/modules/pseudonym/entity';
 import { Account } from './account.entity';
 import {
 	CardNode,
@@ -6,20 +7,22 @@ import {
 	ColumnNode,
 	FileElementNode,
 	RichTextElementNode,
-	TaskElementNode,
+	SubmissionContainerElementNode,
+	SubmissionItemNode,
 } from './boardnode';
 import { BoardNode } from './boardnode/boardnode.entity';
 import { CardElement, RichTextCardElement } from './card-element.entity';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
+import { FederalState } from './federal-state.entity';
 import { File } from './file.entity';
 import { ImportUser } from './import-user.entity';
 import {
 	Board,
 	BoardElement,
-	ColumnboardBoardElement,
 	ColumnBoardTarget,
+	ColumnboardBoardElement,
 	LessonBoardElement,
 	TaskBoardElement,
 } from './legacy-board';
@@ -27,7 +30,6 @@ import { Lesson } from './lesson.entity';
 import { LtiTool } from './ltitool.entity';
 import { Material } from './materials.entity';
 import { CourseNews, News, SchoolNews, TeamNews } from './news.entity';
-import { Pseudonym } from './pseudonym.entity';
 import { Role } from './role.entity';
 import { School, SchoolRolePermission, SchoolRoles } from './school.entity';
 import { SchoolYear } from './schoolyear.entity';
@@ -54,7 +56,8 @@ export const ALL_ENTITIES = [
 	ColumnNode,
 	FileElementNode,
 	RichTextElementNode,
-	TaskElementNode,
+	SubmissionContainerElementNode,
+	SubmissionItemNode,
 	Course,
 	ContextExternalTool,
 	CourseGroup,
@@ -62,6 +65,7 @@ export const ALL_ENTITIES = [
 	DashboardGridElementModel,
 	DashboardModelEntity,
 	ExternalTool,
+	FederalState,
 	File,
 	ImportUser,
 	Lesson,
@@ -69,7 +73,8 @@ export const ALL_ENTITIES = [
 	LtiTool,
 	Material,
 	News,
-	Pseudonym,
+	PseudonymEntity,
+	ExternalToolPseudonymEntity,
 	Role,
 	School,
 	SchoolExternalTool,

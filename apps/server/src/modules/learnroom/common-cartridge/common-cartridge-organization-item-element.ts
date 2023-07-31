@@ -1,12 +1,11 @@
 import { ObjectId } from 'bson';
 import { ICommonCartridgeElement } from './common-cartridge-element.interface';
-import { CommonCartridgeVersion } from './common-cartridge-enums';
 import { ICommonCartridgeResourceProps } from './common-cartridge-resource-item-element';
 
 export type ICommonCartridgeOrganizationProps = {
 	identifier: string;
 	title: string;
-	version: CommonCartridgeVersion;
+	version: string;
 	resources: ICommonCartridgeResourceProps[];
 };
 

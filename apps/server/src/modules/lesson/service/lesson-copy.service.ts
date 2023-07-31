@@ -17,9 +17,9 @@ import { LessonRepo } from '@shared/repo';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { CopyFilesService } from '@src/modules/files-storage-client';
 import { FileUrlReplacement } from '@src/modules/files-storage-client/service/copy-files.service';
-import { TaskCopyService } from '@src/modules/task';
+import { TaskCopyService } from '@src/modules/task/service/task-copy.service';
 import { randomBytes } from 'crypto';
-import { LessonCopyParams } from '../types/lesson-copy.params';
+import { LessonCopyParams } from '../types';
 import { EtherpadService } from './etherpad.service';
 import { NexboardService } from './nexboard.service';
 

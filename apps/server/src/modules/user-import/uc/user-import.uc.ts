@@ -167,12 +167,16 @@ export class UserImportUc {
 		// TODO Change ImportUserRepo to DO to fix this workaround
 		const [importUsers, total] = await this.importUserRepo.findImportUsers(currentUser.school, filters, options);
 		if (total > 0) {
-			importUsers.map(async (importUser) => {
+			for (const importUser of importUsers) {
+				// TODO: Find a better solution for this loop
+				// this needs to be synchronous, because otherwise it was leading to
+				// server crush when working with larger number of users (e.g. 1000)
+				// eslint-disable-next-line no-await-in-loop
 				await this.updateUserAndAccount(importUser, school);
-			});
-			await this.userRepo.flush();
+			}
 		}
 		// TODO Change ImportUserRepo to DO to fix this workaround
+		// Delete all remaining importUser-objects that dont need to be ported
 		await this.importUserRepo.deleteImportUsersBySchool(currentUser.school);
 		await this.endSchoolInUserMigration(currentUserId);
 	}
@@ -244,6 +248,7 @@ export class UserImportUc {
 
 		await this.userRepo.save(user);
 		await this.accountService.save(account);
+		await this.importUserRepo.delete(importUser);
 	}
 
 	private async getMigrationSystem(): Promise<System> {

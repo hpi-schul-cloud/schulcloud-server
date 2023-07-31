@@ -1,30 +1,27 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, School, System, User } from '@shared/domain';
+import { Permission, School, System } from '@shared/domain';
 import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
-	accountFactory,
 	cleanupCollections,
-	mapUserToCurrentUser,
 	schoolFactory,
 	systemFactory,
-	userFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { JwtTestFactory } from '@shared/testing/factory/jwt.test.factory';
 import { userLoginMigrationFactory } from '@shared/testing/factory/user-login-migration.factory';
-import { ICurrentUser } from '@src/modules/authentication';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { OauthTokenResponse } from '@src/modules/oauth/service/dto';
 import { SanisResponse, SanisRole } from '@src/modules/provisioning';
 import { ServerTestModule } from '@src/modules/server';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { UUID } from 'bson';
-import { Request } from 'express';
-import request, { Response } from 'supertest';
+import { Response } from 'supertest';
+import { UserLoginMigrationResponse } from '../dto';
 import { Oauth2MigrationParams } from '../dto/oauth2-migration.params';
 
 jest.mock('jwks-rsa', () => () => {
@@ -39,35 +36,24 @@ jest.mock('jwks-rsa', () => () => {
 		getSigningKeys: jest.fn(),
 	};
 });
-
 describe('UserLoginMigrationController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let userJwt: string;
-	let currentUser: ICurrentUser | undefined;
 	let axiosMock: MockAdapter;
+	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		Configuration.set('PUBLIC_BACKEND_URL', 'http://localhost:3030/api');
-		userJwt = JwtTestFactory.createJwt();
 
 		const moduleRef: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					req.headers.authorization = userJwt;
-					return true;
-				},
-			})
-			.compile();
+		}).compile();
+
 		axiosMock = new MockAdapter(axios);
 		app = moduleRef.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
+		testApiClient = new TestApiClient(app, '/user-login-migrations');
 	});
 
 	afterAll(async () => {
@@ -93,29 +79,28 @@ describe('UserLoginMigrationController (API)', () => {
 					sourceSystem,
 					startedAt: date,
 					mandatorySince: date,
-					closedAt: date,
-					finishedAt: date,
+					closedAt: undefined,
+					finishedAt: undefined,
 				});
-				const user: User = userFactory.buildWithId({ school });
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, user, userLoginMigration]);
+				await em.persistAndFlush([sourceSystem, targetSystem, school, teacherAccount, teacherUser, userLoginMigration]);
 
-				currentUser = mapUserToCurrentUser(user);
+				const loggedInClient = await testApiClient.login(teacherAccount);
 
 				return {
 					sourceSystem,
 					targetSystem,
-					user,
+					loggedInClient,
 					userLoginMigration,
+					teacherUser,
 				};
 			};
 
 			it('should return the users migration', async () => {
-				const { sourceSystem, targetSystem, user, userLoginMigration } = await setup();
+				const { sourceSystem, targetSystem, userLoginMigration, teacherUser, loggedInClient } = await setup();
 
-				const response: Response = await request(app.getHttpServer())
-					.get(`/user-login-migrations`)
-					.query({ userId: user.id });
+				const response: Response = await loggedInClient.get().query({ userId: teacherUser.id });
 
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual({
@@ -135,18 +120,188 @@ describe('UserLoginMigrationController (API)', () => {
 		});
 
 		describe('when unauthorized', () => {
-			const setup = () => {
-				currentUser = undefined;
-			};
-
 			it('should return Unauthorized', async () => {
-				setup();
-
-				const response: Response = await request(app.getHttpServer())
-					.get(`/user-login-migrations`)
-					.query({ userId: new ObjectId().toHexString() });
+				const response: Response = await testApiClient.get();
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+	});
+
+	describe('[POST] /start', () => {
+		describe('when current User start the migration successfully', () => {
+			const setup = async () => {
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
+
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser]);
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+				};
+			};
+
+			it('should return the Status CREATED', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.post(`/start`);
+
+				expect(response.status).toEqual(HttpStatus.CREATED);
+			});
+		});
+
+		describe('when current User start the migration and is not authorized', () => {
+			it('should return Unauthorized', async () => {
+				const response: Response = await testApiClient.post(`/start`);
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when invalid User start the migration', () => {
+			const setup = async () => {
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+				await em.persistAndFlush([teacherAccount, teacherUser]);
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return {
+					loggedInClient,
+				};
+			};
+
+			it('should return forbidden', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.post(`/start`);
+
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+			});
+		});
+
+		describe('when migration already started', () => {
+			const setup = async () => {
+				const date: Date = new Date(2023, 5, 4);
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
+
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: date,
+					mandatorySince: date,
+				});
+
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+					adminUser,
+				};
+			};
+
+			it('should return the Status CREATED', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.post(`/start`);
+
+				expect(response.status).toEqual(HttpStatus.CREATED);
+			});
+		});
+
+		describe('when migration already closed', () => {
+			const setup = async () => {
+				const date: Date = new Date(2023, 5, 4);
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
+
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: date,
+					mandatorySince: date,
+					closedAt: date,
+					finishedAt: date,
+				});
+
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+					adminUser,
+				};
+			};
+
+			it('should return unprocessable entity', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.post(`/start`);
+
+				expect(response.status).toEqual(HttpStatus.UNPROCESSABLE_ENTITY);
+			});
+		});
+
+		describe('when official school number is not set', () => {
+			const setup = async () => {
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+				});
+
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser]);
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+					adminUser,
+				};
+			};
+
+			it('should return a unprocessable entity', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.post(`/start`);
+
+				expect(response.status).toEqual(HttpStatus.UNPROCESSABLE_ENTITY);
 			});
 		});
 	});
@@ -224,18 +379,15 @@ describe('UserLoginMigrationController (API)', () => {
 					startedAt: new Date('2022-12-17T03:24:00'),
 				});
 
-				const user: User = userFactory.buildWithId({ externalId: 'externalUserId', school });
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin(
+					{ school, externalId: 'externalUserId' },
+					[Permission.USER_LOGIN_MIGRATION_ADMIN]
+				);
 
-				const account: Account = accountFactory.buildWithId({
-					userId: user.id,
-					systemId: sourceSystem.id,
-					username: user.email,
-				});
-
-				await em.persistAndFlush([sourceSystem, targetSystem, school, user, account, userLoginMigration]);
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
 				em.clear();
 
-				currentUser = mapUserToCurrentUser(user);
+				const loggedInClient = await testApiClient.login(adminAccount);
 
 				const idToken: string = JwtTestFactory.createJwt({
 					sub: 'testUser',
@@ -243,26 +395,24 @@ describe('UserLoginMigrationController (API)', () => {
 					aud: targetSystem.oauthConfig?.clientId,
 				});
 
-				mockPostOauthTokenEndpoint(idToken, targetSystem, currentUser.userId, externalId, officialSchoolNumber);
+				mockPostOauthTokenEndpoint(idToken, targetSystem, adminUser.id, externalId, officialSchoolNumber);
 
 				return {
 					query,
-					user,
+					loggedInClient,
 					sourceSystem,
 					targetSystem,
 				};
 			};
 
 			it('should migrate the user', async () => {
-				const { query } = await setup();
+				const { query, loggedInClient } = await setup();
 
-				const response: Response = await request(app.getHttpServer())
-					.post(`/user-login-migrations/migrate-to-oauth2`)
-					.send({
-						redirectUri: query.redirectUri,
-						code: query.code,
-						systemId: query.systemId,
-					});
+				const response: Response = await loggedInClient.post(`/migrate-to-oauth2`).send({
+					redirectUri: query.redirectUri,
+					code: query.code,
+					systemId: query.systemId,
+				});
 
 				expect(response.status).toEqual(HttpStatus.CREATED);
 			});
@@ -296,18 +446,15 @@ describe('UserLoginMigrationController (API)', () => {
 					startedAt: new Date('2022-12-17T03:24:00'),
 				});
 
-				const user: User = userFactory.buildWithId({ externalId: 'externalUserId', school });
-
-				const account: Account = accountFactory.buildWithId({
-					userId: user.id,
-					systemId: sourceSystem.id,
-					username: user.email,
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({
+					school,
+					externalId: 'externalUserId',
 				});
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, user, account, userLoginMigration]);
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
 				em.clear();
 
-				currentUser = mapUserToCurrentUser(user);
+				const loggedInClient = await testApiClient.login(adminAccount);
 
 				const idToken: string = JwtTestFactory.createJwt({
 					sub: 'testUser',
@@ -315,22 +462,20 @@ describe('UserLoginMigrationController (API)', () => {
 					aud: targetSystem.oauthConfig?.clientId,
 				});
 
-				mockPostOauthTokenEndpoint(idToken, targetSystem, currentUser.userId, externalId, 'kennung');
+				mockPostOauthTokenEndpoint(idToken, targetSystem, adminUser.id, externalId, 'kennung');
 
 				return {
 					query,
-					user,
+					loggedInClient,
 					sourceSystem,
 					targetSystem,
 				};
 			};
 
 			it('should throw Internal Server Error', async () => {
-				const { query } = await setup();
+				const { query, loggedInClient } = await setup();
 
-				const response: Response = await request(app.getHttpServer())
-					.post(`/user-login-migrations/migrate-to-oauth2`)
-					.send(query);
+				const response: Response = await loggedInClient.post(`/migrate-to-oauth2`).send(query);
 
 				expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
 			});
@@ -343,8 +488,6 @@ describe('UserLoginMigrationController (API)', () => {
 				query.systemId = new ObjectId().toHexString();
 				query.redirectUri = 'redirectUri';
 
-				currentUser = undefined;
-
 				return {
 					query,
 				};
@@ -353,11 +496,389 @@ describe('UserLoginMigrationController (API)', () => {
 			it('should throw an UnauthorizedException', async () => {
 				const { query } = setup();
 
-				const response: Response = await request(app.getHttpServer())
-					.post(`/user-login-migrations/migrate-to-oauth2`)
-					.send(query);
+				const response: Response = await testApiClient.post(`migrate-to-oauth2`).send(query);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+	});
+
+	describe('[POST] /restart', () => {
+		describe('when current User restart the migration successfully', () => {
+			const setup = async () => {
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
+
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: new Date(2023, 5, 4),
+					closedAt: new Date(2023, 5, 20),
+					finishedAt: new Date(2055, 5, 4),
+				});
+				school.userLoginMigration = userLoginMigration;
+
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+					adminUser,
+				};
+			};
+
+			it('should return the Status OK ', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.put(`/restart`);
+
+				expect(response.status).toEqual(HttpStatus.OK);
+			});
+
+			it('should return the response ', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.put(`/restart`);
+
+				expect(response.body).toHaveProperty('startedAt');
+				expect(response.body).not.toHaveProperty('closedAt');
+				expect(response.body).not.toHaveProperty('finishedAt');
+			});
+		});
+
+		describe('when invalid User restart the migration', () => {
+			const setup = async () => {
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin();
+
+				await em.persistAndFlush([adminAccount, adminUser]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+				};
+			};
+
+			it('should return forbidden', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.put(`/restart`);
+
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+			});
+		});
+
+		describe('when current User restart the migration and is not authorized', () => {
+			it('should return Unauthorized', async () => {
+				const response: Response = await testApiClient.put(`/restart`);
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when migration is already started', () => {
+			const setup = async () => {
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
+
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: new Date(2023, 5, 4),
+				});
+				school.userLoginMigration = userLoginMigration;
+
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+				};
+			};
+
+			it('should return OK', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.put(`/restart`);
+
+				expect(response.status).toEqual(HttpStatus.OK);
+			});
+		});
+
+		describe('when migration is finally finished', () => {
+			const setup = async () => {
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
+
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: new Date(2023, 1, 4),
+					closedAt: new Date(2023, 1, 5),
+					finishedAt: new Date(2023, 1, 20),
+				});
+				school.userLoginMigration = userLoginMigration;
+
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+					adminUser,
+				};
+			};
+
+			it('should return unprocessable entity', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.put(`/restart`);
+
+				expect(response.status).toEqual(HttpStatus.UNPROCESSABLE_ENTITY);
+			});
+		});
+	});
+
+	describe('[PUT] /mandatory', () => {
+		describe('when migration is set from optional to mandatory', () => {
+			const setup = async () => {
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
+
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: new Date(2023, 1, 4),
+					mandatorySince: undefined,
+				});
+				school.userLoginMigration = userLoginMigration;
+
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+					userLoginMigration,
+				};
+			};
+
+			it('it should set migration to mandatory', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.put('/mandatory', { mandatory: true });
+
+				const responseBody = response.body as UserLoginMigrationResponse;
+				expect(responseBody.mandatorySince).toBeDefined();
+			});
+		});
+
+		describe('when migration is set from mandatory to optional', () => {
+			const setup = async () => {
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
+
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: new Date(2023, 1, 4),
+					mandatorySince: new Date(2023, 1, 4),
+					closedAt: new Date(2023, 1, 5),
+				});
+				school.userLoginMigration = userLoginMigration;
+
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+					userLoginMigration,
+				};
+			};
+
+			it('it should set migration to optional', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.put('/mandatory', { mandatory: false });
+
+				const responseBody = response.body as UserLoginMigrationResponse;
+				expect(responseBody.mandatorySince).toBeUndefined();
+			});
+		});
+
+		describe('when migration is not started', () => {
+			const setup = async () => {
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
+
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+				};
+			};
+
+			it('should return a not found', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.put('/mandatory', { mandatory: true });
+
+				expect(response.status).toEqual(HttpStatus.NOT_FOUND);
+			});
+		});
+
+		describe('when the migration is closed', () => {
+			const setup = async () => {
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
+
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: new Date(2023, 1, 4),
+					closedAt: new Date(2023, 1, 5),
+				});
+				school.userLoginMigration = userLoginMigration;
+
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+					userLoginMigration,
+				};
+			};
+
+			it('should return unprocessable entity', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.put('/mandatory', { mandatory: true });
+
+				expect(response.status).toEqual(HttpStatus.UNPROCESSABLE_ENTITY);
+			});
+		});
+
+		describe('when user is not authorized', () => {
+			it('should return unauthorized', async () => {
+				const response: Response = await testApiClient.put('/mandatory', { mandatory: true });
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when user has not the required permission', () => {
+			const setup = async () => {
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
+
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: new Date(2023, 1, 4),
+					closedAt: new Date(2023, 1, 5),
+				});
+				school.userLoginMigration = userLoginMigration;
+
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, []);
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+					userLoginMigration,
+				};
+			};
+
+			it('should return forbidden', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.put('/mandatory', { mandatory: true });
+
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 			});
 		});
 	});

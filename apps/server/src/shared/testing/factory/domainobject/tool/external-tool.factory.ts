@@ -11,8 +11,9 @@ import {
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
+	ExternalToolProps,
 } from '@shared/domain';
-import { TokenEndpointAuthMethod } from '@src/modules/tool/interface';
+import { TokenEndpointAuthMethod } from '@src/modules/tool/common/interface';
 import { DoBaseFactory } from '../do-base.factory';
 
 export const basicToolConfigDOFactory = DoBaseFactory.define<BasicToolConfigDO, BasicToolConfigDO>(
@@ -77,7 +78,7 @@ export const customParameterDOFactory = DoBaseFactory.define<CustomParameterDO, 
 	}
 );
 
-class ExternalToolDOFactory extends DoBaseFactory<ExternalToolDO, ExternalToolDO> {
+class ExternalToolDOFactory extends DoBaseFactory<ExternalToolDO, ExternalToolProps> {
 	withOauth2Config(customParam?: DeepPartial<Oauth2ToolConfigDO>): this {
 		const params: DeepPartial<ExternalToolDO> = {
 			config: oauth2ToolConfigDOFactory.build(customParam),
