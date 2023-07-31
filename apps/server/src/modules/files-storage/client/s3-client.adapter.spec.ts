@@ -164,11 +164,10 @@ describe('S3ClientAdapter', () => {
 		describe('WHEN client throws error', () => {
 			const setup = (errorKey: string) => {
 				const { pathToFile } = createParameter();
-				const error = new Error(errorKey);
 				// @ts-expect-error Testcase
-				client.send.mockRejectedValueOnce(error);
+				client.send.mockRejectedValueOnce({ Code: errorKey });
 
-				return { error, pathToFile };
+				return { pathToFile };
 			};
 
 			it('should throw NotFoundException', async () => {

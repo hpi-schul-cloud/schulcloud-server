@@ -248,30 +248,32 @@ export class FilesStorageService {
 		this.checkIfPreviewPossible(fileRecord);
 
 		const hash = this.createNameHash(params, previewParams);
-		const [fileRecords, count] = await this.fileRecordRepo.findByName(hash);
+		const filePath = [fileRecord.getSchoolId(), 'previews', hash].join('/');
 		let response: IGetFileResponse;
 
-		if (count === 0) {
-			response = await this.generatePreview(fileRecord, params, previewParams, hash, bytesRange);
-		} else {
-			response = await this.downloadPreview(fileRecords, bytesRange);
+		try {
+			response = await this.storageClient.get(filePath);
+		} catch (error) {
+			this.throwIfOtherError(error);
+
+			response = await this.generatePreview(fileRecord, params, previewParams, hash, filePath, bytesRange);
 		}
 
 		return response;
 	}
 
+	private throwIfOtherError(error): void | InternalServerErrorException {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+		if (error.message && error.message !== 'NoSuchKey') {
+			throw error;
+		}
+	}
+
 	private createNameHash(params: DownloadFileParams, previewParams: PreviewParams): string {
-		const fileParamsString = `${params.fileRecordId}${params.fileName}${previewParams.width}${previewParams.height}${previewParams.ratio}`;
+		const fileParamsString = `${params.fileRecordId}${previewParams.width}${previewParams.height}${previewParams.ratio}`;
 		const hash = crypto.createHash('md5').update(fileParamsString).digest('hex');
 
 		return hash;
-	}
-
-	private async downloadPreview(fileRecords: FileRecord[], bytesRange?: string): Promise<IGetFileResponse> {
-		const path = [fileRecords[0].getSchoolId(), 'previews', fileRecords[0].id].join('/');
-		const preview = await this.storageClient.get(path, bytesRange);
-
-		return preview;
 	}
 
 	private async generatePreview(
@@ -279,19 +281,19 @@ export class FilesStorageService {
 		params: DownloadFileParams,
 		previewParams: PreviewParams,
 		hash: string,
+		filePath: string,
 		bytesRange?: string
 	): Promise<IGetFileResponse> {
 		const original = await this.download(fileRecord, params, bytesRange);
 		const preview = this.resizeAndConvertToWebP(original, fileRecord, previewParams);
 
 		const fileDto = FileDtoBuilder.build(hash, preview, 'image/webp');
-		const previewFileRecord = await this.savePreviewFileRecord(fileRecord, fileDto);
-		await this.uploadPreview(previewFileRecord, fileDto);
+		await this.storageClient.create(filePath, fileDto);
 
 		return {
 			data: preview,
 			contentType: 'image/webp',
-			contentLength: previewFileRecord.size,
+			contentLength: undefined,
 			contentRange: undefined,
 			etag: undefined,
 		};
@@ -306,24 +308,6 @@ export class FilesStorageService {
 		const preview = im(original.data, fileRecord.name).resize(previewParams.width, previewParams.height).stream('webp');
 
 		return preview;
-	}
-
-	private async uploadPreview(previewFileRecord: FileRecord, fileDto: FileDto): Promise<void> {
-		const filePath = [previewFileRecord.getSchoolId(), 'previews', previewFileRecord.id].join('/');
-		await this.createFileInStorageAndRollbackOnError(previewFileRecord, filePath, fileDto);
-	}
-
-	private async savePreviewFileRecord(original: FileRecord, fileDto: FileDto): Promise<FileRecord> {
-		const fileRecordParams = {
-			schoolId: original.getSchoolId(),
-			parentId: original.parentId,
-			parentType: original.parentType,
-		};
-
-		const fileRecord = await this.createFileRecord(fileDto, fileRecordParams, original.creatorId);
-		await this.fileRecordRepo.save(fileRecord);
-
-		return fileRecord;
 	}
 
 	// delete

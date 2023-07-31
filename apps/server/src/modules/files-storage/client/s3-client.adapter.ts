@@ -55,6 +55,7 @@ export class S3ClientAdapter implements IStorageClient {
 			const stream = data.Body as Readable;
 
 			this.checkStreamResponsive(stream, path);
+
 			return {
 				data: stream,
 				contentType: data.ContentType,
@@ -64,11 +65,13 @@ export class S3ClientAdapter implements IStorageClient {
 			};
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (err.message && err.message === 'NoSuchKey') {
+			if (err.Code && err.Code === 'NoSuchKey') {
 				this.logger.log(`could not find one of the files for deletion with id ${path}`);
+				this.client.destroy();
 				throw new NotFoundException('NoSuchKey');
+			} else {
+				throw new InternalServerErrorException(err, 'S3ClientAdapter:get');
 			}
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:get');
 		}
 	}
 
