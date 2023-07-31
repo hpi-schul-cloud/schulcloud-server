@@ -26,6 +26,7 @@ import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { IGetFileResponse } from '../interface';
 import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
+import { PreviewService } from '../service/preview.service';
 
 @Injectable()
 export class FilesStorageUC {
@@ -33,7 +34,8 @@ export class FilesStorageUC {
 		private logger: LegacyLogger,
 		private readonly authorizationService: AuthorizationService,
 		private readonly httpService: HttpService,
-		private readonly filesStorageService: FilesStorageService
+		private readonly filesStorageService: FilesStorageService,
+		private readonly previewService: PreviewService
 	) {
 		this.logger.setContext(FilesStorageUC.name);
 	}
@@ -151,7 +153,7 @@ export class FilesStorageUC {
 
 		await this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.read);
 
-		const result = this.filesStorageService.getPreview(fileRecord, params, previewParams, bytesRange);
+		const result = this.previewService.getPreview(fileRecord, params, previewParams, bytesRange);
 
 		return result;
 	}

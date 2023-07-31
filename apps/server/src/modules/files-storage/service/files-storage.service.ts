@@ -10,16 +10,12 @@ import { ConfigService } from '@nestjs/config';
 import { Counted, EntityId } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { LegacyLogger } from '@src/core/logger';
-import crypto from 'crypto';
-import { subClass } from 'gm';
-import { PassThrough } from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import {
 	CopyFileResponse,
 	CopyFilesOfParentParams,
 	DownloadFileParams,
 	FileRecordParams,
-	PreviewParams,
 	RenameFileParams,
 	ScanResultParams,
 	SingleFileParams,
@@ -38,7 +34,7 @@ import {
 	unmarkForDelete,
 } from '../helper';
 import { IGetFileResponse } from '../interface';
-import { CopyFileResponseBuilder, FileDtoBuilder, FileRecordMapper, FilesStorageMapper } from '../mapper';
+import { CopyFileResponseBuilder, FileRecordMapper, FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
 
 @Injectable()
@@ -208,13 +204,6 @@ export class FilesStorageService {
 		}
 	}
 
-	private checkIfPreviewPossible(fileRecord: FileRecord): void | NotAcceptableException {
-		if (!fileRecord.isPreviewPossible()) {
-			this.logger.warn(`could not generate preview for : ${fileRecord.id} ${fileRecord.mimeType}`);
-			throw new NotAcceptableException(ErrorType.PREVIEW_NOT_POSSIBLE);
-		}
-	}
-
 	public async downloadFile(
 		schoolId: EntityId,
 		fileRecordId: EntityId,
@@ -237,77 +226,6 @@ export class FilesStorageService {
 		const response = await this.downloadFile(fileRecord.getSchoolId(), fileRecord.id, bytesRange);
 
 		return response;
-	}
-
-	public async getPreview(
-		fileRecord: FileRecord,
-		params: DownloadFileParams,
-		previewParams: PreviewParams,
-		bytesRange?: string
-	): Promise<IGetFileResponse> {
-		this.checkIfPreviewPossible(fileRecord);
-
-		const hash = this.createNameHash(params, previewParams);
-		const filePath = [fileRecord.getSchoolId(), 'previews', hash].join('/');
-		let response: IGetFileResponse;
-
-		try {
-			response = await this.storageClient.get(filePath);
-		} catch (error) {
-			this.throwIfOtherError(error);
-
-			response = await this.generatePreview(fileRecord, params, previewParams, hash, filePath, bytesRange);
-		}
-
-		return response;
-	}
-
-	private throwIfOtherError(error): void | InternalServerErrorException {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-		if (error.message && error.message !== 'NoSuchKey') {
-			throw error;
-		}
-	}
-
-	private createNameHash(params: DownloadFileParams, previewParams: PreviewParams): string {
-		const fileParamsString = `${params.fileRecordId}${previewParams.width}${previewParams.height}${previewParams.ratio}`;
-		const hash = crypto.createHash('md5').update(fileParamsString).digest('hex');
-
-		return hash;
-	}
-
-	private async generatePreview(
-		fileRecord: FileRecord,
-		params: DownloadFileParams,
-		previewParams: PreviewParams,
-		hash: string,
-		filePath: string,
-		bytesRange?: string
-	): Promise<IGetFileResponse> {
-		const original = await this.download(fileRecord, params, bytesRange);
-		const preview = this.resizeAndConvertToWebP(original, fileRecord, previewParams);
-
-		const fileDto = FileDtoBuilder.build(hash, preview, 'image/webp');
-		await this.storageClient.create(filePath, fileDto);
-
-		return {
-			data: preview,
-			contentType: 'image/webp',
-			contentLength: undefined,
-			contentRange: undefined,
-			etag: undefined,
-		};
-	}
-
-	private resizeAndConvertToWebP(
-		original: IGetFileResponse,
-		fileRecord: FileRecord,
-		previewParams: PreviewParams
-	): PassThrough {
-		const im = subClass({ imageMagick: true });
-		const preview = im(original.data, fileRecord.name).resize(previewParams.width, previewParams.height).stream('webp');
-
-		return preview;
 	}
 
 	// delete
