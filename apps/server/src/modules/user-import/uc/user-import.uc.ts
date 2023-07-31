@@ -182,6 +182,7 @@ export class UserImportUc {
 		const options: IFindOptions<ImportUser> = {};
 		// TODO Change ImportUserRepo to DO to fix this workaround
 		const [importUsers, total] = await this.importUserRepo.findImportUsers(currentUser.school, filters, options);
+		let migratedUser = 0;
 		if (total > 0) {
 			this.logger.notice({
 				getLogMessage: () => {
@@ -197,8 +198,17 @@ export class UserImportUc {
 				// server crush when working with larger number of users (e.g. 1000)
 				// eslint-disable-next-line no-await-in-loop
 				await this.updateUserAndAccount(importUser, school);
+				migratedUser += 1;
 			}
 		}
+		this.logger.notice({
+			getLogMessage: () => {
+				return {
+					message: 'number of users already migrated from the total number',
+					numberOfMigratedUser: `${migratedUser}/${total}`,
+				};
+			},
+		});
 		// TODO Change ImportUserRepo to DO to fix this workaround
 		// Delete all remaining importUser-objects that dont need to be ported
 		await this.importUserRepo.deleteImportUsersBySchool(currentUser.school);
