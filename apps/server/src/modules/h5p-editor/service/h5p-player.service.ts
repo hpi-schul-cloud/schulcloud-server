@@ -1,26 +1,19 @@
-import { H5PConfig, H5PPlayer, UrlGenerator } from '@lumieducation/h5p-server';
+import { H5PPlayer } from '@lumieducation/h5p-server';
 
 import { ContentStorage } from '../contentStorage/contentStorage';
 import { LibraryStorage } from '../libraryStorage/libraryStorage';
+import { h5pConfig, h5pUrlGenerator } from './config/h5p-service-config';
 
 export const H5PPlayerService = {
 	provide: H5PPlayer,
 	inject: [ContentStorage, LibraryStorage],
 	useFactory: (contentStorage: ContentStorage, libraryStorage: LibraryStorage) => {
-		const config: H5PConfig = new H5PConfig(undefined, {
-			baseUrl: '/api/v3/h5p-editor',
-			contentUserStateSaveInterval: false,
-			setFinishedEnabled: false,
-		});
-
-		const urlGenerator = new UrlGenerator(config);
-
 		const h5pPlayer = new H5PPlayer(
 			libraryStorage,
 			contentStorage,
-			config,
+			h5pConfig,
 			undefined,
-			urlGenerator,
+			h5pUrlGenerator,
 			undefined,
 			undefined,
 			undefined

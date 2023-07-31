@@ -217,17 +217,19 @@ export class H5PEditorUc {
 	}
 
 	public async getEmptyH5pEditor(currentUser: ICurrentUser, language: string) {
-		// If contentId is undefined, a new H5P content will be created.
 		// TODO: await this.checkPermission...
 		const user = this.changeUserType(currentUser);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		const createdH5PEditor: IEditorModel = await this.h5pEditor.render(undefined as unknown as string, language, user);
+		const createdH5PEditor: IEditorModel = await this.h5pEditor.render(
+			undefined as unknown as string, // Lumi typings are wrong because they dont "use strict", this method actually accepts both string and undefined
+			language,
+			user
+		);
 
 		return createdH5PEditor;
 	}
 
 	public async getH5pEditor(currentUser: ICurrentUser, contentId: string, language: string) {
-		// If contentId is undefined, a new H5P content will be created.
 		// TODO: await this.checkPermission...
 		const user = this.changeUserType(currentUser);
 

@@ -17,9 +17,9 @@ export class GetH5PContentParams {
 }
 
 export class GetH5PEditorParams {
-	@ApiPropertyOptional()
+	@ApiProperty()
 	@IsMongoId()
-	contentId?: string;
+	contentId!: string;
 }
 
 export class SaveH5PEditorParams {

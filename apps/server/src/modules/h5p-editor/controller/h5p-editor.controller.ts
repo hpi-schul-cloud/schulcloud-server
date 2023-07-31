@@ -181,7 +181,7 @@ export class H5PEditorController {
 	@ApiResponse({ status: 200, type: H5PEditorModelContentResponse })
 	async getH5PEditor(@Param() params: GetH5PEditorParams, @CurrentUser() currentUser: ICurrentUser) {
 		// TODO: Get user language
-		const { editorModel, content } = await this.h5pEditorUc.getH5pEditor(currentUser, params.contentId as string, 'de');
+		const { editorModel, content } = await this.h5pEditorUc.getH5pEditor(currentUser, params.contentId, 'de');
 		return new H5PEditorModelContentResponse(editorModel, content);
 	}
 
