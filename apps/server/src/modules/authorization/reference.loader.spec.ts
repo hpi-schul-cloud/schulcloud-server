@@ -154,7 +154,7 @@ describe('reference.loader', () => {
 		});
 
 		it('should call contextExternalToolService.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.ContextExternalTool, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.ContextExternalToolEntity, entityId);
 
 			expect(contextExternalToolAuthorizableService.findById).toBeCalledWith(entityId);
 		});
@@ -166,7 +166,7 @@ describe('reference.loader', () => {
 		});
 
 		it('should call schoolExternalToolRepo.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.SchoolExternalTool, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.SchoolExternalToolEntity, entityId);
 
 			expect(schoolExternalToolRepo.findById).toBeCalledWith(entityId);
 		});

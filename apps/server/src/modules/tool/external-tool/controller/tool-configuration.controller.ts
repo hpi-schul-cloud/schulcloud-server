@@ -7,9 +7,9 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { ExternalToolDO } from '@shared/domain';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ExternalTool } from '../domain';
 import { ToolConfigurationMapper } from '../mapper/tool-configuration.mapper';
 import { ContextExternalToolTemplateInfo, ExternalToolConfigurationUc } from '../uc';
 import {
@@ -40,7 +40,7 @@ export class ToolConfigurationController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolIdParams
 	): Promise<SchoolExternalToolConfigurationTemplateListResponse> {
-		const availableTools: ExternalToolDO[] = await this.externalToolConfigurationUc.getAvailableToolsForSchool(
+		const availableTools: ExternalTool[] = await this.externalToolConfigurationUc.getAvailableToolsForSchool(
 			currentUser.userId,
 			params.schoolId
 		);
@@ -88,7 +88,7 @@ export class ToolConfigurationController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams
 	): Promise<SchoolExternalToolConfigurationTemplateResponse> {
-		const tool: ExternalToolDO = await this.externalToolConfigurationUc.getTemplateForSchoolExternalTool(
+		const tool: ExternalTool = await this.externalToolConfigurationUc.getTemplateForSchoolExternalTool(
 			currentUser.userId,
 			params.schoolExternalToolId
 		);

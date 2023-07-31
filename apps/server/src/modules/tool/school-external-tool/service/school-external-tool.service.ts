@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { SchoolExternalToolRepo } from '@shared/repo';
-import { SchoolExternalToolDO, ExternalToolDO, ToolConfigurationStatus, EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain';
 import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
 import { ExternalToolService } from '../../external-tool/service';
+import { SchoolExternalTool } from '../domain';
+import { ExternalTool } from '../../external-tool/domain';
+import { ToolConfigurationStatus } from '../../common/enum';
 
 @Injectable()
 export class SchoolExternalToolService {
@@ -11,45 +14,43 @@ export class SchoolExternalToolService {
 		private readonly externalToolService: ExternalToolService
 	) {}
 
-	async getSchoolExternalToolById(schoolExternalToolId: EntityId): Promise<SchoolExternalToolDO> {
-		const schoolExternalTool = await this.schoolExternalToolRepo.findById(schoolExternalToolId);
+	async getSchoolExternalToolById(schoolExternalToolId: EntityId): Promise<SchoolExternalTool> {
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolRepo.findById(schoolExternalToolId);
 		return schoolExternalTool;
 	}
 
-	async findSchoolExternalTools(query: SchoolExternalToolQuery): Promise<SchoolExternalToolDO[]> {
-		let schoolExternalToolDOs: SchoolExternalToolDO[] = await this.schoolExternalToolRepo.find({
+	async findSchoolExternalTools(query: SchoolExternalToolQuery): Promise<SchoolExternalTool[]> {
+		let schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolRepo.find({
 			schoolId: query.schoolId,
 		});
 
-		schoolExternalToolDOs = await this.enrichWithDataFromExternalTools(schoolExternalToolDOs);
+		schoolExternalTools = await this.enrichWithDataFromExternalTools(schoolExternalTools);
 
-		return schoolExternalToolDOs;
+		return schoolExternalTools;
 	}
 
-	private async enrichWithDataFromExternalTools(tools: SchoolExternalToolDO[]): Promise<SchoolExternalToolDO[]> {
-		const enrichedTools: SchoolExternalToolDO[] = await Promise.all(
-			tools.map(
-				async (tool: SchoolExternalToolDO): Promise<SchoolExternalToolDO> => this.enrichDataFromExternalTool(tool)
-			)
+	private async enrichWithDataFromExternalTools(tools: SchoolExternalTool[]): Promise<SchoolExternalTool[]> {
+		const enrichedTools: SchoolExternalTool[] = await Promise.all(
+			tools.map(async (tool: SchoolExternalTool): Promise<SchoolExternalTool> => this.enrichDataFromExternalTool(tool))
 		);
 
 		return enrichedTools;
 	}
 
-	private async enrichDataFromExternalTool(tool: SchoolExternalToolDO): Promise<SchoolExternalToolDO> {
-		const externalToolDO: ExternalToolDO = await this.externalToolService.findExternalToolById(tool.toolId);
-		const status: ToolConfigurationStatus = this.determineStatus(tool, externalToolDO);
-		const schoolExternalTool: SchoolExternalToolDO = new SchoolExternalToolDO({
+	private async enrichDataFromExternalTool(tool: SchoolExternalTool): Promise<SchoolExternalTool> {
+		const externalTool: ExternalTool = await this.externalToolService.findExternalToolById(tool.toolId);
+		const status: ToolConfigurationStatus = this.determineStatus(tool, externalTool);
+		const schoolExternalTool: SchoolExternalTool = new SchoolExternalTool({
 			...tool,
 			status,
-			name: externalToolDO.name,
+			name: externalTool.name,
 		});
 
 		return schoolExternalTool;
 	}
 
-	private determineStatus(tool: SchoolExternalToolDO, externalToolDO: ExternalToolDO): ToolConfigurationStatus {
-		if (externalToolDO.version <= tool.toolVersion) {
+	private determineStatus(tool: SchoolExternalTool, externalTool: ExternalTool): ToolConfigurationStatus {
+		if (externalTool.version <= tool.toolVersion) {
 			return ToolConfigurationStatus.LATEST;
 		}
 
@@ -60,8 +61,8 @@ export class SchoolExternalToolService {
 		await this.schoolExternalToolRepo.deleteById(schoolExternalToolId);
 	}
 
-	async saveSchoolExternalTool(schoolExternalTool: SchoolExternalToolDO): Promise<SchoolExternalToolDO> {
-		let createdSchoolExternalTool: SchoolExternalToolDO = await this.schoolExternalToolRepo.save(schoolExternalTool);
+	async saveSchoolExternalTool(schoolExternalTool: SchoolExternalTool): Promise<SchoolExternalTool> {
+		let createdSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolRepo.save(schoolExternalTool);
 		createdSchoolExternalTool = await this.enrichDataFromExternalTool(createdSchoolExternalTool);
 		return createdSchoolExternalTool;
 	}

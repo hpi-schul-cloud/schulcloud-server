@@ -1,7 +1,7 @@
-import { SchoolExternalToolDO } from '@shared/domain';
-import { schoolExternalToolDOFactory } from '@shared/testing/factory';
+import { schoolExternalToolFactory } from '@shared/testing/factory';
 import { ToolConfigurationStatusResponse } from '../../external-tool/controller/dto';
 import { SchoolExternalToolResponse, SchoolExternalToolSearchListResponse } from '../controller/dto';
+import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolResponseMapper } from './school-external-tool-response.mapper';
 
 describe('SchoolExternalToolResponseMapper', () => {
@@ -13,10 +13,10 @@ describe('SchoolExternalToolResponseMapper', () => {
 
 	describe('mapToSearchListResponse is called', () => {
 		const setup = () => {
-			const do1: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
-			const do2: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
+			const do1: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+			const do2: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 
-			const dos: SchoolExternalToolDO[] = [do1, do2];
+			const dos: SchoolExternalTool[] = [do1, do2];
 
 			return {
 				dos,
