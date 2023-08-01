@@ -12,7 +12,7 @@ import { Inject, Injectable, InternalServerErrorException, NotFoundException } f
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
 import { FileDto } from '../dto';
-import { ICopyFiles, IGetFileResponse, IStorageClient, S3Config } from '../interface';
+import { ICopyFiles, IGetFile, IStorageClient, S3Config } from '../interface';
 
 @Injectable()
 export class S3ClientAdapter implements IStorageClient {
@@ -41,7 +41,7 @@ export class S3ClientAdapter implements IStorageClient {
 		}
 	}
 
-	public async get(path: string, bytesRange?: string): Promise<IGetFileResponse> {
+	public async get(path: string, bytesRange?: string): Promise<IGetFile> {
 		try {
 			this.logger.log({ action: 'get', params: { path, bucket: this.config.bucket } });
 

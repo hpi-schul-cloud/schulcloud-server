@@ -23,7 +23,7 @@ import {
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
-import { IGetFileResponse } from '../interface';
+import { IGetFile, IGetFileResponse } from '../interface';
 import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
@@ -134,7 +134,7 @@ export class FilesStorageUC {
 		return this.filesStorageService.download(fileRecord, params, bytesRange);
 	}
 
-	public async downloadBySecurityToken(token: string): Promise<IGetFileResponse> {
+	public async downloadBySecurityToken(token: string): Promise<IGetFile> {
 		const fileRecord = await this.filesStorageService.getFileRecordBySecurityCheckRequestToken(token);
 		const res = await this.filesStorageService.downloadFile(fileRecord.getSchoolId(), fileRecord.id);
 

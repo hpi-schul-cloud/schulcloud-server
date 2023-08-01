@@ -7,7 +7,7 @@ import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { DownloadFileParams, PreviewParams } from '../controller/dto';
 import { FileRecord } from '../entity';
 import { ErrorType } from '../error';
-import { IGetFileResponse } from '../interface';
+import { IGetFile, IGetFileResponse } from '../interface';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
 import { FileDtoBuilder } from '../mapper';
 import { FilesStorageService } from './files-storage.service';
@@ -39,15 +39,20 @@ export class PreviewService {
 
 		const hash = this.createNameHash(params, previewParams);
 		const filePath = [fileRecord.getSchoolId(), 'previews', hash].join('/');
-		let response: IGetFileResponse;
+		const fileNameWithoutExtension = fileRecord.name.split('.')[0];
+		const format = this.getFormat(previewParams.outputFormat);
+		const name = `${fileNameWithoutExtension}.${format}`;
+		let file: IGetFile;
 
 		try {
-			response = await this.storageClient.get(filePath);
+			file = await this.storageClient.get(filePath);
 		} catch (error) {
 			this.throwIfOtherError(error);
 
-			response = await this.generatePreview(fileRecord, params, previewParams, hash, filePath, bytesRange);
+			file = await this.generatePreview(fileRecord, params, previewParams, hash, filePath, bytesRange);
 		}
+
+		const response = { ...file, data: file.data, name };
 
 		return response;
 	}
@@ -73,7 +78,7 @@ export class PreviewService {
 		hash: string,
 		filePath: string,
 		bytesRange?: string
-	): Promise<IGetFileResponse> {
+	): Promise<IGetFile> {
 		const original = await this.fileStorageService.download(fileRecord, params, bytesRange);
 		const preview = this.resizeAndConvert(original, fileRecord, previewParams);
 

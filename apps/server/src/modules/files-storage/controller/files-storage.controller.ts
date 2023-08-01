@@ -127,12 +127,12 @@ export class FilesStorageController {
 		} else {
 			response.status(HttpStatus.OK);
 		}
-
+		console.log(res);
 		// Return StreamableFile with stream data and options that will additionally set
 		// Content-Type, Content-Disposition and Content-Length headers in a response.
 		return new StreamableFile(res.data, {
 			type: res.contentType,
-			disposition: `inline; filename="${encodeURI(params.fileName)}"`,
+			disposition: `inline; filename="${encodeURI(res.name)}"`,
 			length: res.contentLength,
 		});
 	}
@@ -181,7 +181,7 @@ export class FilesStorageController {
 		// Content-Type, Content-Disposition and Content-Length headers in a response.
 		return new StreamableFile(res.data, {
 			type: res.contentType,
-			disposition: `inline; filename="${encodeURI(params.fileName)}"`,
+			disposition: `inline; filename="${encodeURI(res.name)}"`,
 			length: res.contentLength,
 		});
 	}
