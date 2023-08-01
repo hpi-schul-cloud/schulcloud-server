@@ -3,6 +3,7 @@ import { Injectable, NotImplementedException } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { Counted, EntityId, IAccount, IAccountUpdate } from '@shared/domain';
 import { IdentityManagementService, IdentityManagementOauthService } from '@shared/infra/identity-management';
+import { LegacyLogger } from '@src/core/logger';
 import { AccountIdmToDtoMapper } from '../mapper';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountDto, AccountSaveDto } from './dto';
@@ -14,7 +15,8 @@ export class AccountServiceIdm extends AbstractAccountService {
 		private readonly identityManager: IdentityManagementService,
 		private readonly accountIdmToDtoMapper: AccountIdmToDtoMapper,
 		private readonly accountLookupService: AccountLookupService,
-		private readonly idmOauthService: IdentityManagementOauthService
+		private readonly idmOauthService: IdentityManagementOauthService,
+		private readonly logger: LegacyLogger
 	) {
 		super();
 	}
@@ -96,6 +98,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 			try {
 				idmId = await this.getIdmAccountId(accountDto.id);
 			} catch {
+				this.logger.log(`Account ID ${accountDto.id} could not be resolved. Creating new account and ID ...`);
 				idmId = undefined;
 			}
 			if (idmId) {

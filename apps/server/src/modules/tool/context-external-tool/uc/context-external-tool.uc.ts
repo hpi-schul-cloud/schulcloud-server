@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { ContextExternalToolDO, ContextRef, EntityId, Permission } from '@shared/domain';
+import { EntityId, Permission } from '@shared/domain';
 import { Action } from '@src/modules/authorization';
 import { LegacyLogger } from '@src/core/logger';
 import { ForbiddenLoggableException } from '@src/modules/authorization/errors/forbidden.loggable-exception';
 import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
-import { ContextExternalTool } from './dto/context-external-tool.types';
-import { ToolContextType } from '../../common/interface';
+import { ContextExternalToolDto } from './dto/context-external-tool.types';
+import { ContextExternalTool, ContextRef } from '../domain';
+import { ToolContextType } from '../../common/enum';
 
 @Injectable()
 export class ContextExternalToolUc {
@@ -17,26 +18,26 @@ export class ContextExternalToolUc {
 
 	async createContextExternalTool(
 		userId: EntityId,
-		contextExternalTool: ContextExternalTool
-	): Promise<ContextExternalToolDO> {
-		const contextExternalToolDO = new ContextExternalToolDO(contextExternalTool);
+		contextExternalToolDto: ContextExternalToolDto
+	): Promise<ContextExternalTool> {
+		const contextExternalTool = new ContextExternalTool(contextExternalToolDto);
 
-		await this.contextExternalToolService.ensureContextPermissions(userId, contextExternalToolDO, {
+		await this.contextExternalToolService.ensureContextPermissions(userId, contextExternalTool, {
 			requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 			action: Action.write,
 		});
 
-		await this.contextExternalToolValidationService.validate(contextExternalTool);
+		await this.contextExternalToolValidationService.validate(contextExternalToolDto);
 
-		const createdTool: ContextExternalToolDO = await this.contextExternalToolService.createContextExternalTool(
-			contextExternalToolDO
+		const createdTool: ContextExternalTool = await this.contextExternalToolService.createContextExternalTool(
+			contextExternalTool
 		);
 
 		return createdTool;
 	}
 
 	async deleteContextExternalTool(userId: EntityId, contextExternalToolId: EntityId): Promise<void> {
-		const tool: ContextExternalToolDO = await this.contextExternalToolService.getContextExternalToolById(
+		const tool: ContextExternalTool = await this.contextExternalToolService.getContextExternalToolById(
 			contextExternalToolId
 		);
 		await this.contextExternalToolService.ensureContextPermissions(userId, tool, {
@@ -50,19 +51,19 @@ export class ContextExternalToolUc {
 	}
 
 	async getContextExternalToolsForContext(userId: EntityId, contextType: ToolContextType, contextId: string) {
-		const tools: ContextExternalToolDO[] = await this.contextExternalToolService.findAllByContext(
+		const tools: ContextExternalTool[] = await this.contextExternalToolService.findAllByContext(
 			new ContextRef({ id: contextId, type: contextType })
 		);
 
-		const toolsWithPermission: ContextExternalToolDO[] = await this.filterToolsWithPermissions(userId, tools);
+		const toolsWithPermission: ContextExternalTool[] = await this.filterToolsWithPermissions(userId, tools);
 
 		return toolsWithPermission;
 	}
 
 	private async filterToolsWithPermissions(
 		userId: EntityId,
-		tools: ContextExternalToolDO[]
-	): Promise<ContextExternalToolDO[]> {
+		tools: ContextExternalTool[]
+	): Promise<ContextExternalTool[]> {
 		const toolPromises = tools.map(async (tool) => {
 			try {
 				await this.contextExternalToolService.ensureContextPermissions(userId, tool, {
@@ -81,9 +82,9 @@ export class ContextExternalToolUc {
 		});
 
 		const toolsWithPermission = await Promise.all(toolPromises);
-		const filteredTools: ContextExternalToolDO[] = toolsWithPermission.filter(
+		const filteredTools: ContextExternalTool[] = toolsWithPermission.filter(
 			(tool) => tool !== null
-		) as ContextExternalToolDO[];
+		) as ContextExternalTool[];
 		return filteredTools;
 	}
 }
