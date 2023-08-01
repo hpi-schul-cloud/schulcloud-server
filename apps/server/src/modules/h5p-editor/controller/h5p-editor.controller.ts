@@ -172,7 +172,6 @@ export class H5PEditorController {
 	@Get('/edit')
 	@ApiResponse({ status: 200, type: H5PEditorModelResponse })
 	async getNewH5PEditor(@CurrentUser() currentUser: ICurrentUser) {
-		// TODO: Get user language
 		const editorModel = await this.h5pEditorUc.getEmptyH5pEditor(currentUser);
 		return new H5PEditorModelResponse(editorModel);
 	}
@@ -180,7 +179,6 @@ export class H5PEditorController {
 	@Get('/edit/:contentId')
 	@ApiResponse({ status: 200, type: H5PEditorModelContentResponse })
 	async getH5PEditor(@Param() params: GetH5PEditorParams, @CurrentUser() currentUser: ICurrentUser) {
-		// TODO: Get user language
 		const { editorModel, content } = await this.h5pEditorUc.getH5pEditor(currentUser, params.contentId);
 		return new H5PEditorModelContentResponse(editorModel, content);
 	}
