@@ -25,6 +25,7 @@ import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request, Response } from 'express';
 import { setBytesRangeHeader } from '../helper/bytes-range';
+import { FilesStorageMapper } from '../mapper';
 import { FileRecordMapper } from '../mapper/file-record.mapper';
 import { FilesStorageUC } from '../uc';
 import {
@@ -119,11 +120,9 @@ export class FilesStorageController {
 
 		// Return StreamableFile with stream data and options that will additionally set
 		// Content-Type, Content-Disposition and Content-Length headers in a response.
-		return new StreamableFile(fileResponse.data, {
-			type: fileResponse.contentType,
-			disposition: `inline; filename="${encodeURI(fileResponse.name)}"`,
-			length: fileResponse.contentLength,
-		});
+		const streamableFile = FilesStorageMapper.mapToStreamableFile(fileResponse);
+
+		return streamableFile;
 	}
 
 	@ApiOperation({ summary: 'Streamable download of a preview file.' })
@@ -162,11 +161,9 @@ export class FilesStorageController {
 
 		// Return StreamableFile with stream data and options that will additionally set
 		// Content-Type, Content-Disposition and Content-Length headers in a response.
-		return new StreamableFile(fileResponse.data, {
-			type: fileResponse.contentType,
-			disposition: `inline; filename="${encodeURI(fileResponse.name)}"`,
-			length: fileResponse.contentLength,
-		});
+		const streamableFile = FilesStorageMapper.mapToStreamableFile(fileResponse);
+
+		return streamableFile;
 	}
 
 	@ApiOperation({ summary: 'Get a list of file meta data of a parent entityId.' })
