@@ -6,7 +6,6 @@ import {
 	Delete,
 	ForbiddenException,
 	Get,
-	HttpStatus,
 	InternalServerErrorException,
 	NotAcceptableException,
 	NotFoundException,
@@ -25,6 +24,7 @@ import { PaginationParams } from '@shared/controller';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request, Response } from 'express';
+import { setBytesRangeHeader } from '../helper/bytes-range';
 import { FileRecordMapper } from '../mapper/file-record.mapper';
 import { FilesStorageUC } from '../uc';
 import {
@@ -109,31 +109,20 @@ export class FilesStorageController {
 		const bytesRange = req.header('Range');
 
 		// Call download method with either defined or undefined bytes range.
-		const res = await this.filesStorageUC.download(currentUser.userId, params, bytesRange);
+		const fileResponse = await this.filesStorageUC.download(currentUser.userId, params, bytesRange);
 
 		// Destroy the stream after it has been closed.
-		req.on('close', () => res.data.destroy());
+		req.on('close', () => fileResponse.data.destroy());
 
-		// If bytes range has been defined, set Accept-Ranges and Content-Range HTTP headers
-		// in a response and also set 206 Partial Content HTTP status code to inform the caller
-		// about the partial data stream. Otherwise, just set a 200 OK HTTP status code.
-		if (bytesRange) {
-			response.set({
-				'Accept-Ranges': 'bytes',
-				'Content-Range': res.contentRange,
-			});
+		// Set headers and status.
+		setBytesRangeHeader(response, fileResponse, bytesRange);
 
-			response.status(HttpStatus.PARTIAL_CONTENT);
-		} else {
-			response.status(HttpStatus.OK);
-		}
-		console.log(res);
 		// Return StreamableFile with stream data and options that will additionally set
 		// Content-Type, Content-Disposition and Content-Length headers in a response.
-		return new StreamableFile(res.data, {
-			type: res.contentType,
-			disposition: `inline; filename="${encodeURI(res.name)}"`,
-			length: res.contentLength,
+		return new StreamableFile(fileResponse.data, {
+			type: fileResponse.contentType,
+			disposition: `inline; filename="${encodeURI(fileResponse.name)}"`,
+			length: fileResponse.contentLength,
 		});
 	}
 
@@ -158,31 +147,25 @@ export class FilesStorageController {
 		const bytesRange = req.header('Range');
 
 		// Call download method with either defined or undefined bytes range.
-		const res = await this.filesStorageUC.downloadPreview(currentUser.userId, params, previewParams, bytesRange);
+		const fileResponse = await this.filesStorageUC.downloadPreview(
+			currentUser.userId,
+			params,
+			previewParams,
+			bytesRange
+		);
 
 		// Destroy the stream after it has been closed.
-		req.on('close', () => res.data.destroy());
+		req.on('close', () => fileResponse.data.destroy());
 
-		// If bytes range has been defined, set Accept-Ranges and Content-Range HTTP headers
-		// in a response and also set 206 Partial Content HTTP status code to inform the caller
-		// about the partial data stream. Otherwise, just set a 200 OK HTTP status code.
-		if (bytesRange) {
-			response.set({
-				'Accept-Ranges': 'bytes',
-				'Content-Range': res.contentRange,
-			});
-
-			response.status(HttpStatus.PARTIAL_CONTENT);
-		} else {
-			response.status(HttpStatus.OK);
-		}
+		// Set headers and status.
+		setBytesRangeHeader(response, fileResponse, bytesRange);
 
 		// Return StreamableFile with stream data and options that will additionally set
 		// Content-Type, Content-Disposition and Content-Length headers in a response.
-		return new StreamableFile(res.data, {
-			type: res.contentType,
-			disposition: `inline; filename="${encodeURI(res.name)}"`,
-			length: res.contentLength,
+		return new StreamableFile(fileResponse.data, {
+			type: fileResponse.contentType,
+			disposition: `inline; filename="${encodeURI(fileResponse.name)}"`,
+			length: fileResponse.contentLength,
 		});
 	}
 
