@@ -24,7 +24,7 @@ import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Logger } from '@src/core/logger';
 import {
-	UserMigrationIsNotEnable,
+	UserMigrationIsNotEnabled,
 	SchoolInUserMigrationStartLoggable,
 	SchoolInUserMigrationEndLoggable,
 	SchoolIdDoesNotMatchWithUserSchoolId,
@@ -61,7 +61,7 @@ export class UserImportUc {
 		const enabled = Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean;
 		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeatures.LDAP_UNIVENTION_MIGRATION);
 		if (!enabled && !isLdapPilotSchool) {
-			this.logger.warn(new UserMigrationIsNotEnable());
+			this.logger.warn(new UserMigrationIsNotEnabled());
 			throw new InternalServerErrorException('User Migration not enabled');
 		}
 	}

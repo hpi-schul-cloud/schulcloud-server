@@ -5,7 +5,7 @@ export class SchoolInUserMigrationEndLoggable implements Loggable {
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			message: 'migration for school is completed',
+			message: 'Migration for school is completed',
 			data: {
 				schoolName: this.schoolName,
 			},
