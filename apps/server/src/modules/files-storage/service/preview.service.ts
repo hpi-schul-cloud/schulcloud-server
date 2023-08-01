@@ -38,7 +38,7 @@ export class PreviewService {
 		this.checkIfPreviewPossible(fileRecord);
 
 		const hash = this.createNameHash(params, previewParams);
-		const filePath = [fileRecord.getSchoolId(), 'previews', hash].join('/');
+		const filePath = ['previews', fileRecord.getSchoolId(), hash].join('/');
 		const fileNameWithoutExtension = fileRecord.name.split('.')[0];
 		const format = this.getFormat(previewParams.outputFormat);
 		const name = `${fileNameWithoutExtension}.${format}`;
