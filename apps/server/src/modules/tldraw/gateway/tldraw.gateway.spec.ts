@@ -43,19 +43,21 @@ describe('TldrawGateway', () => {
 	});
 
 	it('should throw error for not connected WebSocket', () => {
+		jest.useFakeTimers();
 		const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
+		const setupConnectionSpy = jest.spyOn(Utils, 'setupWSConnection');
 		const closeConSpy = jest.spyOn(Utils, 'closeConn').mockReturnValue();
 		const sendSpy = jest.spyOn(Utils, 'send');
-		const message = 'TEST STRING';
-		const request = new Request(new URL(`ws://localhost:${gatewayPort}?roomName=TEST`), {
-			body: message,
-			method: 'POST',
-		});
-		clientSocket = new WebSocket(`ws://localhost:${gatewayPort}/TEST`);
-		gateway.handleConnection(clientSocket, request);
 
+		const request = { url: '/TEST' };
+		clientSocket = new WebSocket(`ws://localhost:${gatewayPort}/TEST`);
+		gateway.handleConnection(clientSocket, request as unknown as Request);
+
+		jest.advanceTimersByTime(20);
 		expect(handleConnectionSpy).toHaveBeenCalledWith(clientSocket, request);
+		expect(setupConnectionSpy).toHaveBeenCalledWith(clientSocket, 'TEST');
 		expect(sendSpy).toThrow();
+		expect(sendSpy).toHaveBeenCalledWith();
 		expect(closeConSpy).toHaveBeenCalled();
 	});
 
