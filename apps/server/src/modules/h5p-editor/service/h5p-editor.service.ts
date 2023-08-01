@@ -1,11 +1,9 @@
 import { H5PConfig, H5PEditor, UrlGenerator, cacheImplementations } from '@lumieducation/h5p-server';
 
-import i18next from 'i18next';
-import path from 'path';
-import { IH5PEditorOptions, ITranslationFunction } from '@lumieducation/h5p-server/build/src/types';
-import i18nextFsBackend from 'i18next-fs-backend';
+import { IH5PEditorOptions } from '@lumieducation/h5p-server/build/src/types';
 import { ContentStorage } from '../contentStorage/contentStorage';
 import { LibraryStorage } from '../libraryStorage/libraryStorage';
+import { Translator } from './h5p-translator.service';
 import { TemporaryFileStorage } from '../temporary-file-storage/temporary-file-storage';
 
 export const H5PEditorService = {
@@ -24,30 +22,6 @@ export const H5PEditorService = {
 		});
 
 		const urlGenerator = new UrlGenerator(config);
-		const pathBackend = path.join(
-			__dirname,
-			'../../../../../../node_modules/@lumieducation/h5p-server/build/assets/translations/{{ns}}/{{lng}}.json'
-		);
-
-		const translationFunction = await i18next.use(i18nextFsBackend).init({
-			backend: {
-				loadPath: pathBackend,
-			},
-			ns: [
-				'client',
-				'copyright-semantics',
-				'hub',
-				'library-metadata',
-				'metadata-semantics',
-				'mongo-s3-content-storage',
-				's3-temporary-storage',
-				'server',
-				'storage-file-implementations',
-			],
-			preload: ['es', 'de', 'en', 'uk'],
-		});
-
-		const translate: ITranslationFunction = (key, language) => translationFunction(key, { lng: language });
 
 		const h5pOptions: IH5PEditorOptions = {
 			enableHubLocalization: true,
@@ -60,7 +34,7 @@ export const H5PEditorService = {
 			libraryStorage,
 			contentStorage,
 			temporaryStorage,
-			translate,
+			await Translator.translate(),
 			urlGenerator,
 			h5pOptions
 		);

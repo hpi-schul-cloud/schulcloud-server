@@ -1,9 +1,7 @@
-import { H5PConfig, H5PPlayer, ITranslationFunction, UrlGenerator } from '@lumieducation/h5p-server';
+import { H5PConfig, H5PPlayer, UrlGenerator } from '@lumieducation/h5p-server';
 
-import i18next from 'i18next';
-import i18nextFsBackend from 'i18next-fs-backend';
-import path from 'path';
 import { LibraryStorage } from '../libraryStorage/libraryStorage';
+import { Translator } from './h5p-translator.service';
 import { ContentStorage } from '../contentStorage/contentStorage';
 
 export const H5PPlayerService = {
@@ -17,36 +15,13 @@ export const H5PPlayerService = {
 
 		const urlGenerator = new UrlGenerator(config);
 
-		const pathBackend = path.join(
-			__dirname,
-			'../../../../../../node_modules/@lumieducation/h5p-server/build/assets/translations/{{ns}}/{{lng}}.json'
-		);
-		const translationFunction = await i18next.use(i18nextFsBackend).init({
-			backend: {
-				loadPath: pathBackend,
-			},
-			ns: [
-				'client',
-				'copyright-semantics',
-				'hub',
-				'library-metadata',
-				'metadata-semantics',
-				'mongo-s3-content-storage',
-				's3-temporary-storage',
-				'server',
-				'storage-file-implementations',
-			],
-			preload: ['es', 'de', 'en', 'uk'],
-		});
-		const translate: ITranslationFunction = (key, language) => translationFunction(key, { lng: language });
-
 		const h5pPlayer = new H5PPlayer(
 			libraryStorage,
 			contentStorage,
 			config,
 			undefined,
 			urlGenerator,
-			translate,
+			await Translator.translate(),
 			undefined,
 			undefined
 		);
