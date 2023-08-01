@@ -1,5 +1,5 @@
 import { SchoolExternalToolRequestMapper } from './school-external-tool-request.mapper';
-import { SchoolExternalTool } from '../uc/dto/school-external-tool.types';
+import { SchoolExternalToolDto } from '../uc/dto/school-external-tool.types';
 import { CustomParameterEntryParam, SchoolExternalToolPostParams } from '../controller/dto';
 
 describe('SchoolExternalToolRequestMapper', () => {
@@ -19,9 +19,9 @@ describe('SchoolExternalToolRequestMapper', () => {
 					parameters: [param],
 				};
 
-				const schoolExternalTool: SchoolExternalTool = mapper.mapSchoolExternalToolRequest(params);
+				const schoolExternalToolDto: SchoolExternalToolDto = mapper.mapSchoolExternalToolRequest(params);
 
-				expect(schoolExternalTool).toEqual<SchoolExternalTool>({
+				expect(schoolExternalToolDto).toEqual<SchoolExternalToolDto>({
 					toolId: params.toolId,
 					parameters: [{ name: param.name, value: param.value }],
 					schoolId: params.schoolId,
@@ -39,9 +39,9 @@ describe('SchoolExternalToolRequestMapper', () => {
 					parameters: undefined,
 				};
 
-				const schoolExternalTool: SchoolExternalTool = mapper.mapSchoolExternalToolRequest(params);
+				const schoolExternalToolDto: SchoolExternalToolDto = mapper.mapSchoolExternalToolRequest(params);
 
-				expect(schoolExternalTool).toEqual<SchoolExternalTool>({
+				expect(schoolExternalToolDto).toEqual<SchoolExternalToolDto>({
 					toolId: params.toolId,
 					parameters: [],
 					schoolId: params.schoolId,
