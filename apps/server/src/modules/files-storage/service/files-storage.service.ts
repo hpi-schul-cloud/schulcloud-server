@@ -75,20 +75,11 @@ export class FilesStorageService {
 	}
 
 	// upload
-	public async uploadFile(
-		userId: EntityId,
-		params: FileRecordParams,
-		file: FileDto,
-		filePath?: string
-	): Promise<FileRecord> {
+	public async uploadFile(userId: EntityId, params: FileRecordParams, file: FileDto): Promise<FileRecord> {
 		const fileRecord = await this.createFileRecord(file, params, userId);
 		await this.fileRecordRepo.save(fileRecord);
 
-		if (!filePath) {
-			filePath = createPath(fileRecord.schoolId, fileRecord.id);
-		}
-
-		await this.createFileInStorageAndRollbackOnError(fileRecord, filePath, file);
+		await this.createFileInStorageAndRollbackOnError(fileRecord, params, file);
 
 		return fileRecord;
 	}
@@ -115,9 +106,11 @@ export class FilesStorageService {
 
 	private async createFileInStorageAndRollbackOnError(
 		fileRecord: FileRecord,
-		filePath: string,
+		params: FileRecordParams,
 		file: FileDto
 	): Promise<void> {
+		const filePath = createPath(params.schoolId, fileRecord.id);
+
 		try {
 			const fileSizePromise = this.countFileSize(file);
 
