@@ -648,7 +648,7 @@ describe('TaskUC', () => {
 			});
 		});
 
-		describe('when user is teacher', () => {
+		describe('when user is authorized and teacher', () => {
 			const setup = () => {
 				const user = setupUser([Permission.HOMEWORK_EDIT]);
 				const task = taskFactory.build();
@@ -671,7 +671,7 @@ describe('TaskUC', () => {
 			});
 		});
 
-		describe('when user is student', () => {
+		describe('when user is authorized and student', () => {
 			const setup = () => {
 				const user = setupUser([]);
 				const task = taskFactory.build();

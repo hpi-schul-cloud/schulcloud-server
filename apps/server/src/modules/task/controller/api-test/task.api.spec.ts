@@ -19,6 +19,7 @@ import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { TaskCreateParams, TaskListResponse, TaskResponse, TaskUpdateParams } from '@src/modules/task/controller/dto';
+import { ObjectID } from 'bson';
 import { Request } from 'express';
 import request from 'supertest';
 
@@ -65,7 +66,7 @@ describe('Task Controller (API)', () => {
 	});
 
 	describe('[GET]', () => {
-		describe('when no authorization is provided', () => {
+		describe('when no user is logged in', () => {
 			it('should return 401', async () => {
 				const { statusCode } = await testApiClient.get();
 				expect(statusCode).toEqual(401);
@@ -730,6 +731,44 @@ describe('Task Controller (API)', () => {
 		});
 	});
 
+	describe('[GET] /:taskId', () => {
+		describe('when no user is logged in', () => {
+			it('should return 401', async () => {
+				const id = new ObjectID().toString();
+
+				const { statusCode } = await testApiClient.get(id);
+
+				expect(statusCode).toEqual(401);
+			});
+		});
+
+		describe('when user is an authorized teacher', () => {
+			const setup = async () => {
+				const { account, user } = createTeacher();
+				const task = taskFactory.build({
+					name: 'test name',
+					description: '<p>test</p>',
+					descriptionInputFormat: InputFormat.RICH_TEXT_CK5,
+				});
+				await em.persistAndFlush([account, user, task]);
+				em.clear();
+				const loggedInClient = await testApiClient.login(account);
+				return { loggedInClient, teacher: user, task };
+			};
+
+			it('should return the task', async () => {
+				const { task, loggedInClient } = await setup();
+
+				const response = await loggedInClient.get(task.id);
+				const result = response.body as TaskResponse;
+
+				expect(result).toBeDefined();
+				expect(result.name).toEqual('test name');
+				expect(result.description).toEqual({ content: '<p>test</p>', type: InputFormat.RICH_TEXT_CK5 });
+			});
+		});
+	});
+
 	// TODO: refactor
 	describe('When task-card feature is enabled', () => {
 		// eslint-disable-next-line @typescript-eslint/no-shadow
@@ -775,22 +814,6 @@ describe('Task Controller (API)', () => {
 			Configuration.set('FEATURE_TASK_CARD_ENABLED', true);
 		});
 
-		it('GET :id should return existing task', async () => {
-			const user = setup(Permission.HOMEWORK_VIEW);
-			const task = taskFactory.build({ name: 'original name', creator: user });
-
-			await em.persistAndFlush([user, task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-
-			const response = await request(app.getHttpServer())
-				.get(`/tasks/${task.id}`)
-				.set('Accept', 'application/json')
-				.expect(200);
-
-			expect((response.body as TaskResponse).id).toEqual(task.id);
-		});
 		it('POST should create a draft task', async () => {
 			const teacher = setup(Permission.HOMEWORK_CREATE);
 			const student = setup(Permission.HOMEWORK_VIEW);
@@ -1002,22 +1025,6 @@ describe('Task Controller (API)', () => {
 
 			const params = { name: 'test', courseId: course.id };
 			await request(app.getHttpServer()).post(`/tasks`).set('Accept', 'application/json').send(params).expect(501);
-		});
-
-		it('Find task should throw', async () => {
-			const student = setup();
-			const course = courseFactory.build({
-				students: [student],
-			});
-			const teacher = userFactory.build();
-			const task = taskFactory.build({ creator: teacher, course, finished: [teacher, student] });
-
-			await em.persistAndFlush([student, task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(student);
-
-			await request(app.getHttpServer()).get(`/tasks/${task.id}`).set('Accept', 'application/json').expect(501);
 		});
 
 		it('Update task should throw', async () => {
