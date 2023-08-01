@@ -18,13 +18,13 @@ class API {
 	}
 
 	async editH5pContent(contentId: string) {
-		return request(this.app.getHttpServer()).get(`/h5p-editor/${contentId}`);
+		return request(this.app.getHttpServer()).get(`/h5p-editor/edit/${contentId}`);
 	}
 }
 
 const setup = () => {
-	const contentId = '12345';
-	const notExistingContentId = '12345';
+	const contentId = '64c3ac73abadca6138edee47';
+	const notExistingContentId = '04c3ac73abadca6138edee47';
 	const badContentId = '';
 
 	return { contentId, notExistingContentId, badContentId };

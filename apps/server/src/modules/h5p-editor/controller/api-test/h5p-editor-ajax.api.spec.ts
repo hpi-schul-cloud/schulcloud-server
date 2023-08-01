@@ -94,7 +94,7 @@ describe('H5PEditor Controller (api)', () => {
 					undefined, // MachineName
 					undefined, // MajorVersion
 					undefined, // MinorVersion
-					undefined, // Language
+					'de', // Language
 					expect.objectContaining({ id })
 				);
 			});

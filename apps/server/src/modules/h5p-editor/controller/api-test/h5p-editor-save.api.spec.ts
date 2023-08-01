@@ -4,31 +4,50 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
-import { DeepMocked, createMock } from '@golevelup/ts-jest/lib/mocks';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Request } from 'express';
+import { IContentMetadata } from '@lumieducation/h5p-server';
+import { DeepMocked, createMock } from '@golevelup/ts-jest/lib/mocks';
 import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 import { H5PEditorUc } from '../../uc/h5p.uc';
+
+const setup = () => {
+	const contentId = '64c3ac73abadca6138edee47';
+	const notExistingContentId = '04c3ac73abadca6138edee47';
+	const badContentId = '';
+	const id = '64c3ac73abadca6138edee47';
+	const metadata: IContentMetadata = {
+		embedTypes: [],
+		language: 'de',
+		mainLibrary: 'mainLib',
+		preloadedDependencies: [],
+		defaultLanguage: '',
+		license: '',
+		title: '123',
+	};
+
+	return { contentId, notExistingContentId, badContentId, id, metadata };
+};
 
 class API {
 	constructor(private app: INestApplication) {
 		this.app = app;
 	}
 
-	async deleteH5pContent(contentId: string) {
-		return request(this.app.getHttpServer()).post(`/h5p-editor/delete/${contentId}`);
+	async save(contentId: string) {
+		const body = {
+			params: {
+				params: {},
+				metadata: {},
+			},
+			metadata: {},
+			library: {},
+		};
+		return request(this.app.getHttpServer()).post(`/h5p-editor/edit/${contentId}`).send(body);
 	}
 }
-
-const setup = () => {
-	const contentId = '64c3ac73abadca6138edee47';
-	const notExistingContentId = '04c3ac73abadca6138edee47';
-	const badContentId = '';
-
-	return { contentId, notExistingContentId, badContentId };
-};
 
 describe('H5PEditor Controller (api)', () => {
 	let app: INestApplication;
@@ -66,8 +85,7 @@ describe('H5PEditor Controller (api)', () => {
 	afterAll(async () => {
 		await app.close();
 	});
-
-	describe('delete h5p content', () => {
+	describe('save h5p content', () => {
 		beforeEach(async () => {
 			await cleanupCollections(em);
 			const school = schoolFactory.build();
@@ -82,20 +100,19 @@ describe('H5PEditor Controller (api)', () => {
 			currentUser = mapUserToCurrentUser(user);
 		});
 		describe('with valid request params', () => {
-			it('should return 200 status', async () => {
-				const { contentId } = setup();
-
-				h5PEditorUc.deleteH5pContent.mockResolvedValueOnce(true);
-				const response = await api.deleteH5pContent(contentId);
+			it('should return 201 status', async () => {
+				const { contentId, id, metadata } = setup();
+				const result1 = { id, metadata };
+				h5PEditorUc.saveH5pContentGetMetadata.mockResolvedValueOnce(result1);
+				const response = await api.save(contentId);
 				expect(response.status).toEqual(201);
 			});
 		});
 		describe('with bad request params', () => {
 			it('should return 500 status', async () => {
 				const { notExistingContentId } = setup();
-
-				h5PEditorUc.deleteH5pContent.mockRejectedValueOnce(new Error('Could not delete H5P content'));
-				const response = await api.deleteH5pContent(notExistingContentId);
+				h5PEditorUc.saveH5pContentGetMetadata.mockRejectedValueOnce(new Error('Could not save H5P content'));
+				const response = await api.save(notExistingContentId);
 				expect(response.status).toEqual(500);
 			});
 		});

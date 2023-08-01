@@ -11,6 +11,7 @@ import { LoggerModule } from '@src/core/logger';
 import { AuthenticationApiModule } from '@src/modules/authentication/authentication-api.module';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { AuthorizationModule } from '@src/modules/authorization';
+import { UserRepo } from '@shared/repo';
 
 import { ContentStorage } from './contentStorage/contentStorage';
 import { H5PEditorController } from './controller';
@@ -46,6 +47,7 @@ const providers = [
 	H5PAjaxEndpointService,
 	S3ClientAdapter,
 	H5PContentRepo,
+	UserRepo,
 	...storages,
 ];
 

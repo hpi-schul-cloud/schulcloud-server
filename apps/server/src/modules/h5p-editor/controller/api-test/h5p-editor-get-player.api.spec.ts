@@ -23,8 +23,8 @@ class API {
 }
 
 const setup = () => {
-	const contentId = '12345';
-	const notExistingContentId = '12345';
+	const contentId = '64c3ac73abadca6138edee47';
+	const notExistingContentId = '04c3ac73abadca6138edee47';
 
 	return { contentId, notExistingContentId };
 };
