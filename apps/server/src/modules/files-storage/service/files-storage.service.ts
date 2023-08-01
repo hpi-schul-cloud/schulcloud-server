@@ -34,7 +34,7 @@ import {
 	unmarkForDelete,
 } from '../helper';
 import { IGetFile, IGetFileResponse } from '../interface';
-import { CopyFileResponseBuilder, FileRecordMapper, FilesStorageMapper } from '../mapper';
+import { CopyFileResponseBuilder, FileRecordMapper, FileResponseBuilder, FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
 
 @Injectable()
@@ -214,7 +214,7 @@ export class FilesStorageService {
 		this.checkScanStatus(fileRecord);
 
 		const file = await this.downloadFile(fileRecord.getSchoolId(), fileRecord.id, bytesRange);
-		const response = { ...file, data: file.data, name: fileRecord.getName() };
+		const response = FileResponseBuilder.build(file, fileRecord.getName());
 
 		return response;
 	}

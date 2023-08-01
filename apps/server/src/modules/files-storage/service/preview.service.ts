@@ -9,7 +9,7 @@ import { FileRecord } from '../entity';
 import { ErrorType } from '../error';
 import { IGetFile, IGetFileResponse } from '../interface';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
-import { FileDtoBuilder } from '../mapper';
+import { FileDtoBuilder, FileResponseBuilder } from '../mapper';
 import { FilesStorageService } from './files-storage.service';
 
 @Injectable()
@@ -52,7 +52,7 @@ export class PreviewService {
 			file = await this.generatePreview(fileRecord, params, previewParams, hash, filePath, bytesRange);
 		}
 
-		const response = { ...file, data: file.data, name };
+		const response = FileResponseBuilder.build(file, name);
 
 		return response;
 	}
