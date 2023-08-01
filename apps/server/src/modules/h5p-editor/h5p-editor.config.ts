@@ -9,9 +9,9 @@ const h5pEditorConfig = {
 export const s3Config: S3Config = {
 	endpoint: Configuration.get('H5P_EDITOR__S3_ENDPOINT') as string,
 	region: Configuration.get('H5P_EDITOR__S3_REGION') as string,
-	bucket: Configuration.get('H5P_EDITOR__S3_BUCKET') as string,
-	accessKeyId: Configuration.get('H5P_EDITOR__S3_ACCESS_KEY') as string,
-	secretAccessKey: Configuration.get('H5P_EDITOR__S3_SECRET_KEY') as string,
+	bucket: Configuration.get('H5P_EDITOR__S3_BUCKET_CONTENT') as string,
+	accessKeyId: Configuration.get('H5P_EDITOR__S3_ACCESS_KEY_ID') as string,
+	secretAccessKey: Configuration.get('H5P_EDITOR__S3_SECRET_ACCESS_KEY') as string,
 };
 
 export const config = () => h5pEditorConfig;
