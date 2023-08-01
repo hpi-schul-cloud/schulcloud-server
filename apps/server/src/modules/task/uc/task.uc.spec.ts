@@ -32,6 +32,15 @@ describe('TaskUC', () => {
 		return user;
 	};
 
+	const mockStatus: ITaskStatus = {
+		submitted: 1,
+		graded: 1,
+		maxSubmissions: 1,
+		isDraft: false,
+		isSubstitutionTeacher: false,
+		isFinished: false,
+	};
+
 	beforeAll(async () => {
 		await setupEntities();
 
@@ -619,16 +628,74 @@ describe('TaskUC', () => {
 		});
 	});
 
-	describe('[method] changeFinishedForUser', () => {
-		const mockStatus: ITaskStatus = {
-			submitted: 1,
-			graded: 1,
-			maxSubmissions: 1,
-			isDraft: false,
-			isSubstitutionTeacher: false,
-			isFinished: false,
-		};
+	describe('[method] find', () => {
+		describe('when user is not authorized', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const task = taskFactory.build();
 
+				authorizationService.checkPermission.mockImplementationOnce(() => {
+					throw new ForbiddenException();
+				});
+
+				return { user, task };
+			};
+
+			it('should throw forbidden exception', async () => {
+				const { user, task } = setup();
+
+				await expect(() => service.find(user.id, task.id)).rejects.toThrow(ForbiddenException);
+			});
+		});
+
+		describe('when user is teacher', () => {
+			const setup = () => {
+				const user = setupUser([Permission.HOMEWORK_EDIT]);
+				const task = taskFactory.build();
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				taskService.findById.mockResolvedValueOnce(task);
+				authorizationService.checkPermission.mockImplementationOnce(() => {});
+				jest.spyOn(task, 'createTeacherStatusForUser').mockReturnValueOnce(mockStatus);
+
+				return { user, task };
+			};
+
+			it('should return task with status', async () => {
+				const { user, task } = setup();
+
+				const result = await service.find(user.id, task.id);
+
+				expect(result.task).toEqual(task);
+				expect(result.status).toEqual(mockStatus);
+			});
+		});
+
+		describe('when user is student', () => {
+			const setup = () => {
+				const user = setupUser([]);
+				const task = taskFactory.build();
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				taskService.findById.mockResolvedValueOnce(task);
+				authorizationService.checkPermission.mockImplementationOnce(() => {});
+				jest.spyOn(task, 'createStudentStatusForUser').mockReturnValueOnce(mockStatus);
+
+				return { user, task };
+			};
+
+			it('should return task with status', async () => {
+				const { user, task } = setup();
+
+				const result = await service.find(user.id, task.id);
+
+				expect(result.task).toEqual(task);
+				expect(result.status).toEqual(mockStatus);
+			});
+		});
+	});
+
+	describe('[method] changeFinishedForUser', () => {
 		describe('when task has 1 creator and 1 user without permission', () => {
 			const setup = () => {
 				const creator = userFactory.buildWithId();
