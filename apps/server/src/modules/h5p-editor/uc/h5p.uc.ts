@@ -223,7 +223,7 @@ export class H5PEditorUc {
 		return playerModel;
 	}
 
-	public async getEmptyH5pEditor(currentUser: ICurrentUser, language: string) {
+	public async getEmptyH5pEditor(currentUser: ICurrentUser) {
 		// TODO: await this.checkPermission...
 		const language = await this.getUserLanguage(currentUser);
 		const user = this.changeUserType(currentUser);
@@ -237,8 +237,9 @@ export class H5PEditorUc {
 		return createdH5PEditor;
 	}
 
-	public async getH5pEditor(currentUser: ICurrentUser, contentId: string, language: string) {
+	public async getH5pEditor(currentUser: ICurrentUser, contentId: string) {
 		// TODO: await this.checkPermission...
+		const language = await this.getUserLanguage(currentUser);
 		const user = this.changeUserType(currentUser);
 
 		const [editorModel, content] = await Promise.all([

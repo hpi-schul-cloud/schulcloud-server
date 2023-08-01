@@ -160,7 +160,7 @@ describe('H5PEditor Controller (api)', () => {
 					expect(ajaxEndpoint.postAjax).toHaveBeenCalledWith(
 						'libraries',
 						dummyBody,
-						undefined,
+						'de',
 						expect.objectContaining({ id }),
 						undefined,
 						undefined,

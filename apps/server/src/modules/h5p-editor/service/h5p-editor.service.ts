@@ -17,13 +17,6 @@ export const H5PEditorService = {
 	) {
 		const cache = new cacheImplementations.CachedKeyValueStorage('kvcache');
 
-		const config: H5PConfig = new H5PConfig(undefined, {
-			baseUrl: '/api/v3/h5p-editor',
-			contentUserStateSaveInterval: false,
-		});
-
-		const urlGenerator = new UrlGenerator(config);
-
 		const h5pOptions: IH5PEditorOptions = {
 			enableHubLocalization: true,
 			enableLibraryNameLocalization: true,
