@@ -45,7 +45,7 @@ export class PreviewService {
 		let file: IGetFile;
 
 		try {
-			file = await this.storageClient.get(filePath);
+			file = await this.storageClient.get(filePath, bytesRange);
 		} catch (error) {
 			this.throwIfOtherError(error);
 
@@ -85,7 +85,7 @@ export class PreviewService {
 		const fileDto = FileDtoBuilder.build(hash, preview, previewParams.outputFormat);
 		await this.storageClient.create(filePath, fileDto);
 
-		const response = await this.storageClient.get(filePath);
+		const response = await this.storageClient.get(filePath, bytesRange);
 
 		return response;
 	}
