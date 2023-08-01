@@ -80,13 +80,9 @@ export class PreviewService {
 		const fileDto = FileDtoBuilder.build(hash, preview, previewParams.outputFormat);
 		await this.storageClient.create(filePath, fileDto);
 
-		return {
-			data: preview,
-			contentType: 'image/webp',
-			contentLength: undefined,
-			contentRange: undefined,
-			etag: undefined,
-		};
+		const response = await this.storageClient.get(filePath);
+
+		return response;
 	}
 
 	private resizeAndConvert(
