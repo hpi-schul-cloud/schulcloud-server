@@ -1,6 +1,6 @@
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import request from 'supertest';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
@@ -23,8 +23,8 @@ class API {
 }
 
 const setup = () => {
-	const contentId = '64c3ac73abadca6138edee47';
-	const notExistingContentId = '04c3ac73abadca6138edee47';
+	const contentId = new ObjectId(0).toString();
+	const notExistingContentId = new ObjectId(1).toString();
 	const badContentId = '';
 
 	return { contentId, notExistingContentId, badContentId };

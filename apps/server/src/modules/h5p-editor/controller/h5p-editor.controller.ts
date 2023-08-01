@@ -31,26 +31,12 @@ import {
 	AjaxPostQueryParams,
 	ContentFileUrlParams,
 	GetH5PContentParams,
+	GetH5PEditorParams,
 	LibraryFileUrlParams,
 	PostH5PContentCreateParams,
+	SaveH5PEditorParams,
 } from './dto';
-
-// Dummy html response so we can test i-frame integration
-const dummyResponse = (title: string) => `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${title}</title>
-</head>
-<body>
-    <h1>${title}</h1>
-    <p>This response can be used for testing</p>
-</body>
-</html>
-`;
+import { H5PEditorModelContentResponse, H5PEditorModelResponse, H5PSaveResponse } from './dto/h5p-editor.response';
 
 @ApiTags('h5p-editor')
 @Authenticate('jwt')
@@ -66,19 +52,6 @@ export class H5PEditorController {
 	@Get('/play/:contentId')
 	async getPlayer(@CurrentUser() currentUser: ICurrentUser, @Param() params: GetH5PContentParams) {
 		return this.h5pEditorUc.getH5pPlayer(currentUser, params.contentId);
-		// Dummy Response
-		// return Promise.resolve(dummyResponse('H5P Player Dummy'));
-	}
-
-	@ApiOperation({ summary: 'Return dummy HTML for testing' })
-	@ApiResponse({ status: 400, type: ApiValidationError })
-	@ApiResponse({ status: 400, type: BadRequestException })
-	@ApiResponse({ status: 403, type: ForbiddenException })
-	@ApiResponse({ status: 500, type: InternalServerErrorException })
-	@Get('/:contentId/edit')
-	async getEditor() {
-		// Dummy Response
-		return Promise.resolve(dummyResponse('H5P Editor Dummy'));
 	}
 
 	// Other Endpoints (incomplete list), paths not final
@@ -196,16 +169,41 @@ export class H5PEditorController {
 		return deleteSuccessfull;
 	}
 
+	@Get('/edit')
+	@ApiResponse({ status: 200, type: H5PEditorModelResponse })
+	async getNewH5PEditor(@CurrentUser() currentUser: ICurrentUser) {
+		// TODO: Get user language
+		const editorModel = await this.h5pEditorUc.getEmptyH5pEditor(currentUser, 'de');
+		return new H5PEditorModelResponse(editorModel);
+	}
+
 	@Get('/edit/:contentId')
-	async getH5PEditor(@Param() params: GetH5PContentParams, @CurrentUser() currentUser: ICurrentUser): Promise<string> {
-		const response = this.h5pEditorUc.getH5pEditor(currentUser, params.contentId);
-		return response;
+	@ApiResponse({ status: 200, type: H5PEditorModelContentResponse })
+	async getH5PEditor(@Param() params: GetH5PEditorParams, @CurrentUser() currentUser: ICurrentUser) {
+		// TODO: Get user language
+		const { editorModel, content } = await this.h5pEditorUc.getH5pEditor(currentUser, params.contentId, 'de');
+		return new H5PEditorModelContentResponse(editorModel, content);
+	}
+
+	@Post('/edit')
+	@ApiResponse({ status: 201, type: H5PSaveResponse })
+	async createH5pContent(@Body() body: PostH5PContentCreateParams, @CurrentUser() currentUser: ICurrentUser) {
+		const response = await this.h5pEditorUc.createH5pContentGetMetadata(
+			currentUser,
+			body.params.params,
+			body.params.metadata,
+			body.library
+		);
+
+		const saveResponse = new H5PSaveResponse(response.id, response.metadata);
+		return saveResponse;
 	}
 
 	@Post('/edit/:contentId')
-	async createOrSaveH5pContent(
+	@ApiResponse({ status: 201, type: H5PSaveResponse })
+	async saveH5pContent(
 		@Body() body: PostH5PContentCreateParams,
-		@Param() params: GetH5PContentParams,
+		@Param() params: SaveH5PEditorParams,
 		@CurrentUser() currentUser: ICurrentUser
 	) {
 		const response = await this.h5pEditorUc.saveH5pContentGetMetadata(
@@ -215,28 +213,8 @@ export class H5PEditorController {
 			body.params.metadata,
 			body.library
 		);
-		return response;
-	}
 
-	@Get('/create')
-	async getH5PEditorCreate(@CurrentUser() currentUser: ICurrentUser): Promise<string> {
-		const contentId = undefined as unknown as string;
-
-		const response = this.h5pEditorUc.getH5pEditor(currentUser, contentId);
-		return response;
-	}
-
-	@Post('/create')
-	async createH5pContent(@Body() body: PostH5PContentCreateParams, @CurrentUser() currentUser: ICurrentUser) {
-		const contentId = undefined as unknown as string;
-
-		const response = await this.h5pEditorUc.saveH5pContentGetMetadata(
-			contentId,
-			currentUser,
-			body.params.params,
-			body.params.metadata,
-			body.library
-		);
-		return response;
+		const saveResponse = new H5PSaveResponse(response.id, response.metadata);
+		return saveResponse;
 	}
 }

@@ -1,14 +1,27 @@
 import { IContentMetadata } from '@lumieducation/h5p-server';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { SanitizeHtml } from '@shared/controller';
 import { IsMongoId, IsNotEmpty, IsObject, IsOptional, IsString, Matches } from 'class-validator';
 
 export class GetH5PContentParams {
-	@ApiProperty()
+	@ApiPropertyOptional()
 	@Matches('([a-z]+-[a-z]+)')
 	@IsString()
 	@IsOptional()
 	language?: string;
 
+	@ApiProperty()
+	@IsMongoId()
+	contentId!: string;
+}
+
+export class GetH5PEditorParams {
+	@ApiProperty()
+	@IsMongoId()
+	contentId!: string;
+}
+
+export class SaveH5PEditorParams {
 	@ApiProperty()
 	@IsMongoId()
 	contentId!: string;
@@ -29,6 +42,7 @@ export class PostH5PContentParams {
 
 	@ApiProperty()
 	@IsString()
+	@SanitizeHtml()
 	@IsNotEmpty()
 	mainLibraryUbername!: string;
 }
@@ -42,11 +56,6 @@ export class PostH5PContentCreateParams {
 		params: unknown;
 		metadata: IContentMetadata;
 	};
-
-	@ApiProperty()
-	@IsObject()
-	@IsOptional()
-	metadata!: IContentMetadata;
 
 	@ApiProperty()
 	@IsString()

@@ -1,6 +1,6 @@
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import request from 'supertest';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
@@ -14,10 +14,11 @@ import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 import { H5PEditorUc } from '../../uc/h5p.uc';
 
 const setup = () => {
-	const contentId = '64c3ac73abadca6138edee47';
-	const notExistingContentId = '04c3ac73abadca6138edee47';
+	const contentId = new ObjectId(0);
+	const createContentId = 'create';
+	const notExistingContentId = new ObjectId(1);
 	const badContentId = '';
-	const id = '64c3ac73abadca6138edee47';
+	const id = '0000000';
 	const metadata: IContentMetadata = {
 		embedTypes: [],
 		language: 'de',
@@ -28,12 +29,24 @@ const setup = () => {
 		title: '123',
 	};
 
-	return { contentId, notExistingContentId, badContentId, id, metadata };
+	return { contentId, notExistingContentId, badContentId, createContentId, id, metadata };
 };
 
 class API {
 	constructor(private app: INestApplication) {
 		this.app = app;
+	}
+
+	async create() {
+		const body = {
+			params: {
+				params: {},
+				metadata: {},
+			},
+			metadata: {},
+			library: {},
+		};
+		return request(this.app.getHttpServer()).post(`/h5p-editor/edit/`).send(body);
 	}
 
 	async save(contentId: string) {
@@ -85,6 +98,31 @@ describe('H5PEditor Controller (api)', () => {
 	afterAll(async () => {
 		await app.close();
 	});
+
+	describe('create h5p content', () => {
+		beforeEach(async () => {
+			await cleanupCollections(em);
+			const school = schoolFactory.build();
+			const roles = roleFactory.buildList(1, {
+				permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
+			});
+			const user = userFactory.build({ school, roles });
+
+			await em.persistAndFlush([user, school]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+		});
+		describe('with valid request params', () => {
+			it('should return 201 status', async () => {
+				const { id, metadata } = setup();
+				const result1 = { id, metadata };
+				h5PEditorUc.createH5pContentGetMetadata.mockResolvedValueOnce(result1);
+				const response = await api.create();
+				expect(response.status).toEqual(201);
+			});
+		});
+	});
 	describe('save h5p content', () => {
 		beforeEach(async () => {
 			await cleanupCollections(em);
@@ -104,7 +142,7 @@ describe('H5PEditor Controller (api)', () => {
 				const { contentId, id, metadata } = setup();
 				const result1 = { id, metadata };
 				h5PEditorUc.saveH5pContentGetMetadata.mockResolvedValueOnce(result1);
-				const response = await api.save(contentId);
+				const response = await api.save(contentId.toString());
 				expect(response.status).toEqual(201);
 			});
 		});
@@ -112,7 +150,7 @@ describe('H5PEditor Controller (api)', () => {
 			it('should return 500 status', async () => {
 				const { notExistingContentId } = setup();
 				h5PEditorUc.saveH5pContentGetMetadata.mockRejectedValueOnce(new Error('Could not save H5P content'));
-				const response = await api.save(notExistingContentId);
+				const response = await api.save(notExistingContentId.toString());
 				expect(response.status).toEqual(500);
 			});
 		});

@@ -1,6 +1,8 @@
-import { H5PConfig, H5PPlayer, UrlGenerator } from '@lumieducation/h5p-server';
+import { H5PPlayer } from '@lumieducation/h5p-server';
 
+import { ContentStorage } from '../contentStorage/contentStorage';
 import { LibraryStorage } from '../libraryStorage/libraryStorage';
+import { h5pConfig, h5pUrlGenerator } from './config/h5p-service-config';
 import { Translator } from './h5p-translator.service';
 import { ContentStorage } from '../contentStorage/contentStorage';
 
@@ -15,16 +17,19 @@ export const H5PPlayerService = {
 
 		const urlGenerator = new UrlGenerator(config);
 
+	useFactory: (contentStorage: ContentStorage, libraryStorage: LibraryStorage) => {
 		const h5pPlayer = new H5PPlayer(
 			libraryStorage,
 			contentStorage,
-			config,
+			h5pConfig,
 			undefined,
-			urlGenerator,
+			h5pUrlGenerator,
 			await Translator.translate(),
 			undefined,
 			undefined
 		);
+
+		h5pPlayer.setRenderer((model) => model);
 
 		return h5pPlayer;
 	},
