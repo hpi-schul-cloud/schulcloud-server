@@ -1,42 +1,41 @@
 import { UnprocessableEntityException } from '@nestjs/common';
-import { CustomParameterEntryEntity } from '@src/modules/tool/common/entity';
-import {
-	BasicToolConfigEntity,
-	CustomParameterEntity,
-	ExternalToolEntity,
-	IExternalToolProperties,
-	Lti11ToolConfigEntity,
-	Oauth2ToolConfigEntity,
-} from '@src/modules/tool/external-tool/entity';
 import {
 	BasicToolConfig,
+	BasicToolConfigDO,
+	CustomParameter,
+	CustomParameterDO,
+	CustomParameterEntry,
+	CustomParameterEntryDO,
 	ExternalTool,
+	ExternalToolDO,
+	IExternalToolProperties,
 	Lti11ToolConfig,
+	Lti11ToolConfigDO,
 	Oauth2ToolConfig,
-} from '@src/modules/tool/external-tool/domain';
-import { ToolConfigType } from '@src/modules/tool/common/enum';
-import { CustomParameter, CustomParameterEntry } from '@src/modules/tool/common/domain';
+	Oauth2ToolConfigDO,
+	ToolConfigType,
+} from '@shared/domain';
 
 // TODO: maybe rename because of usage in external tool repo and school external tool repo
 export class ExternalToolRepoMapper {
-	static mapEntityToDO(entity: ExternalToolEntity): ExternalTool {
-		let config: BasicToolConfig | Oauth2ToolConfig | Lti11ToolConfig;
+	static mapEntityToDO(entity: ExternalTool): ExternalToolDO {
+		let config: BasicToolConfigDO | Oauth2ToolConfigDO | Lti11ToolConfigDO;
 		switch (entity.config.type) {
 			case ToolConfigType.BASIC:
-				config = this.mapBasicToolConfigToDO(entity.config as BasicToolConfig);
+				config = this.mapBasicToolConfigToDO(entity.config as BasicToolConfigDO);
 				break;
 			case ToolConfigType.OAUTH2:
-				config = this.mapOauth2ConfigToDO(entity.config as Oauth2ToolConfig);
+				config = this.mapOauth2ConfigToDO(entity.config as Oauth2ToolConfigDO);
 				break;
 			case ToolConfigType.LTI11:
-				config = this.mapLti11ToolConfigToDO(entity.config as Lti11ToolConfig);
+				config = this.mapLti11ToolConfigToDO(entity.config as Lti11ToolConfigDO);
 				break;
 			default:
 				/* istanbul ignore next */
 				throw new UnprocessableEntityException(`Unknown config type.`);
 		}
 
-		return new ExternalTool({
+		return new ExternalToolDO({
 			id: entity.id,
 			name: entity.name,
 			url: entity.url,
@@ -49,15 +48,15 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapBasicToolConfigToDO(lti11Config: BasicToolConfigEntity): BasicToolConfig {
-		return new BasicToolConfig({
+	static mapBasicToolConfigToDO(lti11Config: BasicToolConfig): BasicToolConfigDO {
+		return new BasicToolConfigDO({
 			type: lti11Config.type,
 			baseUrl: lti11Config.baseUrl,
 		});
 	}
 
-	static mapOauth2ConfigToDO(oauth2Config: Oauth2ToolConfigEntity): Oauth2ToolConfig {
-		return new Oauth2ToolConfig({
+	static mapOauth2ConfigToDO(oauth2Config: Oauth2ToolConfig): Oauth2ToolConfigDO {
+		return new Oauth2ToolConfigDO({
 			type: oauth2Config.type,
 			baseUrl: oauth2Config.baseUrl,
 			clientId: oauth2Config.clientId,
@@ -65,8 +64,8 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapLti11ToolConfigToDO(lti11Config: Lti11ToolConfigEntity): Lti11ToolConfig {
-		return new Lti11ToolConfig({
+	static mapLti11ToolConfigToDO(lti11Config: Lti11ToolConfig): Lti11ToolConfigDO {
+		return new Lti11ToolConfigDO({
 			type: lti11Config.type,
 			baseUrl: lti11Config.baseUrl,
 			key: lti11Config.key,
@@ -77,17 +76,17 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapDOToEntityProperties(entityDO: ExternalTool): IExternalToolProperties {
-		let config: BasicToolConfigEntity | Oauth2ToolConfigEntity | Lti11ToolConfigEntity;
+	static mapDOToEntityProperties(entityDO: ExternalToolDO): IExternalToolProperties {
+		let config: BasicToolConfig | Oauth2ToolConfig | Lti11ToolConfig;
 		switch (entityDO.config.type) {
 			case ToolConfigType.BASIC:
-				config = this.mapBasicToolConfigDOToEntity(entityDO.config as BasicToolConfig);
+				config = this.mapBasicToolConfigDOToEntity(entityDO.config as BasicToolConfigDO);
 				break;
 			case ToolConfigType.OAUTH2:
-				config = this.mapOauth2ConfigDOToEntity(entityDO.config as Oauth2ToolConfig);
+				config = this.mapOauth2ConfigDOToEntity(entityDO.config as Oauth2ToolConfigDO);
 				break;
 			case ToolConfigType.LTI11:
-				config = this.mapLti11ToolConfigDOToEntity(entityDO.config as Lti11ToolConfig);
+				config = this.mapLti11ToolConfigDOToEntity(entityDO.config as Lti11ToolConfigDO);
 				break;
 			default:
 				/* istanbul ignore next */
@@ -106,15 +105,15 @@ export class ExternalToolRepoMapper {
 		};
 	}
 
-	static mapBasicToolConfigDOToEntity(lti11Config: BasicToolConfig): BasicToolConfigEntity {
-		return new BasicToolConfigEntity({
+	static mapBasicToolConfigDOToEntity(lti11Config: BasicToolConfigDO): BasicToolConfig {
+		return new BasicToolConfig({
 			type: lti11Config.type,
 			baseUrl: lti11Config.baseUrl,
 		});
 	}
 
-	static mapOauth2ConfigDOToEntity(oauth2Config: Oauth2ToolConfig): Oauth2ToolConfigEntity {
-		return new Oauth2ToolConfigEntity({
+	static mapOauth2ConfigDOToEntity(oauth2Config: Oauth2ToolConfigDO): Oauth2ToolConfig {
+		return new Oauth2ToolConfig({
 			type: oauth2Config.type,
 			baseUrl: oauth2Config.baseUrl,
 			clientId: oauth2Config.clientId,
@@ -122,8 +121,8 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapLti11ToolConfigDOToEntity(lti11Config: Lti11ToolConfig): Lti11ToolConfigEntity {
-		return new Lti11ToolConfigEntity({
+	static mapLti11ToolConfigDOToEntity(lti11Config: Lti11ToolConfigDO): Lti11ToolConfig {
+		return new Lti11ToolConfig({
 			type: lti11Config.type,
 			baseUrl: lti11Config.baseUrl,
 			key: lti11Config.key,
@@ -134,9 +133,27 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapCustomParametersToDOs(customParameters: CustomParameterEntity[]): CustomParameter[] {
+	static mapCustomParametersToDOs(customParameters: CustomParameter[]): CustomParameterDO[] {
 		return customParameters.map(
-			(param: CustomParameterEntity) =>
+			(param: CustomParameter) =>
+				new CustomParameterDO({
+					name: param.name,
+					displayName: param.displayName,
+					description: param.description,
+					default: param.default,
+					regex: param.regex,
+					regexComment: param.regexComment,
+					scope: param.scope,
+					location: param.location,
+					type: param.type,
+					isOptional: param.isOptional,
+				})
+		);
+	}
+
+	static mapCustomParameterDOsToEntities(customParameters: CustomParameterDO[]): CustomParameter[] {
+		return customParameters.map(
+			(param: CustomParameterDO) =>
 				new CustomParameter({
 					name: param.name,
 					displayName: param.displayName,
@@ -152,38 +169,20 @@ export class ExternalToolRepoMapper {
 		);
 	}
 
-	static mapCustomParameterDOsToEntities(customParameters: CustomParameter[]): CustomParameterEntity[] {
-		return customParameters.map(
-			(param: CustomParameter) =>
-				new CustomParameterEntity({
-					name: param.name,
-					displayName: param.displayName,
-					description: param.description,
-					default: param.default,
-					regex: param.regex,
-					regexComment: param.regexComment,
-					scope: param.scope,
-					location: param.location,
-					type: param.type,
-					isOptional: param.isOptional,
-				})
-		);
-	}
-
-	static mapCustomParameterEntryEntitiesToDOs(entries: CustomParameterEntryEntity[]): CustomParameterEntry[] {
+	static mapCustomParameterEntryEntitiesToDOs(entries: CustomParameterEntry[]): CustomParameterEntryDO[] {
 		return entries.map(
-			(entry: CustomParameterEntryEntity): CustomParameterEntry =>
-				new CustomParameterEntry({
+			(entry: CustomParameterEntry): CustomParameterEntryDO =>
+				new CustomParameterEntryDO({
 					name: entry.name,
 					value: entry.value,
 				})
 		);
 	}
 
-	static mapCustomParameterEntryDOsToEntities(entries: CustomParameterEntry[]): CustomParameterEntryEntity[] {
+	static mapCustomParameterEntryDOsToEntities(entries: CustomParameterEntryDO[]): CustomParameterEntry[] {
 		return entries.map(
-			(entry: CustomParameterEntryEntity): CustomParameterEntry =>
-				new CustomParameterEntryEntity({
+			(entry: CustomParameterEntry): CustomParameterEntryDO =>
+				new CustomParameterEntry({
 					name: entry.name,
 					value: entry.value,
 				})

@@ -1,8 +1,6 @@
-import { SchoolExternalTool } from '../../../school-external-tool/domain';
-import { ExternalTool } from '../../domain';
+import { ExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
 
-export type ContextExternalToolTemplateInfo = {
-	externalTool: ExternalTool;
-
-	schoolExternalTool: SchoolExternalTool;
+export type AvailableToolsForContext = {
+	externalTool: ExternalToolDO;
+	schoolExternalTool: SchoolExternalToolDO;
 };

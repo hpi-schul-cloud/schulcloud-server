@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
+import {
+	ContextExternalToolDO,
+	CustomParameterDO,
+	CustomParameterEntryDO,
+	CustomParameterScope,
+	CustomParameterType,
+	ExternalToolDO,
+	SchoolExternalToolDO,
+} from '@shared/domain';
 import { isNaN } from 'lodash';
-import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ExternalTool } from '../../external-tool/domain';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { CustomParameter, CustomParameterEntry } from '../domain';
-import { CustomParameterScope, CustomParameterType } from '../enum';
 
 const typeCheckers: { [key in CustomParameterType]: (val: string) => boolean } = {
 	[CustomParameterType.STRING]: () => true,
@@ -17,12 +21,12 @@ const typeCheckers: { [key in CustomParameterType]: (val: string) => boolean } =
 	[CustomParameterType.AUTO_SCHOOLNUMBER]: () => true,
 };
 
-export type ValidatableTool = SchoolExternalTool | ContextExternalTool;
+export type ValidatableTool = SchoolExternalToolDO | ContextExternalToolDO;
 
 @Injectable()
 export class CommonToolValidationService {
 	public checkForDuplicateParameters(validatableTool: ValidatableTool): void {
-		const caseInsensitiveNames: string[] = validatableTool.parameters.map(({ name }: CustomParameterEntry) =>
+		const caseInsensitiveNames: string[] = validatableTool.parameters.map(({ name }: CustomParameterEntryDO) =>
 			name.toLowerCase()
 		);
 
@@ -34,7 +38,7 @@ export class CommonToolValidationService {
 		}
 	}
 
-	public checkCustomParameterEntries(loadedExternalTool: ExternalTool, validatableTool: ValidatableTool) {
+	public checkCustomParameterEntries(loadedExternalTool: ExternalToolDO, validatableTool: ValidatableTool) {
 		if (loadedExternalTool.parameters) {
 			for (const param of loadedExternalTool.parameters) {
 				this.checkScopeAndValidateParameter(validatableTool, param);
@@ -42,19 +46,19 @@ export class CommonToolValidationService {
 		}
 	}
 
-	private checkScopeAndValidateParameter(validatableTool: ValidatableTool, param: CustomParameter): void {
-		const foundEntry: CustomParameterEntry | undefined = validatableTool.parameters.find(
-			({ name }: CustomParameterEntry): boolean => name.toLowerCase() === param.name.toLowerCase()
+	private checkScopeAndValidateParameter(validatableTool: ValidatableTool, param: CustomParameterDO): void {
+		const foundEntry: CustomParameterEntryDO | undefined = validatableTool.parameters.find(
+			({ name }: CustomParameterEntryDO): boolean => name.toLowerCase() === param.name.toLowerCase()
 		);
 
-		if (param.scope === CustomParameterScope.SCHOOL && validatableTool instanceof SchoolExternalTool) {
+		if (param.scope === CustomParameterScope.SCHOOL && validatableTool instanceof SchoolExternalToolDO) {
 			this.validateParameter(param, foundEntry);
-		} else if (param.scope === CustomParameterScope.CONTEXT && validatableTool instanceof ContextExternalTool) {
+		} else if (param.scope === CustomParameterScope.CONTEXT && validatableTool instanceof ContextExternalToolDO) {
 			this.validateParameter(param, foundEntry);
 		}
 	}
 
-	private validateParameter(param: CustomParameter, foundEntry: CustomParameterEntry | undefined): void {
+	private validateParameter(param: CustomParameterDO, foundEntry: CustomParameterEntryDO | undefined): void {
 		this.checkOptionalParameter(param, foundEntry);
 		if (foundEntry) {
 			this.checkParameterType(foundEntry, param);
@@ -62,7 +66,7 @@ export class CommonToolValidationService {
 		}
 	}
 
-	private checkOptionalParameter(param: CustomParameter, foundEntry: CustomParameterEntry | undefined): void {
+	private checkOptionalParameter(param: CustomParameterDO, foundEntry: CustomParameterEntryDO | undefined): void {
 		if (!foundEntry?.value && !param.isOptional) {
 			throw new ValidationError(
 				`tool_param_required: The parameter with name ${param.name} is required but not found in the tool.`
@@ -70,7 +74,7 @@ export class CommonToolValidationService {
 		}
 	}
 
-	private checkParameterType(foundEntry: CustomParameterEntry, param: CustomParameter): void {
+	private checkParameterType(foundEntry: CustomParameterEntryDO, param: CustomParameterDO): void {
 		if (foundEntry.value !== undefined && !typeCheckers[param.type](foundEntry.value)) {
 			throw new ValidationError(
 				`tool_param_type_mismatch: The value of parameter with name ${foundEntry.name} should be of type ${param.type}.`
@@ -78,7 +82,7 @@ export class CommonToolValidationService {
 		}
 	}
 
-	private checkParameterRegex(foundEntry: CustomParameterEntry, param: CustomParameter): void {
+	private checkParameterRegex(foundEntry: CustomParameterEntryDO, param: CustomParameterDO): void {
 		if (param.regex && !new RegExp(param.regex).test(foundEntry.value ?? '')) {
 			throw new ValidationError(
 				`tool_param_value_regex: The given entry for the parameter with name ${foundEntry.name} does not fit the regex.`

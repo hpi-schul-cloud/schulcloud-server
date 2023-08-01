@@ -177,7 +177,6 @@ class DtoCreator {
 			displayColor: this.room.color,
 			title: this.room.name,
 			elements,
-			isArchived: this.room.isFinished(),
 		};
 		return dto;
 	}

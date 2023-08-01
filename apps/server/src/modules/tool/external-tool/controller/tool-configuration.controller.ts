@@ -1,5 +1,6 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import {
+	ApiBearerAuth,
 	ApiForbiddenResponse,
 	ApiFoundResponse,
 	ApiOkResponse,
@@ -7,118 +8,113 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { ExternalToolDO } from '@shared/domain';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ExternalTool } from '../domain';
-import { ToolConfigurationMapper } from '../mapper/tool-configuration.mapper';
-import { ContextExternalToolTemplateInfo, ExternalToolConfigurationUc } from '../uc';
+import { ExternalToolConfigurationUc } from '../uc';
 import {
-	ContextExternalToolConfigurationTemplateListResponse,
-	ContextExternalToolConfigurationTemplateResponse,
-	ContextExternalToolIdParams,
-	ContextRefParams,
-	SchoolExternalToolConfigurationTemplateListResponse,
-	SchoolExternalToolConfigurationTemplateResponse,
-	SchoolExternalToolIdParams,
-	SchoolIdParams,
+	ContextTypeParams,
+	ExternalToolConfigurationTemplateResponse,
+	IdParams,
+	ToolConfigurationListResponse,
+	ToolIdParams,
 } from './dto';
+import { ExternalToolResponseMapper } from '../mapper';
+import { SchoolToolConfigurationListResponse } from '../../school-external-tool/controller/dto';
+import { SchoolExternalToolResponseMapper } from '../../school-external-tool/mapper';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
 @Controller('tools')
 export class ToolConfigurationController {
-	constructor(private readonly externalToolConfigurationUc: ExternalToolConfigurationUc) {}
+	constructor(
+		private readonly externalToolConfigurationUc: ExternalToolConfigurationUc,
+		private readonly externalToolResponseMapper: ExternalToolResponseMapper
+	) {}
 
-	@Get('school/:schoolId/available-tools')
+	@Get('available/school/:id')
 	@ApiForbiddenResponse()
-	@ApiOperation({ summary: 'Lists all available tools that can be added for a given school' })
-	@ApiOkResponse({
-		description: 'List of available tools for a school',
-		type: SchoolExternalToolConfigurationTemplateListResponse,
-	})
 	public async getAvailableToolsForSchool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: SchoolIdParams
-	): Promise<SchoolExternalToolConfigurationTemplateListResponse> {
-		const availableTools: ExternalTool[] = await this.externalToolConfigurationUc.getAvailableToolsForSchool(
+		@Param() idParams: IdParams
+	): Promise<ToolConfigurationListResponse> {
+		const availableTools: ExternalToolDO[] = await this.externalToolConfigurationUc.getAvailableToolsForSchool(
 			currentUser.userId,
-			params.schoolId
+			idParams.id
 		);
 
-		const mapped: SchoolExternalToolConfigurationTemplateListResponse =
-			ToolConfigurationMapper.mapToSchoolExternalToolConfigurationTemplateListResponse(availableTools);
+		const mapped: ToolConfigurationListResponse =
+			this.externalToolResponseMapper.mapExternalToolDOsToToolConfigurationListResponse(availableTools);
 
 		return mapped;
 	}
 
-	@Get(':contextType/:contextId/available-tools')
+	@Get('available/:context/:id')
+	@ApiBearerAuth()
 	@ApiForbiddenResponse()
 	@ApiOperation({ summary: 'Lists all available tools that can be added for a given context' })
 	@ApiOkResponse({
 		description: 'List of available tools for a context',
-		type: ContextExternalToolConfigurationTemplateListResponse,
+		type: SchoolToolConfigurationListResponse,
 	})
 	public async getAvailableToolsForContext(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ContextRefParams
-	): Promise<ContextExternalToolConfigurationTemplateListResponse> {
-		const availableTools: ContextExternalToolTemplateInfo[] =
-			await this.externalToolConfigurationUc.getAvailableToolsForContext(
-				currentUser.userId,
-				currentUser.schoolId,
-				params.contextId,
-				params.contextType
-			);
-
-		const mapped: ContextExternalToolConfigurationTemplateListResponse =
-			ToolConfigurationMapper.mapToContextExternalToolConfigurationTemplateListResponse(availableTools);
-
-		return mapped;
-	}
-
-	@Get('school-external-tools/:schoolExternalToolId/configuration-template')
-	@ApiUnauthorizedResponse()
-	@ApiForbiddenResponse()
-	@ApiOperation({ summary: 'Get the latest configuration template for a School External Tool' })
-	@ApiFoundResponse({
-		description: 'Configuration template for a School External Tool',
-		type: SchoolExternalToolConfigurationTemplateResponse,
-	})
-	public async getConfigurationTemplateForSchool(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: SchoolExternalToolIdParams
-	): Promise<SchoolExternalToolConfigurationTemplateResponse> {
-		const tool: ExternalTool = await this.externalToolConfigurationUc.getTemplateForSchoolExternalTool(
+		@Param() contextParams: ContextTypeParams,
+		@Param() idParams: IdParams
+	): Promise<SchoolToolConfigurationListResponse> {
+		const availableToolsForContext = await this.externalToolConfigurationUc.getAvailableToolsForContext(
 			currentUser.userId,
-			params.schoolExternalToolId
+			currentUser.schoolId,
+			idParams.id,
+			contextParams.context
 		);
 
-		const mapped: SchoolExternalToolConfigurationTemplateResponse =
-			ToolConfigurationMapper.mapToSchoolExternalToolConfigurationTemplateResponse(tool);
+		const mapped: SchoolToolConfigurationListResponse =
+			SchoolExternalToolResponseMapper.mapExternalToolDOsToSchoolToolConfigurationListResponse(
+				availableToolsForContext
+			);
 
 		return mapped;
 	}
 
-	@Get('context-external-tools/:contextExternalToolId/configuration-template')
+	@Get(':toolId/configuration')
+	@ApiUnauthorizedResponse()
+	@ApiFoundResponse({ description: 'Configuration has been found.', type: ExternalToolConfigurationTemplateResponse })
+	public async getExternalToolForScope(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ToolIdParams
+	): Promise<ExternalToolConfigurationTemplateResponse> {
+		const externalToolDO: ExternalToolDO = await this.externalToolConfigurationUc.getExternalToolForSchool(
+			currentUser.userId,
+			params.toolId,
+			currentUser.schoolId
+		);
+
+		const mapped: ExternalToolConfigurationTemplateResponse =
+			this.externalToolResponseMapper.mapToConfigurationTemplateResponse(externalToolDO);
+
+		return mapped;
+	}
+
+	@Get(':toolId/:context/:id/configuration')
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
-	@ApiOperation({ summary: 'Get the latest configuration template for a Context External Tool' })
-	@ApiFoundResponse({
-		description: 'Configuration template for a Context External Tool',
-		type: ContextExternalToolConfigurationTemplateResponse,
-	})
-	public async getConfigurationTemplateForContext(
+	@ApiFoundResponse({ description: 'Configuration has been found.', type: ExternalToolConfigurationTemplateResponse })
+	public async getExternalToolForContext(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ContextExternalToolIdParams
-	): Promise<ContextExternalToolConfigurationTemplateResponse> {
-		const tool: ContextExternalToolTemplateInfo =
-			await this.externalToolConfigurationUc.getTemplateForContextExternalTool(
-				currentUser.userId,
-				params.contextExternalToolId
-			);
+		@Param() params: ToolIdParams,
+		@Param() contextParams: ContextTypeParams,
+		@Param() idParams: IdParams
+	): Promise<ExternalToolConfigurationTemplateResponse> {
+		const externalToolDO: ExternalToolDO = await this.externalToolConfigurationUc.getExternalToolForContext(
+			currentUser.userId,
+			params.toolId,
+			idParams.id,
+			contextParams.context
+		);
 
-		const mapped: ContextExternalToolConfigurationTemplateResponse =
-			ToolConfigurationMapper.mapToContextExternalToolConfigurationTemplateResponse(tool);
+		const mapped: ExternalToolConfigurationTemplateResponse =
+			this.externalToolResponseMapper.mapToConfigurationTemplateResponse(externalToolDO);
 
 		return mapped;
 	}

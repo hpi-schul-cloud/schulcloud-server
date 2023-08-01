@@ -4,4 +4,6 @@ export * from './school-external-tool-id.params';
 export * from './custom-parameter-entry.response';
 export * from './school-external-tool-post.params';
 export * from './school-external-tool-search.params';
+export * from './school-tool-configuration-list.response';
+export * from './school-tool-configuration-entry.response';
 export * from './school-external-tool-search-list.response';

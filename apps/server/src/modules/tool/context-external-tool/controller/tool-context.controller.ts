@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import {
+	ApiBearerAuth,
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiOkResponse,
@@ -9,14 +9,13 @@ import {
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
-import { LegacyLogger } from '@src/core/logger';
+import { ContextExternalToolDO } from '@shared/domain';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ContextExternalTool } from '../domain';
+import { LegacyLogger } from '@src/core/logger';
 import { ContextExternalToolRequestMapper, ContextExternalToolResponseMapper } from '../mapper';
-import { ContextExternalToolUc } from '../uc';
-import { ContextExternalToolDto } from '../uc/dto/context-external-tool.types';
 import {
 	ContextExternalToolContextParams,
 	ContextExternalToolIdParams,
@@ -24,6 +23,8 @@ import {
 	ContextExternalToolResponse,
 	ContextExternalToolSearchListResponse,
 } from './dto';
+import { ContextExternalToolUc } from '../uc';
+import { ContextExternalTool } from '../uc/dto/context-external-tool.types';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -45,10 +46,10 @@ export class ToolContextController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: ContextExternalToolPostParams
 	): Promise<ContextExternalToolResponse> {
-		const contextExternalTool: ContextExternalToolDto =
+		const contextExternalTool: ContextExternalTool =
 			ContextExternalToolRequestMapper.mapContextExternalToolRequest(body);
 
-		const createdTool: ContextExternalTool = await this.contextExternalToolUc.createContextExternalTool(
+		const createdTool: ContextExternalToolDO = await this.contextExternalToolUc.createContextExternalTool(
 			currentUser.userId,
 			contextExternalTool
 		);
@@ -76,6 +77,7 @@ export class ToolContextController {
 	}
 
 	@Get(':contextType/:contextId')
+	@ApiBearerAuth()
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
 	@ApiOkResponse({

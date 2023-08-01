@@ -1,25 +1,31 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CustomParameterEntry } from '@src/modules/tool/common/domain';
-import { ToolContextType } from '@src/modules/tool/common/enum';
-import { ContextExternalTool, ContextExternalToolProps } from '@src/modules/tool/context-external-tool/domain';
+import {
+	ContextExternalToolDO,
+	ContextExternalToolProps,
+	CustomParameterEntryDO,
+} from '@shared/domain/domainobject/tool';
 import { DeepPartial } from 'fishery';
+import { ToolContextType } from '@src/modules/tool/common/interface';
 import { DoBaseFactory } from '../do-base.factory';
 
-class ContextExternalToolFactory extends DoBaseFactory<ContextExternalTool, ContextExternalToolProps> {
+class ContextExternalToolDOFactory extends DoBaseFactory<ContextExternalToolDO, ContextExternalToolProps> {
 	withSchoolExternalToolRef(schoolToolId: string, schoolId?: string | undefined): this {
-		const params: DeepPartial<ContextExternalTool> = {
+		const params: DeepPartial<ContextExternalToolDO> = {
 			schoolToolRef: { schoolToolId, schoolId },
 		};
 		return this.params(params);
 	}
 }
 
-export const contextExternalToolFactory = ContextExternalToolFactory.define(ContextExternalTool, ({ sequence }) => {
-	return {
-		schoolToolRef: { schoolToolId: `schoolToolId-${sequence}`, schoolId: 'schoolId' },
-		contextRef: { id: new ObjectId().toHexString(), type: ToolContextType.COURSE },
-		displayName: 'My Course Tool 1',
-		parameters: [new CustomParameterEntry({ name: 'param', value: 'value' })],
-		toolVersion: 1,
-	};
-});
+export const contextExternalToolDOFactory = ContextExternalToolDOFactory.define(
+	ContextExternalToolDO,
+	({ sequence }) => {
+		return {
+			schoolToolRef: { schoolToolId: `schoolToolId-${sequence}`, schoolId: 'schoolId' },
+			contextRef: { id: new ObjectId().toHexString(), type: ToolContextType.COURSE },
+			displayName: 'My Course Tool 1',
+			parameters: [new CustomParameterEntryDO({ name: 'param', value: 'value' })],
+			toolVersion: 1,
+		};
+	}
+);

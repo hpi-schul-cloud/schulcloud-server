@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { ExternalToolDO } from '@shared/domain/domainobject/tool';
 import { ValidationError } from '@shared/common';
-import { ExternalTool } from '../domain';
-import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
 import { ExternalToolService } from './external-tool.service';
+import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
 
 @Injectable()
 export class ExternalToolValidationService {
@@ -11,74 +11,74 @@ export class ExternalToolValidationService {
 		private readonly externalToolParameterValidationService: ExternalToolParameterValidationService
 	) {}
 
-	async validateCreate(externalTool: ExternalTool): Promise<void> {
-		await this.externalToolParameterValidationService.validateCommon(externalTool);
+	async validateCreate(externalToolDO: ExternalToolDO): Promise<void> {
+		await this.externalToolParameterValidationService.validateCommon(externalToolDO);
 
-		await this.validateOauth2Config(externalTool);
+		await this.validateOauth2Config(externalToolDO);
 
-		this.validateLti11Config(externalTool);
+		this.validateLti11Config(externalToolDO);
 	}
 
-	private async validateOauth2Config(externalTool: ExternalTool): Promise<void> {
-		if (ExternalTool.isOauth2Config(externalTool.config)) {
-			if (!externalTool.config.clientSecret) {
+	private async validateOauth2Config(externalToolDO: ExternalToolDO): Promise<void> {
+		if (ExternalToolDO.isOauth2Config(externalToolDO.config)) {
+			if (!externalToolDO.config.clientSecret) {
 				throw new ValidationError(
-					`tool_clientSecret_missing: The Client Secret of the tool ${externalTool.name || ''} is missing.`
+					`tool_clientSecret_missing: The Client Secret of the tool ${externalToolDO.name || ''} is missing.`
 				);
 			}
 
-			if (!(await this.isClientIdUnique(externalTool))) {
+			if (!(await this.isClientIdUnique(externalToolDO))) {
 				throw new ValidationError(
-					`tool_clientId_duplicate: The Client Id of the tool ${externalTool.name || ''} is already used.`
-				);
-			}
-		}
-	}
-
-	private validateLti11Config(externalTool: ExternalTool): void {
-		if (ExternalTool.isLti11Config(externalTool.config)) {
-			if (!externalTool.config.secret) {
-				throw new ValidationError(
-					`tool_secret_missing: The secret of the LTI tool ${externalTool.name || ''} is missing.`
+					`tool_clientId_duplicate: The Client Id of the tool ${externalToolDO.name || ''} is already used.`
 				);
 			}
 		}
 	}
 
-	private async isClientIdUnique(externalTool: ExternalTool): Promise<boolean> {
-		let duplicate: ExternalTool | null = null;
-		if (ExternalTool.isOauth2Config(externalTool.config)) {
-			duplicate = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(externalTool.config.clientId);
+	private validateLti11Config(externalToolDO: ExternalToolDO): void {
+		if (ExternalToolDO.isLti11Config(externalToolDO.config)) {
+			if (!externalToolDO.config.secret) {
+				throw new ValidationError(
+					`tool_secret_missing: The secret of the LTI tool ${externalToolDO.name || ''} is missing.`
+				);
+			}
 		}
-		return duplicate == null || duplicate.id === externalTool.id;
 	}
 
-	async validateUpdate(toolId: string, externalTool: Partial<ExternalTool>): Promise<void> {
-		if (toolId !== externalTool.id) {
+	private async isClientIdUnique(externalToolDO: ExternalToolDO): Promise<boolean> {
+		let duplicate: ExternalToolDO | null = null;
+		if (ExternalToolDO.isOauth2Config(externalToolDO.config)) {
+			duplicate = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(externalToolDO.config.clientId);
+		}
+		return duplicate == null || duplicate.id === externalToolDO.id;
+	}
+
+	async validateUpdate(toolId: string, externalToolDO: Partial<ExternalToolDO>): Promise<void> {
+		if (toolId !== externalToolDO.id) {
 			throw new ValidationError(`tool_id_mismatch: The tool has no id or it does not match the path parameter.`);
 		}
 
-		await this.externalToolParameterValidationService.validateCommon(externalTool);
+		await this.externalToolParameterValidationService.validateCommon(externalToolDO);
 
-		const loadedTool: ExternalTool = await this.externalToolService.findExternalToolById(toolId);
+		const loadedTool: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
 		if (
-			ExternalTool.isOauth2Config(loadedTool.config) &&
-			externalTool.config &&
-			externalTool.config.type !== loadedTool.config.type
+			ExternalToolDO.isOauth2Config(loadedTool.config) &&
+			externalToolDO.config &&
+			externalToolDO.config.type !== loadedTool.config.type
 		) {
 			throw new ValidationError(
-				`tool_type_immutable: The Config Type of the tool ${externalTool.name || ''} is immutable.`
+				`tool_type_immutable: The Config Type of the tool ${externalToolDO.name || ''} is immutable.`
 			);
 		}
 
 		if (
-			externalTool.config &&
-			ExternalTool.isOauth2Config(externalTool.config) &&
-			ExternalTool.isOauth2Config(loadedTool.config) &&
-			externalTool.config.clientId !== loadedTool.config.clientId
+			externalToolDO.config &&
+			ExternalToolDO.isOauth2Config(externalToolDO.config) &&
+			ExternalToolDO.isOauth2Config(loadedTool.config) &&
+			externalToolDO.config.clientId !== loadedTool.config.clientId
 		) {
 			throw new ValidationError(
-				`tool_clientId_immutable: The Client Id of the tool ${externalTool.name || ''} is immutable.`
+				`tool_clientId_immutable: The Client Id of the tool ${externalToolDO.name || ''} is immutable.`
 			);
 		}
 	}

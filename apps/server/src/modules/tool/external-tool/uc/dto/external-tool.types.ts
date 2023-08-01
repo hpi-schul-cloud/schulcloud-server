@@ -1,21 +1,25 @@
-import { BasicToolConfig, Lti11ToolConfig, Oauth2ToolConfig } from '../../domain';
-import { CustomParameter } from '../../../common/domain';
+import {
+	BasicToolConfigDO,
+	CustomParameterDO,
+	Lti11ToolConfigDO,
+	Oauth2ToolConfigDO,
+} from '@shared/domain/domainobject/tool';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
-export type BasicToolConfigDto = BasicToolConfig;
+export type BasicToolConfig = BasicToolConfigDO;
 
-export type Lti11ToolConfigCreate = Lti11ToolConfig;
+export type Lti11ToolConfigCreate = Lti11ToolConfigDO;
 
-export type Lti11ToolConfigUpdate = PartialBy<Lti11ToolConfig, 'secret'>;
+export type Lti11ToolConfigUpdate = PartialBy<Lti11ToolConfigDO, 'secret'>;
 
-export type Oauth2ToolConfigCreate = Oauth2ToolConfig;
+export type Oauth2ToolConfigCreate = Oauth2ToolConfigDO;
 
-export type Oauth2ToolConfigUpdate = PartialBy<Oauth2ToolConfig, 'clientSecret'>;
+export type Oauth2ToolConfigUpdate = PartialBy<Oauth2ToolConfigDO, 'clientSecret'>;
 
-export type CustomParameterDto = CustomParameter;
+export type CustomParameter = CustomParameterDO;
 
-export type ExternalToolDto<T> = {
+export type ExternalTool<T> = {
 	name: string;
 
 	url?: string;
@@ -24,7 +28,7 @@ export type ExternalToolDto<T> = {
 
 	config: T;
 
-	parameters?: CustomParameterDto[];
+	parameters?: CustomParameter[];
 
 	isHidden: boolean;
 
@@ -33,10 +37,8 @@ export type ExternalToolDto<T> = {
 	version: number;
 };
 
-export type ExternalToolCreate = ExternalToolDto<BasicToolConfigDto | Lti11ToolConfigCreate | Oauth2ToolConfigCreate>;
+export type ExternalToolCreate = ExternalTool<BasicToolConfig | Lti11ToolConfigCreate | Oauth2ToolConfigCreate>;
 
-export type ExternalToolUpdate = ExternalToolDto<
-	BasicToolConfigDto | Lti11ToolConfigUpdate | Oauth2ToolConfigUpdate
-> & {
+export type ExternalToolUpdate = ExternalTool<BasicToolConfig | Lti11ToolConfigUpdate | Oauth2ToolConfigUpdate> & {
 	id: string;
 };

@@ -1,8 +1,7 @@
 import { Scope } from '@shared/repo/scope';
-import { EntityId } from '@shared/domain';
-import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
+import { EntityId, SchoolExternalTool } from '@shared/domain';
 
-export class SchoolExternalToolScope extends Scope<SchoolExternalToolEntity> {
+export class SchoolExternalToolScope extends Scope<SchoolExternalTool> {
 	bySchoolId(schoolId: EntityId | undefined): this {
 		if (schoolId !== undefined) {
 			this.addQuery({ school: schoolId });

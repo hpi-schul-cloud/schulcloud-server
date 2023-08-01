@@ -1,7 +1,7 @@
+import { CustomParameterLocation, ToolConfigType } from '@shared/domain';
 import { ToolLaunchRequestResponse } from '../controller/dto';
 import { LaunchRequestMethod, PropertyLocation, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import { ToolLaunchMapper } from './tool-launch.mapper';
-import { CustomParameterLocation, ToolConfigType } from '../../common/enum';
 
 describe('ToolLaunchMapper', () => {
 	describe('mapToParameterLocation', () => {

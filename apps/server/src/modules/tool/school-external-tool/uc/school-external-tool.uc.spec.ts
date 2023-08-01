@@ -1,13 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, Permission, User } from '@shared/domain';
-import { setupEntities, userFactory, schoolExternalToolFactory } from '@shared/testing';
+import { EntityId, Permission, User, SchoolExternalToolDO } from '@shared/domain';
+import { setupEntities, userFactory, schoolExternalToolDOFactory } from '@shared/testing';
 import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import { SchoolExternalToolUc } from './school-external-tool.uc';
 import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
-import { SchoolExternalTool } from '../domain';
 
 describe('SchoolExternalToolUc', () => {
 	let module: TestingModule;
@@ -58,7 +57,7 @@ describe('SchoolExternalToolUc', () => {
 	});
 
 	const setup = () => {
-		const tool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+		const tool: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
 		const user: User = userFactory.buildWithId();
 
 		return {
@@ -110,20 +109,20 @@ describe('SchoolExternalToolUc', () => {
 
 				it('should return a empty array', async () => {
 					const { user } = setup();
-					const emptyQuery: Partial<SchoolExternalTool> = {};
+					const emptyQuery: Partial<SchoolExternalToolDO> = {};
 
-					const result: SchoolExternalTool[] = await uc.findSchoolExternalTools(user.id, emptyQuery);
+					const result: SchoolExternalToolDO[] = await uc.findSchoolExternalTools(user.id, emptyQuery);
 
 					expect(result).toEqual([]);
 				});
 			});
 
 			describe('has schoolId set', () => {
-				it('should return a schoolExternalTool array', async () => {
+				it('should return a schoolExternalToolDO array', async () => {
 					const { user, tool } = setup();
 					schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([tool, tool]);
 
-					const result: SchoolExternalTool[] = await uc.findSchoolExternalTools(user.id, tool);
+					const result: SchoolExternalToolDO[] = await uc.findSchoolExternalTools(user.id, tool);
 
 					expect(result).toEqual([tool, tool]);
 				});
@@ -140,7 +139,7 @@ describe('SchoolExternalToolUc', () => {
 
 				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
-					AuthorizableReferenceType.SchoolExternalToolEntity,
+					AuthorizableReferenceType.SchoolExternalTool,
 					schoolExternalToolId,
 					{
 						action: Action.read,
@@ -216,7 +215,7 @@ describe('SchoolExternalToolUc', () => {
 
 				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
-					AuthorizableReferenceType.SchoolExternalToolEntity,
+					AuthorizableReferenceType.SchoolExternalTool,
 					schoolExternalToolId,
 					{
 						action: Action.read,
@@ -226,11 +225,11 @@ describe('SchoolExternalToolUc', () => {
 			});
 		});
 		describe('when userId and schoolExternalTool are given', () => {
-			it('should return a schoolExternalTool', async () => {
+			it('should return a schoolExternalToolDO', async () => {
 				const { user, schoolExternalToolId, tool } = setup();
 				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValue(tool);
 
-				const result: SchoolExternalTool = await uc.getSchoolExternalTool(user.id, schoolExternalToolId);
+				const result: SchoolExternalToolDO = await uc.getSchoolExternalTool(user.id, schoolExternalToolId);
 
 				expect(result).toEqual(tool);
 			});
@@ -240,7 +239,7 @@ describe('SchoolExternalToolUc', () => {
 	describe('updateSchoolExternalTool is called', () => {
 		const setupUpdate = () => {
 			const { tool, user } = setup();
-			const updatedTool: SchoolExternalTool = schoolExternalToolFactory.build({ ...tool });
+			const updatedTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({ ...tool });
 			updatedTool.parameters[0].value = 'updatedValue';
 
 			schoolExternalToolService.saveSchoolExternalTool.mockResolvedValue(updatedTool);
@@ -258,7 +257,7 @@ describe('SchoolExternalToolUc', () => {
 
 			expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 				user.id,
-				AuthorizableReferenceType.SchoolExternalToolEntity,
+				AuthorizableReferenceType.SchoolExternalTool,
 				schoolExternalToolId,
 				{
 					action: Action.read,
@@ -283,10 +282,14 @@ describe('SchoolExternalToolUc', () => {
 			expect(schoolExternalToolService.saveSchoolExternalTool).toHaveBeenCalledWith(updatedTool);
 		});
 
-		it('should return a schoolExternalTool', async () => {
+		it('should return a schoolExternalToolDO', async () => {
 			const { updatedTool, schoolExternalToolId, user } = setupUpdate();
 
-			const result: SchoolExternalTool = await uc.updateSchoolExternalTool(user.id, schoolExternalToolId, updatedTool);
+			const result: SchoolExternalToolDO = await uc.updateSchoolExternalTool(
+				user.id,
+				schoolExternalToolId,
+				updatedTool
+			);
 
 			expect(result).toEqual(updatedTool);
 		});

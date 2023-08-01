@@ -12,15 +12,13 @@ import {
 } from '@nestjs/swagger';
 import { ValidationError } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
-import { IFindOptions, Page } from '@shared/domain';
+import { ExternalToolDO, IFindOptions, Page, ToolReference } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ExternalToolSearchQuery } from '../../common/interface';
-import { ContextExternalToolContextParams } from '../../context-external-tool/controller/dto';
-import { ExternalTool, ToolReference } from '../domain';
-import { ExternalToolRequestMapper, ExternalToolResponseMapper } from '../mapper';
 import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate, ToolReferenceUc } from '../uc';
+import { ExternalToolRequestMapper, ExternalToolResponseMapper } from '../mapper';
 import {
 	ExternalToolCreateParams,
 	ExternalToolResponse,
@@ -32,6 +30,7 @@ import {
 	ToolReferenceListResponse,
 	ToolReferenceResponse,
 } from './dto';
+import { ContextExternalToolContextParams } from '../../context-external-tool/controller/dto';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -40,6 +39,7 @@ export class ToolController {
 	constructor(
 		private readonly externalToolUc: ExternalToolUc,
 		private readonly externalToolDOMapper: ExternalToolRequestMapper,
+		private readonly externalResponseMapper: ExternalToolResponseMapper,
 		private readonly toolReferenceUc: ToolReferenceUc,
 		private readonly logger: LegacyLogger
 	) {}
@@ -54,11 +54,11 @@ export class ToolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() externalToolParams: ExternalToolCreateParams
 	): Promise<ExternalToolResponse> {
-		const externalTool: ExternalToolCreate = this.externalToolDOMapper.mapCreateRequest(externalToolParams);
+		const externalToolDO: ExternalToolCreate = this.externalToolDOMapper.mapCreateRequest(externalToolParams);
 
-		const created: ExternalTool = await this.externalToolUc.createExternalTool(currentUser.userId, externalTool);
+		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(currentUser.userId, externalToolDO);
 
-		const mapped: ExternalToolResponse = ExternalToolResponseMapper.mapToExternalToolResponse(created);
+		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToExternalToolResponse(created);
 
 		this.logger.debug(`ExternalTool with id ${mapped.id} was created by user with id ${currentUser.userId}`);
 
@@ -75,15 +75,15 @@ export class ToolController {
 		@Query() pagination: PaginationParams,
 		@Query() sortingQuery: SortExternalToolParams
 	): Promise<ExternalToolSearchListResponse> {
-		const options: IFindOptions<ExternalTool> = { pagination };
+		const options: IFindOptions<ExternalToolDO> = { pagination };
 		options.order = this.externalToolDOMapper.mapSortingQueryToDomain(sortingQuery);
 		const query: ExternalToolSearchQuery =
 			this.externalToolDOMapper.mapExternalToolFilterQueryToExternalToolSearchQuery(filterQuery);
 
-		const tools: Page<ExternalTool> = await this.externalToolUc.findExternalTool(currentUser.userId, query, options);
+		const tools: Page<ExternalToolDO> = await this.externalToolUc.findExternalTool(currentUser.userId, query, options);
 
 		const dtoList: ExternalToolResponse[] = tools.data.map(
-			(tool: ExternalTool): ExternalToolResponse => ExternalToolResponseMapper.mapToExternalToolResponse(tool)
+			(tool: ExternalToolDO): ExternalToolResponse => this.externalResponseMapper.mapToExternalToolResponse(tool)
 		);
 		const response: ExternalToolSearchListResponse = new ExternalToolSearchListResponse(
 			dtoList,
@@ -100,8 +100,8 @@ export class ToolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolIdParams
 	): Promise<ExternalToolResponse> {
-		const externalTool: ExternalTool = await this.externalToolUc.getExternalTool(currentUser.userId, params.toolId);
-		const mapped: ExternalToolResponse = ExternalToolResponseMapper.mapToExternalToolResponse(externalTool);
+		const externalToolDO: ExternalToolDO = await this.externalToolUc.getExternalTool(currentUser.userId, params.toolId);
+		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToExternalToolResponse(externalToolDO);
 
 		return mapped;
 	}
@@ -117,12 +117,12 @@ export class ToolController {
 		@Body() externalToolParams: ExternalToolUpdateParams
 	): Promise<ExternalToolResponse> {
 		const externalTool: ExternalToolUpdate = this.externalToolDOMapper.mapUpdateRequest(externalToolParams);
-		const updated: ExternalTool = await this.externalToolUc.updateExternalTool(
+		const updated: ExternalToolDO = await this.externalToolUc.updateExternalTool(
 			currentUser.userId,
 			params.toolId,
 			externalTool
 		);
-		const mapped: ExternalToolResponse = ExternalToolResponseMapper.mapToExternalToolResponse(updated);
+		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToExternalToolResponse(updated);
 		this.logger.debug(`ExternalTool with id ${mapped.id} was updated by user with id ${currentUser.userId}`);
 
 		return mapped;
@@ -157,7 +157,7 @@ export class ToolController {
 		);
 
 		const toolReferenceResponses: ToolReferenceResponse[] =
-			ExternalToolResponseMapper.mapToToolReferenceResponses(toolReferences);
+			this.externalResponseMapper.mapToToolReferenceResponses(toolReferences);
 		const toolReferenceListResponse = new ToolReferenceListResponse(toolReferenceResponses);
 
 		return toolReferenceListResponse;

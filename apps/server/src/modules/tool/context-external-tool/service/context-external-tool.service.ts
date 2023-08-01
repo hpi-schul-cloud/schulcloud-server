@@ -1,10 +1,10 @@
 import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { ContextRef, EntityId } from '@shared/domain';
+import { ContextExternalToolDO } from '@shared/domain/domainobject/tool';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { AuthorizableReferenceType, AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
 import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
 import { ContextTypeMapper } from '../../common/mapper';
-import { ContextExternalTool, ContextRef } from '../domain';
 
 @Injectable()
 export class ContextExternalToolService {
@@ -14,14 +14,14 @@ export class ContextExternalToolService {
 		private readonly authorizationService: AuthorizationService
 	) {}
 
-	async findContextExternalTools(query: ContextExternalToolQuery): Promise<ContextExternalTool[]> {
-		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolRepo.find(query);
+	async findContextExternalTools(query: ContextExternalToolQuery): Promise<ContextExternalToolDO[]> {
+		const contextExternalTools: ContextExternalToolDO[] = await this.contextExternalToolRepo.find(query);
 
 		return contextExternalTools;
 	}
 
-	async getContextExternalToolById(contextExternalToolId: EntityId): Promise<ContextExternalTool> {
-		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolRepo.find({
+	async getContextExternalToolById(contextExternalToolId: EntityId): Promise<ContextExternalToolDO> {
+		const contextExternalTools: ContextExternalToolDO[] = await this.contextExternalToolRepo.find({
 			id: contextExternalToolId,
 		});
 
@@ -32,8 +32,8 @@ export class ContextExternalToolService {
 		return contextExternalTools[0];
 	}
 
-	async createContextExternalTool(contextExternalTool: ContextExternalTool): Promise<ContextExternalTool> {
-		const newContextExternalTool: ContextExternalTool = new ContextExternalTool({
+	async createContextExternalTool(contextExternalTool: ContextExternalToolDO): Promise<ContextExternalToolDO> {
+		const newContextExternalTool: ContextExternalToolDO = new ContextExternalToolDO({
 			displayName: contextExternalTool.displayName,
 			contextRef: contextExternalTool.contextRef,
 			toolVersion: contextExternalTool.toolVersion,
@@ -41,7 +41,7 @@ export class ContextExternalToolService {
 			schoolToolRef: contextExternalTool.schoolToolRef,
 		});
 
-		const createdContextExternalTool: ContextExternalTool = await this.contextExternalToolRepo.save(
+		const createdContextExternalTool: ContextExternalToolDO = await this.contextExternalToolRepo.save(
 			newContextExternalTool
 		);
 
@@ -49,7 +49,7 @@ export class ContextExternalToolService {
 	}
 
 	async deleteBySchoolExternalToolId(schoolExternalToolId: EntityId) {
-		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolRepo.find({
+		const contextExternalTools: ContextExternalToolDO[] = await this.contextExternalToolRepo.find({
 			schoolToolRef: {
 				schoolToolId: schoolExternalToolId,
 			},
@@ -58,34 +58,34 @@ export class ContextExternalToolService {
 		await this.contextExternalToolRepo.delete(contextExternalTools);
 	}
 
-	async deleteContextExternalTool(contextExternalTool: ContextExternalTool): Promise<void> {
+	async deleteContextExternalTool(contextExternalTool: ContextExternalToolDO): Promise<void> {
 		await this.contextExternalToolRepo.delete(contextExternalTool);
 	}
 
 	public async ensureContextPermissions(
 		userId: EntityId,
-		contextExternalTool: ContextExternalTool,
+		contextExternalToolDO: ContextExternalToolDO,
 		context: AuthorizationContext
 	): Promise<void> {
-		if (contextExternalTool.id) {
+		if (contextExternalToolDO.id) {
 			await this.authorizationService.checkPermissionByReferences(
 				userId,
-				AuthorizableReferenceType.ContextExternalToolEntity,
-				contextExternalTool.id,
+				AuthorizableReferenceType.ContextExternalTool,
+				contextExternalToolDO.id,
 				context
 			);
 		}
 
 		await this.authorizationService.checkPermissionByReferences(
 			userId,
-			ContextTypeMapper.mapContextTypeToAllowedAuthorizationEntityType(contextExternalTool.contextRef.type),
-			contextExternalTool.contextRef.id,
+			ContextTypeMapper.mapContextTypeToAllowedAuthorizationEntityType(contextExternalToolDO.contextRef.type),
+			contextExternalToolDO.contextRef.id,
 			context
 		);
 	}
 
-	async findAllByContext(contextRef: ContextRef): Promise<ContextExternalTool[]> {
-		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolRepo.find({
+	async findAllByContext(contextRef: ContextRef): Promise<ContextExternalToolDO[]> {
+		const contextExternalTools: ContextExternalToolDO[] = await this.contextExternalToolRepo.find({
 			context: contextRef,
 		});
 

@@ -1,4 +1,4 @@
-import { CustomParameterType } from '../../common/enum';
+import { CustomParameterType } from '@shared/domain';
 import { ParameterTypeNotImplementedLoggableException } from './parameter-type-not-implemented.loggable-exception';
 
 describe('ParameterNotImplementedLoggableException', () => {

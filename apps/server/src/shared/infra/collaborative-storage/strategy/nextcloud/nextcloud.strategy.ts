@@ -1,5 +1,5 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { Pseudonym, UserDO } from '@shared/domain/';
+import { ExternalToolDO, Pseudonym, UserDO } from '@shared/domain/';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolRepo } from '@shared/repo/ltitool/';
 import { LegacyLogger } from '@src/core/logger';
@@ -7,7 +7,6 @@ import { TeamDto, TeamUserDto } from '@src/modules/collaborative-storage';
 import { PseudonymService } from '@src/modules/pseudonym';
 import { UserService } from '@src/modules/user';
 import { ExternalToolService } from '@src/modules/tool/external-tool/service';
-import { ExternalTool } from '@src/modules/tool/external-tool/domain';
 import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
 import { ICollaborativeStorageStrategy } from '../base.interface.strategy';
 import { NextcloudClient } from './nextcloud.client';
@@ -128,7 +127,7 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 	 */
 	protected async updateTeamUsersInGroup(groupId: string, teamUsers: TeamUserDto[]): Promise<void[][]> {
 		const groupUserIds: string[] = await this.client.getGroupUsers(groupId);
-		const nextcloudTool: ExternalTool | LtiToolDO = await this.findNextcloudTool();
+		const nextcloudTool: ExternalToolDO | LtiToolDO = await this.findNextcloudTool();
 
 		let convertedTeamUserIds: string[] = await Promise.all<Promise<string>[]>(
 			// The Oauth authentication generates a pseudonym which will be used from external systems as identifier
@@ -155,8 +154,8 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 		]);
 	}
 
-	private async findNextcloudTool(): Promise<ExternalTool | LtiToolDO> {
-		const tool: ExternalTool | null = await this.externalToolService.findExternalToolByName(
+	private async findNextcloudTool(): Promise<ExternalToolDO | LtiToolDO> {
+		const tool: ExternalToolDO | null = await this.externalToolService.findExternalToolByName(
 			this.client.oidcInternalName
 		);
 

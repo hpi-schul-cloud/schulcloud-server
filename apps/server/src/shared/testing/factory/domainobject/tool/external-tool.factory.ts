@@ -1,33 +1,34 @@
-import { CustomParameter } from '@src/modules/tool/common/domain';
+import { DeepPartial } from 'fishery';
 import {
 	CustomParameterLocation,
 	CustomParameterScope,
 	CustomParameterType,
 	LtiMessageType,
 	LtiPrivacyPermission,
-	TokenEndpointAuthMethod,
 	ToolConfigType,
-} from '@src/modules/tool/common/enum';
-import {
-	BasicToolConfig,
-	ExternalTool,
+	BasicToolConfigDO,
+	CustomParameterDO,
+	ExternalToolDO,
+	Lti11ToolConfigDO,
+	Oauth2ToolConfigDO,
 	ExternalToolProps,
-	Lti11ToolConfig,
-	Oauth2ToolConfig,
-} from '@src/modules/tool/external-tool/domain';
-import { DeepPartial } from 'fishery';
+} from '@shared/domain';
+import { TokenEndpointAuthMethod } from '@src/modules/tool/common/interface';
 import { DoBaseFactory } from '../do-base.factory';
 
-export const basicToolConfigFactory = DoBaseFactory.define<BasicToolConfig, BasicToolConfig>(BasicToolConfig, () => {
-	return {
-		type: ToolConfigType.BASIC,
-		baseUrl: 'https://www.basic-baseUrl.com/',
-	};
-});
+export const basicToolConfigDOFactory = DoBaseFactory.define<BasicToolConfigDO, BasicToolConfigDO>(
+	BasicToolConfigDO,
+	() => {
+		return {
+			type: ToolConfigType.BASIC,
+			baseUrl: 'https://www.basic-baseUrl.com/',
+		};
+	}
+);
 
-class Oauth2ToolConfigFactory extends DoBaseFactory<Oauth2ToolConfig, Oauth2ToolConfig> {
-	withExternalData(oauth2Params?: DeepPartial<Oauth2ToolConfig>): this {
-		const params: DeepPartial<Oauth2ToolConfig> = {
+class Oauth2ToolConfigDOFactory extends DoBaseFactory<Oauth2ToolConfigDO, Oauth2ToolConfigDO> {
+	withExternalData(oauth2Params?: DeepPartial<Oauth2ToolConfigDO>): this {
+		const params: DeepPartial<Oauth2ToolConfigDO> = {
 			clientSecret: 'clientSecret',
 			scope: 'offline openid',
 			frontchannelLogoutUri: 'https://www.frontchannel.com/',
@@ -39,7 +40,7 @@ class Oauth2ToolConfigFactory extends DoBaseFactory<Oauth2ToolConfig, Oauth2Tool
 	}
 }
 
-export const oauth2ToolConfigFactory = Oauth2ToolConfigFactory.define(Oauth2ToolConfig, () => {
+export const oauth2ToolConfigDOFactory = Oauth2ToolConfigDOFactory.define(Oauth2ToolConfigDO, () => {
 	return {
 		type: ToolConfigType.OAUTH2,
 		baseUrl: 'https://www.oauth2-baseUrl.com/',
@@ -48,67 +49,63 @@ export const oauth2ToolConfigFactory = Oauth2ToolConfigFactory.define(Oauth2Tool
 	};
 });
 
-export const lti11ToolConfigFactory = DoBaseFactory.define<Lti11ToolConfig, Lti11ToolConfig>(Lti11ToolConfig, () => {
-	return {
-		type: ToolConfigType.LTI11,
-		baseUrl: 'https://www.lti11-baseUrl.com/',
-		key: 'key',
-		secret: 'secret',
-		privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
-		lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
-		resource_link_id: 'linkId',
-	};
-});
-
-class CustomParameterFactory extends DoBaseFactory<CustomParameter, CustomParameter> {
-	buildListWithEachType(params?: DeepPartial<CustomParameter>): CustomParameter[] {
-		const globalParameter = this.build({ ...params, scope: CustomParameterScope.GLOBAL });
-		const schoolParameter = this.build({ ...params, scope: CustomParameterScope.SCHOOL });
-		const contextParameter = this.build({ ...params, scope: CustomParameterScope.CONTEXT });
-
-		return [globalParameter, schoolParameter, contextParameter];
+export const lti11ToolConfigDOFactory = DoBaseFactory.define<Lti11ToolConfigDO, Lti11ToolConfigDO>(
+	Lti11ToolConfigDO,
+	() => {
+		return {
+			type: ToolConfigType.LTI11,
+			baseUrl: 'https://www.lti11-baseUrl.com/',
+			key: 'key',
+			secret: 'secret',
+			privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
+			lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
+			resource_link_id: 'linkId',
+		};
 	}
-}
+);
 
-export const customParameterFactory = CustomParameterFactory.define(CustomParameter, ({ sequence }) => {
-	return {
-		name: `custom-parameter-${sequence}`,
-		displayName: 'User Friendly Name',
-		type: CustomParameterType.STRING,
-		scope: CustomParameterScope.GLOBAL,
-		location: CustomParameterLocation.BODY,
-		isOptional: false,
-	};
-});
+export const customParameterDOFactory = DoBaseFactory.define<CustomParameterDO, CustomParameterDO>(
+	CustomParameterDO,
+	({ sequence }) => {
+		return {
+			name: `custom-parameter-${sequence}`,
+			displayName: 'User Friendly Name',
+			type: CustomParameterType.STRING,
+			scope: CustomParameterScope.GLOBAL,
+			location: CustomParameterLocation.BODY,
+			isOptional: false,
+		};
+	}
+);
 
-class ExternalToolFactory extends DoBaseFactory<ExternalTool, ExternalToolProps> {
-	withOauth2Config(customParam?: DeepPartial<Oauth2ToolConfig>): this {
-		const params: DeepPartial<ExternalTool> = {
-			config: oauth2ToolConfigFactory.build(customParam),
+class ExternalToolDOFactory extends DoBaseFactory<ExternalToolDO, ExternalToolProps> {
+	withOauth2Config(customParam?: DeepPartial<Oauth2ToolConfigDO>): this {
+		const params: DeepPartial<ExternalToolDO> = {
+			config: oauth2ToolConfigDOFactory.build(customParam),
 		};
 		return this.params(params);
 	}
 
-	withLti11Config(customParam?: DeepPartial<Lti11ToolConfig>): this {
-		const params: DeepPartial<ExternalTool> = {
-			config: lti11ToolConfigFactory.build(customParam),
+	withLti11Config(customParam?: DeepPartial<Lti11ToolConfigDO>): this {
+		const params: DeepPartial<ExternalToolDO> = {
+			config: lti11ToolConfigDOFactory.build(customParam),
 		};
 		return this.params(params);
 	}
 
-	withCustomParameters(number: number, customParam?: DeepPartial<CustomParameter>): this {
-		const params: DeepPartial<ExternalTool> = {
-			parameters: customParameterFactory.buildList(number, customParam),
+	withCustomParameters(number: number, customParam?: DeepPartial<CustomParameterDO>): this {
+		const params: DeepPartial<ExternalToolDO> = {
+			parameters: customParameterDOFactory.buildList(number, customParam),
 		};
 		return this.params(params);
 	}
 }
 
-export const externalToolFactory = ExternalToolFactory.define(ExternalTool, ({ sequence }) => {
+export const externalToolDOFactory = ExternalToolDOFactory.define(ExternalToolDO, ({ sequence }) => {
 	return {
 		name: `external-tool-${sequence}`,
 		url: 'https://url.com/',
-		config: basicToolConfigFactory.build(),
+		config: basicToolConfigDOFactory.build(),
 		logoUrl: 'https://logo.com/',
 		isHidden: false,
 		openNewTab: false,

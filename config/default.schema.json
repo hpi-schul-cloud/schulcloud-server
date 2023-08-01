@@ -1218,11 +1218,6 @@
 			"default": false,
 			"description": "This feature flag controls whether the outdated user accounts are displayed or not. After a migration, all user accounts which were not migrated will be marked as outdated."
 		},
-		"FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the configuration of custom parameters for context external tools"
-		},
 		"TSP_SCHOOL_SYNCER": {
 			"type": "object",
 			"description": "TSP School Syncer properties",

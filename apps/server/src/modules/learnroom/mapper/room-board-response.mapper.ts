@@ -20,7 +20,6 @@ export class RoomBoardResponseMapper {
 			title: board.title,
 			displayColor: board.displayColor,
 			elements,
-			isArchived: board.isArchived,
 		});
 
 		return mapped;

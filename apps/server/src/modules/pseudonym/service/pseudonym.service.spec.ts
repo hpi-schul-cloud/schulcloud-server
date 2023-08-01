@@ -1,10 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LtiToolDO, Pseudonym, UserDO } from '@shared/domain';
-import { externalToolFactory, ltiToolDOFactory, pseudonymFactory, userDoFactory } from '@shared/testing/factory';
+import { ExternalToolDO, LtiToolDO, Pseudonym, UserDO } from '@shared/domain';
+import { externalToolDOFactory, ltiToolDOFactory, pseudonymFactory, userDoFactory } from '@shared/testing/factory';
 import { IToolFeatures, ToolFeatures } from '@src/modules/tool/tool-config';
-import { ExternalTool } from '@src/modules/tool/external-tool/domain';
 import { PseudonymService } from './pseudonym.service';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 
@@ -56,7 +55,7 @@ describe('PseudonymService', () => {
 		describe('when user or tool is missing', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.build({ id: undefined });
-				const externalTool: ExternalTool = externalToolFactory.build({ id: undefined });
+				const externalTool: ExternalToolDO = externalToolDOFactory.build({ id: undefined });
 
 				return {
 					user,
@@ -75,7 +74,7 @@ describe('PseudonymService', () => {
 			describe('when ctl tools tab feature is enabled', () => {
 				const setup = () => {
 					const user: UserDO = userDoFactory.buildWithId();
-					const externalTool: ExternalTool = externalToolFactory.buildWithId();
+					const externalTool: ExternalToolDO = externalToolDOFactory.buildWithId();
 
 					return {
 						user,
@@ -95,7 +94,7 @@ describe('PseudonymService', () => {
 			describe('when tools feature ctl tools tab is disabled', () => {
 				const setup = () => {
 					const user: UserDO = userDoFactory.buildWithId();
-					const externalTool: ExternalTool = externalToolFactory.buildWithId();
+					const externalTool: ExternalToolDO = externalToolDOFactory.buildWithId();
 
 					toolFeatures.ctlToolsTabEnabled = false;
 
@@ -139,7 +138,7 @@ describe('PseudonymService', () => {
 			const setup = () => {
 				const pseudonym: Pseudonym = pseudonymFactory.buildWithId();
 				const user: UserDO = userDoFactory.buildWithId();
-				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+				const externalTool: ExternalToolDO = externalToolDOFactory.buildWithId();
 
 				externalToolPseudonymRepo.findByUserIdAndToolIdOrFail.mockResolvedValueOnce(pseudonym);
 
@@ -171,7 +170,7 @@ describe('PseudonymService', () => {
 			const setup = () => {
 				externalToolPseudonymRepo.findByUserIdAndToolIdOrFail.mockRejectedValueOnce(new NotFoundException());
 				const user: UserDO = userDoFactory.buildWithId();
-				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+				const externalTool: ExternalToolDO = externalToolDOFactory.buildWithId();
 
 				return {
 					user,
@@ -193,7 +192,7 @@ describe('PseudonymService', () => {
 		describe('when user or tool is missing', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.build({ id: undefined });
-				const externalTool: ExternalTool = externalToolFactory.build({ id: undefined });
+				const externalTool: ExternalToolDO = externalToolDOFactory.build({ id: undefined });
 
 				return {
 					user,
@@ -213,7 +212,7 @@ describe('PseudonymService', () => {
 		describe('when tool parameter is an ExternalToolDO', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.buildWithId();
-				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+				const externalTool: ExternalToolDO = externalToolDOFactory.buildWithId();
 
 				return {
 					user,
@@ -254,7 +253,7 @@ describe('PseudonymService', () => {
 			const setup = () => {
 				const pseudonym: Pseudonym = pseudonymFactory.buildWithId();
 				const user: UserDO = userDoFactory.buildWithId();
-				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+				const externalTool: ExternalToolDO = externalToolDOFactory.buildWithId();
 
 				externalToolPseudonymRepo.findByUserIdAndToolId.mockResolvedValueOnce(pseudonym);
 
@@ -283,7 +282,7 @@ describe('PseudonymService', () => {
 			const setup = () => {
 				const pseudonym: Pseudonym = pseudonymFactory.buildWithId();
 				const user: UserDO = userDoFactory.buildWithId();
-				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+				const externalTool: ExternalToolDO = externalToolDOFactory.buildWithId();
 
 				externalToolPseudonymRepo.findByUserIdAndToolId.mockResolvedValueOnce(null);
 				externalToolPseudonymRepo.createOrUpdate.mockResolvedValueOnce(pseudonym);

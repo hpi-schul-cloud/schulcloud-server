@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
+import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/tool/school-external-tool.do';
 import { ICurrentUser } from '@src/modules/authentication';
 import { LegacyLogger } from '@src/core/logger';
-import { SchoolExternalTool } from '../domain';
 import { ToolSchoolController } from './tool-school.controller';
 import { SchoolExternalToolUc } from '../uc';
 import { SchoolExternalToolResponseMapper, SchoolExternalToolRequestMapper } from '../mapper';
@@ -77,14 +77,14 @@ describe('ToolSchoolController', () => {
 			],
 		};
 
-		const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+		const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
 
 		return {
 			currentUser,
 			searchParams,
 			idParams,
 			createParams,
-			schoolExternalTool,
+			schoolExternalToolDO,
 		};
 	};
 
@@ -102,12 +102,12 @@ describe('ToolSchoolController', () => {
 
 			it('should call the response mapper', async () => {
 				const { currentUser, searchParams } = setup();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-				schoolExternalToolUc.findSchoolExternalTools.mockResolvedValue([schoolExternalTool]);
+				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
+				schoolExternalToolUc.findSchoolExternalTools.mockResolvedValue([schoolExternalToolDO]);
 
 				await controller.getSchoolExternalTools(currentUser, searchParams);
 
-				expect(schoolExternalToolResponseMapper.mapToSearchListResponse).toHaveBeenCalledWith([schoolExternalTool]);
+				expect(schoolExternalToolResponseMapper.mapToSearchListResponse).toHaveBeenCalledWith([schoolExternalToolDO]);
 			});
 
 			it('should return a schoolExternalToolSearchListResponse', async () => {
@@ -164,32 +164,32 @@ describe('ToolSchoolController', () => {
 			});
 
 			it('should call the uc', async () => {
-				const { currentUser, createParams, schoolExternalTool } = setup();
-				schoolExternalToolRequestMapper.mapSchoolExternalToolRequest.mockReturnValue(schoolExternalTool);
+				const { currentUser, createParams, schoolExternalToolDO } = setup();
+				schoolExternalToolRequestMapper.mapSchoolExternalToolRequest.mockReturnValue(schoolExternalToolDO);
 
 				await controller.createSchoolExternalTool(currentUser, createParams);
 
 				expect(schoolExternalToolUc.createSchoolExternalTool).toHaveBeenCalledWith(
 					currentUser.userId,
-					schoolExternalTool
+					schoolExternalToolDO
 				);
 			});
 
 			it('should call the schoolExternalToolRequestMapper', async () => {
-				const { currentUser, createParams, schoolExternalTool } = setup();
-				schoolExternalToolUc.createSchoolExternalTool.mockResolvedValue(schoolExternalTool);
+				const { currentUser, createParams, schoolExternalToolDO } = setup();
+				schoolExternalToolUc.createSchoolExternalTool.mockResolvedValue(schoolExternalToolDO);
 
 				await controller.createSchoolExternalTool(currentUser, createParams);
 
 				expect(schoolExternalToolResponseMapper.mapToSchoolExternalToolResponse).toHaveBeenCalledWith(
-					schoolExternalTool
+					schoolExternalToolDO
 				);
 			});
 
 			it('should return a schoolExternalToolResponse', async () => {
-				const { currentUser, createParams, schoolExternalTool } = setup();
-				schoolExternalToolRequestMapper.mapSchoolExternalToolRequest.mockReturnValue(schoolExternalTool);
-				schoolExternalToolUc.createSchoolExternalTool.mockResolvedValue(schoolExternalTool);
+				const { currentUser, createParams, schoolExternalToolDO } = setup();
+				schoolExternalToolRequestMapper.mapSchoolExternalToolRequest.mockReturnValue(schoolExternalToolDO);
+				schoolExternalToolUc.createSchoolExternalTool.mockResolvedValue(schoolExternalToolDO);
 				schoolExternalToolResponseMapper.mapToSchoolExternalToolResponse.mockReturnValue({
 					name: 'name',
 					parameters: [],

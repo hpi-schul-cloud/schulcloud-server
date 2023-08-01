@@ -2,18 +2,30 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, EntityId, SchoolDO } from '@shared/domain';
+import {
+	ContextExternalToolDO,
+	Course,
+	CustomParameterEntryDO,
+	CustomParameterLocation,
+	CustomParameterScope,
+	CustomParameterType,
+	EntityId,
+	ExternalToolDO,
+	SchoolDO,
+	SchoolExternalToolDO,
+} from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
 import {
-	contextExternalToolFactory,
+	contextExternalToolDOFactory,
 	courseFactory,
-	customParameterFactory,
-	externalToolFactory,
+	customParameterDOFactory,
+	externalToolDOFactory,
 	schoolDOFactory,
-	schoolExternalToolFactory,
+	schoolExternalToolDOFactory,
 	setupEntities,
 } from '@shared/testing';
 import { SchoolService } from '@src/modules/school';
+import { ToolContextType } from '../../../common/interface';
 import { MissingToolParameterValueLoggableException, ParameterTypeNotImplementedLoggableException } from '../../error';
 import {
 	LaunchRequestMethod,
@@ -25,16 +37,6 @@ import {
 } from '../../types';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
-import {
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	ToolContextType,
-} from '../../../common/enum';
-import { ExternalTool } from '../../../external-tool/domain';
-import { CustomParameterEntry } from '../../../common/domain';
-import { SchoolExternalTool } from '../../../school-external-tool/domain';
-import { ContextExternalTool } from '../../../context-external-tool/domain';
 
 const concreteConfigParameter: PropertyData = {
 	location: PropertyLocation.QUERY,
@@ -108,51 +110,51 @@ describe('AbstractLaunchStrategy', () => {
 				const schoolId: string = new ObjectId().toHexString();
 
 				// External Tool
-				const globalCustomParameter = customParameterFactory.build({
+				const globalCustomParameter = customParameterDOFactory.build({
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.PATH,
 					default: 'value',
 					name: 'globalParam',
 					type: CustomParameterType.STRING,
 				});
-				const schoolCustomParameter = customParameterFactory.build({
+				const schoolCustomParameter = customParameterDOFactory.build({
 					scope: CustomParameterScope.SCHOOL,
 					location: CustomParameterLocation.BODY,
 					name: 'schoolParam',
 					type: CustomParameterType.BOOLEAN,
 				});
-				const contextCustomParameter = customParameterFactory.build({
+				const contextCustomParameter = customParameterDOFactory.build({
 					scope: CustomParameterScope.CONTEXT,
 					location: CustomParameterLocation.QUERY,
 					name: 'contextParam',
 					type: CustomParameterType.NUMBER,
 				});
-				const autoSchoolIdCustomParameter = customParameterFactory.build({
+				const autoSchoolIdCustomParameter = customParameterDOFactory.build({
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.BODY,
 					name: 'autoSchoolIdParam',
 					type: CustomParameterType.AUTO_SCHOOLID,
 				});
-				const autoCourseIdCustomParameter = customParameterFactory.build({
+				const autoCourseIdCustomParameter = customParameterDOFactory.build({
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.BODY,
 					name: 'autoCourseIdParam',
 					type: CustomParameterType.AUTO_CONTEXTID,
 				});
-				const autoCourseNameCustomParameter = customParameterFactory.build({
+				const autoCourseNameCustomParameter = customParameterDOFactory.build({
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.BODY,
 					name: 'autoCourseNameParam',
 					type: CustomParameterType.AUTO_CONTEXTNAME,
 				});
-				const autoSchoolNumberCustomParameter = customParameterFactory.build({
+				const autoSchoolNumberCustomParameter = customParameterDOFactory.build({
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.BODY,
 					name: 'autoSchoolNumberParam',
 					type: CustomParameterType.AUTO_SCHOOLNUMBER,
 				});
 
-				const externalTool: ExternalTool = externalToolFactory.build({
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
 					parameters: [
 						globalCustomParameter,
 						schoolCustomParameter,
@@ -165,21 +167,21 @@ describe('AbstractLaunchStrategy', () => {
 				});
 
 				// School External Tool
-				const schoolParameterEntry: CustomParameterEntry = new CustomParameterEntry({
+				const schoolParameterEntry: CustomParameterEntryDO = new CustomParameterEntryDO({
 					name: schoolCustomParameter.name,
 					value: 'true',
 				});
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
 					parameters: [schoolParameterEntry],
 					schoolId,
 				});
 
 				// Context External Tool
-				const contextParameterEntry: CustomParameterEntry = new CustomParameterEntry({
+				const contextParameterEntry: CustomParameterEntryDO = new CustomParameterEntryDO({
 					name: contextCustomParameter.name,
 					value: 'anyValue2',
 				});
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build({
 					parameters: [contextParameterEntry],
 				});
 
@@ -195,7 +197,7 @@ describe('AbstractLaunchStrategy', () => {
 					{
 						name: 'testName',
 					},
-					contextExternalTool.contextRef.id
+					contextExternalToolDO.contextRef.id
 				);
 
 				schoolService.getSchoolById.mockResolvedValue(school);
@@ -220,9 +222,9 @@ describe('AbstractLaunchStrategy', () => {
 					autoSchoolNumberCustomParameter,
 					schoolParameterEntry,
 					contextParameterEntry,
-					externalTool,
-					schoolExternalTool,
-					contextExternalTool,
+					externalToolDO,
+					schoolExternalToolDO,
+					contextExternalToolDO,
 					course,
 					school,
 					sortFn,
@@ -239,23 +241,23 @@ describe('AbstractLaunchStrategy', () => {
 					autoCourseNameCustomParameter,
 					autoSchoolNumberCustomParameter,
 					schoolParameterEntry,
-					externalTool,
-					schoolExternalTool,
-					contextExternalTool,
+					externalToolDO,
+					schoolExternalToolDO,
+					contextExternalToolDO,
 					course,
 					school,
 					sortFn,
 				} = setup();
 
 				const result: ToolLaunchData = await launchStrategy.createLaunchData('userId', {
-					externalTool,
-					schoolExternalTool,
-					contextExternalTool,
+					externalToolDO,
+					schoolExternalToolDO,
+					contextExternalToolDO,
 				});
 
 				result.properties = result.properties.sort(sortFn);
 				expect(result).toEqual<ToolLaunchData>({
-					baseUrl: externalTool.config.baseUrl,
+					baseUrl: externalToolDO.config.baseUrl,
 					type: ToolLaunchDataType.BASIC,
 					openNewTab: false,
 					properties: [
@@ -306,36 +308,36 @@ describe('AbstractLaunchStrategy', () => {
 
 		describe('when no parameters were defined', () => {
 			const setup = () => {
-				const externalTool: ExternalTool = externalToolFactory.build({
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
 					parameters: [],
 				});
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
 					parameters: [],
 				});
 
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build({
 					parameters: [],
 				});
 
 				return {
-					externalTool,
-					schoolExternalTool,
-					contextExternalTool,
+					externalToolDO,
+					schoolExternalToolDO,
+					contextExternalToolDO,
 				};
 			};
 
 			it('should return a ToolLaunchData with no custom parameters', async () => {
-				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
+				const { externalToolDO, schoolExternalToolDO, contextExternalToolDO } = setup();
 
 				const result: ToolLaunchData = await launchStrategy.createLaunchData('userId', {
-					externalTool,
-					schoolExternalTool,
-					contextExternalTool,
+					externalToolDO,
+					schoolExternalToolDO,
+					contextExternalToolDO,
 				});
 
 				expect(result).toEqual<ToolLaunchData>({
-					baseUrl: externalTool.config.baseUrl,
+					baseUrl: externalToolDO.config.baseUrl,
 					type: ToolLaunchDataType.BASIC,
 					openNewTab: false,
 					properties: [
@@ -351,21 +353,21 @@ describe('AbstractLaunchStrategy', () => {
 
 		describe('when a parameter has no value, but is required', () => {
 			const setup = () => {
-				const autoSchoolNumberCustomParameter = customParameterFactory.build({
+				const autoSchoolNumberCustomParameter = customParameterDOFactory.build({
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.BODY,
 					name: 'autoSchoolNumberParam',
 					type: CustomParameterType.AUTO_SCHOOLNUMBER,
 				});
-				const externalTool: ExternalTool = externalToolFactory.build({
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
 					parameters: [autoSchoolNumberCustomParameter],
 				});
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
 					parameters: [],
 				});
 
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build({
 					parameters: [],
 				});
 
@@ -376,20 +378,20 @@ describe('AbstractLaunchStrategy', () => {
 				schoolService.getSchoolById.mockResolvedValue(school);
 
 				return {
-					externalTool,
-					schoolExternalTool,
-					contextExternalTool,
+					externalToolDO,
+					schoolExternalToolDO,
+					contextExternalToolDO,
 				};
 			};
 
 			it('should throw a MissingToolParameterValueLoggableException', async () => {
-				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
+				const { externalToolDO, schoolExternalToolDO, contextExternalToolDO } = setup();
 
 				const func = async () =>
 					launchStrategy.createLaunchData('userId', {
-						externalTool,
-						schoolExternalTool,
-						contextExternalTool,
+						externalToolDO,
+						schoolExternalToolDO,
+						contextExternalToolDO,
 					});
 
 				await expect(func).rejects.toThrow(MissingToolParameterValueLoggableException);
@@ -398,39 +400,39 @@ describe('AbstractLaunchStrategy', () => {
 
 		describe('when a parameter type is not implemented ', () => {
 			const setup = () => {
-				const customParameterWithUnknownType = customParameterFactory.build({
+				const customParameterWithUnknownType = customParameterDOFactory.build({
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.BODY,
 					name: 'unknownTypeParam',
 					type: 'unknownType' as unknown as CustomParameterType,
 				});
-				const externalTool: ExternalTool = externalToolFactory.build({
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
 					parameters: [customParameterWithUnknownType],
 				});
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
 					parameters: [],
 				});
 
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build({
 					parameters: [],
 				});
 
 				return {
-					externalTool,
-					schoolExternalTool,
-					contextExternalTool,
+					externalToolDO,
+					schoolExternalToolDO,
+					contextExternalToolDO,
 				};
 			};
 
 			it('should throw a ParameterNotImplementedLoggableException', async () => {
-				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
+				const { externalToolDO, schoolExternalToolDO, contextExternalToolDO } = setup();
 
 				const func = async () =>
 					launchStrategy.createLaunchData('userId', {
-						externalTool,
-						schoolExternalTool,
-						contextExternalTool,
+						externalToolDO,
+						schoolExternalToolDO,
+						contextExternalToolDO,
 					});
 
 				await expect(func).rejects.toThrow(ParameterTypeNotImplementedLoggableException);
@@ -439,21 +441,21 @@ describe('AbstractLaunchStrategy', () => {
 
 		describe('when a lookup for a context name is not implemented', () => {
 			const setup = () => {
-				const customParameterWithUnknownType = customParameterFactory.build({
+				const customParameterWithUnknownType = customParameterDOFactory.build({
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.BODY,
 					name: 'autoContextNameParam',
 					type: CustomParameterType.AUTO_CONTEXTNAME,
 				});
-				const externalTool: ExternalTool = externalToolFactory.build({
+				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
 					parameters: [customParameterWithUnknownType],
 				});
 
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
 					parameters: [],
 				});
 
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build({
 					contextRef: {
 						id: new ObjectId().toHexString(),
 						type: 'unknownContext' as unknown as ToolContextType,
@@ -462,20 +464,20 @@ describe('AbstractLaunchStrategy', () => {
 				});
 
 				return {
-					externalTool,
-					schoolExternalTool,
-					contextExternalTool,
+					externalToolDO,
+					schoolExternalToolDO,
+					contextExternalToolDO,
 				};
 			};
 
 			it('should throw a ParameterNotImplementedLoggableException', async () => {
-				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
+				const { externalToolDO, schoolExternalToolDO, contextExternalToolDO } = setup();
 
 				const func = async () =>
 					launchStrategy.createLaunchData('userId', {
-						externalTool,
-						schoolExternalTool,
-						contextExternalTool,
+						externalToolDO,
+						schoolExternalToolDO,
+						contextExternalToolDO,
 					});
 
 				await expect(func).rejects.toThrow(ParameterTypeNotImplementedLoggableException);

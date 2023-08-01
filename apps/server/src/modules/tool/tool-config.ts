@@ -5,13 +5,11 @@ export const ToolFeatures = Symbol('ToolFeatures');
 export interface IToolFeatures {
 	ctlToolsTabEnabled: boolean;
 	ltiToolsTabEnabled: boolean;
-	contextConfigurationEnabled: boolean;
 }
 
 export default class ToolConfiguration {
 	static toolFeatures: IToolFeatures = {
 		ctlToolsTabEnabled: Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED') as boolean,
 		ltiToolsTabEnabled: Configuration.get('FEATURE_LTI_TOOLS_TAB_ENABLED') as boolean,
-		contextConfigurationEnabled: Configuration.get('FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED') as boolean,
 	};
 }

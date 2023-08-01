@@ -1,5 +1,12 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import {
+	ContextExternalToolDO,
+	EntityId,
+	ExternalToolDO,
+	SchoolExternalToolDO,
+	ToolConfigurationStatus,
+} from '@shared/domain';
+import { ToolConfigType } from '../../common/interface';
 import { CommonToolService } from '../../common/service';
 import { ToolLaunchMapper } from '../mapper';
 import { ToolLaunchData, ToolLaunchRequest } from '../types';
@@ -12,10 +19,6 @@ import {
 import { ToolStatusOutdatedLoggableException } from '../error';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ExternalToolService } from '../../external-tool/service';
-import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
-import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ExternalTool } from '../../external-tool/domain';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
 
 @Injectable()
 export class ToolLaunchService {
@@ -48,23 +51,23 @@ export class ToolLaunchService {
 		return launchRequest;
 	}
 
-	async getLaunchData(userId: EntityId, contextExternalTool: ContextExternalTool): Promise<ToolLaunchData> {
-		const schoolExternalToolId: EntityId = contextExternalTool.schoolToolRef.schoolToolId;
+	async getLaunchData(userId: EntityId, contextExternalToolDO: ContextExternalToolDO): Promise<ToolLaunchData> {
+		const schoolExternalToolId: EntityId = contextExternalToolDO.schoolToolRef.schoolToolId;
 
-		const { externalTool, schoolExternalTool } = await this.loadToolHierarchy(schoolExternalToolId);
+		const { externalToolDO, schoolExternalToolDO } = await this.loadToolHierarchy(schoolExternalToolId);
 
-		this.isToolStatusLatestOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
+		this.isToolStatusLatestOrThrow(userId, externalToolDO, schoolExternalToolDO, contextExternalToolDO);
 
-		const strategy: IToolLaunchStrategy | undefined = this.strategies.get(externalTool.config.type);
+		const strategy: IToolLaunchStrategy | undefined = this.strategies.get(externalToolDO.config.type);
 
 		if (!strategy) {
 			throw new InternalServerErrorException('Unknown tool config type');
 		}
 
 		const launchData: ToolLaunchData = await strategy.createLaunchData(userId, {
-			externalTool,
-			schoolExternalTool,
-			contextExternalTool,
+			externalToolDO,
+			schoolExternalToolDO,
+			contextExternalToolDO,
 		});
 
 		return launchData;
@@ -72,32 +75,34 @@ export class ToolLaunchService {
 
 	private async loadToolHierarchy(
 		schoolExternalToolId: string
-	): Promise<{ schoolExternalTool: SchoolExternalTool; externalTool: ExternalTool }> {
-		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.getSchoolExternalToolById(
+	): Promise<{ schoolExternalToolDO: SchoolExternalToolDO; externalToolDO: ExternalToolDO }> {
+		const schoolExternalToolDO: SchoolExternalToolDO = await this.schoolExternalToolService.getSchoolExternalToolById(
 			schoolExternalToolId
 		);
 
-		const externalTool: ExternalTool = await this.externalToolService.findExternalToolById(schoolExternalTool.toolId);
+		const externalToolDO: ExternalToolDO = await this.externalToolService.findExternalToolById(
+			schoolExternalToolDO.toolId
+		);
 
 		return {
-			schoolExternalTool,
-			externalTool,
+			schoolExternalToolDO,
+			externalToolDO,
 		};
 	}
 
 	private isToolStatusLatestOrThrow(
 		userId: EntityId,
-		externalTool: ExternalTool,
-		schoolExternalTool: SchoolExternalTool,
-		contextExternalTool: ContextExternalTool
+		externalToolDO: ExternalToolDO,
+		schoolExternalToolDO: SchoolExternalToolDO,
+		contextExternalToolDO: ContextExternalToolDO
 	): void {
 		const status: ToolConfigurationStatus = this.commonToolService.determineToolConfigurationStatus(
-			externalTool,
-			schoolExternalTool,
-			contextExternalTool
+			externalToolDO,
+			schoolExternalToolDO,
+			contextExternalToolDO
 		);
 		if (status !== ToolConfigurationStatus.LATEST) {
-			throw new ToolStatusOutdatedLoggableException(userId, contextExternalTool.id ?? '');
+			throw new ToolStatusOutdatedLoggableException(userId, contextExternalToolDO.id ?? '');
 		}
 	}
 }

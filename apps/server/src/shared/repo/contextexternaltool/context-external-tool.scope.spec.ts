@@ -1,7 +1,7 @@
-import { schoolExternalToolEntityFactory } from '@shared/testing';
-import { ToolContextType } from '@src/modules/tool/common/enum';
-import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
+import { SchoolExternalTool } from '@shared/domain';
+import { schoolExternalToolFactory } from '@shared/testing';
 import { ContextExternalToolScope } from './context-external-tool.scope';
+import { ToolContextType } from '../../../modules/tool/common/interface';
 
 describe('CourseExternalToolScope', () => {
 	let scope: ContextExternalToolScope;
@@ -21,11 +21,11 @@ describe('CourseExternalToolScope', () => {
 
 		describe('when id parameter is defined', () => {
 			it('should return scope with added id to query', () => {
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 
-				scope.byId(schoolExternalToolEntity.id);
+				scope.byId(schoolExternalTool.id);
 
-				expect(scope.query).toEqual({ id: schoolExternalToolEntity.id });
+				expect(scope.query).toEqual({ id: schoolExternalTool.id });
 			});
 		});
 	});
@@ -40,11 +40,11 @@ describe('CourseExternalToolScope', () => {
 
 		describe('when schoolToolId parameter is defined', () => {
 			it('should return scope with added schoolToolId to query', () => {
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 
-				scope.bySchoolToolId(schoolExternalToolEntity.id);
+				scope.bySchoolToolId(schoolExternalTool.id);
 
-				expect(scope.query).toEqual({ schoolTool: schoolExternalToolEntity.id });
+				expect(scope.query).toEqual({ schoolTool: schoolExternalTool.id });
 			});
 		});
 	});
@@ -59,11 +59,11 @@ describe('CourseExternalToolScope', () => {
 
 		describe('when contextId parameter is defined', () => {
 			it('should return scope with added contextId to query', () => {
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 
-				scope.byContextId(schoolExternalToolEntity.id);
+				scope.byContextId(schoolExternalTool.id);
 
-				expect(scope.query).toEqual({ contextId: schoolExternalToolEntity.id });
+				expect(scope.query).toEqual({ contextId: schoolExternalTool.id });
 			});
 		});
 	});

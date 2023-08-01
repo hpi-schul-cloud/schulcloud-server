@@ -24,8 +24,8 @@ export class RoomsUc {
 
 		await this.roomsService.updateBoard(board, roomId, userId);
 
-		const roomBoardDTO = this.factory.createDTO({ room: course, board, user });
-		return roomBoardDTO;
+		const dto = this.factory.createDTO({ room: course, board, user });
+		return dto;
 	}
 
 	async updateVisibilityOfBoardElement(
