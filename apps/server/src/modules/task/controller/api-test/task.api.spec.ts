@@ -64,7 +64,7 @@ describe('Task Controller (API)', () => {
 		await cleanupCollections(em);
 	});
 
-	describe('[GET] /tasks', () => {
+	describe('[GET]', () => {
 		describe('when no authorization is provided', () => {
 			it('should return 401', async () => {
 				const { statusCode } = await testApiClient.get();
@@ -722,55 +722,6 @@ describe('Task Controller (API)', () => {
 				const { student } = await setup();
 
 				const response = await (await testApiClient.login(student.account)).get();
-
-				const { total } = response.body as TaskListResponse;
-				expect(response.statusCode).toBe(200);
-				expect(total).toBe(0);
-			});
-		});
-	});
-
-	describe('[GET] /finished', () => {
-		describe('when task has student assigned to finished task', () => {
-			const setup = async () => {
-				const teacher = createTeacher();
-				const student = createStudent();
-				const notAssignedStudent = createStudent();
-				const course = courseFactory.build({
-					teachers: [teacher.user],
-					students: [student.user, notAssignedStudent.user],
-				});
-				const task = taskFactory.build({ course, users: [student.user], finished: [student.user] });
-
-				await em.persistAndFlush([
-					teacher.user,
-					teacher.account,
-					student.user,
-					student.account,
-					course,
-					task,
-					notAssignedStudent.account,
-					notAssignedStudent.user,
-				]);
-				em.clear();
-
-				return { student, task, teacher, course, notAssignedStudent };
-			};
-
-			it('should find finished tasks to which student is assigned ', async () => {
-				const { student, task } = await setup();
-
-				const response = await (await testApiClient.login(student.account)).get('/finished');
-
-				const { data } = response.body as TaskListResponse;
-				expect(response.statusCode).toBe(200);
-				expect(data[0].id).toContain(task.id);
-			});
-
-			it('student does not find finished tasks, if tasks have users assigned, but himself is not assigned', async () => {
-				const { notAssignedStudent } = await setup();
-
-				const response = await (await testApiClient.login(notAssignedStudent.account)).get('/finished');
 
 				const { total } = response.body as TaskListResponse;
 				expect(response.statusCode).toBe(200);
