@@ -3,6 +3,7 @@ import { H5PEditor, H5PPlayer } from '@lumieducation/h5p-server';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
+import { UserRepo } from '@shared/repo';
 import { H5PAjaxEndpointService } from '../service';
 import { H5PEditorUc } from './h5p.uc';
 
@@ -44,6 +45,10 @@ describe('save or create H5P content', () => {
 				{
 					provide: H5PPlayer,
 					useValue: createMock<H5PPlayer>(),
+				},
+				{
+					provide: UserRepo,
+					useValue: createMock<UserRepo>(),
 				},
 			],
 		}).compile();

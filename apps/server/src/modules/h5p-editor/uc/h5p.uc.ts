@@ -326,7 +326,7 @@ export class H5PEditorUc {
 	private async getUserLanguage(currentUser: ICurrentUser): Promise<string> {
 		const languageUser = await this.userRepo.findById(currentUser.userId);
 		let language = 'de';
-		if (languageUser.language) {
+		if (languageUser && languageUser.language) {
 			language = languageUser.language.toString();
 		}
 		return language;

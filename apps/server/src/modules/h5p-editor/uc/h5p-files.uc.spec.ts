@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { Request } from 'express';
 import { Readable } from 'stream';
+import { UserRepo } from '@shared/repo';
 import { H5PEditorUc } from './h5p.uc';
 import { ContentStorage } from '../contentStorage/contentStorage';
 import { LibraryStorage } from '../libraryStorage/libraryStorage';
@@ -35,6 +36,10 @@ describe('H5P Files', () => {
 				{
 					provide: TemporaryFileStorage,
 					useValue: createMock<TemporaryFileStorage>(),
+				},
+				{
+					provide: UserRepo,
+					useValue: createMock<UserRepo>(),
 				},
 			],
 		}).compile();

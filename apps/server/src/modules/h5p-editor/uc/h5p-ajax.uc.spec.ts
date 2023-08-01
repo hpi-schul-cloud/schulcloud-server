@@ -3,6 +3,7 @@ import { H5PAjaxEndpoint, H5PEditor, H5PPlayer, H5pError } from '@lumieducation/
 import { HttpException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
+import { UserRepo } from '@shared/repo';
 import { H5PEditorUc } from './h5p.uc';
 
 describe('H5P Ajax', () => {
@@ -25,6 +26,10 @@ describe('H5P Ajax', () => {
 				{
 					provide: H5PAjaxEndpoint,
 					useValue: createMock<H5PAjaxEndpoint>(),
+				},
+				{
+					provide: UserRepo,
+					useValue: createMock<UserRepo>(),
 				},
 			],
 		}).compile();
@@ -57,7 +62,7 @@ describe('H5P Ajax', () => {
 
 			ajaxEndpoint.getAjax.mockResolvedValueOnce(dummyResponse);
 
-			const result = await uc.getAjax({ action: 'content-type-cache', language: 'de' }, userMock);
+			const result = await uc.getAjax({ action: 'content-type-cache' }, userMock);
 
 			expect(result).toBe(dummyResponse);
 			expect(ajaxEndpoint.getAjax).toHaveBeenCalledWith(
@@ -65,7 +70,7 @@ describe('H5P Ajax', () => {
 				undefined, // MachineName
 				undefined, // MajorVersion
 				undefined, // MinorVersion
-				'de',
+				'function () {\n        return fn.apply(this, arguments);\n      }', // Translation Callback
 				expect.objectContaining({ id: 'dummyId' })
 			);
 		});
@@ -73,7 +78,7 @@ describe('H5P Ajax', () => {
 		it('should convert any H5P-Errors into HttpExceptions', async () => {
 			ajaxEndpoint.getAjax.mockRejectedValueOnce(new H5pError('dummy-error', { error: 'Dummy Error' }, 400));
 
-			const result = uc.getAjax({ action: 'content-type-cache', language: 'de' }, userMock);
+			const result = uc.getAjax({ action: 'content-type-cache' }, userMock);
 
 			await expect(result).rejects.toThrowError(new HttpException('dummy-error (error: Dummy Error)', 400));
 		});
@@ -81,7 +86,7 @@ describe('H5P Ajax', () => {
 		it('should convert any non-H5P-Errors into InternalServerErrorException', async () => {
 			ajaxEndpoint.getAjax.mockRejectedValueOnce(new Error('Dummy Error'));
 
-			const result = uc.getAjax({ action: 'content-type-cache', language: 'de' }, userMock);
+			const result = uc.getAjax({ action: 'content-type-cache' }, userMock);
 
 			await expect(result).rejects.toThrowError(InternalServerErrorException);
 		});
@@ -117,7 +122,7 @@ describe('H5P Ajax', () => {
 			expect(ajaxEndpoint.postAjax).toHaveBeenCalledWith(
 				'libraries',
 				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' },
-				undefined,
+				'de',
 				expect.objectContaining({ id: 'dummyId' }),
 				undefined,
 				undefined,
@@ -177,7 +182,7 @@ describe('H5P Ajax', () => {
 			expect(ajaxEndpoint.postAjax).toHaveBeenCalledWith(
 				'libraries',
 				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' },
-				undefined,
+				'de',
 				expect.objectContaining({ id: 'dummyId' }),
 				bufferTest,
 				undefined,
