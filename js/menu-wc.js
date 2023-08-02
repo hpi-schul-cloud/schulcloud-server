@@ -3399,6 +3399,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/MigrationDto.html" data-type="entity-link" >MigrationDto</a>
                             </li>
                             <li class="link">
+                                <a href="classes/MigrationMayBeCompleted.html" data-type="entity-link" >MigrationMayBeCompleted</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/MigrationMayNotBeCompleted.html" data-type="entity-link" >MigrationMayNotBeCompleted</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/MigrationResponse.html" data-type="entity-link" >MigrationResponse</a>
                             </li>
                             <li class="link">
@@ -3738,6 +3744,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/SchoolFactory.html" data-type="entity-link" >SchoolFactory</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SchoolIdDoesNotMatchWithUserSchoolId.html" data-type="entity-link" >SchoolIdDoesNotMatchWithUserSchoolId</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/SchoolIdParams.html" data-type="entity-link" >SchoolIdParams</a>
                             </li>
                             <li class="link">
@@ -3748,6 +3757,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/SchoolInMigrationError.html" data-type="entity-link" >SchoolInMigrationError</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchoolInUserMigrationEndLoggable.html" data-type="entity-link" >SchoolInUserMigrationEndLoggable</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchoolInUserMigrationStartLoggable.html" data-type="entity-link" >SchoolInUserMigrationStartLoggable</a>
                             </li>
                             <li class="link">
                                 <a href="classes/SchoolMigrationError.html" data-type="entity-link" >SchoolMigrationError</a>
@@ -4147,6 +4162,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/UserMatchResponse.html" data-type="entity-link" >UserMatchResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/UserMigrationIsNotEnabled.html" data-type="entity-link" >UserMigrationIsNotEnabled</a>
                             </li>
                             <li class="link">
                                 <a href="classes/UserMigrationMapper.html" data-type="entity-link" >UserMigrationMapper</a>

@@ -109,6 +109,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
+                                <a href="#notice" >notice</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#setContext" >setContext</a>
                             </li>
                             <li>
@@ -280,6 +284,77 @@
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="13"
                             class="link-to-prism">apps/server/src/core/logger/logger.ts:13</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>loggable</td>
+                                    <td>
+                                                <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="notice"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>notice</b></span>
+                        <a href="#notice"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>notice(loggable: <a href="../interfaces/Loggable.html" target="_self">Loggable</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="37"
+                            class="link-to-prism">apps/server/src/core/logger/logger.ts:37</a></div>
                 </td>
             </tr>
 
@@ -618,6 +693,11 @@ export class Logger {
 
 	public setContext(name: string) {
 		this.context &#x3D; name;
+	}
+
+	public notice(loggable: Loggable): void {
+		const message &#x3D; LoggingUtils.createMessageWithContext(loggable, this.context);
+		this.logger.notice(message);
 	}
 }
 </code></pre>
