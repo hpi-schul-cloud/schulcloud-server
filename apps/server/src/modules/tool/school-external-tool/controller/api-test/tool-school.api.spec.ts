@@ -1,12 +1,12 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalTool, Permission, Role, RoleName, School, SchoolExternalTool, User } from '@shared/domain';
+import { Permission, Role, RoleName, School, User } from '@shared/domain';
 import {
-	externalToolFactory,
+	externalToolEntityFactory,
 	mapUserToCurrentUser,
 	roleFactory,
-	schoolExternalToolFactory,
+	schoolExternalToolEntityFactory,
 	schoolFactory,
 	userFactory,
 } from '@shared/testing';
@@ -23,6 +23,8 @@ import {
 	SchoolExternalToolSearchParams,
 } from '../dto';
 import { ToolConfigurationStatusResponse } from '../../../external-tool/controller/dto';
+import { SchoolExternalToolEntity } from '../../entity';
+import { ExternalToolEntity } from '../../../external-tool/entity';
 
 describe('ToolSchoolController (API)', () => {
 	let app: INestApplication;
@@ -71,11 +73,17 @@ describe('ToolSchoolController (API)', () => {
 		const adminUser: User = userFactory.buildWithId({ school, roles: [adminRole] });
 		const userWithMissingPermission: User = userFactory.buildWithId({ school });
 
-		const externalTool: ExternalTool = externalToolFactory.buildWithId({ version: 1, parameters: [] });
-		const externalTool2: ExternalTool = externalToolFactory.buildWithId({ version: 1, parameters: [] });
+		const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+			version: 1,
+			parameters: [],
+		});
+		const externalToolEntity2: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+			version: 1,
+			parameters: [],
+		});
 
-		const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
-			tool: externalTool2,
+		const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+			tool: externalToolEntity2,
 			school,
 		});
 
@@ -84,20 +92,20 @@ describe('ToolSchoolController (API)', () => {
 			school,
 			adminUser,
 			userWithMissingPermission,
-			externalTool,
-			externalTool2,
-			schoolExternalTool,
+			externalToolEntity,
+			externalToolEntity2,
+			schoolExternalToolEntity,
 		]);
 		await em.flush();
 		em.clear();
 
 		return {
-			externalTool,
-			externalTool2,
+			externalToolEntity,
+			externalToolEntity2,
 			school,
 			adminUser,
 			userWithMissingPermission,
-			schoolExternalTool,
+			schoolExternalToolEntity,
 		};
 	};
 
@@ -117,11 +125,11 @@ describe('ToolSchoolController (API)', () => {
 		});
 
 		it('should create an school external tool', async () => {
-			const { externalTool, school, adminUser } = await setup();
+			const { externalToolEntity, school, adminUser } = await setup();
 			currentUser = mapUserToCurrentUser(adminUser);
 			const paramEntry = { name: 'name', value: 'value' };
 			const postParams: SchoolExternalToolPostParams = {
-				toolId: externalTool.id,
+				toolId: externalToolEntity.id,
 				schoolId: school.id,
 				version: 1,
 				parameters: [paramEntry],
@@ -135,7 +143,7 @@ describe('ToolSchoolController (API)', () => {
 					expect(res.body).toEqual(
 						expect.objectContaining(<SchoolExternalToolResponse>{
 							id: expect.any(String),
-							name: externalTool.name,
+							name: externalToolEntity.name,
 							schoolId: postParams.schoolId,
 							toolId: postParams.toolId,
 							status: ToolConfigurationStatusResponse.LATEST,
@@ -151,7 +159,7 @@ describe('ToolSchoolController (API)', () => {
 					return res;
 				});
 
-			const createdSchoolExternalTool: SchoolExternalTool | null = await em.findOne(SchoolExternalTool, {
+			const createdSchoolExternalTool: SchoolExternalToolEntity | null = await em.findOne(SchoolExternalToolEntity, {
 				school: postParams.schoolId,
 				tool: postParams.toolId,
 			});
@@ -161,20 +169,20 @@ describe('ToolSchoolController (API)', () => {
 
 	describe('[DELETE] tools/school/:schoolExternalToolId', () => {
 		it('should return forbidden when user is not authorized', async () => {
-			const { userWithMissingPermission, schoolExternalTool } = await setup();
+			const { userWithMissingPermission, schoolExternalToolEntity } = await setup();
 			currentUser = mapUserToCurrentUser(userWithMissingPermission);
 
-			await request(app.getHttpServer()).delete(`${basePath}/${schoolExternalTool.id}`).expect(403);
+			await request(app.getHttpServer()).delete(`${basePath}/${schoolExternalToolEntity.id}`).expect(403);
 		});
 
 		it('should create an school external tool', async () => {
-			const { adminUser, schoolExternalTool } = await setup();
+			const { adminUser, schoolExternalToolEntity } = await setup();
 			currentUser = mapUserToCurrentUser(adminUser);
 
-			await request(app.getHttpServer()).delete(`${basePath}/${schoolExternalTool.id}`).expect(200);
+			await request(app.getHttpServer()).delete(`${basePath}/${schoolExternalToolEntity.id}`).expect(200);
 
-			const deleted: SchoolExternalTool | null = await em.findOne(SchoolExternalTool, {
-				id: schoolExternalTool.id,
+			const deleted: SchoolExternalToolEntity | null = await em.findOne(SchoolExternalToolEntity, {
+				id: schoolExternalToolEntity.id,
 			});
 			expect(deleted).toBeNull();
 		});
@@ -192,7 +200,7 @@ describe('ToolSchoolController (API)', () => {
 		});
 
 		it('should return found schoolExternalTools for given school', async () => {
-			const { adminUser, schoolExternalTool, externalTool2, school } = await setup();
+			const { adminUser, schoolExternalToolEntity, externalToolEntity2, school } = await setup();
 			currentUser = mapUserToCurrentUser(adminUser);
 			const params: SchoolExternalToolSearchParams = {
 				schoolId: school.id,
@@ -207,16 +215,16 @@ describe('ToolSchoolController (API)', () => {
 						expect.objectContaining(<SchoolExternalToolSearchListResponse>{
 							data: [
 								{
-									id: schoolExternalTool.id,
-									name: externalTool2.name,
+									id: schoolExternalToolEntity.id,
+									name: externalToolEntity2.name,
 									schoolId: school.id,
-									toolId: externalTool2.id,
+									toolId: externalToolEntity2.id,
 									status: ToolConfigurationStatusResponse.OUTDATED,
-									toolVersion: schoolExternalTool.toolVersion,
+									toolVersion: schoolExternalToolEntity.toolVersion,
 									parameters: [
 										{
-											name: schoolExternalTool.schoolParameters[0].name,
-											value: schoolExternalTool.schoolParameters[0].value,
+											name: schoolExternalToolEntity.schoolParameters[0].name,
+											value: schoolExternalToolEntity.schoolParameters[0].value,
 										},
 									],
 								},
@@ -230,32 +238,32 @@ describe('ToolSchoolController (API)', () => {
 
 	describe('[GET] tools/school/:schoolExternalToolId', () => {
 		it('should return forbidden when user is not authorized', async () => {
-			const { userWithMissingPermission, schoolExternalTool } = await setup();
+			const { userWithMissingPermission, schoolExternalToolEntity } = await setup();
 			currentUser = mapUserToCurrentUser(userWithMissingPermission);
 
-			await request(app.getHttpServer()).get(`${basePath}/${schoolExternalTool.id}`).expect(403);
+			await request(app.getHttpServer()).get(`${basePath}/${schoolExternalToolEntity.id}`).expect(403);
 		});
 
 		it('should return found schoolExternalTool for given school', async () => {
-			const { adminUser, schoolExternalTool, externalTool2, school } = await setup();
+			const { adminUser, schoolExternalToolEntity, externalToolEntity2, school } = await setup();
 			currentUser = mapUserToCurrentUser(adminUser);
 
 			await request(app.getHttpServer())
-				.get(`${basePath}/${schoolExternalTool.id}`)
+				.get(`${basePath}/${schoolExternalToolEntity.id}`)
 				.expect(200)
 				.then((res: Response) => {
 					expect(res.body).toEqual(
 						expect.objectContaining(<SchoolExternalToolResponse>{
-							id: schoolExternalTool.id,
+							id: schoolExternalToolEntity.id,
 							name: '',
 							schoolId: school.id,
-							toolId: externalTool2.id,
+							toolId: externalToolEntity2.id,
 							status: ToolConfigurationStatusResponse.UNKNOWN,
-							toolVersion: schoolExternalTool.toolVersion,
+							toolVersion: schoolExternalToolEntity.toolVersion,
 							parameters: [
 								{
-									name: schoolExternalTool.schoolParameters[0].name,
-									value: schoolExternalTool.schoolParameters[0].value,
+									name: schoolExternalToolEntity.schoolParameters[0].name,
+									value: schoolExternalToolEntity.schoolParameters[0].value,
 								},
 							],
 						})
@@ -267,7 +275,7 @@ describe('ToolSchoolController (API)', () => {
 
 	describe('[PUT] tools/school/:schoolExternalToolId', () => {
 		it('should return forbidden when user is not authorized', async () => {
-			const { userWithMissingPermission, schoolExternalTool } = await setup();
+			const { userWithMissingPermission, schoolExternalToolEntity } = await setup();
 			currentUser = mapUserToCurrentUser(userWithMissingPermission);
 			const paramEntry = { name: 'name', value: 'Updatedvalue' };
 			const randomTestId = new ObjectId().toString();
@@ -278,27 +286,27 @@ describe('ToolSchoolController (API)', () => {
 				parameters: [paramEntry],
 			};
 
-			await request(app.getHttpServer()).put(`${basePath}/${schoolExternalTool.id}`).send(postParams).expect(403);
+			await request(app.getHttpServer()).put(`${basePath}/${schoolExternalToolEntity.id}`).send(postParams).expect(403);
 		});
 		it('should update an existing school external tool', async () => {
-			const { externalTool, school, adminUser, schoolExternalTool } = await setup();
+			const { externalToolEntity, school, adminUser, schoolExternalToolEntity } = await setup();
 			currentUser = mapUserToCurrentUser(adminUser);
 			const paramEntry = { name: 'name', value: 'Updatedvalue' };
 			const postParams: SchoolExternalToolPostParams = {
-				toolId: externalTool.id,
+				toolId: externalToolEntity.id,
 				schoolId: school.id,
 				version: 1,
 				parameters: [paramEntry],
 			};
 			await request(app.getHttpServer())
-				.put(`${basePath}/${schoolExternalTool.id}`)
+				.put(`${basePath}/${schoolExternalToolEntity.id}`)
 				.send(postParams)
 				.expect(200)
 				.then((res: Response) => {
 					expect(res.body).toEqual(
 						expect.objectContaining(<SchoolExternalToolResponse>{
-							id: schoolExternalTool.id,
-							name: externalTool.name,
+							id: schoolExternalToolEntity.id,
+							name: externalToolEntity.name,
 							schoolId: postParams.schoolId,
 							toolId: postParams.toolId,
 							status: ToolConfigurationStatusResponse.LATEST,
@@ -313,7 +321,7 @@ describe('ToolSchoolController (API)', () => {
 					);
 					return res;
 				});
-			const updatedSchoolExternalTool: SchoolExternalTool | null = await em.findOne(SchoolExternalTool, {
+			const updatedSchoolExternalTool: SchoolExternalToolEntity | null = await em.findOne(SchoolExternalToolEntity, {
 				school: postParams.schoolId,
 				tool: postParams.toolId,
 			});

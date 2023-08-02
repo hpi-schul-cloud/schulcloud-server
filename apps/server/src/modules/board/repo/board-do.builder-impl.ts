@@ -8,6 +8,7 @@ import type {
 	FileElementNode,
 	RichTextElementNode,
 	SubmissionContainerElementNode,
+	SubmissionItemNode,
 } from '@shared/domain';
 import {
 	AnyBoardDo,
@@ -18,6 +19,7 @@ import {
 	FileElement,
 	RichTextElement,
 	SubmissionContainerElement,
+	SubmissionItem,
 } from '@shared/domain';
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
@@ -114,14 +116,29 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 	}
 
 	public buildSubmissionContainerElement(boardNode: SubmissionContainerElementNode): SubmissionContainerElement {
-		this.ensureLeafNode(boardNode);
+		this.ensureBoardNodeType(this.getChildren(boardNode), [BoardNodeType.SUBMISSION_ITEM]);
+		const elements = this.buildChildren<SubmissionItem>(boardNode);
 
 		const element = new SubmissionContainerElement({
 			id: boardNode.id,
 			dueDate: boardNode.dueDate,
-			children: [],
+			children: elements,
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
+		});
+		return element;
+	}
+
+	public buildSubmissionItem(boardNode: SubmissionItemNode): SubmissionItem {
+		this.ensureLeafNode(boardNode);
+
+		const element = new SubmissionItem({
+			id: boardNode.id,
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+			completed: boardNode.completed,
+			userId: boardNode.userId,
+			children: [],
 		});
 		return element;
 	}

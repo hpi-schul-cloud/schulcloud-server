@@ -1,8 +1,9 @@
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ExternalToolDO, LtiToolDO, Pseudonym, UserDO } from '@shared/domain';
+import { LtiToolDO, Pseudonym, UserDO } from '@shared/domain';
 import { v4 as uuidv4 } from 'uuid';
 import { IToolFeatures, ToolFeatures } from '@src/modules/tool/tool-config';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 
 @Injectable()
@@ -13,7 +14,7 @@ export class PseudonymService {
 		private readonly externalToolPseudonymRepo: ExternalToolPseudonymRepo
 	) {}
 
-	public async findByUserAndTool(user: UserDO, tool: ExternalToolDO | LtiToolDO): Promise<Pseudonym> {
+	public async findByUserAndTool(user: UserDO, tool: ExternalTool | LtiToolDO): Promise<Pseudonym> {
 		if (!user.id || !tool.id) {
 			throw new InternalServerErrorException('User or tool id is missing');
 		}
@@ -44,7 +45,7 @@ export class PseudonymService {
 		return allPseudonyms;
 	}
 
-	public async findOrCreatePseudonym(user: UserDO, tool: ExternalToolDO | LtiToolDO): Promise<Pseudonym> {
+	public async findOrCreatePseudonym(user: UserDO, tool: ExternalTool | LtiToolDO): Promise<Pseudonym> {
 		if (!user.id || !tool.id) {
 			throw new InternalServerErrorException('User or tool id is missing');
 		}
@@ -104,8 +105,8 @@ export class PseudonymService {
 		return externalToolPseudonymPromise;
 	}
 
-	private getRepository(tool: ExternalToolDO | LtiToolDO): PseudonymsRepo | ExternalToolPseudonymRepo {
-		if (this.toolFeatures.ctlToolsTabEnabled && tool instanceof ExternalToolDO) {
+	private getRepository(tool: ExternalTool | LtiToolDO): PseudonymsRepo | ExternalToolPseudonymRepo {
+		if (this.toolFeatures.ctlToolsTabEnabled && tool instanceof ExternalTool) {
 			return this.externalToolPseudonymRepo;
 		}
 		return this.pseudonymRepo;
