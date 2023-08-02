@@ -4,4 +4,5 @@ export enum PreviewInputMimeTypes {
 	IMAGE_JPEG = 'image/jpeg',
 	IMAGE_PNG = 'image/png',
 	IMAGE_SVG = 'image/svg+xml',
+	IMAGE_HEIC = 'image/heic',
 }
