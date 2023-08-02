@@ -523,7 +523,7 @@ describe('ToolController (API)', () => {
 			it('should delete a tool', async () => {
 				const { loggedInClient, toolId } = await setup();
 
-				await loggedInClient.delete(`${toolId}`).expect(HttpStatus.OK);
+				await loggedInClient.delete(`${toolId}`).expect(HttpStatus.NO_CONTENT);
 
 				expect(await em.findOne(ExternalToolEntity, { id: toolId })).toBeNull();
 			});
