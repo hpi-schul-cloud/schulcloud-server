@@ -5,10 +5,8 @@ import i18nextFsBackend from 'i18next-fs-backend';
 
 export const Translator = {
 	async translate() {
-		const pathBackend = path.join(
-			__dirname,
-			'../../../../../../node_modules/@lumieducation/h5p-server/build/assets/translations/{{ns}}/{{lng}}.json'
-		);
+		const lumiPackagePath = path.dirname(require.resolve('@lumieducation/h5p-server/package.json'));
+		const pathBackend = path.join(lumiPackagePath, 'build/assets/translations/{{ns}}/{{lng}}.json');
 
 		const translationFunction = await i18next.use(i18nextFsBackend).init({
 			backend: {
