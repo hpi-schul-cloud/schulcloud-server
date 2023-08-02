@@ -7,7 +7,7 @@ describe('SchoolExternalToolRequestMapper', () => {
 
 	describe('mapSchoolExternalToolRequest is called', () => {
 		describe('when SchoolExternalToolPostParams is given', () => {
-			it('should return an schoolExternalTool', () => {
+			const setup = () => {
 				const param: CustomParameterEntryParam = {
 					name: 'name',
 					value: 'value',
@@ -18,6 +18,15 @@ describe('SchoolExternalToolRequestMapper', () => {
 					schoolId: 'schoolId',
 					parameters: [param],
 				};
+
+				return {
+					param,
+					params,
+				};
+			};
+
+			it('should return an schoolExternalTool', () => {
+				const { param, params } = setup();
 
 				const schoolExternalToolDto: SchoolExternalToolDto = mapper.mapSchoolExternalToolRequest(params);
 
@@ -31,13 +40,21 @@ describe('SchoolExternalToolRequestMapper', () => {
 		});
 
 		describe('when parameters are not given', () => {
-			it('should return an schoolExternalTool without parameter', () => {
+			const setup = () => {
 				const params: SchoolExternalToolPostParams = {
 					toolId: 'toolId',
 					version: 1,
 					schoolId: 'schoolId',
 					parameters: undefined,
 				};
+
+				return {
+					params,
+				};
+			};
+
+			it('should return an schoolExternalTool without parameter', () => {
+				const { params } = setup();
 
 				const schoolExternalToolDto: SchoolExternalToolDto = mapper.mapSchoolExternalToolRequest(params);
 
