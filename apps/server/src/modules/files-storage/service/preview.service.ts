@@ -39,9 +39,7 @@ export class PreviewService {
 
 		const hash = this.createNameHash(params, previewParams);
 		const filePath = ['previews', fileRecord.getSchoolId(), hash].join('/');
-		const fileNameWithoutExtension = fileRecord.name.split('.')[0];
-		const format = this.getFormat(previewParams.outputFormat);
-		const name = `${fileNameWithoutExtension}.${format}`;
+		const name = this.getPreviewName(fileRecord, previewParams.outputFormat);
 		let file: IGetFile;
 
 		try {
@@ -106,5 +104,13 @@ export class PreviewService {
 		const format = mimeType.split('/')[1];
 
 		return format;
+	}
+
+	private getPreviewName(fileRecord: FileRecord, outputFormat: PreviewOutputMimeTypes): string {
+		const fileNameWithoutExtension = fileRecord.name.split('.')[0];
+		const format = this.getFormat(outputFormat);
+		const name = `${fileNameWithoutExtension}.${format}`;
+
+		return name;
 	}
 }
