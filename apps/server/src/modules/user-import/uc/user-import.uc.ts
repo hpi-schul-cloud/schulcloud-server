@@ -204,7 +204,7 @@ export class UserImportUc {
 		this.logger.notice({
 			getLogMessage: () => {
 				return {
-					message: 'number of users already migrated from the total number',
+					message: 'number of already migrated users from the total number',
 					numberOfMigratedUser: `${migratedUser}/${total}`,
 				};
 			},
