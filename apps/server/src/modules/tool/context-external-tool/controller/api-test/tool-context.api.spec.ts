@@ -32,7 +32,7 @@ describe('ToolContextController (API)', () => {
 
 	let currentUser: ICurrentUser | undefined;
 
-	const basePath = '/tools/context';
+	const basePath = '/tools/context-external-tools';
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
@@ -62,7 +62,7 @@ describe('ToolContextController (API)', () => {
 		await orm.getSchemaGenerator().clearDatabase();
 	});
 
-	describe('[POST] tools/context', () => {
+	describe('[POST] tools/context-external-tools', () => {
 		describe('when creation of contextExternalTool is successfully', () => {
 			const setup = async () => {
 				const teacherRole: Role = roleFactory.build({
@@ -177,7 +177,7 @@ describe('ToolContextController (API)', () => {
 		});
 	});
 
-	describe('[DELETE] tools/context/:contextExternalToolId', () => {
+	describe('[DELETE] tools/context-external-tools/:contextExternalToolId', () => {
 		describe('when deletion of contextExternalTool is successfully', () => {
 			const setup = async () => {
 				const teacherRole: Role = roleFactory.build({
@@ -214,7 +214,7 @@ describe('ToolContextController (API)', () => {
 				const { teacher, contextExternalToolEntity } = await setup();
 				currentUser = mapUserToCurrentUser(teacher);
 
-				await request(app.getHttpServer()).delete(`${basePath}/${contextExternalToolEntity.id}`).expect(200);
+				await request(app.getHttpServer()).delete(`${basePath}/${contextExternalToolEntity.id}`).expect(204);
 
 				const deleted: ContextExternalToolEntity | null = await em.findOne(ContextExternalToolEntity, {
 					contextId: contextExternalToolEntity.id,
@@ -258,7 +258,7 @@ describe('ToolContextController (API)', () => {
 		});
 	});
 
-	describe('[GET] tools/context/:contextType/:contextId', () => {
+	describe('[GET] tools/context-external-tools/:contextType/:contextId', () => {
 		const setup = async () => {
 			const userRole: Role = roleFactory.build({
 				name: RoleName.USER,
