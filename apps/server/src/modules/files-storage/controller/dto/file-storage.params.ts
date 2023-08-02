@@ -1,6 +1,16 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain';
-import { Allow, IsEnum, IsInt, IsMongoId, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import {
+	Allow,
+	IsBoolean,
+	IsEnum,
+	IsInt,
+	IsMongoId,
+	IsNotEmpty,
+	IsOptional,
+	IsString,
+	ValidateNested,
+} from 'class-validator';
 import { FileRecordParentType } from '../../entity';
 import { PreviewOutputMimeTypes } from '../../interface/preview-output-mime-types.enum';
 
@@ -116,4 +126,13 @@ export class PreviewParams {
 	@ApiProperty({ enum: PreviewOutputMimeTypes })
 	@IsEnum(PreviewOutputMimeTypes)
 	outputFormat!: PreviewOutputMimeTypes;
+
+	@ApiPropertyOptional({
+		type: 'boolean',
+		default: false,
+		description: 'If true, the preview will be generated again."',
+	})
+	@IsOptional()
+	@IsBoolean()
+	forceUpdate?: boolean;
 }

@@ -37,9 +37,31 @@ export class PreviewService {
 	): Promise<IGetFileResponse> {
 		this.checkIfPreviewPossible(fileRecord);
 
+		const { forceUpdate, outputFormat } = previewParams;
 		const hash = this.createNameHash(params, previewParams);
 		const filePath = ['previews', fileRecord.getSchoolId(), hash].join('/');
-		const name = this.getPreviewName(fileRecord, previewParams.outputFormat);
+		const name = this.getPreviewName(fileRecord, outputFormat);
+		let file: IGetFile;
+
+		if (forceUpdate) {
+			file = await this.generatePreview(fileRecord, params, previewParams, hash, filePath, bytesRange);
+		} else {
+			file = await this.tryGetPreviewOrGenerate(fileRecord, params, previewParams, hash, filePath, bytesRange);
+		}
+
+		const response = FileResponseBuilder.build(file, name);
+
+		return response;
+	}
+
+	private async tryGetPreviewOrGenerate(
+		fileRecord: FileRecord,
+		params: DownloadFileParams,
+		previewParams: PreviewParams,
+		hash: string,
+		filePath: string,
+		bytesRange?: string
+	): Promise<IGetFile> {
 		let file: IGetFile;
 
 		try {
@@ -50,9 +72,7 @@ export class PreviewService {
 			file = await this.generatePreview(fileRecord, params, previewParams, hash, filePath, bytesRange);
 		}
 
-		const response = FileResponseBuilder.build(file, name);
-
-		return response;
+		return file;
 	}
 
 	private throwIfOtherError(error): void | InternalServerErrorException {
