@@ -61,14 +61,14 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		const tempFile = await this.repo.findByUserAndFilename(user.id, filename);
 		const path = join(user.id, filename);
 		if (rangeStart === undefined) {
-			if (rangeEnd === undefined) {
-				return (await this.s3Client.get(path)).data;
-			}
 			rangeStart = 0;
-		} else if (rangeEnd === undefined) {
+		}
+		if (rangeEnd === undefined) {
 			rangeEnd = tempFile.size - 1;
 		}
-		return (await this.s3Client.get(path, `${rangeStart}-${rangeEnd}`)).data;
+		const response = await this.s3Client.get(path, `${rangeStart}-${rangeEnd}`);
+
+		return response.data;
 	}
 
 	public async listFiles(user?: IUser | undefined): Promise<ITemporaryFile[]> {
@@ -104,7 +104,7 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 
 		if (tempFile === undefined) {
 			tempFile = new TemporaryFile(filename, user.id, expirationTime, new Date(), dataStream.bytesRead);
-			await this.repo.createTemporaryFile(tempFile);
+			await this.repo.save(tempFile);
 		} else {
 			tempFile.expiresAt = expirationTime;
 			tempFile.size = dataStream.bytesRead;

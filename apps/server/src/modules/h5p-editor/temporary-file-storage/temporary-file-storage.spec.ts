@@ -131,8 +131,10 @@ describe('TemporaryFileStorage', () => {
 		describe('WHEN file exists', () => {
 			it('should delete file', async () => {
 				const { user1, file1 } = setup();
-				repo.findByUserAndFilename.mockResolvedValue(file1);
+				repo.findByPath.mockResolvedValueOnce(file1);
+
 				await storage.deleteFile(file1.filename, user1.id);
+
 				expect(repo.delete).toHaveBeenCalled();
 				expect(s3clientAdapter.delete).toHaveBeenCalledWith([join(user1.id, file1.filename)]);
 			});
@@ -156,8 +158,9 @@ describe('TemporaryFileStorage', () => {
 		describe('WHEN file exists', () => {
 			it('should return true', async () => {
 				const { user1, file1 } = setup();
-				repo.findByUserAndFilename.mockResolvedValue(file1);
-				await expect(storage.fileExists(file1.filename, user1)).resolves.toBe(true);
+				repo.findByPath.mockResolvedValue(file1);
+				const result = await storage.fileExists(file1.filename, user1);
+				expect(result).toBe(true);
 			});
 		});
 		describe('WHEN file does not exist', () => {
