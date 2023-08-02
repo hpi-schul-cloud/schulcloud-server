@@ -1,9 +1,4 @@
-import {
-	Injectable,
-	InternalServerErrorException,
-	NotAcceptableException,
-	UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable, NotAcceptableException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { LegacyLogger } from '@src/core/logger';
 import crypto from 'crypto';
 import { subClass } from 'gm';
@@ -77,19 +72,14 @@ export class PreviewService {
 		try {
 			file = await this.storageClient.get(filePath, bytesRange);
 		} catch (error) {
-			this.throwIfOtherError(error);
+			if (!(error instanceof NotFoundException)) {
+				throw error;
+			}
 
 			file = await this.generatePreview(params);
 		}
 
 		return file;
-	}
-
-	private throwIfOtherError(error): void | InternalServerErrorException {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-		if (error.message && error.message !== 'NoSuchKey') {
-			throw error;
-		}
 	}
 
 	private createNameHash(params: DownloadFileParams, previewParams: PreviewParams): string {
