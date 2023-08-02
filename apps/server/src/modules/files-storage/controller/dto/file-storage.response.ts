@@ -15,6 +15,7 @@ export class FileRecordResponse {
 		this.mimeType = fileRecord.mimeType;
 		this.parentType = fileRecord.parentType;
 		this.deletedSince = fileRecord.deletedSince;
+		this.isPreviewPossible = fileRecord.isPreviewPossible();
 	}
 
 	@ApiProperty()
@@ -44,6 +45,9 @@ export class FileRecordResponse {
 
 	@ApiProperty({ enum: FileRecordParentType })
 	parentType: FileRecordParentType;
+
+	@ApiProperty()
+	isPreviewPossible: boolean;
 
 	@ApiPropertyOptional()
 	deletedSince?: Date;
