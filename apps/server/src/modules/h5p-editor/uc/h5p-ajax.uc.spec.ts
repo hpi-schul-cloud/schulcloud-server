@@ -4,12 +4,14 @@ import { HttpException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { UserRepo } from '@shared/repo';
+import { User } from '@shared/domain';
 import { H5PEditorUc } from './h5p.uc';
 
 describe('H5P Ajax', () => {
 	let module: TestingModule;
 	let uc: H5PEditorUc;
 	let ajaxEndpoint: DeepMocked<H5PAjaxEndpoint>;
+	let userRepo: DeepMocked<UserRepo>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -36,6 +38,7 @@ describe('H5P Ajax', () => {
 
 		uc = module.get(H5PEditorUc);
 		ajaxEndpoint = module.get(H5PAjaxEndpoint);
+		userRepo = module.get(UserRepo);
 		await setupEntities();
 	});
 
@@ -61,6 +64,7 @@ describe('H5P Ajax', () => {
 			};
 
 			ajaxEndpoint.getAjax.mockResolvedValueOnce(dummyResponse);
+			userRepo.findById.mockResolvedValueOnce({ language: 'de' } as User);
 
 			const result = await uc.getAjax({ action: 'content-type-cache' }, userMock);
 
@@ -70,7 +74,7 @@ describe('H5P Ajax', () => {
 				undefined, // MachineName
 				undefined, // MajorVersion
 				undefined, // MinorVersion
-				'function () {\n        return fn.apply(this, arguments);\n      }', // Translation Callback
+				'de',
 				expect.objectContaining({ id: 'dummyId' })
 			);
 		});
