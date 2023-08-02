@@ -109,17 +109,12 @@ export class FilesStorageController {
 		// requested either partial or full data stream.
 		const bytesRange = req.header('Range');
 
-		// Call download method with either defined or undefined bytes range.
 		const fileResponse = await this.filesStorageUC.download(currentUser.userId, params, bytesRange);
 
-		// Destroy the stream after it has been closed.
 		req.on('close', () => fileResponse.data.destroy());
 
-		// Set headers and status.
 		setBytesRangeHeader(response, fileResponse, bytesRange);
 
-		// Return StreamableFile with stream data and options that will additionally set
-		// Content-Type, Content-Disposition and Content-Length headers in a response.
 		const streamableFile = FilesStorageMapper.mapToStreamableFile(fileResponse);
 
 		return streamableFile;
@@ -145,7 +140,6 @@ export class FilesStorageController {
 		// requested either partial or full data stream.
 		const bytesRange = req.header('Range');
 
-		// Call download method with either defined or undefined bytes range.
 		const fileResponse = await this.filesStorageUC.downloadPreview(
 			currentUser.userId,
 			params,
@@ -153,14 +147,10 @@ export class FilesStorageController {
 			bytesRange
 		);
 
-		// Destroy the stream after it has been closed.
 		req.on('close', () => fileResponse.data.destroy());
 
-		// Set headers and status.
 		setBytesRangeHeader(response, fileResponse, bytesRange);
 
-		// Return StreamableFile with stream data and options that will additionally set
-		// Content-Type, Content-Disposition and Content-Length headers in a response.
 		const streamableFile = FilesStorageMapper.mapToStreamableFile(fileResponse);
 
 		return streamableFile;
