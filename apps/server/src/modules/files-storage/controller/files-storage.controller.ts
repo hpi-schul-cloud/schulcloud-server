@@ -6,6 +6,8 @@ import {
 	Delete,
 	ForbiddenException,
 	Get,
+	Headers,
+	HttpStatus,
 	InternalServerErrorException,
 	NotAcceptableException,
 	NotFoundException,
@@ -24,7 +26,7 @@ import { PaginationParams } from '@shared/controller';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request, Response } from 'express';
-import { setBytesRangeHeader } from '../helper/bytes-range';
+import { IGetFileResponse } from '../interface';
 import { FilesStorageMapper } from '../mapper';
 import { FileRecordMapper } from '../mapper/file-record.mapper';
 import { FilesStorageUC } from '../uc';
@@ -103,19 +105,12 @@ export class FilesStorageController {
 		@Param() params: DownloadFileParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Req() req: Request,
-		@Res({ passthrough: true }) response: Response
+		@Res({ passthrough: true }) response: Response,
+		@Headers('Range') bytesRange?: string
 	): Promise<StreamableFile> {
-		// Get Range HTTP header value to check if caller
-		// requested either partial or full data stream.
-		const bytesRange = req.header('Range');
-
 		const fileResponse = await this.filesStorageUC.download(currentUser.userId, params, bytesRange);
 
-		req.on('close', () => fileResponse.data.destroy());
-
-		setBytesRangeHeader(response, fileResponse, bytesRange);
-
-		const streamableFile = FilesStorageMapper.mapToStreamableFile(fileResponse);
+		const streamableFile = this.streamFileToClient(req, fileResponse, response, bytesRange);
 
 		return streamableFile;
 	}
@@ -134,12 +129,9 @@ export class FilesStorageController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() previewParams: PreviewParams,
 		@Req() req: Request,
-		@Res({ passthrough: true }) response: Response
+		@Res({ passthrough: true }) response: Response,
+		@Headers('Range') bytesRange?: string
 	): Promise<StreamableFile> {
-		// Get Range HTTP header value to check if caller
-		// requested either partial or full data stream.
-		const bytesRange = req.header('Range');
-
 		const fileResponse = await this.filesStorageUC.downloadPreview(
 			currentUser.userId,
 			params,
@@ -147,9 +139,32 @@ export class FilesStorageController {
 			bytesRange
 		);
 
+		const streamableFile = this.streamFileToClient(req, fileResponse, response, bytesRange);
+
+		return streamableFile;
+	}
+
+	private streamFileToClient(
+		req: Request,
+		fileResponse: IGetFileResponse,
+		httpResponse: Response,
+		bytesRange?: string
+	): StreamableFile {
 		req.on('close', () => fileResponse.data.destroy());
 
-		setBytesRangeHeader(response, fileResponse, bytesRange);
+		// If bytes range has been defined, set Accept-Ranges and Content-Range HTTP headers
+		// in a response and also set 206 Partial Content HTTP status code to inform the caller
+		// about the partial data stream. Otherwise, just set a 200 OK HTTP status code.
+		if (bytesRange) {
+			httpResponse.set({
+				'Accept-Ranges': 'bytes',
+				'Content-Range': fileResponse.contentRange,
+			});
+
+			httpResponse.status(HttpStatus.PARTIAL_CONTENT);
+		} else {
+			httpResponse.status(HttpStatus.OK);
+		}
 
 		const streamableFile = FilesStorageMapper.mapToStreamableFile(fileResponse);
 
