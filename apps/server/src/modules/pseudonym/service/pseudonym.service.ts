@@ -34,12 +34,14 @@ export class PseudonymService {
 			this.findExternalToolPseudonymByUserId(userId),
 		]);
 
-		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-		pseudonyms === undefined ? (pseudonyms = []) : pseudonyms;
-		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-		externalToolPseudonyms === undefined ? (externalToolPseudonyms = []) : externalToolPseudonyms;
+		if (pseudonyms === undefined) {
+			pseudonyms = [];
+		}
 
-		// const allPseudonyms = pseudonyms.concat(externalToolPseudonyms);
+		if (externalToolPseudonyms === undefined) {
+			externalToolPseudonyms = [];
+		}
+
 		const allPseudonyms = [...pseudonyms, ...externalToolPseudonyms];
 
 		return allPseudonyms;
