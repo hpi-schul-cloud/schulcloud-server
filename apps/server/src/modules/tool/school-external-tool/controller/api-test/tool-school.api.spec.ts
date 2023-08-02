@@ -33,7 +33,7 @@ describe('ToolSchoolController (API)', () => {
 
 	let currentUser: ICurrentUser;
 
-	const basePath = '/tools/school';
+	const basePath = '/tools/school-external-tools';
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
@@ -109,7 +109,7 @@ describe('ToolSchoolController (API)', () => {
 		};
 	};
 
-	describe('[POST] tools/school', () => {
+	describe('[POST] tools/school-external-tools', () => {
 		it('should return forbidden when user is not authorized', async () => {
 			const { userWithMissingPermission } = await setup();
 			currentUser = mapUserToCurrentUser(userWithMissingPermission);
@@ -167,7 +167,7 @@ describe('ToolSchoolController (API)', () => {
 		});
 	});
 
-	describe('[DELETE] tools/school/:schoolExternalToolId', () => {
+	describe('[DELETE] tools/school-external-tools/:schoolExternalToolId', () => {
 		it('should return forbidden when user is not authorized', async () => {
 			const { userWithMissingPermission, schoolExternalToolEntity } = await setup();
 			currentUser = mapUserToCurrentUser(userWithMissingPermission);
@@ -179,7 +179,7 @@ describe('ToolSchoolController (API)', () => {
 			const { adminUser, schoolExternalToolEntity } = await setup();
 			currentUser = mapUserToCurrentUser(adminUser);
 
-			await request(app.getHttpServer()).delete(`${basePath}/${schoolExternalToolEntity.id}`).expect(200);
+			await request(app.getHttpServer()).delete(`${basePath}/${schoolExternalToolEntity.id}`).expect(204);
 
 			const deleted: SchoolExternalToolEntity | null = await em.findOne(SchoolExternalToolEntity, {
 				id: schoolExternalToolEntity.id,
@@ -188,7 +188,7 @@ describe('ToolSchoolController (API)', () => {
 		});
 	});
 
-	describe('[GET] tools/school/', () => {
+	describe('[GET] tools/school-external-tools/', () => {
 		it('should return forbidden when user is not authorized', async () => {
 			const { userWithMissingPermission, school } = await setup();
 			currentUser = mapUserToCurrentUser(userWithMissingPermission);
@@ -236,7 +236,7 @@ describe('ToolSchoolController (API)', () => {
 		});
 	});
 
-	describe('[GET] tools/school/:schoolExternalToolId', () => {
+	describe('[GET] tools/school-external-tools/:schoolExternalToolId', () => {
 		it('should return forbidden when user is not authorized', async () => {
 			const { userWithMissingPermission, schoolExternalToolEntity } = await setup();
 			currentUser = mapUserToCurrentUser(userWithMissingPermission);
@@ -273,7 +273,7 @@ describe('ToolSchoolController (API)', () => {
 		});
 	});
 
-	describe('[PUT] tools/school/:schoolExternalToolId', () => {
+	describe('[PUT] tools/school-external-tools/:schoolExternalToolId', () => {
 		it('should return forbidden when user is not authorized', async () => {
 			const { userWithMissingPermission, schoolExternalToolEntity } = await setup();
 			currentUser = mapUserToCurrentUser(userWithMissingPermission);
@@ -288,6 +288,7 @@ describe('ToolSchoolController (API)', () => {
 
 			await request(app.getHttpServer()).put(`${basePath}/${schoolExternalToolEntity.id}`).send(postParams).expect(403);
 		});
+
 		it('should update an existing school external tool', async () => {
 			const { externalToolEntity, school, adminUser, schoolExternalToolEntity } = await setup();
 			currentUser = mapUserToCurrentUser(adminUser);
@@ -298,6 +299,7 @@ describe('ToolSchoolController (API)', () => {
 				version: 1,
 				parameters: [paramEntry],
 			};
+
 			await request(app.getHttpServer())
 				.put(`${basePath}/${schoolExternalToolEntity.id}`)
 				.send(postParams)
@@ -321,10 +323,12 @@ describe('ToolSchoolController (API)', () => {
 					);
 					return res;
 				});
+
 			const updatedSchoolExternalTool: SchoolExternalToolEntity | null = await em.findOne(SchoolExternalToolEntity, {
 				school: postParams.schoolId,
 				tool: postParams.toolId,
 			});
+
 			expect(updatedSchoolExternalTool).toBeDefined();
 		});
 	});
