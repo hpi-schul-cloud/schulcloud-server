@@ -12,6 +12,15 @@ import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.e
 import { FileDtoBuilder, FileResponseBuilder } from '../mapper';
 import { FilesStorageService } from './files-storage.service';
 
+interface PreviewFileParams {
+	fileRecord: FileRecord;
+	downloadParams: DownloadFileParams;
+	previewParams: PreviewParams;
+	hash: string;
+	filePath: string;
+	bytesRange?: string;
+}
+
 @Injectable()
 export class PreviewService {
 	constructor(
@@ -31,22 +40,24 @@ export class PreviewService {
 
 	public async getPreview(
 		fileRecord: FileRecord,
-		params: DownloadFileParams,
+		downloadParams: DownloadFileParams,
 		previewParams: PreviewParams,
 		bytesRange?: string
 	): Promise<IGetFileResponse> {
 		this.checkIfPreviewPossible(fileRecord);
 
 		const { forceUpdate, outputFormat } = previewParams;
-		const hash = this.createNameHash(params, previewParams);
-		const filePath = ['previews', fileRecord.getSchoolId(), hash].join('/');
+		const hash = this.createNameHash(downloadParams, previewParams);
+		const filePath = this.getFilePath(fileRecord, hash);
 		const name = this.getPreviewName(fileRecord, outputFormat);
 		let file: IGetFile;
 
+		const previewFileParams = { fileRecord, downloadParams, previewParams, hash, filePath, bytesRange };
+
 		if (forceUpdate) {
-			file = await this.generatePreview(fileRecord, params, previewParams, hash, filePath, bytesRange);
+			file = await this.generatePreview(previewFileParams);
 		} else {
-			file = await this.tryGetPreviewOrGenerate(fileRecord, params, previewParams, hash, filePath, bytesRange);
+			file = await this.tryGetPreviewOrGenerate(previewFileParams);
 		}
 
 		const response = FileResponseBuilder.build(file, name);
@@ -54,14 +65,8 @@ export class PreviewService {
 		return response;
 	}
 
-	private async tryGetPreviewOrGenerate(
-		fileRecord: FileRecord,
-		params: DownloadFileParams,
-		previewParams: PreviewParams,
-		hash: string,
-		filePath: string,
-		bytesRange?: string
-	): Promise<IGetFile> {
+	private async tryGetPreviewOrGenerate(params: PreviewFileParams): Promise<IGetFile> {
+		const { filePath, bytesRange } = params;
 		let file: IGetFile;
 
 		try {
@@ -69,7 +74,7 @@ export class PreviewService {
 		} catch (error) {
 			this.throwIfOtherError(error);
 
-			file = await this.generatePreview(fileRecord, params, previewParams, hash, filePath, bytesRange);
+			file = await this.generatePreview(params);
 		}
 
 		return file;
@@ -89,15 +94,10 @@ export class PreviewService {
 		return hash;
 	}
 
-	private async generatePreview(
-		fileRecord: FileRecord,
-		params: DownloadFileParams,
-		previewParams: PreviewParams,
-		hash: string,
-		filePath: string,
-		bytesRange?: string
-	): Promise<IGetFile> {
-		const original = await this.fileStorageService.download(fileRecord, params, bytesRange);
+	private async generatePreview(params: PreviewFileParams): Promise<IGetFile> {
+		const { fileRecord, downloadParams, previewParams, hash, filePath, bytesRange } = params;
+
+		const original = await this.fileStorageService.download(fileRecord, downloadParams, bytesRange);
 		const preview = this.resizeAndConvert(original, fileRecord, previewParams);
 
 		const fileDto = FileDtoBuilder.build(hash, preview, previewParams.outputFormat);
@@ -132,5 +132,11 @@ export class PreviewService {
 		const name = `${fileNameWithoutExtension}.${format}`;
 
 		return name;
+	}
+
+	private getFilePath(fileRecord: FileRecord, hash: string): string {
+		const path = ['previews', fileRecord.getSchoolId(), hash].join('/');
+
+		return path;
 	}
 }
