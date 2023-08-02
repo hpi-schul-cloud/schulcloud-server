@@ -560,6 +560,7 @@ const filterResult = async (context) => {
 		'displayName',
 		'avatarInitials',
 		'avatarBackgroundColor',
+		'outdatedSince',
 	];
 	return keep(...allowedAttributes)(context);
 };
