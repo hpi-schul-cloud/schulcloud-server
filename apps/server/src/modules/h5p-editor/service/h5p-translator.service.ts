@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import path from 'path';
-import { ITranslationFunction } from '@lumieducation/h5p-server/build/src/types';
+import { ITranslationFunction } from '@lumieducation/h5p-server';
 import i18nextFsBackend from 'i18next-fs-backend';
 
 export const Translator = {
