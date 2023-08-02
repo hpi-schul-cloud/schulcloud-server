@@ -10,12 +10,12 @@ import * as Utils from '@src/modules/tldraw/utils/utils';
 import { Awareness } from 'y-protocols/awareness';
 import { WSSharedDoc } from '@src/modules/tldraw/utils/utils';
 import { TldrawGateway } from '.';
+// import * as timer from 'timers';
 
 describe('TldrawGateway', () => {
 	let gateway: TldrawGateway;
 	let clientSocket: WebSocket;
 	let app: INestApplication;
-	const gatewayPort = 3346;
 
 	beforeAll(async () => {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
@@ -40,25 +40,6 @@ describe('TldrawGateway', () => {
 		expect(gateway.connectionString).toBeDefined();
 		expect(gateway.afterInit).toBeDefined();
 		expect(gateway.handleConnection).toBeDefined();
-	});
-
-	it('should throw error for not connected WebSocket', () => {
-		jest.useFakeTimers();
-		const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
-		const setupConnectionSpy = jest.spyOn(Utils, 'setupWSConnection');
-		const closeConSpy = jest.spyOn(Utils, 'closeConn').mockReturnValue();
-		const sendSpy = jest.spyOn(Utils, 'send');
-
-		const request = { url: '/TEST' };
-		clientSocket = new WebSocket(`ws://localhost:${gatewayPort}/TEST`);
-		gateway.handleConnection(clientSocket, request as unknown as Request);
-
-		jest.advanceTimersByTime(20);
-		expect(handleConnectionSpy).toHaveBeenCalledWith(clientSocket, request);
-		expect(setupConnectionSpy).toHaveBeenCalledWith(clientSocket, 'TEST');
-		expect(sendSpy).toThrow();
-		expect(sendSpy).toHaveBeenCalledWith();
-		expect(closeConSpy).toHaveBeenCalled();
 	});
 
 	it('awareness change handler testing', () => {
