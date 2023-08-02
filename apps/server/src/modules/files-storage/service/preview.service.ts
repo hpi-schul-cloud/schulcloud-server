@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException, NotAcceptableException } from '@nestjs/common';
+import {
+	Injectable,
+	InternalServerErrorException,
+	NotAcceptableException,
+	UnprocessableEntityException,
+} from '@nestjs/common';
 import { LegacyLogger } from '@src/core/logger';
 import crypto from 'crypto';
 import { subClass } from 'gm';
@@ -31,13 +36,6 @@ export class PreviewService {
 		this.logger.setContext(PreviewService.name);
 	}
 
-	private checkIfPreviewPossible(fileRecord: FileRecord): void | NotAcceptableException {
-		if (!fileRecord.isPreviewPossible()) {
-			this.logger.warn(`could not generate preview for : ${fileRecord.id} ${fileRecord.mimeType}`);
-			throw new NotAcceptableException(ErrorType.PREVIEW_NOT_POSSIBLE);
-		}
-	}
-
 	public async getPreview(
 		fileRecord: FileRecord,
 		downloadParams: DownloadFileParams,
@@ -63,6 +61,13 @@ export class PreviewService {
 		const response = FileResponseBuilder.build(file, name);
 
 		return response;
+	}
+
+	private checkIfPreviewPossible(fileRecord: FileRecord): void | NotAcceptableException {
+		if (!fileRecord.isPreviewPossible()) {
+			this.logger.warn(`could not generate preview for : ${fileRecord.id} ${fileRecord.mimeType}`);
+			throw new UnprocessableEntityException(ErrorType.PREVIEW_NOT_POSSIBLE);
+		}
 	}
 
 	private async tryGetPreviewOrGenerate(params: PreviewFileParams): Promise<IGetFile> {
