@@ -50,7 +50,7 @@ describe('ToolController (API)', () => {
 		await app.init();
 
 		em = app.get(EntityManager);
-		testApiClient = new TestApiClient(app, 'tools');
+		testApiClient = new TestApiClient(app, 'tools/external-tools');
 	});
 
 	afterAll(async () => {
@@ -61,7 +61,7 @@ describe('ToolController (API)', () => {
 		await cleanupCollections(em);
 	});
 
-	describe('[POST] tools', () => {
+	describe('[POST] tools/external-tools', () => {
 		const postParams: ExternalToolCreateParams = {
 			name: 'Tool 1',
 			parameters: [
@@ -211,7 +211,7 @@ describe('ToolController (API)', () => {
 		});
 	});
 
-	describe('[GET] tools', () => {
+	describe('[GET] tools/external-tools', () => {
 		describe('when requesting tools', () => {
 			const setup = async () => {
 				const toolId: string = new ObjectId().toHexString();
@@ -272,8 +272,8 @@ describe('ToolController (API)', () => {
 		});
 	});
 
-	describe('[GET] tools/:toolId', () => {
-		describe('when toolId is given', () => {
+	describe('[GET] tools/external-tools/:externalToolId', () => {
+		describe('when externalToolId is given', () => {
 			const setup = async () => {
 				const toolId: string = new ObjectId().toHexString();
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
@@ -350,7 +350,7 @@ describe('ToolController (API)', () => {
 		});
 	});
 
-	describe('[POST] tools/:toolId', () => {
+	describe('[POST] tools/external-tools/:externalToolId', () => {
 		const postParams: ExternalToolCreateParams = {
 			name: 'Tool 1',
 			parameters: [
@@ -505,7 +505,7 @@ describe('ToolController (API)', () => {
 		});
 	});
 
-	describe('[DELETE] tools/:toolId', () => {
+	describe('[DELETE] tools/external-tools/:externalToolId', () => {
 		describe('when valid data is given', () => {
 			const setup = async () => {
 				const toolId: string = new ObjectId().toHexString();
@@ -582,10 +582,10 @@ describe('ToolController (API)', () => {
 		});
 	});
 
-	describe('[GET] tools/references/:contextType/:contextId', () => {
+	describe('[GET] tools/external-tools/:contextType/:contextId/references', () => {
 		describe('when user is not authenticated', () => {
 			it('should return unauthorized', async () => {
-				const response: Response = await testApiClient.get(`references/contextType/${new ObjectId().toHexString()}`);
+				const response: Response = await testApiClient.get(`contextType/${new ObjectId().toHexString()}/references`);
 
 				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -632,7 +632,7 @@ describe('ToolController (API)', () => {
 			it('should filter out the tool', async () => {
 				const { loggedInClient, params } = await setup();
 
-				const response: Response = await loggedInClient.get(`references/${params.contextType}/${params.contextId}`);
+				const response: Response = await loggedInClient.get(`${params.contextType}/${params.contextId}/references`);
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual<ToolReferenceListResponse>({ data: [] });
@@ -684,7 +684,7 @@ describe('ToolController (API)', () => {
 			it('should return an ToolReferenceListResponse with data', async () => {
 				const { loggedInClient, params, contextExternalToolEntity, externalToolEntity } = await setup();
 
-				const response: Response = await loggedInClient.get(`references/${params.contextType}/${params.contextId}`);
+				const response: Response = await loggedInClient.get(`${params.contextType}/${params.contextId}/references`);
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual<ToolReferenceListResponse>({
