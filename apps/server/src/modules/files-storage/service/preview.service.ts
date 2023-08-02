@@ -93,7 +93,10 @@ export class PreviewService {
 	}
 
 	private createNameHash(params: DownloadFileParams, previewParams: PreviewParams): string {
-		const fileParamsString = `${params.fileRecordId}${previewParams.width}${previewParams.height}${previewParams.outputFormat}`;
+		const width = previewParams.width ?? '';
+		const height = previewParams.height ?? '';
+		const format = previewParams.outputFormat ?? '';
+		const fileParamsString = `${params.fileRecordId}${width}${height}${format}`;
 		const hash = crypto.createHash('md5').update(fileParamsString).digest('hex');
 
 		return hash;
@@ -105,7 +108,8 @@ export class PreviewService {
 		const original = await this.fileStorageService.download(fileRecord, downloadParams, bytesRange);
 		const preview = this.resizeAndConvert(original, fileRecord, previewParams);
 
-		const fileDto = FileDtoBuilder.build(hash, preview, previewParams.outputFormat);
+		const format = previewParams.outputFormat ?? fileRecord.mimeType;
+		const fileDto = FileDtoBuilder.build(hash, preview, format);
 		await this.storageClient.create(filePath, fileDto);
 
 		const response = await this.storageClient.get(filePath, bytesRange);
@@ -118,20 +122,33 @@ export class PreviewService {
 		fileRecord: FileRecord,
 		previewParams: PreviewParams
 	): PassThrough {
-		const format = this.getFormat(previewParams.outputFormat);
+		const mimeType = previewParams.outputFormat ?? fileRecord.mimeType;
+		const format = this.getFormat(mimeType);
 		const im = subClass({ imageMagick: true });
-		const preview = im(original.data, fileRecord.name).resize(previewParams.width, previewParams.height).stream(format);
 
-		return preview;
+		const preview = im(original.data, fileRecord.name);
+		const { width, height } = previewParams;
+
+		if (width) {
+			preview.resize(width, height);
+		}
+
+		const result = preview.stream(format);
+
+		return result;
 	}
 
-	private getFormat(mimeType: PreviewOutputMimeTypes): string {
+	private getFormat(mimeType: string): string {
 		const format = mimeType.split('/')[1];
 
 		return format;
 	}
 
-	private getPreviewName(fileRecord: FileRecord, outputFormat: PreviewOutputMimeTypes): string {
+	private getPreviewName(fileRecord: FileRecord, outputFormat?: PreviewOutputMimeTypes): string {
+		if (!outputFormat) {
+			return fileRecord.name;
+		}
+
 		const fileNameWithoutExtension = fileRecord.name.split('.')[0];
 		const format = this.getFormat(outputFormat);
 		const name = `${fileNameWithoutExtension}.${format}`;
