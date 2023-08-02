@@ -121,4 +121,21 @@ describe('Logger', () => {
 			expect(service['context']).toEqual('test');
 		});
 	});
+
+	describe('notice', () => {
+		it('should call notice method of WinstonLogger with appropriate message', () => {
+			const loggable = new SampleLoggable();
+			service.setContext('test context');
+
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			const expectedMessage = expect.objectContaining({
+				message: "{ message: 'test message', data: 'test data' }",
+				context: 'test context',
+			});
+
+			service.notice(loggable);
+
+			expect(winstonLogger.notice).toBeCalledWith(expectedMessage);
+		});
+	});
 });
