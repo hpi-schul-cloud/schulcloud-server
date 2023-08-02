@@ -23,6 +23,27 @@ export class PseudonymService {
 		return pseudonymPromise;
 	}
 
+	public async findByUserId(userId: string): Promise<Pseudonym[]> {
+		if (!userId) {
+			throw new InternalServerErrorException('User id is missing');
+		}
+
+		let [pseudonyms, externalToolPseudonyms] = await Promise.all([
+			this.findPseudonymByUserId(userId),
+			this.findExternalToolPseudonymByUserId(userId),
+		]);
+
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+		pseudonyms === undefined ? (pseudonyms = []) : pseudonyms;
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+		externalToolPseudonyms === undefined ? (externalToolPseudonyms = []) : externalToolPseudonyms;
+
+		// const allPseudonyms = pseudonyms.concat(externalToolPseudonyms);
+		const allPseudonyms = [...pseudonyms, ...externalToolPseudonyms];
+
+		return allPseudonyms;
+	}
+
 	public async findOrCreatePseudonym(user: UserDO, tool: ExternalToolDO | LtiToolDO): Promise<Pseudonym> {
 		if (!user.id || !tool.id) {
 			throw new InternalServerErrorException('User or tool id is missing');
@@ -45,6 +66,42 @@ export class PseudonymService {
 		}
 
 		return pseudonym;
+	}
+
+	public async deleteByUserId(userId: string): Promise<number> {
+		if (!userId) {
+			throw new InternalServerErrorException('User id is missing');
+		}
+
+		const [deletedPseudonyms, deletedExternalToolPseudonyms] = await Promise.all([
+			this.deletePseudonymByUserId(userId),
+			this.deleteExternalToolPseudonymByUserId(userId),
+		]);
+
+		return deletedPseudonyms + deletedExternalToolPseudonyms;
+	}
+
+	private async findPseudonymByUserId(userId: string): Promise<Pseudonym[]> {
+		const pseudonymPromise: Promise<Pseudonym[]> = this.pseudonymRepo.findPseudonymsByUserId(userId);
+		return pseudonymPromise;
+	}
+
+	private async findExternalToolPseudonymByUserId(userId: string): Promise<Pseudonym[]> {
+		const externalToolPseudonymPromise: Promise<Pseudonym[]> =
+			this.externalToolPseudonymRepo.findPseudonymsByUserId(userId);
+
+		return externalToolPseudonymPromise;
+	}
+
+	private async deletePseudonymByUserId(userId: string): Promise<number> {
+		const pseudonymPromise: Promise<number> = this.pseudonymRepo.deletePseudonymsByUserId(userId);
+		return pseudonymPromise;
+	}
+
+	private async deleteExternalToolPseudonymByUserId(userId: string): Promise<number> {
+		const externalToolPseudonymPromise: Promise<number> =
+			this.externalToolPseudonymRepo.deletePseudonymsByUserId(userId);
+		return externalToolPseudonymPromise;
 	}
 
 	private getRepository(tool: ExternalToolDO | LtiToolDO): PseudonymsRepo | ExternalToolPseudonymRepo {
