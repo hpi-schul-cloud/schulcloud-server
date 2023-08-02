@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Query } from '@nestjs/common';
 import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
@@ -35,7 +35,7 @@ import {
 
 @ApiTags('Tool')
 @Authenticate('jwt')
-@Controller('tools')
+@Controller('tools/external-tools')
 export class ToolController {
 	constructor(
 		private readonly externalToolUc: ExternalToolUc,
@@ -50,6 +50,7 @@ export class ToolController {
 	@ApiUnprocessableEntityResponse()
 	@ApiUnauthorizedResponse()
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
+	@ApiOperation({ summary: 'Creates an ExternalTool' })
 	async createExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() externalToolParams: ExternalToolCreateParams
@@ -69,6 +70,7 @@ export class ToolController {
 	@ApiFoundResponse({ description: 'Tools has been found.', type: ExternalToolSearchListResponse })
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
+	@ApiOperation({ summary: 'Returns a list of ExternalTools' })
 	async findExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() filterQuery: ExternalToolSearchParams,
@@ -95,22 +97,27 @@ export class ToolController {
 		return response;
 	}
 
-	@Get(':toolId')
+	@Get(':externalToolId')
+	@ApiOperation({ summary: 'Returns an ExternalTool' })
 	async getExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolIdParams
 	): Promise<ExternalToolResponse> {
-		const externalTool: ExternalTool = await this.externalToolUc.getExternalTool(currentUser.userId, params.toolId);
+		const externalTool: ExternalTool = await this.externalToolUc.getExternalTool(
+			currentUser.userId,
+			params.externalToolId
+		);
 		const mapped: ExternalToolResponse = ExternalToolResponseMapper.mapToExternalToolResponse(externalTool);
 
 		return mapped;
 	}
 
-	@Post('/:toolId')
+	@Post('/:externalToolId')
 	@ApiOkResponse({ description: 'The Tool has been successfully updated.', type: ExternalToolResponse })
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
+	@ApiOperation({ summary: 'Updates an ExternalTool' })
 	async updateExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolIdParams,
@@ -119,7 +126,7 @@ export class ToolController {
 		const externalTool: ExternalToolUpdate = this.externalToolDOMapper.mapUpdateRequest(externalToolParams);
 		const updated: ExternalTool = await this.externalToolUc.updateExternalTool(
 			currentUser.userId,
-			params.toolId,
+			params.externalToolId,
 			externalTool
 		);
 		const mapped: ExternalToolResponse = ExternalToolResponseMapper.mapToExternalToolResponse(updated);
@@ -128,18 +135,22 @@ export class ToolController {
 		return mapped;
 	}
 
-	@Delete(':toolId')
+	@Delete(':externalToolId')
 	@ApiForbiddenResponse({ description: 'User is not allowed to access this resource.' })
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
+	@ApiOperation({ summary: 'Deletes an ExternalTool' })
+	@HttpCode(204)
 	async deleteExternalTool(@CurrentUser() currentUser: ICurrentUser, @Param() params: ToolIdParams): Promise<void> {
-		const promise: Promise<void> = this.externalToolUc.deleteExternalTool(currentUser.userId, params.toolId);
-		this.logger.debug(`ExternalTool with id ${params.toolId} was deleted by user with id ${currentUser.userId}`);
+		const promise: Promise<void> = this.externalToolUc.deleteExternalTool(currentUser.userId, params.externalToolId);
+		this.logger.debug(
+			`ExternalTool with id ${params.externalToolId} was deleted by user with id ${currentUser.userId}`
+		);
 
 		return promise;
 	}
 
-	@Get('/references/:contextType/:contextId')
-	@ApiOperation({ summary: 'Get Tool References' })
+	@Get('/:contextType/:contextId/references')
+	@ApiOperation({ summary: 'Get ExternalTool References' })
 	@ApiOkResponse({
 		description: 'The Tool References has been successfully fetched.',
 		type: ToolReferenceListResponse,
