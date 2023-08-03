@@ -315,7 +315,7 @@
 				},
 				"S3_REGION": {
 					"type": "string",
-					"default": "de",
+					"default": "eu-central-2",
 					"description": "Region name of bucket"
 				},
 				"S3_BUCKET_LIBRARIES": {
