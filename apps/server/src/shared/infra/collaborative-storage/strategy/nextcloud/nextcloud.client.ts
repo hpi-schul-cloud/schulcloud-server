@@ -429,7 +429,7 @@ export class NextcloudClient {
 			})
 			.catch((err) => {
 				error(err);
-				throw new Error();
+				throw new NotImplementedException();
 			});
 	}
 }
