@@ -1,18 +1,18 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
 import { Action } from '@src/modules/authorization';
 import { ToolLaunchService } from '../service';
 import { ToolLaunchData, ToolLaunchRequest } from '../types';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ContextExternalToolUc } from '../../context-external-tool/uc';
+import { ToolPermissionsUc } from '../../common/uc/tool-permissions.uc';
 
 @Injectable()
 export class ToolLaunchUc {
 	constructor(
 		private readonly toolLaunchService: ToolLaunchService,
 		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly contextExternalToolUc: ContextExternalToolUc
+		private readonly toolPermissionsUc: ToolPermissionsUc
 	) {}
 
 	async getToolLaunchRequest(userId: EntityId, contextExternalToolId: EntityId): Promise<ToolLaunchRequest> {
@@ -20,7 +20,7 @@ export class ToolLaunchUc {
 			contextExternalToolId
 		);
 
-		await this.contextExternalToolUc.ensureContextPermissions(userId, contextExternalTool, {
+		await this.toolPermissionsUc.ensureContextPermissions(userId, contextExternalTool, {
 			requiredPermissions: [Permission.CONTEXT_TOOL_USER],
 			action: Action.read,
 		});
