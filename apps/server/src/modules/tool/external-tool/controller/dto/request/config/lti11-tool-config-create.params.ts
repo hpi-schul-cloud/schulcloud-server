@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsLocale, IsOptional, IsString } from 'class-validator';
 import { LtiMessageType, LtiPrivacyPermission, ToolConfigType } from '../../../../../common/enum';
 import { ExternalToolConfigCreateParams } from './external-tool-config.params';
 
@@ -32,4 +32,8 @@ export class Lti11ToolConfigCreateParams extends ExternalToolConfigCreateParams 
 	@IsEnum(LtiPrivacyPermission)
 	@ApiProperty()
 	privacy_permission!: LtiPrivacyPermission;
+
+	@IsLocale()
+	@ApiProperty()
+	launch_presentation_locale!: string;
 }
