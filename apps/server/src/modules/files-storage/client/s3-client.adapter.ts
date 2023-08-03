@@ -9,7 +9,7 @@ import {
 	ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
 import { FileDto } from '../dto';
@@ -36,25 +36,33 @@ export class S3ClientAdapter implements IStorageClient {
 	}
 
 	public async get(path: string, bytesRange?: string): Promise<IGetFileResponse> {
-		this.logger.log({ action: 'get', params: { path, bucket: this.config.bucket } });
+		try {
+			this.logger.log({ action: 'get', params: { path, bucket: this.config.bucket } });
 
-		const req = new GetObjectCommand({
-			Bucket: this.config.bucket,
-			Key: path,
-			Range: bytesRange,
-		});
+			const req = new GetObjectCommand({
+				Bucket: this.config.bucket,
+				Key: path,
+				Range: bytesRange,
+			});
 
-		const data = await this.client.send(req);
-		const stream = data.Body as Readable;
+			const data = await this.client.send(req);
+			const stream = data.Body as Readable;
 
-		this.checkStreamResponsive(stream, path);
-		return {
-			data: stream,
-			contentType: data.ContentType,
-			contentLength: data.ContentLength,
-			contentRange: data.ContentRange,
-			etag: data.ETag,
-		};
+			this.checkStreamResponsive(stream, path);
+			return {
+				data: stream,
+				contentType: data.ContentType,
+				contentLength: data.ContentLength,
+				contentRange: data.ContentRange,
+				etag: data.ETag,
+			};
+		} catch (error) {
+			if (error instanceof S3ServiceException && error.name === 'NoSuchKey') {
+				throw new NotFoundException('NoSuchKey', { cause: error });
+			}
+
+			throw error;
+		}
 	}
 
 	public async create(path: string, file: FileDto): Promise<ServiceOutputTypes> {
