@@ -52,6 +52,16 @@ export class ContextExternalToolRepo extends BaseDORepo<
 		return dos;
 	}
 
+	async findByIdAndContext(query: ContextExternalToolQuery): Promise<ContextExternalTool> {
+		const tool: Promise<ContextExternalTool> = await this._em.findOneOrFail(this.entityName, {
+			id: query.id,
+			contextId: query.context?.id,
+			contextType: query.context?.type,
+		});
+
+		return tool;
+	}
+
 	private buildScope(query: ContextExternalToolQuery): ContextExternalToolScope {
 		const scope: ContextExternalToolScope = new ContextExternalToolScope();
 

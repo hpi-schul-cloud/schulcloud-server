@@ -60,6 +60,27 @@ export class ContextExternalToolUc {
 		return toolsWithPermission;
 	}
 
+	async getContextExternalTool(
+		userId: EntityId,
+		contextToolId: EntityId,
+		contextType: ToolContextType,
+		contextId: string
+	) {
+		const tool: ContextExternalTool = await this.contextExternalToolService.getContextExternalTool(
+			userId,
+			contextToolId,
+			contextType,
+			contextId
+		);
+
+		await this.contextExternalToolService.ensureContextPermissions(userId, tool, {
+			requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
+			action: Action.read,
+		});
+
+		return tool;
+	}
+
 	private async filterToolsWithPermissions(
 		userId: EntityId,
 		tools: ContextExternalTool[]

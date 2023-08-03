@@ -5,6 +5,7 @@ import { AuthorizableReferenceType, AuthorizationContext, AuthorizationService }
 import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
 import { ContextTypeMapper } from '../../common/mapper';
 import { ContextExternalTool, ContextRef } from '../domain';
+import { ToolContextType } from '../../common/enum';
 
 @Injectable()
 export class ContextExternalToolService {
@@ -30,6 +31,20 @@ export class ContextExternalToolService {
 		}
 
 		return contextExternalTools[0];
+	}
+
+	async getContextExternalTool(
+		userId: EntityId,
+		contextExternalToolId: EntityId,
+		contextType: ToolContextType,
+		contextId: EntityId
+	): Promise<ContextExternalTool> {
+		const tool: ContextExternalTool = await this.contextExternalToolRepo.findByIdAndContext({
+			id: contextExternalToolId,
+			context: { id: contextId, type: contextType },
+		});
+
+		return tool;
 	}
 
 	async createContextExternalTool(contextExternalTool: ContextExternalTool): Promise<ContextExternalTool> {
