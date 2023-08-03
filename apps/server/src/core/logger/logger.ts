@@ -33,4 +33,9 @@ export class Logger {
 	public setContext(name: string) {
 		this.context = name;
 	}
+
+	public notice(loggable: Loggable): void {
+		const message = LoggingUtils.createMessageWithContext(loggable, this.context);
+		this.logger.notice(message);
+	}
 }

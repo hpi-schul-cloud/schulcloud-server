@@ -1,11 +1,19 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardDoAuthorizable, InputFormat } from '@shared/domain';
-import { fileElementFactory, richTextElementFactory, setupEntities, userFactory } from '@shared/testing';
+import {
+	fileElementFactory,
+	richTextElementFactory,
+	setupEntities,
+	submissionContainerElementFactory,
+	submissionItemFactory,
+	userFactory,
+} from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { ObjectId } from 'bson';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
+import { SubmissionItemService } from '../service/submission-item.service';
 import { ElementUc } from './element.uc';
 
 describe(ElementUc.name, () => {
@@ -30,6 +38,10 @@ describe(ElementUc.name, () => {
 				{
 					provide: ContentElementService,
 					useValue: createMock<ContentElementService>(),
+				},
+				{
+					provide: SubmissionItemService,
+					useValue: createMock<SubmissionItemService>(),
 				},
 				{
 					provide: Logger,
@@ -107,6 +119,69 @@ describe(ElementUc.name, () => {
 				await uc.updateElementContent(user.id, fileElement.id, content);
 
 				expect(elementService.update).toHaveBeenCalledWith(fileElement, content);
+			});
+		});
+	});
+
+	describe('createSubmissionItem', () => {
+		describe('with non SubmissionContainerElement parent', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const fileElement = fileElementFactory.build();
+
+				const elementSpy = elementService.findById.mockResolvedValue(fileElement);
+
+				return { fileElement, user, elementSpy };
+			};
+
+			it('should throw', async () => {
+				const { fileElement, user } = setup();
+
+				await expect(uc.createSubmissionItem(user.id, fileElement.id)).rejects.toThrowError(
+					'Cannot create submission-item for non submission-container-element'
+				);
+			});
+		});
+
+		describe('with non SubmissionContainerElement containing non SubmissionItem children', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const fileElement = fileElementFactory.build();
+
+				const submissionContainer = submissionContainerElementFactory.build({ children: [fileElement] });
+
+				const elementSpy = elementService.findById.mockResolvedValue(submissionContainer);
+
+				return { submissionContainer, fileElement, user, elementSpy };
+			};
+
+			it('should throw', async () => {
+				const { submissionContainer, user } = setup();
+
+				await expect(uc.createSubmissionItem(user.id, submissionContainer.id)).rejects.toThrowError(
+					'Children of submission-container-element must be of type submission-item'
+				);
+			});
+		});
+
+		describe('with user already has a submission-item in the submission-container-element set', () => {
+			const setup = () => {
+				const user = userFactory.build();
+
+				const submissionItem = submissionItemFactory.build({ userId: user.id });
+				const submissionContainer = submissionContainerElementFactory.build({ children: [submissionItem] });
+
+				const elementSpy = elementService.findById.mockResolvedValue(submissionContainer);
+
+				return { submissionContainer, submissionItem, user, elementSpy };
+			};
+
+			it('should throw', async () => {
+				const { submissionContainer, user } = setup();
+
+				await expect(uc.createSubmissionItem(user.id, submissionContainer.id)).rejects.toThrowError(
+					'User is not allowed to have multiple submission-items per submission-container-element'
+				);
 			});
 		});
 	});

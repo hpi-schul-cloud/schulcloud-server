@@ -10,7 +10,6 @@ import {
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Body, Controller, Delete, Get, Param, Post, Query, Put } from '@nestjs/common';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/tool';
 import { ValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { LegacyLogger } from '@src/core/logger';
@@ -24,8 +23,9 @@ import {
 	SchoolExternalToolSearchListResponse,
 	SchoolExternalToolSearchParams,
 } from './dto';
-import { SchoolExternalTool } from '../uc/dto/school-external-tool.types';
+import { SchoolExternalToolDto } from '../uc/dto/school-external-tool.types';
 import { SchoolExternalToolUc } from '../uc';
+import { SchoolExternalTool } from '../domain';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -46,7 +46,7 @@ export class ToolSchoolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() schoolExternalToolParams: SchoolExternalToolSearchParams
 	): Promise<SchoolExternalToolSearchListResponse> {
-		const found: SchoolExternalToolDO[] = await this.schoolExternalToolUc.findSchoolExternalTools(currentUser.userId, {
+		const found: SchoolExternalTool[] = await this.schoolExternalToolUc.findSchoolExternalTools(currentUser.userId, {
 			schoolId: schoolExternalToolParams.schoolId,
 		});
 		const response: SchoolExternalToolSearchListResponse = this.responseMapper.mapToSearchListResponse(found);
@@ -60,12 +60,11 @@ export class ToolSchoolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams
 	): Promise<SchoolExternalToolResponse> {
-		const schoolExternalToolDO: SchoolExternalToolDO = await this.schoolExternalToolUc.getSchoolExternalTool(
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolUc.getSchoolExternalTool(
 			currentUser.userId,
 			params.schoolExternalToolId
 		);
-		const mapped: SchoolExternalToolResponse =
-			this.responseMapper.mapToSchoolExternalToolResponse(schoolExternalToolDO);
+		const mapped: SchoolExternalToolResponse = this.responseMapper.mapToSchoolExternalToolResponse(schoolExternalTool);
 		return mapped;
 	}
 
@@ -79,11 +78,11 @@ export class ToolSchoolController {
 		@Param() params: SchoolExternalToolIdParams,
 		@Body() body: SchoolExternalToolPostParams
 	): Promise<SchoolExternalToolResponse> {
-		const schoolExternalTool: SchoolExternalTool = this.requestMapper.mapSchoolExternalToolRequest(body);
-		const updated: SchoolExternalToolDO = await this.schoolExternalToolUc.updateSchoolExternalTool(
+		const schoolExternalToolDto: SchoolExternalToolDto = this.requestMapper.mapSchoolExternalToolRequest(body);
+		const updated: SchoolExternalTool = await this.schoolExternalToolUc.updateSchoolExternalTool(
 			currentUser.userId,
 			params.schoolExternalToolId,
-			schoolExternalTool
+			schoolExternalToolDto
 		);
 
 		const mapped: SchoolExternalToolResponse = this.responseMapper.mapToSchoolExternalToolResponse(updated);
@@ -117,11 +116,11 @@ export class ToolSchoolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: SchoolExternalToolPostParams
 	): Promise<SchoolExternalToolResponse> {
-		const schoolExternalTool: SchoolExternalTool = this.requestMapper.mapSchoolExternalToolRequest(body);
+		const schoolExternalToolDto: SchoolExternalToolDto = this.requestMapper.mapSchoolExternalToolRequest(body);
 
-		const createdSchoolExternalToolDO: SchoolExternalToolDO = await this.schoolExternalToolUc.createSchoolExternalTool(
+		const createdSchoolExternalToolDO: SchoolExternalTool = await this.schoolExternalToolUc.createSchoolExternalTool(
 			currentUser.userId,
-			schoolExternalTool
+			schoolExternalToolDto
 		);
 
 		const response: SchoolExternalToolResponse =
