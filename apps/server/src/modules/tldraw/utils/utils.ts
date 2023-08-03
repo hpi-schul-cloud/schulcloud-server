@@ -50,7 +50,12 @@ export const closeConn = (doc: WSSharedDoc, ws: WebSocket) => {
 			docs.delete(doc.name);
 		}
 	}
-	ws.close();
+
+	try {
+		ws.close();
+	} catch (err) {
+		throw new Error('Cannot close the connection. It is possible that connection is already closed.');
+	}
 };
 
 /**
