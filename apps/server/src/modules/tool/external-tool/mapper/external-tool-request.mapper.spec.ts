@@ -156,6 +156,7 @@ describe('ExternalToolRequestMapper', () => {
 				lti11ConfigParams.resource_link_id = 'mockLink';
 				lti11ConfigParams.lti_message_type = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
 				lti11ConfigParams.privacy_permission = LtiPrivacyPermission.NAME;
+				lti11ConfigParams.launch_presentation_locale = 'de-DE';
 
 				const lti11ToolConfigDO: Lti11ToolConfig = new Lti11ToolConfig({
 					privacy_permission: LtiPrivacyPermission.NAME,
@@ -248,6 +249,7 @@ describe('ExternalToolRequestMapper', () => {
 				lti11ConfigParams.resource_link_id = 'mockLink';
 				lti11ConfigParams.lti_message_type = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
 				lti11ConfigParams.privacy_permission = LtiPrivacyPermission.NAME;
+				lti11ConfigParams.launch_presentation_locale = 'de-DE';
 
 				const lti11ToolConfigDO: Lti11ToolConfig = new Lti11ToolConfig({
 					privacy_permission: LtiPrivacyPermission.NAME,
