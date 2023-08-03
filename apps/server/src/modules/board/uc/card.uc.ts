@@ -6,7 +6,7 @@ import {
 	EntityId,
 	FileElement,
 	RichTextElement,
-	TaskElement,
+	SubmissionContainerElement,
 } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
@@ -39,14 +39,18 @@ export class CardUc {
 	async createElement(
 		userId: EntityId,
 		cardId: EntityId,
-		type: ContentElementType
-	): Promise<FileElement | RichTextElement | TaskElement> {
+		type: ContentElementType,
+		toPosition?: number
+	): Promise<FileElement | RichTextElement | SubmissionContainerElement> {
 		this.logger.debug({ action: 'createElement', userId, cardId, type });
 
 		const card = await this.cardService.findById(cardId);
 		await this.checkPermission(userId, card, Action.write);
 
 		const element = await this.elementService.create(card, type);
+		if (toPosition !== undefined && typeof toPosition === 'number') {
+			await this.elementService.move(element, card, toPosition);
+		}
 
 		return element;
 	}

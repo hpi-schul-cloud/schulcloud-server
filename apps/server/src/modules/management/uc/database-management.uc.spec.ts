@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { StorageProvider, System } from '@shared/domain';
@@ -10,9 +11,11 @@ import {
 	SymetricKeyEncryptionService,
 } from '@shared/infra/encryption';
 import { FileSystemAdapter } from '@shared/infra/file-system';
+import { setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { ObjectId } from 'mongodb';
 import { BsonConverter } from '../converter/bson.converter';
+import { generateSeedData } from '../seed-data/generateSeedData';
 import { DatabaseManagementUc } from './database-management.uc';
 
 describe('DatabaseManagementService', () => {
@@ -177,6 +180,7 @@ describe('DatabaseManagementService', () => {
 				{ provide: DefaultEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
 				{ provide: ConfigService, useValue: createMock<ConfigService>() },
 				{ provide: LegacyLogger, useValue: createMock<LegacyLogger>() },
+				{ provide: EntityManager, useValue: createMock<EntityManager>() },
 				{ provide: LdapEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
 				{
 					provide: FileSystemAdapter,
@@ -252,6 +256,7 @@ describe('DatabaseManagementService', () => {
 		logger = module.get(LegacyLogger);
 		defaultEncryptionService = module.get(DefaultEncryptionService);
 		ldapEncryptionService = module.get(LdapEncryptionService);
+		await setupEntities();
 	});
 
 	afterAll(async () => {
@@ -617,11 +622,43 @@ describe('DatabaseManagementService', () => {
 			});
 		});
 	});
+
 	describe('DatabaseManagementService', () => {
 		it('should call syncIndexes()', async () => {
 			dbService.syncIndexes = jest.fn();
 			await uc.syncIndexes();
 			expect(dbService.syncIndexes).toHaveBeenCalled();
+		});
+	});
+
+	describe('when seeding database from factories', () => {
+		it('should return correct number of seeded collections with length', async () => {
+			const collectionsSeeded = await uc.seedDatabaseCollectionsFromFactories();
+			// eslint-disable-next-line @typescript-eslint/dot-notation
+			const expectedCollectionsWithLength = generateSeedData((s) => uc['injectEnvVars'](s)).map(
+				(c) => `${c.collectionName}:${c.data.length}`
+			);
+			expect(collectionsSeeded).toStrictEqual(expectedCollectionsWithLength);
+		});
+
+		it('should return correct number of filtered seeded collections', async () => {
+			const filteredCollections = ['roles'];
+			const collectionsSeeded = await uc.seedDatabaseCollectionsFromFactories(filteredCollections);
+			// eslint-disable-next-line @typescript-eslint/dot-notation
+			const expectedCollectionsWithLength = generateSeedData((s) => uc['injectEnvVars'](s))
+				.filter((d) => filteredCollections.includes(d.collectionName))
+				.map((c) => `${c.collectionName}:${c.data.length}`);
+			expect(collectionsSeeded).toStrictEqual(expectedCollectionsWithLength);
+		});
+
+		it('should call dropCollectionIfExists if collection is present', async () => {
+			dbService.collectionExists.mockReturnValue(Promise.resolve(true));
+			const collectionsSeeded = await uc.seedDatabaseCollectionsFromFactories();
+			// eslint-disable-next-line @typescript-eslint/dot-notation
+			const expectedCollectionsWithLength = generateSeedData((s) => uc['injectEnvVars'](s)).map(
+				(c) => `${c.collectionName}:${c.data.length}`
+			);
+			expect(collectionsSeeded).toStrictEqual(expectedCollectionsWithLength);
 		});
 	});
 });
