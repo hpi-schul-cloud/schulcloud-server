@@ -17,7 +17,7 @@ export class ErrorMapper {
 		} else if (errorObj.status === 403) {
 			error = new ForbiddenException(errorObj.message);
 		} else {
-			error = new InternalServerErrorException(null, { cause: errorObj });
+			error = new InternalServerErrorException(errorObj.message, { cause: errorObj });
 		}
 
 		return error;
