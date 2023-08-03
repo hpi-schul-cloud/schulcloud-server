@@ -1,4 +1,4 @@
-import { Injectable, NotAcceptableException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { LegacyLogger } from '@src/core/logger';
 import crypto from 'crypto';
 import { subClass } from 'gm';
@@ -58,7 +58,7 @@ export class PreviewService {
 		return response;
 	}
 
-	private checkIfPreviewPossible(fileRecord: FileRecord): void | NotAcceptableException {
+	private checkIfPreviewPossible(fileRecord: FileRecord): void | UnprocessableEntityException {
 		if (!fileRecord.isPreviewPossible()) {
 			this.logger.warn(`could not generate preview for : ${fileRecord.id} ${fileRecord.mimeType}`);
 			throw new UnprocessableEntityException(ErrorType.PREVIEW_NOT_POSSIBLE);
