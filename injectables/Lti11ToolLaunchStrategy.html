@@ -1505,13 +1505,13 @@ import { PseudonymService } from &#x27;@src/modules/pseudonym&#x27;;
 import { SchoolService } from &#x27;@src/modules/school&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
 import { Authorization } from &#x27;oauth-1.0a&#x27;;
+import { LtiRole } from &#x27;../../../common/enum&#x27;;
+import { ExternalTool } from &#x27;../../../external-tool/domain&#x27;;
 import { LtiRoleMapper } from &#x27;../../mapper&#x27;;
 import { LaunchRequestMethod, PropertyData, PropertyLocation } from &#x27;../../types&#x27;;
 import { Lti11EncryptionService } from &#x27;../lti11-encryption.service&#x27;;
 import { AbstractLaunchStrategy } from &#x27;./abstract-launch.strategy&#x27;;
 import { IToolLaunchParams } from &#x27;./tool-launch-params.interface&#x27;;
-import { ExternalTool } from &#x27;../../../external-tool/domain&#x27;;
-import { LtiRole } from &#x27;../../../common/enum&#x27;;
 
 @Injectable()
 export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
@@ -1562,7 +1562,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			}),
 			new PropertyData({
 				name: &#x27;launch_presentation_locale&#x27;,
-				value: &#x27;de-DE&#x27;,
+				value: config.launch_presentation_locale,
 				location: PropertyLocation.BODY,
 			}),
 			new PropertyData({

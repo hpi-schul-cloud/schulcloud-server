@@ -178,8 +178,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="109"
-                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.mapper.ts:109</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="110"
+                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.mapper.ts:110</a></div>
                 </td>
             </tr>
 
@@ -320,8 +320,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="155"
-                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.mapper.ts:155</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="157"
+                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.mapper.ts:157</a></div>
                 </td>
             </tr>
 
@@ -391,8 +391,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="183"
-                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.mapper.ts:183</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="185"
+                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.mapper.ts:185</a></div>
                 </td>
             </tr>
 
@@ -462,8 +462,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="173"
-                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.mapper.ts:173</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="175"
+                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.mapper.ts:175</a></div>
                 </td>
             </tr>
 
@@ -533,8 +533,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="137"
-                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.mapper.ts:137</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="139"
+                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.mapper.ts:139</a></div>
                 </td>
             </tr>
 
@@ -604,8 +604,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="80"
-                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.mapper.ts:80</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="81"
+                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.mapper.ts:81</a></div>
                 </td>
             </tr>
 
@@ -746,8 +746,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="125"
-                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.mapper.ts:125</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="126"
+                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.mapper.ts:126</a></div>
                 </td>
             </tr>
 
@@ -888,8 +888,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="116"
-                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.mapper.ts:116</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="117"
+                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.mapper.ts:117</a></div>
                 </td>
             </tr>
 
@@ -1019,7 +1019,15 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
+import { CustomParameter, CustomParameterEntry } from &#x27;@src/modules/tool/common/domain&#x27;;
 import { CustomParameterEntryEntity } from &#x27;@src/modules/tool/common/entity&#x27;;
+import { ToolConfigType } from &#x27;@src/modules/tool/common/enum&#x27;;
+import {
+	BasicToolConfig,
+	ExternalTool,
+	Lti11ToolConfig,
+	Oauth2ToolConfig,
+} from &#x27;@src/modules/tool/external-tool/domain&#x27;;
 import {
 	BasicToolConfigEntity,
 	CustomParameterEntity,
@@ -1028,14 +1036,6 @@ import {
 	Lti11ToolConfigEntity,
 	Oauth2ToolConfigEntity,
 } from &#x27;@src/modules/tool/external-tool/entity&#x27;;
-import {
-	BasicToolConfig,
-	ExternalTool,
-	Lti11ToolConfig,
-	Oauth2ToolConfig,
-} from &#x27;@src/modules/tool/external-tool/domain&#x27;;
-import { ToolConfigType } from &#x27;@src/modules/tool/common/enum&#x27;;
-import { CustomParameter, CustomParameterEntry } from &#x27;@src/modules/tool/common/domain&#x27;;
 
 // TODO: maybe rename because of usage in external tool repo and school external tool repo
 export class ExternalToolRepoMapper {
@@ -1094,6 +1094,7 @@ export class ExternalToolRepoMapper {
 			lti_message_type: lti11Config.lti_message_type,
 			resource_link_id: lti11Config.resource_link_id,
 			privacy_permission: lti11Config.privacy_permission,
+			launch_presentation_locale: lti11Config.launch_presentation_locale,
 		});
 	}
 
@@ -1151,6 +1152,7 @@ export class ExternalToolRepoMapper {
 			lti_message_type: lti11Config.lti_message_type,
 			resource_link_id: lti11Config.resource_link_id,
 			privacy_permission: lti11Config.privacy_permission,
+			launch_presentation_locale: lti11Config.launch_presentation_locale,
 		});
 	}
 

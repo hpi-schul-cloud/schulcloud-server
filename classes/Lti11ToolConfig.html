@@ -98,6 +98,9 @@
                                 <a href="#key" >key</a>
                             </li>
                             <li>
+                                <a href="#launch_presentation_locale" >launch_presentation_locale</a>
+                            </li>
+                            <li>
                                 <a href="#lti_message_type" >lti_message_type</a>
                             </li>
                             <li>
@@ -140,7 +143,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/tool/external-tool/domain/config/lti11-tool-config.do.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/tool/external-tool/domain/config/lti11-tool-config.do.ts:15</a></div>
                             </td>
                         </tr>
 
@@ -203,6 +206,32 @@
                     <tr>
                         <td class="col-md-4">
                                 <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/tool/external-tool/domain/config/lti11-tool-config.do.ts:5</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="launch_presentation_locale"></a>
+                    <span class="name">
+                        <span ><b>launch_presentation_locale</b></span>
+                        <a href="#launch_presentation_locale"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/tool/external-tool/domain/config/lti11-tool-config.do.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -392,7 +421,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LtiMessageType, ToolConfigType, LtiPrivacyPermission } from &#x27;../../../common/enum&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LtiMessageType, LtiPrivacyPermission, ToolConfigType } from &#x27;../../../common/enum&#x27;;
 import { ExternalToolConfig } from &#x27;./external-tool-config.do&#x27;;
 
 export class Lti11ToolConfig extends ExternalToolConfig {
@@ -406,6 +435,8 @@ export class Lti11ToolConfig extends ExternalToolConfig {
 
 	privacy_permission: LtiPrivacyPermission;
 
+	launch_presentation_locale: string;
+
 	constructor(props: Lti11ToolConfig) {
 		super({
 			type: ToolConfigType.LTI11,
@@ -416,6 +447,7 @@ export class Lti11ToolConfig extends ExternalToolConfig {
 		this.resource_link_id &#x3D; props.resource_link_id;
 		this.lti_message_type &#x3D; props.lti_message_type;
 		this.privacy_permission &#x3D; props.privacy_permission;
+		this.launch_presentation_locale &#x3D; props.launch_presentation_locale;
 	}
 }
 </code></pre>
