@@ -1,14 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain';
 import { ContextExternalToolRepo } from '@shared/repo';
 import {
 	contextExternalToolFactory,
 	schoolDOFactory,
 	schoolExternalToolFactory,
 } from '@shared/testing/factory/domainobject';
-import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationService } from '@src/modules/authorization';
 import { ContextExternalToolService } from './context-external-tool.service';
 import { ToolContextType } from '../../common/enum';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
@@ -19,7 +18,6 @@ describe('ContextExternalToolService', () => {
 	let service: ContextExternalToolService;
 
 	let contextExternalToolRepo: DeepMocked<ContextExternalToolRepo>;
-	let authorizationService: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -38,7 +36,6 @@ describe('ContextExternalToolService', () => {
 
 		service = module.get(ContextExternalToolService);
 		contextExternalToolRepo = module.get(ContextExternalToolRepo);
-		authorizationService = module.get(AuthorizationService);
 	});
 
 	afterAll(async () => {
@@ -189,81 +186,6 @@ describe('ContextExternalToolService', () => {
 				await service.deleteContextExternalTool(contextExternalTool);
 
 				expect(contextExternalToolRepo.delete).toHaveBeenCalledWith(contextExternalTool);
-			});
-		});
-	});
-
-	describe('ensureContextPermissions is called', () => {
-		const setup = () => {
-			const userId = 'userId';
-			const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
-
-			return {
-				userId,
-				contextExternalTool,
-			};
-		};
-
-		describe('context external tool has a id', () => {
-			it('should check permission by reference for context external tool itself', async () => {
-				const { userId, contextExternalTool } = setup();
-
-				await service.ensureContextPermissions(userId, contextExternalTool, {
-					requiredPermissions: [Permission.CONTEXT_TOOL_USER],
-					action: Action.read,
-				});
-
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
-					userId,
-					AuthorizableReferenceType.ContextExternalToolEntity,
-					contextExternalTool.id,
-					{
-						action: Action.read,
-						requiredPermissions: [Permission.CONTEXT_TOOL_USER],
-					}
-				);
-			});
-
-			it('should check permission by reference for the dependent context of the context external tool', async () => {
-				const { userId, contextExternalTool } = setup();
-				contextExternalTool.contextRef.type = ToolContextType.COURSE;
-
-				await service.ensureContextPermissions(userId, contextExternalTool, {
-					requiredPermissions: [Permission.CONTEXT_TOOL_USER],
-					action: Action.read,
-				});
-
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
-					userId,
-					AuthorizableReferenceType.Course,
-					contextExternalTool.contextRef.id,
-					{
-						action: Action.read,
-						requiredPermissions: [Permission.CONTEXT_TOOL_USER],
-					}
-				);
-			});
-		});
-
-		describe('context external tool has no id yet', () => {
-			it('should skip permission check for context external tool', async () => {
-				const { userId, contextExternalTool } = setup();
-				const contextExternalToolWithoutId = new ContextExternalTool({ ...contextExternalTool, id: '' });
-
-				await service.ensureContextPermissions(userId, contextExternalToolWithoutId, {
-					requiredPermissions: [Permission.CONTEXT_TOOL_USER],
-					action: Action.read,
-				});
-
-				expect(authorizationService.checkPermissionByReferences).not.toHaveBeenCalledWith(
-					userId,
-					AuthorizableReferenceType.ContextExternalToolEntity,
-					contextExternalToolWithoutId.id,
-					{
-						action: Action.read,
-						requiredPermissions: [Permission.CONTEXT_TOOL_USER],
-					}
-				);
 			});
 		});
 	});
