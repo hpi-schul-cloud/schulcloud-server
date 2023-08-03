@@ -1,7 +1,4 @@
 import { setupEntities } from '@shared/testing';
-import { BasicToolConfigEntity, Lti11ToolConfigEntity, Oauth2ToolConfigEntity } from './config';
-import { CustomParameterEntity } from './custom-parameter';
-import { ExternalToolEntity } from './external-tool.entity';
 import {
 	CustomParameterLocation,
 	CustomParameterScope,
@@ -10,6 +7,9 @@ import {
 	LtiPrivacyPermission,
 	ToolConfigType,
 } from '../../common/enum';
+import { BasicToolConfigEntity, Lti11ToolConfigEntity, Oauth2ToolConfigEntity } from './config';
+import { CustomParameterEntity } from './custom-parameter';
+import { ExternalToolEntity } from './external-tool.entity';
 
 describe('ExternalToolEntity', () => {
 	beforeAll(async () => {
@@ -36,6 +36,7 @@ describe('ExternalToolEntity', () => {
 				resource_link_id: 'mockLink',
 				lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 				privacy_permission: LtiPrivacyPermission.ANONYMOUS,
+				launch_presentation_locale: 'de-DE',
 			});
 			const customParameter: CustomParameterEntity = new CustomParameterEntity({
 				name: 'parameterName',
