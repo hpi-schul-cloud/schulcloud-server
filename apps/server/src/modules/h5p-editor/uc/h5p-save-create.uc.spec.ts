@@ -21,7 +21,6 @@ const setup = () => {
 		title: '123',
 	};
 	const params = {};
-	const contentIdUndefined = undefined as unknown as string;
 	const mainLibraryUbername = 'mainLib';
 	const currentUser: ICurrentUser = {
 		userId: '123',
@@ -33,7 +32,6 @@ const setup = () => {
 
 	return {
 		contentId,
-		contentIdUndefined,
 		notExistingContentId,
 		currentUser,
 		params,
@@ -82,41 +80,43 @@ describe('save or create H5P content', () => {
 		await module.close();
 	});
 
-	describe('when value of contentId is create', () => {
+	describe('save H5P content', () => {
+		describe('when contentId is given', () => {
+			it('should render h5p editor', async () => {
+				const { contentId, metadata, mainLibraryUbername, params, currentUser, id } = setup();
+				const result1 = { id, metadata };
+				h5pEditor.saveOrUpdateContentReturnMetaData.mockResolvedValueOnce(result1);
+				const result = await uc.saveH5pContentGetMetadata(
+					contentId,
+					currentUser,
+					params,
+					metadata,
+					mainLibraryUbername
+				);
+
+				expect(result).toEqual(result1);
+			});
+		});
+
+		describe('when contentId does not exist', () => {
+			it('should throw an error ', async () => {
+				const { metadata, mainLibraryUbername, params, notExistingContentId, currentUser, error } = setup();
+				h5pEditor.saveOrUpdateContentReturnMetaData.mockRejectedValueOnce(error);
+				await expect(
+					uc.saveH5pContentGetMetadata(notExistingContentId, currentUser, params, metadata, mainLibraryUbername)
+				).rejects.toThrowError(error);
+			});
+		});
+	});
+
+	describe('create H5P content', () => {
 		it('should create new h5p content', async () => {
-			const { contentIdUndefined, metadata, mainLibraryUbername, params, currentUser, id } = setup();
+			const { metadata, mainLibraryUbername, params, currentUser, id } = setup();
 			const result1 = { id, metadata };
 			h5pEditor.saveOrUpdateContentReturnMetaData.mockResolvedValueOnce(result1);
-			const result = await uc.saveH5pContentGetMetadata(
-				contentIdUndefined,
-				currentUser,
-				params,
-				metadata,
-				mainLibraryUbername
-			);
+			const result = await uc.createH5pContentGetMetadata(currentUser, params, metadata, mainLibraryUbername);
 
 			expect(result).toEqual(result1);
-		});
-	});
-
-	describe('when contentId is given', () => {
-		it('should render h5p editor', async () => {
-			const { contentId, metadata, mainLibraryUbername, params, currentUser, id } = setup();
-			const result1 = { id, metadata };
-			h5pEditor.saveOrUpdateContentReturnMetaData.mockResolvedValueOnce(result1);
-			const result = await uc.saveH5pContentGetMetadata(contentId, currentUser, params, metadata, mainLibraryUbername);
-
-			expect(result).toEqual(result1);
-		});
-	});
-
-	describe('when contentId does not exist', () => {
-		it('should throw an error ', async () => {
-			const { metadata, mainLibraryUbername, params, notExistingContentId, currentUser, error } = setup();
-			h5pEditor.saveOrUpdateContentReturnMetaData.mockRejectedValueOnce(error);
-			await expect(
-				uc.saveH5pContentGetMetadata(notExistingContentId, currentUser, params, metadata, mainLibraryUbername)
-			).rejects.toThrowError(error);
 		});
 	});
 });
