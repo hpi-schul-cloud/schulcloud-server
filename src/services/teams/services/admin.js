@@ -59,7 +59,7 @@ class AdminOverview {
 				if (m.userId) {
 					const obj = {
 						role: m.role.name,
-						user: AdminOverview.getKeys(m.userId, ['roles', '_id', 'firstName', 'lastName']),
+						user: AdminOverview.getKeys(m.userId, ['roles', '_id', 'firstName', 'lastName', 'outdatedSince']),
 					};
 					reducedSchoolMembers.push(obj);
 				}
@@ -199,7 +199,9 @@ class AdminOverview {
 	}
 
 	static getRestrictedQuery(teamIds, schoolId) {
-		let query = teamIds.map((_id) => ({ _id }));
+		let query = teamIds.map((_id) => {
+			return { _id };
+		});
 		query = { $or: query, $populate: [{ path: 'userIds.userId' }] };
 		query.schoolIds = schoolId;
 		return { query };
