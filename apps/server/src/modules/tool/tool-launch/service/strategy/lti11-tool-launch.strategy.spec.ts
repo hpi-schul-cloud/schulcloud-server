@@ -15,14 +15,14 @@ import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
 import { Authorization } from 'oauth-1.0a';
+import { LtiMessageType, LtiPrivacyPermission, LtiRole, ToolContextType } from '../../../common/enum';
+import { ContextExternalTool } from '../../../context-external-tool/domain';
+import { ExternalTool } from '../../../external-tool/domain';
+import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { Lti11ToolLaunchStrategy } from './lti11-tool-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
-import { ExternalTool } from '../../../external-tool/domain';
-import { LtiMessageType, LtiPrivacyPermission, LtiRole, ToolContextType } from '../../../common/enum';
-import { SchoolExternalTool } from '../../../school-external-tool/domain';
-import { ContextExternalTool } from '../../../context-external-tool/domain';
 
 describe('Lti11ToolLaunchStrategy', () => {
 	let module: TestingModule;
@@ -81,6 +81,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 				const mockSecret = 'mockSecret';
 				const ltiMessageType = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
 				const resourceLinkId = 'resourceLinkId';
+				const launchPresentationLocale = 'de-DE';
 
 				const externalTool: ExternalTool = externalToolFactory
 					.withLti11Config({
@@ -89,6 +90,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 						lti_message_type: ltiMessageType,
 						privacy_permission: LtiPrivacyPermission.PUBLIC,
 						resource_link_id: resourceLinkId,
+						launch_presentation_locale: launchPresentationLocale,
 					})
 					.buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
@@ -122,6 +124,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 					mockSecret,
 					ltiMessageType,
 					resourceLinkId,
+					launchPresentationLocale,
 				};
 			};
 
@@ -139,7 +142,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 			});
 
 			it('should contain mandatory lti attributes', async () => {
-				const { data, ltiMessageType, resourceLinkId } = setup();
+				const { data, ltiMessageType, resourceLinkId, launchPresentationLocale } = setup();
 
 				const result: PropertyData[] = await strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
 
@@ -159,7 +162,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 						}),
 						new PropertyData({
 							name: 'launch_presentation_locale',
-							value: 'de-DE',
+							value: launchPresentationLocale,
 							location: PropertyLocation.BODY,
 						}),
 						new PropertyData({
