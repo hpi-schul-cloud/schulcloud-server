@@ -1,41 +1,41 @@
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import {
-	Account,
-	Counted,
-	EntityId,
-	IFindOptions,
-	IImportUserScope,
-	ImportUser,
-	INameMatch,
-	MatchCreator,
-	MatchCreatorScope,
-	Permission,
-	SchoolFeatures,
-	System,
-	User,
+    Account,
+    Counted,
+    EntityId,
+    IFindOptions,
+    IImportUserScope,
+    INameMatch,
+    ImportUser,
+    MatchCreator,
+    MatchCreatorScope,
+    Permission,
+    SchoolFeatures,
+    System,
+    User,
 } from '@shared/domain';
 
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
+import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import { AuthorizationService } from '@src/modules/authorization';
-import { Logger } from '@src/core/logger';
-import {
-	UserMigrationIsNotEnabled,
-	SchoolInUserMigrationStartLoggable,
-	SchoolInUserMigrationEndLoggable,
-	SchoolIdDoesNotMatchWithUserSchoolId,
-	MigrationMayNotBeCompleted,
-	MigrationMayBeCompleted,
-} from '../loggable';
 import { SchoolService } from '../../school';
 import {
-	LdapAlreadyPersistedException,
-	MigrationAlreadyActivatedException,
-	MissingSchoolNumberException,
+    MigrationMayBeCompleted,
+    MigrationMayNotBeCompleted,
+    SchoolIdDoesNotMatchWithUserSchoolId,
+    SchoolInUserMigrationEndLoggable,
+    SchoolInUserMigrationStartLoggable,
+    UserMigrationIsNotEnabled,
+} from '../loggable';
+import {
+    LdapAlreadyPersistedException,
+    MigrationAlreadyActivatedException,
+    MissingSchoolNumberException,
 } from './ldap-user-migration.error';
 
 export type UserImportPermissions =
@@ -61,7 +61,7 @@ export class UserImportUc {
 		const enabled = Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean;
 		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeatures.LDAP_UNIVENTION_MIGRATION);
 		if (!enabled && !isLdapPilotSchool) {
-			this.logger.warn(new UserMigrationIsNotEnabled());
+			this.logger.warning(new UserMigrationIsNotEnabled());
 			throw new InternalServerErrorException('User Migration not enabled');
 		}
 	}
@@ -102,7 +102,7 @@ export class UserImportUc {
 
 		// check same school
 		if (!school.id || school.id !== userMatch.school.id || school.id !== importUser.school.id) {
-			this.logger.warn(new SchoolIdDoesNotMatchWithUserSchoolId(userMatch.school.id, importUser.school.id, school.id));
+			this.logger.warning(new SchoolIdDoesNotMatchWithUserSchoolId(userMatch.school.id, importUser.school.id, school.id));
 			throw new ForbiddenException('not same school');
 		}
 
@@ -123,7 +123,7 @@ export class UserImportUc {
 		const importUser = await this.importUserRepo.findById(importUserId);
 		// check same school
 		if (school.id !== importUser.school.id) {
-			this.logger.warn(new SchoolIdDoesNotMatchWithUserSchoolId('', importUser.school.id, school.id));
+			this.logger.warning(new SchoolIdDoesNotMatchWithUserSchoolId('', importUser.school.id, school.id));
 			throw new ForbiddenException('not same school');
 		}
 
@@ -141,7 +141,7 @@ export class UserImportUc {
 
 		// check same school
 		if (school.id !== importUser.school.id) {
-			this.logger.warn(new SchoolIdDoesNotMatchWithUserSchoolId('', importUser.school.id, school.id));
+			this.logger.warning(new SchoolIdDoesNotMatchWithUserSchoolId('', importUser.school.id, school.id));
 			throw new ForbiddenException('not same school');
 		}
 
@@ -220,7 +220,7 @@ export class UserImportUc {
 		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
 		if (!school.externalId || school.inUserMigration !== true || !school.inMaintenanceSince) {
-			this.logger.warn(new MigrationMayBeCompleted(school.inUserMigration));
+			this.logger.warning(new MigrationMayBeCompleted(school.inUserMigration));
 			throw new BadRequestException('School cannot exit from user migration mode');
 		}
 		school.inUserMigration = false;
@@ -254,7 +254,7 @@ export class UserImportUc {
 		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
 		if (school.inUserMigration !== false || !school.inMaintenanceSince || !school.externalId) {
-			this.logger.warn(new MigrationMayNotBeCompleted(school.inUserMigration));
+			this.logger.warning(new MigrationMayNotBeCompleted(school.inUserMigration));
 			throw new BadRequestException('Sync cannot be activated for school');
 		}
 		school.inMaintenanceSince = undefined;

@@ -4,8 +4,8 @@ import { Logger } from '@src/core/logger';
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { SchoolService } from '@src/modules/school';
 import {
-	UserLoginMigrationGracePeriodExpiredLoggableException,
-	UserLoginMigrationNotFoundLoggableException,
+    UserLoginMigrationGracePeriodExpiredLoggableException,
+    UserLoginMigrationNotFoundLoggableException,
 } from '../error';
 import { UserLoginMigrationStartLoggable } from '../loggable';
 import { UserLoginMigrationService } from '../service';
@@ -38,7 +38,7 @@ export class RestartUserLoginMigrationUc {
 		} else if (userLoginMigration.closedAt) {
 			userLoginMigration = await this.userLoginMigrationService.restartMigration(schoolId);
 
-			this.logger.log(new UserLoginMigrationStartLoggable(userId, schoolId));
+			this.logger.info(new UserLoginMigrationStartLoggable(userId, schoolId));
 		} else {
 			// Do nothing, if migration is already started but not stopped.
 		}
