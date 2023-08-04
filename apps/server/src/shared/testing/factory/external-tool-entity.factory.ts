@@ -57,6 +57,7 @@ export class ExternalToolEntityFactory extends BaseFactory<ExternalToolEntity, I
 				resource_link_id: 'resource_link_id',
 				secret: 'secret',
 				privacy_permission: LtiPrivacyPermission.ANONYMOUS,
+				launch_presentation_locale: 'de-DE',
 			}),
 		};
 		return this.params(params);
