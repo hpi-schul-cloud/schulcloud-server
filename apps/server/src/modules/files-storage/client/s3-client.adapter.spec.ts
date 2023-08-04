@@ -267,7 +267,7 @@ describe('S3ClientAdapter', () => {
 			const setup = () => {
 				const { file } = createFile();
 				const { pathToFile } = createParameter();
-				const error = new InternalServerErrorException('testError', 'S3ClientAdapter:create');
+				const error = new InternalServerErrorException('S3ClientAdapter:create');
 
 				const uploadDoneMock = jest.spyOn(Upload.prototype, 'done').mockRejectedValueOnce(error);
 
