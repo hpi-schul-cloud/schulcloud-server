@@ -24,7 +24,7 @@ export class LegacyLogger implements ILegacyLogger {
 	constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: WinstonLogger) {}
 
 	log(message: unknown, context?: string): void {
-		this.logger.log('info', this.createMessage(message, context));
+		this.logger.info(this.createMessage(message, context));
 	}
 
 	warn(message: unknown, context?: string): void {
@@ -33,10 +33,6 @@ export class LegacyLogger implements ILegacyLogger {
 
 	debug(message: unknown, context?: string): void {
 		this.logger.debug(this.createMessage(message, context));
-	}
-
-	verbose(message: unknown, context?: string): void {
-		this.logger.verbose(this.createMessage(message, context));
 	}
 
 	http(message: RequestLoggingBody, context?: string): void {
