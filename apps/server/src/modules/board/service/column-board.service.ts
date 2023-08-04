@@ -113,6 +113,14 @@ export class ColumnBoardService {
 			card.addChild(text3);
 		}
 
+		if (Configuration.has('COLUMN_BOARD_CONTACT_LINK')) {
+			const contactLink = Configuration.get('COLUMN_BOARD_CONTACT_LINK') as string;
+			const text4 = this.createRichTextElement(
+				`<p>Wir freuen uns über <a href="${contactLink}">Feedback und Wünsche</a>.</p>`
+			);
+			card.addChild(text4);
+		}
+
 		await this.boardDoRepo.save(columnBoard);
 
 		return columnBoard;
