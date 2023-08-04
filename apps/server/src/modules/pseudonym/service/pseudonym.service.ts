@@ -30,8 +30,8 @@ export class PseudonymService {
 		}
 
 		let [pseudonyms, externalToolPseudonyms] = await Promise.all([
-			this.findPseudonymByUserId(userId),
-			this.findExternalToolPseudonymByUserId(userId),
+			this.findPseudonymsByUserId(userId),
+			this.findExternalToolPseudonymsByUserId(userId),
 		]);
 
 		if (pseudonyms === undefined) {
@@ -77,33 +77,35 @@ export class PseudonymService {
 		}
 
 		const [deletedPseudonyms, deletedExternalToolPseudonyms] = await Promise.all([
-			this.deletePseudonymByUserId(userId),
-			this.deleteExternalToolPseudonymByUserId(userId),
+			this.deletePseudonymsByUserId(userId),
+			this.deleteExternalToolPseudonymsByUserId(userId),
 		]);
 
 		return deletedPseudonyms + deletedExternalToolPseudonyms;
 	}
 
-	private async findPseudonymByUserId(userId: string): Promise<Pseudonym[]> {
-		const pseudonymPromise: Promise<Pseudonym[]> = this.pseudonymRepo.findPseudonymsByUserId(userId);
+	private async findPseudonymsByUserId(userId: string): Promise<Pseudonym[]> {
+		const pseudonymPromise: Promise<Pseudonym[]> = this.pseudonymRepo.findByUserId(userId);
+
 		return pseudonymPromise;
 	}
 
-	private async findExternalToolPseudonymByUserId(userId: string): Promise<Pseudonym[]> {
-		const externalToolPseudonymPromise: Promise<Pseudonym[]> =
-			this.externalToolPseudonymRepo.findPseudonymsByUserId(userId);
+	private async findExternalToolPseudonymsByUserId(userId: string): Promise<Pseudonym[]> {
+		const externalToolPseudonymPromise: Promise<Pseudonym[]> = this.externalToolPseudonymRepo.findByUserId(userId);
 
 		return externalToolPseudonymPromise;
 	}
 
-	private async deletePseudonymByUserId(userId: string): Promise<number> {
+	private async deletePseudonymsByUserId(userId: string): Promise<number> {
 		const pseudonymPromise: Promise<number> = this.pseudonymRepo.deletePseudonymsByUserId(userId);
+
 		return pseudonymPromise;
 	}
 
-	private async deleteExternalToolPseudonymByUserId(userId: string): Promise<number> {
+	private async deleteExternalToolPseudonymsByUserId(userId: string): Promise<number> {
 		const externalToolPseudonymPromise: Promise<number> =
 			this.externalToolPseudonymRepo.deletePseudonymsByUserId(userId);
+
 		return externalToolPseudonymPromise;
 	}
 
@@ -111,6 +113,7 @@ export class PseudonymService {
 		if (this.toolFeatures.ctlToolsTabEnabled && tool instanceof ExternalTool) {
 			return this.externalToolPseudonymRepo;
 		}
+
 		return this.pseudonymRepo;
 	}
 }

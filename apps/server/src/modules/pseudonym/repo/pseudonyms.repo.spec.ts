@@ -121,33 +121,46 @@ describe('PseudonymRepo', () => {
 	describe('findPseudonymsByUserId', () => {
 		describe('when pseudonym is existing', () => {
 			const setup = async () => {
-				const user = userFactory.buildWithId();
-				const pseudonym1: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user.id });
-				const pseudonym2: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user.id });
+				const user1 = userFactory.buildWithId();
+				const user2 = userFactory.buildWithId();
+				const pseudonym1: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user1.id });
+				const pseudonym2: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user1.id });
+				const pseudonym3: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user2.id });
+				const pseudonym4: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user2.id });
 
-				await em.persistAndFlush([pseudonym1, pseudonym2]);
+				await em.persistAndFlush([pseudonym1, pseudonym2, pseudonym3, pseudonym4]);
 
 				return {
-					user,
+					user1,
 					pseudonym1,
 					pseudonym2,
 				};
 			};
 
 			it('should return array of pseudonyms', async () => {
-				const { user } = await setup();
+				const { user1, pseudonym1, pseudonym2 } = await setup();
 
-				const result: Pseudonym[] = await repo.findPseudonymsByUserId(user.id);
+				const result: Pseudonym[] = await repo.findByUserId(user1.id);
 
 				expect(result).toHaveLength(2);
-				expect(result[0].userId).toEqual(user.id);
-				expect(result[1].userId).toEqual(user.id);
+				expect(result[0].id).toEqual(pseudonym1.id);
+				expect(result[0].userId).toEqual(pseudonym1.userId.toJSON());
+				expect(result[0].pseudonym).toEqual(pseudonym1.pseudonym);
+				expect(result[0].toolId).toEqual(pseudonym1.toolId.toJSON());
+				expect(result[0].createdAt).toEqual(pseudonym1.createdAt);
+				expect(result[0].updatedAt).toEqual(pseudonym1.updatedAt);
+				expect(result[1].id).toEqual(pseudonym2.id);
+				expect(result[1].userId).toEqual(pseudonym2.userId.toJSON());
+				expect(result[1].pseudonym).toEqual(pseudonym2.pseudonym);
+				expect(result[1].toolId).toEqual(pseudonym2.toolId.toJSON());
+				expect(result[1].createdAt).toEqual(pseudonym1.createdAt);
+				expect(result[1].updatedAt).toEqual(pseudonym1.updatedAt);
 			});
 		});
 
 		describe('should return empty array when there is no pseudonym', () => {
 			it('should return empty array', async () => {
-				const result: Pseudonym[] = await repo.findPseudonymsByUserId(new ObjectId().toHexString());
+				const result: Pseudonym[] = await repo.findByUserId(new ObjectId().toHexString());
 
 				expect(result).toHaveLength(0);
 			});
@@ -209,21 +222,24 @@ describe('PseudonymRepo', () => {
 	describe('deletePseudonymsByUserId', () => {
 		describe('when pseudonyms are existing', () => {
 			const setup = async () => {
-				const user = userFactory.buildWithId();
-				const pseudonym1: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user.id });
-				const pseudonym2: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user.id });
+				const user1 = userFactory.buildWithId();
+				const user2 = userFactory.buildWithId();
+				const pseudonym1: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user1.id });
+				const pseudonym2: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user1.id });
+				const pseudonym3: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user2.id });
+				const pseudonym4: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user2.id });
 
-				await em.persistAndFlush([pseudonym1, pseudonym2]);
+				await em.persistAndFlush([pseudonym1, pseudonym2, pseudonym3, pseudonym4]);
 
 				return {
-					user,
+					user1,
 				};
 			};
 
 			it('should delete all pseudonyms for userId', async () => {
-				const { user } = await setup();
+				const { user1 } = await setup();
 
-				const result: number = await repo.deletePseudonymsByUserId(user.id);
+				const result: number = await repo.deletePseudonymsByUserId(user1.id);
 
 				expect(result).toEqual(2);
 			});
@@ -231,7 +247,7 @@ describe('PseudonymRepo', () => {
 
 		describe('should return empty array when there is no pseudonym', () => {
 			it('should return empty array', async () => {
-				const result: Pseudonym[] = await repo.findPseudonymsByUserId(new ObjectId().toHexString());
+				const result: Pseudonym[] = await repo.findByUserId(new ObjectId().toHexString());
 				expect(result).toHaveLength(0);
 			});
 		});

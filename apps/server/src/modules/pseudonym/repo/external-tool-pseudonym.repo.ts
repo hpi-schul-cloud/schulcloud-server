@@ -33,11 +33,12 @@ export class ExternalToolPseudonymRepo {
 		return domainObject;
 	}
 
-	async findPseudonymsByUserId(userId: EntityId): Promise<Pseudonym[]> {
+	async findByUserId(userId: EntityId): Promise<Pseudonym[]> {
 		const entities: ExternalToolPseudonymEntity[] = await this.em.find(ExternalToolPseudonymEntity, {
 			userId: new ObjectId(userId),
 		});
 		const pseudonyms: Pseudonym[] = entities.map((entity) => this.mapEntityToDomainObject(entity));
+
 		return pseudonyms;
 	}
 
@@ -66,6 +67,7 @@ export class ExternalToolPseudonymRepo {
 		const promise: Promise<number> = this.em.nativeDelete(ExternalToolPseudonymEntity, {
 			userId: new ObjectId(userId),
 		});
+
 		return promise;
 	}
 

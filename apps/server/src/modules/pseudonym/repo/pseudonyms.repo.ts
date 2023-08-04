@@ -33,10 +33,11 @@ export class PseudonymsRepo {
 		return domainObject;
 	}
 
-	async findPseudonymsByUserId(userId: EntityId): Promise<Pseudonym[]> {
+	async findByUserId(userId: EntityId): Promise<Pseudonym[]> {
 		const entities: PseudonymEntity[] = await this.em.find(PseudonymEntity, { userId: new ObjectId(userId) });
 
 		const pseudonyms: Pseudonym[] = entities.map((entity) => this.mapEntityToDomainObject(entity));
+
 		return pseudonyms;
 	}
 
@@ -63,6 +64,7 @@ export class PseudonymsRepo {
 
 	async deletePseudonymsByUserId(userId: EntityId): Promise<number> {
 		const promise: Promise<number> = this.em.nativeDelete(PseudonymEntity, { userId: new ObjectId(userId) });
+
 		return promise;
 	}
 
