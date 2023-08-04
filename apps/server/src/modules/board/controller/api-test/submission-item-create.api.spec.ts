@@ -136,6 +136,41 @@ describe('submission create (api)', () => {
 		});
 	});
 
+	describe('with external student', () => {
+		const setup = async () => {
+			await cleanupCollections(em);
+
+			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+			const course = courseFactory.build({ students: [] });
+			await em.persistAndFlush([studentAccount, studentUser, course]);
+
+			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+				context: { id: course.id, type: BoardExternalReferenceType.Course },
+			});
+
+			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+
+			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+
+			const submissionContainerNode = submissionContainerElementNodeFactory.buildWithId({ parent: cardNode });
+
+			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode]);
+			em.clear();
+
+			const loggedInClient = await testApiClient.login(studentAccount);
+
+			return { loggedInClient, studentUser, columnBoardNode, columnNode, cardNode, submissionContainerNode };
+		};
+
+		it('should return status 403', async () => {
+			const { loggedInClient, submissionContainerNode } = await setup();
+
+			const response = await loggedInClient.post(`${submissionContainerNode.id}/submissions`, { completed: false });
+
+			expect(response.status).toEqual(403);
+		});
+	});
+
 	describe('with invalid user', () => {
 		const setup = async () => {
 			await cleanupCollections(em);
