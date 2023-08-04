@@ -1,13 +1,15 @@
 import { S3Client } from '@aws-sdk/client-s3';
+import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { File, StorageProvider } from '@shared/domain/entity';
-import { FilesRepo } from '@shared/repo';
 import { StorageProviderRepo } from '@shared/repo/storageprovider/storageprovider.repo';
 import { storageProviderFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
+
 import { DeleteFilesUc } from './delete-files.uc';
+import { FilesRepo } from '../repo';
 
 describe('DeleteFileUC', () => {
 	let service: DeleteFilesUc;

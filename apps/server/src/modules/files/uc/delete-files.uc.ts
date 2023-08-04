@@ -1,10 +1,12 @@
 /* eslint-disable no-await-in-loop */
 import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
+
 import { File, StorageProvider } from '@shared/domain';
-import { FilesRepo } from '@shared/repo';
 import { StorageProviderRepo } from '@shared/repo/storageprovider/storageprovider.repo';
 import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
+
+import { FilesRepo } from '../repo';
 
 @Injectable()
 export class DeleteFilesUc {

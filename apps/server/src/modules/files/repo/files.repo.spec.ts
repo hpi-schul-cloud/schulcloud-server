@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { File } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { fileFactory } from '@shared/testing';
+
 import { FilesRepo } from './files.repo';
 
 describe('FilesRepo', () => {
