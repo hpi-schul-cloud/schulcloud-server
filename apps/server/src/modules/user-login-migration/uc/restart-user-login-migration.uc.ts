@@ -4,8 +4,8 @@ import { Logger } from '@src/core/logger';
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { SchoolService } from '@src/modules/school';
 import {
-    UserLoginMigrationGracePeriodExpiredLoggableException,
-    UserLoginMigrationNotFoundLoggableException,
+	UserLoginMigrationGracePeriodExpiredLoggableException,
+	UserLoginMigrationNotFoundLoggableException,
 } from '../error';
 import { UserLoginMigrationStartLoggable } from '../loggable';
 import { UserLoginMigrationService } from '../service';
