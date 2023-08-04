@@ -23,7 +23,7 @@ describe('TldrawGateway', () => {
 	let app: INestApplication;
 	const gatewayPort = 3346;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
 		const module: TestingModule = await Test.createTestingModule({
 			imports,
@@ -37,7 +37,7 @@ describe('TldrawGateway', () => {
 		clientSocket = new WebSocket(`ws://localhost:${gatewayPort}/TEST`);
 	});
 
-	afterEach(async () => {
+	afterAll(async () => {
 		await app.close();
 	});
 
@@ -109,7 +109,6 @@ describe('TldrawGateway', () => {
 		doc.awareness.states = states;
 		doc.awareness.meta = mockMeta;
 
-		// const docAwarenessSpy = jest.spyOn(doc, 'awarenessChangeHandler');
 		const sendSpy = jest.spyOn(Utils, 'send').mockReturnValue();
 
 		const mockIDs = new Set<number>();

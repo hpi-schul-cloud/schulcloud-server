@@ -7,9 +7,9 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import WebSocket from 'ws';
 import { WSMessageType, WSConnectionState, Persitence } from '@src/modules/tldraw/types';
 
-const pingTimeout: number = (Configuration.get('TLDRAW_PING_TIMEOUT') as number) ?? 10000;
+const pingTimeout: number = (Configuration.get('TLDRAW__PING_TIMEOUT') as number) ?? 10000;
 // disable gc when using snapshots!
-const gcEnabled: boolean = Configuration.get('TLDRAW_GC_ENABLED') as boolean;
+const gcEnabled: boolean = Configuration.get('TLDRAW__GC_ENABLED') as boolean;
 
 /**
  * @type {{bindState: function(string,WSSharedDoc):void, writeState:function(string,WSSharedDoc):Promise<any>, provider: any}|null}

@@ -1204,30 +1204,37 @@
 				}
 			}
 		},
-		"TLDRAW_PING_TIMEOUT": {
-			"type": "number",
-			"default": 30000,
-			"description": "Max time for waiting between calls for tldraw"
-		},
-		"TLDRAW_GC_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "If tldraw garbage collector should be enabled"
-		},
-		"TLDRAW_DB_COLLECTION_NAME": {
-			"type": "string",
-			"default": "drawing",
-			"description": "Collection name in which tldraw drawing are stored"
-		},
-		"TLDRAW_DB_FLUSH_SIZE": {
-			"type": "integer",
-			"default": 400,
-			"description": "DB collection flushing size"
-		},
-		"TLDRAW_DB_MULTIPLE_COLLECTIONS": {
-			"type": "boolean",
-			"default": false,
-			"description": "DB collection allowing multiple collections for drawing"
+		"TLDRAW": {
+			"type": "object",
+			"description": "Tldraw managing variables.",
+			"required": ["PING_TIMEOUT", "GC_ENABLED", "DB_COLLECTION_NAME", "DB_FLUSH_SIZE", "DB_MULTIPLE_COLLECTIONS"],
+			"properties": {
+				"PING_TIMEOUT": {
+					"type": "number",
+					"default": 30000,
+					"description": "Max time for waiting between calls for tldraw"
+				},
+				"GC_ENABLED": {
+					"type": "boolean",
+					"default": true,
+					"description": "If tldraw garbage collector should be enabled"
+				},
+				"DB_COLLECTION_NAME": {
+					"type": "string",
+					"default": "drawing",
+					"description": "Collection name in which tldraw drawing are stored"
+				},
+				"DB_FLUSH_SIZE": {
+					"type": "integer",
+					"default": 400,
+					"description": "DB collection flushing size"
+				},
+				"DB_MULTIPLE_COLLECTIONS": {
+					"type": "boolean",
+					"default": false,
+					"description": "DB collection allowing multiple collections for drawing"
+				}
+			}
 		}
 	},
 	"required": [
