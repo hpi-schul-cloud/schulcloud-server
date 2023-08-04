@@ -1,5 +1,13 @@
 import { UnprocessableEntityException } from '@nestjs/common';
+import { CustomParameter, CustomParameterEntry } from '@src/modules/tool/common/domain';
 import { CustomParameterEntryEntity } from '@src/modules/tool/common/entity';
+import { ToolConfigType } from '@src/modules/tool/common/enum';
+import {
+	BasicToolConfig,
+	ExternalTool,
+	Lti11ToolConfig,
+	Oauth2ToolConfig,
+} from '@src/modules/tool/external-tool/domain';
 import {
 	BasicToolConfigEntity,
 	CustomParameterEntity,
@@ -8,14 +16,6 @@ import {
 	Lti11ToolConfigEntity,
 	Oauth2ToolConfigEntity,
 } from '@src/modules/tool/external-tool/entity';
-import {
-	BasicToolConfig,
-	ExternalTool,
-	Lti11ToolConfig,
-	Oauth2ToolConfig,
-} from '@src/modules/tool/external-tool/domain';
-import { ToolConfigType } from '@src/modules/tool/common/enum';
-import { CustomParameter, CustomParameterEntry } from '@src/modules/tool/common/domain';
 
 // TODO: maybe rename because of usage in external tool repo and school external tool repo
 export class ExternalToolRepoMapper {
@@ -74,6 +74,7 @@ export class ExternalToolRepoMapper {
 			lti_message_type: lti11Config.lti_message_type,
 			resource_link_id: lti11Config.resource_link_id,
 			privacy_permission: lti11Config.privacy_permission,
+			launch_presentation_locale: lti11Config.launch_presentation_locale,
 		});
 	}
 
@@ -131,6 +132,7 @@ export class ExternalToolRepoMapper {
 			lti_message_type: lti11Config.lti_message_type,
 			resource_link_id: lti11Config.resource_link_id,
 			privacy_permission: lti11Config.privacy_permission,
+			launch_presentation_locale: lti11Config.launch_presentation_locale,
 		});
 	}
 
