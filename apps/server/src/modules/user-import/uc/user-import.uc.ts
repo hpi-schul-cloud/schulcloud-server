@@ -23,7 +23,7 @@ import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import { AuthorizationService } from '@src/modules/authorization';
-import { SchoolService } from '../../school';
+import { SchoolService } from '@src/modules/school';
 import {
 	MigrationMayBeCompleted,
 	MigrationMayNotBeCompleted,
