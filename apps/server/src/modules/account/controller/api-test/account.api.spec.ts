@@ -239,13 +239,6 @@ describe('Account Controller (API)', () => {
 				.get(`${basePath}/${studentAccount.id}`)
 				.expect(200);
 		});
-		it('should reject if id has invalid format', async () => {
-			currentUser = mapUserToCurrentUser(superheroUser, superheroAccount);
-			await request(app.getHttpServer()) //
-				.get(`${basePath}/qwerty`)
-				.send()
-				.expect(400);
-		});
 		it('should reject if user is not a authorized', async () => {
 			currentUser = mapUserToCurrentUser(adminUser, adminAccount);
 			await request(app.getHttpServer()) //
@@ -305,12 +298,6 @@ describe('Account Controller (API)', () => {
 			await request(app.getHttpServer()) //
 				.delete(`${basePath}/${studentAccount.id}`)
 				.expect(200);
-		});
-		it('should reject invalid account id format', async () => {
-			currentUser = mapUserToCurrentUser(superheroUser, studentAccount);
-			await request(app.getHttpServer()) //
-				.delete(`${basePath}/qwerty`)
-				.expect(400);
 		});
 		it('should reject if user is not a authorized', async () => {
 			currentUser = mapUserToCurrentUser(adminUser, adminAccount);

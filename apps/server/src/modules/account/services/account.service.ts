@@ -68,7 +68,12 @@ export class AccountService extends AbstractAccountService {
 			idmReferenceId: ret.id,
 			password: accountDto.password,
 		};
-		const idmAccount = await this.executeIdmMethod(async () => this.accountIdm.save(newAccount));
+		const idmAccount = await this.executeIdmMethod(async () => {
+			this.logger.debug(`Saving account with accountID ${ret.id} ...`);
+			const account = await this.accountIdm.save(newAccount);
+			this.logger.debug(`Saved account with accountID ${ret.id}`);
+			return account;
+		});
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
@@ -108,21 +113,34 @@ export class AccountService extends AbstractAccountService {
 
 	async updateUsername(accountId: string, username: string): Promise<AccountDto> {
 		const ret = await this.accountDb.updateUsername(accountId, username);
-		const idmAccount = await this.executeIdmMethod(async () => this.accountIdm.updateUsername(accountId, username));
+		const idmAccount = await this.executeIdmMethod(async () => {
+			this.logger.debug(`Updating username for account with accountID ${accountId} ...`);
+			const account = await this.accountIdm.updateUsername(accountId, username);
+			this.logger.debug(`Updated username for account with accountID ${accountId}`);
+			return account;
+		});
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
 	async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise<AccountDto> {
 		const ret = await this.accountDb.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
-		const idmAccount = await this.executeIdmMethod(async () =>
-			this.accountIdm.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin)
-		);
+		const idmAccount = await this.executeIdmMethod(async () => {
+			this.logger.debug(`Updating last tried failed login for account with accountID ${accountId} ...`);
+			const account = await this.accountIdm.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
+			this.logger.debug(`Updated last tried failed login for account with accountID ${accountId}`);
+			return account;
+		});
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
 	async updatePassword(accountId: string, password: string): Promise<AccountDto> {
 		const ret = await this.accountDb.updatePassword(accountId, password);
-		const idmAccount = await this.executeIdmMethod(async () => this.accountIdm.updatePassword(accountId, password));
+		const idmAccount = await this.executeIdmMethod(async () => {
+			this.logger.debug(`Updating password for account with accountID ${accountId} ...`);
+			const account = await this.accountIdm.updatePassword(accountId, password);
+			this.logger.debug(`Updated password for account with accountID ${accountId}`);
+			return account;
+		});
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
@@ -132,12 +150,20 @@ export class AccountService extends AbstractAccountService {
 
 	async delete(accountId: string): Promise<void> {
 		await this.accountDb.delete(accountId);
-		await this.executeIdmMethod(async () => this.accountIdm.delete(accountId));
+		await this.executeIdmMethod(async () => {
+			this.logger.debug(`Deleting account with accountId ${accountId} ...`);
+			await this.accountIdm.delete(accountId);
+			this.logger.debug(`Deleted account with accountId ${accountId}`);
+		});
 	}
 
 	async deleteByUserId(userId: string): Promise<void> {
 		await this.accountDb.deleteByUserId(userId);
-		await this.executeIdmMethod(async () => this.accountIdm.deleteByUserId(userId));
+		await this.executeIdmMethod(async () => {
+			this.logger.debug(`Deleting account with userId ${userId} ...`);
+			await this.accountIdm.deleteByUserId(userId);
+			this.logger.debug(`Deleted account with userId ${userId}`);
+		});
 	}
 
 	/**

@@ -1,27 +1,16 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Course, Permission, Role, School, User } from '@shared/domain';
 import {
-	ContextExternalTool,
-	ContextExternalToolType,
-	Course,
-	ExternalTool,
-	Permission,
-	Role,
-	School,
-	SchoolExternalTool,
-	ToolConfigType,
-	User,
-} from '@shared/domain';
-import {
-	basicToolConfigDOFactory,
-	contextExternalToolDOFactory,
+	basicToolConfigFactory,
 	contextExternalToolFactory,
+	contextExternalToolEntityFactory,
 	courseFactory,
-	externalToolFactory,
+	externalToolEntityFactory,
 	mapUserToCurrentUser,
 	roleFactory,
-	schoolExternalToolFactory,
+	schoolExternalToolEntityFactory,
 	schoolFactory,
 	userFactory,
 } from '@shared/testing';
@@ -30,8 +19,12 @@ import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server';
 import { Request } from 'express';
 import request, { Response } from 'supertest';
+import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { LaunchRequestMethod } from '../../types';
 import { ToolLaunchRequestResponse, ToolLaunchParams } from '../dto';
+import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
+import { ExternalToolEntity } from '../../../external-tool/entity';
+import { ToolConfigType } from '../../../common/enum';
 
 // TODO Refactor to use api testHelpers
 describe('ToolLaunchController (API)', () => {
@@ -82,23 +75,30 @@ describe('ToolLaunchController (API)', () => {
 				const course: Course = courseFactory.buildWithId({ school, teachers: [user] });
 				currentUser = mapUserToCurrentUser(user);
 
-				const externalTool: ExternalTool = externalToolFactory.buildWithId({
-					config: basicToolConfigDOFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					config: basicToolConfigFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
 					version: 0,
 				});
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
-					tool: externalTool,
+				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+					tool: externalToolEntity,
 					school,
 				});
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
-					schoolTool: schoolExternalTool,
+				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
+					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,
 				});
 
-				const params: ToolLaunchParams = { contextExternalToolId: contextExternalTool.id };
+				const params: ToolLaunchParams = { contextExternalToolId: contextExternalToolEntity.id };
 
-				await em.persistAndFlush([school, user, course, externalTool, schoolExternalTool, contextExternalTool]);
+				await em.persistAndFlush([
+					school,
+					user,
+					course,
+					externalToolEntity,
+					schoolExternalToolEntity,
+					contextExternalToolEntity,
+				]);
 				em.clear();
 
 				return { params };
@@ -128,25 +128,32 @@ describe('ToolLaunchController (API)', () => {
 				const course: Course = courseFactory.buildWithId({ school, teachers: [user] });
 				currentUser = mapUserToCurrentUser(user);
 
-				const externalTool: ExternalTool = externalToolFactory.buildWithId({
-					config: basicToolConfigDOFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					config: basicToolConfigFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
 					version: 1,
 				});
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
-					tool: externalTool,
+				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+					tool: externalToolEntity,
 					school,
 					toolVersion: 0,
 				});
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
-					schoolTool: schoolExternalTool,
+				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
+					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,
 					toolVersion: 0,
 				});
 
-				const params: ToolLaunchParams = { contextExternalToolId: contextExternalTool.id };
+				const params: ToolLaunchParams = { contextExternalToolId: contextExternalToolEntity.id };
 
-				await em.persistAndFlush([school, user, course, externalTool, schoolExternalTool, contextExternalTool]);
+				await em.persistAndFlush([
+					school,
+					user,
+					course,
+					externalToolEntity,
+					schoolExternalToolEntity,
+					contextExternalToolEntity,
+				]);
 				em.clear();
 
 				return { params };
@@ -174,29 +181,29 @@ describe('ToolLaunchController (API)', () => {
 				const course: Course = courseFactory.buildWithId({ school: usersSchool, teachers: [user] });
 				currentUser = mapUserToCurrentUser(user);
 
-				const externalTool: ExternalTool = externalToolFactory.buildWithId({
-					config: basicToolConfigDOFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					config: basicToolConfigFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
 				});
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
-					tool: externalTool,
+				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+					tool: externalToolEntity,
 					school: toolSchool,
 				});
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
-					schoolTool: schoolExternalTool,
+				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
+					schoolTool: schoolExternalToolEntity,
 					contextId: course.id,
 					contextType: ContextExternalToolType.COURSE,
 				});
 
-				const params: ToolLaunchParams = { contextExternalToolId: contextExternalTool.id };
+				const params: ToolLaunchParams = { contextExternalToolId: contextExternalToolEntity.id };
 
 				await em.persistAndFlush([
 					toolSchool,
 					usersSchool,
 					user,
 					course,
-					externalTool,
-					schoolExternalTool,
-					contextExternalTool,
+					externalToolEntity,
+					schoolExternalToolEntity,
+					contextExternalToolEntity,
 				]);
 				em.clear();
 
@@ -214,9 +221,9 @@ describe('ToolLaunchController (API)', () => {
 
 		describe('when user is not authenticated', () => {
 			it('should return unauthorized', async () => {
-				const contextExternalToolDO = contextExternalToolDOFactory.buildWithId();
+				const contextExternalTool = contextExternalToolFactory.buildWithId();
 				const params: ToolLaunchParams = {
-					contextExternalToolId: contextExternalToolDO.id as string,
+					contextExternalToolId: contextExternalTool.id as string,
 				};
 				currentUser = undefined;
 

@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, ExternalToolConfigDO, ExternalToolDO, IFindOptions, Page, Permission, User } from '@shared/domain';
+import { EntityId, IFindOptions, Page, Permission, User } from '@shared/domain';
 import { AuthorizationService } from '@src/modules/authorization';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
+import { ExternalToolConfig, ExternalTool } from '../domain';
 
 @Injectable()
 export class ExternalToolUc {
@@ -13,28 +14,24 @@ export class ExternalToolUc {
 		private readonly toolValidationService: ExternalToolValidationService
 	) {}
 
-	async createExternalTool(userId: EntityId, externalToolDO: ExternalToolCreate): Promise<ExternalToolDO> {
-		const externalTool = new ExternalToolDO({ ...externalToolDO });
+	async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
+		const externalTool = new ExternalTool({ ...externalToolCreate });
 
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 		await this.toolValidationService.validateCreate(externalTool);
 
-		const tool: Promise<ExternalToolDO> = this.externalToolService.createExternalTool(externalTool);
+		const tool: Promise<ExternalTool> = this.externalToolService.createExternalTool(externalTool);
 
 		return tool;
 	}
 
-	async updateExternalTool(
-		userId: EntityId,
-		toolId: string,
-		externalTool: ExternalToolUpdate
-	): Promise<ExternalToolDO> {
+	async updateExternalTool(userId: EntityId, toolId: string, externalTool: ExternalToolUpdate): Promise<ExternalTool> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 		await this.toolValidationService.validateUpdate(toolId, externalTool);
 
-		const loaded: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
-		const configToUpdate: ExternalToolConfigDO = { ...loaded.config, ...externalTool.config };
-		const toUpdate: ExternalToolDO = new ExternalToolDO({
+		const loaded: ExternalTool = await this.externalToolService.findExternalToolById(toolId);
+		const configToUpdate: ExternalToolConfig = { ...loaded.config, ...externalTool.config };
+		const toUpdate: ExternalTool = new ExternalTool({
 			...loaded,
 			...externalTool,
 			config: configToUpdate,
@@ -48,18 +45,18 @@ export class ExternalToolUc {
 	async findExternalTool(
 		userId: EntityId,
 		query: ExternalToolSearchQuery,
-		options: IFindOptions<ExternalToolDO>
-	): Promise<Page<ExternalToolDO>> {
+		options: IFindOptions<ExternalTool>
+	): Promise<Page<ExternalTool>> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
-		const tools: Page<ExternalToolDO> = await this.externalToolService.findExternalTools(query, options);
+		const tools: Page<ExternalTool> = await this.externalToolService.findExternalTools(query, options);
 		return tools;
 	}
 
-	async getExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalToolDO> {
+	async getExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalTool> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
-		const tool: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
+		const tool: ExternalTool = await this.externalToolService.findExternalToolById(toolId);
 		return tool;
 	}
 

@@ -5,9 +5,6 @@ metadata:
   namespace: {{ NAMESPACE }}
   labels:
     app: api-fwu
-  annotations:
-    prometheus.io/scrape: 'true'
-    prometheus.io/port: '4446'
 spec:
   type: ClusterIP
   ports:

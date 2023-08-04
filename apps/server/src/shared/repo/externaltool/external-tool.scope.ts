@@ -1,7 +1,7 @@
-import { ExternalTool } from '@shared/domain/entity/tools/external-tool/external-tool.entity';
 import { Scope } from '@shared/repo/scope';
+import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
 
-export class ExternalToolScope extends Scope<ExternalTool> {
+export class ExternalToolScope extends Scope<ExternalToolEntity> {
 	byName(name: string | undefined): this {
 		if (name) {
 			this.addQuery({ name: { $re: name } });

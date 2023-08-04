@@ -6,6 +6,7 @@ import {
 	fileElementFactory,
 	richTextElementFactory,
 	submissionContainerElementFactory,
+	submissionItemFactory,
 } from '@shared/testing';
 import { FileContentBody, RichTextContentBody } from '../controller/dto';
 import { ContentElementUpdateVisitor } from './content-element-update.visitor';
@@ -19,9 +20,10 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const content = new RichTextContentBody();
 			content.text = 'a text';
 			content.inputFormat = InputFormat.RICH_TEXT_CK5;
+			const submissionItem = submissionItemFactory.build();
 			const updater = new ContentElementUpdateVisitor(content);
 
-			return { board, column, card, updater };
+			return { board, column, card, submissionItem, updater };
 		};
 
 		describe('when component is a column board', () => {
@@ -42,6 +44,13 @@ describe(ContentElementUpdateVisitor.name, () => {
 			it('should throw an error', () => {
 				const { card, updater } = setup();
 				expect(() => updater.visitCard(card)).toThrow();
+			});
+		});
+
+		describe('when component is a submission-item', () => {
+			it('should throw an error', () => {
+				const { submissionItem, updater } = setup();
+				expect(() => updater.visitSubmissionItem(submissionItem)).toThrow();
 			});
 		});
 	});

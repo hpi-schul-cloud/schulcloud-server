@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ExternalToolConfigResponse } from './external-tool-config.response';
-import { TokenEndpointAuthMethod, ToolConfigType } from '../../../../../common/interface';
+import { TokenEndpointAuthMethod, ToolConfigType } from '../../../../../common/enum';
 
 export class Oauth2ToolConfigResponse extends ExternalToolConfigResponse {
 	@ApiProperty()

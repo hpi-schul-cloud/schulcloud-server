@@ -276,6 +276,8 @@ const securePatching = async (context) => {
 	return Promise.resolve(context);
 };
 
+const formatLastName = (name, isOutdated) => `${name}${isOutdated ? ' ~~' : ''}`;
+
 /**
  *
  * @param user {object} - the user the display name has to be generated
@@ -286,12 +288,14 @@ const getDisplayName = (user, protectedRoles) => {
 	const protectedRoleIds = (protectedRoles.data || []).map((role) => role._id);
 	const isProtectedUser = protectedRoleIds.find((role) => (user.roles || []).includes(role));
 
+	const isOutdated = !!user.outdatedSince;
+
 	user.age = getAge(user.birthday);
 
 	if (isProtectedUser) {
-		return user.lastName ? user.lastName : user._id;
+		return user.lastName ? formatLastName(user.lastName, isOutdated) : user._id;
 	}
-	return user.lastName ? `${user.firstName} ${user.lastName}` : user._id;
+	return user.lastName ? `${user.firstName} ${formatLastName(user.lastName, isOutdated)}` : user._id;
 };
 
 /**
@@ -560,6 +564,7 @@ const filterResult = async (context) => {
 		'displayName',
 		'avatarInitials',
 		'avatarBackgroundColor',
+		'outdatedSince',
 	];
 	return keep(...allowedAttributes)(context);
 };

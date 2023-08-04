@@ -19,7 +19,8 @@
 				"name": "q",
 				"displayName": "Suchparameter",
 				"description": "Hier nach wird gesucht",
-				"scope": "course",
+				"default": "asdasd",
+				"scope": "global",
 				"location": "query",
 				"type": "string",
 				"isOptional": false
@@ -42,6 +43,17 @@
 				"location": "path",
 				"type": "string",
 				"isOptional": true
+			},
+			{
+				"name": "contextParam",
+				"displayName": "Kontext-Parameter",
+				"description": "Parameter der auf Kontextebene gesetzt werden muss",
+				"regex": "[x]",
+				"regexComment": "Darf nur aus dem Buchstaben x bestehen",
+				"scope": "context",
+				"location": "query",
+				"type": "string",
+				"isOptional": false
 			}
 		],
 		"isHidden": false,
@@ -70,6 +82,7 @@
 		"config_secret": "secret",
 		"config_lti_message_type": "basic-lti-launch-request",
 		"config_privacy_permission": "name",
+		"config_launch_presentation_locale": "de-DE",
 		"parameters": [
 			{
 				"name": "custom_test",

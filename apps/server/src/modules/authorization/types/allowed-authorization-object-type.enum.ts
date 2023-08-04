@@ -7,7 +7,7 @@ export enum AuthorizableReferenceType {
 	'Lesson' = 'lessons',
 	'Team' = 'teams',
 	'Submission' = 'submissions',
-	'SchoolExternalTool' = 'school_external_tools',
+	'SchoolExternalToolEntity' = 'school_external_tools',
 	'BoardNode' = 'boardnodes',
-	'ContextExternalTool' = 'context_external_tools',
+	'ContextExternalToolEntity' = 'context_external_tools',
 }

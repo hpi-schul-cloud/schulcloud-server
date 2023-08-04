@@ -1,30 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { SortOrder, SortOrderMap } from '@shared/domain';
+
+import { basicToolConfigFactory, customParameterFactory, externalToolFactory } from '@shared/testing';
+import { CustomParameter } from '../../common/domain';
 import {
 	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	SortOrder,
-	SortOrderMap,
-	ToolConfigType,
-} from '@shared/domain';
-import {
-	BasicToolConfigDO,
-	CustomParameterDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/tool';
-import { basicToolConfigDOFactory, customParameterDOFactory, externalToolDOFactory } from '@shared/testing';
-import {
 	CustomParameterLocationParams,
+	CustomParameterScope,
 	CustomParameterScopeTypeParams,
+	CustomParameterType,
 	CustomParameterTypeParams,
-	ExternalToolSearchQuery,
 	LtiMessageType,
 	LtiPrivacyPermission,
 	TokenEndpointAuthMethod,
-} from '../../common/interface';
-import { ExternalToolRequestMapper } from './external-tool-request.mapper';
+	ToolConfigType,
+} from '../../common/enum';
+import { ExternalToolSearchQuery } from '../../common/interface';
 import {
 	BasicToolConfigParams,
 	CustomParameterPostParams,
@@ -37,6 +28,8 @@ import {
 	Oauth2ToolConfigCreateParams,
 	SortExternalToolParams,
 } from '../controller/dto';
+import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
+import { ExternalToolRequestMapper } from './external-tool-request.mapper';
 
 describe('ExternalToolRequestMapper', () => {
 	let module: TestingModule;
@@ -88,12 +81,12 @@ describe('ExternalToolRequestMapper', () => {
 		externalToolUpdateParams.isHidden = true;
 		externalToolUpdateParams.openNewTab = true;
 
-		const basicToolConfigDO: BasicToolConfigDO = basicToolConfigDOFactory.build({
+		const basicToolConfigDO: BasicToolConfig = basicToolConfigFactory.build({
 			type: ToolConfigType.BASIC,
 			baseUrl: 'mockUrl',
 		});
 
-		const customParameterDO: CustomParameterDO = customParameterDOFactory.build({
+		const customParameterDO: CustomParameter = customParameterFactory.build({
 			name: 'mockName',
 			displayName: 'displayName',
 			description: 'description',
@@ -106,7 +99,7 @@ describe('ExternalToolRequestMapper', () => {
 			isOptional: false,
 		});
 
-		const externalToolDOCreate: ExternalToolDO = externalToolDOFactory.build({
+		const externalToolDOCreate: ExternalTool = externalToolFactory.build({
 			name: 'mockName',
 			url: 'mockUrl',
 			logoUrl: 'mockLogoUrl',
@@ -117,7 +110,7 @@ describe('ExternalToolRequestMapper', () => {
 			config: basicToolConfigDO,
 		});
 
-		const externalToolDOUpdate: ExternalToolDO = externalToolDOFactory.buildWithId(
+		const externalToolDOUpdate: ExternalTool = externalToolFactory.buildWithId(
 			{
 				name: 'mockName',
 				url: 'mockUrl',
@@ -163,8 +156,9 @@ describe('ExternalToolRequestMapper', () => {
 				lti11ConfigParams.resource_link_id = 'mockLink';
 				lti11ConfigParams.lti_message_type = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
 				lti11ConfigParams.privacy_permission = LtiPrivacyPermission.NAME;
+				lti11ConfigParams.launch_presentation_locale = 'de-DE';
 
-				const lti11ToolConfigDO: Lti11ToolConfigDO = new Lti11ToolConfigDO({
+				const lti11ToolConfigDO: Lti11ToolConfig = new Lti11ToolConfig({
 					privacy_permission: LtiPrivacyPermission.NAME,
 					secret: 'mockSecret',
 					key: 'mockKey',
@@ -172,6 +166,7 @@ describe('ExternalToolRequestMapper', () => {
 					lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 					type: ToolConfigType.LTI11,
 					baseUrl: 'mockUrl',
+					launch_presentation_locale: 'de-DE',
 				});
 				return { lti11ToolConfigDO, lti11ConfigParams };
 			};
@@ -201,7 +196,7 @@ describe('ExternalToolRequestMapper', () => {
 				oauth2ConfigParams.redirectUris = ['mockUri'];
 				oauth2ConfigParams.tokenEndpointAuthMethod = TokenEndpointAuthMethod.CLIENT_SECRET_POST;
 
-				const oauth2ToolConfigDO: Oauth2ToolConfigDO = new Oauth2ToolConfigDO({
+				const oauth2ToolConfigDO: Oauth2ToolConfig = new Oauth2ToolConfig({
 					clientId: 'mockId',
 					type: ToolConfigType.OAUTH2,
 					baseUrl: 'mockUrl',
@@ -254,8 +249,9 @@ describe('ExternalToolRequestMapper', () => {
 				lti11ConfigParams.resource_link_id = 'mockLink';
 				lti11ConfigParams.lti_message_type = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
 				lti11ConfigParams.privacy_permission = LtiPrivacyPermission.NAME;
+				lti11ConfigParams.launch_presentation_locale = 'de-DE';
 
-				const lti11ToolConfigDO: Lti11ToolConfigDO = new Lti11ToolConfigDO({
+				const lti11ToolConfigDO: Lti11ToolConfig = new Lti11ToolConfig({
 					privacy_permission: LtiPrivacyPermission.NAME,
 					secret: 'mockSecret',
 					key: 'mockKey',
@@ -263,6 +259,7 @@ describe('ExternalToolRequestMapper', () => {
 					lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 					type: ToolConfigType.LTI11,
 					baseUrl: 'mockUrl',
+					launch_presentation_locale: 'de-DE',
 				});
 
 				return { lti11ToolConfigDO, lti11ConfigParams };
@@ -293,7 +290,7 @@ describe('ExternalToolRequestMapper', () => {
 				oauth2ConfigParams.redirectUris = ['mockUri'];
 				oauth2ConfigParams.tokenEndpointAuthMethod = TokenEndpointAuthMethod.CLIENT_SECRET_POST;
 
-				const oauth2ToolConfigDO: Oauth2ToolConfigDO = new Oauth2ToolConfigDO({
+				const oauth2ToolConfigDO: Oauth2ToolConfig = new Oauth2ToolConfig({
 					clientId: 'mockId',
 					type: ToolConfigType.OAUTH2,
 					baseUrl: 'mockUrl',
@@ -331,7 +328,7 @@ describe('ExternalToolRequestMapper', () => {
 				sortOrder: SortOrder.asc,
 			};
 
-			const result: SortOrderMap<ExternalToolDO> | undefined = mapper.mapSortingQueryToDomain(sortingQuery);
+			const result: SortOrderMap<ExternalTool> | undefined = mapper.mapSortingQueryToDomain(sortingQuery);
 
 			expect(result).toEqual({ id: SortOrder.asc });
 		});
@@ -341,7 +338,7 @@ describe('ExternalToolRequestMapper', () => {
 				sortOrder: SortOrder.asc,
 			};
 
-			const result: SortOrderMap<ExternalToolDO> | undefined = mapper.mapSortingQueryToDomain(sortingQuery);
+			const result: SortOrderMap<ExternalTool> | undefined = mapper.mapSortingQueryToDomain(sortingQuery);
 
 			expect(result).toBeUndefined();
 		});
