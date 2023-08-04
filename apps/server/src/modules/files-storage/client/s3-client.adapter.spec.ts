@@ -1,4 +1,4 @@
-import { S3Client } from '@aws-sdk/client-s3';
+import { S3Client, S3ServiceException } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
@@ -267,7 +267,7 @@ describe('S3ClientAdapter', () => {
 			const setup = () => {
 				const { file } = createFile();
 				const { pathToFile } = createParameter();
-				const error = new InternalServerErrorException('testError', 'S3ClientAdapter:create');
+				const error = new InternalServerErrorException('S3ClientAdapter:create');
 
 				const uploadDoneMock = jest.spyOn(Upload.prototype, 'done').mockRejectedValueOnce(error);
 
@@ -323,7 +323,7 @@ describe('S3ClientAdapter', () => {
 			const { pathToFile } = setup();
 
 			// @ts-expect-error should run into error
-			client.send.mockRejectedValue({ Code: 'NoSuchKey' });
+			client.send.mockRejectedValue(new S3ServiceException({ name: 'NoSuchKey' }));
 
 			const res = await service.moveToTrash([pathToFile]);
 

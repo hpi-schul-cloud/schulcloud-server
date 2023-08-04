@@ -37,7 +37,9 @@ export class S3ClientAdapter implements IStorageClient {
 			if (err instanceof Error) {
 				this.logger.error(`${err.message} "${this.config.bucket}"`);
 			}
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:createBucket');
+			throw new InternalServerErrorException('S3ClientAdapter:createBucket', {
+				cause: err instanceof Error ? err : undefined,
+			});
 		}
 	}
 
@@ -68,7 +70,9 @@ export class S3ClientAdapter implements IStorageClient {
 				this.logger.log(`could not find one of the files for deletion with id ${path}`);
 				throw new NotFoundException('NoSuchKey');
 			}
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:get');
+			throw new InternalServerErrorException('S3ClientAdapter:get', {
+				cause: err instanceof Error ? err : undefined,
+			});
 		}
 	}
 
@@ -97,7 +101,9 @@ export class S3ClientAdapter implements IStorageClient {
 				return await this.create(path, file);
 			}
 
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:create');
+			throw new InternalServerErrorException('S3ClientAdapter:create', {
+				cause: err instanceof Error ? err : undefined,
+			});
 		}
 	}
 
@@ -116,11 +122,13 @@ export class S3ClientAdapter implements IStorageClient {
 			return result;
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (err.response && err.response.Code && err.response.Code === 'NoSuchKey') {
+			if (err.cause && err.cause.name && err.cause.name === 'NoSuchKey') {
 				this.logger.log(`could not find one of the files for deletion with ids ${paths.join(',')}`);
 				return [];
 			}
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:delete');
+			throw new InternalServerErrorException('S3ClientAdapter:delete', {
+				cause: err instanceof Error ? err : undefined,
+			});
 		}
 	}
 
@@ -141,7 +149,9 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return result;
 		} catch (err) {
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:restore');
+			throw new InternalServerErrorException('S3ClientAdapter:restore', {
+				cause: err instanceof Error ? err : undefined,
+			});
 		}
 	}
 
@@ -165,7 +175,9 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return result;
 		} catch (err) {
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:copy');
+			throw new InternalServerErrorException('S3ClientAdapter:copy', {
+				cause: err instanceof Error ? err : undefined,
+			});
 		}
 	}
 
