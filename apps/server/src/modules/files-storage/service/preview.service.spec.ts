@@ -131,6 +131,7 @@ describe('FilesStorageService download method', () => {
 			describe('WHEN width, height and outputFormat are not set', () => {
 				describe('WHEN download of original and preview file is successfull', () => {
 					const setup = () => {
+						const bytesRange = 'bytes=0-100';
 						const mimeType = 'image/png';
 						const format = mimeType.split('/')[1];
 						const { fileRecord } = buildFileRecordsWithParams(mimeType);
@@ -155,6 +156,7 @@ describe('FilesStorageService download method', () => {
 						streamMock.mockReturnValueOnce(previewFileDto.data);
 
 						return {
+							bytesRange,
 							fileRecord,
 							downloadParams,
 							previewParams,
@@ -166,11 +168,11 @@ describe('FilesStorageService download method', () => {
 					};
 
 					it('calls download with correct params', async () => {
-						const { fileRecord, downloadParams, previewParams } = setup();
+						const { fileRecord, downloadParams, previewParams, bytesRange } = setup();
 
-						await previewService.getPreview(fileRecord, downloadParams, previewParams);
+						await previewService.getPreview(fileRecord, downloadParams, previewParams, bytesRange);
 
-						expect(fileStorageService.download).toHaveBeenCalledWith(fileRecord, downloadParams);
+						expect(fileStorageService.download).toHaveBeenCalledWith(fileRecord, downloadParams, bytesRange);
 					});
 
 					it('calls image magicks stream method', async () => {
@@ -294,6 +296,7 @@ describe('FilesStorageService download method', () => {
 			describe('WHEN width, height and outputFormat are set', () => {
 				describe('WHEN download of original and preview file is successfull', () => {
 					const setup = () => {
+						const bytesRange = 'bytes=0-100';
 						const mimeType = 'image/png';
 						const { fileRecord } = buildFileRecordsWithParams(mimeType);
 						const downloadParams = {
@@ -333,6 +336,7 @@ describe('FilesStorageService download method', () => {
 						resizeMock.mockClear();
 
 						return {
+							bytesRange,
 							fileRecord,
 							downloadParams,
 							previewParams,
@@ -344,11 +348,11 @@ describe('FilesStorageService download method', () => {
 					};
 
 					it('calls download with correct params', async () => {
-						const { fileRecord, downloadParams, previewParams } = setup();
+						const { fileRecord, downloadParams, previewParams, bytesRange } = setup();
 
-						await previewService.getPreview(fileRecord, downloadParams, previewParams);
+						await previewService.getPreview(fileRecord, downloadParams, previewParams, bytesRange);
 
-						expect(fileStorageService.download).toHaveBeenCalledWith(fileRecord, downloadParams);
+						expect(fileStorageService.download).toHaveBeenCalledWith(fileRecord, downloadParams, bytesRange);
 					});
 
 					it('calls image magicks resize method', async () => {
@@ -497,6 +501,7 @@ describe('FilesStorageService download method', () => {
 
 				describe('WHEN S3ClientAdapter get throws NotFoundException', () => {
 					const setup = () => {
+						const bytesRange = 'bytes=0-100';
 						const mimeType = 'image/png';
 						const { fileRecord } = buildFileRecordsWithParams(mimeType);
 						const downloadParams = {
@@ -539,6 +544,7 @@ describe('FilesStorageService download method', () => {
 						resizeMock.mockClear();
 
 						return {
+							bytesRange,
 							fileRecord,
 							downloadParams,
 							previewParams,
@@ -550,11 +556,11 @@ describe('FilesStorageService download method', () => {
 					};
 
 					it('calls download with correct params', async () => {
-						const { fileRecord, downloadParams, previewParams } = setup();
+						const { fileRecord, downloadParams, previewParams, bytesRange } = setup();
 
-						await previewService.getPreview(fileRecord, downloadParams, previewParams);
+						await previewService.getPreview(fileRecord, downloadParams, previewParams, bytesRange);
 
-						expect(fileStorageService.download).toHaveBeenCalledWith(fileRecord, downloadParams);
+						expect(fileStorageService.download).toHaveBeenCalledWith(fileRecord, downloadParams, bytesRange);
 					});
 
 					it('calls image magicks resize method', async () => {
