@@ -365,7 +365,7 @@ describe('PseudonymService', () => {
 			});
 
 			it('should be return array with four pseudonyms', async () => {
-				const { user1, pseudonym1, pseudonym2, pseudonym3, pseudonym4} = setup();
+				const { user1, pseudonym1, pseudonym2, pseudonym3, pseudonym4 } = setup();
 
 				const result: Pseudonym[] = await service.findByUserId(user1.id as string);
 
