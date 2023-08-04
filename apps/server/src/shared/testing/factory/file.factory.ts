@@ -13,11 +13,3 @@ export const fileFactory = BaseFactory.define<File, IFileProperties>(File, ({ se
 		name: `file-${sequence}`,
 	};
 });
-
-export const directoryFactory = BaseFactory.define<File, IFileProperties>(File, ({ sequence }) => {
-	return {
-		isDirectory: true,
-		creator: userFactory.build(),
-		name: `directory-${sequence}`,
-	};
-});
