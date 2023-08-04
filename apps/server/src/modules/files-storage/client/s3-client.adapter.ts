@@ -37,9 +37,7 @@ export class S3ClientAdapter implements IStorageClient {
 			if (err instanceof Error) {
 				this.logger.error(`${err.message} "${this.config.bucket}"`);
 			}
-			throw new InternalServerErrorException('S3ClientAdapter:createBucket', {
-				cause: err instanceof Error ? err : new Error(JSON.stringify(err)),
-			});
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:createBucket');
 		}
 	}
 
@@ -70,9 +68,7 @@ export class S3ClientAdapter implements IStorageClient {
 				this.logger.log(`could not find one of the files for deletion with id ${path}`);
 				throw new NotFoundException('NoSuchKey');
 			}
-			throw new InternalServerErrorException('S3ClientAdapter:get', {
-				cause: err instanceof Error ? err : new Error(JSON.stringify(err)),
-			});
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:get');
 		}
 	}
 
@@ -101,9 +97,7 @@ export class S3ClientAdapter implements IStorageClient {
 				return await this.create(path, file);
 			}
 
-			throw new InternalServerErrorException('S3ClientAdapter:create', {
-				cause: err instanceof Error ? err : new Error(JSON.stringify(err)),
-			});
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:create');
 		}
 	}
 
@@ -121,22 +115,12 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return result;
 		} catch (err) {
-			if (
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				err.cause &&
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				err.cause.message &&
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				typeof err.cause.message === 'string' &&
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
-				JSON.parse(err.cause.message).Code === 'NoSuchKey'
-			) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			if (err.response && err.response.Code && err.response.Code === 'NoSuchKey') {
 				this.logger.log(`could not find one of the files for deletion with ids ${paths.join(',')}`);
 				return [];
 			}
-			throw new InternalServerErrorException('S3ClientAdapter:delete', {
-				cause: err instanceof Error ? err : new Error(JSON.stringify(err)),
-			});
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:delete');
 		}
 	}
 
@@ -157,9 +141,7 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return result;
 		} catch (err) {
-			throw new InternalServerErrorException('S3ClientAdapter:restore', {
-				cause: err instanceof Error ? err : new Error(JSON.stringify(err)),
-			});
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:restore');
 		}
 	}
 
@@ -183,9 +165,7 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return result;
 		} catch (err) {
-			throw new InternalServerErrorException('S3ClientAdapter:copy', {
-				cause: err instanceof Error ? err : new Error(JSON.stringify(err)),
-			});
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:copy');
 		}
 	}
 
