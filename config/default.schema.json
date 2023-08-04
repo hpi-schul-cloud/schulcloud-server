@@ -970,10 +970,6 @@
 			"type": "string",
 			"description": "link to a page that gathers feedback about the column board feature"
 		},
-		"COLUMN_BOARD_CONTACT_LINK": {
-			"type": "string",
-			"description": "link to the contact form to gather feedback and wishes about the column board feature"
-		},
 		"FEATURE_COURSE_SHARE": {
 			"type": "boolean",
 			"default": false,
