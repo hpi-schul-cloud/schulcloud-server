@@ -18,6 +18,7 @@ import {
 	Req,
 	Res,
 	StreamableFile,
+	UnprocessableEntityException,
 	UseInterceptors,
 } from '@nestjs/common';
 import { ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -121,7 +122,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
-	@ApiResponse({ status: 406, type: NotAcceptableException })
+	@ApiResponse({ status: 422, type: UnprocessableEntityException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Get('/preview/:fileRecordId/:fileName')
 	async downloadPreview(
