@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SortOrder, SortOrderMap } from '@shared/domain';
 
 import { basicToolConfigFactory, customParameterFactory, externalToolFactory } from '@shared/testing';
+import { CustomParameter } from '../../common/domain';
 import {
 	CustomParameterLocation,
 	CustomParameterLocationParams,
@@ -14,7 +15,7 @@ import {
 	TokenEndpointAuthMethod,
 	ToolConfigType,
 } from '../../common/enum';
-import { ExternalToolRequestMapper } from './external-tool-request.mapper';
+import { ExternalToolSearchQuery } from '../../common/interface';
 import {
 	BasicToolConfigParams,
 	CustomParameterPostParams,
@@ -28,8 +29,7 @@ import {
 	SortExternalToolParams,
 } from '../controller/dto';
 import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
-import { CustomParameter } from '../../common/domain';
-import { ExternalToolSearchQuery } from '../../common/interface';
+import { ExternalToolRequestMapper } from './external-tool-request.mapper';
 
 describe('ExternalToolRequestMapper', () => {
 	let module: TestingModule;
@@ -156,6 +156,7 @@ describe('ExternalToolRequestMapper', () => {
 				lti11ConfigParams.resource_link_id = 'mockLink';
 				lti11ConfigParams.lti_message_type = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
 				lti11ConfigParams.privacy_permission = LtiPrivacyPermission.NAME;
+				lti11ConfigParams.launch_presentation_locale = 'de-DE';
 
 				const lti11ToolConfigDO: Lti11ToolConfig = new Lti11ToolConfig({
 					privacy_permission: LtiPrivacyPermission.NAME,
@@ -165,6 +166,7 @@ describe('ExternalToolRequestMapper', () => {
 					lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 					type: ToolConfigType.LTI11,
 					baseUrl: 'mockUrl',
+					launch_presentation_locale: 'de-DE',
 				});
 				return { lti11ToolConfigDO, lti11ConfigParams };
 			};
@@ -247,6 +249,7 @@ describe('ExternalToolRequestMapper', () => {
 				lti11ConfigParams.resource_link_id = 'mockLink';
 				lti11ConfigParams.lti_message_type = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
 				lti11ConfigParams.privacy_permission = LtiPrivacyPermission.NAME;
+				lti11ConfigParams.launch_presentation_locale = 'de-DE';
 
 				const lti11ToolConfigDO: Lti11ToolConfig = new Lti11ToolConfig({
 					privacy_permission: LtiPrivacyPermission.NAME,
@@ -256,6 +259,7 @@ describe('ExternalToolRequestMapper', () => {
 					lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 					type: ToolConfigType.LTI11,
 					baseUrl: 'mockUrl',
+					launch_presentation_locale: 'de-DE',
 				});
 
 				return { lti11ToolConfigDO, lti11ConfigParams };

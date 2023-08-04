@@ -566,11 +566,16 @@
 				"IS_ENABLED_BY_DEFAULT": {
 					"type": "boolean",
 					"description": "Grants teachers STUDENT_LIST permission by default."
+				},
+				"IS_VISIBLE": {
+					"type": "boolean",
+					"description": "Defines whether feature toggle for visibility of students to teachers is visible."
 				}
 			},
 			"default": {
 				"IS_CONFIGURABLE": false,
-				"IS_ENABLED_BY_DEFAULT": true
+				"IS_ENABLED_BY_DEFAULT": true,
+				"IS_VISIBLE": true
 			}
 		},
 		"FEATURE_SCHOOL_POLICY_ENABLED": {
