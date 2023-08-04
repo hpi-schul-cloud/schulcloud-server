@@ -1,3 +1,10 @@
+import {
+	basicToolConfigFactory,
+	customParameterFactory,
+	externalToolFactory,
+	lti11ToolConfigFactory,
+	oauth2ToolConfigFactory,
+} from '@shared/testing';
 import { CustomParameter } from '../../common/domain';
 import {
 	CustomParameterLocation,
@@ -55,12 +62,12 @@ describe('ExternalToolResponseMapper', () => {
 					config: basicToolConfigResponse,
 				});
 
-				const basicToolConfig: BasicToolConfig = new BasicToolConfig({
+				const basicToolConfig: BasicToolConfig = basicToolConfigFactory.build({
 					type: ToolConfigType.BASIC,
 					baseUrl: 'mockUrl',
 				});
 
-				const customParameter: CustomParameter = new CustomParameter({
+				const customParameter: CustomParameter = customParameterFactory.build({
 					name: 'mockName',
 					displayName: 'displayName',
 					description: 'description',
@@ -72,7 +79,8 @@ describe('ExternalToolResponseMapper', () => {
 					regexComment: 'mockComment',
 					isOptional: false,
 				});
-				const externalTool: ExternalTool = new ExternalTool({
+
+				const externalTool: ExternalTool = externalToolFactory.build({
 					id: '1',
 					name: 'mockName',
 					url: 'mockUrl',
@@ -101,7 +109,7 @@ describe('ExternalToolResponseMapper', () => {
 
 		describe('when mapping oauth tool DO', () => {
 			const setup = () => {
-				const oauth2ToolConfigDO: Oauth2ToolConfig = new Oauth2ToolConfig({
+				const oauth2ToolConfigDO: Oauth2ToolConfig = oauth2ToolConfigFactory.build({
 					clientId: 'mockId',
 					skipConsent: false,
 					type: ToolConfigType.OAUTH2,
@@ -149,7 +157,7 @@ describe('ExternalToolResponseMapper', () => {
 					config: oauth2ToolConfigResponse,
 				});
 
-				const customParameter: CustomParameter = new CustomParameter({
+				const customParameter: CustomParameter = customParameterFactory.build({
 					name: 'mockName',
 					displayName: 'displayName',
 					description: 'description',
@@ -162,7 +170,7 @@ describe('ExternalToolResponseMapper', () => {
 					isOptional: false,
 				});
 
-				const externalTool: ExternalTool = new ExternalTool({
+				const externalTool: ExternalTool = externalToolFactory.build({
 					id: '1',
 					name: 'mockName',
 					url: 'mockUrl',
@@ -191,7 +199,7 @@ describe('ExternalToolResponseMapper', () => {
 
 		describe('when mapping lti tool DO', () => {
 			const setup = () => {
-				const lti11ToolConfigDO: Lti11ToolConfig = new Lti11ToolConfig({
+				const lti11ToolConfigDO: Lti11ToolConfig = lti11ToolConfigFactory.build({
 					secret: 'mockSecret',
 					key: 'mockKey',
 					lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
@@ -233,7 +241,7 @@ describe('ExternalToolResponseMapper', () => {
 					config: lti11ToolConfigResponse,
 				});
 
-				const customParameter: CustomParameter = new CustomParameter({
+				const customParameter: CustomParameter = customParameterFactory.build({
 					name: 'mockName',
 					displayName: 'displayName',
 					description: 'description',
@@ -245,7 +253,7 @@ describe('ExternalToolResponseMapper', () => {
 					regexComment: 'mockComment',
 					isOptional: false,
 				});
-				const externalTool: ExternalTool = new ExternalTool({
+				const externalTool: ExternalTool = externalToolFactory.build({
 					id: '1',
 					name: 'mockName',
 					url: 'mockUrl',

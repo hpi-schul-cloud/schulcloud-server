@@ -7,12 +7,12 @@ import { ContextExternalToolService, ContextExternalToolValidationService } from
 import { ContextExternalToolDto } from './dto/context-external-tool.types';
 import { ContextExternalTool, ContextRef } from '../domain';
 import { ToolContextType } from '../../common/enum';
-import { ToolPermissionsUc } from '../../common/uc/tool-permissions.uc';
+import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 
 @Injectable()
 export class ContextExternalToolUc {
 	constructor(
-		private readonly toolPermissionsUc: ToolPermissionsUc,
+		private readonly toolPermissionHelper: ToolPermissionHelper,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly contextExternalToolValidationService: ContextExternalToolValidationService,
 		private readonly logger: LegacyLogger
@@ -24,7 +24,7 @@ export class ContextExternalToolUc {
 	): Promise<ContextExternalTool> {
 		const contextExternalTool = new ContextExternalTool(contextExternalToolDto);
 
-		await this.toolPermissionsUc.ensureContextPermissions(userId, contextExternalTool, {
+		await this.toolPermissionHelper.ensureContextPermissions(userId, contextExternalTool, {
 			requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 			action: Action.write,
 		});
@@ -42,7 +42,7 @@ export class ContextExternalToolUc {
 		const tool: ContextExternalTool = await this.contextExternalToolService.getContextExternalToolById(
 			contextExternalToolId
 		);
-		await this.toolPermissionsUc.ensureContextPermissions(userId, tool, {
+		await this.toolPermissionHelper.ensureContextPermissions(userId, tool, {
 			requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 			action: Action.write,
 		});
@@ -68,7 +68,7 @@ export class ContextExternalToolUc {
 	): Promise<ContextExternalTool[]> {
 		const toolPromises = tools.map(async (tool) => {
 			try {
-				await this.toolPermissionsUc.ensureContextPermissions(userId, tool, {
+				await this.toolPermissionHelper.ensureContextPermissions(userId, tool, {
 					requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 					action: Action.read,
 				});

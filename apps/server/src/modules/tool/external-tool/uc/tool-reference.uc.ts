@@ -10,8 +10,7 @@ import { CommonToolService } from '../../common/service';
 import { ToolReferenceMapper } from '../mapper/tool-reference.mapper';
 import { ContextExternalTool, ContextRef } from '../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ContextExternalToolUc } from '../../context-external-tool/uc';
-import { ToolPermissionsUc } from '../../common/uc/tool-permissions.uc';
+import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 
 @Injectable()
 export class ToolReferenceUc {
@@ -19,7 +18,7 @@ export class ToolReferenceUc {
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly toolPermissionsUc: ToolPermissionsUc,
+		private readonly toolPermissionHelper: ToolPermissionHelper,
 		private readonly commonToolService: CommonToolService
 	) {}
 
@@ -73,7 +72,7 @@ export class ToolReferenceUc {
 	}
 
 	private async ensureToolPermissions(userId: EntityId, contextExternalTool: ContextExternalTool): Promise<void> {
-		const promise: Promise<void> = this.toolPermissionsUc.ensureContextPermissions(userId, contextExternalTool, {
+		const promise: Promise<void> = this.toolPermissionHelper.ensureContextPermissions(userId, contextExternalTool, {
 			requiredPermissions: [Permission.CONTEXT_TOOL_USER],
 			action: Action.read,
 		});

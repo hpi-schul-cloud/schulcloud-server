@@ -1,7 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SortOrder, SortOrderMap } from '@shared/domain';
 
-import { basicToolConfigFactory, customParameterFactory, externalToolFactory } from '@shared/testing';
+import {
+	basicToolConfigFactory,
+	customParameterFactory,
+	externalToolFactory,
+	lti11ToolConfigFactory,
+	oauth2ToolConfigFactory,
+} from '@shared/testing';
 import {
 	CustomParameterLocation,
 	CustomParameterLocationParams,
@@ -213,7 +219,7 @@ describe('ExternalToolRequestMapper', () => {
 				oauth2ConfigParams.redirectUris = ['mockUri'];
 				oauth2ConfigParams.tokenEndpointAuthMethod = TokenEndpointAuthMethod.CLIENT_SECRET_POST;
 
-				const oauth2ToolConfigDO: Oauth2ToolConfig = new Oauth2ToolConfig({
+				const oauth2ToolConfigDO: Oauth2ToolConfig = oauth2ToolConfigFactory.build({
 					clientId: 'mockId',
 					type: ToolConfigType.OAUTH2,
 					baseUrl: 'mockUrl',
@@ -373,7 +379,7 @@ describe('ExternalToolRequestMapper', () => {
 				lti11ConfigParams.lti_message_type = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
 				lti11ConfigParams.privacy_permission = LtiPrivacyPermission.NAME;
 
-				const lti11ToolConfigDO: Lti11ToolConfig = new Lti11ToolConfig({
+				const lti11ToolConfigDO: Lti11ToolConfig = lti11ToolConfigFactory.build({
 					privacy_permission: LtiPrivacyPermission.NAME,
 					secret: 'mockSecret',
 					key: 'mockKey',
@@ -460,7 +466,7 @@ describe('ExternalToolRequestMapper', () => {
 				oauth2ConfigParams.redirectUris = ['mockUri'];
 				oauth2ConfigParams.tokenEndpointAuthMethod = TokenEndpointAuthMethod.CLIENT_SECRET_POST;
 
-				const oauth2ToolConfigDO: Oauth2ToolConfig = new Oauth2ToolConfig({
+				const oauth2ToolConfigDO: Oauth2ToolConfig = oauth2ToolConfigFactory.build({
 					clientId: 'mockId',
 					type: ToolConfigType.OAUTH2,
 					baseUrl: 'mockUrl',

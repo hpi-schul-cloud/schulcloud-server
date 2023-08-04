@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
-import { AuthorizableReferenceType, AuthorizationContext, AuthorizationService } from '../../../authorization';
+import { AuthorizableReferenceType, AuthorizationContext, AuthorizationService } from '@src/modules';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ContextTypeMapper } from '../mapper';
 
 @Injectable()
-export class ToolPermissionsUc {
+export class ToolPermissionHelper {
 	constructor(private readonly authorizationService: AuthorizationService) {}
 
 	public async ensureContextPermissions(

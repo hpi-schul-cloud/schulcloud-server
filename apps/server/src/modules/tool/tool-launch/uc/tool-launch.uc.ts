@@ -5,14 +5,14 @@ import { ToolLaunchService } from '../service';
 import { ToolLaunchData, ToolLaunchRequest } from '../types';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ToolPermissionsUc } from '../../common/uc/tool-permissions.uc';
+import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 
 @Injectable()
 export class ToolLaunchUc {
 	constructor(
 		private readonly toolLaunchService: ToolLaunchService,
 		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly toolPermissionsUc: ToolPermissionsUc
+		private readonly toolPermissionHelper: ToolPermissionHelper
 	) {}
 
 	async getToolLaunchRequest(userId: EntityId, contextExternalToolId: EntityId): Promise<ToolLaunchRequest> {
@@ -20,7 +20,7 @@ export class ToolLaunchUc {
 			contextExternalToolId
 		);
 
-		await this.toolPermissionsUc.ensureContextPermissions(userId, contextExternalTool, {
+		await this.toolPermissionHelper.ensureContextPermissions(userId, contextExternalTool, {
 			requiredPermissions: [Permission.CONTEXT_TOOL_USER],
 			action: Action.read,
 		});
