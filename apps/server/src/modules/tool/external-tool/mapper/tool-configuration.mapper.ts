@@ -1,16 +1,16 @@
-import { ExternalToolDO } from '@shared/domain';
 import {
 	ContextExternalToolConfigurationTemplateListResponse,
 	ContextExternalToolConfigurationTemplateResponse,
 	SchoolExternalToolConfigurationTemplateListResponse,
 	SchoolExternalToolConfigurationTemplateResponse,
 } from '../controller/dto';
+import { ExternalTool } from '../domain';
 import { ContextExternalToolTemplateInfo } from '../uc';
 import { ExternalToolResponseMapper } from './external-tool-response.mapper';
 
 export class ToolConfigurationMapper {
 	static mapToSchoolExternalToolConfigurationTemplateResponse(
-		externalTool: ExternalToolDO
+		externalTool: ExternalTool
 	): SchoolExternalToolConfigurationTemplateResponse {
 		const mapped = new SchoolExternalToolConfigurationTemplateResponse({
 			externalToolId: externalTool.id ?? '',
@@ -26,7 +26,7 @@ export class ToolConfigurationMapper {
 	}
 
 	static mapToSchoolExternalToolConfigurationTemplateListResponse(
-		externalTools: ExternalToolDO[]
+		externalTools: ExternalTool[]
 	): SchoolExternalToolConfigurationTemplateListResponse {
 		const mappedTools = externalTools.map(
 			(tool): SchoolExternalToolConfigurationTemplateResponse =>

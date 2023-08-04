@@ -1,22 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import {
-	ContextExternalToolDO,
-	ExternalToolDO,
-	Permission,
-	SchoolExternalToolDO,
-	ToolConfigurationStatus,
-	ToolReference,
-} from '@shared/domain';
-import { contextExternalToolDOFactory, externalToolDOFactory, schoolExternalToolDOFactory } from '@shared/testing';
+import { Permission } from '@shared/domain';
+import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Action } from '@src/modules/authorization';
 import { ToolReferenceUc } from './tool-reference.uc';
-import { ToolContextType } from '../../common/interface';
+import { ToolConfigurationStatus, ToolContextType } from '../../common/enum';
 import { ExternalToolService } from '../service';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { CommonToolService } from '../../common/service';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { ExternalTool, ToolReference } from '../domain';
+import { ContextExternalTool } from '../../context-external-tool/domain';
 
 describe('ToolReferenceUc', () => {
 	let module: TestingModule;
@@ -67,9 +63,11 @@ describe('ToolReferenceUc', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const externalTool: ExternalToolDO = externalToolDOFactory.buildWithId();
-				const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({ toolId: externalTool.id });
-				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+					toolId: externalTool.id,
+				});
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef('schoolToolId', 'schoolId')
 					.buildWithId();
 
@@ -166,9 +164,11 @@ describe('ToolReferenceUc', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const externalTool: ExternalToolDO = externalToolDOFactory.buildWithId();
-				const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({ toolId: externalTool.id });
-				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+					toolId: externalTool.id,
+				});
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef('schoolToolId', 'schoolId')
 					.buildWithId();
 

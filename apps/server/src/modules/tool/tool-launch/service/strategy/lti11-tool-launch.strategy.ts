@@ -1,17 +1,18 @@
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, ExternalToolDO, LtiPrivacyPermission, Pseudonym, RoleName, UserDO } from '@shared/domain';
+import { EntityId, LtiPrivacyPermission, Pseudonym, RoleName, UserDO } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
 import { CourseRepo } from '@shared/repo';
 import { PseudonymService } from '@src/modules/pseudonym';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { Authorization } from 'oauth-1.0a';
+import { LtiRole } from '../../../common/enum';
+import { ExternalTool } from '../../../external-tool/domain';
 import { LtiRoleMapper } from '../../mapper';
 import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
-import { LtiRole } from '../../../common/interface';
 
 @Injectable()
 export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
@@ -30,10 +31,10 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		userId: EntityId,
 		data: IToolLaunchParams
 	): Promise<PropertyData[]> {
-		const { config } = data.externalToolDO;
-		const contextId: EntityId = data.contextExternalToolDO.contextRef.id;
+		const { config } = data.externalTool;
+		const contextId: EntityId = data.contextExternalTool.contextRef.id;
 
-		if (!ExternalToolDO.isLti11Config(config)) {
+		if (!ExternalTool.isLti11Config(config)) {
 			throw new UnprocessableEntityException(
 				`Unable to build LTI 1.1 launch data. Tool configuration is of type ${config.type}. Expected "lti11"`
 			);
@@ -62,7 +63,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			}),
 			new PropertyData({
 				name: 'launch_presentation_locale',
-				value: 'de-DE',
+				value: config.launch_presentation_locale,
 				location: PropertyLocation.BODY,
 			}),
 			new PropertyData({
@@ -95,7 +96,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		}
 
 		if (config.privacy_permission === LtiPrivacyPermission.PSEUDONYMOUS) {
-			const pseudonym: Pseudonym = await this.pseudonymService.findOrCreatePseudonym(user, data.externalToolDO);
+			const pseudonym: Pseudonym = await this.pseudonymService.findOrCreatePseudonym(user, data.externalTool);
 
 			additionalProperties.push(
 				new PropertyData({
