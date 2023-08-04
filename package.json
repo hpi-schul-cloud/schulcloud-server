@@ -213,7 +213,7 @@
 		"universal-analytics": "^0.5.1",
 		"urlsafe-base64": "^1.0.0",
 		"uuid": "^8.3.0",
-		"winston": "^3.8.2",
+		"winston": "^3.10.0",
 		"y-mongodb-provider": "^0.1.6",
 		"y-protocols": "^1.0.5",
 		"y-websocket": "^1.5.0",
