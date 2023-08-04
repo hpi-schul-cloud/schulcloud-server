@@ -1,5 +1,5 @@
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { AnyBoardDo, EntityId, SubmissionContainerElement, SubmissionItem } from '@shared/domain';
+import { ForbiddenException, forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { AnyBoardDo, BoardRoles, EntityId, SubmissionContainerElement, SubmissionItem } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Action } from '@src/modules/authorization/types/action.enum';
@@ -55,7 +55,14 @@ export class ElementUc {
 			);
 		}
 
-		await this.checkPermission(userId, submissionContainer, Action.write);
+		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(submissionContainer);
+		const boardRoles = boardDoAuthorizable.users.find((user) => user.userId === userId)?.roles;
+
+		if (!boardRoles?.includes(BoardRoles.READER)) {
+			throw new ForbiddenException('Only students should be able to create a new submissionItem');
+		}
+
+		await this.checkPermission(userId, submissionContainer, Action.read);
 
 		const subElement = await this.submissionItemService.create(userId, submissionContainer, { completed: false });
 

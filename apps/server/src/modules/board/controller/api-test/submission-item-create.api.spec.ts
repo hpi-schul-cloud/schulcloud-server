@@ -62,42 +62,12 @@ describe('submission create (api)', () => {
 
 			return { loggedInClient, teacherUser, columnBoardNode, columnNode, cardNode, submissionContainerNode };
 		};
-		it('should return status 201', async () => {
+		it('should return status 403', async () => {
 			const { loggedInClient, submissionContainerNode } = await setup();
 
 			const response = await loggedInClient.post(`${submissionContainerNode.id}/submissions`, { completed: false });
 
-			expect(response.status).toEqual(201);
-		});
-
-		it('should return created submission', async () => {
-			const { loggedInClient, teacherUser, submissionContainerNode } = await setup();
-
-			const response = await loggedInClient.post(`${submissionContainerNode.id}/submissions`, { completed: true });
-
-			const result = response.body as SubmissionItemResponse;
-			expect(result.completed).toBe(true);
-			expect(result.id).toBeDefined();
-			expect(result.timestamps.createdAt).toBeDefined();
-			expect(result.timestamps.lastUpdatedAt).toBeDefined();
-			expect(result.userId).toBe(teacherUser.id);
-		});
-
-		it('should fail without params completed', async () => {
-			const { loggedInClient, submissionContainerNode } = await setup();
-
-			const response = await loggedInClient.post(`${submissionContainerNode.id}/submissions`, {});
-			expect(response.status).toBe(400);
-		});
-
-		it('should fail when user wants to create more than one submission-item', async () => {
-			const { loggedInClient, submissionContainerNode } = await setup();
-
-			const response = await loggedInClient.post(`${submissionContainerNode.id}/submissions`, { completed: false });
-			expect(response.status).toBe(201);
-
-			const response2 = await loggedInClient.post(`${submissionContainerNode.id}/submissions`, { completed: false });
-			expect(response2.status).toBe(406);
+			expect(response.status).toEqual(403);
 		});
 	});
 
@@ -127,12 +97,42 @@ describe('submission create (api)', () => {
 			return { loggedInClient, studentUser, columnBoardNode, columnNode, cardNode, submissionContainerNode };
 		};
 
-		it('should return status 403', async () => {
+		it('should return status 201', async () => {
 			const { loggedInClient, submissionContainerNode } = await setup();
 
 			const response = await loggedInClient.post(`${submissionContainerNode.id}/submissions`, { completed: false });
 
-			expect(response.status).toEqual(403);
+			expect(response.status).toEqual(201);
+		});
+
+		it('should return created submission', async () => {
+			const { loggedInClient, studentUser, submissionContainerNode } = await setup();
+
+			const response = await loggedInClient.post(`${submissionContainerNode.id}/submissions`, { completed: true });
+
+			const result = response.body as SubmissionItemResponse;
+			expect(result.completed).toBe(true);
+			expect(result.id).toBeDefined();
+			expect(result.timestamps.createdAt).toBeDefined();
+			expect(result.timestamps.lastUpdatedAt).toBeDefined();
+			expect(result.userId).toBe(studentUser.id);
+		});
+
+		it('should fail without params completed', async () => {
+			const { loggedInClient, submissionContainerNode } = await setup();
+
+			const response = await loggedInClient.post(`${submissionContainerNode.id}/submissions`, {});
+			expect(response.status).toBe(400);
+		});
+
+		it('should fail when user wants to create more than one submission-item', async () => {
+			const { loggedInClient, submissionContainerNode } = await setup();
+
+			const response = await loggedInClient.post(`${submissionContainerNode.id}/submissions`, { completed: false });
+			expect(response.status).toBe(201);
+
+			const response2 = await loggedInClient.post(`${submissionContainerNode.id}/submissions`, { completed: false });
+			expect(response2.status).toBe(406);
 		});
 	});
 
