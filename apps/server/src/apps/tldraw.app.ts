@@ -15,13 +15,12 @@ async function bootstrap() {
 	const logger = await nestApp.resolve(Logger);
 	nestApp.useWebSocketAdapter(new WsAdapter(wss));
 	nestApp.enableCors();
-	const port = 3344;
-	await nestApp.listen(port);
+	await nestApp.init();
 
 	logger.log(
 		new AppStartLoggable({
-			appName: 'Tldraw server app',
-			port,
+			appName: 'Tldraw server app.',
+			port: 3345,
 		})
 	);
 }
