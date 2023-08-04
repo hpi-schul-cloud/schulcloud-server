@@ -32,7 +32,7 @@ spec:
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 3344
+        - containerPort: 3345
           name: tldraw
           protocol: TCP
         envFrom:
