@@ -1211,29 +1211,31 @@
 			"properties": {
 				"PING_TIMEOUT": {
 					"type": "number",
-					"default": 30000,
 					"description": "Max time for waiting between calls for tldraw"
 				},
 				"GC_ENABLED": {
 					"type": "boolean",
-					"default": true,
 					"description": "If tldraw garbage collector should be enabled"
 				},
 				"DB_COLLECTION_NAME": {
 					"type": "string",
-					"default": "drawing",
 					"description": "Collection name in which tldraw drawing are stored"
 				},
 				"DB_FLUSH_SIZE": {
 					"type": "integer",
-					"default": 400,
 					"description": "DB collection flushing size"
 				},
 				"DB_MULTIPLE_COLLECTIONS": {
 					"type": "boolean",
-					"default": false,
 					"description": "DB collection allowing multiple collections for drawing"
 				}
+			},
+			"default": {
+				"PING_TIMEOUT": 30000,
+				"GC_ENABLED": true,
+				"DB_COLLECTION_NAME": "drawing",
+				"DB_FLUSH_SIZE": 400,
+				"DB_MULTIPLE_COLLECTIONS": false
 			}
 		}
 	},
