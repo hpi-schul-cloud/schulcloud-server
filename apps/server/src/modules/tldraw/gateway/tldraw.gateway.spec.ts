@@ -23,7 +23,7 @@ describe('TldrawGateway', () => {
 	let app: INestApplication;
 	const gatewayPort = 3346;
 
-	beforeAll(async () => {
+	beforeEach(async () => {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
 		const module: TestingModule = await Test.createTestingModule({
 			imports,
@@ -37,7 +37,7 @@ describe('TldrawGateway', () => {
 		clientSocket = new WebSocket(`ws://localhost:${gatewayPort}/TEST`);
 	});
 
-	afterAll(async () => {
+	afterEach(async () => {
 		await app.close();
 	});
 
