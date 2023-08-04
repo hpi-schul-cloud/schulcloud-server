@@ -1,19 +1,19 @@
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import {
-    Account,
-    Counted,
-    EntityId,
-    IFindOptions,
-    IImportUserScope,
-    INameMatch,
-    ImportUser,
-    MatchCreator,
-    MatchCreatorScope,
-    Permission,
-    SchoolFeatures,
-    System,
-    User,
+	Account,
+	Counted,
+	EntityId,
+	IFindOptions,
+	IImportUserScope,
+	INameMatch,
+	ImportUser,
+	MatchCreator,
+	MatchCreatorScope,
+	Permission,
+	SchoolFeatures,
+	System,
+	User,
 } from '@shared/domain';
 
 import { Configuration } from '@hpi-schul-cloud/commons';
@@ -25,17 +25,17 @@ import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import { AuthorizationService } from '@src/modules/authorization';
 import { SchoolService } from '../../school';
 import {
-    MigrationMayBeCompleted,
-    MigrationMayNotBeCompleted,
-    SchoolIdDoesNotMatchWithUserSchoolId,
-    SchoolInUserMigrationEndLoggable,
-    SchoolInUserMigrationStartLoggable,
-    UserMigrationIsNotEnabled,
+	MigrationMayBeCompleted,
+	MigrationMayNotBeCompleted,
+	SchoolIdDoesNotMatchWithUserSchoolId,
+	SchoolInUserMigrationEndLoggable,
+	SchoolInUserMigrationStartLoggable,
+	UserMigrationIsNotEnabled,
 } from '../loggable';
 import {
-    LdapAlreadyPersistedException,
-    MigrationAlreadyActivatedException,
-    MissingSchoolNumberException,
+	LdapAlreadyPersistedException,
+	MigrationAlreadyActivatedException,
+	MissingSchoolNumberException,
 } from './ldap-user-migration.error';
 
 export type UserImportPermissions =
@@ -102,7 +102,9 @@ export class UserImportUc {
 
 		// check same school
 		if (!school.id || school.id !== userMatch.school.id || school.id !== importUser.school.id) {
-			this.logger.warning(new SchoolIdDoesNotMatchWithUserSchoolId(userMatch.school.id, importUser.school.id, school.id));
+			this.logger.warning(
+				new SchoolIdDoesNotMatchWithUserSchoolId(userMatch.school.id, importUser.school.id, school.id)
+			);
 			throw new ForbiddenException('not same school');
 		}
 

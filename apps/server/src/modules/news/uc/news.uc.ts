@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import {
-    Counted,
-    EntityId,
-    ICreateNews,
-    IFindOptions,
-    INewsScope,
-    IUpdateNews,
-    News,
-    NewsTargetModel,
-    Permission,
-    SortOrder,
+	Counted,
+	EntityId,
+	ICreateNews,
+	IFindOptions,
+	INewsScope,
+	IUpdateNews,
+	News,
+	NewsTargetModel,
+	Permission,
+	SortOrder,
 } from '@shared/domain';
 import { NewsRepo, NewsTargetFilter } from '@shared/repo';
 import { CrudOperation } from '@shared/types';

@@ -1,9 +1,9 @@
 import { Express } from 'express';
 
 import {
-    PrometheusMetricsConfig,
-    createAPIResponseTimeMetricMiddleware,
-    createPrometheusMetricsApp,
+	PrometheusMetricsConfig,
+	createAPIResponseTimeMetricMiddleware,
+	createPrometheusMetricsApp,
 } from '@shared/infra/metrics';
 import { LogMessage, Loggable, Logger } from '@src/core/logger';
 import { AppStartLoggable } from './app-start-loggable';
