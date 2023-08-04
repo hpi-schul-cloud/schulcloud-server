@@ -23,6 +23,7 @@ import { ExternalToolRequestMapper, ExternalToolResponseMapper } from '../mapper
 import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate, ToolReferenceUc } from '../uc';
 import {
 	ExternalToolCreateParams,
+	ExternalToolLogoResponse,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
 	ExternalToolSearchParams,
@@ -161,5 +162,20 @@ export class ToolController {
 		const toolReferenceListResponse = new ToolReferenceListResponse(toolReferenceResponses);
 
 		return toolReferenceListResponse;
+	}
+
+	@Get('/:toolId/logo')
+	@ApiOperation({ summary: 'Gets the logo of an external tool.' })
+	@ApiOkResponse({
+		description: 'Logo of external tool fetched successfully.',
+		type: ExternalToolLogoResponse,
+	})
+	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
+	async getExternalToolLogo(@Param() params: ToolIdParams): Promise<ExternalToolLogoResponse> {
+		const logoBase64: string = await this.externalToolUc.getExternalToolBase64Logo(params.toolId);
+
+		const response: ExternalToolLogoResponse = new ExternalToolLogoResponse({ logoBase64 });
+
+		return response;
 	}
 }

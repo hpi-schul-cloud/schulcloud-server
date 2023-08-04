@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { EntityId, IFindOptions, Page, Permission, User } from '@shared/domain';
 import { AuthorizationService } from '@src/modules/authorization';
 import { ExternalToolSearchQuery } from '../../common/interface';
+import { ExternalTool, ExternalToolConfig } from '../domain';
+import { ExternalToolLogoNotFoundLoggableException } from '../error/external-tool-logo-not-found-loggable-exception';
 import { ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
-import { ExternalToolConfig, ExternalTool } from '../domain';
 
 @Injectable()
 export class ExternalToolUc {
@@ -20,7 +21,8 @@ export class ExternalToolUc {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 		await this.toolValidationService.validateCreate(externalTool);
 
-		const tool: Promise<ExternalTool> = this.externalToolService.createExternalTool(externalTool);
+		const tool: ExternalTool = await this.externalToolService.createExternalTool(externalTool);
+		await this.externalToolService.fetchAndSaveLogo(tool);
 
 		return tool;
 	}
@@ -39,6 +41,8 @@ export class ExternalToolUc {
 		});
 
 		const saved = await this.externalToolService.updateExternalTool(toUpdate, loaded);
+		await this.externalToolService.fetchAndSaveLogo(saved);
+
 		return saved;
 	}
 
@@ -70,5 +74,15 @@ export class ExternalToolUc {
 	private async ensurePermission(userId: EntityId, permission: Permission) {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [permission]);
+	}
+
+	async getExternalToolBase64Logo(toolId: EntityId): Promise<string> {
+		const tool: ExternalTool = await this.externalToolService.findExternalToolById(toolId);
+
+		if (!tool.logoBase64) {
+			throw new ExternalToolLogoNotFoundLoggableException(toolId);
+		}
+
+		return tool.logoBase64;
 	}
 }

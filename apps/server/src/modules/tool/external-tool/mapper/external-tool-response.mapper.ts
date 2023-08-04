@@ -12,6 +12,7 @@ import { statusMapping } from '../../school-external-tool/mapper';
 import {
 	BasicToolConfigResponse,
 	CustomParameterResponse,
+	ExternalToolLogoResponse,
 	ExternalToolResponse,
 	Lti11ToolConfigResponse,
 	Oauth2ToolConfigResponse,

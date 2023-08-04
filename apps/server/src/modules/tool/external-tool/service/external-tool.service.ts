@@ -45,6 +45,7 @@ export class ExternalToolService {
 		await this.updateOauth2ToolConfig(toUpdate);
 		this.externalToolVersionService.increaseVersionOfNewToolIfNecessary(loadedTool, toUpdate);
 		const externalTool: ExternalTool = await this.externalToolRepo.save(toUpdate);
+
 		return externalTool;
 	}
 
@@ -147,5 +148,17 @@ export class ExternalToolService {
 		config.tokenEndpointAuthMethod = oauthClient.token_endpoint_auth_method as TokenEndpointAuthMethod;
 		config.redirectUris = oauthClient.redirect_uris;
 		config.frontchannelLogoutUri = oauthClient.frontchannel_logout_uri;
+	}
+
+	async fetchAndSaveLogo(externalTool: ExternalTool): Promise<void> {
+		if (externalTool.logoUrl) {
+			const response: Response = await fetch(externalTool.logoUrl);
+
+			const arrayBuffer: ArrayBuffer = await response.arrayBuffer();
+			const buffer: Buffer = Buffer.from(arrayBuffer);
+			externalTool.logoBase64 = buffer.toString('base64');
+
+			await this.externalToolRepo.save(externalTool);
+		}
 	}
 }
