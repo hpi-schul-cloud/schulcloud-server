@@ -5,11 +5,10 @@ import {
 	DeleteObjectsCommand,
 	GetObjectCommand,
 	S3Client,
-	S3ServiceException,
 	ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
 import { FileDto } from '../dto';
@@ -29,10 +28,17 @@ export class S3ClientAdapter implements IStorageClient {
 
 	// is public but only used internally
 	public async createBucket() {
-		this.logger.log({ action: 'create bucket', params: { bucket: this.config.bucket } });
+		try {
+			this.logger.log({ action: 'create bucket', params: { bucket: this.config.bucket } });
 
-		const req = new CreateBucketCommand({ Bucket: this.config.bucket });
-		await this.client.send(req);
+			const req = new CreateBucketCommand({ Bucket: this.config.bucket });
+			await this.client.send(req);
+		} catch (err) {
+			if (err instanceof Error) {
+				this.logger.error(`${err.message} "${this.config.bucket}"`);
+			}
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:createBucket');
+		}
 	}
 
 	public async get(path: string, bytesRange?: string): Promise<IGetFileResponse> {
@@ -56,12 +62,13 @@ export class S3ClientAdapter implements IStorageClient {
 				contentRange: data.ContentRange,
 				etag: data.ETag,
 			};
-		} catch (error) {
-			if (error instanceof S3ServiceException && error.name === 'NoSuchKey') {
-				throw new NotFoundException('NoSuchKey', { cause: error });
+		} catch (err) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			if (err.message && err.message === 'NoSuchKey') {
+				this.logger.log(`could not find one of the files for deletion with id ${path}`);
+				throw new NotFoundException('NoSuchKey');
 			}
-
-			throw error;
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:get');
 		}
 	}
 
@@ -83,13 +90,14 @@ export class S3ClientAdapter implements IStorageClient {
 			const commandOutput = await upload.done();
 			return commandOutput;
 		} catch (err) {
-			if (err instanceof S3ServiceException && err.name === 'NoSuchBucket') {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			if (err.Code && err.Code === 'NoSuchBucket') {
 				await this.createBucket();
 
 				return await this.create(path, file);
 			}
 
-			throw err;
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:create');
 		}
 	}
 
@@ -107,50 +115,58 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return result;
 		} catch (err) {
-			if (err instanceof S3ServiceException && err.name === 'NoSuchKey') {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			if (err.response && err.response.Code && err.response.Code === 'NoSuchKey') {
 				this.logger.log(`could not find one of the files for deletion with ids ${paths.join(',')}`);
 				return [];
 			}
-
-			throw err;
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:delete');
 		}
 	}
 
 	public async restore(paths: string[]): Promise<CopyObjectCommandOutput[]> {
-		this.logger.log({ action: 'restore', params: { paths, bucket: this.config.bucket } });
+		try {
+			this.logger.log({ action: 'restore', params: { paths, bucket: this.config.bucket } });
 
-		const copyPaths = paths.map((path) => {
-			return { sourcePath: `${this.deletedFolderName}/${path}`, targetPath: path };
-		});
+			const copyPaths = paths.map((path) => {
+				return { sourcePath: `${this.deletedFolderName}/${path}`, targetPath: path };
+			});
 
-		const result = await this.copy(copyPaths);
+			const result = await this.copy(copyPaths);
 
-		// try catch with rollback is not needed,
-		// because the second copyRequest try override existing files in trash folder
-		const deleteObjects = copyPaths.map((p) => p.sourcePath);
-		await this.delete(deleteObjects);
+			// try catch with rollback is not needed,
+			// because the second copyRequest try override existing files in trash folder
+			const deleteObjects = copyPaths.map((p) => p.sourcePath);
+			await this.delete(deleteObjects);
 
-		return result;
+			return result;
+		} catch (err) {
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:restore');
+		}
 	}
 
 	public async copy(paths: ICopyFiles[]) {
-		this.logger.log({ action: 'copy', params: { paths, bucket: this.config.bucket } });
+		try {
+			this.logger.log({ action: 'copy', params: { paths, bucket: this.config.bucket } });
 
-		const copyRequests = paths.map(async (path) => {
-			const req = new CopyObjectCommand({
-				Bucket: this.config.bucket,
-				CopySource: `${this.config.bucket}/${path.sourcePath}`,
-				Key: `${path.targetPath}`,
+			const copyRequests = paths.map(async (path) => {
+				const req = new CopyObjectCommand({
+					Bucket: this.config.bucket,
+					CopySource: `${this.config.bucket}/${path.sourcePath}`,
+					Key: `${path.targetPath}`,
+				});
+
+				const data = await this.client.send(req);
+
+				return data;
 			});
 
-			const data = await this.client.send(req);
+			const result = await Promise.all(copyRequests);
 
-			return data;
-		});
-
-		const result = await Promise.all(copyRequests);
-
-		return result;
+			return result;
+		} catch (err) {
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:copy');
+		}
 	}
 
 	public async delete(paths: string[]) {
