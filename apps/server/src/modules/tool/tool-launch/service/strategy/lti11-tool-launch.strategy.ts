@@ -6,13 +6,13 @@ import { PseudonymService } from '@src/modules/pseudonym';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { Authorization } from 'oauth-1.0a';
+import { LtiRole } from '../../../common/enum';
+import { ExternalTool } from '../../../external-tool/domain';
 import { LtiRoleMapper } from '../../mapper';
 import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
-import { ExternalTool } from '../../../external-tool/domain';
-import { LtiRole } from '../../../common/enum';
 
 @Injectable()
 export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
@@ -63,7 +63,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			}),
 			new PropertyData({
 				name: 'launch_presentation_locale',
-				value: 'de-DE',
+				value: config.launch_presentation_locale,
 				location: PropertyLocation.BODY,
 			}),
 			new PropertyData({
