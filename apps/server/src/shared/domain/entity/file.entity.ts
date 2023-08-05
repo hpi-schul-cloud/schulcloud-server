@@ -23,6 +23,7 @@ export interface FileProps {
 	ownerId: EntityId | ObjectId;
 	refOwnerModel: FileRefOwnerModel;
 	creator?: User;
+	lockId?: User;
 }
 
 export const enum FileRefOwnerModel {
@@ -53,6 +54,7 @@ export class File extends BaseEntityWithTimestamps {
 		this._ownerId = new ObjectId(props.ownerId);
 		this.refOwnerModel = props.refOwnerModel;
 		this.creator = props.creator;
+		this.lockId = props.lockId;
 	}
 
 	private validate(props: FileProps) {
@@ -110,4 +112,7 @@ export class File extends BaseEntityWithTimestamps {
 
 	@ManyToOne('User', { nullable: true })
 	creator?: User;
+
+	@ManyToOne({ nullable: true })
+	lockId?: User;
 }
