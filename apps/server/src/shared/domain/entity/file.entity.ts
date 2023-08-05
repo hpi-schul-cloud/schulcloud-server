@@ -9,16 +9,16 @@ import { User } from './user.entity';
 
 export interface IFileProperties {
 	deletedAt?: Date;
-	bucket?: string;
-	storageProvider?: StorageProvider;
-	creator?: User;
+	isDirectory?: boolean;
 	name: string;
 	size?: number;
 	type?: string;
 	storageFileName?: string;
+	bucket?: string;
+	storageProvider?: StorageProvider;
 	thumbnail?: string;
 	thumbnailRequestToken?: string;
-	isDirectory?: boolean;
+	creator?: User;
 	parent?: File;
 	ownerId: EntityId | ObjectId;
 	refOwnerModel: FileRefOwnerModel;
@@ -37,17 +37,17 @@ export class File extends BaseEntityWithTimestamps {
 		super();
 		this.validate(props);
 
-		this.isDirectory = props.isDirectory || false;
 		this.deletedAt = props.deletedAt;
-		this.bucket = props.bucket;
-		this.storageProvider = props.storageProvider;
-		this.creator = props.creator;
+		this.isDirectory = props.isDirectory || false;
 		this.name = props.name;
 		this.size = props.size;
 		this.type = props.type;
 		this.storageFileName = props.storageFileName;
+		this.bucket = props.bucket;
+		this.storageProvider = props.storageProvider;
 		this.thumbnail = props.thumbnail;
 		this.thumbnailRequestToken = props.thumbnailRequestToken;
+		this.creator = props.creator;
 		this.parent = props.parent;
 		this._ownerId = new ObjectId(props.ownerId);
 		this.refOwnerModel = props.refOwnerModel;
@@ -79,6 +79,12 @@ export class File extends BaseEntityWithTimestamps {
 	storageFileName?: string; // not for directories
 
 	@Property({ nullable: true })
+	bucket?: string; // not for directories
+
+	@ManyToOne('StorageProvider', { fieldName: 'storageProviderId', nullable: true })
+	storageProvider?: StorageProvider; // not for directories
+
+	@Property({ nullable: true })
 	thumbnail?: string;
 
 	@Property({ nullable: true })
@@ -92,12 +98,6 @@ export class File extends BaseEntityWithTimestamps {
 
 	@ManyToOne({ nullable: true })
 	parent?: File;
-
-	@Property({ nullable: true })
-	bucket?: string; // not for directories
-
-	@ManyToOne('StorageProvider', { fieldName: 'storageProviderId', nullable: true })
-	storageProvider?: StorageProvider; // not for directories
 
 	@Property({ fieldName: 'owner', nullable: false })
 	_ownerId: ObjectId;
