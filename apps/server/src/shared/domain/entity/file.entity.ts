@@ -9,11 +9,15 @@ import { User } from './user.entity';
 
 export interface IFileProperties {
 	deletedAt?: Date;
-	storageFileName?: string;
 	bucket?: string;
 	storageProvider?: StorageProvider;
 	creator?: User;
 	name: string;
+	size?: number;
+	type?: string;
+	storageFileName?: string;
+	thumbnail?: string;
+	thumbnailRequestToken?: string;
 	isDirectory?: boolean;
 	ownerId: EntityId | ObjectId;
 	refOwnerModel: FileRefOwnerModel;
@@ -34,11 +38,15 @@ export class File extends BaseEntityWithTimestamps {
 
 		this.isDirectory = props.isDirectory || false;
 		this.deletedAt = props.deletedAt;
-		this.storageFileName = props.storageFileName;
 		this.bucket = props.bucket;
 		this.storageProvider = props.storageProvider;
 		this.creator = props.creator;
 		this.name = props.name;
+		this.size = props.size;
+		this.type = props.type;
+		this.storageFileName = props.storageFileName;
+		this.thumbnail = props.thumbnail;
+		this.thumbnailRequestToken = props.thumbnailRequestToken;
 		this._ownerId = new ObjectId(props.ownerId);
 		this.refOwnerModel = props.refOwnerModel;
 	}
@@ -60,13 +68,25 @@ export class File extends BaseEntityWithTimestamps {
 	name: string;
 
 	@Property({ nullable: true })
+	size?: number;
+
+	@Property({ nullable: true })
+	type?: string;
+
+	@Property({ nullable: true })
+	storageFileName?: string; // not for directories
+
+	@Property({ nullable: true })
+	thumbnail?: string;
+
+	@Property({ nullable: true })
+	thumbnailRequestToken?: string;
+
+	@Property({ nullable: true })
 	shareTokens?: string[];
 
 	@ManyToOne('User', { nullable: true })
 	creator?: User;
-
-	@Property({ nullable: true })
-	storageFileName?: string; // not for directories
 
 	@Property({ nullable: true })
 	bucket?: string; // not for directories
