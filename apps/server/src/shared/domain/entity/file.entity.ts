@@ -18,6 +18,7 @@ export interface FileProps {
 	storageProvider?: StorageProvider;
 	thumbnail?: string;
 	thumbnailRequestToken?: string;
+	shareTokens?: string[];
 	creator?: User;
 	parent?: File;
 	ownerId: EntityId | ObjectId;
@@ -47,6 +48,7 @@ export class File extends BaseEntityWithTimestamps {
 		this.storageProvider = props.storageProvider;
 		this.thumbnail = props.thumbnail;
 		this.thumbnailRequestToken = props.thumbnailRequestToken;
+		this.shareTokens = props.shareTokens;
 		this.creator = props.creator;
 		this.parent = props.parent;
 		this._ownerId = new ObjectId(props.ownerId);
