@@ -1,4 +1,4 @@
-import { Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
+import { Entity, Enum, Index, ManyToOne, OneToOne, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 
 import { EntityId } from '@shared/domain';
@@ -19,6 +19,7 @@ export interface IFileProperties {
 	thumbnail?: string;
 	thumbnailRequestToken?: string;
 	isDirectory?: boolean;
+	parent?: File;
 	ownerId: EntityId | ObjectId;
 	refOwnerModel: FileRefOwnerModel;
 }
@@ -47,6 +48,7 @@ export class File extends BaseEntityWithTimestamps {
 		this.storageFileName = props.storageFileName;
 		this.thumbnail = props.thumbnail;
 		this.thumbnailRequestToken = props.thumbnailRequestToken;
+		this.parent = props.parent;
 		this._ownerId = new ObjectId(props.ownerId);
 		this.refOwnerModel = props.refOwnerModel;
 	}
@@ -87,6 +89,9 @@ export class File extends BaseEntityWithTimestamps {
 
 	@ManyToOne('User', { nullable: true })
 	creator?: User;
+
+	@ManyToOne({ nullable: true })
+	parent?: File;
 
 	@Property({ nullable: true })
 	bucket?: string; // not for directories
