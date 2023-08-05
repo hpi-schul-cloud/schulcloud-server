@@ -1,4 +1,4 @@
-import { Entity, Enum, Index, ManyToOne, OneToOne, Property } from '@mikro-orm/core';
+import { Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 
 import { EntityId } from '@shared/domain';
@@ -7,7 +7,7 @@ import { BaseEntityWithTimestamps } from './base.entity';
 import { StorageProvider } from './storageprovider.entity';
 import { User } from './user.entity';
 
-export interface IFileProperties {
+export interface FileProps {
 	deletedAt?: Date;
 	isDirectory?: boolean;
 	name: string;
@@ -33,7 +33,7 @@ export const enum FileRefOwnerModel {
 @Entity({ collection: 'files' })
 @Index({ properties: ['shareTokens'] })
 export class File extends BaseEntityWithTimestamps {
-	constructor(props: IFileProperties) {
+	constructor(props: FileProps) {
 		super();
 		this.validate(props);
 
@@ -53,7 +53,7 @@ export class File extends BaseEntityWithTimestamps {
 		this.refOwnerModel = props.refOwnerModel;
 	}
 
-	private validate(props: IFileProperties) {
+	private validate(props: FileProps) {
 		if (props.isDirectory) return;
 		if (!props.bucket || !props.storageFileName || !props.storageProvider) {
 			throw new Error('files that are not directories always need a bucket, a storageFilename, and a storageProvider.');

@@ -1,7 +1,7 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 
-import { EntityId, File } from '@shared/domain';
+import { File } from '@shared/domain';
 import { BaseRepo } from '@shared/repo/base.repo';
 
 @Injectable()
