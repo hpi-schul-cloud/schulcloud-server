@@ -4,7 +4,7 @@ import { Task } from '@shared/domain/entity';
 import { TaskRepo } from '@shared/repo';
 import {
 	courseFactory,
-	fileFactory,
+	userFileFactory,
 	lessonFactory,
 	schoolFactory,
 	setupEntities,
@@ -410,8 +410,8 @@ describe('task copy service', () => {
 
 			const setupWithFiles = () => {
 				const school = schoolFactory.build();
-				const file1 = fileFactory.buildWithId({ name: 'file1.jpg' });
-				const file2 = fileFactory.buildWithId({ name: 'file2.jpg' });
+				const file1 = userFileFactory.buildWithId({ name: 'file1.jpg' });
+				const file2 = userFileFactory.buildWithId({ name: 'file2.jpg' });
 				const imageHTML1 = getImageHTML(file1.id, file1.name);
 				const imageHTML2 = getImageHTML(file2.id, file2.name);
 

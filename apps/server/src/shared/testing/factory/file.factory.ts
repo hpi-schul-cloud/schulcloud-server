@@ -1,9 +1,12 @@
-import { File, IFileProperties } from '@shared/domain';
+import { ObjectId } from 'bson';
+
+import { File, FileRefOwnerModel, IFileProperties } from '@shared/domain';
+
 import { BaseFactory } from './base.factory';
 import { storageProviderFactory } from './storageprovider.factory';
 import { userFactory } from './user.factory';
 
-export const fileFactory = BaseFactory.define<File, IFileProperties>(File, ({ sequence }) => {
+export const userFileFactory = BaseFactory.define<File, IFileProperties>(File, ({ sequence }) => {
 	return {
 		storageFileName: `file-${sequence}`,
 		bucket: 'test-bucket',
@@ -11,5 +14,7 @@ export const fileFactory = BaseFactory.define<File, IFileProperties>(File, ({ se
 		isDirectory: false,
 		creator: userFactory.build(),
 		name: `file-${sequence}`,
+		ownerId: new ObjectId(),
+		refOwnerModel: FileRefOwnerModel.USER,
 	};
 });

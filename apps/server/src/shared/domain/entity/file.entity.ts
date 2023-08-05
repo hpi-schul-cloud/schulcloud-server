@@ -1,4 +1,8 @@
-import { Entity, Index, ManyToOne, Property } from '@mikro-orm/core';
+import { Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
+
+import { EntityId } from '@shared/domain';
+
 import { BaseEntityWithTimestamps } from './base.entity';
 import { StorageProvider } from './storageprovider.entity';
 import { User } from './user.entity';
@@ -11,6 +15,14 @@ export interface IFileProperties {
 	creator?: User;
 	name: string;
 	isDirectory?: boolean;
+	ownerId: EntityId | ObjectId;
+	refOwnerModel: FileRefOwnerModel;
+}
+
+export const enum FileRefOwnerModel {
+	USER = 'user',
+	COURSE = 'course',
+	TEAMS = 'teams',
 }
 
 @Entity({ collection: 'files' })
@@ -27,6 +39,8 @@ export class File extends BaseEntityWithTimestamps {
 		this.storageProvider = props.storageProvider;
 		this.creator = props.creator;
 		this.name = props.name;
+		this._ownerId = new ObjectId(props.ownerId);
+		this.refOwnerModel = props.refOwnerModel;
 	}
 
 	private validate(props: IFileProperties) {
@@ -59,4 +73,14 @@ export class File extends BaseEntityWithTimestamps {
 
 	@ManyToOne('StorageProvider', { fieldName: 'storageProviderId', nullable: true })
 	storageProvider?: StorageProvider; // not for directories
+
+	@Property({ fieldName: 'owner', nullable: false })
+	_ownerId: ObjectId;
+
+	get ownerId(): EntityId {
+		return this._ownerId.toHexString();
+	}
+
+	@Enum({ nullable: false })
+	refOwnerModel: FileRefOwnerModel;
 }

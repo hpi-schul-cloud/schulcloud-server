@@ -2,12 +2,13 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ObjectId } from 'bson';
 
-import { File, StorageProvider } from '@shared/domain/entity';
+import { File, FileRefOwnerModel, StorageProvider } from '@shared/domain/entity';
 import { StorageProviderRepo } from '@shared/repo/storageprovider/storageprovider.repo';
 import { storageProviderFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
 
+import { LegacyLogger } from '@src/core/logger';
 import { DeleteFilesUc } from './delete-files.uc';
 import { FilesRepo } from '../repo';
 
@@ -30,12 +31,16 @@ describe('DeleteFileUC', () => {
 			storageFileName: 'file1',
 			bucket: 'bucket',
 			name: 'filename1',
+			ownerId: new ObjectId(),
+			refOwnerModel: FileRefOwnerModel.USER,
 		}),
 		new File({
 			storageProvider: exampleStorageProvider,
 			storageFileName: 'file2',
 			bucket: 'bucket',
 			name: 'filename2',
+			ownerId: new ObjectId(),
+			refOwnerModel: FileRefOwnerModel.USER,
 		}),
 	];
 

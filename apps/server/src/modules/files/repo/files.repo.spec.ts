@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { File } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { fileFactory } from '@shared/testing';
+import { userFileFactory } from '@shared/testing';
 
 import { FilesRepo } from './files.repo';
 
@@ -47,7 +47,7 @@ describe('FilesRepo', () => {
 
 	describe('findAllFilesForCleanup', () => {
 		it('should return files marked for deletion', async () => {
-			const file = fileFactory.build({ deletedAt: new Date() });
+			const file = userFileFactory.build({ deletedAt: new Date() });
 			await em.persistAndFlush(file);
 			em.clear();
 
@@ -60,7 +60,7 @@ describe('FilesRepo', () => {
 		});
 
 		it('should not return files which are not marked for deletion', async () => {
-			const file = fileFactory.build({ deletedAt: undefined });
+			const file = userFileFactory.build({ deletedAt: undefined });
 			await em.persistAndFlush(file);
 			const thresholdDate = new Date();
 			em.clear();
@@ -71,7 +71,7 @@ describe('FilesRepo', () => {
 
 		it('should not return files where deletedAt is after threshold', async () => {
 			const thresholdDate = new Date();
-			const file = fileFactory.build({ deletedAt: new Date(thresholdDate.getTime() + 10) });
+			const file = userFileFactory.build({ deletedAt: new Date(thresholdDate.getTime() + 10) });
 			await em.persistAndFlush(file);
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			expect(file.deletedAt!.getTime()).toBeGreaterThan(thresholdDate.getTime());
