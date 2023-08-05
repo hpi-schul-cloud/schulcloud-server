@@ -19,10 +19,10 @@ export interface FileProps {
 	thumbnail?: string;
 	thumbnailRequestToken?: string;
 	shareTokens?: string[];
-	creator?: User;
 	parent?: File;
 	ownerId: EntityId | ObjectId;
 	refOwnerModel: FileRefOwnerModel;
+	creator?: User;
 }
 
 export const enum FileRefOwnerModel {
@@ -49,10 +49,10 @@ export class File extends BaseEntityWithTimestamps {
 		this.thumbnail = props.thumbnail;
 		this.thumbnailRequestToken = props.thumbnailRequestToken;
 		this.shareTokens = props.shareTokens;
-		this.creator = props.creator;
 		this.parent = props.parent;
 		this._ownerId = new ObjectId(props.ownerId);
 		this.refOwnerModel = props.refOwnerModel;
+		this.creator = props.creator;
 	}
 
 	private validate(props: FileProps) {
@@ -95,9 +95,6 @@ export class File extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	shareTokens?: string[];
 
-	@ManyToOne('User', { nullable: true })
-	creator?: User;
-
 	@ManyToOne({ nullable: true })
 	parent?: File;
 
@@ -110,4 +107,7 @@ export class File extends BaseEntityWithTimestamps {
 
 	@Enum({ nullable: false })
 	refOwnerModel: FileRefOwnerModel;
+
+	@ManyToOne('User', { nullable: true })
+	creator?: User;
 }
