@@ -10,8 +10,6 @@ ENV TZ=Europe/Berlin
 RUN apk add --no-cache git make python3
 # to run ldap sync as script curl is needed
 RUN apk add --no-cache curl
-# we need it for file storage preview
-RUN apk add --no-cache imagemagick
 WORKDIR /schulcloud-server
 COPY tsconfig.json tsconfig.build.json package.json package-lock.json .eslintrc.js .eslintignore nest-cli.json ./
 COPY esbuild ./esbuild
