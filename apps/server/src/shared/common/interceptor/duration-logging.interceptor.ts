@@ -13,8 +13,8 @@ export class DurationLoggingInterceptor implements NestInterceptor {
 	}
 
 	intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
-		this.logger.verbose('Before...');
+		this.logger.log('Before...');
 		const now = Date.now();
-		return next.handle().pipe(tap(() => this.logger.verbose(`After... ${Date.now() - now}ms`)));
+		return next.handle().pipe(tap(() => this.logger.log(`After... ${Date.now() - now}ms`)));
 	}
 }
