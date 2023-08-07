@@ -1,8 +1,10 @@
 import { EntityId } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { hasDuplicateName, resolveFileNameDuplicates } from '.';
+import crypto from 'crypto';
+import { createPreviewNameHash, hasDuplicateName, resolveFileNameDuplicates } from '.';
 import { FileRecord } from '../entity';
+import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
 
 describe('File Name Helper', () => {
 	const setupFileRecords = () => {
@@ -230,6 +232,40 @@ describe('File Name Helper', () => {
 				const result = resolveFileNameDuplicates(newFileName, fileRecords);
 
 				expect(result).toBe(`renamed (1).jpeg`);
+			});
+		});
+	});
+
+	describe('createPreviewNameHash is called', () => {
+		describe('when preview params are set', () => {
+			it('should return hash', () => {
+				const fileRecordId = new ObjectId().toHexString();
+				const width = 100;
+				const height = 100;
+				const outputFormat = PreviewOutputMimeTypes.IMAGE_JPG;
+				const previewParams = {
+					width,
+					height,
+					outputFormat,
+				};
+				const fileParamsString = `${fileRecordId}${width}${height}${outputFormat}`;
+				const hash = crypto.createHash('sha512').update(fileParamsString).digest('hex');
+
+				const result = createPreviewNameHash(fileRecordId, previewParams);
+
+				expect(result).toBe(hash);
+			});
+		});
+
+		describe('when preview params are not set', () => {
+			it('should return hash', () => {
+				const fileRecordId = new ObjectId().toHexString();
+				const fileParamsString = `${fileRecordId}`;
+				const hash = crypto.createHash('sha512').update(fileParamsString).digest('hex');
+
+				const result = createPreviewNameHash(fileRecordId, {});
+
+				expect(result).toBe(hash);
 			});
 		});
 	});
