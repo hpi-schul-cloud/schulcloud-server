@@ -3,7 +3,6 @@ import { EntityId } from '@shared/domain';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
 import { ContextExternalTool, ContextRef } from '../domain';
-import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
 
 @Injectable()
 export class ContextExternalToolService {

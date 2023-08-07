@@ -292,7 +292,7 @@ describe('ContextExternalToolUc', () => {
 
 				await uc.getContextExternalTool(userId, contextExternalTool.id as string);
 
-				expect(contextExternalToolService.ensureContextPermissions).toHaveBeenCalledWith(userId, contextExternalTool, {
+				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(userId, contextExternalTool, {
 					requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 					action: Action.read,
 				});
