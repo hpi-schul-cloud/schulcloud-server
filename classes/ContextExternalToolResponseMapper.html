@@ -132,7 +132,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapContextExternalToolResponse(contextExternalTool: <a href="../undefineds/ContextExternalToolDto.html" target="_self">ContextExternalToolDto</a>)</code>
+                    <code>mapContextExternalToolResponse(contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
                 </td>
             </tr>
 
@@ -163,7 +163,7 @@
                                 <tr>
                                     <td>contextExternalTool</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#ContextExternalToolDto" target="_self" >ContextExternalToolDto</a></code>
+                                                <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
                                     </td>
 
                                     <td>
@@ -270,12 +270,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ContextExternalToolResponse } from &#x27;../controller/dto&#x27;;
-import { CustomParameterEntryParam, CustomParameterEntryResponse } from &#x27;../../school-external-tool/controller/dto&#x27;;
-import { ContextExternalToolDto } from &#x27;../uc/dto/context-external-tool.types&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CustomParameterEntryParam, CustomParameterEntryResponse } from &#x27;../../school-external-tool/controller/dto&#x27;;
+import { ContextExternalToolResponse } from &#x27;../controller/dto&#x27;;
+import { ContextExternalTool } from &#x27;../domain&#x27;;
 
 export class ContextExternalToolResponseMapper {
-	static mapContextExternalToolResponse(contextExternalTool: ContextExternalToolDto): ContextExternalToolResponse {
+	static mapContextExternalToolResponse(contextExternalTool: ContextExternalTool): ContextExternalToolResponse {
 		const mapped: ContextExternalToolResponse &#x3D; new ContextExternalToolResponse({
 			id: contextExternalTool.id ?? &#x27;&#x27;,
 			contextId: contextExternalTool.contextRef.id,

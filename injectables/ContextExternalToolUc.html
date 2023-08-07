@@ -99,6 +99,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#getContextExternalTool" >getContextExternalTool</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#getContextExternalToolsForContext" >getContextExternalToolsForContext</a>
                             </li>
                         </ul>
@@ -380,8 +384,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="63"
-                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:63</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="75"
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:75</a></div>
                 </td>
             </tr>
 
@@ -445,6 +449,89 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getContextExternalTool"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>getContextExternalTool</b></span>
+                        <a href="#getContextExternalTool"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getContextExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="64"
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:64</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>contextToolId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>unknown</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getContextExternalToolsForContext"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -463,8 +550,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="53"
-                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:53</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="54"
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:54</a></div>
                 </td>
             </tr>
 
@@ -544,13 +631,13 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId, Permission } from &#x27;@shared/domain&#x27;;
-import { Action } from &#x27;@src/modules/authorization&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
+import { Action } from &#x27;@src/modules/authorization&#x27;;
 import { ForbiddenLoggableException } from &#x27;@src/modules/authorization/errors/forbidden.loggable-exception&#x27;;
+import { ToolContextType } from &#x27;../../common/enum&#x27;;
+import { ContextExternalTool, ContextRef } from &#x27;../domain&#x27;;
 import { ContextExternalToolService, ContextExternalToolValidationService } from &#x27;../service&#x27;;
 import { ContextExternalToolDto } from &#x27;./dto/context-external-tool.types&#x27;;
-import { ContextExternalTool, ContextRef } from &#x27;../domain&#x27;;
-import { ToolContextType } from &#x27;../../common/enum&#x27;;
 
 @Injectable()
 export class ContextExternalToolUc {
@@ -584,6 +671,7 @@ export class ContextExternalToolUc {
 		const tool: ContextExternalTool &#x3D; await this.contextExternalToolService.getContextExternalToolById(
 			contextExternalToolId
 		);
+
 		await this.contextExternalToolService.ensureContextPermissions(userId, tool, {
 			requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 			action: Action.write,
@@ -602,6 +690,17 @@ export class ContextExternalToolUc {
 		const toolsWithPermission: ContextExternalTool[] &#x3D; await this.filterToolsWithPermissions(userId, tools);
 
 		return toolsWithPermission;
+	}
+
+	async getContextExternalTool(userId: EntityId, contextToolId: EntityId) {
+		const tool: ContextExternalTool &#x3D; await this.contextExternalToolService.getContextExternalToolById(contextToolId);
+
+		await this.contextExternalToolService.ensureContextPermissions(userId, tool, {
+			requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
+			action: Action.read,
+		});
+
+		return tool;
 	}
 
 	private async filterToolsWithPermissions(

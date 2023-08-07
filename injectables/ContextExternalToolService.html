@@ -213,8 +213,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="35"
-                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:35</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="29"
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:29</a></div>
                 </td>
             </tr>
 
@@ -284,8 +284,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="51"
-                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:51</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="45"
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:45</a></div>
                 </td>
             </tr>
 
@@ -355,8 +355,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="61"
-                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:61</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="55"
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:55</a></div>
                 </td>
             </tr>
 
@@ -427,8 +427,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="65"
-                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:65</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="59"
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:59</a></div>
                 </td>
             </tr>
 
@@ -522,8 +522,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="87"
-                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:87</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="81"
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/context-external-tool.service.ts:81</a></div>
                 </td>
             </tr>
 
@@ -719,13 +719,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { forwardRef, Inject, Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { forwardRef, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain&#x27;;
 import { ContextExternalToolRepo } from &#x27;@shared/repo&#x27;;
 import { AuthorizableReferenceType, AuthorizationContext, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
-import { ContextExternalToolQuery } from &#x27;../uc/dto/context-external-tool.types&#x27;;
 import { ContextTypeMapper } from &#x27;../../common/mapper&#x27;;
 import { ContextExternalTool, ContextRef } from &#x27;../domain&#x27;;
+import { ContextExternalToolQuery } from &#x27;../uc/dto/context-external-tool.types&#x27;;
 
 @Injectable()
 export class ContextExternalToolService {
@@ -742,15 +742,9 @@ export class ContextExternalToolService {
 	}
 
 	async getContextExternalToolById(contextExternalToolId: EntityId): Promise&lt;ContextExternalTool&gt; {
-		const contextExternalTools: ContextExternalTool[] &#x3D; await this.contextExternalToolRepo.find({
-			id: contextExternalToolId,
-		});
+		const tool: ContextExternalTool &#x3D; await this.contextExternalToolRepo.findById(contextExternalToolId);
 
-		if (contextExternalTools.length &#x3D;&#x3D;&#x3D; 0) {
-			throw new NotFoundException(&#x60;ContextExternalTool with id ${contextExternalToolId} not found&#x60;);
-		}
-
-		return contextExternalTools[0];
+		return tool;
 	}
 
 	async createContextExternalTool(contextExternalTool: ContextExternalTool): Promise&lt;ContextExternalTool&gt; {
