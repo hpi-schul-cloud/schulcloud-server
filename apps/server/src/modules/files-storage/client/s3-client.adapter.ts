@@ -67,7 +67,6 @@ export class S3ClientAdapter implements IStorageClient {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			if (err.Code && err.Code === 'NoSuchKey') {
 				this.logger.log(`could not find one of the files for deletion with id ${path}`);
-				this.client.destroy();
 				throw new NotFoundException('NoSuchKey');
 			} else {
 				throw new InternalServerErrorException(err, 'S3ClientAdapter:get');
