@@ -254,7 +254,7 @@ export class ContentStorage implements IContentStorage {
 			throw new Error('COULD_NOT_CREATE_PATH');
 		}
 
-		const path = `h5p/${contentId}/`;
+		const path = `h5p-content/${contentId}/`;
 		return path;
 	}
 

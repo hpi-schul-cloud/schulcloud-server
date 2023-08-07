@@ -113,4 +113,22 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 
 		return tempFile;
 	}
+
+	private getContentPath(contentId: string): string {
+		if (!contentId) {
+			throw new Error('COULD_NOT_CREATE_PATH');
+		}
+
+		const path = `h5p/${contentId}/`;
+		return path;
+	}
+
+	private getFilePath(userId: string, filename: string): string {
+		if (!userId || !filename) {
+			throw new Error('COULD_NOT_CREATE_PATH');
+		}
+
+		const path = `h5p-tempfiles/${userId}/${filename}`;
+		return path;
+	}
 }

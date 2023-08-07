@@ -1,22 +1,19 @@
-import { S3Client } from '@aws-sdk/client-s3';
-import { DynamicModule, Module, Scope } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
 import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
 import { CoreModule } from '@src/core';
-import { LoggerModule } from '@src/core/logger';
+import { LegacyLogger, LoggerModule } from '@src/core/logger';
 import { AuthenticationApiModule } from '@src/modules/authentication/authentication-api.module';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { AuthorizationModule } from '@src/modules/authorization';
 
-import { S3ClientAdapter } from '../files-storage/client/s3-client.adapter';
 import { ContentStorage } from './contentStorage/contentStorage';
 import { H5PContentRepo } from './contentStorage/h5p-content.repo';
 import { H5PEditorController } from './controller';
-import { s3Config } from './h5p-editor.config';
-import { H5PEditorModule } from './h5p-editor.module';
-import { S3Config } from './interface/config';
+import { s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
+import { H5PEditorModule, createS3ClientAdapter } from './h5p-editor.module';
 import { LibraryStorage } from './libraryStorage/libraryStorage';
 import { H5PAjaxEndpointService, H5PEditorService, H5PPlayerService } from './service';
 import { TemporaryFileStorage } from './temporary-file-storage/temporary-file-storage';
@@ -40,30 +37,26 @@ const providers = [
 	H5PAjaxEndpointService,
 	H5PContentRepo,
 	ContentStorage,
-	S3ClientAdapter,
-	{
-		provide: 'S3_Client',
-		scope: Scope.REQUEST,
-		useFactory: (configProvider: S3Config) =>
-			new S3Client({
-				region: configProvider.region,
-				credentials: {
-					accessKeyId: configProvider.accessKeyId,
-					secretAccessKey: configProvider.secretAccessKey,
-				},
-				endpoint: configProvider.endpoint,
-				forcePathStyle: true,
-				tls: true,
-			}),
-		inject: ['S3_Config'],
-	},
-	{
-		provide: 'S3_Config',
-		useValue: s3Config,
-	},
-	ContentStorage,
 	LibraryStorage,
 	TemporaryFileStorage,
+	{
+		provide: 'S3Config_Content',
+		useValue: s3ConfigContent,
+	},
+	{
+		provide: 'S3Config_Libraries',
+		useValue: s3ConfigLibraries,
+	},
+	{
+		provide: 'S3ClientAdapter_Content',
+		useFactory: createS3ClientAdapter,
+		inject: ['S3Config_Content', LegacyLogger],
+	},
+	{
+		provide: 'S3ClientAdapter_Libraries',
+		useFactory: createS3ClientAdapter,
+		inject: ['S3Config_Libraries', LegacyLogger],
+	},
 ];
 
 @Module({
