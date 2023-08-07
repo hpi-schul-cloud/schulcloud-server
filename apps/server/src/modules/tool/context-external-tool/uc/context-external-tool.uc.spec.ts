@@ -1,4 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { ForbiddenException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId, Permission } from '@shared/domain';
 import { contextExternalToolFactory, setupEntities } from '@shared/testing';
@@ -63,8 +65,7 @@ describe('ContextExternalToolUc', () => {
 					},
 				});
 
-				contextExternalToolService.ensureContextPermissions.mockResolvedValue(Promise.resolve());
-				contextExternalToolValidationService.validate.mockResolvedValue(Promise.resolve());
+				contextExternalToolService.saveContextExternalTool.mockResolvedValue(contextExternalTool);
 
 				return {
 					contextExternalTool,
@@ -77,7 +78,7 @@ describe('ContextExternalToolUc', () => {
 
 				await uc.createContextExternalTool(userId, contextExternalTool);
 
-				expect(contextExternalToolService.createContextExternalTool).toHaveBeenCalledWith(contextExternalTool);
+				expect(contextExternalToolService.saveContextExternalTool).toHaveBeenCalledWith(contextExternalTool);
 			});
 
 			it('should call contextExternalToolService to ensure permissions', async () => {
@@ -97,6 +98,219 @@ describe('ContextExternalToolUc', () => {
 				await uc.createContextExternalTool(userId, contextExternalTool);
 
 				expect(contextExternalToolValidationService.validate).toHaveBeenCalledWith(contextExternalTool);
+			});
+
+			it('should return the saved object', async () => {
+				const { contextExternalTool, userId } = setup();
+
+				const result = await uc.createContextExternalTool(userId, contextExternalTool);
+
+				expect(result).toEqual(contextExternalTool);
+			});
+		});
+
+		describe('when the user does not have permission', () => {
+			const setup = () => {
+				const userId: EntityId = 'userId';
+
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+					displayName: 'Course',
+					contextRef: {
+						id: 'contextId',
+						type: ToolContextType.COURSE,
+					},
+				});
+
+				const error = new ForbiddenException();
+
+				contextExternalToolService.ensureContextPermissions.mockRejectedValue(error);
+
+				return {
+					contextExternalTool,
+					userId,
+					error,
+				};
+			};
+
+			it('should return forbidden and not save', async () => {
+				const { contextExternalTool, userId, error } = setup();
+
+				const func = () => uc.createContextExternalTool(userId, contextExternalTool);
+
+				await expect(func).rejects.toThrow(error);
+				expect(contextExternalToolService.saveContextExternalTool).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when the user does not have permission', () => {
+			const setup = () => {
+				const userId: EntityId = 'userId';
+
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+					displayName: 'Course',
+					contextRef: {
+						id: 'contextId',
+						type: ToolContextType.COURSE,
+					},
+				});
+
+				const error = new UnprocessableEntityException();
+
+				contextExternalToolValidationService.validate.mockRejectedValue(error);
+
+				return {
+					contextExternalTool,
+					userId,
+					error,
+				};
+			};
+
+			it('should return UnprocessableEntity and not save', async () => {
+				const { contextExternalTool, userId, error } = setup();
+
+				const func = () => uc.createContextExternalTool(userId, contextExternalTool);
+
+				await expect(func).rejects.toThrow(error);
+				expect(contextExternalToolService.saveContextExternalTool).not.toHaveBeenCalled();
+			});
+		});
+	});
+
+	describe('updateContextExternalTool is called', () => {
+		describe('when contextExternalTool is given and user has permission ', () => {
+			const setup = () => {
+				const userId: EntityId = 'userId';
+
+				const contextExternalToolId = new ObjectId().toHexString();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId(
+					{
+						displayName: 'Course',
+						contextRef: {
+							id: 'contextId',
+							type: ToolContextType.COURSE,
+						},
+					},
+					contextExternalToolId
+				);
+
+				contextExternalToolService.saveContextExternalTool.mockResolvedValue(contextExternalTool);
+
+				return {
+					contextExternalTool,
+					contextExternalToolId,
+					userId,
+				};
+			};
+
+			it('should call contextExternalToolService', async () => {
+				const { contextExternalTool, contextExternalToolId, userId } = setup();
+
+				await uc.updateContextExternalTool(userId, contextExternalToolId, contextExternalTool);
+
+				expect(contextExternalToolService.saveContextExternalTool).toHaveBeenCalledWith(contextExternalTool);
+			});
+
+			it('should call contextExternalToolService to ensure permissions', async () => {
+				const { contextExternalTool, contextExternalToolId, userId } = setup();
+
+				await uc.updateContextExternalTool(userId, contextExternalToolId, contextExternalTool);
+
+				expect(contextExternalToolService.ensureContextPermissions).toHaveBeenCalledWith(userId, contextExternalTool, {
+					requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
+					action: Action.write,
+				});
+			});
+
+			it('should call contextExternalToolValidationService', async () => {
+				const { contextExternalTool, contextExternalToolId, userId } = setup();
+
+				await uc.updateContextExternalTool(userId, contextExternalToolId, contextExternalTool);
+
+				expect(contextExternalToolValidationService.validate).toHaveBeenCalledWith(contextExternalTool);
+			});
+
+			it('should return the saved object', async () => {
+				const { contextExternalTool, contextExternalToolId, userId } = setup();
+
+				const result = await uc.updateContextExternalTool(userId, contextExternalToolId, contextExternalTool);
+
+				expect(result).toEqual(contextExternalTool);
+			});
+		});
+
+		describe('when the user does not have permission', () => {
+			const setup = () => {
+				const userId: EntityId = 'userId';
+
+				const contextExternalToolId = new ObjectId().toHexString();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId(
+					{
+						displayName: 'Course',
+						contextRef: {
+							id: 'contextId',
+							type: ToolContextType.COURSE,
+						},
+					},
+					contextExternalToolId
+				);
+
+				const error = new ForbiddenException();
+
+				contextExternalToolService.ensureContextPermissions.mockRejectedValue(error);
+
+				return {
+					contextExternalTool,
+					contextExternalToolId,
+					userId,
+					error,
+				};
+			};
+
+			it('should return forbidden and not save', async () => {
+				const { contextExternalTool, contextExternalToolId, userId, error } = setup();
+
+				const func = () => uc.updateContextExternalTool(userId, contextExternalToolId, contextExternalTool);
+
+				await expect(func).rejects.toThrow(error);
+				expect(contextExternalToolService.saveContextExternalTool).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when the user does not have permission', () => {
+			const setup = () => {
+				const userId: EntityId = 'userId';
+
+				const contextExternalToolId = new ObjectId().toHexString();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId(
+					{
+						displayName: 'Course',
+						contextRef: {
+							id: 'contextId',
+							type: ToolContextType.COURSE,
+						},
+					},
+					contextExternalToolId
+				);
+
+				const error = new UnprocessableEntityException();
+
+				contextExternalToolValidationService.validate.mockRejectedValue(error);
+
+				return {
+					contextExternalTool,
+					contextExternalToolId,
+					userId,
+					error,
+				};
+			};
+
+			it('should return UnprocessableEntity and not save', async () => {
+				const { contextExternalTool, contextExternalToolId, userId, error } = setup();
+
+				const func = () => uc.updateContextExternalTool(userId, contextExternalToolId, contextExternalTool);
+
+				await expect(func).rejects.toThrow(error);
+				expect(contextExternalToolService.saveContextExternalTool).not.toHaveBeenCalled();
 			});
 		});
 	});
