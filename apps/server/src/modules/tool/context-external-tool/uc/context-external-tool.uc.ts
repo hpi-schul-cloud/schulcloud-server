@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Permission } from '@shared/domain';
-import { Action, AuthorizationContext, AuthorizationContextBuilder } from '@src/modules/authorization';
+import { EntityId, Permission, User } from '@shared/domain';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationContextBuilder,
+	AuthorizationService,
+} from '@src/modules/authorization';
 import { LegacyLogger } from '@src/core/logger';
 import { ForbiddenLoggableException } from '@src/modules/authorization/errors/forbidden.loggable-exception';
 import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
@@ -15,6 +20,7 @@ export class ContextExternalToolUc {
 		private readonly toolPermissionHelper: ToolPermissionHelper,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly contextExternalToolValidationService: ContextExternalToolValidationService,
+		private readonly authorizationService: AuthorizationService,
 		private readonly logger: LegacyLogger
 	) {}
 
@@ -63,28 +69,13 @@ export class ContextExternalToolUc {
 		userId: EntityId,
 		tools: ContextExternalTool[]
 	): Promise<ContextExternalTool[]> {
-		const toolPromises = tools.map(async (tool) => {
-			// TODO N21-1055 remove try/catch, use hasPermission and array.filter
-			try {
-				await this.toolPermissionHelper.ensureContextPermissions(userId, tool, {
-					requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
-					action: Action.read,
-				});
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
 
-				return tool;
-			} catch (error) {
-				if (error instanceof ForbiddenLoggableException) {
-					this.logger.debug(`User ${userId} does not have permission for tool ${tool.id ?? 'undefined'}`);
-					return null;
-				}
-				throw error;
-			}
-		});
+		const toolsWithPermission: ContextExternalTool[] = tools.filter((tool) =>
+			this.authorizationService.hasPermission(user, tool, context)
+		);
 
-		const toolsWithPermission = await Promise.all(toolPromises);
-		const filteredTools: ContextExternalTool[] = toolsWithPermission.filter(
-			(tool) => tool !== null
-		) as ContextExternalTool[];
-		return filteredTools;
+		return toolsWithPermission;
 	}
 }

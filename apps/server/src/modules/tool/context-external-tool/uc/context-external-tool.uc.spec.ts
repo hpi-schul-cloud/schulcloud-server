@@ -173,7 +173,10 @@ describe('ContextExternalToolUc', () => {
 
 				await uc.getContextExternalToolsForContext(userId, contextType, contextId);
 
-				expect(contextExternalToolService.findAllByContext).toHaveBeenCalledWith({ id: contextId, type: contextType });
+				expect(contextExternalToolService.findAllByContext).toHaveBeenCalledWith({
+					id: contextId,
+					type: contextType,
+				});
 			});
 
 			it('should call contextExternalToolService to ensure permissions', async () => {
@@ -186,10 +189,23 @@ describe('ContextExternalToolUc', () => {
 					action: Action.read,
 				});
 			});
+		});
 
-			it('should handle ForbiddenLoggableException and not include the tool in the response', async () => {
-				const { userId, contextType, contextId } = setup();
+		describe('when permission check throws a ForbiddenLoggableException', () => {
+			const setup = () => {
+				const userId: EntityId = 'userId';
+				const contextId: EntityId = 'contextId';
+				const contextType: ToolContextType = ToolContextType.COURSE;
 
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+					displayName: 'Course',
+					contextRef: {
+						id: 'contextId',
+						type: ToolContextType.COURSE,
+					},
+				});
+
+				contextExternalToolService.findAllByContext.mockResolvedValue([contextExternalTool]);
 				toolPermissionHelper.ensureContextPermissions.mockRejectedValue(
 					new ForbiddenLoggableException(userId, 'contextExternalTool', {
 						requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
@@ -197,15 +213,48 @@ describe('ContextExternalToolUc', () => {
 					})
 				);
 
+				return {
+					userId,
+					contextId,
+					contextType,
+				};
+			};
+
+			it('should handle ForbiddenLoggableException and not include the tool in the response', async () => {
+				const { userId, contextType, contextId } = setup();
+
 				const tools = await uc.getContextExternalToolsForContext(userId, contextType, contextId);
 
 				expect(tools).toEqual([]);
 			});
+		});
+
+		describe('when some other error is thrown', () => {
+			const setup = () => {
+				const userId: EntityId = 'userId';
+				const contextId: EntityId = 'contextId';
+				const contextType: ToolContextType = ToolContextType.COURSE;
+
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+					displayName: 'Course',
+					contextRef: {
+						id: 'contextId',
+						type: ToolContextType.COURSE,
+					},
+				});
+
+				contextExternalToolService.findAllByContext.mockResolvedValue([contextExternalTool]);
+				toolPermissionHelper.ensureContextPermissions.mockRejectedValue(new Error());
+
+				return {
+					userId,
+					contextId,
+					contextType,
+				};
+			};
 
 			it('should rethrow any exception other than ForbiddenLoggableException', async () => {
 				const { userId, contextType, contextId } = setup();
-
-				toolPermissionHelper.ensureContextPermissions.mockRejectedValue(new Error());
 
 				await expect(uc.getContextExternalToolsForContext(userId, contextType, contextId)).rejects.toThrow(Error);
 			});
