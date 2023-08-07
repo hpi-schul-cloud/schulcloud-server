@@ -317,8 +317,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="121"
-                            class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:121</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="130"
+                            class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:130</a></div>
                 </td>
             </tr>
 
@@ -923,6 +923,15 @@ export class ColumnBoardService {
 				&#x60;&lt;p&gt;Wir freuen uns sehr über &lt;strong&gt;Feedback&lt;/strong&gt; zum Board unter &lt;a href&#x3D;&quot;${feedbacklink}&quot;&gt;folgendem Link&lt;/a&gt;.&lt;/p&gt;&#x60;
 			);
 			card.addChild(text3);
+		}
+
+		const SC_THEME &#x3D; Configuration.get(&#x27;SC_THEME&#x27;) as string;
+		if (SC_THEME !&#x3D;&#x3D; &#x27;default&#x27;) {
+			const clientUrl &#x3D; Configuration.get(&#x27;HOST&#x27;) as string;
+			const text4 &#x3D; this.createRichTextElement(
+				&#x60;&lt;p&gt;Wir freuen uns über &lt;a href&#x3D;&quot;${clientUrl}/help/contact/&quot;&gt;Feedback und Wünsche&lt;/a&gt;.&lt;/p&gt;&#x60;
+			);
+			card.addChild(text4);
 		}
 
 		await this.boardDoRepo.save(columnBoard);
