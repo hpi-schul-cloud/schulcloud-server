@@ -7,8 +7,7 @@ import { TaskMapper } from './task.mapper';
 const createExpectedResponse = (
 	task: Task,
 	status: ITaskStatus,
-	descriptions: TaskParentDescriptions,
-	usersList: UsersList[]
+	descriptions: TaskParentDescriptions
 ): TaskResponse => {
 	const expectedStatus = Object.create(TaskStatusResponse.prototype) as TaskStatusResponse;
 	expectedStatus.graded = status.graded;
@@ -41,7 +40,6 @@ const createExpectedResponse = (
 	expected.displayColor = descriptions.color;
 	expected.lessonName = descriptions.lessonName;
 	expected.lessonHidden = descriptions.lessonHidden;
-	expected.users = usersList;
 
 	return expected;
 };
@@ -66,20 +64,6 @@ describe('task.mapper', () => {
 
 			const spyParent = jest.spyOn(task, 'getParentData').mockReturnValue(descriptions);
 
-			const usersList: UsersList[] = [
-				{
-					id: 'user ID #1',
-					firstName: 'user',
-					lastName: 'name #1',
-				},
-				{
-					id: 'user ID #2',
-					firstName: 'user',
-					lastName: 'name #2',
-				},
-			];
-			const spyUsers = jest.spyOn(task, 'getUsersList').mockReturnValue(usersList);
-
 			const status = {
 				graded: 0,
 				maxSubmissions: 0,
@@ -90,10 +74,9 @@ describe('task.mapper', () => {
 			};
 
 			const result = TaskMapper.mapToResponse({ task, status });
-			const expected = createExpectedResponse(task, status, descriptions, usersList);
+			const expected = createExpectedResponse(task, status, descriptions);
 
 			expect(spyParent).toHaveBeenCalled();
-			expect(spyUsers).toHaveBeenCalled();
 			expect(result).toStrictEqual(expected);
 		});
 	});
@@ -106,7 +89,6 @@ describe('task.mapper', () => {
 				description: 'test',
 				dueDate: new Date('2023-05-28T08:00:00.000+00:00'),
 				availableDate: new Date('2022-05-28T08:00:00.000+00:00'),
-				usersIds: [new ObjectId().toHexString()],
 			};
 			const result = TaskMapper.mapTaskUpdateToDomain(params);
 
@@ -118,7 +100,6 @@ describe('task.mapper', () => {
 				descriptionInputFormat: InputFormat.RICH_TEXT_CK5,
 				dueDate: params.dueDate,
 				availableDate: params.availableDate,
-				usersIds: params.usersIds,
 			};
 			expect(result).toStrictEqual(expected);
 		});
@@ -132,7 +113,6 @@ describe('task.mapper', () => {
 				description: 'test',
 				dueDate: new Date('2023-05-28T08:00:00.000+00:00'),
 				availableDate: new Date('2022-05-28T08:00:00.000+00:00'),
-				usersIds: [new ObjectId().toHexString()],
 			};
 			const result = TaskMapper.mapTaskCreateToDomain(params);
 
@@ -144,7 +124,6 @@ describe('task.mapper', () => {
 				descriptionInputFormat: InputFormat.RICH_TEXT_CK5,
 				dueDate: params.dueDate,
 				availableDate: params.availableDate,
-				usersIds: params.usersIds,
 			};
 			expect(result).toStrictEqual(expected);
 		});

@@ -12,20 +12,17 @@ interface ITask {
 export interface ITaskUpdate extends ITask {
 	courseId?: string;
 	lessonId?: string;
-	usersIds?: string[];
 }
 
 export interface ITaskCreate extends ITask {
 	courseId?: string;
 	lessonId?: string;
-	usersIds?: string[];
 }
 
 export interface ITaskProperties extends ITask {
 	course?: Course;
 	lesson?: Lesson;
 	creator: User;
-	users?: User[];
 	school: School;
 	finished?: User[];
 	private?: boolean;

@@ -4,7 +4,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
-import { Course, ITaskUpdate, Permission, Task, TaskWithStatusVo, User } from '@shared/domain';
+import { Course, Permission, Task, TaskWithStatusVo, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import {
 	courseFactory,
@@ -19,7 +19,6 @@ import { FilesStorageClientAdapterService } from '@src/modules/files-storage-cli
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
 
-let userRepo: DeepMocked<UserRepo>;
 let courseRepo: DeepMocked<CourseRepo>;
 let lessonRepo: DeepMocked<LessonRepo>;
 let authorizationService: DeepMocked<AuthorizationService>;
@@ -60,7 +59,6 @@ describe('TaskService', () => {
 		taskRepo = module.get(TaskRepo);
 		taskService = module.get(TaskService);
 		submissionService = module.get(SubmissionService);
-		userRepo = module.get(UserRepo);
 		courseRepo = module.get(CourseRepo);
 		lessonRepo = module.get(LessonRepo);
 		authorizationService = module.get(AuthorizationService);
@@ -227,14 +225,6 @@ describe('TaskService', () => {
 
 				lessonRepo.findById.mockRestore();
 			});
-			it('should throw if not all users do not belong to course', async () => {
-				course = courseFactory.studentsWithId(2).buildWithId();
-				const someUser = userFactory.buildWithId();
-
-				await expect(async () => {
-					await taskService.create(user.id, { name: 'test', courseId: course.id, usersIds: [someUser.id] });
-				}).rejects.toThrow(ForbiddenException);
-			});
 			it('should save the task', async () => {
 				const taskMock = {
 					name: 'test',
@@ -263,28 +253,6 @@ describe('TaskService', () => {
 				expect(taskRepo.save).toHaveBeenCalledWith(expect.objectContaining({ ...taskMock }));
 
 				lessonRepo.findById.mockRestore();
-			});
-			it('should save the task with course and assigned users', async () => {
-				const student1 = userFactory.buildWithId();
-				const student2 = userFactory.buildWithId();
-				const course2 = courseFactory.buildWithId({ teachers: [user], students: [student1, student2] });
-				courseRepo.findById.mockResolvedValue(course2);
-				userRepo.findById.mockImplementation((id) => {
-					if (id === student1.id) {
-						return Promise.resolve(student1);
-					}
-					if (id === student2.id) {
-						return Promise.resolve(student2);
-					}
-					return Promise.resolve(user);
-				});
-				const taskWithStatusVo: TaskWithStatusVo = await taskService.create(user.id, {
-					name: 'test',
-					courseId: course2.id,
-					usersIds: [student1.id],
-				});
-				expect(taskRepo.save).toBeCalled();
-				expect(taskWithStatusVo.task.users.getItems()).toEqual([student1]);
 			});
 			it('should return the task and its status', async () => {
 				const taskMock = {
@@ -395,48 +363,6 @@ describe('TaskService', () => {
 
 					lessonRepo.findById.mockRestore();
 				});
-				it('should save the task with course and remove users', async () => {
-					const student1 = userFactory.buildWithId();
-					const student2 = userFactory.buildWithId();
-
-					const courseWithStudents = courseFactory.buildWithId({ teachers: [user], students: [student1, student2] });
-					courseRepo.findById.mockResolvedValue(courseWithStudents);
-
-					userRepo.findById.mockImplementation((id) => {
-						if (id === student1.id) {
-							return Promise.resolve(student1);
-						}
-						if (id === student2.id) {
-							return Promise.resolve(student2);
-						}
-						return Promise.resolve(user);
-					});
-
-					const task2 = taskFactory.build({ course, users: [student1, student2] });
-					taskRepo.findById.mockResolvedValue(task2);
-
-					const params = {
-						name: 'test',
-						courseId: course.id,
-					};
-
-					const taskWithStatusVo: TaskWithStatusVo = await taskService.update(user.id, task2.id, params, true);
-
-					expect(taskRepo.save).toHaveBeenCalled();
-					expect(taskWithStatusVo.task.users.getItems()).toStrictEqual([]);
-				});
-			});
-			it('should throw if not all users do not belong to course', async () => {
-				const someUser = userFactory.buildWithId();
-				const params = {
-					name: 'test',
-					courseId: course.id,
-					usersIds: [someUser.id],
-				};
-
-				await expect(async () => {
-					await taskService.update(user.id, task.id, params);
-				}).rejects.toThrow(ForbiddenException);
 			});
 			it('should throw if lesson does not belong to course', async () => {
 				const lesson = lessonFactory.buildWithId();
@@ -460,32 +386,6 @@ describe('TaskService', () => {
 				const result = await taskService.update(user.id, task.id, params);
 				expect(result.task).toEqual({ ...task, name: params.name });
 				expect(result.status).toBeDefined();
-			});
-			it('should return the task with course and assigned users', async () => {
-				const student1 = userFactory.buildWithId();
-				const student2 = userFactory.buildWithId();
-				const courseWithStudents = courseFactory.buildWithId({ teachers: [user], students: [student1, student2] });
-				courseRepo.findById.mockResolvedValue(courseWithStudents);
-				userRepo.findById.mockImplementation((id) => {
-					if (id === student1.id) {
-						return Promise.resolve(student1);
-					}
-					if (id === student2.id) {
-						return Promise.resolve(student2);
-					}
-					return Promise.resolve(user);
-				});
-
-				task = taskFactory.build({ course: courseWithStudents, users: [student1] });
-
-				const taskParams: ITaskUpdate = {
-					name: 'test',
-					courseId: courseWithStudents.id,
-					usersIds: [student2.id],
-				};
-				const taskWithStatusVo: TaskWithStatusVo = await taskService.update(user.id, task.id, taskParams);
-				expect(taskRepo.save).toBeCalled();
-				expect(taskWithStatusVo.task.users.getItems()).toEqual([student2]);
 			});
 		});
 		describe('find task', () => {
