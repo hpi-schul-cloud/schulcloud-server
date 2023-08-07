@@ -206,6 +206,7 @@ describe('ExternalToolResponseMapper', () => {
 					privacy_permission: LtiPrivacyPermission.NAME,
 					type: ToolConfigType.LTI11,
 					baseUrl: 'mockUrl',
+					launch_presentation_locale: 'de-DE',
 				});
 
 				const lti11ToolConfigResponse: Lti11ToolConfigResponse = new Lti11ToolConfigResponse({
@@ -214,6 +215,7 @@ describe('ExternalToolResponseMapper', () => {
 					privacy_permission: LtiPrivacyPermission.NAME,
 					type: ToolConfigType.LTI11,
 					baseUrl: 'mockUrl',
+					launch_presentation_locale: 'de-DE',
 				});
 
 				const customParameterResponse: CustomParameterResponse = new CustomParameterResponse({
