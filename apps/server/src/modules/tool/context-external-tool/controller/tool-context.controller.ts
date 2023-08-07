@@ -108,7 +108,7 @@ export class ToolContextController {
 		return response;
 	}
 
-	@Get(':contextType/:contextId')
+	@Get(':contextType/:contextId/:contextExternaToolId/configuration')
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
 	@ApiOkResponse({

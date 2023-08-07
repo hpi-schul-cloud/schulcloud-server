@@ -64,7 +64,7 @@ export class ContextExternalToolUc {
 		userId: EntityId,
 		contextToolId: EntityId,
 		contextType: ToolContextType,
-		contextId: string
+		contextId: EntityId
 	) {
 		const tool: ContextExternalTool = await this.contextExternalToolService.getContextExternalTool(
 			userId,

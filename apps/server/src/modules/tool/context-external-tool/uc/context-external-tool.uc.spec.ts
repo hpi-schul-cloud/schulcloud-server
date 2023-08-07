@@ -208,4 +208,114 @@ describe('ContextExternalToolUc', () => {
 			});
 		});
 	});
+
+	describe('getContextExternalTool', () => {
+		describe('when right permission, context  and id is given', () => {
+			const setup = () => {
+				const userId: EntityId = 'userId';
+				const contextId: EntityId = 'contextId';
+				const contextType: ToolContextType = ToolContextType.COURSE;
+
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+					displayName: 'Course',
+					contextRef: {
+						id: 'contextId',
+						type: ToolContextType.COURSE,
+					},
+				});
+
+				contextExternalToolService.getContextExternalTool.mockResolvedValue(contextExternalTool);
+				contextExternalToolService.ensureContextPermissions.mockResolvedValue(Promise.resolve());
+
+				return {
+					contextExternalTool,
+					userId,
+					contextId,
+					contextType,
+				};
+			};
+
+			it('should call contextExternalToolService to ensure permission  ', async () => {
+				const { contextExternalTool, userId } = setup();
+
+				await uc.getContextExternalTool(
+					userId,
+					contextExternalTool.id as string,
+					contextExternalTool.contextRef.type,
+					contextExternalTool.contextRef.id
+				);
+
+				expect(contextExternalToolService.ensureContextPermissions).toHaveBeenCalledWith(userId, contextExternalTool, {
+					requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
+					action: Action.read,
+				});
+			});
+
+			it('should call contextExternalToolService to get contextExternalTool  ', async () => {
+				const { contextExternalTool, userId } = setup();
+
+				await uc.getContextExternalTool(
+					userId,
+					contextExternalTool.id as string,
+					contextExternalTool.contextRef.type,
+					contextExternalTool.contextRef.id
+				);
+
+				expect(contextExternalToolService.getContextExternalTool).toHaveBeenCalledWith(
+					userId,
+					contextExternalTool.id,
+					contextExternalTool.contextRef.type,
+					contextExternalTool.contextRef.id
+				);
+			});
+		});
+
+		describe('when currentUser has no permission', () => {
+			const setup = () => {
+				const userId: EntityId = 'userId';
+				const contextId: EntityId = 'contextId';
+				const contextType: ToolContextType = ToolContextType.COURSE;
+
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+					displayName: 'Course',
+					contextRef: {
+						id: 'contextId',
+						type: ToolContextType.COURSE,
+					},
+				});
+
+				contextExternalToolService.getContextExternalTool.mockResolvedValue(contextExternalTool);
+				contextExternalToolService.ensureContextPermissions.mockRejectedValue(
+					new ForbiddenLoggableException(userId, 'contextExternalTool', {
+						requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
+						action: Action.read,
+					})
+				);
+				return {
+					contextExternalTool,
+					userId,
+					contextId,
+					contextType,
+				};
+			};
+
+			it('should throw forbiddenLoggableException', async () => {
+				const { contextExternalTool, userId } = setup();
+
+				await expect(
+					uc.getContextExternalTool(
+						userId,
+						contextExternalTool.id as string,
+						contextExternalTool.contextRef.type,
+						contextExternalTool.contextRef.id
+					)
+				).rejects.toThrow(
+					new ForbiddenLoggableException(userId, 'contextExternalTool', {
+						requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
+						action: Action.read,
+					})
+				);
+			});
+		});
+	});
 });

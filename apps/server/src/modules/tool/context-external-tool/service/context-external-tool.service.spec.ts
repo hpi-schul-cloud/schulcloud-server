@@ -292,4 +292,41 @@ describe('ContextExternalToolService', () => {
 			});
 		});
 	});
+
+	describe('getContextExternalToolForContext is called', () => {
+		describe('when contextExternalToolId, contextType and contextId are given', () => {
+			it('should call the repository', async () => {
+				const contextExternalTool = contextExternalToolFactory.buildWithId({
+					contextRef: { type: ToolContextType.COURSE, id: 'contextId' },
+				});
+				await service.getContextExternalTool(
+					'userId',
+					contextExternalTool.id as string,
+					contextExternalTool.contextRef.type,
+					contextExternalTool.contextRef.id
+				);
+
+				expect(contextExternalToolRepo.findByIdAndContext).toHaveBeenCalledWith({
+					id: contextExternalTool.id,
+					context: {
+						id: 'contextId',
+						type: ToolContextType.COURSE,
+					},
+				});
+			});
+
+			it('should return context external tool', async () => {
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
+				contextExternalToolRepo.findByIdAndContext.mockResolvedValue(contextExternalTool);
+
+				const result: ContextExternalTool = await service.getContextExternalTool(
+					'userId',
+					contextExternalTool.id as string,
+					contextExternalTool.contextRef.type,
+					contextExternalTool.contextRef.id
+				);
+				expect(result).toEqual(contextExternalTool);
+			});
+		});
+	});
 });
