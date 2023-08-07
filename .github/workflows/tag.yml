@@ -54,8 +54,8 @@ jobs:
         with:
           images: docker.io/schulcloud/schulcloud-server, quay.io/schulcloudverbund/schulcloud-server
           tags: |
-            type=semver,pattern={{version}},prefix=file-storage-
-            type=semver,pattern={{major}}.{{minor}},prefix=file-storage-
+            type=semver,pattern={{version}},prefix=file-storage-,onlatest=false
+            type=semver,pattern={{major}}.{{minor}},prefix=file-storage-,onlatest=false
       - name: Build and push ${{ github.repository }} (file-storage)
         uses: docker/build-push-action@v4
         with:
