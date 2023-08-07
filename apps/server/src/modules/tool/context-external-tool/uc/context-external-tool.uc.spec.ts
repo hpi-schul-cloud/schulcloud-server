@@ -3,12 +3,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId, Permission } from '@shared/domain';
 import { contextExternalToolFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { ForbiddenLoggableException } from '@src/modules/authorization/errors/forbidden.loggable-exception';
 import { Action } from '@src/modules/authorization';
-import { ContextExternalToolUc } from './context-external-tool.uc';
-import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
-import { ContextExternalTool } from '../domain';
+import { ForbiddenLoggableException } from '@src/modules/authorization/errors/forbidden.loggable-exception';
 import { ToolContextType } from '../../common/enum';
+import { ContextExternalTool } from '../domain';
+import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
+import { ContextExternalToolUc } from './context-external-tool.uc';
 
 describe('ContextExternalToolUc', () => {
 	let module: TestingModule;
@@ -224,7 +224,7 @@ describe('ContextExternalToolUc', () => {
 					},
 				});
 
-				contextExternalToolService.getContextExternalTool.mockResolvedValue(contextExternalTool);
+				contextExternalToolService.getContextExternalToolById.mockResolvedValue(contextExternalTool);
 				contextExternalToolService.ensureContextPermissions.mockResolvedValue(Promise.resolve());
 
 				return {
@@ -238,12 +238,7 @@ describe('ContextExternalToolUc', () => {
 			it('should call contextExternalToolService to ensure permission  ', async () => {
 				const { contextExternalTool, userId } = setup();
 
-				await uc.getContextExternalTool(
-					userId,
-					contextExternalTool.id as string,
-					contextExternalTool.contextRef.type,
-					contextExternalTool.contextRef.id
-				);
+				await uc.getContextExternalTool(userId, contextExternalTool.id as string);
 
 				expect(contextExternalToolService.ensureContextPermissions).toHaveBeenCalledWith(userId, contextExternalTool, {
 					requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
@@ -254,19 +249,9 @@ describe('ContextExternalToolUc', () => {
 			it('should call contextExternalToolService to get contextExternalTool  ', async () => {
 				const { contextExternalTool, userId } = setup();
 
-				await uc.getContextExternalTool(
-					userId,
-					contextExternalTool.id as string,
-					contextExternalTool.contextRef.type,
-					contextExternalTool.contextRef.id
-				);
+				await uc.getContextExternalTool(userId, contextExternalTool.id as string);
 
-				expect(contextExternalToolService.getContextExternalTool).toHaveBeenCalledWith(
-					userId,
-					contextExternalTool.id,
-					contextExternalTool.contextRef.type,
-					contextExternalTool.contextRef.id
-				);
+				expect(contextExternalToolService.getContextExternalToolById).toHaveBeenCalledWith(contextExternalTool.id);
 			});
 		});
 
@@ -284,13 +269,14 @@ describe('ContextExternalToolUc', () => {
 					},
 				});
 
-				contextExternalToolService.getContextExternalTool.mockResolvedValue(contextExternalTool);
+				contextExternalToolService.getContextExternalToolById.mockResolvedValue(contextExternalTool);
 				contextExternalToolService.ensureContextPermissions.mockRejectedValue(
 					new ForbiddenLoggableException(userId, 'contextExternalTool', {
 						requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 						action: Action.read,
 					})
 				);
+
 				return {
 					contextExternalTool,
 					userId,
@@ -302,14 +288,9 @@ describe('ContextExternalToolUc', () => {
 			it('should throw forbiddenLoggableException', async () => {
 				const { contextExternalTool, userId } = setup();
 
-				await expect(
-					uc.getContextExternalTool(
-						userId,
-						contextExternalTool.id as string,
-						contextExternalTool.contextRef.type,
-						contextExternalTool.contextRef.id
-					)
-				).rejects.toThrow(
+				const func = () => uc.getContextExternalTool(userId, contextExternalTool.id as string);
+
+				await expect(func).rejects.toThrow(
 					new ForbiddenLoggableException(userId, 'contextExternalTool', {
 						requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 						action: Action.read,

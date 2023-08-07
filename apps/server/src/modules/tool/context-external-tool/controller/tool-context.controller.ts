@@ -24,11 +24,10 @@ import {
 	ContextExternalToolResponse,
 	ContextExternalToolSearchListResponse,
 } from './dto';
-import { ContextExternalToolParams } from './dto/context-external-tool.params';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
-@Controller('tools/context')
+@Controller('tools/context-external-tools')
 export class ToolContextController {
 	constructor(private readonly contextExternalToolUc: ContextExternalToolUc, private readonly logger: LegacyLogger) {}
 
@@ -108,24 +107,23 @@ export class ToolContextController {
 		return response;
 	}
 
-	@Get(':contextType/:contextId/:contextExternaToolId/configuration')
+	@Get(':contextExternalToolId')
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
 	@ApiOkResponse({
-		description: 'Returns a ContextExternalTool for the given id and context',
+		description: 'Returns a ContextExternalTool for the given id',
 		type: ContextExternalToolResponse,
 	})
-	@ApiOperation({ summary: 'Returns a ContextExternalTool for the given id and context' })
+	@ApiOperation({ summary: 'Searches a ContextExternalTool for the given id' })
 	async getContextExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ContextExternalToolParams
+		@Param() params: ContextExternalToolIdParams
 	): Promise<ContextExternalToolResponse> {
 		const contextExternalTool: ContextExternalTool = await this.contextExternalToolUc.getContextExternalTool(
 			currentUser.userId,
-			params.contextExternalToolId,
-			params.contextType,
-			params.contextId
+			params.contextExternalToolId
 		);
+
 		const response: ContextExternalToolResponse =
 			ContextExternalToolResponseMapper.mapContextExternalToolResponse(contextExternalTool);
 

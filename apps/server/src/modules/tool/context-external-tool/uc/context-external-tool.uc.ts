@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
-import { Action } from '@src/modules/authorization';
 import { LegacyLogger } from '@src/core/logger';
+import { Action } from '@src/modules/authorization';
 import { ForbiddenLoggableException } from '@src/modules/authorization/errors/forbidden.loggable-exception';
+import { ToolContextType } from '../../common/enum';
+import { ContextExternalTool, ContextRef } from '../domain';
 import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
 import { ContextExternalToolDto } from './dto/context-external-tool.types';
-import { ContextExternalTool, ContextRef } from '../domain';
-import { ToolContextType } from '../../common/enum';
 
 @Injectable()
 export class ContextExternalToolUc {
@@ -40,6 +40,7 @@ export class ContextExternalToolUc {
 		const tool: ContextExternalTool = await this.contextExternalToolService.getContextExternalToolById(
 			contextExternalToolId
 		);
+
 		await this.contextExternalToolService.ensureContextPermissions(userId, tool, {
 			requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 			action: Action.write,
@@ -60,18 +61,8 @@ export class ContextExternalToolUc {
 		return toolsWithPermission;
 	}
 
-	async getContextExternalTool(
-		userId: EntityId,
-		contextToolId: EntityId,
-		contextType: ToolContextType,
-		contextId: EntityId
-	) {
-		const tool: ContextExternalTool = await this.contextExternalToolService.getContextExternalTool(
-			userId,
-			contextToolId,
-			contextType,
-			contextId
-		);
+	async getContextExternalTool(userId: EntityId, contextToolId: EntityId) {
+		const tool: ContextExternalTool = await this.contextExternalToolService.getContextExternalToolById(contextToolId);
 
 		await this.contextExternalToolService.ensureContextPermissions(userId, tool, {
 			requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
