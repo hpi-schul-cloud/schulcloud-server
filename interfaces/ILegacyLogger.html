@@ -121,13 +121,6 @@
                                     </a>
                                 </li>
                                 <li>
-                                        <span class="modifier">Optional</span>
-                                    <a href="#verbose" 
->
-                                        verbose
-                                    </a>
-                                </li>
-                                <li>
                                     <a href="#warn" 
 >
                                         warn
@@ -482,87 +475,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="verbose"></a>
-                    <span class="name">
-                        <span class="modifier">Optional</span>
-                        <span ><b>verbose</b></span>
-                        <a href="#verbose"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>verbose(message, context?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="16"
-                            class="link-to-prism">apps/server/src/core/logger/interfaces/legacy-logger.interface.ts:16</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>message</td>
-                                    <td>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>context</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        Yes
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="warn"></a>
                     <span class="name">
                         <span ><b>warn</b></span>
@@ -660,7 +572,6 @@ export interface ILegacyLogger {
 	error(message: unknown, trace?: string, context?: string): void;
 	warn(message: unknown, context?: string): void;
 	debug(message: unknown, context?: string): void;
-	verbose?(message: unknown, context?: string): void;
 }
 </code></pre>
     </div>

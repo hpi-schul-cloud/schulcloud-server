@@ -938,7 +938,7 @@
 	const prometheusMetricsApp &#x3D; createPrometheusMetricsApp(route, collectDefaultMetrics, collectMetricsRouteMetrics);
 
 	prometheusMetricsApp.listen(prometheusMetricsAppPort, () &#x3D;&gt; {
-		logger.log(
+		logger.info(
 			new AppStartLoggable({
 				appName: &#x27;Prometheus metrics server app&#x27;,
 				port: prometheusMetricsAppPort,
