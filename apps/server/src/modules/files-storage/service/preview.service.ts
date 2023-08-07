@@ -6,7 +6,7 @@ import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { DownloadFileParams, PreviewParams } from '../controller/dto';
 import { FileRecord } from '../entity';
 import { ErrorType } from '../error';
-import { createPreviewNameHash } from '../helper';
+import { createPreviewNameHash, createPreviewPath } from '../helper';
 import { IGetFile, IGetFileResponse } from '../interface';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
 import { FileDtoBuilder, FileResponseBuilder } from '../mapper';
@@ -41,7 +41,7 @@ export class PreviewService {
 
 		const { forceUpdate, outputFormat } = previewParams;
 		const hash = createPreviewNameHash(fileRecord.id, previewParams);
-		const filePath = this.getFilePath(fileRecord, hash);
+		const filePath = createPreviewPath(fileRecord.getSchoolId(), hash);
 		const name = this.getPreviewName(fileRecord, outputFormat);
 		let file: IGetFile;
 
@@ -134,11 +134,5 @@ export class PreviewService {
 		const name = `${fileNameWithoutExtension}.${format}`;
 
 		return name;
-	}
-
-	private getFilePath(fileRecord: FileRecord, hash: string): string {
-		const path = ['previews', fileRecord.getSchoolId(), hash].join('/');
-
-		return path;
 	}
 }

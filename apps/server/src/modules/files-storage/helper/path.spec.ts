@@ -1,7 +1,7 @@
 import { EntityId } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { createICopyFiles, createPath, getPaths } from '.';
+import { createICopyFiles, createPath, createPreviewPath, getPaths } from '.';
 import { FileRecord } from '../entity';
 import { ErrorType } from '../error';
 
@@ -45,6 +45,13 @@ describe('Path Helper', () => {
 			expect(() => {
 				createPath('', '');
 			}).toThrowError(ErrorType.COULD_NOT_CREATE_PATH);
+		});
+	});
+
+	describe('createPreviewPath', () => {
+		it('should create path', () => {
+			const path = createPreviewPath('schoolId', 'fileRecordId');
+			expect(path).toBe('previews/schoolId/fileRecordId');
 		});
 	});
 

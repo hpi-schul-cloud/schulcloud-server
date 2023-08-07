@@ -13,6 +13,12 @@ export function createPath(schoolId: EntityId, fileRecordId: EntityId): string {
 	return path;
 }
 
+export function createPreviewPath(schoolId: EntityId, hash: string): string {
+	const path = ['previews', schoolId, hash].join('/');
+
+	return path;
+}
+
 export function getPaths(fileRecords: FileRecord[]): string[] {
 	const paths = fileRecords.map((fileRecord) => createPath(fileRecord.getSchoolId(), fileRecord.id));
 
