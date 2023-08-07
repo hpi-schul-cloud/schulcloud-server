@@ -82,6 +82,7 @@
 		"config_secret": "secret",
 		"config_lti_message_type": "basic-lti-launch-request",
 		"config_privacy_permission": "name",
+		"config_launch_presentation_locale": "de-DE",
 		"parameters": [
 			{
 				"name": "custom_test",

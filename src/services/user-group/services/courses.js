@@ -74,8 +74,8 @@ const courseService = new Courses({
 
 const populateWhitelist = {
 	classIds: ['_id', 'displayName'],
-	userIds: ['_id', 'firstName', 'lastName', 'fullName'],
-	teacherIds: ['_id', 'firstName', 'lastName'],
+	userIds: ['_id', 'firstName', 'lastName', 'fullName', 'outdatedSince'],
+	teacherIds: ['_id', 'firstName', 'lastName', 'outdatedSince'],
 };
 
 const courseHooks = {
