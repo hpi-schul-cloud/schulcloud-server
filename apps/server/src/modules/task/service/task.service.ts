@@ -1,18 +1,6 @@
-import { ForbiddenException, forwardRef, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { ValidationError } from '@shared/common';
-import {
-	Counted,
-	EntityId,
-	IFindOptions,
-	ITaskCreate,
-	ITaskProperties,
-	ITaskUpdate,
-	Permission,
-	Task,
-	TaskWithStatusVo,
-} from '@shared/domain';
-import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
-import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
+import { Injectable } from '@nestjs/common';
+import { Counted, EntityId, IFindOptions, Task } from '@shared/domain';
+import { TaskRepo } from '@shared/repo';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { SubmissionService } from './submission.service';
 
@@ -20,10 +8,6 @@ import { SubmissionService } from './submission.service';
 export class TaskService {
 	constructor(
 		private readonly taskRepo: TaskRepo,
-		@Inject(forwardRef(() => AuthorizationService))
-		private readonly authorizationService: AuthorizationService,
-		private readonly courseRepo: CourseRepo,
-		private readonly lessonRepo: LessonRepo,
 		private readonly submissionService: SubmissionService,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
 	) {}
@@ -34,13 +18,7 @@ export class TaskService {
 		filters?: { draft?: boolean; noFutureAvailableDate?: boolean },
 		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
-		const repoFilters: { draft?: boolean; noFutureAvailableDate?: boolean; userId?: EntityId } = { ...filters };
-		const user = await this.authorizationService.getUserWithPermissions(creatorId);
-		if (!this.authorizationService.hasAllPermissions(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3])) {
-			repoFilters.userId = user.id;
-		}
-
-		return this.taskRepo.findBySingleParent(creatorId, courseId, repoFilters, options);
+		return this.taskRepo.findBySingleParent(creatorId, courseId, filters, options);
 	}
 
 	async delete(task: Task): Promise<void> {
@@ -58,116 +36,7 @@ export class TaskService {
 		await Promise.all(promises);
 	}
 
-	async create(userId: EntityId, params: ITaskCreate): Promise<TaskWithStatusVo> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const taskParams: ITaskProperties = {
-			...params,
-			school: user.school,
-			creator: user,
-		};
-
-		this.taskDateValidation(taskParams.availableDate, taskParams.dueDate);
-
-		if (!this.authorizationService.hasAllPermissions(user, [Permission.HOMEWORK_CREATE])) {
-			// TODO: Should be ForbiddenException
-			throw new UnauthorizedException();
-		}
-
-		if (params.courseId) {
-			const course = await this.courseRepo.findById(params.courseId);
-			this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([]));
-			taskParams.course = course;
-		}
-
-		if (params.lessonId) {
-			const lesson = await this.lessonRepo.findById(params.lessonId);
-			if (!taskParams.course || lesson.course.id !== taskParams.course.id) {
-				throw new ForbiddenException('Lesson does not belong to Course');
-			}
-			this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.write([]));
-			taskParams.lesson = lesson;
-		}
-
-		const task = new Task(taskParams);
-
-		await this.taskRepo.save(task);
-
-		const status = task.createTeacherStatusForUser(user);
-		const taskWithStatusVo = new TaskWithStatusVo(task, status);
-
-		return taskWithStatusVo;
-	}
-
-	async find(userId: EntityId, taskId: EntityId) {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const task = await this.taskRepo.findById(taskId);
-
-		this.authorizationService.checkPermission(user, task, AuthorizationContextBuilder.read([Permission.HOMEWORK_VIEW]));
-
-		const status = this.authorizationService.hasOneOfPermissions(user, [Permission.HOMEWORK_EDIT])
-			? task.createTeacherStatusForUser(user)
-			: task.createStudentStatusForUser(user);
-
-		const result = new TaskWithStatusVo(task, status);
-
-		return result;
-	}
-
 	async findById(taskId: EntityId): Promise<Task> {
 		return this.taskRepo.findById(taskId);
-	}
-
-	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate, remove = false): Promise<TaskWithStatusVo> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const task = await this.taskRepo.findById(taskId);
-
-		this.authorizationService.checkPermission(
-			user,
-			task,
-			AuthorizationContextBuilder.write([Permission.HOMEWORK_EDIT])
-		);
-
-		// eslint-disable-next-line no-restricted-syntax
-		for (const [key, value] of Object.entries(params)) {
-			if (value) {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				task[key] = value;
-			}
-		}
-
-		if (params.courseId) {
-			const course = await this.courseRepo.findById(params.courseId);
-			this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([]));
-			task.course = course;
-		} else {
-			task.course = undefined;
-			task.lesson = undefined;
-		}
-
-		if (params.lessonId) {
-			const lesson = await this.lessonRepo.findById(params.lessonId);
-			if (!task.course || lesson.course.id !== task.course.id) {
-				throw new ForbiddenException('Lesson does not belong to Course');
-			}
-			this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.write([]));
-			task.lesson = lesson;
-		} else if (remove) {
-			task.lesson = undefined;
-		}
-
-		this.taskDateValidation(params.availableDate, params.dueDate);
-
-		await this.taskRepo.save(task);
-
-		const status = task.createTeacherStatusForUser(user);
-		const taskWithStatusVo = new TaskWithStatusVo(task, status);
-
-		return taskWithStatusVo;
-	}
-
-	private taskDateValidation(availableDate?: Date, dueDate?: Date) {
-		if (availableDate && dueDate && !(availableDate < dueDate)) {
-			throw new ValidationError('availableDate must be before dueDate');
-		}
 	}
 }
