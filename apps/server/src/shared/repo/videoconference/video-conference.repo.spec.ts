@@ -89,16 +89,29 @@ describe('Video Conference Repo', () => {
 	});
 
 	describe('findByScopeId', () => {
-		it('should find a videoconference by ScopeId', async () => {
+		const setup = async () => {
 			const vcA = videoConferenceFactory.build();
 			await em.persistAndFlush(vcA);
-			const result = await repo.findByScopeId(vcA.target, VideoConferenceScope.COURSE);
+
+			return {
+				vcA,
+			};
+		};
+
+		it('should find a videoconference by ScopeId', async () => {
+			const { vcA } = await setup();
+
+			const result = await repo.findByScopeAndScopeId(vcA.target, VideoConferenceScope.COURSE);
+
 			expect(result.id).toEqual(vcA.id);
 		});
 
 		it('should throw an Error if the scope mismatches the idtype', async () => {
-			const vcA = videoConferenceFactory.build();
-			await expect(repo.findByScopeId(vcA.target, VideoConferenceScope.EVENT)).rejects.toThrow(NotFoundError);
+			await setup();
+
+			const func = () => repo.findByScopeAndScopeId(new ObjectId().toHexString(), VideoConferenceScope.EVENT);
+
+			await expect(func()).rejects.toThrow(NotFoundError);
 		});
 	});
 

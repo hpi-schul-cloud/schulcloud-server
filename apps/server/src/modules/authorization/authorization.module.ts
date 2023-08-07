@@ -23,7 +23,8 @@ import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
 
 @Module({
-	imports: [FeathersModule, LoggerModule, SchoolModule, forwardRef(() => ToolModule), BoardModule],
+	// TODO: remove forwardRef to TooModule N21-1055
+	imports: [FeathersModule, LoggerModule, SchoolModule, forwardRef(() => ToolModule), forwardRef(() => BoardModule)],
 	providers: [
 		FeathersAuthorizationService,
 		FeathersAuthProvider,

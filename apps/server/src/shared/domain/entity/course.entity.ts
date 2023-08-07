@@ -1,4 +1,4 @@
-import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property, Unique } from '@mikro-orm/core';
+import { Collection, Entity, Enum, Index, ManyToMany, ManyToOne, OneToMany, Property, Unique } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception';
 import { IEntityWithSchool, ILearnroom } from '@shared/domain/interface';
 import { EntityId, LearnroomMetadata, LearnroomTypes } from '../types';
@@ -7,8 +7,8 @@ import { CourseGroup } from './coursegroup.entity';
 import type { ILessonParent } from './lesson.entity';
 import type { School } from './school.entity';
 import type { ITaskParent } from './task.entity';
-import type { User } from './user.entity';
 import { UsersList } from './task.entity';
+import type { User } from './user.entity';
 
 export interface ICourseProperties {
 	name?: string;
@@ -22,6 +22,7 @@ export interface ICourseProperties {
 	startDate?: Date;
 	untilDate?: Date;
 	copyingSince?: Date;
+	features?: CourseFeatures[];
 }
 
 // that is really really shit default handling :D constructor, getter, js default, em default...what the hell
@@ -31,6 +32,10 @@ const DEFAULT = {
 	name: 'Kurse',
 	description: '',
 };
+
+const enum CourseFeatures {
+	VIDEOCONFERENCE = 'videoconference',
+}
 
 @Entity({ tableName: 'courses' })
 export class Course
@@ -80,6 +85,9 @@ export class Course
 	@Unique({ options: { sparse: true } })
 	shareToken?: string;
 
+	@Enum({ nullable: true, array: true })
+	features?: CourseFeatures[];
+
 	constructor(props: ICourseProperties) {
 		super();
 		if (props.name) this.name = props.name;
@@ -92,6 +100,7 @@ export class Course
 		if (props.untilDate) this.untilDate = props.untilDate;
 		if (props.startDate) this.startDate = props.startDate;
 		if (props.copyingSince) this.copyingSince = props.copyingSince;
+		if (props.features) this.features = props.features;
 	}
 
 	public getStudentIds(): EntityId[] {

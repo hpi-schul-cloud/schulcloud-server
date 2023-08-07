@@ -6,8 +6,9 @@ import {
 	columnBoardFactory,
 	columnFactory,
 	fileElementFactory,
-	taskElementFactory,
 	setupEntities,
+	submissionContainerElementFactory,
+	submissionItemFactory,
 } from '@shared/testing';
 import { FileDto, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
@@ -143,21 +144,47 @@ describe(RecursiveDeleteVisitor.name, () => {
 		});
 	});
 
-	describe('visitTaskElementAsync', () => {
+	describe('visitSubmissionContainerElementAsync', () => {
 		const setup = () => {
-			const childTaskElement = taskElementFactory.build();
-			const taskElement = taskElementFactory.build({ children: [childTaskElement] });
+			const childSubmissionContainerElement = submissionContainerElementFactory.build();
+			const submissionContainerElement = submissionContainerElementFactory.build({
+				children: [childSubmissionContainerElement],
+			});
 
-			return { taskElement, childTaskElement };
+			return { submissionContainerElement, childSubmissionContainerElement };
 		};
 
 		it('should call entity remove', async () => {
-			const { taskElement, childTaskElement } = setup();
+			const { submissionContainerElement, childSubmissionContainerElement } = setup();
 
-			await service.visitTaskElementAsync(taskElement);
+			await service.visitSubmissionContainerElementAsync(submissionContainerElement);
 
-			expect(em.remove).toHaveBeenCalledWith(em.getReference(taskElement.constructor, taskElement.id));
-			expect(em.remove).toHaveBeenCalledWith(em.getReference(childTaskElement.constructor, childTaskElement.id));
+			expect(em.remove).toHaveBeenCalledWith(
+				em.getReference(submissionContainerElement.constructor, submissionContainerElement.id)
+			);
+			expect(em.remove).toHaveBeenCalledWith(
+				em.getReference(childSubmissionContainerElement.constructor, childSubmissionContainerElement.id)
+			);
+		});
+	});
+
+	describe('visitSubmissionItemAsync', () => {
+		const setup = () => {
+			const childSubmissionItem = submissionItemFactory.build();
+			const submissionItem = submissionItemFactory.build({
+				children: [childSubmissionItem],
+			});
+
+			return { submissionItem, childSubmissionItem };
+		};
+
+		it('should call entity remove', async () => {
+			const { submissionItem, childSubmissionItem } = setup();
+
+			await service.visitSubmissionItemAsync(submissionItem);
+
+			expect(em.remove).toHaveBeenCalledWith(em.getReference(submissionItem.constructor, submissionItem.id));
+			expect(em.remove).toHaveBeenCalledWith(em.getReference(childSubmissionItem.constructor, childSubmissionItem.id));
 		});
 	});
 });
