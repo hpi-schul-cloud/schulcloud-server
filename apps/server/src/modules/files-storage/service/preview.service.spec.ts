@@ -4,12 +4,12 @@ import { NotFoundException, UnprocessableEntityException } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import crypto from 'crypto';
 import { Readable } from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
+import { createPreviewNameHash } from '../helper';
 import { TestHelper } from '../helper/test-helper';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
 import { FileDtoBuilder, FileResponseBuilder } from '../mapper';
@@ -44,14 +44,6 @@ const buildFileRecordWithParams = (mimeType: string) => {
 	};
 
 	return { params, fileRecord, parentId };
-};
-
-// Move CreateHash to HelperFunction
-const createHash = (fileRecordId: string, format?: string, width?: number, height?: number) => {
-	const fileParamsString = `${fileRecordId}${width ?? ''}${height ?? ''}${format ?? ''}`;
-	const hash = crypto.createHash('md5').update(fileParamsString).digest('hex');
-
-	return hash;
 };
 
 // Move getFilePath to HelperFunction
@@ -125,7 +117,7 @@ describe('FilesStorageService download method', () => {
 
 							const previewFileResponse = FileResponseBuilder.build(previewFile, fileRecord.name);
 
-							const hash = createHash(fileRecord.id);
+							const hash = createPreviewNameHash(fileRecord.id, {});
 							const previewFileDto = FileDtoBuilder.build(hash, previewFile.data, mimeType);
 							const previewPath = getFilePath(fileRecord, hash);
 							streamMock.mockClear();
@@ -297,12 +289,7 @@ describe('FilesStorageService download method', () => {
 							const name = `${fileNameWithoutExtension}.${format}`;
 							const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
-							const hash = createHash(
-								fileRecord.id,
-								previewParams.outputFormat,
-								previewParams.width,
-								previewParams.height
-							);
+							const hash = createPreviewNameHash(fileRecord.id, previewParams);
 							const previewFileDto = FileDtoBuilder.build(hash, previewFile.data, previewParams.outputFormat);
 							const previewPath = getFilePath(fileRecord, hash);
 
@@ -428,12 +415,7 @@ describe('FilesStorageService download method', () => {
 							const name = `${fileNameWithoutExtension}.${format}`;
 							const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
-							const hash = createHash(
-								fileRecord.id,
-								previewParams.outputFormat,
-								previewParams.width,
-								previewParams.height
-							);
+							const hash = createPreviewNameHash(fileRecord.id, previewParams);
 							const previewPath = getFilePath(fileRecord, hash);
 
 							resizeMock.mockClear();
@@ -505,12 +487,7 @@ describe('FilesStorageService download method', () => {
 							const name = `${fileNameWithoutExtension}.${format}`;
 							const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
-							const hash = createHash(
-								fileRecord.id,
-								previewParams.outputFormat,
-								previewParams.width,
-								previewParams.height
-							);
+							const hash = createPreviewNameHash(fileRecord.id, previewParams);
 							const previewFileDto = FileDtoBuilder.build(hash, previewFile.data, previewParams.outputFormat);
 							const previewPath = getFilePath(fileRecord, hash);
 

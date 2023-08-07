@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { LegacyLogger } from '@src/core/logger';
-import crypto from 'crypto';
 import { subClass } from 'gm';
 import { PassThrough } from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { DownloadFileParams, PreviewParams } from '../controller/dto';
 import { FileRecord } from '../entity';
 import { ErrorType } from '../error';
+import { createPreviewNameHash } from '../helper';
 import { IGetFile, IGetFileResponse } from '../interface';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
 import { FileDtoBuilder, FileResponseBuilder } from '../mapper';
@@ -40,7 +40,7 @@ export class PreviewService {
 		this.checkIfPreviewPossible(fileRecord);
 
 		const { forceUpdate, outputFormat } = previewParams;
-		const hash = this.createNameHash(downloadParams, previewParams);
+		const hash = createPreviewNameHash(fileRecord.id, previewParams);
 		const filePath = this.getFilePath(fileRecord, hash);
 		const name = this.getPreviewName(fileRecord, outputFormat);
 		let file: IGetFile;
@@ -80,16 +80,6 @@ export class PreviewService {
 		}
 
 		return file;
-	}
-
-	private createNameHash(params: DownloadFileParams, previewParams: PreviewParams): string {
-		const width = previewParams.width ?? '';
-		const height = previewParams.height ?? '';
-		const format = previewParams.outputFormat ?? '';
-		const fileParamsString = `${params.fileRecordId}${width}${height}${format}`;
-		const hash = crypto.createHash('sha512').update(fileParamsString).digest('hex');
-
-		return hash;
 	}
 
 	private async generatePreview(params: PreviewFileParams): Promise<IGetFile> {
