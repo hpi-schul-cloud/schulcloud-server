@@ -9,7 +9,7 @@ import { Readable } from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
-import { IGetFile, IGetFileResponse } from '../interface';
+import { TestHelper } from '../helper/test-helper';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
 import { FileDtoBuilder, FileResponseBuilder } from '../mapper';
 import { FilesStorageService } from './files-storage.service';
@@ -38,37 +38,6 @@ const buildFileRecordsWithParams = (mimeType: string) => {
 	};
 
 	return { params, fileRecord, parentId };
-};
-
-const createFile = (contentRange?: string): IGetFile => {
-	const text = 'testText';
-	const readable = Readable.from(text);
-
-	const fileResponse = {
-		data: readable,
-		contentType: 'text/plain',
-		contentLength: text.length,
-		contentRange,
-		etag: 'testTag',
-	};
-
-	return fileResponse;
-};
-
-const createFileResponse = (contentRange?: string): IGetFileResponse => {
-	const text = 'testText';
-	const readable = Readable.from(text);
-
-	const fileResponse = {
-		data: readable,
-		contentType: 'text/plain',
-		contentLength: text.length,
-		contentRange,
-		etag: 'testTag',
-		name: 'testName',
-	};
-
-	return fileResponse;
 };
 
 // Move CreateHash to HelperFunction
@@ -141,10 +110,10 @@ describe('FilesStorageService download method', () => {
 						};
 						const previewParams = { forceUpdate: true };
 
-						const originalFileResponse = createFileResponse();
+						const originalFileResponse = TestHelper.createFileResponse();
 						fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
 
-						const previewFile = createFile();
+						const previewFile = TestHelper.createFile();
 						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
 						const previewFileResponse = FileResponseBuilder.build(previewFile, fileRecord.name);
@@ -246,7 +215,7 @@ describe('FilesStorageService download method', () => {
 						};
 						const previewParams = { forceUpdate: true };
 
-						const originalFileResponse = createFileResponse();
+						const originalFileResponse = TestHelper.createFileResponse();
 						fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
 
 						const error = new Error('testError');
@@ -274,7 +243,7 @@ describe('FilesStorageService download method', () => {
 						};
 						const previewParams = { forceUpdate: true };
 
-						const originalFileResponse = createFileResponse();
+						const originalFileResponse = TestHelper.createFileResponse();
 						fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
 
 						const error = new Error('testError');
@@ -311,10 +280,10 @@ describe('FilesStorageService download method', () => {
 						};
 						const format = previewParams.outputFormat.split('/')[1];
 
-						const originalFileResponse = createFileResponse();
+						const originalFileResponse = TestHelper.createFileResponse();
 						fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
 
-						const previewFile = createFile();
+						const previewFile = TestHelper.createFile();
 						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
 						const fileNameWithoutExtension = fileRecord.name.split('.')[0];
@@ -445,7 +414,7 @@ describe('FilesStorageService download method', () => {
 						};
 						const format = previewParams.outputFormat.split('/')[1];
 
-						const previewFile = createFile();
+						const previewFile = TestHelper.createFile();
 						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
 						const fileNameWithoutExtension = fileRecord.name.split('.')[0];
@@ -519,10 +488,10 @@ describe('FilesStorageService download method', () => {
 						const error = new NotFoundException();
 						s3ClientAdapter.get.mockRejectedValueOnce(error);
 
-						const originalFileResponse = createFileResponse();
+						const originalFileResponse = TestHelper.createFileResponse();
 						fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
 
-						const previewFile = createFile();
+						const previewFile = TestHelper.createFile();
 						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
 						const fileNameWithoutExtension = fileRecord.name.split('.')[0];

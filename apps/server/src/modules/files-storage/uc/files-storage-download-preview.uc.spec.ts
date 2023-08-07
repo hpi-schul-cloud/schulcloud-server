@@ -7,12 +7,11 @@ import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
-import { Readable } from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { SingleFileParams } from '../controller/dto';
 import { FileRecord } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
-import { IGetFileResponse } from '../interface/storage-client';
+import { TestHelper } from '../helper/test-helper';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
@@ -29,22 +28,6 @@ const buildFileRecordWithParams = () => {
 	};
 
 	return { params, fileRecord, userId };
-};
-
-const createFileResponse = (contentRange?: string): IGetFileResponse => {
-	const text = 'testText';
-	const readable = Readable.from(text);
-
-	const fileResponse = {
-		data: readable,
-		contentType: 'text/plain',
-		contentLength: text.length,
-		contentRange,
-		etag: 'testTag',
-		name: 'testName',
-	};
-
-	return fileResponse;
 };
 
 describe('FilesStorageUC', () => {
@@ -117,7 +100,7 @@ describe('FilesStorageUC', () => {
 				const singleFileParams = FilesStorageMapper.mapToSingleFileParams(fileDownloadParams);
 
 				const previewParams = { forceUpdate: true };
-				const previewFileResponse = createFileResponse();
+				const previewFileResponse = TestHelper.createFileResponse();
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
 				previewService.getPreview.mockResolvedValueOnce(previewFileResponse);
