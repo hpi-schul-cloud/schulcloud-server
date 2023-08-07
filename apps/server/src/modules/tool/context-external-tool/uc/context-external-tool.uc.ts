@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
-import { Action } from '@src/modules/authorization';
+import { Action, AuthorizationContext, AuthorizationContextBuilder } from '@src/modules/authorization';
 import { LegacyLogger } from '@src/core/logger';
 import { ForbiddenLoggableException } from '@src/modules/authorization/errors/forbidden.loggable-exception';
 import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
@@ -23,11 +23,9 @@ export class ContextExternalToolUc {
 		contextExternalToolDto: ContextExternalToolDto
 	): Promise<ContextExternalTool> {
 		const contextExternalTool = new ContextExternalTool(contextExternalToolDto);
+		const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
 
-		await this.toolPermissionHelper.ensureContextPermissions(userId, contextExternalTool, {
-			requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
-			action: Action.write,
-		});
+		await this.toolPermissionHelper.ensureContextPermissions(userId, contextExternalTool, context);
 
 		await this.contextExternalToolValidationService.validate(contextExternalToolDto);
 
@@ -42,10 +40,9 @@ export class ContextExternalToolUc {
 		const tool: ContextExternalTool = await this.contextExternalToolService.getContextExternalToolById(
 			contextExternalToolId
 		);
-		await this.toolPermissionHelper.ensureContextPermissions(userId, tool, {
-			requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
-			action: Action.write,
-		});
+		const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
+
+		await this.toolPermissionHelper.ensureContextPermissions(userId, tool, context);
 
 		const promise: Promise<void> = this.contextExternalToolService.deleteContextExternalTool(tool);
 
@@ -67,6 +64,7 @@ export class ContextExternalToolUc {
 		tools: ContextExternalTool[]
 	): Promise<ContextExternalTool[]> {
 		const toolPromises = tools.map(async (tool) => {
+			// TODO N21-1055 remove try/catch, use hasPermission and array.filter
 			try {
 				await this.toolPermissionHelper.ensureContextPermissions(userId, tool, {
 					requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],

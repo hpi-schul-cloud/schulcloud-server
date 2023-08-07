@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
-import { Action } from '@src/modules/authorization';
+import { Action, AuthorizationContext, AuthorizationContextBuilder } from '@src/modules/authorization';
 import { ExternalTool, ToolReference } from '../domain';
 import { ToolConfigurationStatus, ToolContextType } from '../../common/enum';
 import { ExternalToolService } from '../service';
@@ -72,10 +72,13 @@ export class ToolReferenceUc {
 	}
 
 	private async ensureToolPermissions(userId: EntityId, contextExternalTool: ContextExternalTool): Promise<void> {
-		const promise: Promise<void> = this.toolPermissionHelper.ensureContextPermissions(userId, contextExternalTool, {
-			requiredPermissions: [Permission.CONTEXT_TOOL_USER],
-			action: Action.read,
-		});
+		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);
+
+		const promise: Promise<void> = this.toolPermissionHelper.ensureContextPermissions(
+			userId,
+			contextExternalTool,
+			context
+		);
 
 		return promise;
 	}
