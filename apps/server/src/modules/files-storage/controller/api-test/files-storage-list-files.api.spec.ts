@@ -188,6 +188,7 @@ describe(`${baseRouteName} (api)`, () => {
 				mimeType: 'application/octet-stream',
 				securityCheckStatus: 'pending',
 				size: expect.any(Number),
+				isPreviewPossible: false,
 			});
 		});
 

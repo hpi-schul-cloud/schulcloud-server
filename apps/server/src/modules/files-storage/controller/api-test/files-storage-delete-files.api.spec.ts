@@ -203,6 +203,7 @@ describe(`${baseRouteName} (api)`, () => {
 					deletedSince: expect.any(String),
 					securityCheckStatus: 'pending',
 					size: expect.any(Number),
+					isPreviewPossible: false,
 				});
 			});
 
@@ -297,6 +298,7 @@ describe(`${baseRouteName} (api)`, () => {
 					deletedSince: expect.any(String),
 					securityCheckStatus: 'pending',
 					size: expect.any(Number),
+					isPreviewPossible: false,
 				});
 			});
 

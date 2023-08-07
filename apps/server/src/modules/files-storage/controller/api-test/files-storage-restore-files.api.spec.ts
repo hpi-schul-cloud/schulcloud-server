@@ -227,6 +227,7 @@ describe(`${baseRouteName} (api)`, () => {
 					mimeType: 'text/plain',
 					securityCheckStatus: 'pending',
 					size: expect.any(Number),
+					isPreviewPossible: false,
 				});
 			});
 
@@ -321,6 +322,7 @@ describe(`${baseRouteName} (api)`, () => {
 					mimeType: 'text/plain',
 					securityCheckStatus: 'pending',
 					size: expect.any(Number),
+					isPreviewPossible: false,
 				});
 			});
 
