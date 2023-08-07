@@ -1,15 +1,16 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
 import { Action } from '@src/modules/authorization';
-import { ExternalTool, ToolReference } from '../domain';
 import { ToolConfigurationStatus, ToolContextType } from '../../common/enum';
-import { ExternalToolService } from '../service';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { ContextExternalToolService } from '../../context-external-tool/service';
 import { CommonToolService } from '../../common/service';
-import { ToolReferenceMapper } from '../mapper/tool-reference.mapper';
 import { ContextExternalTool, ContextRef } from '../../context-external-tool/domain';
+import { ContextExternalToolService } from '../../context-external-tool/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { ExternalTool, ToolReference } from '../domain';
+import { ToolReferenceMapper } from '../mapper/tool-reference.mapper';
+import { ExternalToolService } from '../service';
 
 @Injectable()
 export class ToolReferenceUc {
@@ -65,8 +66,20 @@ export class ToolReferenceUc {
 			contextExternalTool,
 			status
 		);
+		this.buildLogoUrl(toolReference, externalTool);
 
 		return toolReference;
+	}
+
+	// TODO: use tool config and export const for endpoint path
+	private buildLogoUrl(toolReference: ToolReference, externalTool: ExternalTool): void {
+		if (externalTool.logoBase64) {
+			toolReference.logoUrl = `${Configuration.get('PUBLIC_BACKEND_URL') as string}/v3/tools/external-tools/${
+				externalTool.id ?? ''
+			}/logo`;
+		} else {
+			toolReference.logoUrl = undefined;
+		}
 	}
 
 	private async ensureToolPermissions(userId: EntityId, contextExternalTool: ContextExternalTool): Promise<void> {

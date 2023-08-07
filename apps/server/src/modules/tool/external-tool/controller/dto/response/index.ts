@@ -9,4 +9,3 @@ export * from './context-external-tool-configuration-template.response';
 export * from './context-external-tool-configuration-template-list.response';
 export * from './school-external-tool-configuration-template.response';
 export * from './school-external-tool-configuration-template-list.response';
-export * from './external-tool-logo.response';

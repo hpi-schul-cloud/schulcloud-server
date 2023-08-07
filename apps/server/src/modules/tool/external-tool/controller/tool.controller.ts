@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, Res } from '@nestjs/common';
 import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
@@ -16,14 +16,15 @@ import { IFindOptions, Page } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { Response } from 'express';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ContextExternalToolContextParams } from '../../context-external-tool/controller/dto';
 import { ExternalTool, ToolReference } from '../domain';
+import { ExternalToolLogo } from '../domain/external-tool-logo';
 import { ExternalToolRequestMapper, ExternalToolResponseMapper } from '../mapper';
 import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate, ToolReferenceUc } from '../uc';
 import {
 	ExternalToolCreateParams,
-	ExternalToolLogoResponse,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
 	ExternalToolSearchParams,
@@ -164,18 +165,15 @@ export class ToolController {
 		return toolReferenceListResponse;
 	}
 
-	@Get('/:toolId/logo')
+	@Get('external-tools/:toolId/logo')
 	@ApiOperation({ summary: 'Gets the logo of an external tool.' })
 	@ApiOkResponse({
 		description: 'Logo of external tool fetched successfully.',
-		type: ExternalToolLogoResponse,
 	})
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
-	async getExternalToolLogo(@Param() params: ToolIdParams): Promise<ExternalToolLogoResponse> {
-		const logoBase64: string = await this.externalToolUc.getExternalToolBase64Logo(params.toolId);
-
-		const response: ExternalToolLogoResponse = new ExternalToolLogoResponse({ logoBase64 });
-
-		return response;
+	async getExternalToolLogo(@Param() params: ToolIdParams, @Res() res: Response): Promise<void> {
+		const externalToolLogo: ExternalToolLogo = await this.externalToolUc.getExternalToolBinaryLogo(params.toolId);
+		res.setHeader('Content-Type', externalToolLogo.contentType);
+		res.send(externalToolLogo.logo);
 	}
 }

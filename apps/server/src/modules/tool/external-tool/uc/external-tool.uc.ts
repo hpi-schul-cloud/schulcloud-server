@@ -3,9 +3,15 @@ import { EntityId, IFindOptions, Page, Permission, User } from '@shared/domain';
 import { AuthorizationService } from '@src/modules/authorization';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalTool, ExternalToolConfig } from '../domain';
+import { ExternalToolLogo } from '../domain/external-tool-logo';
 import { ExternalToolLogoNotFoundLoggableException } from '../error/external-tool-logo-not-found-loggable-exception';
 import { ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
+
+const contentTypeDetector: Record<string, string> = {
+	ffd8: 'image/jpeg',
+	'89504e47': 'image/png',
+};
 
 @Injectable()
 export class ExternalToolUc {
@@ -40,7 +46,7 @@ export class ExternalToolUc {
 			version: loaded.version,
 		});
 
-		const saved = await this.externalToolService.updateExternalTool(toUpdate, loaded);
+		const saved: ExternalTool = await this.externalToolService.updateExternalTool(toUpdate, loaded);
 		await this.externalToolService.fetchAndSaveLogo(saved);
 
 		return saved;
@@ -76,13 +82,26 @@ export class ExternalToolUc {
 		this.authorizationService.checkAllPermissions(user, [permission]);
 	}
 
-	async getExternalToolBase64Logo(toolId: EntityId): Promise<string> {
+	async getExternalToolBinaryLogo(toolId: EntityId): Promise<ExternalToolLogo> {
 		const tool: ExternalTool = await this.externalToolService.findExternalToolById(toolId);
 
 		if (!tool.logoBase64) {
 			throw new ExternalToolLogoNotFoundLoggableException(toolId);
 		}
 
-		return tool.logoBase64;
+		const logoBinaryData: Buffer = Buffer.from(tool.logoBase64, 'base64');
+
+		const externalToolLogoDto: ExternalToolLogo = new ExternalToolLogo({
+			contentType: this.detectContentType(logoBinaryData),
+			logo: logoBinaryData,
+		});
+
+		return externalToolLogoDto;
+	}
+
+	private detectContentType(imageBuffer: Buffer): string {
+		const imageSignature: string = imageBuffer.toString('hex', 0, 6);
+		const contentType: string = contentTypeDetector[imageSignature] || 'image/png';
+		return contentType;
 	}
 }
