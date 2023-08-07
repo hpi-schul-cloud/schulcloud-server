@@ -6,7 +6,7 @@ import { ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types'
 import { ToolLaunchUc } from './tool-launch.uc';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
+import { ToolPermissionHelper } from '../../context-external-tool/uc/tool-permission-helper';
 
 describe('ToolLaunchUc', () => {
 	let module: TestingModule;

@@ -1,18 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, Permission, User } from '@shared/domain';
-import {
-	Action,
-	AuthorizationContext,
-	AuthorizationContextBuilder,
-	AuthorizationService,
-} from '@src/modules/authorization';
+import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { LegacyLogger } from '@src/core/logger';
-import { ForbiddenLoggableException } from '@src/modules/authorization/errors/forbidden.loggable-exception';
 import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
 import { ContextExternalToolDto } from './dto/context-external-tool.types';
 import { ContextExternalTool, ContextRef } from '../domain';
 import { ToolContextType } from '../../common/enum';
-import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
+import { ToolPermissionHelper } from './tool-permission-helper';
 
 @Injectable()
 export class ContextExternalToolUc {

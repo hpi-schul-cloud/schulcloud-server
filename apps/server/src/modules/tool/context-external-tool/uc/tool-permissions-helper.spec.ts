@@ -2,16 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DeepMocked } from '@golevelup/ts-jest';
 import { contextExternalToolFactory, setupEntities } from '@shared/testing';
 import { Permission } from '@shared/domain';
-import {
-	Action,
-	AuthorizableReferenceType,
-	AuthorizationContext,
-	AuthorizationContextBuilder,
-	AuthorizationService,
-} from '@src/modules';
-import { ContextExternalToolUc } from '../../context-external-tool/uc';
-import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ToolContextType } from '../enum';
+import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
+import { ContextExternalToolUc } from './index';
+import { ContextExternalTool } from '../domain';
 import { ToolPermissionHelper } from './tool-permission-helper';
 
 describe('ToolPermissionHelper', () => {
