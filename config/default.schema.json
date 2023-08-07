@@ -538,12 +538,12 @@
 		},
 		"SC_TITLE": {
 			"type": "string",
-			"default": "HPI Schul-Cloud",
+			"default": "dBildungscloud",
 			"description": "The used title."
 		},
 		"SC_SHORT_TITLE": {
 			"type": "string",
-			"default": "HPI Schul-Cloud",
+			"default": "dBildungscloud",
 			"description": "Look to SC_TITLE, it is a possible short form of it."
 		},
 		"SC_DOMAIN": {
@@ -1178,7 +1178,7 @@
 			"default": true,
 			"description": "Enables old LTI-tool tab in a course"
 		},
-		"FEATURE_SHOW_OUTDATED_USERS":{
+		"FEATURE_SHOW_OUTDATED_USERS": {
 			"type": "boolean",
 			"default": false,
 			"description": "This feature flag controls whether the outdated user accounts are displayed or not. After a migration, all user accounts which were not migrated will be marked as outdated."
