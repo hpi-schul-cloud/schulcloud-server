@@ -138,7 +138,7 @@ describe('ContextExternalToolUc', () => {
 
 				const error = new ForbiddenException();
 
-				contextExternalToolService.ensureContextPermissions.mockRejectedValue(error);
+				toolPermissionHelper.ensureContextPermissions.mockRejectedValue(error);
 
 				return {
 					contextExternalTool,
@@ -230,10 +230,11 @@ describe('ContextExternalToolUc', () => {
 
 				await uc.updateContextExternalTool(userId, contextExternalToolId, contextExternalTool);
 
-				expect(contextExternalToolService.ensureContextPermissions).toHaveBeenCalledWith(userId, contextExternalTool, {
-					requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
-					action: Action.write,
-				});
+				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
+					userId,
+					contextExternalTool,
+					AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN])
+				);
 			});
 
 			it('should call contextExternalToolValidationService', async () => {
@@ -271,7 +272,7 @@ describe('ContextExternalToolUc', () => {
 
 				const error = new ForbiddenException();
 
-				contextExternalToolService.ensureContextPermissions.mockRejectedValue(error);
+				toolPermissionHelper.ensureContextPermissions.mockRejectedValue(error);
 
 				return {
 					contextExternalTool,

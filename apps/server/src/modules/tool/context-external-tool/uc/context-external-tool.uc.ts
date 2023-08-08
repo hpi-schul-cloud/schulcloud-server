@@ -43,10 +43,11 @@ export class ContextExternalToolUc {
 	): Promise<ContextExternalTool> {
 		const contextExternalTool: ContextExternalTool = new ContextExternalTool(contextExternalToolDto);
 
-		await this.contextExternalToolService.ensureContextPermissions(userId, contextExternalTool, {
-			requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
-			action: Action.write,
-		});
+		await this.toolPermissionHelper.ensureContextPermissions(
+			userId,
+			contextExternalTool,
+			AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN])
+		);
 
 		const updated: ContextExternalTool = new ContextExternalTool({
 			...contextExternalTool,

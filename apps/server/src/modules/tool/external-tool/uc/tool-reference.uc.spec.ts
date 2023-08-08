@@ -98,7 +98,7 @@ describe('ToolReferenceUc', () => {
 				};
 			};
 
-			it('should call contextExternalToolService.ensureContextPermissions', async () => {
+			it('should call toolPermissionHelper.ensureContextPermissions', async () => {
 				const { userId, contextType, contextId, contextExternalTool } = setup();
 
 				await uc.getToolReferences(userId, contextType, contextId);
