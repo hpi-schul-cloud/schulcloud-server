@@ -8,16 +8,16 @@ import {
 	externalToolFactory,
 	oauth2ToolConfigFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { AuthorizationService } from '@src/modules/authorization';
 import { ICurrentUser } from '@src/modules/authentication';
+import { AuthorizationService } from '@src/modules/authorization';
 import { ExternalToolSearchQuery } from '../../common/interface';
+import { ExternalTool, Oauth2ToolConfig } from '../domain';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
 import { ExternalToolLogoNotFoundLoggableException } from '../loggable';
-import { ExternalToolUc } from './external-tool.uc';
 import { ExternalToolService, ExternalToolValidationService } from '../service';
 
 import { ExternalToolUpdate } from './dto';
-import { ExternalTool, Oauth2ToolConfig } from '../domain';
+import { ExternalToolUc } from './external-tool.uc';
 
 describe('ExternalToolUc', () => {
 	let module: TestingModule;
@@ -181,6 +181,67 @@ describe('ExternalToolUc', () => {
 			const result: ExternalTool = await uc.createExternalTool(currentUser.userId, externalTool);
 
 			expect(result).toEqual(externalTool);
+		});
+
+		describe('when tool has no logo url', () => {
+			const setup2 = () => {
+				const user: User = userFactory.buildWithId();
+				const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
+
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({ logoUrl: undefined });
+
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+
+				return {
+					currentUser,
+					externalTool,
+				};
+			};
+
+			it('should not fetch the logo', async () => {
+				const { currentUser, externalTool } = setup2();
+
+				await uc.createExternalTool(currentUser.userId, externalTool);
+
+				expect(externalToolService.fetchBase64Logo).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when tool has a logo url', () => {
+			const setup2 = () => {
+				const user: User = userFactory.buildWithId();
+				const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
+
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				const base64Logo = 'base64Logo';
+				externalToolService.fetchBase64Logo.mockResolvedValueOnce(base64Logo);
+
+				return {
+					currentUser,
+					externalTool,
+					base64Logo,
+				};
+			};
+
+			it('should fetch the logo', async () => {
+				const { currentUser, externalTool } = setup2();
+
+				await uc.createExternalTool(currentUser.userId, externalTool);
+
+				expect(externalToolService.fetchBase64Logo).toHaveBeenCalledWith(externalTool.logoUrl);
+			});
+
+			it('should add the base64 encoded logo to the external tool', async () => {
+				const { currentUser, externalTool, base64Logo } = setup2();
+
+				await uc.createExternalTool(currentUser.userId, externalTool);
+
+				expect(externalToolService.createExternalTool).toHaveBeenCalledWith(
+					expect.objectContaining<Partial<ExternalTool>>({ logoBase64: base64Logo })
+				);
+			});
 		});
 	});
 
@@ -381,6 +442,88 @@ describe('ExternalToolUc', () => {
 			const result: ExternalTool = await uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate);
 
 			expect(result).toEqual(updatedExternalToolDO);
+		});
+
+		describe('when tool has no logo url', () => {
+			const setup2 = () => {
+				const user: User = userFactory.buildWithId();
+				const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
+
+				const existingExternalTool: ExternalTool = externalToolFactory.buildWithId();
+				const existingExternalToolId = existingExternalTool.id as string;
+				const externalToolToUpdate: ExternalToolUpdate = {
+					...existingExternalTool,
+					id: existingExternalToolId,
+					logoUrl: undefined,
+				};
+
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				externalToolService.findExternalToolById.mockResolvedValueOnce(existingExternalTool);
+
+				return {
+					currentUser,
+					existingExternalToolId,
+					externalToolToUpdate,
+				};
+			};
+
+			it('should not fetch the logo', async () => {
+				const { currentUser, externalToolToUpdate, existingExternalToolId } = setup2();
+
+				await uc.updateExternalTool(currentUser.userId, existingExternalToolId, externalToolToUpdate);
+
+				expect(externalToolService.fetchBase64Logo).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when tool has a logo url', () => {
+			const setup2 = () => {
+				const user: User = userFactory.buildWithId();
+				const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
+
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				const base64Logo = 'base64Logo';
+				externalToolService.fetchBase64Logo.mockResolvedValue(base64Logo);
+
+				const existingExternalTool: ExternalTool = externalToolFactory.withLti11Config().buildWithId();
+				const existingExternalToolId = existingExternalTool.id as string;
+				const externalToolToUpdate: ExternalToolUpdate = {
+					...existingExternalTool,
+					id: existingExternalToolId,
+					logoUrl: 'https://logo.url',
+				};
+
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				externalToolService.findExternalToolById.mockResolvedValueOnce(existingExternalTool);
+
+				return {
+					currentUser,
+					existingExternalTool,
+					existingExternalToolId,
+					externalToolToUpdate,
+					base64Logo,
+				};
+			};
+
+			it('should fetch the logo', async () => {
+				const { currentUser, externalToolToUpdate, existingExternalToolId } = setup2();
+
+				await uc.updateExternalTool(currentUser.userId, existingExternalToolId, externalToolToUpdate);
+
+				expect(externalToolService.fetchBase64Logo).toHaveBeenCalledWith(externalToolToUpdate.logoUrl);
+			});
+
+			it('should add the base64 encoded logo to the external tool', async () => {
+				const { currentUser, externalToolToUpdate, existingExternalTool, existingExternalToolId, base64Logo } =
+					setup2();
+
+				await uc.updateExternalTool(currentUser.userId, existingExternalToolId, externalToolToUpdate);
+
+				expect(externalToolService.updateExternalTool).toHaveBeenCalledWith(
+					expect.objectContaining<Partial<ExternalTool>>({ logoBase64: base64Logo }),
+					existingExternalTool
+				);
+			});
 		});
 	});
 
