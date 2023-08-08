@@ -1,18 +1,19 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ForbiddenException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
 import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
-import { ForbiddenException } from '@nestjs/common';
 import { Action } from '@src/modules/authorization';
-import { ToolReferenceUc } from './tool-reference.uc';
 import { ToolConfigurationStatus, ToolContextType } from '../../common/enum';
-import { ExternalToolService } from '../service';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { ContextExternalToolService } from '../../context-external-tool/service';
 import { CommonToolService } from '../../common/service';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ExternalTool, ToolReference } from '../domain';
 import { ContextExternalTool } from '../../context-external-tool/domain';
+import { ContextExternalToolService } from '../../context-external-tool/service';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { ExternalTool, ToolReference } from '../domain';
+import { ExternalToolService } from '../service';
+import { ToolReferenceUc } from './tool-reference.uc';
 
 describe('ToolReferenceUc', () => {
 	let module: TestingModule;
@@ -63,7 +64,7 @@ describe('ToolReferenceUc', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+				const externalTool: ExternalTool = externalToolFactory.withBase64Logo().buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					toolId: externalTool.id,
 				});
@@ -150,7 +151,9 @@ describe('ToolReferenceUc', () => {
 
 				expect(result).toEqual<ToolReference[]>([
 					{
-						logoUrl: externalTool.logoUrl,
+						logoUrl: `${Configuration.get('PUBLIC_BACKEND_URL') as string}/v3/tools/external-tools/${
+							externalTool.id as string
+						}/logo`,
 						openInNewTab: externalTool.openNewTab,
 						contextToolId: contextExternalTool.id as string,
 						displayName: contextExternalTool.displayName as string,

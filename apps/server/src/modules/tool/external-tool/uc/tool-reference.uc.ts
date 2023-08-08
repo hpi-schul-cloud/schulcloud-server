@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
 import { Action } from '@src/modules/authorization';
@@ -65,8 +66,20 @@ export class ToolReferenceUc {
 			contextExternalTool,
 			status
 		);
+		this.buildLogoUrl(toolReference, externalTool);
 
 		return toolReference;
+	}
+
+	private buildLogoUrl(toolReference: ToolReference, externalTool: ExternalTool): void {
+		const { logoBase64, id } = externalTool;
+		const backendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
+
+		if (logoBase64) {
+			toolReference.logoUrl = `${backendUrl}/v3/tools/external-tools/${id ?? ''}/logo`;
+		} else {
+			toolReference.logoUrl = undefined;
+		}
 	}
 
 	private async ensureToolPermissions(userId: EntityId, contextExternalTool: ContextExternalTool): Promise<void> {
