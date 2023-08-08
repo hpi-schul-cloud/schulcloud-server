@@ -37,14 +37,14 @@ describe('LibraryStorage', () => {
 					useValue: createMock<LibraryRepo>(),
 				},
 				{
-					provide: S3ClientAdapter,
+					provide: 'S3ClientAdapter_Libraries',
 					useValue: createMock<S3ClientAdapter>(),
 				},
 			],
 		}).compile();
 
 		storage = module.get(LibraryStorage);
-		s3ClientAdapter = module.get(S3ClientAdapter);
+		s3ClientAdapter = module.get('S3ClientAdapter_Libraries');
 		repo = module.get(LibraryRepo);
 	});
 

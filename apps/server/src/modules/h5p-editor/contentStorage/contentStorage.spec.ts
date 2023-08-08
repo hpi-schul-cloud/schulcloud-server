@@ -94,13 +94,13 @@ describe('ContentStorage', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				ContentStorage,
-				{ provide: S3ClientAdapter, useValue: createMock<S3ClientAdapter>() },
+				{ provide: 'S3ClientAdapter_Content', useValue: createMock<S3ClientAdapter>() },
 				{ provide: H5PContentRepo, useValue: createMock<H5PContentRepo>() },
 			],
 		}).compile();
 
 		service = module.get(ContentStorage);
-		s3ClientAdapter = module.get(S3ClientAdapter);
+		s3ClientAdapter = module.get('S3ClientAdapter_Content');
 		contentRepo = module.get(H5PContentRepo);
 	});
 

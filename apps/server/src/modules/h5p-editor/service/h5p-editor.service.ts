@@ -35,6 +35,8 @@ export const H5PEditorService = {
 
 		h5pEditor.setRenderer((model) => model);
 
+		h5pEditor.setRenderer((model) => model);
+
 		return h5pEditor;
 	},
 };

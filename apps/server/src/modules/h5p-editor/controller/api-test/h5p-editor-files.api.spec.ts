@@ -1,15 +1,16 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ContentMetadata } from '@lumieducation/h5p-server/build/src/ContentMetadata';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 import { H5PEditorTestModule } from '@src/modules/h5p-editor/h5p-editor-test.module';
 import { Readable } from 'stream';
-import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 import { ContentStorage } from '../../contentStorage/contentStorage';
 import { LibraryStorage } from '../../libraryStorage/libraryStorage';
 import { TemporaryFileStorage } from '../../temporary-file-storage/temporary-file-storage';
+import { TemporaryFile } from '../../temporary-file-storage/temporary-file.entity';
 
 describe('H5PEditor Controller (api)', () => {
 	let app: INestApplication;
@@ -24,7 +25,9 @@ describe('H5PEditor Controller (api)', () => {
 		const module = await Test.createTestingModule({
 			imports: [H5PEditorTestModule],
 		})
-			.overrideProvider(S3ClientAdapter)
+			.overrideProvider('S3ClientAdapter_Content')
+			.useValue(createMock<S3ClientAdapter>())
+			.overrideProvider('S3ClientAdapter_Libraries')
 			.useValue(createMock<S3ClientAdapter>())
 			.overrideProvider(ContentStorage)
 			.useValue(createMock<ContentStorage>())
@@ -199,16 +202,27 @@ describe('H5PEditor Controller (api)', () => {
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
-				return { loggedInClient };
+				const mockFile = {
+					name: 'example.txt',
+					content: 'File Content',
+				};
+
+				const mockTempFile = new TemporaryFile(
+					mockFile.name,
+					studentUser.id,
+					new Date(),
+					new Date(),
+					mockFile.content.length
+				);
+
+				return { loggedInClient, mockFile, mockTempFile };
 			};
 
 			it('should return the content file', async () => {
-				const { loggedInClient } = await setup();
-
-				const mockFile = { content: 'Test File', size: 9, name: 'test.txt', birthtime: new Date() };
+				const { loggedInClient, mockFile, mockTempFile } = await setup();
 
 				temporaryStorage.getFileStream.mockResolvedValueOnce(Readable.from(mockFile.content));
-				temporaryStorage.getFileStats.mockResolvedValueOnce({ birthtime: mockFile.birthtime, size: mockFile.size });
+				temporaryStorage.getFileStats.mockResolvedValueOnce(mockTempFile);
 
 				const response = await loggedInClient.get(`temp-files/${mockFile.name}`);
 
@@ -217,12 +231,10 @@ describe('H5PEditor Controller (api)', () => {
 			});
 
 			it('should work with range requests', async () => {
-				const { loggedInClient } = await setup();
-
-				const mockFile = { content: 'Test File', size: 9, name: 'test.txt', birthtime: new Date() };
+				const { loggedInClient, mockFile, mockTempFile } = await setup();
 
 				temporaryStorage.getFileStream.mockResolvedValueOnce(Readable.from(mockFile.content));
-				temporaryStorage.getFileStats.mockResolvedValueOnce({ birthtime: mockFile.birthtime, size: mockFile.size });
+				temporaryStorage.getFileStats.mockResolvedValueOnce(mockTempFile);
 
 				const response = await loggedInClient.get(`temp-files/${mockFile.name}`).set('Range', 'bytes=2-4');
 

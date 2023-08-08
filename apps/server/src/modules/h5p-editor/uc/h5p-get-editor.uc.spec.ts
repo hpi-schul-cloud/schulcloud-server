@@ -37,6 +37,21 @@ const setup = () => {
 	};
 
 	return { contentId, contentIdCreate, currentUser, playerModel, editorModel, exampleContent };
+	const editorModel = {
+		scripts: ['example.js'],
+		styles: ['example.css'],
+	};
+
+	const exampleContent = {
+		h5p: {},
+		library: 'ExampleLib-1.0',
+		params: {
+			metadata: {},
+			params: { anything: true },
+		},
+	};
+
+	return { contentId, contentIdCreate, language, currentUser, playerModel, editorModel, exampleContent };
 };
 
 describe('get H5P editor', () => {
@@ -82,6 +97,9 @@ describe('get H5P editor', () => {
 			const { currentUser, editorModel } = setup();
 			h5pEditor.render.mockResolvedValueOnce(editorModel);
 			const result = await uc.getEmptyH5pEditor(currentUser);
+			const { language, currentUser, editorModel } = setup();
+			h5pEditor.render.mockResolvedValueOnce(editorModel);
+			const result = await uc.getEmptyH5pEditor(currentUser, language);
 
 			expect(result).toEqual(editorModel);
 		});
@@ -94,6 +112,11 @@ describe('get H5P editor', () => {
 			// @ts-expect-error partial object
 			h5pEditor.getContent.mockResolvedValueOnce(exampleContent);
 			const result = await uc.getH5pEditor(currentUser, contentId);
+			const { contentId, language, currentUser, editorModel, exampleContent } = setup();
+			h5pEditor.render.mockResolvedValueOnce(editorModel);
+			// @ts-expect-error partial object
+			h5pEditor.getContent.mockResolvedValueOnce(exampleContent);
+			const result = await uc.getH5pEditor(currentUser, contentId, language);
 
 			expect(result).toEqual({ editorModel, content: exampleContent });
 		});

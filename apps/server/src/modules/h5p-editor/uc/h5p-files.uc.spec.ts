@@ -10,6 +10,7 @@ import { ContentStorage } from '../contentStorage/contentStorage';
 import { LibraryStorage } from '../libraryStorage/libraryStorage';
 import { TemporaryFileStorage } from '../temporary-file-storage/temporary-file-storage';
 import { H5PAjaxEndpointService, H5PEditorService, H5PPlayerService } from '../service';
+import { TemporaryFile } from '../temporary-file-storage/temporary-file.entity';
 
 describe('H5P Files', () => {
 	let module: TestingModule;
@@ -256,7 +257,9 @@ describe('H5P Files', () => {
 				contentRange = rangeCallbackReturnValue[0];
 			}
 
-			temporaryStorage.getFileStats.mockResolvedValueOnce({ birthtime: fileDate, size: contentLength });
+			const tempFile = new TemporaryFile(filename, 'dummyId', fileDate, fileDate, contentLength);
+
+			temporaryStorage.getFileStats.mockResolvedValueOnce(tempFile);
 			temporaryStorage.getFileStream.mockResolvedValueOnce(readableContent);
 
 			const requestMock = {
