@@ -14,9 +14,11 @@ import { H5PContentRepo } from './contentStorage/h5p-content.repo';
 import { H5PEditorController } from './controller';
 import { s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
 import { H5PEditorModule, createS3ClientAdapter } from './h5p-editor.module';
+import { LibraryRepo } from './libraryStorage/library.repo';
 import { LibraryStorage } from './libraryStorage/libraryStorage';
 import { H5PAjaxEndpointService, H5PEditorService, H5PPlayerService } from './service';
 import { TemporaryFileStorage } from './temporary-file-storage/temporary-file-storage';
+import { TemporaryFileRepo } from './temporary-file-storage/temporary-file.repo';
 import { H5PEditorUc } from './uc/h5p.uc';
 
 const imports = [
@@ -36,6 +38,8 @@ const providers = [
 	H5PEditorService,
 	H5PAjaxEndpointService,
 	H5PContentRepo,
+	LibraryRepo,
+	TemporaryFileRepo,
 	ContentStorage,
 	LibraryStorage,
 	TemporaryFileStorage,

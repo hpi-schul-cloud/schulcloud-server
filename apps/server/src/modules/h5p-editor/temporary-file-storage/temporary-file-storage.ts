@@ -1,16 +1,18 @@
-import { ReadStream } from 'fs';
-import { Readable } from 'stream';
-import { join } from 'node:path';
-import { Injectable } from '@nestjs/common';
 import { ITemporaryFile, ITemporaryFileStorage, IUser } from '@lumieducation/h5p-server';
+import { Inject, Injectable } from '@nestjs/common';
 import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 import { FileDto } from '@src/modules/files-storage/dto/file.dto';
+import { ReadStream } from 'fs';
+import { Readable } from 'stream';
 import { TemporaryFile } from './temporary-file.entity';
 import { TemporaryFileRepo } from './temporary-file.repo';
 
 @Injectable()
 export class TemporaryFileStorage implements ITemporaryFileStorage {
-	constructor(private readonly repo: TemporaryFileRepo, private readonly s3Client: S3ClientAdapter) {}
+	constructor(
+		private readonly repo: TemporaryFileRepo,
+		@Inject('S3ClientAdapter_Content') private readonly s3Client: S3ClientAdapter
+	) {}
 
 	private checkFilename(filename: string): void {
 		if (/^[a-zA-Z0-9/._-]+$/g.test(filename) && !filename.includes('..') && !filename.startsWith('/')) {
@@ -33,7 +35,7 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 	public async deleteFile(filename: string, userId: string): Promise<void> {
 		this.checkFilename(filename);
 		const meta = await this.repo.findByUserAndFilename(userId, filename);
-		await this.s3Client.delete([join(userId, filename)]);
+		await this.s3Client.delete([this.getFilePath(userId, filename)]);
 		await this.repo.delete(meta);
 	}
 
@@ -59,7 +61,7 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 	): Promise<Readable> {
 		this.checkFilename(filename);
 		const tempFile = await this.repo.findByUserAndFilename(user.id, filename);
-		const path = join(user.id, filename);
+		const path = this.getFilePath(user.id, filename);
 		if (rangeStart === undefined) {
 			rangeStart = 0;
 		}
@@ -89,7 +91,7 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 			throw new Error('expirationTime must be in the future');
 		}
 
-		const path = join(user.id, filename);
+		const path = this.getFilePath(user.id, filename);
 		let tempFile: TemporaryFile | undefined;
 		try {
 			tempFile = await this.repo.findByUserAndFilename(user.id, filename);
@@ -112,15 +114,6 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		}
 
 		return tempFile;
-	}
-
-	private getContentPath(contentId: string): string {
-		if (!contentId) {
-			throw new Error('COULD_NOT_CREATE_PATH');
-		}
-
-		const path = `h5p/${contentId}/`;
-		return path;
 	}
 
 	private getFilePath(userId: string, filename: string): string {

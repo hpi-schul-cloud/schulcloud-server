@@ -30,13 +30,13 @@ describe('TemporaryFileStorage', () => {
 					useValue: createMock<TemporaryFileRepo>(),
 				},
 				{
-					provide: S3ClientAdapter,
+					provide: 'S3ClientAdapter_Content',
 					useValue: createMock<S3ClientAdapter>(),
 				},
 			],
 		}).compile();
 		storage = module.get(TemporaryFileStorage);
-		s3clientAdapter = module.get(S3ClientAdapter);
+		s3clientAdapter = module.get('S3ClientAdapter_Content');
 		repo = module.get(TemporaryFileRepo);
 	});
 
@@ -131,12 +131,12 @@ describe('TemporaryFileStorage', () => {
 		describe('WHEN file exists', () => {
 			it('should delete file', async () => {
 				const { user1, file1 } = setup();
-				repo.findByPath.mockResolvedValueOnce(file1);
+				repo.findByUserAndFilename.mockResolvedValueOnce(file1);
 
 				await storage.deleteFile(file1.filename, user1.id);
 
 				expect(repo.delete).toHaveBeenCalled();
-				expect(s3clientAdapter.delete).toHaveBeenCalledWith([join(user1.id, file1.filename)]);
+				expect(s3clientAdapter.delete).toHaveBeenCalledWith([join('h5p-tempfiles', user1.id, file1.filename)]);
 			});
 		});
 		describe('WHEN file does not exist', () => {
@@ -158,7 +158,7 @@ describe('TemporaryFileStorage', () => {
 		describe('WHEN file exists', () => {
 			it('should return true', async () => {
 				const { user1, file1 } = setup();
-				repo.findByPath.mockResolvedValue(file1);
+				repo.findByUserAndFilename.mockResolvedValueOnce(file1);
 				const result = await storage.fileExists(file1.filename, user1);
 				expect(result).toBe(true);
 			});
@@ -166,6 +166,7 @@ describe('TemporaryFileStorage', () => {
 		describe('WHEN file does not exist', () => {
 			it('should return false', async () => {
 				const { user1 } = setup();
+				repo.findByUserAndFilename.mockRejectedValueOnce(new Error('Not found'));
 				await expect(storage.fileExists('abc/nonexistingfile.txt', user1)).resolves.toBe(false);
 			});
 		});
@@ -175,7 +176,7 @@ describe('TemporaryFileStorage', () => {
 		describe('WHEN file exists', () => {
 			it('should return file stats', async () => {
 				const { user1, file1 } = setup();
-				repo.findByUserAndFilename.mockResolvedValue(file1);
+				repo.findByUserAndFilename.mockResolvedValueOnce(file1);
 				const filestats = await storage.getFileStats(file1.filename, user1);
 				expect(filestats.size).toBe(file1.size);
 				expect(filestats.birthtime).toBe(file1.birthtime);
@@ -204,8 +205,8 @@ describe('TemporaryFileStorage', () => {
 					contentRange: undefined,
 					etag: undefined,
 				};
-				repo.findByUserAndFilename.mockResolvedValue(file1);
-				s3clientAdapter.get.mockResolvedValue(response);
+				repo.findByUserAndFilename.mockResolvedValueOnce(file1);
+				s3clientAdapter.get.mockResolvedValueOnce(response);
 				const stream = await storage.getFileStream(file1.filename, user1);
 				let content = Buffer.alloc(0);
 				await new Promise((resolve, reject) => {
@@ -234,7 +235,7 @@ describe('TemporaryFileStorage', () => {
 		describe('WHEN existing user is given', () => {
 			it('should return only users file', async () => {
 				const { user1, file1 } = setup();
-				repo.findByUser.mockResolvedValue([file1]);
+				repo.findByUser.mockResolvedValueOnce([file1]);
 				const files = await storage.listFiles(user1);
 				expect(files.length).toBe(1);
 				expect(files[0].ownedByUserId).toBe(user1.id);
@@ -244,7 +245,7 @@ describe('TemporaryFileStorage', () => {
 		describe('WHEN no user is given', () => {
 			it('should return both users files', async () => {
 				const { user1, user2, file1, file2 } = setup();
-				repo.findExpired.mockResolvedValue([file1, file2]);
+				repo.findExpired.mockResolvedValueOnce([file1, file2]);
 				const files = await storage.listFiles();
 				expect(files.length).toBe(2);
 				expect(files[0].ownedByUserId).toBe(user1.id);
@@ -260,7 +261,7 @@ describe('TemporaryFileStorage', () => {
 				const newData = 'This is new fake H5P content.';
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 				const readStream = Readable.from(newData) as ReadStream;
-				repo.findByUserAndFilename.mockResolvedValue(file1);
+				repo.findByUserAndFilename.mockResolvedValueOnce(file1);
 				let savedData = Buffer.alloc(0);
 				s3clientAdapter.create.mockImplementation(async (path: string, file: FileDto) => {
 					savedData += file.data.read();
