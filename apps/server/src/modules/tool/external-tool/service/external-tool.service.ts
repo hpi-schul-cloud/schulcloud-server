@@ -1,4 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId, IFindOptions, Page } from '@shared/domain';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
@@ -46,7 +45,6 @@ export class ExternalToolService {
 		await this.updateOauth2ToolConfig(toUpdate);
 		this.externalToolVersionService.increaseVersionOfNewToolIfNecessary(loadedTool, toUpdate);
 		const externalTool: ExternalTool = await this.externalToolRepo.save(toUpdate);
-
 		return externalTool;
 	}
 
@@ -151,15 +149,17 @@ export class ExternalToolService {
 		config.frontchannelLogoutUri = oauthClient.frontchannel_logout_uri;
 	}
 
-	async fetchAndSaveLogo(externalTool: ExternalTool): Promise<void> {
-		if (externalTool.logoUrl) {
-			const response: Response = await fetch(externalTool.logoUrl);
-
-			const arrayBuffer: ArrayBuffer = await response.arrayBuffer();
-			const buffer: Buffer = Buffer.from(arrayBuffer);
-			externalTool.logoBase64 = buffer.toString('base64');
-
-			await this.externalToolRepo.save(externalTool);
+	async fetchBase64Logo(logoUrl: string | undefined): Promise<string | null> {
+		if (!logoUrl) {
+			return null;
 		}
+
+		const response: Response = await fetch(logoUrl);
+
+		const arrayBuffer: ArrayBuffer = await response.arrayBuffer();
+		const buffer: Buffer = Buffer.from(arrayBuffer);
+		const logoBase64: string = buffer.toString('base64');
+
+		return logoBase64;
 	}
 }

@@ -4,7 +4,7 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalTool, ExternalToolConfig } from '../domain';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
-import { ExternalToolLogoNotFoundLoggableException } from '../error/external-tool-logo-not-found-loggable-exception';
+import { ExternalToolLogoNotFoundLoggableException } from '../error';
 import { ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
 
@@ -23,18 +23,30 @@ export class ExternalToolUc {
 
 	async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
 		const externalTool = new ExternalTool({ ...externalToolCreate });
+		await this.addLogoToExternalToolIfExists(externalTool);
 
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 		await this.toolValidationService.validateCreate(externalTool);
 
 		const tool: ExternalTool = await this.externalToolService.createExternalTool(externalTool);
-		await this.externalToolService.fetchAndSaveLogo(tool);
 
 		return tool;
 	}
 
+	private async addLogoToExternalToolIfExists(externalTool: Partial<ExternalTool>): Promise<Partial<ExternalTool>> {
+		const base64Logo: string | null = await this.externalToolService.fetchBase64Logo(externalTool.logoUrl);
+		if (base64Logo) {
+			externalTool.logoBase64 = base64Logo;
+		}
+
+		return externalTool;
+	}
+
 	async updateExternalTool(userId: EntityId, toolId: string, externalTool: ExternalToolUpdate): Promise<ExternalTool> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+
+		await this.addLogoToExternalToolIfExists(externalTool);
+
 		await this.toolValidationService.validateUpdate(toolId, externalTool);
 
 		const loaded: ExternalTool = await this.externalToolService.findExternalToolById(toolId);
@@ -47,7 +59,6 @@ export class ExternalToolUc {
 		});
 
 		const saved: ExternalTool = await this.externalToolService.updateExternalTool(toUpdate, loaded);
-		await this.externalToolService.fetchAndSaveLogo(saved);
 
 		return saved;
 	}
@@ -100,8 +111,10 @@ export class ExternalToolUc {
 	}
 
 	private detectContentType(imageBuffer: Buffer): string {
-		const imageSignature: string = imageBuffer.toString('hex', 0, 6);
+		const imageSignature: string = imageBuffer.toString('hex', 0, 3);
+
 		const contentType: string = contentTypeDetector[imageSignature] || 'image/png';
+
 		return contentType;
 	}
 }

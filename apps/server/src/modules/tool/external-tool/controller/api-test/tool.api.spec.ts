@@ -701,4 +701,39 @@ describe('ToolController (API)', () => {
 			});
 		});
 	});
+
+	describe('[GET] tools/external-tools/:toolId/logo', () => {
+		const setup = async () => {
+			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.withBase64Logo().buildWithId();
+
+			const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
+			await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
+			em.clear();
+
+			const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
+
+			return { loggedInClient, externalToolEntity };
+		};
+
+		describe('when user is not authenticated', () => {
+			it('should return unauthorized', async () => {
+				const { externalToolEntity } = await setup();
+
+				const response: Response = await testApiClient.get(`external-tools/${externalToolEntity.id}/logo`);
+
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when user is authenticated', () => {
+			it('should return the logo', async () => {
+				const { loggedInClient, externalToolEntity } = await setup();
+
+				const response: Response = await loggedInClient.get(`external-tools/${externalToolEntity.id}/logo`);
+
+				expect(response.statusCode).toEqual(HttpStatus.OK);
+				expect(response.body).toBeInstanceOf(Buffer);
+			});
+		});
+	});
 });

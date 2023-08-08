@@ -11,6 +11,8 @@ import {
 import { AuthorizationService } from '@src/modules/authorization';
 import { ICurrentUser } from '@src/modules/authentication';
 import { ExternalToolSearchQuery } from '../../common/interface';
+import { ExternalToolLogo } from '../domain/external-tool-logo';
+import { ExternalToolLogoNotFoundLoggableException } from '../error';
 import { ExternalToolUc } from './external-tool.uc';
 import { ExternalToolService, ExternalToolValidationService } from '../service';
 
@@ -412,6 +414,54 @@ describe('ExternalToolUc', () => {
 			await uc.deleteExternalTool(currentUser.userId, toolId);
 
 			expect(externalToolService.deleteExternalTool).toHaveBeenCalledWith(toolId);
+		});
+	});
+
+	describe('getExternalToolBinaryLogo', () => {
+		describe('when logoBase64 is available', () => {
+			const setupLogo = () => {
+				const externalTool: ExternalTool = externalToolFactory.withBase64Logo().buildWithId();
+
+				externalToolService.findExternalToolById.mockResolvedValue(externalTool);
+
+				return {
+					externalToolId: externalTool.id as string,
+					base64logo: externalTool.logoBase64 as string,
+				};
+			};
+
+			it('should return ExternalToolLogo with proper properties', async () => {
+				const { externalToolId, base64logo } = setupLogo();
+
+				const result: ExternalToolLogo = await uc.getExternalToolBinaryLogo(externalToolId);
+
+				expect(result).toEqual(
+					new ExternalToolLogo({
+						contentType: 'image/png',
+						logo: Buffer.from(base64logo, 'base64'),
+					})
+				);
+			});
+		});
+
+		describe('when logoBase64 is not available', () => {
+			const setupLogo = () => {
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+
+				externalToolService.findExternalToolById.mockResolvedValue(externalTool);
+
+				return {
+					externalToolId: externalTool.id as string,
+				};
+			};
+
+			it('should throw ExternalToolLogoNotFoundLoggableException', async () => {
+				const { externalToolId } = setupLogo();
+
+				await expect(uc.getExternalToolBinaryLogo(externalToolId)).rejects.toThrow(
+					ExternalToolLogoNotFoundLoggableException
+				);
+			});
 		});
 	});
 });

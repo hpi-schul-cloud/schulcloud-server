@@ -1,11 +1,13 @@
-import { externalToolFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
-import { ExternalToolService } from './external-tool.service';
-import { ExternalToolValidationService } from './external-tool-validation.service';
-import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
+import { externalToolFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
+import { ExternalToolLogoSizeExceededLoggableException } from '../error';
+import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
+import { ExternalToolValidationService } from './external-tool-validation.service';
+import { ExternalToolService } from './external-tool.service';
 
 describe('ExternalToolValidationService', () => {
 	let module: TestingModule;
@@ -13,6 +15,7 @@ describe('ExternalToolValidationService', () => {
 
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let commonToolValidationService: DeepMocked<ExternalToolParameterValidationService>;
+	let toolFeatures: IToolFeatures;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -26,12 +29,19 @@ describe('ExternalToolValidationService', () => {
 					provide: ExternalToolParameterValidationService,
 					useValue: createMock<ExternalToolParameterValidationService>(),
 				},
+				{
+					provide: ToolFeatures,
+					useValue: {
+						maxExternalToolLogoSizeInBytes: 30000,
+					},
+				},
 			],
 		}).compile();
 
 		service = module.get(ExternalToolValidationService);
 		externalToolService = module.get(ExternalToolService);
 		commonToolValidationService = module.get(ExternalToolParameterValidationService);
+		toolFeatures = module.get(ToolFeatures);
 	});
 
 	afterAll(async () => {
@@ -42,31 +52,33 @@ describe('ExternalToolValidationService', () => {
 		jest.clearAllMocks();
 	});
 
-	const externalTool: ExternalTool = externalToolFactory.buildWithId();
+	describe('validateCreate', () => {
+		describe('when external tool is given', () => {
+			it('should call the common validation service', async () => {
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
-	describe('validateCreate is called', () => {
-		it('should call the common validation service', async () => {
-			await service.validateCreate(externalTool);
+				await service.validateCreate(externalTool);
 
-			expect(commonToolValidationService.validateCommon).toHaveBeenCalledWith(externalTool);
+				expect(commonToolValidationService.validateCommon).toHaveBeenCalledWith(externalTool);
+			});
 		});
 
 		describe('when external tool config has oauth config', () => {
 			describe('when client id is unique', () => {
 				describe('when tool with oauth2 config not exists', () => {
 					const setup = () => {
-						const externalOauthToolDO: ExternalTool = externalToolFactory
+						const externalOauthTool: ExternalTool = externalToolFactory
 							.withOauth2Config({ clientId: 'ClientId', clientSecret: 'secret' })
 							.buildWithId();
 						externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(null);
 
-						return { externalOauthToolDO };
+						return { externalOauthTool };
 					};
 
 					it('should not find a tool with this client id', async () => {
-						const { externalOauthToolDO } = setup();
+						const { externalOauthTool } = setup();
 
-						const result: Promise<void> = service.validateCreate(externalOauthToolDO);
+						const result: Promise<void> = service.validateCreate(externalOauthTool);
 
 						await expect(result).resolves.not.toThrow();
 					});
@@ -74,18 +86,18 @@ describe('ExternalToolValidationService', () => {
 
 				describe('when tool with oauth2 config exists', () => {
 					const setup = () => {
-						const externalOauthToolDO: ExternalTool = externalToolFactory
+						const externalOauthTool: ExternalTool = externalToolFactory
 							.withOauth2Config({ clientId: 'ClientId', clientSecret: 'secret' })
 							.buildWithId();
-						externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalOauthToolDO);
+						externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalOauthTool);
 
-						return { externalOauthToolDO };
+						return { externalOauthTool };
 					};
 
 					it('should return without error', async () => {
-						const { externalOauthToolDO } = setup();
+						const { externalOauthTool } = setup();
 
-						const result: Promise<void> = service.validateCreate(externalOauthToolDO);
+						const result: Promise<void> = service.validateCreate(externalOauthTool);
 
 						await expect(result).resolves.not.toThrow();
 					});
@@ -94,7 +106,7 @@ describe('ExternalToolValidationService', () => {
 
 			describe('when client id already exists', () => {
 				const setup = () => {
-					const externalOauthToolDO: ExternalTool = externalToolFactory
+					const externalOauthTool: ExternalTool = externalToolFactory
 						.withOauth2Config({ clientId: 'ClientId', clientSecret: 'secret' })
 						.buildWithId();
 					const existingExternalOauthToolDO: ExternalTool = externalToolFactory
@@ -104,18 +116,18 @@ describe('ExternalToolValidationService', () => {
 					externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(existingExternalOauthToolDO);
 
 					return {
-						externalOauthToolDO,
+						externalOauthTool,
 					};
 				};
 
 				it('should find a tool with this client id', async () => {
-					const { externalOauthToolDO } = setup();
+					const { externalOauthTool } = setup();
 
-					const result: Promise<void> = service.validateCreate(externalOauthToolDO);
+					const result: Promise<void> = service.validateCreate(externalOauthTool);
 
 					await expect(result).rejects.toThrow(
 						new ValidationError(
-							`tool_clientId_duplicate: The Client Id of the tool ${externalOauthToolDO.name} is already used.`
+							`tool_clientId_duplicate: The Client Id of the tool ${externalOauthTool.name} is already used.`
 						)
 					);
 				});
@@ -167,38 +179,84 @@ describe('ExternalToolValidationService', () => {
 				});
 			});
 		});
+
+		describe('when external tool has a given base64 logo', () => {
+			describe('when size is exceeded', () => {
+				const setup = () => {
+					const externalTool: ExternalTool = externalToolFactory.withBase64Logo().build();
+					toolFeatures.maxExternalToolLogoSizeInBytes = 1;
+
+					return { externalTool };
+				};
+
+				it('should throw an error', async () => {
+					const { externalTool } = setup();
+
+					const func = () => service.validateCreate(externalTool);
+
+					await expect(func).rejects.toThrow(ExternalToolLogoSizeExceededLoggableException);
+				});
+			});
+
+			describe('when size is not exceeded', () => {
+				const setup = () => {
+					const externalTool: ExternalTool = externalToolFactory.withBase64Logo().build();
+					toolFeatures.maxExternalToolLogoSizeInBytes = 30000;
+
+					return { externalTool };
+				};
+
+				it('should throw an error', async () => {
+					const { externalTool } = setup();
+
+					const func = () => service.validateCreate(externalTool);
+
+					await expect(func()).resolves.not.toThrow();
+				});
+			});
+		});
 	});
 
-	describe('validateUpdate is called', () => {
-		beforeEach(() => {
-			externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(null);
-		});
+	describe('validateUpdate', () => {
+		describe('when external tool is given', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.build({ id: 'toolId' });
+				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(null);
 
-		it('should call the common validation service', async () => {
-			externalTool.id = 'toolId';
+				return {
+					externalTool,
+					externalToolId: externalTool.id as string,
+				};
+			};
 
-			await service.validateUpdate(externalTool.id, externalTool);
+			it('should call the common validation service', async () => {
+				const { externalTool, externalToolId } = setup();
 
-			expect(commonToolValidationService.validateCommon).toHaveBeenCalledWith(externalTool);
+				await service.validateUpdate(externalToolId, externalTool);
+
+				expect(commonToolValidationService.validateCommon).toHaveBeenCalledWith(externalTool);
+			});
 		});
 
 		describe('when checking if parameter id matches toolId', () => {
 			const setup = () => {
-				const externalOauthToolDO: ExternalTool = externalToolFactory
+				const externalOauthTool: ExternalTool = externalToolFactory
 					.withOauth2Config({ clientId: 'ClientId', clientSecret: 'secret' })
 					.buildWithId();
 
-				externalOauthToolDO.id = 'toolId';
-				externalToolService.findExternalToolById.mockResolvedValue(externalOauthToolDO);
+				externalOauthTool.id = 'toolId';
+				externalToolService.findExternalToolById.mockResolvedValue(externalOauthTool);
 
 				return {
-					externalOauthToolDO,
-					externalOauthToolId: externalOauthToolDO.id,
+					externalOauthTool,
+					externalOauthToolId: externalOauthTool.id,
 				};
 			};
 
 			it('should throw an error if not matches', async () => {
-				const func = () => service.validateUpdate('notMatchToolId', externalTool);
+				const { externalOauthTool } = setup();
+
+				const func = () => service.validateUpdate('notMatchToolId', externalOauthTool);
 
 				await expect(func).rejects.toThrow(
 					new ValidationError(`tool_id_mismatch: The tool has no id or it does not match the path parameter.`)
@@ -206,9 +264,9 @@ describe('ExternalToolValidationService', () => {
 			});
 
 			it('should return without error if matches', async () => {
-				const { externalOauthToolDO, externalOauthToolId } = setup();
+				const { externalOauthTool, externalOauthToolId } = setup();
 
-				const result: Promise<void> = service.validateUpdate(externalOauthToolId, externalOauthToolDO);
+				const result: Promise<void> = service.validateUpdate(externalOauthToolId, externalOauthTool);
 
 				await expect(result).resolves.not.toThrow();
 			});
@@ -217,39 +275,49 @@ describe('ExternalToolValidationService', () => {
 		describe('when external tool config has oauth config', () => {
 			describe('when config type was changed', () => {
 				const setup = () => {
-					const existingExternalOauthToolDO: ExternalTool = externalToolFactory
+					const existingExternalOauthTool: ExternalTool = externalToolFactory
 						.withOauth2Config({ clientId: 'ClientId', clientSecret: 'secret' })
 						.buildWithId();
 
-					externalToolService.findExternalToolById.mockResolvedValue(existingExternalOauthToolDO);
+					externalToolService.findExternalToolById.mockResolvedValue(existingExternalOauthTool);
+
+					const newExternalTool: ExternalTool = externalToolFactory.buildWithId();
+
+					return {
+						existingExternalOauthTool,
+						newExternalTool,
+						newExternalToolId: newExternalTool.id as string,
+					};
 				};
 
 				it('should throw', async () => {
-					setup();
+					const { newExternalToolId, newExternalTool } = setup();
 
-					const result: Promise<void> = service.validateUpdate(externalTool.id as string, externalTool);
+					const result: Promise<void> = service.validateUpdate(newExternalToolId, newExternalTool);
 
 					await expect(result).rejects.toThrow(
-						new ValidationError(`tool_type_immutable: The Config Type of the tool ${externalTool.name} is immutable.`)
+						new ValidationError(
+							`tool_type_immutable: The Config Type of the tool ${newExternalTool.name} is immutable.`
+						)
 					);
 				});
 			});
 
 			describe('when clientId is the same', () => {
 				const setup = () => {
-					const externalOauthToolDO: ExternalTool = externalToolFactory
+					const externalOauthTool: ExternalTool = externalToolFactory
 						.withOauth2Config({ clientId: 'ClientId', clientSecret: 'secret' })
 						.buildWithId();
 
-					externalToolService.findExternalToolById.mockResolvedValue(externalOauthToolDO);
+					externalToolService.findExternalToolById.mockResolvedValue(externalOauthTool);
 
-					return { externalOauthToolDO };
+					return { externalOauthTool };
 				};
 
 				it('should pass', async () => {
-					const { externalOauthToolDO } = setup();
+					const { externalOauthTool } = setup();
 
-					const result: Promise<void> = service.validateUpdate(externalOauthToolDO.id as string, externalOauthToolDO);
+					const result: Promise<void> = service.validateUpdate(externalOauthTool.id as string, externalOauthTool);
 
 					await expect(result).resolves.not.toThrow();
 				});
@@ -257,7 +325,7 @@ describe('ExternalToolValidationService', () => {
 
 			describe('when clientID was changed', () => {
 				const setup = () => {
-					const externalOauthToolDO: ExternalTool = externalToolFactory
+					const externalOauthTool: ExternalTool = externalToolFactory
 						.withOauth2Config({ clientId: 'ClientId', clientSecret: 'secret' })
 						.buildWithId();
 					const existingExternalOauthToolDOWithDifferentClientId: ExternalTool = externalToolFactory
@@ -266,18 +334,18 @@ describe('ExternalToolValidationService', () => {
 					externalToolService.findExternalToolById.mockResolvedValue(existingExternalOauthToolDOWithDifferentClientId);
 
 					return {
-						externalOauthToolDO,
+						externalOauthTool,
 					};
 				};
 
 				it('should throw', async () => {
-					const { externalOauthToolDO } = setup();
+					const { externalOauthTool } = setup();
 
-					const result: Promise<void> = service.validateUpdate(externalOauthToolDO.id as string, externalOauthToolDO);
+					const result: Promise<void> = service.validateUpdate(externalOauthTool.id as string, externalOauthTool);
 
 					await expect(result).rejects.toThrow(
 						new ValidationError(
-							`tool_clientId_immutable: The Client Id of the tool ${externalOauthToolDO.name} is immutable.`
+							`tool_clientId_immutable: The Client Id of the tool ${externalOauthTool.name} is immutable.`
 						)
 					);
 				});
@@ -303,6 +371,42 @@ describe('ExternalToolValidationService', () => {
 				const result: Promise<void> = service.validateUpdate(externalLtiToolId, externalLtiToolDO);
 
 				await expect(result).resolves.not.toThrow();
+			});
+		});
+
+		describe('when external tool has a given base64 logo', () => {
+			describe('when size is exceeded', () => {
+				const setup = () => {
+					const externalTool: ExternalTool = externalToolFactory.withBase64Logo().build();
+					toolFeatures.maxExternalToolLogoSizeInBytes = 1;
+
+					return { externalTool };
+				};
+
+				it('should throw an error', async () => {
+					const { externalTool } = setup();
+
+					const func = () => service.validateCreate(externalTool);
+
+					await expect(func).rejects.toThrow(ExternalToolLogoSizeExceededLoggableException);
+				});
+			});
+
+			describe('when size is not exceeded', () => {
+				const setup = () => {
+					const externalTool: ExternalTool = externalToolFactory.withBase64Logo().build();
+					toolFeatures.maxExternalToolLogoSizeInBytes = 30000;
+
+					return { externalTool };
+				};
+
+				it('should throw an error', async () => {
+					const { externalTool } = setup();
+
+					const func = () => service.validateCreate(externalTool);
+
+					await expect(func()).resolves.not.toThrow();
+				});
 			});
 		});
 	});

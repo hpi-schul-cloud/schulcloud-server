@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
+import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
+import { ExternalToolLogoSizeExceededLoggableException } from '../error';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
 import { ExternalToolService } from './external-tool.service';
 
@@ -8,7 +10,8 @@ import { ExternalToolService } from './external-tool.service';
 export class ExternalToolValidationService {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
-		private readonly externalToolParameterValidationService: ExternalToolParameterValidationService
+		private readonly externalToolParameterValidationService: ExternalToolParameterValidationService,
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
 	) {}
 
 	async validateCreate(externalTool: ExternalTool): Promise<void> {
@@ -17,6 +20,23 @@ export class ExternalToolValidationService {
 		await this.validateOauth2Config(externalTool);
 
 		this.validateLti11Config(externalTool);
+
+		this.validateLogoSize(externalTool);
+	}
+
+	private validateLogoSize(externalTool: Partial<ExternalTool>): void {
+		if (!externalTool.logoBase64) {
+			return;
+		}
+
+		const buffer: Buffer = Buffer.from(externalTool.logoBase64, 'base64');
+
+		if (buffer.length > this.toolFeatures.maxExternalToolLogoSizeInBytes) {
+			throw new ExternalToolLogoSizeExceededLoggableException(
+				externalTool.id,
+				this.toolFeatures.maxExternalToolLogoSizeInBytes
+			);
+		}
 	}
 
 	private async validateOauth2Config(externalTool: ExternalTool): Promise<void> {
@@ -81,5 +101,7 @@ export class ExternalToolValidationService {
 				`tool_clientId_immutable: The Client Id of the tool ${externalTool.name || ''} is immutable.`
 			);
 		}
+
+		this.validateLogoSize(externalTool);
 	}
 }
