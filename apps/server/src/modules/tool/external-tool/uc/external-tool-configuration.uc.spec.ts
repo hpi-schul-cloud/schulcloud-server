@@ -11,7 +11,12 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
-import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
+import {
+	Action,
+	AuthorizableReferenceType,
+	AuthorizationContextBuilder,
+	AuthorizationService,
+} from '@src/modules/authorization';
 import { ToolContextType } from '../../common/enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ContextExternalToolService } from '../../context-external-tool/service';
@@ -22,6 +27,7 @@ import { ExternalTool } from '../domain';
 import { ExternalToolService } from '../service';
 import { ContextExternalToolTemplateInfo } from './dto';
 import { ExternalToolConfigurationUc } from './external-tool-configuration.uc';
+import { ToolPermissionHelper } from '../../context-external-tool/uc/tool-permission-helper';
 
 describe('ExternalToolConfigurationUc', () => {
 	let module: TestingModule;
@@ -31,6 +37,7 @@ describe('ExternalToolConfigurationUc', () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
+	let toolPermissionHelper: DeepMocked<ToolPermissionHelper>;
 	let toolFeatures: IToolFeatures;
 
 	beforeAll(async () => {
@@ -56,6 +63,10 @@ describe('ExternalToolConfigurationUc', () => {
 					useValue: createMock<ContextExternalToolService>(),
 				},
 				{
+					provide: ToolPermissionHelper,
+					useValue: createMock<ToolPermissionHelper>(),
+				},
+				{
 					provide: ToolFeatures,
 					useValue: {
 						contextConfigurationEnabled: false,
@@ -69,6 +80,7 @@ describe('ExternalToolConfigurationUc', () => {
 		authorizationService = module.get(AuthorizationService);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		contextExternalToolService = module.get(ContextExternalToolService);
+		toolPermissionHelper = module.get(ToolPermissionHelper);
 		toolFeatures = module.get(ToolFeatures);
 	});
 
@@ -196,24 +208,25 @@ describe('ExternalToolConfigurationUc', () => {
 	describe('getAvailableToolsForContext is called', () => {
 		describe('when the user has insufficient permission', () => {
 			const setup = () => {
-				authorizationService.checkPermissionByReferences.mockRejectedValue(new ForbiddenException());
+				const tool: ContextExternalTool = contextExternalToolFactory.build();
+
+				toolPermissionHelper.ensureContextPermissions.mockRejectedValue(new ForbiddenException());
+				contextExternalToolService.findContextExternalTools.mockResolvedValue([tool]);
+
+				return { tool };
 			};
 
 			it('should fail when authorizationService throws ForbiddenException', async () => {
-				setup();
+				const { tool } = setup();
 
 				const func = async () =>
 					uc.getAvailableToolsForContext('userId', 'schoolId', 'contextId', ToolContextType.COURSE);
 
 				await expect(func).rejects.toThrow(ForbiddenException);
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
 					'userId',
-					AuthorizableReferenceType.Course,
-					'contextId',
-					{
-						action: Action.read,
-						requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
-					}
+					tool,
+					AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN])
 				);
 			});
 		});
@@ -257,22 +270,19 @@ describe('ExternalToolConfigurationUc', () => {
 					toolWithoutSchoolTool,
 					usedSchoolExternalTool,
 					unusedSchoolExternalTool,
+					usedContextExternalTool,
 				};
 			};
 
 			it('should call the authorizationService with CONTEXT_TOOL_ADMIN permission', async () => {
-				setup();
+				const { usedContextExternalTool } = setup();
 
 				await uc.getAvailableToolsForContext('userId', 'schoolId', 'contextId', ToolContextType.COURSE);
 
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
 					'userId',
-					AuthorizableReferenceType.Course,
-					'contextId',
-					{
-						action: Action.read,
-						requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
-					}
+					usedContextExternalTool,
+					AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN])
 				);
 			});
 
@@ -617,19 +627,15 @@ describe('ExternalToolConfigurationUc', () => {
 				};
 			};
 
-			it('should successfully check the user permission with the authorization service', async () => {
+			it('should successfully check the user permission with the toolPermissionHelper', async () => {
 				const { contextExternalToolId, contextExternalTool } = setup();
 
 				await uc.getTemplateForContextExternalTool('userId', contextExternalToolId);
 
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
 					'userId',
-					AuthorizableReferenceType.Course,
-					contextExternalTool.contextRef.id,
-					{
-						action: Action.read,
-						requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
-					}
+					contextExternalTool,
+					AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN])
 				);
 			});
 
@@ -651,7 +657,7 @@ describe('ExternalToolConfigurationUc', () => {
 				);
 
 				contextExternalToolService.getContextExternalToolById.mockResolvedValueOnce(contextExternalTool);
-				authorizationService.checkPermissionByReferences.mockImplementation(() => {
+				toolPermissionHelper.ensureContextPermissions.mockImplementation(() => {
 					throw new UnauthorizedException();
 				});
 

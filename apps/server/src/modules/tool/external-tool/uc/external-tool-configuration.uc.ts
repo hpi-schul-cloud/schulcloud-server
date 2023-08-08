@@ -2,10 +2,15 @@ import { Inject, Injectable } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { EntityId, Permission } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
-import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
+import {
+	Action,
+	AuthorizableReferenceType,
+	AuthorizationContext,
+	AuthorizationContextBuilder,
+	AuthorizationService,
+} from '@src/modules/authorization';
 import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
-import { ContextTypeMapper } from '../../common/mapper';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
@@ -14,6 +19,7 @@ import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ExternalToolService } from '../service';
 import { ContextExternalToolTemplateInfo } from './dto';
+import { ToolPermissionHelper } from '../../context-external-tool/uc/tool-permission-helper';
 
 @Injectable()
 export class ExternalToolConfigurationUc {
@@ -22,6 +28,7 @@ export class ExternalToolConfigurationUc {
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly authorizationService: AuthorizationService,
+		private readonly toolPermissionHelper: ToolPermissionHelper,
 		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
 	) {}
 
@@ -57,8 +64,6 @@ export class ExternalToolConfigurationUc {
 		contextId: EntityId,
 		contextType: ToolContextType
 	): Promise<ContextExternalToolTemplateInfo[]> {
-		await this.ensureContextPermission(userId, contextId, contextType);
-
 		const [externalTools, schoolExternalTools, contextExternalToolsInUse]: [
 			Page<ExternalTool>,
 			SchoolExternalTool[],
@@ -72,6 +77,9 @@ export class ExternalToolConfigurationUc {
 				context: { id: contextId, type: contextType },
 			}),
 		]);
+		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
+
+		await this.ensureContextPermissions(userId, contextExternalToolsInUse, context);
 
 		const availableSchoolExternalTools: SchoolExternalTool[] = this.filterForAvailableSchoolExternalTools(
 			schoolExternalTools,
@@ -169,8 +177,9 @@ export class ExternalToolConfigurationUc {
 		const contextExternalTool: ContextExternalTool = await this.contextExternalToolService.getContextExternalToolById(
 			contextExternalToolId
 		);
+		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
 
-		await this.ensureContextPermission(userId, contextExternalTool.contextRef.id, contextExternalTool.contextRef.type);
+		await this.toolPermissionHelper.ensureContextPermissions(userId, contextExternalTool, context);
 
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.getSchoolExternalToolById(
 			contextExternalTool.schoolToolRef.schoolToolId
@@ -205,19 +214,14 @@ export class ExternalToolConfigurationUc {
 		});
 	}
 
-	private async ensureContextPermission(
+	private async ensureContextPermissions(
 		userId: EntityId,
-		contextId: EntityId,
-		contextType: ToolContextType
+		tools: ContextExternalTool[],
+		context: AuthorizationContext
 	): Promise<void> {
-		return this.authorizationService.checkPermissionByReferences(
-			userId,
-			ContextTypeMapper.mapContextTypeToAllowedAuthorizationEntityType(contextType),
-			contextId,
-			{
-				action: Action.read,
-				requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
-			}
-		);
+		for (const tool of tools) {
+			// eslint-disable-next-line no-await-in-loop
+			await this.toolPermissionHelper.ensureContextPermissions(userId, tool, context);
+		}
 	}
 }
