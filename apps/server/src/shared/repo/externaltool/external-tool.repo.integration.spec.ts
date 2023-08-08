@@ -9,12 +9,12 @@ import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolSearchQuery } from '@src/modules/tool';
 import { CustomParameter } from '@src/modules/tool/common/domain';
 import {
-	ToolConfigType,
-	LtiPrivacyPermission,
 	CustomParameterLocation,
 	CustomParameterScope,
 	CustomParameterType,
 	LtiMessageType,
+	LtiPrivacyPermission,
+	ToolConfigType,
 } from '@src/modules/tool/common/enum';
 import {
 	BasicToolConfig,
@@ -206,6 +206,7 @@ describe('ExternalToolRepo', () => {
 				lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 				privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
 				resource_link_id: 'resource_link_id',
+				launch_presentation_locale: 'de-DE',
 			});
 			const { domainObject } = setupDO(config);
 			const { id, ...expected } = domainObject;

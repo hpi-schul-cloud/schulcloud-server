@@ -57,11 +57,30 @@ export class ExternalToolEntityFactory extends BaseFactory<ExternalToolEntity, I
 				resource_link_id: 'resource_link_id',
 				secret: 'secret',
 				privacy_permission: LtiPrivacyPermission.ANONYMOUS,
+				launch_presentation_locale: 'de-DE',
 			}),
 		};
 		return this.params(params);
 	}
 }
+
+export const customParameterEntityFactory = BaseFactory.define<CustomParameterEntity, CustomParameterEntity>(
+	CustomParameterEntity,
+	({ sequence }) => {
+		return {
+			name: `name${sequence}`,
+			displayName: `User Friendly Name ${sequence}`,
+			description: 'This is a mock parameter.',
+			default: 'default',
+			location: CustomParameterLocation.PATH,
+			regex: 'regex',
+			regexComment: 'mockComment',
+			scope: CustomParameterScope.SCHOOL,
+			type: CustomParameterType.STRING,
+			isOptional: false,
+		};
+	}
+);
 
 export const externalToolEntityFactory = ExternalToolEntityFactory.define(
 	ExternalToolEntity,
@@ -74,20 +93,7 @@ export const externalToolEntityFactory = ExternalToolEntityFactory.define(
 				type: ToolConfigType.BASIC,
 				baseUrl: 'mockBaseUrl',
 			}),
-			parameters: [
-				new CustomParameterEntity({
-					name: 'name',
-					displayName: 'User Friendly Name',
-					description: 'This is a mock parameter.',
-					default: 'default',
-					location: CustomParameterLocation.PATH,
-					regex: 'regex',
-					regexComment: 'mockComment',
-					scope: CustomParameterScope.SCHOOL,
-					type: CustomParameterType.STRING,
-					isOptional: false,
-				}),
-			],
+			parameters: [customParameterEntityFactory.build()],
 			isHidden: false,
 			openNewTab: true,
 			version: 1,
