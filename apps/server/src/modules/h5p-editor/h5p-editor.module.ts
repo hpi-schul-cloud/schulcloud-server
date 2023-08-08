@@ -6,10 +6,11 @@ import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Module, NotFoundException, Scope } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Account, Role, School, SchoolYear, System, User } from '@shared/domain';
+import { S3Client } from '@aws-sdk/client-s3';
 import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger, Logger } from '@src/core/logger';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { S3Client } from '@aws-sdk/client-s3';
@@ -27,6 +28,8 @@ import { TemporaryFileStorage } from './temporary-file-storage/temporary-file-st
 import { S3ClientAdapter } from '../files-storage/client/s3-client.adapter';
 import { H5PContentRepo } from './contentStorage/h5p-content.repo';
 import { H5PContent } from './contentStorage/h5p-content.entity';
+import { LibraryRepo } from './libraryStorage/library.repo';
+import { s3ConfigLibraries } from './s3-config';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -34,9 +37,33 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		new NotFoundException(`The requested ${entityName}: ${where} has not been found.`),
 };
 
+export function createS3ClientAdapter(s3config: S3Config, legacyLogger: LegacyLogger) {
+	const s3Client = new S3Client({
+		region: s3config.region,
+		credentials: {
+			accessKeyId: s3config.accessKeyId,
+			secretAccessKey: s3config.secretAccessKey,
+		},
+		endpoint: s3config.endpoint,
+		forcePathStyle: true,
+		tls: true,
+	});
+	return new S3ClientAdapter(s3Client, s3config, legacyLogger);
+}
+
 const storages = [
 	ContentStorage,
-	{ provide: LibraryStorage, useValue: new LibraryStorage(path.join(os.tmpdir(), '/h5p_libraries')) },
+	LibraryStorage,
+	{
+		provide: 'S3ClientAdapter_Libraries',
+		useFactory: createS3ClientAdapter,
+		inject: ['S3Config_Libraries', LegacyLogger],
+	},
+	LibraryRepo,
+	{
+		provide: 'S3Config_Libraries',
+		useValue: s3ConfigLibraries,
+	},
 	{ provide: TemporaryFileStorage, useValue: new TemporaryFileStorage(path.join(os.tmpdir(), '/h5p_temporary')) },
 ];
 
