@@ -33,19 +33,6 @@ export class ExternalToolUc {
 		return tool;
 	}
 
-	private async addLogoToExternalToolIfExists(externalTool: Partial<ExternalTool>): Promise<Partial<ExternalTool>> {
-		if (!externalTool.logoUrl) {
-			return externalTool;
-		}
-
-		const base64Logo: string | null = await this.externalToolService.fetchBase64Logo(externalTool.logoUrl);
-		if (base64Logo) {
-			externalTool.logoBase64 = base64Logo;
-		}
-
-		return externalTool;
-	}
-
 	async updateExternalTool(userId: EntityId, toolId: string, externalTool: ExternalToolUpdate): Promise<ExternalTool> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
@@ -65,6 +52,19 @@ export class ExternalToolUc {
 		const saved: ExternalTool = await this.externalToolService.updateExternalTool(toUpdate, loaded);
 
 		return saved;
+	}
+
+	private async addLogoToExternalToolIfExists(externalTool: Partial<ExternalTool>): Promise<Partial<ExternalTool>> {
+		if (!externalTool.logoUrl) {
+			return externalTool;
+		}
+
+		const base64Logo: string | null = await this.externalToolService.fetchBase64Logo(externalTool.logoUrl);
+		if (base64Logo) {
+			externalTool.logo = base64Logo;
+		}
+
+		return externalTool;
 	}
 
 	async findExternalTool(
@@ -100,18 +100,18 @@ export class ExternalToolUc {
 	async getExternalToolBinaryLogo(toolId: EntityId): Promise<ExternalToolLogo> {
 		const tool: ExternalTool = await this.externalToolService.findExternalToolById(toolId);
 
-		if (!tool.logoBase64) {
+		if (!tool.logo) {
 			throw new ExternalToolLogoNotFoundLoggableException(toolId);
 		}
 
-		const logoBinaryData: Buffer = Buffer.from(tool.logoBase64, 'base64');
+		const logoBinaryData: Buffer = Buffer.from(tool.logo, 'base64');
 
-		const externalToolLogoDto: ExternalToolLogo = new ExternalToolLogo({
+		const externalToolLogo: ExternalToolLogo = new ExternalToolLogo({
 			contentType: this.detectContentType(logoBinaryData),
 			logo: logoBinaryData,
 		});
 
-		return externalToolLogoDto;
+		return externalToolLogo;
 	}
 
 	private detectContentType(imageBuffer: Buffer): string {

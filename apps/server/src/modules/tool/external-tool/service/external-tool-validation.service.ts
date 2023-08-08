@@ -24,12 +24,44 @@ export class ExternalToolValidationService {
 		this.validateLogoSize(externalTool);
 	}
 
+	async validateUpdate(toolId: string, externalTool: Partial<ExternalTool>): Promise<void> {
+		if (toolId !== externalTool.id) {
+			throw new ValidationError(`tool_id_mismatch: The tool has no id or it does not match the path parameter.`);
+		}
+
+		await this.externalToolParameterValidationService.validateCommon(externalTool);
+
+		const loadedTool: ExternalTool = await this.externalToolService.findExternalToolById(toolId);
+		if (
+			ExternalTool.isOauth2Config(loadedTool.config) &&
+			externalTool.config &&
+			externalTool.config.type !== loadedTool.config.type
+		) {
+			throw new ValidationError(
+				`tool_type_immutable: The Config Type of the tool ${externalTool.name || ''} is immutable.`
+			);
+		}
+
+		if (
+			externalTool.config &&
+			ExternalTool.isOauth2Config(externalTool.config) &&
+			ExternalTool.isOauth2Config(loadedTool.config) &&
+			externalTool.config.clientId !== loadedTool.config.clientId
+		) {
+			throw new ValidationError(
+				`tool_clientId_immutable: The Client Id of the tool ${externalTool.name || ''} is immutable.`
+			);
+		}
+
+		this.validateLogoSize(externalTool);
+	}
+
 	private validateLogoSize(externalTool: Partial<ExternalTool>): void {
-		if (!externalTool.logoBase64) {
+		if (!externalTool.logo) {
 			return;
 		}
 
-		const buffer: Buffer = Buffer.from(externalTool.logoBase64, 'base64');
+		const buffer: Buffer = Buffer.from(externalTool.logo, 'base64');
 
 		if (buffer.length > this.toolFeatures.maxExternalToolLogoSizeInBytes) {
 			throw new ExternalToolLogoSizeExceededLoggableException(
@@ -71,37 +103,5 @@ export class ExternalToolValidationService {
 			duplicate = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(externalTool.config.clientId);
 		}
 		return duplicate == null || duplicate.id === externalTool.id;
-	}
-
-	async validateUpdate(toolId: string, externalTool: Partial<ExternalTool>): Promise<void> {
-		if (toolId !== externalTool.id) {
-			throw new ValidationError(`tool_id_mismatch: The tool has no id or it does not match the path parameter.`);
-		}
-
-		await this.externalToolParameterValidationService.validateCommon(externalTool);
-
-		const loadedTool: ExternalTool = await this.externalToolService.findExternalToolById(toolId);
-		if (
-			ExternalTool.isOauth2Config(loadedTool.config) &&
-			externalTool.config &&
-			externalTool.config.type !== loadedTool.config.type
-		) {
-			throw new ValidationError(
-				`tool_type_immutable: The Config Type of the tool ${externalTool.name || ''} is immutable.`
-			);
-		}
-
-		if (
-			externalTool.config &&
-			ExternalTool.isOauth2Config(externalTool.config) &&
-			ExternalTool.isOauth2Config(loadedTool.config) &&
-			externalTool.config.clientId !== loadedTool.config.clientId
-		) {
-			throw new ValidationError(
-				`tool_clientId_immutable: The Client Id of the tool ${externalTool.name || ''} is immutable.`
-			);
-		}
-
-		this.validateLogoSize(externalTool);
 	}
 }

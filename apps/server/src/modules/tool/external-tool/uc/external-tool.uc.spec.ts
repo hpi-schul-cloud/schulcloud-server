@@ -184,7 +184,7 @@ describe('ExternalToolUc', () => {
 		});
 
 		describe('when tool has no logo url', () => {
-			const setup2 = () => {
+			const setupLogo = () => {
 				const user: User = userFactory.buildWithId();
 				const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
 
@@ -199,7 +199,7 @@ describe('ExternalToolUc', () => {
 			};
 
 			it('should not fetch the logo', async () => {
-				const { currentUser, externalTool } = setup2();
+				const { currentUser, externalTool } = setupLogo();
 
 				await uc.createExternalTool(currentUser.userId, externalTool);
 
@@ -208,7 +208,7 @@ describe('ExternalToolUc', () => {
 		});
 
 		describe('when tool has a logo url', () => {
-			const setup2 = () => {
+			const setupLogo = () => {
 				const user: User = userFactory.buildWithId();
 				const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
 
@@ -226,7 +226,7 @@ describe('ExternalToolUc', () => {
 			};
 
 			it('should fetch the logo', async () => {
-				const { currentUser, externalTool } = setup2();
+				const { currentUser, externalTool } = setupLogo();
 
 				await uc.createExternalTool(currentUser.userId, externalTool);
 
@@ -234,12 +234,12 @@ describe('ExternalToolUc', () => {
 			});
 
 			it('should add the base64 encoded logo to the external tool', async () => {
-				const { currentUser, externalTool, base64Logo } = setup2();
+				const { currentUser, externalTool, base64Logo } = setupLogo();
 
 				await uc.createExternalTool(currentUser.userId, externalTool);
 
 				expect(externalToolService.createExternalTool).toHaveBeenCalledWith(
-					expect.objectContaining<Partial<ExternalTool>>({ logoBase64: base64Logo })
+					expect.objectContaining<Partial<ExternalTool>>({ logo: base64Logo })
 				);
 			});
 		});
@@ -520,7 +520,7 @@ describe('ExternalToolUc', () => {
 				await uc.updateExternalTool(currentUser.userId, existingExternalToolId, externalToolToUpdate);
 
 				expect(externalToolService.updateExternalTool).toHaveBeenCalledWith(
-					expect.objectContaining<Partial<ExternalTool>>({ logoBase64: base64Logo }),
+					expect.objectContaining<Partial<ExternalTool>>({ logo: base64Logo }),
 					existingExternalTool
 				);
 			});
@@ -569,7 +569,7 @@ describe('ExternalToolUc', () => {
 
 				return {
 					externalToolId: externalTool.id as string,
-					base64logo: externalTool.logoBase64 as string,
+					base64logo: externalTool.logo as string,
 				};
 			};
 

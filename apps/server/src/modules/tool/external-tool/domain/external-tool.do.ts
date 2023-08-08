@@ -13,7 +13,7 @@ export interface ExternalToolProps {
 
 	logoUrl?: string;
 
-	logoBase64?: string;
+	logo?: string;
 
 	config: BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig;
 
@@ -33,7 +33,7 @@ export class ExternalTool extends BaseDO implements ToolVersion {
 
 	logoUrl?: string;
 
-	logoBase64?: string;
+	logo?: string;
 
 	config: BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig;
 
@@ -51,7 +51,7 @@ export class ExternalTool extends BaseDO implements ToolVersion {
 		this.name = props.name;
 		this.url = props.url;
 		this.logoUrl = props.logoUrl;
-		this.logoBase64 = props.logoBase64;
+		this.logo = props.logo;
 		this.config = props.config;
 		this.parameters = props.parameters;
 		this.isHidden = props.isHidden;
