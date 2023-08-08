@@ -142,7 +142,7 @@ describe('ContextExternalToolUc', () => {
 			});
 		});
 
-		describe('when the user does not have permission', () => {
+		describe('when the validation fails', () => {
 			const setup = () => {
 				const userId: EntityId = 'userId';
 
@@ -276,7 +276,7 @@ describe('ContextExternalToolUc', () => {
 			});
 		});
 
-		describe('when the user does not have permission', () => {
+		describe('when the validation fails', () => {
 			const setup = () => {
 				const userId: EntityId = 'userId';
 
