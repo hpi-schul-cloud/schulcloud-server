@@ -20,20 +20,10 @@ export class ContextExternalToolService {
 		return tool;
 	}
 
-	async createContextExternalTool(contextExternalTool: ContextExternalTool): Promise<ContextExternalTool> {
-		const newContextExternalTool: ContextExternalTool = new ContextExternalTool({
-			displayName: contextExternalTool.displayName,
-			contextRef: contextExternalTool.contextRef,
-			toolVersion: contextExternalTool.toolVersion,
-			parameters: contextExternalTool.parameters,
-			schoolToolRef: contextExternalTool.schoolToolRef,
-		});
+	async saveContextExternalTool(contextExternalTool: ContextExternalTool): Promise<ContextExternalTool> {
+		const savedContextExternalTool: ContextExternalTool = await this.contextExternalToolRepo.save(contextExternalTool);
 
-		const createdContextExternalTool: ContextExternalTool = await this.contextExternalToolRepo.save(
-			newContextExternalTool
-		);
-
-		return createdContextExternalTool;
+		return savedContextExternalTool;
 	}
 
 	async deleteBySchoolExternalToolId(schoolExternalToolId: EntityId) {

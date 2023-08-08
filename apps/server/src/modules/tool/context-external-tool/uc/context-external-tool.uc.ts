@@ -29,11 +29,35 @@ export class ContextExternalToolUc {
 
 		await this.contextExternalToolValidationService.validate(contextExternalToolDto);
 
-		const createdTool: ContextExternalTool = await this.contextExternalToolService.createContextExternalTool(
+		const createdTool: ContextExternalTool = await this.contextExternalToolService.saveContextExternalTool(
 			contextExternalTool
 		);
 
 		return createdTool;
+	}
+
+	async updateContextExternalTool(
+		userId: EntityId,
+		contextExternalToolId: EntityId,
+		contextExternalToolDto: ContextExternalToolDto
+	): Promise<ContextExternalTool> {
+		const contextExternalTool: ContextExternalTool = new ContextExternalTool(contextExternalToolDto);
+
+		await this.contextExternalToolService.ensureContextPermissions(userId, contextExternalTool, {
+			requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
+			action: Action.write,
+		});
+
+		const updated: ContextExternalTool = new ContextExternalTool({
+			...contextExternalTool,
+			id: contextExternalToolId,
+		});
+
+		await this.contextExternalToolValidationService.validate(updated);
+
+		const saved: ContextExternalTool = await this.contextExternalToolService.saveContextExternalTool(updated);
+
+		return saved;
 	}
 
 	async deleteContextExternalTool(userId: EntityId, contextExternalToolId: EntityId): Promise<void> {
