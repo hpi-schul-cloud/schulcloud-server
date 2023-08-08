@@ -65,7 +65,6 @@ export class ContextExternalToolUc {
 
 		await this.toolPermissionHelper.ensureContextPermissions(userId, tool, context);
 
-
 		return tool;
 	}
 

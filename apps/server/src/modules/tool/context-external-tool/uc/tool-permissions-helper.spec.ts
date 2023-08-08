@@ -1,25 +1,30 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DeepMocked } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { contextExternalToolFactory, setupEntities } from '@shared/testing';
 import { Permission } from '@shared/domain';
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { ContextExternalToolUc } from './index';
 import { ContextExternalTool } from '../domain';
 import { ToolPermissionHelper } from './tool-permission-helper';
 
 describe('ToolPermissionHelper', () => {
 	let module: TestingModule;
-	let uc: ToolPermissionHelper;
+	let helper: ToolPermissionHelper;
 
 	let authorizationService: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
 		await setupEntities();
 		module = await Test.createTestingModule({
-			providers: [ToolPermissionHelper],
+			providers: [
+				ToolPermissionHelper,
+				{
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
+				},
+			],
 		}).compile();
 
-		uc = module.get(ContextExternalToolUc);
+		helper = module.get(ToolPermissionHelper);
 		authorizationService = module.get(AuthorizationService);
 	});
 
@@ -48,7 +53,7 @@ describe('ToolPermissionHelper', () => {
 			it('should check permission for context external tool', async () => {
 				const { userId, contextExternalTool, context } = setup();
 
-				await uc.ensureContextPermissions(userId, contextExternalTool, context);
+				await helper.ensureContextPermissions(userId, contextExternalTool, context);
 
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(userId, contextExternalTool, context);
 			});

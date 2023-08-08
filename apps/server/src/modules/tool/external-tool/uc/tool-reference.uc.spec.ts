@@ -3,7 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Permission } from '@shared/domain';
 import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
 import { ForbiddenException } from '@nestjs/common';
-import { Action } from '@src/modules/authorization';
+import { AuthorizationContextBuilder } from '@src/modules/authorization';
 import { ToolReferenceUc } from './tool-reference.uc';
 import { ToolConfigurationStatus, ToolContextType } from '../../common/enum';
 import { ExternalToolService } from '../service';
@@ -44,6 +44,10 @@ describe('ToolReferenceUc', () => {
 				{
 					provide: CommonToolService,
 					useValue: createMock<CommonToolService>(),
+				},
+				{
+					provide: ToolPermissionHelper,
+					useValue: createMock<ToolPermissionHelper>(),
 				},
 			],
 		}).compile();
@@ -99,10 +103,11 @@ describe('ToolReferenceUc', () => {
 
 				await uc.getToolReferences(userId, contextType, contextId);
 
-				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(userId, contextExternalTool, {
-					requiredPermissions: [Permission.CONTEXT_TOOL_USER],
-					action: Action.read,
-				});
+				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
+					userId,
+					contextExternalTool,
+					AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER])
+				);
 			});
 
 			it('should call contextExternalToolService.findAllByContext', async () => {

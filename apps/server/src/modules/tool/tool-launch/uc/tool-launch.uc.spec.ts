@@ -28,11 +28,16 @@ describe('ToolLaunchUc', () => {
 					provide: ContextExternalToolService,
 					useValue: createMock<ContextExternalToolService>(),
 				},
+				{
+					provide: ToolPermissionHelper,
+					useValue: createMock<ToolPermissionHelper>(),
+				},
 			],
 		}).compile();
 
 		uc = module.get<ToolLaunchUc>(ToolLaunchUc);
 		toolLaunchService = module.get(ToolLaunchService);
+		contextExternalToolService = module.get(ContextExternalToolService);
 		toolPermissionHelper = module.get(ToolPermissionHelper);
 	});
 
