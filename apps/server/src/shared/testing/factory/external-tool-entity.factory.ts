@@ -15,7 +15,6 @@ import {
 	Oauth2ToolConfigEntity,
 } from '@src/modules/tool/external-tool/entity';
 import { DeepPartial } from 'fishery';
-import { ExternalTool } from '../../../modules/tool/external-tool/domain';
 import { BaseFactory } from './base.factory';
 
 export class ExternalToolEntityFactory extends BaseFactory<ExternalToolEntity, IExternalToolProperties> {
