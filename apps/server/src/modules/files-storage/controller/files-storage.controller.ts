@@ -21,7 +21,7 @@ import {
 	UnprocessableEntityException,
 	UseInterceptors,
 } from '@nestjs/common';
-import { ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError, RequestLoggingInterceptor } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
 import { ICurrentUser } from '@src/modules/authentication';
@@ -101,6 +101,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@ApiResponse({ status: 406, type: NotAcceptableException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
+	@ApiHeader({ name: 'Range', required: false })
 	@Get('/download/:fileRecordId/:fileName')
 	async download(
 		@Param() params: DownloadFileParams,
@@ -124,6 +125,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@ApiResponse({ status: 422, type: UnprocessableEntityException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
+	@ApiHeader({ name: 'Range', required: false })
 	@Get('/preview/:fileRecordId/:fileName')
 	async downloadPreview(
 		@Param() params: DownloadFileParams,
