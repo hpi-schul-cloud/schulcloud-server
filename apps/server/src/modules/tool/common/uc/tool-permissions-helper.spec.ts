@@ -1,10 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { contextExternalToolFactory, setupEntities } from '@shared/testing';
+import { contextExternalToolFactory, schoolExternalToolFactory, setupEntities } from '@shared/testing';
 import { Permission } from '@shared/domain';
-import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { ContextExternalTool } from '../domain';
+import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '../../../authorization';
+import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ToolPermissionHelper } from './tool-permission-helper';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
 
 describe('ToolPermissionHelper', () => {
 	let module: TestingModule;
@@ -56,6 +57,30 @@ describe('ToolPermissionHelper', () => {
 				await helper.ensureContextPermissions(userId, contextExternalTool, context);
 
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(userId, contextExternalTool, context);
+			});
+		});
+	});
+
+	describe('ensureSchoolPermissions is called', () => {
+		describe('when school external tool is given', () => {
+			const setup = () => {
+				const userId = 'userId';
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+				const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
+
+				return {
+					userId,
+					schoolExternalTool,
+					context,
+				};
+			};
+
+			it('should check permission for school external tool', async () => {
+				const { userId, schoolExternalTool, context } = setup();
+
+				await helper.ensureSchoolPermissions(userId, schoolExternalTool, context);
+
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(userId, schoolExternalTool, context);
 			});
 		});
 	});

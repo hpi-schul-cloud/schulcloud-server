@@ -5,7 +5,7 @@ import { ToolLaunchService } from '../service';
 import { ToolLaunchData, ToolLaunchRequest } from '../types';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ToolPermissionHelper } from '../../context-external-tool/uc/tool-permission-helper';
+import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 
 @Injectable()
 export class ToolLaunchUc {

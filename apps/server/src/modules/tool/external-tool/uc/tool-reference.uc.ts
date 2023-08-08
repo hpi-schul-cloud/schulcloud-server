@@ -10,7 +10,7 @@ import { CommonToolService } from '../../common/service';
 import { ToolReferenceMapper } from '../mapper/tool-reference.mapper';
 import { ContextExternalTool, ContextRef } from '../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ToolPermissionHelper } from '../../context-external-tool/uc/tool-permission-helper';
+import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 
 @Injectable()
 export class ToolReferenceUc {

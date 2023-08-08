@@ -16,7 +16,7 @@ import { ToolConfigModule } from './tool-config.module';
 import { ToolLaunchController } from './tool-launch/controller/tool-launch.controller';
 import { ToolLaunchUc } from './tool-launch/uc';
 import { ToolModule } from './tool.module';
-import { ContextExternalToolPermissionHelperModule } from './context-external-tool/context-external-tool-permission-helper.module';
+import { ToolPermissionHelperModule } from './common/tool-permission-helper.module';
 
 @Module({
 	imports: [
@@ -26,7 +26,7 @@ import { ContextExternalToolPermissionHelperModule } from './context-external-to
 		LoggerModule,
 		SchoolModule,
 		ToolConfigModule,
-		ContextExternalToolPermissionHelperModule,
+		ToolPermissionHelperModule,
 	],
 	controllers: [
 		ToolLaunchController,

@@ -2,21 +2,15 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Page, Permission, User } from '@shared/domain';
+import { Page, Permission } from '@shared/domain';
 import {
 	contextExternalToolFactory,
 	customParameterFactory,
 	externalToolFactory,
 	schoolExternalToolFactory,
 	setupEntities,
-	userFactory,
 } from '@shared/testing';
-import {
-	Action,
-	AuthorizableReferenceType,
-	AuthorizationContextBuilder,
-	AuthorizationService,
-} from '@src/modules/authorization';
+import { AuthorizationContextBuilder } from '@src/modules/authorization';
 import { ToolContextType } from '../../common/enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ContextExternalToolService } from '../../context-external-tool/service';
@@ -27,14 +21,13 @@ import { ExternalTool } from '../domain';
 import { ExternalToolService } from '../service';
 import { ContextExternalToolTemplateInfo } from './dto';
 import { ExternalToolConfigurationUc } from './external-tool-configuration.uc';
-import { ToolPermissionHelper } from '../../context-external-tool/uc/tool-permission-helper';
+import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 
 describe('ExternalToolConfigurationUc', () => {
 	let module: TestingModule;
 	let uc: ExternalToolConfigurationUc;
 
 	let externalToolService: DeepMocked<ExternalToolService>;
-	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let toolPermissionHelper: DeepMocked<ToolPermissionHelper>;
@@ -49,10 +42,6 @@ describe('ExternalToolConfigurationUc', () => {
 				{
 					provide: ExternalToolService,
 					useValue: createMock<ExternalToolService>(),
-				},
-				{
-					provide: AuthorizationService,
-					useValue: createMock<AuthorizationService>(),
 				},
 				{
 					provide: SchoolExternalToolService,
@@ -77,7 +66,6 @@ describe('ExternalToolConfigurationUc', () => {
 
 		uc = module.get(ExternalToolConfigurationUc);
 		externalToolService = module.get(ExternalToolService);
-		authorizationService = module.get(AuthorizationService);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		contextExternalToolService = module.get(ContextExternalToolService);
 		toolPermissionHelper = module.get(ToolPermissionHelper);
@@ -95,40 +83,42 @@ describe('ExternalToolConfigurationUc', () => {
 	describe('getAvailableToolsForSchool is called', () => {
 		describe('when checking for the users permission', () => {
 			const setup = () => {
-				const user: User = userFactory.buildWithId();
-				const schoolId = 'schoolId';
+				const tool: SchoolExternalTool = schoolExternalToolFactory.build();
 
 				externalToolService.findExternalTools.mockResolvedValue(new Page<ExternalTool>([], 0));
-				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([]);
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([tool]);
 
 				return {
-					user,
-					schoolId,
+					tool,
 				};
 			};
 
-			it('should call the authorizationService with SCHOOL_TOOL_ADMIN permission', async () => {
-				const { user, schoolId } = setup();
+			it('should call the toolPermissionHelper with SCHOOL_TOOL_ADMIN permission', async () => {
+				const { tool } = setup();
 
-				await uc.getAvailableToolsForSchool(user.id, 'schoolId');
+				await uc.getAvailableToolsForSchool('userId', 'schoolId');
 
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
-					user.id,
-					AuthorizableReferenceType.School,
-					schoolId,
-					{
-						action: Action.read,
-						requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
-					}
+				expect(toolPermissionHelper.ensureSchoolPermissions).toHaveBeenCalledWith(
+					'userId',
+					tool,
+					AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN])
 				);
 			});
+		});
 
-			it('should fail when authorizationService throws ForbiddenException', async () => {
-				setup();
+		describe('when toolPermissionHelper throws ForbiddenException', () => {
+			const setup = () => {
+				const tool: SchoolExternalTool = schoolExternalToolFactory.build();
 
-				authorizationService.checkPermissionByReferences.mockImplementation(() => {
+				externalToolService.findExternalTools.mockResolvedValue(new Page<ExternalTool>([], 0));
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([tool]);
+				toolPermissionHelper.ensureSchoolPermissions.mockImplementation(() => {
 					throw new ForbiddenException();
 				});
+			};
+
+			it('should fail', async () => {
+				setup();
 
 				const func = uc.getAvailableToolsForSchool('userId', 'schoolId');
 
@@ -136,8 +126,8 @@ describe('ExternalToolConfigurationUc', () => {
 			});
 		});
 
-		describe('when getting the list of external tools that can be added to a school', () => {
-			it('should filter tools that are already in use', async () => {
+		describe('when getting the list of external tools that can be added to a school with used tools', () => {
+			const setup = () => {
 				const externalTools: ExternalTool[] = [
 					externalToolFactory.buildWithId(undefined, 'usedToolId'),
 					externalToolFactory.buildWithId(undefined, 'unusedToolId'),
@@ -147,13 +137,19 @@ describe('ExternalToolConfigurationUc', () => {
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue(
 					schoolExternalToolFactory.buildList(1, { toolId: 'usedToolId' })
 				);
+			};
+
+			it('should filter tools that are already in use', async () => {
+				setup();
 
 				const result: ExternalTool[] = await uc.getAvailableToolsForSchool('userId', 'schoolId');
 
 				expect(result).toHaveLength(1);
 			});
+		});
 
-			it('should filter tools that are hidden', async () => {
+		describe('when getting the list of external tools that can be added to a school with hidden tools', () => {
+			const setup = () => {
 				const externalToolDOs: ExternalTool[] = [
 					externalToolFactory.buildWithId({ isHidden: true }),
 					externalToolFactory.buildWithId({ isHidden: false }),
@@ -161,17 +157,29 @@ describe('ExternalToolConfigurationUc', () => {
 
 				externalToolService.findExternalTools.mockResolvedValue(new Page<ExternalTool>(externalToolDOs, 2));
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([]);
+			};
+
+			it('should filter tools that are hidden', async () => {
+				setup();
 
 				const result: ExternalTool[] = await uc.getAvailableToolsForSchool('userId', 'schoolId');
 
 				expect(result).toHaveLength(1);
 			});
+		});
 
-			it('should return a list of available external tools with parameters for only for scope school', async () => {
+		describe('when getting the list of external tools that can be added to a school with scope school', () => {
+			const setup = () => {
 				const externalToolDOs: ExternalTool[] = externalToolFactory.buildListWithId(2);
 
 				externalToolService.findExternalTools.mockResolvedValue(new Page<ExternalTool>(externalToolDOs, 1));
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([]);
+
+				return { externalToolDOs };
+			};
+
+			it('should return a list of available external tools with parameters for only for scope school', async () => {
+				const { externalToolDOs } = setup();
 
 				const result: ExternalTool[] = await uc.getAvailableToolsForSchool('userId', 'schoolId');
 
@@ -477,22 +485,19 @@ describe('ExternalToolConfigurationUc', () => {
 				return {
 					externalTool,
 					schoolExternalToolId,
+					schoolExternalTool,
 				};
 			};
 
 			it('should successfully check the user permission with the authorization service', async () => {
-				const { schoolExternalToolId } = setup();
+				const { schoolExternalToolId, schoolExternalTool } = setup();
 
 				await uc.getTemplateForSchoolExternalTool('userId', schoolExternalToolId);
 
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+				expect(toolPermissionHelper.ensureSchoolPermissions).toHaveBeenCalledWith(
 					'userId',
-					AuthorizableReferenceType.School,
-					'schoolId',
-					{
-						action: Action.read,
-						requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
-					}
+					schoolExternalTool,
+					AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN])
 				);
 			});
 
@@ -514,7 +519,7 @@ describe('ExternalToolConfigurationUc', () => {
 				);
 
 				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(schoolExternalTool);
-				authorizationService.checkPermissionByReferences.mockImplementation(() => {
+				toolPermissionHelper.ensureSchoolPermissions.mockImplementation(() => {
 					throw new UnauthorizedException();
 				});
 

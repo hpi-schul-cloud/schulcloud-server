@@ -11,7 +11,7 @@ import { ToolContextType } from '../../common/enum';
 import { ContextExternalTool } from '../domain';
 import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
 import { ContextExternalToolUc } from './context-external-tool.uc';
-import { ToolPermissionHelper } from './tool-permission-helper';
+import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 
 describe('ContextExternalToolUc', () => {
 	let module: TestingModule;

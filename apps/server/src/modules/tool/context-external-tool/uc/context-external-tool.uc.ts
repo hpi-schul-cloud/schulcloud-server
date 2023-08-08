@@ -6,7 +6,7 @@ import { ContextExternalToolService, ContextExternalToolValidationService } from
 import { ContextExternalToolDto } from './dto/context-external-tool.types';
 import { ContextExternalTool, ContextRef } from '../domain';
 import { ToolContextType } from '../../common/enum';
-import { ToolPermissionHelper } from './tool-permission-helper';
+import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 
 @Injectable()
 export class ContextExternalToolUc {

@@ -2,13 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { EntityId, Permission } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
-import {
-	Action,
-	AuthorizableReferenceType,
-	AuthorizationContext,
-	AuthorizationContextBuilder,
-	AuthorizationService,
-} from '@src/modules/authorization';
+import { AuthorizationContext, AuthorizationContextBuilder } from '@src/modules/authorization';
 import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';
@@ -19,7 +13,7 @@ import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ExternalToolService } from '../service';
 import { ContextExternalToolTemplateInfo } from './dto';
-import { ToolPermissionHelper } from '../../context-external-tool/uc/tool-permission-helper';
+import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 
 @Injectable()
 export class ExternalToolConfigurationUc {
@@ -27,14 +21,11 @@ export class ExternalToolConfigurationUc {
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly authorizationService: AuthorizationService,
 		private readonly toolPermissionHelper: ToolPermissionHelper,
 		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
 	) {}
 
 	public async getAvailableToolsForSchool(userId: EntityId, schoolId: EntityId): Promise<ExternalTool[]> {
-		await this.ensureSchoolPermission(userId, schoolId);
-
 		const externalTools: Page<ExternalTool> = await this.externalToolService.findExternalTools({});
 
 		const schoolExternalToolsInUse: SchoolExternalTool[] = await this.schoolExternalToolService.findSchoolExternalTools(
@@ -42,6 +33,10 @@ export class ExternalToolConfigurationUc {
 				schoolId,
 			}
 		);
+
+		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
+
+		await this.ensureSchoolPermission(userId, schoolExternalToolsInUse, context);
 
 		const toolIdsInUse: EntityId[] = schoolExternalToolsInUse.map(
 			(schoolExternalTool: SchoolExternalTool): EntityId => schoolExternalTool.toolId
@@ -156,8 +151,9 @@ export class ExternalToolConfigurationUc {
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.getSchoolExternalToolById(
 			schoolExternalToolId
 		);
+		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 
-		await this.ensureSchoolPermission(userId, schoolExternalTool.schoolId);
+		await this.toolPermissionHelper.ensureSchoolPermissions(userId, schoolExternalTool, context);
 
 		const externalTool: ExternalTool = await this.externalToolService.findExternalToolById(schoolExternalTool.toolId);
 
@@ -207,11 +203,15 @@ export class ExternalToolConfigurationUc {
 		}
 	}
 
-	private async ensureSchoolPermission(userId: EntityId, schoolId: EntityId) {
-		return this.authorizationService.checkPermissionByReferences(userId, AuthorizableReferenceType.School, schoolId, {
-			action: Action.read,
-			requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
-		});
+	private async ensureSchoolPermission(
+		userId: EntityId,
+		tools: SchoolExternalTool[],
+		context: AuthorizationContext
+	): Promise<void> {
+		for (const tool of tools) {
+			// eslint-disable-next-line no-await-in-loop
+			await this.toolPermissionHelper.ensureSchoolPermissions(userId, tool, context);
+		}
 	}
 
 	private async ensureContextPermissions(
