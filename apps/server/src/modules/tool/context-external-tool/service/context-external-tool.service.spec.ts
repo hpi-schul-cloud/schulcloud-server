@@ -9,10 +9,10 @@ import {
 	schoolExternalToolFactory,
 } from '@shared/testing/factory/domainobject';
 import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
-import { ContextExternalToolService } from './context-external-tool.service';
 import { ToolContextType } from '../../common/enum';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ContextExternalTool, ContextRef } from '../domain';
+import { ContextExternalToolService } from './context-external-tool.service';
 
 describe('ContextExternalToolService', () => {
 	let module: TestingModule;
@@ -112,7 +112,7 @@ describe('ContextExternalToolService', () => {
 		});
 	});
 
-	describe('createContextExternalTool is called', () => {
+	describe('saveContextExternalTool is called', () => {
 		describe('when contextExternalTool is given', () => {
 			const setup = () => {
 				jest.useFakeTimers().setSystemTime(new Date('2023-01-01'));
@@ -126,7 +126,7 @@ describe('ContextExternalToolService', () => {
 			it('should call contextExternalToolRepo ', async () => {
 				const { contextExternalTool } = setup();
 
-				await service.createContextExternalTool(contextExternalTool);
+				await service.saveContextExternalTool(contextExternalTool);
 
 				expect(contextExternalToolRepo.save).toHaveBeenCalledWith(contextExternalTool);
 			});
@@ -153,7 +153,6 @@ describe('ContextExternalToolService', () => {
 
 			it('should return a contextExternalTool', async () => {
 				const { contextExternalTool } = setup();
-				contextExternalToolRepo.find.mockResolvedValue([contextExternalTool]);
 
 				const result: ContextExternalTool = await service.getContextExternalToolById(contextExternalTool.id as string);
 
@@ -162,13 +161,16 @@ describe('ContextExternalToolService', () => {
 		});
 
 		describe('when contextExternalTool could not be found', () => {
+			const setup = () => {
+				contextExternalToolRepo.findById.mockRejectedValue(new NotFoundException());
+			};
+
 			it('should throw a not found exception', async () => {
-				const id = 'someId';
-				contextExternalToolRepo.find.mockResolvedValue([]);
+				setup();
 
-				const func = () => service.getContextExternalToolById(id);
+				const func = () => service.getContextExternalToolById('unknownContextExternalToolId');
 
-				await expect(func()).rejects.toThrow(new NotFoundException(`ContextExternalTool with id ${id} not found`));
+				await expect(func()).rejects.toThrow(NotFoundException);
 			});
 		});
 	});
