@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication, NotFoundException } from '@nestjs/common';
+import { ExecutionContext, INestApplication, NotFoundException, StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { EntityId, Permission } from '@shared/domain';
@@ -45,7 +45,7 @@ class API {
 			.query(query || {});
 
 		return {
-			result: response.body as FileRecordResponse,
+			result: response.body as StreamableFile,
 			error: response.body as ApiValidationError,
 			status: response.status,
 		};
@@ -58,7 +58,7 @@ class API {
 			.query(query || {});
 
 		return {
-			result: response.body as FileRecordResponse,
+			result: response.body as StreamableFile,
 			error: response.body as ApiValidationError,
 			status: response.status,
 			headers: response.headers as Record<string, string>,
@@ -269,7 +269,7 @@ describe('File Controller (API) - preview', () => {
 						const previewFile = TestHelper.createFile('bytes 0-3/4');
 						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
-						return { uploadedFile };
+						return { uploadedFile, previewFile };
 					};
 
 					it('should return status 200 for successful download', async () => {
@@ -279,10 +279,12 @@ describe('File Controller (API) - preview', () => {
 							height: 200,
 							outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
 						};
+						const buffer = Buffer.from('testText');
 
 						const response = await api.getPreview(`/file/preview/${uploadedFile.id}/${uploadedFile.name}`, query);
 
 						expect(response.status).toEqual(200);
+						expect(response.result).toEqual(buffer);
 					});
 
 					it('should return status 206 and required headers for the successful partial file stream download', async () => {

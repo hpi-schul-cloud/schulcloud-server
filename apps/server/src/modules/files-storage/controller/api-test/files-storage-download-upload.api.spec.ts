@@ -292,7 +292,7 @@ describe('files-storage controller (API)', () => {
 							name: 'test (1).txt',
 							parentId: validId,
 							creatorId: currentUser.userId,
-							mimeType: 'text/plain',
+							mimeType: 'image/webp',
 							parentType: 'schools',
 							securityCheckStatus: 'pending',
 						})

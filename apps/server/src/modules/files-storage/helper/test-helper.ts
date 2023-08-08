@@ -8,7 +8,7 @@ export class TestHelper {
 
 		const fileResponse = {
 			data: readable,
-			contentType: 'text/plain',
+			contentType: 'image/webp',
 			contentLength: text.length,
 			contentRange,
 			etag: 'testTag',
