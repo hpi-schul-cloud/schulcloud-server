@@ -217,6 +217,9 @@
                             <a href="#CurrentUser" title="apps/server/src/modules/authentication/decorator/auth.decorator.ts" ><b>CurrentUser</b>&nbsp;&nbsp;&nbsp;(apps/.../auth.decorator.ts)</a>
                         </li>
                         <li>
+                            <a href="#customParameterEntityFactory" title="apps/server/src/shared/testing/factory/external-tool-entity.factory.ts" ><b>customParameterEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool-entity.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#customParameterFactory" title="apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts" ><b>customParameterFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool.factory.ts)</a>
                         </li>
                         <li>
@@ -3794,6 +3797,82 @@ must use @ApiProperty</p>
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/shared/testing/factory/external-tool-entity.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="customParameterEntityFactory"></a>
+                    <span class="name">
+                        <span ><b>customParameterEntityFactory</b></span>
+                        <a href="#customParameterEntityFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;CustomParameterEntity, CustomParameterEntity&gt;(
+	CustomParameterEntity,
+	({ sequence }) &#x3D;&gt; {
+		return {
+			name: &#x60;name${sequence}&#x60;,
+			displayName: &#x60;User Friendly Name ${sequence}&#x60;,
+			description: &#x27;This is a mock parameter.&#x27;,
+			default: &#x27;default&#x27;,
+			location: CustomParameterLocation.PATH,
+			regex: &#x27;regex&#x27;,
+			regexComment: &#x27;mockComment&#x27;,
+			scope: CustomParameterScope.SCHOOL,
+			type: CustomParameterType.STRING,
+			isOptional: false,
+		};
+	}
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="externalToolEntityFactory"></a>
+                    <span class="name">
+                        <span ><b>externalToolEntityFactory</b></span>
+                        <a href="#externalToolEntityFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>ExternalToolEntityFactory.define(
+	ExternalToolEntity,
+	({ sequence }): IExternalToolProperties &#x3D;&gt; {
+		return {
+			name: &#x60;external-tool-${sequence}&#x60;,
+			url: &#x27;&#x27;,
+			logoUrl: &#x27;&#x27;,
+			config: new BasicToolConfigEntity({
+				type: ToolConfigType.BASIC,
+				baseUrl: &#x27;mockBaseUrl&#x27;,
+			}),
+			parameters: [customParameterEntityFactory.build()],
+			isHidden: false,
+			openNewTab: true,
+			version: 1,
+		};
+	}
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/modules/tool/tool-launch/mapper/tool-launch.mapper.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -4739,59 +4818,6 @@ it should ensure an empty result</p>
 	const commandResponse &#x3D; await bootstrap.boot([process.argv0, &#x27;console&#x27;, ...args]);
 	return Promise.resolve();
 }</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
-    <h3>apps/server/src/shared/testing/factory/external-tool-entity.factory.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="externalToolEntityFactory"></a>
-                    <span class="name">
-                        <span ><b>externalToolEntityFactory</b></span>
-                        <a href="#externalToolEntityFactory"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>ExternalToolEntityFactory.define(
-	ExternalToolEntity,
-	({ sequence }): IExternalToolProperties &#x3D;&gt; {
-		return {
-			name: &#x60;external-tool-${sequence}&#x60;,
-			url: &#x27;&#x27;,
-			logoUrl: &#x27;&#x27;,
-			config: new BasicToolConfigEntity({
-				type: ToolConfigType.BASIC,
-				baseUrl: &#x27;mockBaseUrl&#x27;,
-			}),
-			parameters: [
-				new CustomParameterEntity({
-					name: &#x27;name&#x27;,
-					displayName: &#x27;User Friendly Name&#x27;,
-					description: &#x27;This is a mock parameter.&#x27;,
-					default: &#x27;default&#x27;,
-					location: CustomParameterLocation.PATH,
-					regex: &#x27;regex&#x27;,
-					regexComment: &#x27;mockComment&#x27;,
-					scope: CustomParameterScope.SCHOOL,
-					type: CustomParameterType.STRING,
-					isOptional: false,
-				}),
-			],
-			isHidden: false,
-			openNewTab: true,
-			version: 1,
-		};
-	}
-)</code>
                     </td>
                 </tr>
 

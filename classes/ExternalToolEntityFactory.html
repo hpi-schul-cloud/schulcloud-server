@@ -1515,6 +1515,24 @@ export class ExternalToolEntityFactory extends BaseFactory&lt;ExternalToolEntity
 	}
 }
 
+export const customParameterEntityFactory &#x3D; BaseFactory.define&lt;CustomParameterEntity, CustomParameterEntity&gt;(
+	CustomParameterEntity,
+	({ sequence }) &#x3D;&gt; {
+		return {
+			name: &#x60;name${sequence}&#x60;,
+			displayName: &#x60;User Friendly Name ${sequence}&#x60;,
+			description: &#x27;This is a mock parameter.&#x27;,
+			default: &#x27;default&#x27;,
+			location: CustomParameterLocation.PATH,
+			regex: &#x27;regex&#x27;,
+			regexComment: &#x27;mockComment&#x27;,
+			scope: CustomParameterScope.SCHOOL,
+			type: CustomParameterType.STRING,
+			isOptional: false,
+		};
+	}
+);
+
 export const externalToolEntityFactory &#x3D; ExternalToolEntityFactory.define(
 	ExternalToolEntity,
 	({ sequence }): IExternalToolProperties &#x3D;&gt; {
@@ -1526,20 +1544,7 @@ export const externalToolEntityFactory &#x3D; ExternalToolEntityFactory.define(
 				type: ToolConfigType.BASIC,
 				baseUrl: &#x27;mockBaseUrl&#x27;,
 			}),
-			parameters: [
-				new CustomParameterEntity({
-					name: &#x27;name&#x27;,
-					displayName: &#x27;User Friendly Name&#x27;,
-					description: &#x27;This is a mock parameter.&#x27;,
-					default: &#x27;default&#x27;,
-					location: CustomParameterLocation.PATH,
-					regex: &#x27;regex&#x27;,
-					regexComment: &#x27;mockComment&#x27;,
-					scope: CustomParameterScope.SCHOOL,
-					type: CustomParameterType.STRING,
-					isOptional: false,
-				}),
-			],
+			parameters: [customParameterEntityFactory.build()],
 			isHidden: false,
 			openNewTab: true,
 			version: 1,

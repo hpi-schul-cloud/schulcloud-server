@@ -105,6 +105,10 @@
                                     <span class="modifier">Async</span>
                                 <a href="#getContextExternalToolsForContext" >getContextExternalToolsForContext</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateContextExternalTool" >updateContextExternalTool</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -300,8 +304,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="39"
-                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:39</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="63"
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:63</a></div>
                 </td>
             </tr>
 
@@ -384,8 +388,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="75"
-                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:75</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="99"
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:99</a></div>
                 </td>
             </tr>
 
@@ -467,8 +471,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="64"
-                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:64</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="88"
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:88</a></div>
                 </td>
             </tr>
 
@@ -550,8 +554,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="54"
-                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:54</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="78"
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:78</a></div>
                 </td>
             </tr>
 
@@ -623,6 +627,101 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateContextExternalTool"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>updateContextExternalTool</b></span>
+                        <a href="#updateContextExternalTool"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateContextExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextExternalToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextExternalToolDto: <a href="../undefineds/ContextExternalToolDto.html" target="_self">ContextExternalToolDto</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/context-external-tool.uc.ts:39</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>contextExternalToolId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>contextExternalToolDto</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#ContextExternalToolDto" target="_self" >ContextExternalToolDto</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;ContextExternalTool&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -660,11 +759,35 @@ export class ContextExternalToolUc {
 
 		await this.contextExternalToolValidationService.validate(contextExternalToolDto);
 
-		const createdTool: ContextExternalTool &#x3D; await this.contextExternalToolService.createContextExternalTool(
+		const createdTool: ContextExternalTool &#x3D; await this.contextExternalToolService.saveContextExternalTool(
 			contextExternalTool
 		);
 
 		return createdTool;
+	}
+
+	async updateContextExternalTool(
+		userId: EntityId,
+		contextExternalToolId: EntityId,
+		contextExternalToolDto: ContextExternalToolDto
+	): Promise&lt;ContextExternalTool&gt; {
+		const contextExternalTool: ContextExternalTool &#x3D; new ContextExternalTool(contextExternalToolDto);
+
+		await this.contextExternalToolService.ensureContextPermissions(userId, contextExternalTool, {
+			requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
+			action: Action.write,
+		});
+
+		const updated: ContextExternalTool &#x3D; new ContextExternalTool({
+			...contextExternalTool,
+			id: contextExternalToolId,
+		});
+
+		await this.contextExternalToolValidationService.validate(updated);
+
+		const saved: ContextExternalTool &#x3D; await this.contextExternalToolService.saveContextExternalTool(updated);
+
+		return saved;
 	}
 
 	async deleteContextExternalTool(userId: EntityId, contextExternalToolId: EntityId): Promise&lt;void&gt; {
