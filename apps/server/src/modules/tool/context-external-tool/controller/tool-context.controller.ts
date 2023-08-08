@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
+	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
 	ApiResponse,
@@ -110,6 +111,7 @@ export class ToolContextController {
 	@Get(':contextExternalToolId')
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
+	@ApiNotFoundResponse()
 	@ApiOkResponse({
 		description: 'Returns a ContextExternalTool for the given id',
 		type: ContextExternalToolResponse,
@@ -126,6 +128,35 @@ export class ToolContextController {
 
 		const response: ContextExternalToolResponse =
 			ContextExternalToolResponseMapper.mapContextExternalToolResponse(contextExternalTool);
+
+		return response;
+	}
+
+	@Put(':contextExternalToolId')
+	@ApiOkResponse({
+		description: 'The ContextExternalTool has been successfully updated.',
+		type: ContextExternalToolResponse,
+	})
+	@ApiForbiddenResponse()
+	@ApiUnauthorizedResponse()
+	@ApiUnprocessableEntityResponse()
+	@ApiOperation({ summary: 'Updates a ContextExternalTool' })
+	async updateContextExternalTool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ContextExternalToolIdParams,
+		@Body() body: ContextExternalToolPostParams
+	): Promise<ContextExternalToolResponse> {
+		const contextExternalTool: ContextExternalToolDto =
+			ContextExternalToolRequestMapper.mapContextExternalToolRequest(body);
+
+		const updatedTool: ContextExternalTool = await this.contextExternalToolUc.updateContextExternalTool(
+			currentUser.userId,
+			params.contextExternalToolId,
+			contextExternalTool
+		);
+
+		const response: ContextExternalToolResponse =
+			ContextExternalToolResponseMapper.mapContextExternalToolResponse(updatedTool);
 
 		return response;
 	}

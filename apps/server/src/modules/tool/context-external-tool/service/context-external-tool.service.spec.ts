@@ -112,7 +112,7 @@ describe('ContextExternalToolService', () => {
 		});
 	});
 
-	describe('createContextExternalTool is called', () => {
+	describe('saveContextExternalTool is called', () => {
 		describe('when contextExternalTool is given', () => {
 			const setup = () => {
 				jest.useFakeTimers().setSystemTime(new Date('2023-01-01'));
@@ -126,7 +126,7 @@ describe('ContextExternalToolService', () => {
 			it('should call contextExternalToolRepo ', async () => {
 				const { contextExternalTool } = setup();
 
-				await service.createContextExternalTool(contextExternalTool);
+				await service.saveContextExternalTool(contextExternalTool);
 
 				expect(contextExternalToolRepo.save).toHaveBeenCalledWith(contextExternalTool);
 			});
