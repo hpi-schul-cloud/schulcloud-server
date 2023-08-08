@@ -39,7 +39,7 @@ class API {
 		};
 	}
 
-	async getDownloadFile(routeName: string, query?: string | Record<string, unknown>) {
+	async getPreview(routeName: string, query?: string | Record<string, unknown>) {
 		const response = await request(this.app.getHttpServer())
 			.get(routeName)
 			.query(query || {});
@@ -51,7 +51,7 @@ class API {
 		};
 	}
 
-	async getDownloadFileBytesRange(routeName: string, bytesRange: string, query?: string | Record<string, unknown>) {
+	async getPreviewBytesRange(routeName: string, bytesRange: string, query?: string | Record<string, unknown>) {
 		const response = await request(this.app.getHttpServer())
 			.get(routeName)
 			.set('Range', bytesRange)
@@ -131,7 +131,7 @@ describe('File Controller (API) - preview', () => {
 		describe('with bad request data', () => {
 			it('should return status 400 for invalid recordId', async () => {
 				const query = { width: 200, height: 200, outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP };
-				const response = await api.getDownloadFile('/file/preview/123/test.png', query);
+				const response = await api.getPreview('/file/preview/123/test.png', query);
 
 				expect(response.error.validationErrors).toEqual([
 					{
@@ -145,7 +145,7 @@ describe('File Controller (API) - preview', () => {
 			it('should return status 400 for width below min value (0)', async () => {
 				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
 				const query = { width: -200, height: 200, outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP };
-				const response = await api.getDownloadFile(`/file/preview/${result.id}/test.png`, query);
+				const response = await api.getPreview(`/file/preview/${result.id}/test.png`, query);
 
 				expect(response.error.validationErrors).toEqual([
 					{
@@ -159,7 +159,7 @@ describe('File Controller (API) - preview', () => {
 			it('should return status 400 for width above max value (2000)', async () => {
 				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
 				const query = { width: 2100, height: 200, outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP };
-				const response = await api.getDownloadFile(`/file/preview/${result.id}/test.png`, query);
+				const response = await api.getPreview(`/file/preview/${result.id}/test.png`, query);
 
 				expect(response.error.validationErrors).toEqual([
 					{
@@ -173,7 +173,7 @@ describe('File Controller (API) - preview', () => {
 			it('should return status 400 for height below min value (0)', async () => {
 				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
 				const query = { width: 200, height: -200, outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP };
-				const response = await api.getDownloadFile(`/file/preview/${result.id}/test.png`, query);
+				const response = await api.getPreview(`/file/preview/${result.id}/test.png`, query);
 
 				expect(response.error.validationErrors).toEqual([
 					{
@@ -187,7 +187,7 @@ describe('File Controller (API) - preview', () => {
 			it('should return status 400 for height above max value (2000)', async () => {
 				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
 				const query = { width: 200, height: 2100, outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP };
-				const response = await api.getDownloadFile(`/file/preview/${result.id}/test.png`, query);
+				const response = await api.getPreview(`/file/preview/${result.id}/test.png`, query);
 
 				expect(response.error.validationErrors).toEqual([
 					{
@@ -201,7 +201,7 @@ describe('File Controller (API) - preview', () => {
 			it('should return status 400 for wrong output format', async () => {
 				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
 				const query = { width: 200, height: 200, outputFormat: 'image/txt' };
-				const response = await api.getDownloadFile(`/file/preview/${result.id}/${result.name}`, query);
+				const response = await api.getPreview(`/file/preview/${result.id}/${result.name}`, query);
 
 				expect(response.error.validationErrors).toEqual([
 					{
@@ -214,7 +214,7 @@ describe('File Controller (API) - preview', () => {
 
 			it('should return status 404 for file not found', async () => {
 				const query = { width: 200, height: 200, outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP };
-				const response = await api.getDownloadFile(`/file/preview/${validId}/wrong-name.txt`, query);
+				const response = await api.getPreview(`/file/preview/${validId}/wrong-name.txt`, query);
 
 				expect(response.error.message).toEqual('The requested FileRecord: [object Object] has not been found.');
 				expect(response.status).toEqual(404);
@@ -227,7 +227,7 @@ describe('File Controller (API) - preview', () => {
 				s3ClientAdapter.get.mockRejectedValueOnce(error);
 
 				const query = { width: 200, height: 200, outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP };
-				const response = await api.getDownloadFile(`/file/preview/${result.id}/wrong-name.txt`, query);
+				const response = await api.getPreview(`/file/preview/${result.id}/wrong-name.txt`, query);
 
 				expect(response.error.message).toEqual(ErrorType.FILE_NOT_FOUND);
 				expect(response.status).toEqual(404);
@@ -254,7 +254,7 @@ describe('File Controller (API) - preview', () => {
 							height: 200,
 							outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
 						};
-						const response = await api.getDownloadFile(`/file/preview/${uploadedFile.id}/${uploadedFile.name}`, query);
+						const response = await api.getPreview(`/file/preview/${uploadedFile.id}/${uploadedFile.name}`, query);
 
 						expect(response.status).toEqual(200);
 					});
@@ -267,7 +267,7 @@ describe('File Controller (API) - preview', () => {
 							height: 200,
 							outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
 						};
-						const response = await api.getDownloadFileBytesRange(
+						const response = await api.getPreviewBytesRange(
 							`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
 							'bytes=0-',
 							query
@@ -299,7 +299,7 @@ describe('File Controller (API) - preview', () => {
 							outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
 							forceUpdate: false,
 						};
-						const response = await api.getDownloadFile(`/file/preview/${uploadedFile.id}/${uploadedFile.name}`, query);
+						const response = await api.getPreview(`/file/preview/${uploadedFile.id}/${uploadedFile.name}`, query);
 
 						expect(response.status).toEqual(200);
 					});
@@ -313,7 +313,7 @@ describe('File Controller (API) - preview', () => {
 							outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
 							forceUpdate: false,
 						};
-						const response = await api.getDownloadFileBytesRange(
+						const response = await api.getPreviewBytesRange(
 							`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
 							'bytes=0-',
 							query
@@ -346,7 +346,7 @@ describe('File Controller (API) - preview', () => {
 							outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
 							forceUpdate: true,
 						};
-						const response = await api.getDownloadFile(`/file/preview/${uploadedFile.id}/${uploadedFile.name}`, query);
+						const response = await api.getPreview(`/file/preview/${uploadedFile.id}/${uploadedFile.name}`, query);
 
 						expect(response.status).toEqual(200);
 					});
@@ -360,7 +360,7 @@ describe('File Controller (API) - preview', () => {
 							outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
 							forceUpdate: true,
 						};
-						const response = await api.getDownloadFileBytesRange(
+						const response = await api.getPreviewBytesRange(
 							`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
 							'bytes=0-',
 							query
@@ -397,7 +397,7 @@ describe('File Controller (API) - preview', () => {
 						height: 200,
 						outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
 					};
-					const response = await api.getDownloadFile(`/file/preview/${uploadedFile.id}/${uploadedFile.name}`, query);
+					const response = await api.getPreview(`/file/preview/${uploadedFile.id}/${uploadedFile.name}`, query);
 
 					expect(response.status).toEqual(200);
 				});
@@ -410,7 +410,7 @@ describe('File Controller (API) - preview', () => {
 						height: 200,
 						outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
 					};
-					const response = await api.getDownloadFileBytesRange(
+					const response = await api.getPreviewBytesRange(
 						`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
 						'bytes=0-',
 						query
