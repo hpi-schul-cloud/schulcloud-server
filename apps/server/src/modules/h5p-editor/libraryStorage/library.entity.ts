@@ -60,7 +60,7 @@ export class InstalledLibrary extends BaseEntity implements IInstalledLibrary {
 	/**
 	 * Addons can be added to other content types by
 	 */
-	@Property()
+	@Property({ nullable: true })
 	addTo?: {
 		content?: {
 			types?: {
@@ -110,57 +110,57 @@ export class InstalledLibrary extends BaseEntity implements IInstalledLibrary {
 	@Property()
 	restricted: boolean;
 
-	@Property()
+	@Property({ nullable: true })
 	author?: string;
 
 	/**
 	 * The core API required to run the library.
 	 */
-	@Property()
+	@Property({ nullable: true })
 	coreApi?: {
 		majorVersion: number;
 		minorVersion: number;
 	};
 
-	@Property()
+	@Property({ nullable: true })
 	description?: string;
 
-	@Property()
+	@Property({ nullable: true })
 	dropLibraryCss?: {
 		machineName: string;
 	}[];
 
-	@Property()
+	@Property({ nullable: true })
 	dynamicDependencies?: LibraryName[];
 
-	@Property()
+	@Property({ nullable: true })
 	editorDependencies?: LibraryName[];
 
-	@Property()
+	@Property({ nullable: true })
 	embedTypes?: ('iframe' | 'div')[];
 
-	@Property()
+	@Property({ nullable: true })
 	fullscreen?: 0 | 1;
 
-	@Property()
+	@Property({ nullable: true })
 	h?: number;
 
-	@Property()
+	@Property({ nullable: true })
 	license?: string;
 
-	@Property()
+	@Property({ nullable: true })
 	metadataSettings?: {
 		disable: 0 | 1;
 		disableExtraTitleField: 0 | 1;
 	};
 
-	@Property()
+	@Property({ nullable: true })
 	preloadedCss?: Path[];
 
-	@Property()
+	@Property({ nullable: true })
 	preloadedDependencies?: LibraryName[];
 
-	@Property()
+	@Property({ nullable: true })
 	preloadedJs?: Path[];
 
 	@Property()
@@ -169,15 +169,15 @@ export class InstalledLibrary extends BaseEntity implements IInstalledLibrary {
 	@Property()
 	title: string;
 
-	@Property()
+	@Property({ nullable: true })
 	w?: number;
 
-	@Property()
+	@Property({ nullable: true })
 	requiredExtensions?: {
 		sharedState: number;
 	};
 
-	@Property()
+	@Property({ nullable: true })
 	state?: {
 		snapshotSchema: boolean;
 		opSchema: boolean;
