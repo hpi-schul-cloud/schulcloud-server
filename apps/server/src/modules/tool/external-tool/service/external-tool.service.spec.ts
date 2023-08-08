@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { UnprocessableEntityException } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { HttpException, HttpStatus, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IFindOptions, Page, SortOrder } from '@shared/domain';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
@@ -12,6 +13,8 @@ import {
 	oauth2ToolConfigFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { LegacyLogger, Logger } from '@src/core/logger';
+import { AxiosResponse } from 'axios';
+import { of, throwError } from 'rxjs';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
@@ -32,6 +35,7 @@ describe('ExternalToolService', () => {
 	let encryptionService: DeepMocked<IEncryptionService>;
 	let versionService: DeepMocked<ExternalToolVersionService>;
 	let logger: DeepMocked<Logger>;
+	let httpService: DeepMocked<HttpService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -73,6 +77,10 @@ describe('ExternalToolService', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: HttpService,
+					useValue: createMock<HttpService>(),
+				},
 			],
 		}).compile();
 
@@ -85,6 +93,7 @@ describe('ExternalToolService', () => {
 		encryptionService = module.get(DefaultEncryptionService);
 		versionService = module.get(ExternalToolVersionService);
 		logger = module.get(Logger);
+		httpService = module.get(HttpService);
 	});
 
 	afterAll(async () => {
@@ -690,7 +699,7 @@ describe('ExternalToolService', () => {
 	});
 
 	describe('fetchBase64Logo', () => {
-		describe('when logoUrl is undefiend', () => {
+		describe('when logoUrl is undefined', () => {
 			it('should return null', async () => {
 				const result: string | null = await service.fetchBase64Logo(undefined);
 
@@ -704,27 +713,28 @@ describe('ExternalToolService', () => {
 				const logoBuffer: Buffer = Buffer.from('logo content', 'utf-8');
 				const logoBase64: string = logoBuffer.toString('base64');
 
-				const responseMock: Partial<Response> = {
-					arrayBuffer: jest.fn().mockResolvedValue(logoBuffer),
-				};
-
-				const fetchMock = jest.fn().mockResolvedValue(responseMock as Response);
-				global.fetch = fetchMock;
+				httpService.get.mockReturnValue(
+					of({
+						data: logoBuffer,
+						status: HttpStatus.OK,
+						statusText: 'OK',
+						headers: {},
+						config: {},
+					} as AxiosResponse<ArrayBuffer>)
+				);
 
 				return {
 					logoUrl,
-					fetchMock,
-					responseMock,
 					logoBase64,
 				};
 			};
 
 			it('should fetch logo', async () => {
-				const { logoUrl, fetchMock } = setup();
+				const { logoUrl } = setup();
 
 				await service.fetchBase64Logo(logoUrl);
 
-				expect(fetchMock).toHaveBeenCalledWith(logoUrl);
+				expect(httpService.get).toHaveBeenCalledWith(logoUrl, { responseType: 'arraybuffer' });
 			});
 
 			it('should log the fetched url', async () => {
@@ -736,14 +746,6 @@ describe('ExternalToolService', () => {
 			});
 
 			it('should convert to base64', async () => {
-				const { logoUrl, responseMock } = setup();
-
-				await service.fetchBase64Logo(logoUrl);
-
-				expect(responseMock.arrayBuffer).toHaveBeenCalled();
-			});
-
-			it('should return the logo', async () => {
 				const { logoUrl, logoBase64 } = setup();
 
 				const result: string | null = await service.fetchBase64Logo(logoUrl);
@@ -756,17 +758,10 @@ describe('ExternalToolService', () => {
 			const setup = () => {
 				const logoUrl = 'https://example.com/logo.png';
 
-				const responseMock: Partial<Response> = {
-					arrayBuffer: jest.fn().mockRejectedValue(new Error()),
-				};
-
-				const fetchMock = jest.fn().mockResolvedValue(responseMock as Response);
-				global.fetch = fetchMock;
+				httpService.get.mockReturnValue(throwError(() => new HttpException('Failed to fetch logo', 404)));
 
 				return {
 					logoUrl,
-					fetchMock,
-					responseMock,
 				};
 			};
 
@@ -775,7 +770,7 @@ describe('ExternalToolService', () => {
 
 				const func = () => service.fetchBase64Logo(logoUrl);
 
-				await expect(func()).rejects.toThrow(Error);
+				await expect(func()).rejects.toThrow(HttpException);
 			});
 		});
 	});

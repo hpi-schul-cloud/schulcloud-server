@@ -12,6 +12,8 @@ import {
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';
 import { Loaded } from '@mikro-orm/core';
 import { ServerTestModule } from '@src/modules/server';
@@ -39,6 +41,7 @@ describe('ToolController (API)', () => {
 	let em: EntityManager;
 
 	let testApiClient: TestApiClient;
+	let axiosMock: MockAdapter;
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
@@ -46,6 +49,7 @@ describe('ToolController (API)', () => {
 		}).compile();
 
 		app = moduleRef.createNestApplication();
+		axiosMock = new MockAdapter(axios);
 
 		await app.init();
 
@@ -95,6 +99,8 @@ describe('ToolController (API)', () => {
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
 				await em.persistAndFlush([adminAccount, adminUser]);
 				em.clear();
+
+				axiosMock.onGet(params.logoUrl).reply(HttpStatus.OK, 'image');
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 

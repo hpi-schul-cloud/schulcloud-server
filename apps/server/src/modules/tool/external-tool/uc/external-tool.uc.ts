@@ -34,6 +34,10 @@ export class ExternalToolUc {
 	}
 
 	private async addLogoToExternalToolIfExists(externalTool: Partial<ExternalTool>): Promise<Partial<ExternalTool>> {
+		if (!externalTool.logoUrl) {
+			return externalTool;
+		}
+
 		const base64Logo: string | null = await this.externalToolService.fetchBase64Logo(externalTool.logoUrl);
 		if (base64Logo) {
 			externalTool.logoBase64 = base64Logo;

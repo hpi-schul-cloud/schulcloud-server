@@ -1,3 +1,4 @@
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
@@ -14,7 +15,7 @@ import {
 import { CommonToolModule } from '../common';
 
 @Module({
-	imports: [CommonToolModule, ToolConfigModule, LoggerModule, OauthProviderServiceModule, EncryptionModule],
+	imports: [CommonToolModule, ToolConfigModule, LoggerModule, OauthProviderServiceModule, EncryptionModule, HttpModule],
 	providers: [
 		ExternalToolService,
 		ExternalToolServiceMapper,

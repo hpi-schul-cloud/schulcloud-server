@@ -1,3 +1,4 @@
+import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId, IFindOptions, Page } from '@shared/domain';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
@@ -5,6 +6,8 @@ import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { LegacyLogger, Logger } from '@src/core/logger';
+import { AxiosResponse } from 'axios';
+import { lastValueFrom } from 'rxjs';
 import { TokenEndpointAuthMethod } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
@@ -24,7 +27,8 @@ export class ExternalToolService {
 		@Inject(DefaultEncryptionService) private readonly encryptionService: IEncryptionService,
 		private readonly legacyLogger: LegacyLogger,
 		private readonly externalToolVersionService: ExternalToolVersionService,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		private readonly httpService: HttpService
 	) {}
 
 	async createExternalTool(externalTool: ExternalTool): Promise<ExternalTool> {
@@ -156,11 +160,12 @@ export class ExternalToolService {
 			return null;
 		}
 
-		const response: Response = await fetch(logoUrl);
+		const response: AxiosResponse<ArrayBuffer> = await lastValueFrom(
+			this.httpService.get(logoUrl, { responseType: 'arraybuffer' })
+		);
 		this.logger.info(new ExternalToolLogoFetchedLoggable(logoUrl));
 
-		const arrayBuffer: ArrayBuffer = await response.arrayBuffer();
-		const buffer: Buffer = Buffer.from(arrayBuffer);
+		const buffer: Buffer = Buffer.from(response.data);
 		const logoBase64: string = buffer.toString('base64');
 
 		return logoBase64;
