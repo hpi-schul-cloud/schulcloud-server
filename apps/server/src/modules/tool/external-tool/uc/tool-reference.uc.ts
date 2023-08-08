@@ -78,7 +78,7 @@ export class ToolReferenceUc {
 		if (logoBase64) {
 			toolReference.logoUrl = `${backendUrl}/v3/tools/external-tools/${id ?? ''}/logo`;
 		} else {
-			toolReference.logoUrl = undefined;
+			toolReference.logoUrl = '';
 		}
 	}
 
