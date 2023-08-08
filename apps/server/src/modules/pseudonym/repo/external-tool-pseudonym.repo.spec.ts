@@ -150,19 +150,29 @@ describe('ExternalToolPseudonymRepo', () => {
 
 				const result: Pseudonym[] = await repo.findByUserId(user1.id);
 
+				const expectedArray = [
+					{
+						id: pseudonym1.id,
+						pseudonym: pseudonym1.pseudonym,
+						toolId: pseudonym1.toolId.toHexString(),
+						userId: pseudonym1.userId.toHexString(),
+						createdAt: pseudonym1.createdAt,
+						updatedAt: pseudonym1.updatedAt,
+					},
+					{
+						id: pseudonym2.id,
+						pseudonym: pseudonym2.pseudonym,
+						toolId: pseudonym2.toolId.toHexString(),
+						userId: pseudonym2.userId.toHexString(),
+						createdAt: pseudonym2.createdAt,
+						updatedAt: pseudonym2.updatedAt,
+					},
+				];
+
 				expect(result).toHaveLength(2);
-				expect(result[0].id).toEqual(pseudonym1.id);
-				expect(result[0].userId).toEqual(pseudonym1.userId.toJSON());
-				expect(result[0].pseudonym).toEqual(pseudonym1.pseudonym);
-				expect(result[0].toolId).toEqual(pseudonym1.toolId.toJSON());
-				expect(result[0].createdAt).toEqual(pseudonym1.createdAt);
-				expect(result[0].updatedAt).toEqual(pseudonym1.updatedAt);
-				expect(result[1].id).toEqual(pseudonym2.id);
-				expect(result[1].userId).toEqual(pseudonym2.userId.toJSON());
-				expect(result[1].pseudonym).toEqual(pseudonym2.pseudonym);
-				expect(result[1].toolId).toEqual(pseudonym2.toolId.toJSON());
-				expect(result[1].createdAt).toEqual(pseudonym2.createdAt);
-				expect(result[1].updatedAt).toEqual(pseudonym2.updatedAt);
+				expect(result).toEqual(
+					expect.arrayContaining([expect.objectContaining(expectedArray[0]), expect.objectContaining(expectedArray[1])])
+				);
 			});
 		});
 
