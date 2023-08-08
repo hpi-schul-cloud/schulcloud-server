@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { StringToBoolean } from '@shared/controller';
 import { EntityId } from '@shared/domain';
 import {
 	Allow,
@@ -9,6 +10,8 @@ import {
 	IsNotEmpty,
 	IsOptional,
 	IsString,
+	Max,
+	Min,
 	ValidateNested,
 } from 'class-validator';
 import { FileRecordParentType } from '../../entity';
@@ -118,23 +121,26 @@ export class PreviewParams {
 	@ApiPropertyOptional()
 	@IsOptional()
 	@IsInt()
+	@Min(1)
+	@Max(2000)
 	width?: number;
 
 	@ApiPropertyOptional()
 	@IsOptional()
 	@IsInt()
+	@Min(1)
+	@Max(2000)
 	height?: number;
 
 	@ApiPropertyOptional({ enum: PreviewOutputMimeTypes })
 	@IsEnum(PreviewOutputMimeTypes)
 	outputFormat?: PreviewOutputMimeTypes;
 
-	@ApiPropertyOptional({
-		type: 'boolean',
-		default: false,
-		description: 'If true, the preview will be generated again."',
-	})
 	@IsOptional()
 	@IsBoolean()
+	@StringToBoolean()
+	@ApiPropertyOptional({
+		description: 'If true, the preview will be generated again.',
+	})
 	forceUpdate?: boolean;
 }
