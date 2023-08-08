@@ -34,10 +34,16 @@ export class ContextExternalToolValidationService {
 	}
 
 	private async checkDuplicateInContext(contextExternalTool: ContextExternalTool) {
-		const duplicate: ContextExternalTool[] = await this.contextExternalToolService.findContextExternalTools({
+		let duplicate: ContextExternalTool[] = await this.contextExternalToolService.findContextExternalTools({
 			schoolToolRef: contextExternalTool.schoolToolRef,
 			context: contextExternalTool.contextRef,
 		});
+
+		// Only leave tools that are not the currently handled tool itself (for updates) or ones with the same name
+		duplicate = duplicate.filter(
+			(duplicateTool) =>
+				duplicateTool.id !== contextExternalTool.id && duplicateTool.displayName === contextExternalTool.displayName
+		);
 
 		if (duplicate.length > 0) {
 			throw new UnprocessableEntityException('Tool is already assigned.');
