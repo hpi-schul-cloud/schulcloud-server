@@ -194,7 +194,7 @@ describe('H5PEditor Controller (api)', () => {
 		describe('when user is logged in', () => {
 			const createStudent = () => UserAndAccountTestFactory.buildStudent();
 
-			const setup = async (range = false) => {
+			const setup = async () => {
 				const { studentAccount, studentUser } = createStudent();
 
 				await em.persistAndFlush([studentAccount, studentUser]);

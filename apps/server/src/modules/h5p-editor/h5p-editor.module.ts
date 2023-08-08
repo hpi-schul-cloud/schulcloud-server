@@ -19,6 +19,7 @@ import { H5PContentRepo } from './contentStorage/h5p-content.repo';
 import { H5PEditorController } from './controller/h5p-editor.controller';
 import { config, s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
 import { S3Config } from './interface/config';
+import { InstalledLibrary } from './libraryStorage/library.entity';
 import { LibraryRepo } from './libraryStorage/library.repo';
 import { LibraryStorage } from './libraryStorage/libraryStorage';
 import { H5PAjaxEndpointService } from './service';
@@ -60,7 +61,7 @@ const imports = [
 		clientUrl: DB_URL,
 		password: DB_PASSWORD,
 		user: DB_USERNAME,
-		entities: [User, Account, H5PContent, Role, School, System, SchoolYear],
+		entities: [User, Account, H5PContent, Role, School, System, SchoolYear, InstalledLibrary],
 
 		// debug: true, // use it for locally debugging of querys
 	}),
