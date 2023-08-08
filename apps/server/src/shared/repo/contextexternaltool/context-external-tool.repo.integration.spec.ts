@@ -6,15 +6,15 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
 import {
 	cleanupCollections,
-	contextExternalToolFactory,
 	contextExternalToolEntityFactory,
+	contextExternalToolFactory,
 	schoolExternalToolEntityFactory,
 	schoolFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { CustomParameterEntry } from '@src/modules/tool/common/domain';
 import { ToolContextType } from '@src/modules/tool/common/enum';
-import { ContextExternalTool } from '@src/modules/tool/context-external-tool/domain';
+import { ContextExternalTool, ContextExternalToolProps } from '@src/modules/tool/context-external-tool/domain';
 import { ContextExternalToolEntity, ContextExternalToolType } from '@src/modules/tool/context-external-tool/entity';
 import { ContextExternalToolQuery } from '@src/modules/tool/context-external-tool/uc/dto/context-external-tool.types';
 import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
@@ -314,6 +314,51 @@ describe('ContextExternalToolRepo', () => {
 				const result: ContextExternalTool[] = await repo.find(query);
 
 				expect(result).toEqual([]);
+			});
+		});
+	});
+
+	describe('findById', () => {
+		describe('when a ContextExternalTool is found', () => {
+			const setup = async () => {
+				const schoolExternalTool = schoolExternalToolEntityFactory.buildWithId();
+				const contextExternalTool = contextExternalToolEntityFactory.buildWithId({
+					contextType: ContextExternalToolType.COURSE,
+					schoolTool: schoolExternalTool,
+				});
+
+				await em.persistAndFlush([schoolExternalTool, contextExternalTool]);
+
+				return {
+					contextExternalTool,
+					schoolExternalTool,
+				};
+			};
+
+			it('should return correct results', async () => {
+				const { contextExternalTool, schoolExternalTool } = await setup();
+
+				const result = await repo.findById(contextExternalTool.id);
+
+				expect(result).toEqual<ContextExternalToolProps>({
+					id: contextExternalTool.id,
+					contextRef: {
+						id: contextExternalTool.contextId,
+						type: ToolContextType.COURSE,
+					},
+					displayName: contextExternalTool.displayName,
+					parameters: [
+						{
+							name: contextExternalTool.parameters[0].name,
+							value: contextExternalTool.parameters[0].value,
+						},
+					],
+					schoolToolRef: {
+						schoolToolId: schoolExternalTool.id,
+						schoolId: schoolExternalTool.school.id,
+					},
+					toolVersion: contextExternalTool.toolVersion,
+				});
 			});
 		});
 	});

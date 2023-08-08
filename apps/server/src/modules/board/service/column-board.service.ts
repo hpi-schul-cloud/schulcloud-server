@@ -113,6 +113,15 @@ export class ColumnBoardService {
 			card.addChild(text3);
 		}
 
+		const SC_THEME = Configuration.get('SC_THEME') as string;
+		if (SC_THEME !== 'default') {
+			const clientUrl = Configuration.get('HOST') as string;
+			const text4 = this.createRichTextElement(
+				`<p>Wir freuen uns über <a href="${clientUrl}/help/contact/">Feedback und Wünsche</a>.</p>`
+			);
+			card.addChild(text4);
+		}
+
 		await this.boardDoRepo.save(columnBoard);
 
 		return columnBoard;
