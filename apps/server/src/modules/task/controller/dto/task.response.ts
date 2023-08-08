@@ -41,9 +41,6 @@ export class TaskResponse {
 	@ApiProperty()
 	courseId: string = '' as string;
 
-	@ApiPropertyOptional()
-	taskCardId?: string;
-
 	@ApiPropertyOptional({
 		description: 'Task description object, with props content: string and type: input format types',
 		type: RichText,

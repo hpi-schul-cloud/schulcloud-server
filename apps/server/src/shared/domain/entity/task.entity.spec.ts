@@ -9,7 +9,6 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { UsersList } from './task.entity';
 
 describe('Task Entity', () => {
 	beforeAll(async () => {

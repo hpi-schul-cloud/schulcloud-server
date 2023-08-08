@@ -17,7 +17,6 @@ const tomorrow = new Date(Date.now() + 86400000);
 
 const createStudent = () => {
 	const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({}, [
-		Permission.TASK_CARD_VIEW,
 		Permission.TASK_DASHBOARD_VIEW_V3,
 		Permission.HOMEWORK_VIEW,
 	]);
