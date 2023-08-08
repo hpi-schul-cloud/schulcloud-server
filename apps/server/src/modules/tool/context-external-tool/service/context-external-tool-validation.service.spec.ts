@@ -120,19 +120,20 @@ describe('ContextExternalToolValidationService', () => {
 		describe('when a tool with the same name already exists in that context', () => {
 			describe('when the displayName is undefined', () => {
 				const setup = () => {
-					const contextExternalTool = contextExternalToolFactory.buildWithId({ displayName: undefined });
+					const contextExternalTool1 = contextExternalToolFactory.buildWithId({ displayName: undefined });
+					const contextExternalTool2 = contextExternalToolFactory.buildWithId({ displayName: undefined });
 
-					contextExternalToolService.findContextExternalTools.mockResolvedValue([contextExternalTool]);
+					contextExternalToolService.findContextExternalTools.mockResolvedValue([contextExternalTool2]);
 
 					return {
-						contextExternalTool,
+						contextExternalTool1,
 					};
 				};
 
 				it('should throw UnprocessableEntityException', async () => {
-					const { contextExternalTool } = setup();
+					const { contextExternalTool1 } = setup();
 
-					const func = () => service.validate(contextExternalTool);
+					const func = () => service.validate(contextExternalTool1);
 
 					await expect(func()).rejects.toThrowError(new UnprocessableEntityException('Tool is already assigned.'));
 				});
@@ -140,19 +141,20 @@ describe('ContextExternalToolValidationService', () => {
 
 			describe('when the displayName is the same', () => {
 				const setup = () => {
-					const contextExternalTool = contextExternalToolFactory.buildWithId({ displayName: 'Existing Tool' });
+					const contextExternalTool1 = contextExternalToolFactory.buildWithId({ displayName: 'Existing Tool' });
+					const contextExternalTool2 = contextExternalToolFactory.buildWithId({ displayName: 'Existing Tool' });
 
-					contextExternalToolService.findContextExternalTools.mockResolvedValue([contextExternalTool]);
+					contextExternalToolService.findContextExternalTools.mockResolvedValue([contextExternalTool2]);
 
 					return {
-						contextExternalTool,
+						contextExternalTool1,
 					};
 				};
 
 				it('should throw UnprocessableEntityException', async () => {
-					const { contextExternalTool } = setup();
+					const { contextExternalTool1 } = setup();
 
-					const func = () => service.validate(contextExternalTool);
+					const func = () => service.validate(contextExternalTool1);
 
 					await expect(func()).rejects.toThrowError(new UnprocessableEntityException('Tool is already assigned.'));
 				});
