@@ -39,16 +39,6 @@ class API {
 		};
 	}
 
-	async postUploadFromUrl(routeName: string, data: Record<string, unknown>) {
-		const response = await request(this.app.getHttpServer()).post(routeName).send(data);
-
-		return {
-			result: response.body as FileRecordResponse,
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-
 	async getDownloadFile(routeName: string, query?: string | Record<string, unknown>) {
 		const response = await request(this.app.getHttpServer())
 			.get(routeName)
