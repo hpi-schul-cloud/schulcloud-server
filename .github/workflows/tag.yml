@@ -56,6 +56,8 @@ jobs:
           tags: |
             type=semver,pattern={{version}},prefix=file-storage-,onlatest=false
             type=semver,pattern={{major}}.{{minor}},prefix=file-storage-,onlatest=false
+          labels: |
+            org.opencontainers.image.title=schulcloud-file-storage
       - name: Build and push ${{ github.repository }} (file-storage)
         uses: docker/build-push-action@v4
         with:

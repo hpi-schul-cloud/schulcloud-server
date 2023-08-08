@@ -77,7 +77,9 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: ghcr.io/${{ github.repository }}:file-storage-${{ needs.branch_meta.outputs.sha }}
-          labels: ${{ steps.docker_meta_img.outputs.labels }}
+          labels: |
+            ${{ steps.docker_meta_img.outputs.labels }}
+            org.opencontainers.image.title=schulcloud-file-storage
   branch_meta:
     runs-on: ubuntu-latest
     outputs:
