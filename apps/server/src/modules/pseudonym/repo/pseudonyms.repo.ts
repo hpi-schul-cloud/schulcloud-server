@@ -33,6 +33,14 @@ export class PseudonymsRepo {
 		return domainObject;
 	}
 
+	async findByUserId(userId: EntityId): Promise<Pseudonym[]> {
+		const entities: PseudonymEntity[] = await this.em.find(PseudonymEntity, { userId: new ObjectId(userId) });
+
+		const pseudonyms: Pseudonym[] = entities.map((entity) => this.mapEntityToDomainObject(entity));
+
+		return pseudonyms;
+	}
+
 	async createOrUpdate(domainObject: Pseudonym): Promise<Pseudonym> {
 		const existing: PseudonymEntity | undefined = this.em
 			.getUnitOfWork()
@@ -52,6 +60,12 @@ export class PseudonymsRepo {
 		const savedDomainObject: Pseudonym = this.mapEntityToDomainObject(entity);
 
 		return savedDomainObject;
+	}
+
+	async deletePseudonymsByUserId(userId: EntityId): Promise<number> {
+		const promise: Promise<number> = this.em.nativeDelete(PseudonymEntity, { userId: new ObjectId(userId) });
+
+		return promise;
 	}
 
 	protected mapEntityToDomainObject(entity: PseudonymEntity): Pseudonym {
