@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
-import { ExternalToolLogoSizeExceededLoggableException } from '../error';
+import { ExternalToolLogoSizeExceededLoggableException } from '../loggable';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
 import { ExternalToolService } from './external-tool.service';
 

@@ -4,7 +4,7 @@ import { ValidationError } from '@shared/common';
 import { externalToolFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
-import { ExternalToolLogoSizeExceededLoggableException } from '../error';
+import { ExternalToolLogoSizeExceededLoggableException } from '../loggable';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
 import { ExternalToolValidationService } from './external-tool-validation.service';
 import { ExternalToolService } from './external-tool.service';

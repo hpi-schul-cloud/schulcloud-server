@@ -4,7 +4,7 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalTool, ExternalToolConfig } from '../domain';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
-import { ExternalToolLogoNotFoundLoggableException } from '../error';
+import { ExternalToolLogoNotFoundLoggableException } from '../loggable';
 import { ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
 

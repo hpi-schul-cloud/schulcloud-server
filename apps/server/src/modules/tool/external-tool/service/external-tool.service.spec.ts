@@ -11,10 +11,11 @@ import {
 	lti11ToolConfigFactory,
 	oauth2ToolConfigFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger, Logger } from '@src/core/logger';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
+import { ExternalToolLogoFetchedLoggable } from '../loggable';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { ExternalToolVersionService } from './external-tool-version.service';
 import { ExternalToolService } from './external-tool.service';
@@ -30,6 +31,7 @@ describe('ExternalToolService', () => {
 	let mapper: DeepMocked<ExternalToolServiceMapper>;
 	let encryptionService: DeepMocked<IEncryptionService>;
 	let versionService: DeepMocked<ExternalToolVersionService>;
+	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -67,6 +69,10 @@ describe('ExternalToolService', () => {
 					provide: ExternalToolVersionService,
 					useValue: createMock<ExternalToolVersionService>(),
 				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 			],
 		}).compile();
 
@@ -78,6 +84,7 @@ describe('ExternalToolService', () => {
 		mapper = module.get(ExternalToolServiceMapper);
 		encryptionService = module.get(DefaultEncryptionService);
 		versionService = module.get(ExternalToolVersionService);
+		logger = module.get(Logger);
 	});
 
 	afterAll(async () => {
@@ -718,6 +725,14 @@ describe('ExternalToolService', () => {
 				await service.fetchBase64Logo(logoUrl);
 
 				expect(fetchMock).toHaveBeenCalledWith(logoUrl);
+			});
+
+			it('should log the fetched url', async () => {
+				const { logoUrl } = setup();
+
+				await service.fetchBase64Logo(logoUrl);
+
+				expect(logger.info).toHaveBeenCalledWith(new ExternalToolLogoFetchedLoggable(logoUrl));
 			});
 
 			it('should convert to base64', async () => {

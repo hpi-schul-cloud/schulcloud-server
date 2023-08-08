@@ -12,7 +12,7 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { ICurrentUser } from '@src/modules/authentication';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
-import { ExternalToolLogoNotFoundLoggableException } from '../error';
+import { ExternalToolLogoNotFoundLoggableException } from '../loggable';
 import { ExternalToolUc } from './external-tool.uc';
 import { ExternalToolService, ExternalToolValidationService } from '../service';
 

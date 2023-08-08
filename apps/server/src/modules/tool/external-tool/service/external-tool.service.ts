@@ -4,11 +4,12 @@ import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encr
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger, Logger } from '@src/core/logger';
 import { TokenEndpointAuthMethod } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ExternalTool, Oauth2ToolConfig } from '../domain';
+import { ExternalToolLogoFetchedLoggable } from '../loggable';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { ExternalToolVersionService } from './external-tool-version.service';
 
@@ -21,8 +22,9 @@ export class ExternalToolService {
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly contextExternalToolRepo: ContextExternalToolRepo,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: IEncryptionService,
-		private readonly logger: LegacyLogger,
-		private readonly externalToolVersionService: ExternalToolVersionService
+		private readonly legacyLogger: LegacyLogger,
+		private readonly externalToolVersionService: ExternalToolVersionService,
+		private readonly logger: Logger
 	) {}
 
 	async createExternalTool(externalTool: ExternalTool): Promise<ExternalTool> {
@@ -60,7 +62,7 @@ export class ExternalToolService {
 					try {
 						await this.addExternalOauth2DataToConfig(tool.config);
 					} catch (e) {
-						this.logger.debug(
+						this.legacyLogger.debug(
 							`Could not resolve oauth2Config of tool with clientId ${tool.config.clientId}. It will be filtered out.`
 						);
 						return undefined;
@@ -81,7 +83,7 @@ export class ExternalToolService {
 			try {
 				await this.addExternalOauth2DataToConfig(tool.config);
 			} catch (e) {
-				this.logger.debug(
+				this.legacyLogger.debug(
 					`Could not resolve oauth2Config of tool with clientId ${tool.config.clientId}. It will be filtered out.`
 				);
 				throw new UnprocessableEntityException(`Could not resolve oauth2Config of tool ${tool.name}.`);
@@ -155,6 +157,7 @@ export class ExternalToolService {
 		}
 
 		const response: Response = await fetch(logoUrl);
+		this.logger.info(new ExternalToolLogoFetchedLoggable(logoUrl));
 
 		const arrayBuffer: ArrayBuffer = await response.arrayBuffer();
 		const buffer: Buffer = Buffer.from(arrayBuffer);
