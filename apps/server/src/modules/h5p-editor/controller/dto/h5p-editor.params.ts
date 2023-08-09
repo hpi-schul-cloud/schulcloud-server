@@ -17,7 +17,7 @@ export class GetH5PContentParams {
 
 export class GetH5PEditorParamsCreate {
 	@ApiPropertyOptional()
-	@Matches('([a-z]+-[a-z]+)')
+	// @Matches('([a-z]+-[a-z]+)') is in zum check
 	@IsString()
 	language!: string;
 }
@@ -28,7 +28,7 @@ export class GetH5PEditorParams {
 	contentId!: string;
 
 	@ApiPropertyOptional()
-	@Matches('([a-z]+-[a-z]+)')
+	// @Matches('([a-z]+-[a-z]+)')
 	@IsString()
 	language!: string;
 }
