@@ -13,7 +13,7 @@ import { ContentStorage } from './contentStorage/contentStorage';
 import { H5PContentRepo } from './contentStorage/h5p-content.repo';
 import { H5PEditorController } from './controller';
 import { s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
-import { H5PEditorModule, createS3ClientAdapter } from './h5p-editor.module';
+import { createS3ClientAdapter, H5PEditorModule } from './h5p-editor.module';
 import { LibraryRepo } from './libraryStorage/library.repo';
 import { LibraryStorage } from './libraryStorage/libraryStorage';
 import { H5PAjaxEndpointService, H5PEditorService, H5PPlayerService } from './service';

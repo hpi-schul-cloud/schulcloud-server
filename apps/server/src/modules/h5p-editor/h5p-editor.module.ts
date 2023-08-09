@@ -6,7 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Account, Role, School, SchoolYear, System, User } from '@shared/domain';
 import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq';
 
-import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
+import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LegacyLogger, Logger } from '@src/core/logger';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
