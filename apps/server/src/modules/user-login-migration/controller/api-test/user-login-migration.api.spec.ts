@@ -180,6 +180,32 @@ describe('UserLoginMigrationController (API)', () => {
 			});
 		});
 
+		describe('when no user login migration is found', () => {
+			const setup = async () => {
+				const school: School = schoolFactory.buildWithId();
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
+
+				await em.persistAndFlush([school, adminAccount, adminUser]);
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+					school,
+				};
+			};
+
+			it('should return the users migration', async () => {
+				const { loggedInClient, school } = await setup();
+
+				const response: Response = await loggedInClient.get(`schools/${school.id}`);
+
+				expect(response.status).toEqual(HttpStatus.NOT_FOUND);
+			});
+		});
+
 		describe('when unauthorized', () => {
 			it('should return Unauthorized', async () => {
 				const response: Response = await testApiClient.get(`schools/${new ObjectId().toHexString()}`);
