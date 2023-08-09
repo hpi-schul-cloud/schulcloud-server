@@ -242,7 +242,7 @@ describe('File Name Helper', () => {
 				const fileRecordId = new ObjectId().toHexString();
 				const width = 100;
 				const height = 100;
-				const outputFormat = PreviewOutputMimeTypes.IMAGE_JPG;
+				const outputFormat = PreviewOutputMimeTypes.IMAGE_WEBP;
 				const previewParams = {
 					width,
 					height,
@@ -260,10 +260,10 @@ describe('File Name Helper', () => {
 		describe('when preview params are not set', () => {
 			it('should return hash', () => {
 				const fileRecordId = new ObjectId().toHexString();
-				const fileParamsString = `${fileRecordId}`;
+				const fileParamsString = `${fileRecordId}${PreviewOutputMimeTypes.IMAGE_WEBP}`;
 				const hash = crypto.createHash('sha512').update(fileParamsString).digest('hex');
 
-				const result = createPreviewNameHash(fileRecordId, {});
+				const result = createPreviewNameHash(fileRecordId, { outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP });
 
 				expect(result).toBe(hash);
 			});

@@ -12,6 +12,7 @@ import { SingleFileParams } from '../controller/dto';
 import { FileRecord } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { TestHelper } from '../helper/test-helper';
+import { PreviewOutputMimeTypes } from '../interface';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
@@ -28,6 +29,13 @@ const buildFileRecordWithParams = () => {
 	};
 
 	return { params, fileRecord, userId };
+};
+
+const getPreviewParams = () => {
+	return {
+		outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
+		forceUpdate: true,
+	};
 };
 
 describe('FilesStorageUC', () => {
@@ -99,7 +107,7 @@ describe('FilesStorageUC', () => {
 				const fileDownloadParams = { ...params, fileName: fileRecord.name };
 				const singleFileParams = FilesStorageMapper.mapToSingleFileParams(fileDownloadParams);
 
-				const previewParams = { forceUpdate: true };
+				const previewParams = getPreviewParams();
 				const previewFileResponse = TestHelper.createFileResponse();
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
@@ -157,7 +165,7 @@ describe('FilesStorageUC', () => {
 				const { fileRecord, params, userId } = buildFileRecordWithParams();
 				const fileDownloadParams = { ...params, fileName: fileRecord.name };
 
-				const previewParams = { forceUpdate: true };
+				const previewParams = getPreviewParams();
 
 				const error = new Error('test');
 				filesStorageService.getFileRecord.mockRejectedValueOnce(error);
@@ -177,7 +185,7 @@ describe('FilesStorageUC', () => {
 				const { fileRecord, params, userId } = buildFileRecordWithParams();
 				const fileDownloadParams = { ...params, fileName: fileRecord.name };
 
-				const previewParams = { forceUpdate: true };
+				const previewParams = getPreviewParams();
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
 
@@ -199,7 +207,7 @@ describe('FilesStorageUC', () => {
 				const { fileRecord, params, userId } = buildFileRecordWithParams();
 				const fileDownloadParams = { ...params, fileName: fileRecord.name };
 
-				const previewParams = { forceUpdate: true };
+				const previewParams = getPreviewParams();
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
 				const error = new Error('test');

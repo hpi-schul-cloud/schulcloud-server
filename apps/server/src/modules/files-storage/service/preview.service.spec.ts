@@ -11,6 +11,7 @@ import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
 import { createPreviewNameHash, createPreviewPath } from '../helper';
 import { TestHelper } from '../helper/test-helper';
+import { PreviewHeight, PreviewWidth } from '../interface';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
 import { FileDtoBuilder, FileResponseBuilder } from '../mapper';
 import { FilesStorageService } from './files-storage.service';
@@ -44,6 +45,17 @@ const buildFileRecordWithParams = (mimeType: string) => {
 	};
 
 	return { params, fileRecord, parentId };
+};
+
+const defaultPreviewParams = {
+	outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
+	forceUpdate: false,
+};
+
+const defaultPreviewParamsWithWidthAndHeight = {
+	...defaultPreviewParams,
+	width: PreviewWidth.WIDTH_500,
+	height: PreviewHeight.HEIGHT_1000,
 };
 
 describe('FilesStorageService download method', () => {
@@ -89,18 +101,19 @@ describe('FilesStorageService download method', () => {
 	describe('getPreview is called', () => {
 		describe('WHEN preview is possbile', () => {
 			describe('WHEN forceUpdate is true', () => {
-				describe('WHEN width, height and outputFormat are not set', () => {
+				describe('WHEN width and height are not set', () => {
 					describe('WHEN download of original and preview file is successfull', () => {
 						const setup = () => {
 							const bytesRange = 'bytes=0-100';
-							const mimeType = 'image/png';
-							const format = mimeType.split('/')[1];
-							const { fileRecord } = buildFileRecordWithParams(mimeType);
+							const orignalMimeType = 'image/png';
+							const previewMimeType = 'image/webp';
+							const format = previewMimeType.split('/')[1];
+							const { fileRecord } = buildFileRecordWithParams(orignalMimeType);
 							const downloadParams = {
 								fileRecordId: fileRecord.id,
 								fileName: fileRecord.name,
 							};
-							const previewParams = { forceUpdate: true };
+							const previewParams = { outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP, forceUpdate: true };
 
 							const originalFileResponse = TestHelper.createFileResponse();
 							fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
@@ -108,10 +121,12 @@ describe('FilesStorageService download method', () => {
 							const previewFile = TestHelper.createFile();
 							s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
-							const previewFileResponse = FileResponseBuilder.build(previewFile, fileRecord.name);
+							const fileNameWithoutExtension = fileRecord.name.split('.')[0];
+							const name = `${fileNameWithoutExtension}.${format}`;
+							const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
-							const hash = createPreviewNameHash(fileRecord.id, {});
-							const previewFileDto = FileDtoBuilder.build(hash, previewFile.data, mimeType);
+							const hash = createPreviewNameHash(fileRecord.id, { outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP });
+							const previewFileDto = FileDtoBuilder.build(hash, previewFile.data, previewMimeType);
 							const previewPath = createPreviewPath(fileRecord.getSchoolId(), hash);
 							streamMock.mockClear();
 							streamMock.mockReturnValueOnce(previewFileDto.data);
@@ -180,7 +195,7 @@ describe('FilesStorageService download method', () => {
 								fileRecordId: fileRecord.id,
 								fileName: fileRecord.name,
 							};
-							const previewParams = { forceUpdate: true };
+							const previewParams = { ...defaultPreviewParams, forceUpdate: true };
 
 							const error = new Error('testError');
 							fileStorageService.download.mockRejectedValueOnce(error);
@@ -205,7 +220,7 @@ describe('FilesStorageService download method', () => {
 								fileRecordId: fileRecord.id,
 								fileName: fileRecord.name,
 							};
-							const previewParams = { forceUpdate: true };
+							const previewParams = { ...defaultPreviewParams, forceUpdate: true };
 
 							const originalFileResponse = TestHelper.createFileResponse();
 							fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
@@ -233,7 +248,7 @@ describe('FilesStorageService download method', () => {
 								fileRecordId: fileRecord.id,
 								fileName: fileRecord.name,
 							};
-							const previewParams = { forceUpdate: true };
+							const previewParams = { ...defaultPreviewParams, forceUpdate: true };
 
 							const originalFileResponse = TestHelper.createFileResponse();
 							fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
@@ -265,10 +280,8 @@ describe('FilesStorageService download method', () => {
 								fileName: fileRecord.name,
 							};
 							const previewParams = {
+								...defaultPreviewParamsWithWidthAndHeight,
 								forceUpdate: true,
-								width: 100,
-								height: 200,
-								outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
 							};
 							const format = previewParams.outputFormat.split('/')[1];
 
@@ -364,7 +377,7 @@ describe('FilesStorageService download method', () => {
 								fileRecordId: fileRecord.id,
 								fileName: fileRecord.name,
 							};
-							const previewParams = { forceUpdate: true };
+							const previewParams = { ...defaultPreviewParams, forceUpdate: true };
 
 							const error = new Error('testError');
 							fileStorageService.download.mockRejectedValueOnce(error);
@@ -394,10 +407,7 @@ describe('FilesStorageService download method', () => {
 								fileName: fileRecord.name,
 							};
 							const previewParams = {
-								forceUpdate: false,
-								width: 100,
-								height: 200,
-								outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
+								...defaultPreviewParamsWithWidthAndHeight,
 							};
 							const format = previewParams.outputFormat.split('/')[1];
 
@@ -460,10 +470,7 @@ describe('FilesStorageService download method', () => {
 								fileName: fileRecord.name,
 							};
 							const previewParams = {
-								forceUpdate: false,
-								width: 100,
-								height: 200,
-								outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
+								...defaultPreviewParamsWithWidthAndHeight,
 							};
 							const format = previewParams.outputFormat.split('/')[1];
 
@@ -563,10 +570,7 @@ describe('FilesStorageService download method', () => {
 								fileName: fileRecord.name,
 							};
 							const previewParams = {
-								forceUpdate: false,
-								width: 100,
-								height: 200,
-								outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
+								...defaultPreviewParamsWithWidthAndHeight,
 							};
 							const format = previewParams.outputFormat.split('/')[1];
 
@@ -602,7 +606,7 @@ describe('FilesStorageService download method', () => {
 					fileRecordId: fileRecord.id,
 					fileName: fileRecord.name,
 				};
-				const previewParams = { forceUpdate: true };
+				const previewParams = { ...defaultPreviewParams, forceUpdate: true };
 
 				const originalFileResponse = TestHelper.createFileResponse();
 				fileStorageService.download.mockResolvedValueOnce(originalFileResponse);

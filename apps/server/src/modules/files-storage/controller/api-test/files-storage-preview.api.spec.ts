@@ -15,6 +15,7 @@ import request from 'supertest';
 import { S3ClientAdapter } from '../../client/s3-client.adapter';
 import { ErrorType } from '../../error';
 import { TestHelper } from '../../helper/test-helper';
+import { PreviewHeight, PreviewWidth } from '../../interface';
 import { PreviewOutputMimeTypes } from '../../interface/preview-output-mime-types.enum';
 
 class API {
@@ -67,6 +68,12 @@ class API {
 }
 
 const createRndInt = (max) => Math.floor(Math.random() * max);
+
+const defaultQueryParameters = {
+	width: PreviewWidth.WIDTH_500,
+	height: PreviewHeight.HEIGHT_1000,
+	outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
+};
 
 describe('File Controller (API) - preview', () => {
 	let module: TestingModule;
@@ -133,9 +140,7 @@ describe('File Controller (API) - preview', () => {
 		describe('with bad request data', () => {
 			describe('WHEN recordId is invalid', () => {
 				it('should return status 400', async () => {
-					const query = { width: 200, height: 200, outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP };
-
-					const response = await api.getPreview('/file/preview/123/test.png', query);
+					const response = await api.getPreview('/file/preview/123/test.png', defaultQueryParameters);
 
 					expect(response.error.validationErrors).toEqual([
 						{
@@ -147,16 +152,19 @@ describe('File Controller (API) - preview', () => {
 				});
 			});
 
-			describe('WHEN width below min value (0)', () => {
+			describe('WHEN width is other than PreviewWidth Enum', () => {
 				it('should return status 400', async () => {
 					const { result } = await api.postUploadFile(uploadPath);
-					const query = { width: -200, height: 200, outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP };
+					const query = {
+						...defaultQueryParameters,
+						width: 2000,
+					};
 
 					const response = await api.getPreview(`/file/preview/${result.id}/${result.name}`, query);
 
 					expect(response.error.validationErrors).toEqual([
 						{
-							errors: ['width must not be less than 1'],
+							errors: ['width must be one of the following values: 500'],
 							field: ['width'],
 						},
 					]);
@@ -164,50 +172,19 @@ describe('File Controller (API) - preview', () => {
 				});
 			});
 
-			describe('WHEN width above max value (2000)', () => {
+			describe('WHEN height is other than PreviewWidth Enum', () => {
 				it('should return status 400', async () => {
 					const { result } = await api.postUploadFile(uploadPath);
-					const query = { width: 2100, height: 200, outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP };
+					const query = {
+						...defaultQueryParameters,
+						height: 2000,
+					};
 
 					const response = await api.getPreview(`/file/preview/${result.id}/${result.name}`, query);
 
 					expect(response.error.validationErrors).toEqual([
 						{
-							errors: ['width must not be greater than 2000'],
-							field: ['width'],
-						},
-					]);
-					expect(response.status).toEqual(400);
-				});
-			});
-
-			describe('WHEN height below min value (0)', () => {
-				it('should return status 400', async () => {
-					const { result } = await api.postUploadFile(uploadPath);
-					const query = { width: 200, height: -200, outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP };
-
-					const response = await api.getPreview(`/file/preview/${result.id}/${result.name}`, query);
-
-					expect(response.error.validationErrors).toEqual([
-						{
-							errors: ['height must not be less than 1'],
-							field: ['height'],
-						},
-					]);
-					expect(response.status).toEqual(400);
-				});
-			});
-
-			describe('WHEN height above max value (2000)', () => {
-				it('should return status 400', async () => {
-					const { result } = await api.postUploadFile(uploadPath);
-					const query = { width: 200, height: 2100, outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP };
-
-					const response = await api.getPreview(`/file/preview/${result.id}/${result.name}`, query);
-
-					expect(response.error.validationErrors).toEqual([
-						{
-							errors: ['height must not be greater than 2000'],
+							errors: ['height must be one of the following values: 1000'],
 							field: ['height'],
 						},
 					]);
@@ -218,13 +195,13 @@ describe('File Controller (API) - preview', () => {
 			describe('WHEN output format is wrong', () => {
 				it('should return status 400', async () => {
 					const { result } = await api.postUploadFile(uploadPath);
-					const query = { width: 200, height: 200, outputFormat: 'image/txt' };
+					const query = { ...defaultQueryParameters, outputFormat: 'image/txt' };
 
 					const response = await api.getPreview(`/file/preview/${result.id}/${result.name}`, query);
 
 					expect(response.error.validationErrors).toEqual([
 						{
-							errors: ['outputFormat must be one of the following values: image/webp, image/jpeg, image/png'],
+							errors: ['outputFormat must be one of the following values: image/webp'],
 							field: ['outputFormat'],
 						},
 					]);
@@ -236,9 +213,8 @@ describe('File Controller (API) - preview', () => {
 				it('should return status 404', async () => {
 					const { result } = await api.postUploadFile(uploadPath);
 					const wrongId = new ObjectId().toString();
-					const query = { width: 200, height: 200, outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP };
 
-					const response = await api.getPreview(`/file/preview/${wrongId}/${result.name}`, query);
+					const response = await api.getPreview(`/file/preview/${wrongId}/${result.name}`, defaultQueryParameters);
 
 					expect(response.error.message).toEqual('The requested FileRecord: [object Object] has not been found.');
 					expect(response.status).toEqual(404);
@@ -250,9 +226,8 @@ describe('File Controller (API) - preview', () => {
 					const { result } = await api.postUploadFile(uploadPath);
 					const error = new NotFoundException();
 					s3ClientAdapter.get.mockRejectedValueOnce(error);
-					const query = { width: 200, height: 200, outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP };
 
-					const response = await api.getPreview(`/file/preview/${result.id}/wrong-name.txt`, query);
+					const response = await api.getPreview(`/file/preview/${result.id}/wrong-name.txt`, defaultQueryParameters);
 
 					expect(response.error.message).toEqual(ErrorType.FILE_NOT_FOUND);
 					expect(response.status).toEqual(404);
@@ -274,14 +249,12 @@ describe('File Controller (API) - preview', () => {
 
 					it('should return status 200 for successful download', async () => {
 						const { uploadedFile } = await setup();
-						const query = {
-							width: 200,
-							height: 200,
-							outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
-						};
 						const buffer = Buffer.from('testText');
 
-						const response = await api.getPreview(`/file/preview/${uploadedFile.id}/${uploadedFile.name}`, query);
+						const response = await api.getPreview(
+							`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
+							defaultQueryParameters
+						);
 
 						expect(response.status).toEqual(200);
 						expect(response.result).toEqual(buffer);
@@ -289,16 +262,11 @@ describe('File Controller (API) - preview', () => {
 
 					it('should return status 206 and required headers for the successful partial file stream download', async () => {
 						const { uploadedFile } = await setup();
-						const query = {
-							width: 200,
-							height: 200,
-							outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
-						};
 
 						const response = await api.getPreviewBytesRange(
 							`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
 							'bytes=0-',
-							query
+							defaultQueryParameters
 						);
 
 						expect(response.status).toEqual(206);
@@ -320,9 +288,7 @@ describe('File Controller (API) - preview', () => {
 					it('should return status 200 for successful download', async () => {
 						const { uploadedFile } = await setup();
 						const query = {
-							width: 200,
-							height: 200,
-							outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
+							...defaultQueryParameters,
 							forceUpdate: false,
 						};
 
@@ -334,9 +300,7 @@ describe('File Controller (API) - preview', () => {
 					it('should return status 206 and required headers for the successful partial file stream download', async () => {
 						const { uploadedFile } = await setup();
 						const query = {
-							width: 200,
-							height: 200,
-							outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
+							...defaultQueryParameters,
 							forceUpdate: false,
 						};
 
@@ -366,9 +330,7 @@ describe('File Controller (API) - preview', () => {
 					it('should return status 200 for successful download', async () => {
 						const { uploadedFile } = await setup();
 						const query = {
-							width: 200,
-							height: 200,
-							outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
+							...defaultQueryParameters,
 							forceUpdate: true,
 						};
 
@@ -380,9 +342,7 @@ describe('File Controller (API) - preview', () => {
 					it('should return status 206 and required headers for the successful partial file stream download', async () => {
 						const { uploadedFile } = await setup();
 						const query = {
-							width: 200,
-							height: 200,
-							outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
+							...defaultQueryParameters,
 							forceUpdate: true,
 						};
 
@@ -416,29 +376,22 @@ describe('File Controller (API) - preview', () => {
 
 				it('should return status 200 for successful download', async () => {
 					const { uploadedFile } = await setup();
-					const query = {
-						width: 200,
-						height: 200,
-						outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
-					};
 
-					const response = await api.getPreview(`/file/preview/${uploadedFile.id}/${uploadedFile.name}`, query);
+					const response = await api.getPreview(
+						`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
+						defaultQueryParameters
+					);
 
 					expect(response.status).toEqual(200);
 				});
 
 				it('should return status 206 and required headers for the successful partial file stream download', async () => {
 					const { uploadedFile } = await setup();
-					const query = {
-						width: 200,
-						height: 200,
-						outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
-					};
 
 					const response = await api.getPreviewBytesRange(
 						`/file/preview/${uploadedFile.id}/${uploadedFile.name}`,
 						'bytes=0-',
-						query
+						defaultQueryParameters
 					);
 
 					expect(response.status).toEqual(206);
