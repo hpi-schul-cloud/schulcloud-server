@@ -99,6 +99,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#fetchBase64Logo" >fetchBase64Logo</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findExternalToolById" >findExternalToolById</a>
                             </li>
                             <li>
@@ -143,12 +147,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(externalToolRepo: <a href="../injectables/ExternalToolRepo.html" target="_self">ExternalToolRepo</a>, oauthProviderService: <a href="../classes/OauthProviderService.html" target="_self">OauthProviderService</a>, mapper: <a href="../injectables/ExternalToolServiceMapper.html" target="_self">ExternalToolServiceMapper</a>, schoolExternalToolRepo: <a href="../injectables/SchoolExternalToolRepo.html" target="_self">SchoolExternalToolRepo</a>, contextExternalToolRepo: <a href="../injectables/ContextExternalToolRepo.html" target="_self">ContextExternalToolRepo</a>, encryptionService: <a href="../interfaces/IEncryptionService.html" target="_self">IEncryptionService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, externalToolVersionService: <a href="../injectables/ExternalToolVersionService.html" target="_self">ExternalToolVersionService</a>)</code>
+<code>constructor(externalToolRepo: <a href="../injectables/ExternalToolRepo.html" target="_self">ExternalToolRepo</a>, oauthProviderService: <a href="../classes/OauthProviderService.html" target="_self">OauthProviderService</a>, mapper: <a href="../injectables/ExternalToolServiceMapper.html" target="_self">ExternalToolServiceMapper</a>, schoolExternalToolRepo: <a href="../injectables/SchoolExternalToolRepo.html" target="_self">SchoolExternalToolRepo</a>, contextExternalToolRepo: <a href="../injectables/ContextExternalToolRepo.html" target="_self">ContextExternalToolRepo</a>, encryptionService: <a href="../interfaces/IEncryptionService.html" target="_self">IEncryptionService</a>, legacyLogger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, externalToolVersionService: <a href="../injectables/ExternalToolVersionService.html" target="_self">ExternalToolVersionService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, httpService: HttpService)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:20</a></div>
                             </td>
                         </tr>
 
@@ -238,7 +242,7 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>logger</td>
+                                                        <td>legacyLogger</td>
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
@@ -254,6 +258,30 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/ExternalToolVersionService.html" target="_self" >ExternalToolVersionService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>httpService</td>
+                                                  
+                                                        <td>
+                                                                    <code>HttpService</code>
                                                         </td>
                                                   
                                                     <td>
@@ -298,8 +326,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="143"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:143</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="149"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:149</a></div>
                 </td>
             </tr>
 
@@ -369,8 +397,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="28"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:28</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="34"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:34</a></div>
                 </td>
             </tr>
 
@@ -440,8 +468,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="103"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:103</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="109"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:109</a></div>
                 </td>
             </tr>
 
@@ -493,6 +521,77 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="fetchBase64Logo"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>fetchBase64Logo</b></span>
+                        <a href="#fetchBase64Logo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>fetchBase64Logo(logoUrl: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="158"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:158</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>logoUrl</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;string&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findExternalToolById"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -511,8 +610,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="78"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:78</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="84"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:84</a></div>
                 </td>
             </tr>
 
@@ -580,8 +679,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="93"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:93</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="99"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:99</a></div>
                 </td>
             </tr>
 
@@ -649,8 +748,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="98"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:98</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="104"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:104</a></div>
                 </td>
             </tr>
 
@@ -720,8 +819,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="51"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:51</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="57"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:57</a></div>
                 </td>
             </tr>
 
@@ -803,8 +902,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="44"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:44</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="50"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:50</a></div>
                 </td>
             </tr>
 
@@ -887,8 +986,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="118"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:118</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="124"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:124</a></div>
                 </td>
             </tr>
 
@@ -959,8 +1058,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="131"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:131</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="137"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool.service.ts:137</a></div>
                 </td>
             </tr>
 
@@ -1038,17 +1137,21 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpService } from &#x27;@nestjs/axios&#x27;;
+import { Inject, Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
 import { EntityId, IFindOptions, Page } from &#x27;@shared/domain&#x27;;
 import { DefaultEncryptionService, IEncryptionService } from &#x27;@shared/infra/encryption&#x27;;
 import { OauthProviderService } from &#x27;@shared/infra/oauth-provider&#x27;;
 import { ProviderOauthClient } from &#x27;@shared/infra/oauth-provider/dto&#x27;;
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from &#x27;@shared/repo&#x27;;
-import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger, Logger } from &#x27;@src/core/logger&#x27;;
+import { AxiosResponse } from &#x27;axios&#x27;;
+import { lastValueFrom } from &#x27;rxjs&#x27;;
 import { TokenEndpointAuthMethod } from &#x27;../../common/enum&#x27;;
 import { ExternalToolSearchQuery } from &#x27;../../common/interface&#x27;;
 import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
 import { ExternalTool, Oauth2ToolConfig } from &#x27;../domain&#x27;;
+import { ExternalToolLogoFetchedLoggable } from &#x27;../loggable&#x27;;
 import { ExternalToolServiceMapper } from &#x27;./external-tool-service.mapper&#x27;;
 import { ExternalToolVersionService } from &#x27;./external-tool-version.service&#x27;;
 
@@ -1061,8 +1164,10 @@ export class ExternalToolService {
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly contextExternalToolRepo: ContextExternalToolRepo,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: IEncryptionService,
-		private readonly logger: LegacyLogger,
-		private readonly externalToolVersionService: ExternalToolVersionService
+		private readonly legacyLogger: LegacyLogger,
+		private readonly externalToolVersionService: ExternalToolVersionService,
+		private readonly logger: Logger,
+		private readonly httpService: HttpService
 	) {}
 
 	async createExternalTool(externalTool: ExternalTool): Promise&lt;ExternalTool&gt; {
@@ -1100,7 +1205,7 @@ export class ExternalToolService {
 					try {
 						await this.addExternalOauth2DataToConfig(tool.config);
 					} catch (e) {
-						this.logger.debug(
+						this.legacyLogger.debug(
 							&#x60;Could not resolve oauth2Config of tool with clientId ${tool.config.clientId}. It will be filtered out.&#x60;
 						);
 						return undefined;
@@ -1121,7 +1226,7 @@ export class ExternalToolService {
 			try {
 				await this.addExternalOauth2DataToConfig(tool.config);
 			} catch (e) {
-				this.logger.debug(
+				this.legacyLogger.debug(
 					&#x60;Could not resolve oauth2Config of tool with clientId ${tool.config.clientId}. It will be filtered out.&#x60;
 				);
 				throw new UnprocessableEntityException(&#x60;Could not resolve oauth2Config of tool ${tool.name}.&#x60;);
@@ -1187,6 +1292,18 @@ export class ExternalToolService {
 		config.tokenEndpointAuthMethod &#x3D; oauthClient.token_endpoint_auth_method as TokenEndpointAuthMethod;
 		config.redirectUris &#x3D; oauthClient.redirect_uris;
 		config.frontchannelLogoutUri &#x3D; oauthClient.frontchannel_logout_uri;
+	}
+
+	async fetchBase64Logo(logoUrl: string): Promise&lt;string&gt; {
+		const response: AxiosResponse&lt;ArrayBuffer&gt; &#x3D; await lastValueFrom(
+			this.httpService.get(logoUrl, { responseType: &#x27;arraybuffer&#x27; })
+		);
+		this.logger.info(new ExternalToolLogoFetchedLoggable(logoUrl));
+
+		const buffer: Buffer &#x3D; Buffer.from(response.data);
+		const logoBase64: string &#x3D; buffer.toString(&#x27;base64&#x27;);
+
+		return logoBase64;
 	}
 }
 </code></pre>

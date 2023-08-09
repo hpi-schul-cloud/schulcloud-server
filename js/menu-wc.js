@@ -697,13 +697,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/ExternalToolModule.html" data-type="entity-link" >ExternalToolModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-ExternalToolModule-cc15880a224eb95111acb650fc431fbbbbb5fe8a75270e5c66be812fe82c70e931e599f3f99387e47c57d4174d20516476d38fed0d85eafb75f85cdb8a34d888"' : 'data-bs-target="#xs-injectables-links-module-ExternalToolModule-cc15880a224eb95111acb650fc431fbbbbb5fe8a75270e5c66be812fe82c70e931e599f3f99387e47c57d4174d20516476d38fed0d85eafb75f85cdb8a34d888"' }>
+                                        'data-bs-target="#injectables-links-module-ExternalToolModule-f074a797c65f9b0e55271bf1626a4954d176360f66e80b07d8407435d8fe788f150a80ce62be85a73502af25cb4eaa542ddbe38ef329aa91f717be696e63829e"' : 'data-bs-target="#xs-injectables-links-module-ExternalToolModule-f074a797c65f9b0e55271bf1626a4954d176360f66e80b07d8407435d8fe788f150a80ce62be85a73502af25cb4eaa542ddbe38ef329aa91f717be696e63829e"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ExternalToolModule-cc15880a224eb95111acb650fc431fbbbbb5fe8a75270e5c66be812fe82c70e931e599f3f99387e47c57d4174d20516476d38fed0d85eafb75f85cdb8a34d888"' :
-                                        'id="xs-injectables-links-module-ExternalToolModule-cc15880a224eb95111acb650fc431fbbbbb5fe8a75270e5c66be812fe82c70e931e599f3f99387e47c57d4174d20516476d38fed0d85eafb75f85cdb8a34d888"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ExternalToolModule-f074a797c65f9b0e55271bf1626a4954d176360f66e80b07d8407435d8fe788f150a80ce62be85a73502af25cb4eaa542ddbe38ef329aa91f717be696e63829e"' :
+                                        'id="xs-injectables-links-module-ExternalToolModule-f074a797c65f9b0e55271bf1626a4954d176360f66e80b07d8407435d8fe788f150a80ce62be85a73502af25cb4eaa542ddbe38ef329aa91f717be696e63829e"' }>
                                         <li class="link">
                                             <a href="injectables/ExternalToolParameterValidationService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ExternalToolParameterValidationService</a>
                                         </li>
@@ -3115,6 +3115,18 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/ExternalToolFactory.html" data-type="entity-link" >ExternalToolFactory</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ExternalToolLogo.html" data-type="entity-link" >ExternalToolLogo</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ExternalToolLogoFetchedLoggable.html" data-type="entity-link" >ExternalToolLogoFetchedLoggable</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ExternalToolLogoNotFoundLoggableException.html" data-type="entity-link" >ExternalToolLogoNotFoundLoggableException</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ExternalToolLogoSizeExceededLoggableException.html" data-type="entity-link" >ExternalToolLogoSizeExceededLoggableException</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ExternalToolPseudonymEntity.html" data-type="entity-link" >ExternalToolPseudonymEntity</a>

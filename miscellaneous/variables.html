@@ -163,6 +163,9 @@
                             <a href="#config" title="apps/server/src/shared/controller/swagger.ts" ><b>config</b>&nbsp;&nbsp;&nbsp;(apps/.../swagger.ts)</a>
                         </li>
                         <li>
+                            <a href="#contentTypeDetector" title="apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts" ><b>contentTypeDetector</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool.uc.ts)</a>
+                        </li>
+                        <li>
                             <a href="#contextExternalToolEntityFactory" title="apps/server/src/shared/testing/factory/context-external-tool-entity.factory.ts" ><b>contextExternalToolEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../context-external-tool-entity.factory.ts)</a>
                         </li>
                         <li>
@@ -2908,6 +2911,40 @@ must use @ApiProperty</p>
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="contentTypeDetector"></a>
+                    <span class="name">
+                        <span ><b>contentTypeDetector</b></span>
+                        <a href="#contentTypeDetector"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Record&lt;string, string&gt;</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+	ffd8ffe0: &#x27;image/jpeg&#x27;,
+	ffd8ffe1: &#x27;image/jpeg&#x27;,
+	&#x27;89504e47&#x27;: &#x27;image/png&#x27;,
+	&#x27;47494638&#x27;: &#x27;image/gif&#x27;,
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/shared/testing/factory/context-external-tool-entity.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -3854,7 +3891,7 @@ must use @ApiProperty</p>
 		return {
 			name: &#x60;external-tool-${sequence}&#x60;,
 			url: &#x27;&#x27;,
-			logoUrl: &#x27;&#x27;,
+			logoUrl: &#x27;https://logourl.com&#x27;,
 			config: new BasicToolConfigEntity({
 				type: ToolConfigType.BASIC,
 				baseUrl: &#x27;mockBaseUrl&#x27;,

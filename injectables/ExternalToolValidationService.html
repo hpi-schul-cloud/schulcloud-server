@@ -95,6 +95,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
+                                <a href="#validateLogoSize" >validateLogoSize</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#validateLti11Config" >validateLti11Config</a>
                             </li>
                             <li>
@@ -124,12 +128,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, externalToolParameterValidationService: <a href="../injectables/ExternalToolParameterValidationService.html" target="_self">ExternalToolParameterValidationService</a>)</code>
+<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, externalToolParameterValidationService: <a href="../injectables/ExternalToolParameterValidationService.html" target="_self">ExternalToolParameterValidationService</a>, toolFeatures: <a href="../interfaces/IToolFeatures.html" target="_self">IToolFeatures</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:10</a></div>
                             </td>
                         </tr>
 
@@ -163,6 +167,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/ExternalToolParameterValidationService.html" target="_self" >ExternalToolParameterValidationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>toolFeatures</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/IToolFeatures.html" target="_self" >IToolFeatures</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -207,8 +223,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="48"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:48</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="100"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:100</a></div>
                 </td>
             </tr>
 
@@ -278,8 +294,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="14"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:14</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="17"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:17</a></div>
                 </td>
             </tr>
 
@@ -331,6 +347,77 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="validateLogoSize"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>validateLogoSize</b></span>
+                        <a href="#validateLogoSize"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>validateLogoSize(externalTool: <a href="../classes/ExternalTool.html" target="_self">Partial&lt;ExternalTool&gt;</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="59"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:59</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>externalTool</td>
+                                    <td>
+                                                <code><a href="../classes/ExternalTool.html" target="_self" >Partial&lt;ExternalTool&gt;</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="validateLti11Config"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
@@ -349,8 +436,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="38"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:38</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="90"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:90</a></div>
                 </td>
             </tr>
 
@@ -421,8 +508,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="22"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:22</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="74"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:74</a></div>
                 </td>
             </tr>
 
@@ -492,8 +579,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="56"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:56</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="27"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-validation.service.ts:27</a></div>
                 </td>
             </tr>
 
@@ -559,9 +646,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
+import { IToolFeatures, ToolFeatures } from &#x27;../../tool-config&#x27;;
 import { ExternalTool } from &#x27;../domain&#x27;;
+import { ExternalToolLogoSizeExceededLoggableException } from &#x27;../loggable&#x27;;
 import { ExternalToolParameterValidationService } from &#x27;./external-tool-parameter-validation.service&#x27;;
 import { ExternalToolService } from &#x27;./external-tool.service&#x27;;
 
@@ -569,7 +658,8 @@ import { ExternalToolService } from &#x27;./external-tool.service&#x27;;
 export class ExternalToolValidationService {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
-		private readonly externalToolParameterValidationService: ExternalToolParameterValidationService
+		private readonly externalToolParameterValidationService: ExternalToolParameterValidationService,
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
 	) {}
 
 	async validateCreate(externalTool: ExternalTool): Promise&lt;void&gt; {
@@ -578,6 +668,55 @@ export class ExternalToolValidationService {
 		await this.validateOauth2Config(externalTool);
 
 		this.validateLti11Config(externalTool);
+
+		this.validateLogoSize(externalTool);
+	}
+
+	async validateUpdate(toolId: string, externalTool: Partial&lt;ExternalTool&gt;): Promise&lt;void&gt; {
+		if (toolId !&#x3D;&#x3D; externalTool.id) {
+			throw new ValidationError(&#x60;tool_id_mismatch: The tool has no id or it does not match the path parameter.&#x60;);
+		}
+
+		await this.externalToolParameterValidationService.validateCommon(externalTool);
+
+		const loadedTool: ExternalTool &#x3D; await this.externalToolService.findExternalToolById(toolId);
+		if (
+			ExternalTool.isOauth2Config(loadedTool.config) &amp;&amp;
+			externalTool.config &amp;&amp;
+			externalTool.config.type !&#x3D;&#x3D; loadedTool.config.type
+		) {
+			throw new ValidationError(
+				&#x60;tool_type_immutable: The Config Type of the tool ${externalTool.name || &#x27;&#x27;} is immutable.&#x60;
+			);
+		}
+
+		if (
+			externalTool.config &amp;&amp;
+			ExternalTool.isOauth2Config(externalTool.config) &amp;&amp;
+			ExternalTool.isOauth2Config(loadedTool.config) &amp;&amp;
+			externalTool.config.clientId !&#x3D;&#x3D; loadedTool.config.clientId
+		) {
+			throw new ValidationError(
+				&#x60;tool_clientId_immutable: The Client Id of the tool ${externalTool.name || &#x27;&#x27;} is immutable.&#x60;
+			);
+		}
+
+		this.validateLogoSize(externalTool);
+	}
+
+	private validateLogoSize(externalTool: Partial&lt;ExternalTool&gt;): void {
+		if (!externalTool.logo) {
+			return;
+		}
+
+		const buffer: Buffer &#x3D; Buffer.from(externalTool.logo, &#x27;base64&#x27;);
+
+		if (buffer.length &gt; this.toolFeatures.maxExternalToolLogoSizeInBytes) {
+			throw new ExternalToolLogoSizeExceededLoggableException(
+				externalTool.id,
+				this.toolFeatures.maxExternalToolLogoSizeInBytes
+			);
+		}
 	}
 
 	private async validateOauth2Config(externalTool: ExternalTool): Promise&lt;void&gt; {
@@ -612,36 +751,6 @@ export class ExternalToolValidationService {
 			duplicate &#x3D; await this.externalToolService.findExternalToolByOAuth2ConfigClientId(externalTool.config.clientId);
 		}
 		return duplicate &#x3D;&#x3D; null || duplicate.id &#x3D;&#x3D;&#x3D; externalTool.id;
-	}
-
-	async validateUpdate(toolId: string, externalTool: Partial&lt;ExternalTool&gt;): Promise&lt;void&gt; {
-		if (toolId !&#x3D;&#x3D; externalTool.id) {
-			throw new ValidationError(&#x60;tool_id_mismatch: The tool has no id or it does not match the path parameter.&#x60;);
-		}
-
-		await this.externalToolParameterValidationService.validateCommon(externalTool);
-
-		const loadedTool: ExternalTool &#x3D; await this.externalToolService.findExternalToolById(toolId);
-		if (
-			ExternalTool.isOauth2Config(loadedTool.config) &amp;&amp;
-			externalTool.config &amp;&amp;
-			externalTool.config.type !&#x3D;&#x3D; loadedTool.config.type
-		) {
-			throw new ValidationError(
-				&#x60;tool_type_immutable: The Config Type of the tool ${externalTool.name || &#x27;&#x27;} is immutable.&#x60;
-			);
-		}
-
-		if (
-			externalTool.config &amp;&amp;
-			ExternalTool.isOauth2Config(externalTool.config) &amp;&amp;
-			ExternalTool.isOauth2Config(loadedTool.config) &amp;&amp;
-			externalTool.config.clientId !&#x3D;&#x3D; loadedTool.config.clientId
-		) {
-			throw new ValidationError(
-				&#x60;tool_clientId_immutable: The Client Id of the tool ${externalTool.name || &#x27;&#x27;} is immutable.&#x60;
-			);
-		}
 	}
 }
 </code></pre>

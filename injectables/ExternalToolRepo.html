@@ -645,7 +645,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:88</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:90</a></code>
 </div>
                 </td>
             </tr>
@@ -1664,11 +1664,15 @@ export class ExternalToolRepo extends BaseDORepo&lt;ExternalTool, ExternalToolEn
 	}
 
 	mapEntityToDO(entity: ExternalToolEntity): ExternalTool {
-		return ExternalToolRepoMapper.mapEntityToDO(entity);
+		const domainObject &#x3D; ExternalToolRepoMapper.mapEntityToDO(entity);
+
+		return domainObject;
 	}
 
 	mapDOToEntityProperties(entityDO: ExternalTool): IExternalToolProperties {
-		return ExternalToolRepoMapper.mapDOToEntityProperties(entityDO);
+		const entity &#x3D; ExternalToolRepoMapper.mapDOToEntityProperties(entityDO);
+
+		return entity;
 	}
 }
 </code></pre>
