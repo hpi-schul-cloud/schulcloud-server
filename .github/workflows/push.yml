@@ -63,7 +63,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./Dockerfile
+          file: ./DockerfileS
           platforms: linux/amd64
           push: true
           tags: ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }}
