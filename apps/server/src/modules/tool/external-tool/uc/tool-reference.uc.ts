@@ -66,20 +66,19 @@ export class ToolReferenceUc {
 			contextExternalTool,
 			status
 		);
-		this.buildLogoUrl(toolReference, externalTool);
+		toolReference.logoUrl = this.buildLogoUrl(externalTool);
 
 		return toolReference;
 	}
 
-	private buildLogoUrl(toolReference: ToolReference, externalTool: ExternalTool): void {
+	private buildLogoUrl(externalTool: ExternalTool): string {
 		const { logo, id } = externalTool;
 		const backendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
 
 		if (logo) {
-			toolReference.logoUrl = `${backendUrl}/v3/tools/external-tools/${id ?? ''}/logo`;
-		} else {
-			toolReference.logoUrl = '';
+			return `${backendUrl}/v3/tools/external-tools/${id ?? ''}/logo`;
 		}
+		return '';
 	}
 
 	private async ensureToolPermissions(userId: EntityId, contextExternalTool: ContextExternalTool): Promise<void> {

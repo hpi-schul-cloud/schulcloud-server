@@ -1,12 +1,20 @@
-import { BadRequestException } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
+import { BusinessError } from '@shared/common';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
-export class ExternalToolLogoSizeExceededLoggableException extends BadRequestException implements Loggable {
+export class ExternalToolLogoSizeExceededLoggableException extends BusinessError implements Loggable {
 	constructor(
 		private readonly externalToolId: string | undefined,
 		private readonly maxExternalToolLogoSizeInBytes: number
 	) {
-		super();
+		super(
+			{
+				type: 'EXTERNAL_TOOL_LOGO_SIZE_EXCEEDED',
+				title: 'External tool logo size exceeded.',
+				defaultMessage: 'External tool logo size exceeded.',
+			},
+			HttpStatus.BAD_REQUEST
+		);
 	}
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {

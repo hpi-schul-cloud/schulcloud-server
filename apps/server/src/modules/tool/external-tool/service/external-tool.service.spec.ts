@@ -699,14 +699,6 @@ describe('ExternalToolService', () => {
 	});
 
 	describe('fetchBase64Logo', () => {
-		describe('when logoUrl is undefined', () => {
-			it('should return null', async () => {
-				const result: string | null = await service.fetchBase64Logo(undefined);
-
-				expect(result).toBeNull();
-			});
-		});
-
 		describe('when logoUrl is given', () => {
 			const setup = () => {
 				const logoUrl = 'https://example.com/logo.png';
@@ -758,7 +750,9 @@ describe('ExternalToolService', () => {
 			const setup = () => {
 				const logoUrl = 'https://example.com/logo.png';
 
-				httpService.get.mockReturnValue(throwError(() => new HttpException('Failed to fetch logo', 404)));
+				httpService.get.mockReturnValue(
+					throwError(() => new HttpException('Failed to fetch logo', HttpStatus.NOT_FOUND))
+				);
 
 				return {
 					logoUrl,

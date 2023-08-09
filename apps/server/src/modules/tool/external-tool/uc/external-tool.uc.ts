@@ -23,7 +23,7 @@ export class ExternalToolUc {
 
 	async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
 		const externalTool = new ExternalTool({ ...externalToolCreate });
-		await this.addLogoToExternalToolIfExists(externalTool);
+		externalTool.logo = await this.fetchLogo(externalTool);
 
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 		await this.toolValidationService.validateCreate(externalTool);
@@ -36,7 +36,7 @@ export class ExternalToolUc {
 	async updateExternalTool(userId: EntityId, toolId: string, externalTool: ExternalToolUpdate): Promise<ExternalTool> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
-		await this.addLogoToExternalToolIfExists(externalTool);
+		externalTool.logo = await this.fetchLogo(externalTool);
 
 		await this.toolValidationService.validateUpdate(toolId, externalTool);
 
@@ -54,17 +54,16 @@ export class ExternalToolUc {
 		return saved;
 	}
 
-	private async addLogoToExternalToolIfExists(externalTool: Partial<ExternalTool>): Promise<Partial<ExternalTool>> {
-		if (!externalTool.logoUrl) {
-			return externalTool;
+	private async fetchLogo(externalTool: Partial<ExternalTool>): Promise<string | undefined> {
+		if (externalTool.logoUrl) {
+			const base64Logo: string | null = await this.externalToolService.fetchBase64Logo(externalTool.logoUrl);
+
+			if (base64Logo) {
+				return base64Logo;
+			}
 		}
 
-		const base64Logo: string | null = await this.externalToolService.fetchBase64Logo(externalTool.logoUrl);
-		if (base64Logo) {
-			externalTool.logo = base64Logo;
-		}
-
-		return externalTool;
+		return undefined;
 	}
 
 	async findExternalTool(

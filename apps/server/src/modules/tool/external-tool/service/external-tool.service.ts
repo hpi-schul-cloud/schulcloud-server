@@ -155,11 +155,7 @@ export class ExternalToolService {
 		config.frontchannelLogoutUri = oauthClient.frontchannel_logout_uri;
 	}
 
-	async fetchBase64Logo(logoUrl: string | undefined): Promise<string | null> {
-		if (!logoUrl) {
-			return null;
-		}
-
+	async fetchBase64Logo(logoUrl: string): Promise<string> {
 		const response: AxiosResponse<ArrayBuffer> = await lastValueFrom(
 			this.httpService.get(logoUrl, { responseType: 'arraybuffer' })
 		);
