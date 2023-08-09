@@ -57,8 +57,65 @@ export const enum FileRefOwnerModel {
 	TEAMS = 'teams',
 }
 
+export const enum RefPermModel {
+	USER = 'user',
+	ROLE = 'role',
+}
+
+export interface FilePermissionProps {
+	refId: EntityId;
+	refPermModel: RefPermModel;
+	write?: boolean;
+	read?: boolean;
+	create?: boolean;
+	delete?: boolean;
+}
+
+@Embeddable()
+export class FilePermission {
+	@Property({ nullable: false })
+	refId: ObjectId;
+
+	@Enum({ nullable: false })
+	refPermModel: RefPermModel;
+
+	@Property()
+	write = true;
+
+	@Property()
+	read = true;
+
+	@Property()
+	create = true;
+
+	@Property()
+	delete = true;
+
+	constructor(props: FilePermissionProps) {
+		this.refId = new ObjectId(props.refId);
+		this.refPermModel = props.refPermModel;
+
+		if (props.write !== undefined) {
+			this.write = props.write;
+		}
+
+		if (props.read !== undefined) {
+			this.read = props.read;
+		}
+
+		if (props.create !== undefined) {
+			this.create = props.create;
+		}
+
+		if (props.delete !== undefined) {
+			this.delete = props.delete;
+		}
+	}
+}
+
 export interface FileProps {
 	deletedAt?: Date;
+	deleted?: boolean;
 	isDirectory?: boolean;
 	name: string;
 	size?: number;
@@ -74,13 +131,19 @@ export interface FileProps {
 	ownerId: EntityId;
 	refOwnerModel: FileRefOwnerModel;
 	creatorId: EntityId;
+	permissions: FilePermission[];
 	lockId?: EntityId;
+	versionKey?: number;
 }
 
 @Entity({ collection: 'files' })
+@Index({ options: { 'permissions.refId': 1 } })
 export class File extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	deletedAt?: Date;
+
+	@Property()
+	deleted = false;
 
 	@Property()
 	isDirectory = false;
@@ -112,20 +175,20 @@ export class File extends BaseEntityWithTimestamps {
 	@Embedded(() => SecurityCheck, { object: true, nullable: false })
 	securityCheck: SecurityCheck = new SecurityCheck({});
 
-	@Index()
 	@Property({ nullable: true })
-	shareTokens?: string[];
-
 	@Index()
+	shareTokens: string[] = [];
+
 	@Property({ fieldName: 'parent', nullable: true })
+	@Index()
 	_parentId?: ObjectId;
 
 	get parentId(): EntityId | undefined {
 		return this._parentId?.toHexString();
 	}
 
-	@Index()
 	@Property({ fieldName: 'owner', nullable: false })
+	@Index()
 	_ownerId: ObjectId;
 
 	get ownerId(): EntityId {
@@ -135,13 +198,16 @@ export class File extends BaseEntityWithTimestamps {
 	@Enum({ nullable: false })
 	refOwnerModel: FileRefOwnerModel;
 
-	@Index()
 	@Property({ fieldName: 'creator' })
+	@Index()
 	_creatorId: ObjectId;
 
 	get creatorId(): EntityId {
 		return this._creatorId.toHexString();
 	}
+
+	@Embedded(() => FilePermission, { array: true, nullable: false })
+	permissions: FilePermission[];
 
 	@Property({ fieldName: 'lockId', nullable: true })
 	_lockId?: ObjectId;
@@ -149,6 +215,9 @@ export class File extends BaseEntityWithTimestamps {
 	get lockId(): EntityId | undefined {
 		return this._lockId?.toHexString();
 	}
+
+	@Property({ fieldName: '__v', nullable: true })
+	versionKey?: number; // mongoose model version key
 
 	private validate(props: FileProps) {
 		if (props.isDirectory) return;
@@ -166,6 +235,10 @@ export class File extends BaseEntityWithTimestamps {
 		this.validate(props);
 
 		this.deletedAt = props.deletedAt;
+
+		if (props.deleted !== undefined) {
+			this.deleted = props.deleted;
+		}
 
 		if (props.isDirectory !== undefined) {
 			this.isDirectory = props.isDirectory;
@@ -198,9 +271,14 @@ export class File extends BaseEntityWithTimestamps {
 		this._ownerId = new ObjectId(props.ownerId);
 		this.refOwnerModel = props.refOwnerModel;
 		this._creatorId = new ObjectId(props.creatorId);
+		this.permissions = props.permissions;
 
 		if (props.lockId !== undefined) {
 			this._lockId = new ObjectId(props.lockId);
+		}
+
+		if (props.versionKey !== undefined) {
+			this.versionKey = props.versionKey;
 		}
 	}
 }

@@ -1,4 +1,4 @@
-import { File, FileRefOwnerModel, FileProps } from '@shared/domain';
+import { File, FilePermission, FileProps, FileRefOwnerModel, RefPermModel } from '@shared/domain';
 
 import { BaseFactory } from './base.factory';
 import { storageProviderFactory } from './storageprovider.factory';
@@ -18,5 +18,6 @@ export const userFileFactory = BaseFactory.define<File, FileProps>(File, ({ sequ
 		ownerId: userId,
 		refOwnerModel: FileRefOwnerModel.USER,
 		creatorId: userId,
+		permissions: [new FilePermission({ refId: userId, refPermModel: RefPermModel.USER })],
 	};
 });

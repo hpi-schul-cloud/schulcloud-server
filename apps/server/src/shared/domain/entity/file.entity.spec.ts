@@ -1,7 +1,7 @@
 import { ObjectId } from 'bson';
 
 import { setupEntities, storageProviderFactory } from '@shared/testing';
-import { File, FileRefOwnerModel } from './file.entity';
+import { File, FilePermission, FileRefOwnerModel, RefPermModel } from './file.entity';
 
 describe('file entity', () => {
 	beforeAll(async () => {
@@ -23,6 +23,7 @@ describe('file entity', () => {
 					ownerId: userId,
 					refOwnerModel: FileRefOwnerModel.USER,
 					creatorId: userId,
+					permissions: [new FilePermission({ refId: userId, refPermModel: RefPermModel.USER })],
 				});
 				expect(file).toBeInstanceOf(File);
 			});
@@ -37,6 +38,7 @@ describe('file entity', () => {
 						ownerId: userId,
 						refOwnerModel: FileRefOwnerModel.USER,
 						creatorId: userId,
+						permissions: [new FilePermission({ refId: userId, refPermModel: RefPermModel.USER })],
 					});
 				expect(call).toThrow();
 			});
@@ -52,6 +54,7 @@ describe('file entity', () => {
 						ownerId: userId,
 						refOwnerModel: FileRefOwnerModel.USER,
 						creatorId: userId,
+						permissions: [new FilePermission({ refId: userId, refPermModel: RefPermModel.USER })],
 					});
 				expect(call).toThrow();
 			});
@@ -66,6 +69,7 @@ describe('file entity', () => {
 						ownerId: userId,
 						refOwnerModel: FileRefOwnerModel.USER,
 						creatorId: userId,
+						permissions: [new FilePermission({ refId: userId, refPermModel: RefPermModel.USER })],
 					});
 				expect(call).toThrow();
 			});

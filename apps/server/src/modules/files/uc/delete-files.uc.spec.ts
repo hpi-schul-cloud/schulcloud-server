@@ -4,7 +4,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from 'bson';
 
-import { File, FileRefOwnerModel, StorageProvider } from '@shared/domain/entity';
+import { File, FilePermission, FileRefOwnerModel, RefPermModel, StorageProvider } from '@shared/domain/entity';
 import { StorageProviderRepo } from '@shared/repo/storageprovider/storageprovider.repo';
 import { storageProviderFactory } from '@shared/testing';
 
@@ -37,6 +37,7 @@ describe('DeleteFileUC', () => {
 			ownerId: userId,
 			refOwnerModel: FileRefOwnerModel.USER,
 			creatorId: userId,
+			permissions: [new FilePermission({ refId: userId, refPermModel: RefPermModel.USER })],
 		}),
 		new File({
 			name: 'filename2',
@@ -47,6 +48,7 @@ describe('DeleteFileUC', () => {
 			ownerId: userId,
 			refOwnerModel: FileRefOwnerModel.USER,
 			creatorId: userId,
+			permissions: [new FilePermission({ refId: userId, refPermModel: RefPermModel.USER })],
 		}),
 	];
 
