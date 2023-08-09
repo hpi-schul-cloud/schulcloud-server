@@ -1,11 +1,62 @@
-import { Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
+import { Embeddable, Embedded, Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { v4 as uuid } from 'uuid';
 
 import { EntityId } from '@shared/domain';
-
 import { BaseEntityWithTimestamps } from './base.entity';
 import { StorageProvider } from './storageprovider.entity';
 import { User } from './user.entity';
+
+export const enum SecurityCheckScanStatus {
+	PENDING = 'pending',
+	VERIFIED = 'verified',
+	BLOCKED = 'blocked',
+	WONT_CHECK = 'wont-check',
+}
+
+export interface SecurityCheckProps {
+	status?: SecurityCheckScanStatus;
+	reason?: string;
+	requestToken?: string;
+}
+
+@Embeddable()
+export class SecurityCheck {
+	@Enum()
+	status: SecurityCheckScanStatus = SecurityCheckScanStatus.PENDING;
+
+	@Property()
+	reason = 'not yet scanned';
+
+	@Property()
+	requestToken?: string = uuid();
+
+	@Property()
+	createdAt = new Date();
+
+	@Property()
+	updatedAt = new Date();
+
+	constructor(props: SecurityCheckProps) {
+		if (props.status !== undefined) {
+			this.status = props.status;
+		}
+
+		if (props.reason !== undefined) {
+			this.reason = props.reason;
+		}
+
+		if (props.requestToken !== undefined) {
+			this.requestToken = props.requestToken;
+		}
+	}
+}
+
+export const enum FileRefOwnerModel {
+	USER = 'user',
+	COURSE = 'course',
+	TEAMS = 'teams',
+}
 
 export interface FileProps {
 	deletedAt?: Date;
@@ -26,12 +77,6 @@ export interface FileProps {
 	lockId?: User;
 }
 
-export const enum FileRefOwnerModel {
-	USER = 'user',
-	COURSE = 'course',
-	TEAMS = 'teams',
-}
-
 @Entity({ collection: 'files' })
 @Index({ properties: ['shareTokens'] })
 export class File extends BaseEntityWithTimestamps {
@@ -49,6 +94,7 @@ export class File extends BaseEntityWithTimestamps {
 		this.storageProvider = props.storageProvider;
 		this.thumbnail = props.thumbnail;
 		this.thumbnailRequestToken = props.thumbnailRequestToken;
+		this.securityCheck = new SecurityCheck({});
 		this.shareTokens = props.shareTokens;
 		this.parent = props.parent;
 		this._ownerId = new ObjectId(props.ownerId);
@@ -93,6 +139,9 @@ export class File extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: true })
 	thumbnailRequestToken?: string;
+
+	@Embedded(() => SecurityCheck, { object: true, nullable: false })
+	securityCheck: SecurityCheck;
 
 	@Property({ nullable: true })
 	shareTokens?: string[];
