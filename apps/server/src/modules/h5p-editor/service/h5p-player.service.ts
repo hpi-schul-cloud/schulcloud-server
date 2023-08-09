@@ -16,7 +16,7 @@ export const H5PPlayerService = {
 			undefined,
 			h5pUrlGenerator,
 			await Translator.translate(),
-			undefined,
+			undefined
 		);
 
 		h5pPlayer.setRenderer((model) => model);
