@@ -67,7 +67,6 @@ export class H5PEditorUc {
 
 	public async getAjax(query: AjaxGetQueryParams, currentUser: ICurrentUser) {
 		const user = this.changeUserType(currentUser);
-		const language = await this.getUserLanguage(currentUser);
 
 		try {
 			const result = await this.h5pAjaxEndpoint.getAjax(
@@ -75,7 +74,7 @@ export class H5PEditorUc {
 				query.machineName,
 				query.majorVersion,
 				query.minorVersion,
-				language,
+				query.language,
 				user
 			);
 
@@ -96,12 +95,11 @@ export class H5PEditorUc {
 		try {
 			const filesFile = files?.find((file) => file.fieldname === 'file');
 			const libraryUploadFile = files?.find((file) => file.fieldname === 'h5p');
-			const language = await this.getUserLanguage(currentUser);
 
 			const result = await this.h5pAjaxEndpoint.postAjax(
 				query.action,
 				body,
-				language,
+				query.language,
 				user,
 				filesFile && {
 					data: filesFile.buffer,
@@ -223,9 +221,8 @@ export class H5PEditorUc {
 		return playerModel;
 	}
 
-	public async getEmptyH5pEditor(currentUser: ICurrentUser) {
+	public async getEmptyH5pEditor(currentUser: ICurrentUser, language: string) {
 		// TODO: await this.checkPermission...
-		const language = await this.getUserLanguage(currentUser);
 		const user = this.changeUserType(currentUser);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		const createdH5PEditor: IEditorModel = await this.h5pEditor.render(
@@ -237,9 +234,8 @@ export class H5PEditorUc {
 		return createdH5PEditor;
 	}
 
-	public async getH5pEditor(currentUser: ICurrentUser, contentId: string) {
+	public async getH5pEditor(currentUser: ICurrentUser, contentId: string, language: string) {
 		// TODO: await this.checkPermission...
-		const language = await this.getUserLanguage(currentUser);
 		const user = this.changeUserType(currentUser);
 
 		const [editorModel, content] = await Promise.all([
@@ -312,9 +308,9 @@ export class H5PEditorUc {
 	private changeUserType(currentUser: ICurrentUser): IUser {
 		// TODO: declare IUser (e.g. add roles, schoolId, etc.)
 		const user: IUser = {
-			canCreateRestricted: false,
-			canInstallRecommended: false,
-			canUpdateAndInstallLibraries: false,
+			canCreateRestricted: true,
+			canInstallRecommended: true,
+			canUpdateAndInstallLibraries: true,
 			email: '',
 			id: currentUser.userId,
 			name: '',
