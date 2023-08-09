@@ -16,32 +16,11 @@ import { H5PEditorController } from './controller';
 import { s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
 import { H5PEditorModule, createS3ClientAdapter } from './h5p-editor.module';
 import { LibraryRepo } from './libraryStorage/library.repo';
-import { H5PEditorModule, createS3ClientAdapter } from './h5p-editor.module';
 import { LibraryStorage } from './libraryStorage/libraryStorage';
 import { H5PAjaxEndpointService, H5PEditorService, H5PPlayerService } from './service';
 import { TemporaryFileStorage } from './temporary-file-storage/temporary-file-storage';
 import { TemporaryFileRepo } from './temporary-file-storage/temporary-file.repo';
 import { H5PEditorUc } from './uc/h5p.uc';
-import { S3ClientAdapter } from '../files-storage/client/s3-client.adapter';
-import { H5PContentRepo } from './contentStorage/h5p-content.repo';
-import { LibraryRepo } from './libraryStorage/library.repo';
-import { s3ConfigLibraries } from './s3-config';
-
-const storages = [
-	ContentStorage,
-	LibraryStorage,
-	{
-		provide: 'S3ClientAdapter_Libraries',
-		useFactory: createS3ClientAdapter,
-		inject: ['S3Config_Libraries', LegacyLogger],
-	},
-	LibraryRepo,
-	{
-		provide: 'S3Config_Libraries',
-		useValue: s3ConfigLibraries,
-	},
-	{ provide: TemporaryFileStorage, useValue: new TemporaryFileStorage(path.join(os.tmpdir(), '/h5p_temporary')) },
-];
 
 const imports = [
 	H5PEditorModule,
@@ -84,7 +63,6 @@ const providers = [
 		inject: ['S3Config_Libraries', LegacyLogger],
 	},
 	UserRepo,
-	...storages,
 ];
 
 @Module({

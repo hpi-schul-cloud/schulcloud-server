@@ -357,11 +357,8 @@ export class LibraryStorage implements ILibraryStorage {
 	 */
 	public async listAddons(): Promise<ILibraryMetadata[]> {
 		const installedLibraryNames = await this.getInstalledLibraryNames();
-		console.log(installedLibraryNames);
 		const installedLibraries = await Promise.all(installedLibraryNames.map((addonName) => this.getLibrary(addonName)));
-		console.log(installedLibraries);
 		const addons = installedLibraries.filter((library) => library.addTo !== undefined);
-		console.log(addons);
 
 		return addons;
 	}

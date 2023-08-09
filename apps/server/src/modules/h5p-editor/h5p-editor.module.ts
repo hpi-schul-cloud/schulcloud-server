@@ -1,4 +1,3 @@
-import { S3Client } from '@aws-sdk/client-s3';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Module, NotFoundException } from '@nestjs/common';
@@ -12,7 +11,6 @@ import { CoreModule } from '@src/core';
 import { LegacyLogger, Logger } from '@src/core/logger';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { AuthorizationModule } from '@src/modules/authorization';
-import { S3Client } from '@aws-sdk/client-s3';
 import { UserRepo } from '@shared/repo';
 import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 
@@ -31,11 +29,6 @@ import { H5PPlayerService } from './service/h5p-player.service';
 import { TemporaryFileStorage } from './temporary-file-storage/temporary-file-storage';
 import { TemporaryFileRepo } from './temporary-file-storage/temporary-file.repo';
 import { H5PEditorUc } from './uc/h5p.uc';
-import { S3ClientAdapter } from '../files-storage/client/s3-client.adapter';
-import { H5PContentRepo } from './contentStorage/h5p-content.repo';
-import { H5PContent } from './contentStorage/h5p-content.entity';
-import { LibraryRepo } from './libraryStorage/library.repo';
-import { s3ConfigLibraries } from './s3-config';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>

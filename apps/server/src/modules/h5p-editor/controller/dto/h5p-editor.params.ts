@@ -15,10 +15,22 @@ export class GetH5PContentParams {
 	contentId!: string;
 }
 
+export class GetH5PEditorParamsCreate {
+	@ApiPropertyOptional()
+	@Matches('([a-z]+-[a-z]+)')
+	@IsString()
+	language!: string;
+}
+
 export class GetH5PEditorParams {
 	@ApiProperty()
 	@IsMongoId()
 	contentId!: string;
+
+	@ApiPropertyOptional()
+	@Matches('([a-z]+-[a-z]+)')
+	@IsString()
+	language!: string;
 }
 
 export class SaveH5PEditorParams {
