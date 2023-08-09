@@ -725,7 +725,7 @@ describe('ToolController (API)', () => {
 			it('should return unauthorized', async () => {
 				const { externalToolEntity } = await setup();
 
-				const response: Response = await testApiClient.get(`/${externalToolEntity.id}/logo`);
+				const response: Response = await testApiClient.get(`${externalToolEntity.id}/logo`);
 
 				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 			});
