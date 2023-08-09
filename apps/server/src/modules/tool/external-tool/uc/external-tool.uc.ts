@@ -56,7 +56,7 @@ export class ExternalToolUc {
 
 	private async fetchLogo(externalTool: Partial<ExternalTool>): Promise<string | undefined> {
 		if (externalTool.logoUrl) {
-			const base64Logo: string | null = await this.externalToolService.fetchBase64Logo(externalTool.logoUrl);
+			const base64Logo: string = await this.externalToolService.fetchBase64Logo(externalTool.logoUrl);
 
 			if (base64Logo) {
 				return base64Logo;
