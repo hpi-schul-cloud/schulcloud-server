@@ -97,7 +97,7 @@ export const externalToolEntityFactory = ExternalToolEntityFactory.define(
 		return {
 			name: `external-tool-${sequence}`,
 			url: '',
-			logoUrl: '',
+			logoUrl: 'https://logourl.com',
 			config: new BasicToolConfigEntity({
 				type: ToolConfigType.BASIC,
 				baseUrl: 'mockBaseUrl',

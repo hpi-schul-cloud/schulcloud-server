@@ -95,7 +95,7 @@ describe('ToolReferenceUc', () => {
 			it('should call contextExternalToolService.ensureContextPermissions', async () => {
 				const { userId, contextType, contextId, contextExternalTool } = setup();
 
-				await uc.getToolReferences(userId, contextType, contextId);
+				await uc.getToolReferences(userId, contextType, contextId, '/v3/tools/external-tools/{id}/logo');
 
 				expect(contextExternalToolService.ensureContextPermissions).toHaveBeenCalledWith(userId, contextExternalTool, {
 					requiredPermissions: [Permission.CONTEXT_TOOL_USER],
@@ -106,7 +106,7 @@ describe('ToolReferenceUc', () => {
 			it('should call contextExternalToolService.findAllByContext', async () => {
 				const { userId, contextType, contextId } = setup();
 
-				await uc.getToolReferences(userId, contextType, contextId);
+				await uc.getToolReferences(userId, contextType, contextId, '/v3/tools/external-tools/{id}/logo');
 
 				expect(contextExternalToolService.findAllByContext).toHaveBeenCalledWith({
 					type: contextType,
@@ -117,7 +117,7 @@ describe('ToolReferenceUc', () => {
 			it('should call schoolExternalToolService.findByExternalToolId', async () => {
 				const { userId, contextType, contextId, contextExternalTool } = setup();
 
-				await uc.getToolReferences(userId, contextType, contextId);
+				await uc.getToolReferences(userId, contextType, contextId, '/v3/tools/external-tools/{id}/logo');
 
 				expect(schoolExternalToolService.getSchoolExternalToolById).toHaveBeenCalledWith(
 					contextExternalTool.schoolToolRef.schoolToolId
@@ -127,7 +127,7 @@ describe('ToolReferenceUc', () => {
 			it('should call externalToolService.findById', async () => {
 				const { userId, contextType, contextId, externalToolId } = setup();
 
-				await uc.getToolReferences(userId, contextType, contextId);
+				await uc.getToolReferences(userId, contextType, contextId, '/v3/tools/external-tools/{id}/logo');
 
 				expect(externalToolService.findExternalToolById).toHaveBeenCalledWith(externalToolId);
 			});
@@ -135,7 +135,7 @@ describe('ToolReferenceUc', () => {
 			it('should call commonToolService.determineToolConfigurationStatus', async () => {
 				const { userId, contextType, contextId, contextExternalTool, schoolExternalTool, externalTool } = setup();
 
-				await uc.getToolReferences(userId, contextType, contextId);
+				await uc.getToolReferences(userId, contextType, contextId, '/v3/tools/external-tools/{id}/logo');
 
 				expect(commonToolService.determineToolConfigurationStatus).toHaveBeenCalledWith(
 					externalTool,
@@ -147,7 +147,12 @@ describe('ToolReferenceUc', () => {
 			it('should return a list of tool references', async () => {
 				const { userId, contextType, contextId, contextExternalTool, externalTool } = setup();
 
-				const result: ToolReference[] = await uc.getToolReferences(userId, contextType, contextId);
+				const result: ToolReference[] = await uc.getToolReferences(
+					userId,
+					contextType,
+					contextId,
+					'/v3/tools/external-tools/{id}/logo'
+				);
 
 				expect(result).toEqual<ToolReference[]>([
 					{
@@ -193,7 +198,12 @@ describe('ToolReferenceUc', () => {
 			it('should filter out tool references if a ForbiddenException is thrown', async () => {
 				const { userId, contextType, contextId } = setup();
 
-				const result: ToolReference[] = await uc.getToolReferences(userId, contextType, contextId);
+				const result: ToolReference[] = await uc.getToolReferences(
+					userId,
+					contextType,
+					contextId,
+					'/v3/tools/external-tools/{id}/logo'
+				);
 
 				expect(result).toEqual<ToolReference[]>([]);
 			});

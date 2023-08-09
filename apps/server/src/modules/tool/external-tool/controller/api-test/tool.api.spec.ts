@@ -652,7 +652,7 @@ describe('ToolController (API)', () => {
 					Permission.CONTEXT_TOOL_USER,
 				]);
 				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({ logoUrl: undefined });
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
 					tool: externalToolEntity,

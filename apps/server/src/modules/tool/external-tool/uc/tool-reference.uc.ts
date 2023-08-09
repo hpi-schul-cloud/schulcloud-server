@@ -21,7 +21,12 @@ export class ToolReferenceUc {
 		private readonly commonToolService: CommonToolService
 	) {}
 
-	async getToolReferences(userId: EntityId, contextType: ToolContextType, contextId: string): Promise<ToolReference[]> {
+	async getToolReferences(
+		userId: EntityId,
+		contextType: ToolContextType,
+		contextId: string,
+		logoUrlTemplate: string
+	): Promise<ToolReference[]> {
 		const contextRef = new ContextRef({ type: contextType, id: contextId });
 
 		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolService.findAllByContext(
@@ -29,7 +34,8 @@ export class ToolReferenceUc {
 		);
 
 		const toolReferencesPromises: Promise<ToolReference | null>[] = contextExternalTools.map(
-			(contextExternalTool: ContextExternalTool) => this.buildToolReference(userId, contextExternalTool)
+			(contextExternalTool: ContextExternalTool) =>
+				this.buildToolReference(userId, contextExternalTool, logoUrlTemplate)
 		);
 
 		const toolReferencesWithNull: (ToolReference | null)[] = await Promise.all(toolReferencesPromises);
@@ -42,7 +48,8 @@ export class ToolReferenceUc {
 
 	private async buildToolReference(
 		userId: EntityId,
-		contextExternalTool: ContextExternalTool
+		contextExternalTool: ContextExternalTool,
+		logoUrlTemplate: string
 	): Promise<ToolReference | null> {
 		try {
 			await this.ensureToolPermissions(userId, contextExternalTool);
@@ -66,19 +73,25 @@ export class ToolReferenceUc {
 			contextExternalTool,
 			status
 		);
-		toolReference.logoUrl = this.buildLogoUrl(externalTool);
+		toolReference.logoUrl = this.buildLogoUrl(logoUrlTemplate, externalTool);
 
 		return toolReference;
 	}
 
-	private buildLogoUrl(externalTool: ExternalTool): string {
+	private buildLogoUrl(template: string, externalTool: ExternalTool): string | undefined {
 		const { logo, id } = externalTool;
 		const backendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
 
 		if (logo) {
-			return `${backendUrl}/v3/tools/external-tools/${id ?? ''}/logo`;
+			const filledTemplate = template.replace(/\{id\}/g, id || '');
+			return `${backendUrl}${filledTemplate}`;
 		}
-		return '';
+
+		return undefined;
+	}
+
+	private formatString(template: string, values: Record<string, string>): string {
+		return template.replace(/\{([^}]+)\}/g, (_, key) => values[key] || '');
 	}
 
 	private async ensureToolPermissions(userId: EntityId, contextExternalTool: ContextExternalTool): Promise<void> {

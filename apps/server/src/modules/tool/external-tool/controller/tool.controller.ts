@@ -155,7 +155,8 @@ export class ToolController {
 		const toolReferences: ToolReference[] = await this.toolReferenceUc.getToolReferences(
 			currentUser.userId,
 			params.contextType,
-			params.contextId
+			params.contextId,
+			'/v3/tools/external-tools/{id}/logo'
 		);
 
 		const toolReferenceResponses: ToolReferenceResponse[] =
