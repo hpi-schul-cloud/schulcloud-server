@@ -82,10 +82,14 @@ export class ExternalToolRepo extends BaseDORepo<ExternalTool, ExternalToolEntit
 	}
 
 	mapEntityToDO(entity: ExternalToolEntity): ExternalTool {
-		return ExternalToolRepoMapper.mapEntityToDO(entity);
+		const domainObject = ExternalToolRepoMapper.mapEntityToDO(entity);
+
+		return domainObject;
 	}
 
 	mapDOToEntityProperties(entityDO: ExternalTool): IExternalToolProperties {
-		return ExternalToolRepoMapper.mapDOToEntityProperties(entityDO);
+		const entity = ExternalToolRepoMapper.mapDOToEntityProperties(entityDO);
+
+		return entity;
 	}
 }
