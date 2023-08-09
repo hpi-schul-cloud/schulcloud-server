@@ -175,6 +175,7 @@ export class ToolController {
 	async getExternalToolLogo(@Param() params: ToolIdParams, @Res() res: Response): Promise<void> {
 		const externalToolLogo: ExternalToolLogo = await this.externalToolUc.getExternalToolBinaryLogo(params.toolId);
 		res.setHeader('Content-Type', externalToolLogo.contentType);
+		res.setHeader('Cache-Control', 'must-revalidate');
 		res.send(externalToolLogo.logo);
 	}
 }
