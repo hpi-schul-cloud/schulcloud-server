@@ -53,6 +53,8 @@ export class H5PEditorUc {
 	}
 
 	private mapH5pError(error: unknown) {
+		console.log(error);
+
 		if (error instanceof H5pError) {
 			return new HttpException(error.message, error.httpStatusCode);
 		}

@@ -2,6 +2,14 @@ import { Entity, Property } from '@mikro-orm/core';
 import { ITemporaryFile, IFileStats } from '@lumieducation/h5p-server';
 import { BaseEntity } from '@shared/domain';
 
+export interface ITemporaryFileProperties {
+	filename: string;
+	ownedByUserId: string;
+	expiresAt: Date;
+	birthtime: Date;
+	size: number;
+}
+
 @Entity({ tableName: 'h5p-editor-temp-file' })
 export class TemporaryFile extends BaseEntity implements ITemporaryFile, IFileStats {
 	/**
@@ -22,7 +30,7 @@ export class TemporaryFile extends BaseEntity implements ITemporaryFile, IFileSt
 	@Property()
 	size: number;
 
-	constructor(filename: string, ownedByUserId: string, expiresAt: Date, birthtime: Date, size: number) {
+	constructor({ filename, ownedByUserId, expiresAt, birthtime, size }: ITemporaryFileProperties) {
 		super();
 		this.filename = filename;
 		this.ownedByUserId = ownedByUserId;

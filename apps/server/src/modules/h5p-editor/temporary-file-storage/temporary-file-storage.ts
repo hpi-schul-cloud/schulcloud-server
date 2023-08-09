@@ -26,12 +26,6 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		return this.repo.findByUserAndFilename(userId, filename);
 	}
 
-	public sanitizeFilename?(filename: string): string {
-		const sanitizedFilename = filename.replace(/[^a-zA-Z0-9/._-]/g, '_');
-		this.checkFilename(sanitizedFilename);
-		return sanitizedFilename;
-	}
-
 	public async deleteFile(filename: string, userId: string): Promise<void> {
 		this.checkFilename(filename);
 		const meta = await this.repo.findByUserAndFilename(userId, filename);
@@ -75,7 +69,7 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 
 	public async listFiles(user?: IUser | undefined): Promise<ITemporaryFile[]> {
 		// method is expected to support listing all files in database
-		// this is only needed for cleanup, so it is optimized to only return expired ones
+		// Lumi uses the variant without a user to search for expired files, so we only return those
 		return user ? this.repo.findByUser(user.id) : this.repo.findExpired();
 	}
 
@@ -105,7 +99,13 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		);
 
 		if (tempFile === undefined) {
-			tempFile = new TemporaryFile(filename, user.id, expirationTime, new Date(), dataStream.bytesRead);
+			tempFile = new TemporaryFile({
+				filename,
+				ownedByUserId: user.id,
+				expiresAt: expirationTime,
+				birthtime: new Date(),
+				size: dataStream.bytesRead,
+			});
 			await this.repo.save(tempFile);
 		} else {
 			tempFile.expiresAt = expirationTime;

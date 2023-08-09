@@ -9,10 +9,6 @@ export class TemporaryFileRepo extends BaseRepo<TemporaryFile> {
 		return TemporaryFile;
 	}
 
-	async createTemporaryFile(tempFile: TemporaryFile): Promise<void> {
-		return this.save(this.create(tempFile));
-	}
-
 	async findByUserAndFilename(userId: EntityId, filename: string): Promise<TemporaryFile> {
 		return this._em.findOneOrFail(this.entityName, { ownedByUserId: userId, filename });
 	}
