@@ -58,13 +58,17 @@ describe('ContextExternalToolValidationService', () => {
 	});
 
 	describe('validate', () => {
-		describe('when check duplication of contextExternalTool is successfully ', () => {
+		describe('when no tool with the name exists in the context', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 				externalToolService.findExternalToolById.mockResolvedValue(externalTool);
 
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
-				contextExternalToolService.findContextExternalTools.mockResolvedValue([]);
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+					displayName: 'Tool 1',
+				});
+				contextExternalToolService.findContextExternalTools.mockResolvedValue([
+					contextExternalToolFactory.buildWithId({ displayName: 'Tool 2' }),
+				]);
 
 				return {
 					externalTool,
@@ -109,26 +113,51 @@ describe('ContextExternalToolValidationService', () => {
 
 				const func = () => service.validate(contextExternalTool);
 
-				await expect(func()).resolves.not.toThrowError(new UnprocessableEntityException());
+				await expect(func()).resolves.not.toThrowError(UnprocessableEntityException);
 			});
 		});
 
-		describe('when check duplication of contextExternalTool failed ', () => {
-			const setup = () => {
-				const contextExternalTool = contextExternalToolFactory.buildWithId();
-				contextExternalToolService.findContextExternalTools.mockResolvedValue([contextExternalTool]);
+		describe('when a tool with the same name already exists in that context', () => {
+			describe('when the displayName is undefined', () => {
+				const setup = () => {
+					const contextExternalTool1 = contextExternalToolFactory.buildWithId({ displayName: undefined });
+					const contextExternalTool2 = contextExternalToolFactory.buildWithId({ displayName: undefined });
 
-				return {
-					contextExternalTool,
+					contextExternalToolService.findContextExternalTools.mockResolvedValue([contextExternalTool2]);
+
+					return {
+						contextExternalTool1,
+					};
 				};
-			};
 
-			it('should throw UnprocessableEntityException', async () => {
-				const { contextExternalTool } = setup();
+				it('should throw UnprocessableEntityException', async () => {
+					const { contextExternalTool1 } = setup();
 
-				const func = () => service.validate(contextExternalTool);
+					const func = () => service.validate(contextExternalTool1);
 
-				await expect(func()).rejects.toThrowError(new UnprocessableEntityException('Tool is already assigned.'));
+					await expect(func()).rejects.toThrowError(new UnprocessableEntityException('Tool is already assigned.'));
+				});
+			});
+
+			describe('when the displayName is the same', () => {
+				const setup = () => {
+					const contextExternalTool1 = contextExternalToolFactory.buildWithId({ displayName: 'Existing Tool' });
+					const contextExternalTool2 = contextExternalToolFactory.buildWithId({ displayName: 'Existing Tool' });
+
+					contextExternalToolService.findContextExternalTools.mockResolvedValue([contextExternalTool2]);
+
+					return {
+						contextExternalTool1,
+					};
+				};
+
+				it('should throw UnprocessableEntityException', async () => {
+					const { contextExternalTool1 } = setup();
+
+					const func = () => service.validate(contextExternalTool1);
+
+					await expect(func()).rejects.toThrowError(new UnprocessableEntityException('Tool is already assigned.'));
+				});
 			});
 		});
 	});

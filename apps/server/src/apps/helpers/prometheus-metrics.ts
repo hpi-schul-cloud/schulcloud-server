@@ -1,11 +1,11 @@
 import { Express } from 'express';
 
-import { LogMessage, Loggable, Logger } from '@src/core/logger';
 import {
 	PrometheusMetricsConfig,
 	createAPIResponseTimeMetricMiddleware,
 	createPrometheusMetricsApp,
 } from '@shared/infra/metrics';
+import { LogMessage, Loggable, Logger } from '@src/core/logger';
 import { AppStartLoggable } from './app-start-loggable';
 
 export const enum PrometheusMetricsSetupState {
@@ -77,7 +77,7 @@ export const createAndStartPrometheusMetricsAppIfEnabled = (logger: Logger) => {
 	const prometheusMetricsApp = createPrometheusMetricsApp(route, collectDefaultMetrics, collectMetricsRouteMetrics);
 
 	prometheusMetricsApp.listen(prometheusMetricsAppPort, () => {
-		logger.log(
+		logger.info(
 			new AppStartLoggable({
 				appName: 'Prometheus metrics server app',
 				port: prometheusMetricsAppPort,

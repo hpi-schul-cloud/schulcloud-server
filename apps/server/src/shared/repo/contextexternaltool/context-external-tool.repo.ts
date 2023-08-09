@@ -3,16 +3,17 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BaseDORepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { ContextExternalToolQuery } from '@src/modules/tool/context-external-tool/uc/dto/context-external-tool.types';
-import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
+import { ToolContextType } from '@src/modules/tool/common/enum/tool-context-type.enum';
+import { ContextExternalTool, ContextRef } from '@src/modules/tool/context-external-tool/domain';
 import {
 	ContextExternalToolEntity,
 	ContextExternalToolType,
 	IContextExternalToolProperties,
 } from '@src/modules/tool/context-external-tool/entity';
-import { ToolContextType } from '@src/modules/tool/common/enum/tool-context-type.enum';
-import { ContextExternalTool, ContextRef } from '@src/modules/tool/context-external-tool/domain';
+import { ContextExternalToolQuery } from '@src/modules/tool/context-external-tool/uc/dto/context-external-tool.types';
 import { SchoolExternalToolRefDO } from '@src/modules/tool/school-external-tool/domain';
+import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
+import { EntityId } from '../../domain';
 import { ExternalToolRepoMapper } from '../externaltool';
 import { ContextExternalToolScope } from './context-external-tool.scope';
 
@@ -50,6 +51,20 @@ export class ContextExternalToolRepo extends BaseDORepo<
 
 		const dos: ContextExternalTool[] = entities.map((entity: ContextExternalToolEntity) => this.mapEntityToDO(entity));
 		return dos;
+	}
+
+	public override async findById(id: EntityId): Promise<ContextExternalTool> {
+		const entity: ContextExternalToolEntity = await this._em.findOneOrFail(
+			this.entityName,
+			{ id },
+			{
+				populate: ['schoolTool.school'],
+			}
+		);
+
+		const mapped: ContextExternalTool = this.mapEntityToDO(entity);
+
+		return mapped;
 	}
 
 	private buildScope(query: ContextExternalToolQuery): ContextExternalToolScope {

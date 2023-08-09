@@ -20,11 +20,11 @@ import { join } from 'path';
 import { install as sourceMapInstall } from 'source-map-support';
 import legacyAppPromise = require('../../../../src/app');
 
+import { AppStartLoggable } from './helpers/app-start-loggable';
 import {
 	addPrometheusMetricsMiddlewaresIfEnabled,
 	createAndStartPrometheusMetricsAppIfEnabled,
 } from './helpers/prometheus-metrics';
-import { AppStartLoggable } from './helpers/app-start-loggable';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -107,7 +107,7 @@ async function bootstrap() {
 	const port = 3030;
 
 	rootExpress.listen(port, () => {
-		logger.log(
+		logger.info(
 			new AppStartLoggable({
 				appName: 'Main server app',
 				port,
