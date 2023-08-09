@@ -90,10 +90,6 @@ export class ToolReferenceUc {
 		return undefined;
 	}
 
-	private formatString(template: string, values: Record<string, string>): string {
-		return template.replace(/\{([^}]+)\}/g, (_, key) => values[key] || '');
-	}
-
 	private async ensureToolPermissions(userId: EntityId, contextExternalTool: ContextExternalTool): Promise<void> {
 		const promise: Promise<void> = this.contextExternalToolService.ensureContextPermissions(
 			userId,

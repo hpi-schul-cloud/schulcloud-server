@@ -9,8 +9,10 @@ import { ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
 
 const contentTypeDetector: Record<string, string> = {
-	ffd8: 'image/jpeg',
+	ffd8ffe0: 'image/jpeg',
+	ffd8ffe1: 'image/jpeg',
 	'89504e47': 'image/png',
+	'47494638': 'image/gif',
 };
 
 @Injectable()
@@ -114,9 +116,9 @@ export class ExternalToolUc {
 	}
 
 	private detectContentType(imageBuffer: Buffer): string {
-		const imageSignature: string = imageBuffer.toString('hex', 0, 3);
+		const imageSignature: string = imageBuffer.toString('hex', 0, 4);
 
-		const contentType: string = contentTypeDetector[imageSignature] || 'image/png';
+		const contentType: string = contentTypeDetector[imageSignature] || 'application/octet-stream';
 
 		return contentType;
 	}
