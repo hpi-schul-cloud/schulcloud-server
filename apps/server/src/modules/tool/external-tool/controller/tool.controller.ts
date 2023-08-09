@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, Res } from '@nestjs/common';
 import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
@@ -16,9 +16,11 @@ import { IFindOptions, Page } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { Response } from 'express';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ContextExternalToolContextParams } from '../../context-external-tool/controller/dto';
 import { ExternalTool, ToolReference } from '../domain';
+import { ExternalToolLogo } from '../domain/external-tool-logo';
 import { ExternalToolRequestMapper, ExternalToolResponseMapper } from '../mapper';
 import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate, ToolReferenceUc } from '../uc';
 import {
@@ -153,7 +155,8 @@ export class ToolController {
 		const toolReferences: ToolReference[] = await this.toolReferenceUc.getToolReferences(
 			currentUser.userId,
 			params.contextType,
-			params.contextId
+			params.contextId,
+			'/v3/tools/external-tools/{id}/logo'
 		);
 
 		const toolReferenceResponses: ToolReferenceResponse[] =
@@ -161,5 +164,18 @@ export class ToolController {
 		const toolReferenceListResponse = new ToolReferenceListResponse(toolReferenceResponses);
 
 		return toolReferenceListResponse;
+	}
+
+	@Get('external-tools/:toolId/logo')
+	@ApiOperation({ summary: 'Gets the logo of an external tool.' })
+	@ApiOkResponse({
+		description: 'Logo of external tool fetched successfully.',
+	})
+	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
+	async getExternalToolLogo(@Param() params: ToolIdParams, @Res() res: Response): Promise<void> {
+		const externalToolLogo: ExternalToolLogo = await this.externalToolUc.getExternalToolBinaryLogo(params.toolId);
+		res.setHeader('Content-Type', externalToolLogo.contentType);
+		res.setHeader('Cache-Control', 'must-revalidate');
+		res.send(externalToolLogo.logo);
 	}
 }
