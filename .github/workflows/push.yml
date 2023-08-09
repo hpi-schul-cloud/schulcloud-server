@@ -66,6 +66,16 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }}
           labels: ${{ steps.docker_meta_img.outputs.labels }}
+      - name: Docker meta Service Name (file storage)
+        id: docker_meta_img_file_storage
+        uses: crazy-max/ghaction-docker-meta@v4
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=ref,event=branch,enable=false,priority=600
+            type=sha,enable=true,priority=600,prefix=
+          labels: |
+            org.opencontainers.image.title=schulcloud-file-storage
       - name: Build and push ${{ github.repository }} (file storage)
         if: ${{ env.IMAGE_EXISTS == 0 }}
         uses: docker/build-push-action@v4
@@ -78,8 +88,7 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}:file-storage-${{ needs.branch_meta.outputs.sha }}
           labels: |
-            ${{ steps.docker_meta_img.outputs.labels }}
-            org.opencontainers.image.title=schulcloud-file-storage
+            ${{ steps.docker_meta_img_file_storage.outputs.labels }}
   branch_meta:
     runs-on: ubuntu-latest
     outputs:
