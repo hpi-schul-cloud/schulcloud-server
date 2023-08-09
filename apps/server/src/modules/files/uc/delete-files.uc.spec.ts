@@ -25,22 +25,28 @@ describe('DeleteFileUC', () => {
 		secretAccessKey: 'secret',
 	});
 
+	const userId = new ObjectId().toHexString();
+
 	const exampleFiles = [
 		new File({
-			storageProvider: exampleStorageProvider,
+			name: 'filename1',
+			size: 42,
 			storageFileName: 'file1',
 			bucket: 'bucket',
-			name: 'filename1',
-			ownerId: new ObjectId(),
+			storageProvider: exampleStorageProvider,
+			ownerId: userId,
 			refOwnerModel: FileRefOwnerModel.USER,
+			creatorId: userId,
 		}),
 		new File({
-			storageProvider: exampleStorageProvider,
+			name: 'filename2',
+			size: 42,
 			storageFileName: 'file2',
 			bucket: 'bucket',
-			name: 'filename2',
-			ownerId: new ObjectId(),
+			storageProvider: exampleStorageProvider,
+			ownerId: userId,
 			refOwnerModel: FileRefOwnerModel.USER,
+			creatorId: userId,
 		}),
 	];
 

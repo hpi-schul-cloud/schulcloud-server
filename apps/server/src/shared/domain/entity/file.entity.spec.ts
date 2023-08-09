@@ -10,15 +10,19 @@ describe('file entity', () => {
 
 	describe('constructor', () => {
 		describe('when creating a file (non-directory)', () => {
+			const userId = new ObjectId().toHexString();
+
 			it('should create file', () => {
 				const storageProvider = storageProviderFactory.build();
 				const file = new File({
 					name: 'name',
-					storageProvider,
-					bucket: 'bucket',
+					size: 42,
 					storageFileName: 'name',
-					ownerId: new ObjectId(),
+					bucket: 'bucket',
+					storageProvider,
+					ownerId: userId,
 					refOwnerModel: FileRefOwnerModel.USER,
+					creatorId: userId,
 				});
 				expect(file).toBeInstanceOf(File);
 			});
@@ -27,10 +31,12 @@ describe('file entity', () => {
 				const call = () =>
 					new File({
 						name: 'name',
-						storageProvider,
+						size: 42,
 						storageFileName: 'name',
-						ownerId: new ObjectId(),
+						storageProvider,
+						ownerId: userId,
 						refOwnerModel: FileRefOwnerModel.USER,
+						creatorId: userId,
 					});
 				expect(call).toThrow();
 			});
@@ -40,10 +46,12 @@ describe('file entity', () => {
 				const call = () =>
 					new File({
 						name: 'name',
-						storageProvider,
+						size: 42,
 						bucket: 'bucket',
-						ownerId: new ObjectId(),
+						storageProvider,
+						ownerId: userId,
 						refOwnerModel: FileRefOwnerModel.USER,
+						creatorId: userId,
 					});
 				expect(call).toThrow();
 			});
@@ -52,10 +60,12 @@ describe('file entity', () => {
 				const call = () =>
 					new File({
 						name: 'name',
+						size: 42,
 						bucket: 'bucket',
 						storageFileName: 'name',
-						ownerId: new ObjectId(),
+						ownerId: userId,
 						refOwnerModel: FileRefOwnerModel.USER,
+						creatorId: userId,
 					});
 				expect(call).toThrow();
 			});

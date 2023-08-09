@@ -5,7 +5,6 @@ import { v4 as uuid } from 'uuid';
 import { EntityId } from '@shared/domain';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { StorageProvider } from './storageprovider.entity';
-import { User } from './user.entity';
 
 export const enum SecurityCheckScanStatus {
 	PENDING = 'pending',
@@ -69,58 +68,28 @@ export interface FileProps {
 	storageProvider?: StorageProvider;
 	thumbnail?: string;
 	thumbnailRequestToken?: string;
+	securityCheck?: SecurityCheck;
 	shareTokens?: string[];
-	parent?: File;
-	ownerId: EntityId | ObjectId;
+	parentId?: EntityId;
+	ownerId: EntityId;
 	refOwnerModel: FileRefOwnerModel;
-	creator?: User;
-	lockId?: User;
+	creatorId: EntityId;
+	lockId?: EntityId;
 }
 
 @Entity({ collection: 'files' })
-@Index({ properties: ['shareTokens'] })
 export class File extends BaseEntityWithTimestamps {
-	constructor(props: FileProps) {
-		super();
-		this.validate(props);
-
-		this.deletedAt = props.deletedAt;
-		this.isDirectory = props.isDirectory || false;
-		this.name = props.name;
-		this.size = props.size;
-		this.type = props.type;
-		this.storageFileName = props.storageFileName;
-		this.bucket = props.bucket;
-		this.storageProvider = props.storageProvider;
-		this.thumbnail = props.thumbnail;
-		this.thumbnailRequestToken = props.thumbnailRequestToken;
-		this.securityCheck = new SecurityCheck({});
-		this.shareTokens = props.shareTokens;
-		this.parent = props.parent;
-		this._ownerId = new ObjectId(props.ownerId);
-		this.refOwnerModel = props.refOwnerModel;
-		this.creator = props.creator;
-		this.lockId = props.lockId;
-	}
-
-	private validate(props: FileProps) {
-		if (props.isDirectory) return;
-		if (!props.bucket || !props.storageFileName || !props.storageProvider) {
-			throw new Error('files that are not directories always need a bucket, a storageFilename, and a storageProvider.');
-		}
-	}
-
 	@Property({ nullable: true })
 	deletedAt?: Date;
 
 	@Property()
-	isDirectory: boolean;
+	isDirectory = false;
 
 	@Property()
 	name: string;
 
 	@Property({ nullable: true })
-	size?: number;
+	size?: number; // not for directories
 
 	@Property({ nullable: true })
 	type?: string;
@@ -138,17 +107,24 @@ export class File extends BaseEntityWithTimestamps {
 	thumbnail?: string;
 
 	@Property({ nullable: true })
-	thumbnailRequestToken?: string;
+	thumbnailRequestToken?: string = uuid();
 
 	@Embedded(() => SecurityCheck, { object: true, nullable: false })
-	securityCheck: SecurityCheck;
+	securityCheck: SecurityCheck = new SecurityCheck({});
 
+	@Index()
 	@Property({ nullable: true })
 	shareTokens?: string[];
 
-	@ManyToOne({ nullable: true })
-	parent?: File;
+	@Index()
+	@Property({ fieldName: 'parent', nullable: true })
+	_parentId?: ObjectId;
 
+	get parentId(): EntityId | undefined {
+		return this._parentId?.toHexString();
+	}
+
+	@Index()
 	@Property({ fieldName: 'owner', nullable: false })
 	_ownerId: ObjectId;
 
@@ -159,9 +135,72 @@ export class File extends BaseEntityWithTimestamps {
 	@Enum({ nullable: false })
 	refOwnerModel: FileRefOwnerModel;
 
-	@ManyToOne('User', { nullable: true })
-	creator?: User;
+	@Index()
+	@Property({ fieldName: 'creator' })
+	_creatorId: ObjectId;
 
-	@ManyToOne({ nullable: true })
-	lockId?: User;
+	get creatorId(): EntityId {
+		return this._creatorId.toHexString();
+	}
+
+	@Property({ fieldName: 'lockId', nullable: true })
+	_lockId?: ObjectId;
+
+	get lockId(): EntityId | undefined {
+		return this._lockId?.toHexString();
+	}
+
+	private validate(props: FileProps) {
+		if (props.isDirectory) return;
+
+		if (!props.size || !props.storageFileName || !props.bucket || !props.storageProvider) {
+			throw new Error(
+				'files that are not directories always need a size, a storage file name, a bucket, and a storage provider.'
+			);
+		}
+	}
+
+	constructor(props: FileProps) {
+		super();
+
+		this.validate(props);
+
+		this.deletedAt = props.deletedAt;
+
+		if (props.isDirectory !== undefined) {
+			this.isDirectory = props.isDirectory;
+		}
+
+		this.name = props.name;
+		this.size = props.size;
+		this.type = props.type;
+		this.storageFileName = props.storageFileName;
+		this.bucket = props.bucket;
+		this.storageProvider = props.storageProvider;
+		this.thumbnail = props.thumbnail;
+
+		if (props.thumbnailRequestToken !== undefined) {
+			this.thumbnailRequestToken = props.thumbnailRequestToken;
+		}
+
+		if (props.securityCheck !== undefined) {
+			this.securityCheck = props.securityCheck;
+		}
+
+		if (props.shareTokens !== undefined) {
+			this.shareTokens = props.shareTokens;
+		}
+
+		if (props.parentId !== undefined) {
+			this._parentId = new ObjectId(props.parentId);
+		}
+
+		this._ownerId = new ObjectId(props.ownerId);
+		this.refOwnerModel = props.refOwnerModel;
+		this._creatorId = new ObjectId(props.creatorId);
+
+		if (props.lockId !== undefined) {
+			this._lockId = new ObjectId(props.lockId);
+		}
+	}
 }
