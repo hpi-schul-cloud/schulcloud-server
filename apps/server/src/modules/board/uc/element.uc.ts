@@ -1,5 +1,5 @@
-import { ForbiddenException, forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { AnyBoardDo, BoardRoles, EntityId, SubmissionContainerElement, SubmissionItem } from '@shared/domain';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { AnyBoardDo, EntityId, SubmissionContainerElement, SubmissionItem, UserRoleEnum } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Action } from '@src/modules/authorization/types/action.enum';
@@ -55,23 +55,22 @@ export class ElementUc {
 			);
 		}
 
-		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(submissionContainer);
-		const boardRoles = boardDoAuthorizable.users.find((user) => user.userId === userId)?.roles;
-
-		if (!boardRoles?.includes(BoardRoles.READER)) {
-			throw new ForbiddenException('Only students should be able to create a new submissionItem');
-		}
-
-		await this.checkPermission(userId, submissionContainer, Action.read);
+		await this.checkPermission(userId, submissionContainer, Action.read, UserRoleEnum.STUDENT);
 
 		const subElement = await this.submissionItemService.create(userId, submissionContainer, { completed: false });
 
 		return subElement;
 	}
 
-	private async checkPermission(userId: EntityId, boardDo: AnyBoardDo, action: Action): Promise<void> {
+	private async checkPermission(
+		userId: EntityId,
+		boardDo: AnyBoardDo,
+		action: Action,
+		requiredUserRole?: UserRoleEnum
+	): Promise<void> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(boardDo);
+		if (requiredUserRole) boardDoAuthorizable.requiredUserRole = requiredUserRole;
 		const context = { action, requiredPermissions: [] };
 
 		return this.authorizationService.checkPermission(user, boardDoAuthorizable, context);
