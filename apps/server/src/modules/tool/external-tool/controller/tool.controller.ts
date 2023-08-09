@@ -177,14 +177,16 @@ export class ToolController {
 		return toolReferenceListResponse;
 	}
 
-	@Get('external-tools/:toolId/logo')
+	@Get('/:externalToolId/logo')
 	@ApiOperation({ summary: 'Gets the logo of an external tool.' })
 	@ApiOkResponse({
 		description: 'Logo of external tool fetched successfully.',
 	})
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
 	async getExternalToolLogo(@Param() params: ToolIdParams, @Res() res: Response): Promise<void> {
-		const externalToolLogo: ExternalToolLogo = await this.externalToolUc.getExternalToolBinaryLogo(params.toolId);
+		const externalToolLogo: ExternalToolLogo = await this.externalToolUc.getExternalToolBinaryLogo(
+			params.externalToolId
+		);
 		res.setHeader('Content-Type', externalToolLogo.contentType);
 		res.setHeader('Cache-Control', 'must-revalidate');
 		res.send(externalToolLogo.logo);

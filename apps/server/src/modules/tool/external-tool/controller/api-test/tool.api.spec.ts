@@ -708,7 +708,7 @@ describe('ToolController (API)', () => {
 		});
 	});
 
-	describe('[GET] tools/external-tools/:toolId/logo', () => {
+	describe('[GET] tools/external-tools/:externalToolId/logo', () => {
 		const setup = async () => {
 			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.withBase64Logo().buildWithId();
 
@@ -725,7 +725,7 @@ describe('ToolController (API)', () => {
 			it('should return unauthorized', async () => {
 				const { externalToolEntity } = await setup();
 
-				const response: Response = await testApiClient.get(`external-tools/${externalToolEntity.id}/logo`);
+				const response: Response = await testApiClient.get(`/${externalToolEntity.id}/logo`);
 
 				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -735,7 +735,7 @@ describe('ToolController (API)', () => {
 			it('should return the logo', async () => {
 				const { loggedInClient, externalToolEntity } = await setup();
 
-				const response: Response = await loggedInClient.get(`external-tools/${externalToolEntity.id}/logo`);
+				const response: Response = await loggedInClient.get(`${externalToolEntity.id}/logo`);
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);
 				expect(response.body).toBeInstanceOf(Buffer);
