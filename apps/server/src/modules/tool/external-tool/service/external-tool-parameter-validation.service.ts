@@ -20,7 +20,7 @@ export class ExternalToolParameterValidationService {
 				);
 			}
 
-			if (this.booleanTypeValidate(externalTool.parameters)) {
+			if (this.hasInvalidBooleanValue(externalTool.parameters)) {
 				throw new ValidationError(
 					`tool_param_boolean_invalid: The tool ${externalTool.name || ''} does not contain a valid boolean.`
 				);
@@ -90,7 +90,7 @@ export class ExternalToolParameterValidationService {
 		);
 	}
 
-	private booleanTypeValidate(customParameter: CustomParameter[]): boolean {
+	private hasInvalidBooleanValue(customParameter: CustomParameter[]): boolean {
 		return customParameter.every((param: CustomParameter) => {
 			if (param.type === 'boolean' && param.default) {
 				return !['true', 'false'].includes(param.default);
