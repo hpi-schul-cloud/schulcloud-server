@@ -69,7 +69,7 @@ jobs:
           tags: ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }}
           labels: ${{ steps.docker_meta_img.outputs.labels }}
 
-      - name: Send Notification to Rocket Chat
+      - name: Send Notification to Rocket Chat if docker image build failed
         if: ${{ failure() && github.ref == 'refs/heads/main' }}
         uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
         with:
