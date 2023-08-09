@@ -4,7 +4,7 @@ import { subClass } from 'gm';
 import { PassThrough } from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { DownloadFileParams, PreviewParams } from '../controller/dto';
-import { FileRecord } from '../entity';
+import { FileRecord, PreviewStatus } from '../entity';
 import { ErrorType } from '../error';
 import { createPreviewNameHash, createPreviewPath } from '../helper';
 import { IGetFile, IGetFileResponse } from '../interface';
@@ -59,7 +59,7 @@ export class PreviewService {
 	}
 
 	private checkIfPreviewPossible(fileRecord: FileRecord): void | UnprocessableEntityException {
-		if (!fileRecord.isPreviewPossible()) {
+		if (fileRecord.getPreviewStatus() !== PreviewStatus.PREVIEW_POSSIBLE) {
 			this.logger.warn(`could not generate preview for : ${fileRecord.id} ${fileRecord.mimeType}`);
 			throw new UnprocessableEntityException(ErrorType.PREVIEW_NOT_POSSIBLE);
 		}

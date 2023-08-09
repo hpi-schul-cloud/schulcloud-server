@@ -20,7 +20,7 @@ import { FileRecordListResponse, FileRecordResponse } from '@src/modules/files-s
 import { Request } from 'express';
 import request from 'supertest';
 import { S3ClientAdapter } from '../../client/s3-client.adapter';
-import { FileRecordParentType } from '../../entity';
+import { FileRecordParentType, PreviewStatus } from '../../entity';
 import { availableParentTypes } from './mocks';
 
 const baseRouteName = '/file/delete';
@@ -203,7 +203,7 @@ describe(`${baseRouteName} (api)`, () => {
 					deletedSince: expect.any(String),
 					securityCheckStatus: 'pending',
 					size: expect.any(Number),
-					isPreviewPossible: false,
+					previewStatus: PreviewStatus.AWAITING_SCAN_STATUS,
 				});
 			});
 
@@ -298,7 +298,7 @@ describe(`${baseRouteName} (api)`, () => {
 					deletedSince: expect.any(String),
 					securityCheckStatus: 'pending',
 					size: expect.any(Number),
-					isPreviewPossible: false,
+					previewStatus: PreviewStatus.AWAITING_SCAN_STATUS,
 				});
 			});
 

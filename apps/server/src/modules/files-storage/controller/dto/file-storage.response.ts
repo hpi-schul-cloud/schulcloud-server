@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities, PaginationResponse } from '@shared/controller';
-import { FileRecord, FileRecordParentType, ScanStatus } from '../../entity';
+import { FileRecord, FileRecordParentType, PreviewStatus, ScanStatus } from '../../entity';
 import { API_VERSION_PATH } from '../../files-storage.const';
 
 export class FileRecordResponse {
@@ -15,7 +15,7 @@ export class FileRecordResponse {
 		this.mimeType = fileRecord.mimeType;
 		this.parentType = fileRecord.parentType;
 		this.deletedSince = fileRecord.deletedSince;
-		this.isPreviewPossible = fileRecord.isPreviewPossible();
+		this.previewStatus = fileRecord.getPreviewStatus();
 	}
 
 	@ApiProperty()
@@ -47,7 +47,7 @@ export class FileRecordResponse {
 	parentType: FileRecordParentType;
 
 	@ApiProperty()
-	isPreviewPossible: boolean;
+	previewStatus: PreviewStatus;
 
 	@ApiPropertyOptional()
 	deletedSince?: Date;

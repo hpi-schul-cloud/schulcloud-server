@@ -7,7 +7,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
 import { createPreviewNameHash, createPreviewPath } from '../helper';
 import { TestHelper } from '../helper/test-helper';
@@ -28,7 +28,7 @@ jest.mock('gm', () => {
 	};
 });
 
-const buildFileRecordWithParams = (mimeType: string) => {
+const buildFileRecordWithParams = (mimeType: string, scanStatus?: ScanStatus) => {
 	const parentId = new ObjectId().toHexString();
 	const parentSchoolId = new ObjectId().toHexString();
 	const fileRecord = fileRecordFactory.buildWithId({
@@ -37,6 +37,7 @@ const buildFileRecordWithParams = (mimeType: string) => {
 		name: 'text.txt',
 		mimeType,
 	});
+	fileRecord.securityCheck.status = scanStatus ?? ScanStatus.VERIFIED;
 
 	const params: FileRecordParams = {
 		schoolId: parentSchoolId,
@@ -597,38 +598,112 @@ describe('FilesStorageService download method', () => {
 		});
 
 		describe('WHEN preview is not possible', () => {
-			const setup = () => {
-				const bytesRange = 'bytes=0-100';
-				const mimeType = 'application/zip';
-				const format = mimeType.split('/')[1];
-				const { fileRecord } = buildFileRecordWithParams(mimeType);
-				const downloadParams = {
-					fileRecordId: fileRecord.id,
-					fileName: fileRecord.name,
+			describe('WHEN MIME Type is not supported', () => {
+				const setup = () => {
+					const bytesRange = 'bytes=0-100';
+					const mimeType = 'application/zip';
+					const format = mimeType.split('/')[1];
+					const { fileRecord } = buildFileRecordWithParams(mimeType);
+					const downloadParams = {
+						fileRecordId: fileRecord.id,
+						fileName: fileRecord.name,
+					};
+					const previewParams = { ...defaultPreviewParams, forceUpdate: true };
+
+					const originalFileResponse = TestHelper.createFileResponse();
+					fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
+
+					const error = new UnprocessableEntityException(ErrorType.PREVIEW_NOT_POSSIBLE);
+
+					return {
+						bytesRange,
+						fileRecord,
+						downloadParams,
+						previewParams,
+						format,
+						error,
+					};
 				};
-				const previewParams = { ...defaultPreviewParams, forceUpdate: true };
 
-				const originalFileResponse = TestHelper.createFileResponse();
-				fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
+				it('calls download with correct params', async () => {
+					const { fileRecord, downloadParams, previewParams, bytesRange, error } = setup();
 
-				const error = new UnprocessableEntityException(ErrorType.PREVIEW_NOT_POSSIBLE);
+					await expect(
+						previewService.getPreview(fileRecord, downloadParams, previewParams, bytesRange)
+					).rejects.toThrowError(error);
+				});
+			});
 
-				return {
-					bytesRange,
-					fileRecord,
-					downloadParams,
-					previewParams,
-					format,
-					error,
+			describe('WHEN scan status is pending', () => {
+				const setup = () => {
+					const bytesRange = 'bytes=0-100';
+					const mimeType = 'image/png';
+					const format = mimeType.split('/')[1];
+					const { fileRecord } = buildFileRecordWithParams(mimeType, ScanStatus.PENDING);
+					const downloadParams = {
+						fileRecordId: fileRecord.id,
+						fileName: fileRecord.name,
+					};
+					const previewParams = { ...defaultPreviewParams, forceUpdate: true };
+
+					const originalFileResponse = TestHelper.createFileResponse();
+					fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
+
+					const error = new UnprocessableEntityException(ErrorType.PREVIEW_NOT_POSSIBLE);
+
+					return {
+						bytesRange,
+						fileRecord,
+						downloadParams,
+						previewParams,
+						format,
+						error,
+					};
 				};
-			};
 
-			it('calls download with correct params', async () => {
-				const { fileRecord, downloadParams, previewParams, bytesRange, error } = setup();
+				it('calls download with correct params', async () => {
+					const { fileRecord, downloadParams, previewParams, bytesRange, error } = setup();
 
-				await expect(
-					previewService.getPreview(fileRecord, downloadParams, previewParams, bytesRange)
-				).rejects.toThrowError(error);
+					await expect(
+						previewService.getPreview(fileRecord, downloadParams, previewParams, bytesRange)
+					).rejects.toThrowError(error);
+				});
+			});
+
+			describe('WHEN scan status is error', () => {
+				const setup = () => {
+					const bytesRange = 'bytes=0-100';
+					const mimeType = 'image/png';
+					const format = mimeType.split('/')[1];
+					const { fileRecord } = buildFileRecordWithParams(mimeType, ScanStatus.ERROR);
+					const downloadParams = {
+						fileRecordId: fileRecord.id,
+						fileName: fileRecord.name,
+					};
+					const previewParams = { ...defaultPreviewParams, forceUpdate: true };
+
+					const originalFileResponse = TestHelper.createFileResponse();
+					fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
+
+					const error = new UnprocessableEntityException(ErrorType.PREVIEW_NOT_POSSIBLE);
+
+					return {
+						bytesRange,
+						fileRecord,
+						downloadParams,
+						previewParams,
+						format,
+						error,
+					};
+				};
+
+				it('calls download with correct params', async () => {
+					const { fileRecord, downloadParams, previewParams, bytesRange, error } = setup();
+
+					await expect(
+						previewService.getPreview(fileRecord, downloadParams, previewParams, bytesRange)
+					).rejects.toThrowError(error);
+				});
 			});
 		});
 	});

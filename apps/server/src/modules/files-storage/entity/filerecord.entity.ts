@@ -22,6 +22,14 @@ export enum FileRecordParentType {
 	'Submission' = 'submissions',
 	'BoardNode' = 'boardnodes',
 }
+
+export enum PreviewStatus {
+	PREVIEW_POSSIBLE = 'preview_possible',
+	AWAITING_SCAN_STATUS = 'awaiting_scan_status',
+	PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR = 'preview_not_possible_scan_status_error',
+	PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE = 'preview_not_possible_wrong_mime_type',
+}
+
 export interface IFileSecurityCheckProperties {
 	status?: ScanStatus;
 	reason?: string;
@@ -219,6 +227,12 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return isBlocked;
 	}
 
+	public hasScanStatusError(): boolean {
+		const hasError = this.securityCheck.status === ScanStatus.ERROR;
+
+		return hasError;
+	}
+
 	public isPending(): boolean {
 		const isPending = this.securityCheck.status === ScanStatus.PENDING;
 
@@ -241,11 +255,19 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return this.schoolId;
 	}
 
-	public isPreviewPossible(): boolean {
-		if (Object.values<string>(PreviewInputMimeTypes).includes(this.mimeType)) {
-			return true;
+	public getPreviewStatus(): PreviewStatus {
+		if (this.isPending()) {
+			return PreviewStatus.AWAITING_SCAN_STATUS;
 		}
 
-		return false;
+		if (this.hasScanStatusError()) {
+			return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR;
+		}
+
+		if (!Object.values<string>(PreviewInputMimeTypes).includes(this.mimeType)) {
+			return PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE;
+		}
+
+		return PreviewStatus.PREVIEW_POSSIBLE;
 	}
 }
