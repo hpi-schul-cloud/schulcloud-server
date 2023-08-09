@@ -58,7 +58,7 @@ export class ToolSchoolController {
 	@Get(':schoolExternalToolId')
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
-	@ApiOperation({ summary: 'Returns a SchoolExternalTool' })
+	@ApiOperation({ summary: 'Returns a SchoolExternalTool for the given id' })
 	async getSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams

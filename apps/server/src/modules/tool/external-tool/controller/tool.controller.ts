@@ -98,7 +98,7 @@ export class ToolController {
 	}
 
 	@Get(':externalToolId')
-	@ApiOperation({ summary: 'Returns an ExternalTool' })
+	@ApiOperation({ summary: 'Returns an ExternalTool for the given id' })
 	async getExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolIdParams
@@ -150,7 +150,7 @@ export class ToolController {
 	}
 
 	@Get('/:contextType/:contextId/references')
-	@ApiOperation({ summary: 'Get ExternalTool References' })
+	@ApiOperation({ summary: 'Get ExternalTool References for a given context' })
 	@ApiOkResponse({
 		description: 'The Tool References has been successfully fetched.',
 		type: ToolReferenceListResponse,
