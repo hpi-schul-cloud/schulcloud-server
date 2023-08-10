@@ -13,6 +13,7 @@ import { FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
 import { S3ClientAdapter } from '../../client/s3-client.adapter';
+import { FileRecord, ScanStatus } from '../../entity';
 import { ErrorType } from '../../error';
 import { TestHelper } from '../../helper/test-helper';
 import { PreviewHeight, PreviewWidth } from '../../interface';
@@ -136,6 +137,12 @@ describe('File Controller (API) - preview', () => {
 		uploadPath = `/file/upload/${schoolId}/schools/${schoolId}`;
 	});
 
+	const setScanStatus = async (fileRecordId: EntityId, status: ScanStatus) => {
+		const fileRecord = await em.findOneOrFail(FileRecord, fileRecordId);
+		fileRecord.securityCheck.status = status;
+		await em.flush();
+	};
+
 	describe('preview', () => {
 		describe('with bad request data', () => {
 			describe('WHEN recordId is invalid', () => {
@@ -222,10 +229,17 @@ describe('File Controller (API) - preview', () => {
 			});
 
 			describe('WHEN filename is wrong', () => {
-				it('should return status 404', async () => {
+				const setup = async () => {
 					const { result } = await api.postUploadFile(uploadPath);
+					await setScanStatus(result.id, ScanStatus.VERIFIED);
 					const error = new NotFoundException();
 					s3ClientAdapter.get.mockRejectedValueOnce(error);
+
+					return { result };
+				};
+
+				it('should return status 404', async () => {
+					const { result } = await setup();
 
 					const response = await api.getPreview(`/file/preview/${result.id}/wrong-name.txt`, defaultQueryParameters);
 
@@ -240,6 +254,7 @@ describe('File Controller (API) - preview', () => {
 				describe('WHEN forceUpdate is undefined', () => {
 					const setup = async () => {
 						const { result: uploadedFile } = await api.postUploadFile(uploadPath);
+						await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
 						const previewFile = TestHelper.createFile('bytes 0-3/4');
 						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
@@ -278,6 +293,7 @@ describe('File Controller (API) - preview', () => {
 				describe('WHEN forceUpdate is false', () => {
 					const setup = async () => {
 						const { result: uploadedFile } = await api.postUploadFile(uploadPath);
+						await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
 						const previewFile = TestHelper.createFile('bytes 0-3/4');
 						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
@@ -319,6 +335,7 @@ describe('File Controller (API) - preview', () => {
 				describe('WHEN forceUpdate is true', () => {
 					const setup = async () => {
 						const { result: uploadedFile } = await api.postUploadFile(uploadPath);
+						await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
 						const originalFile = TestHelper.createFile();
 						const previewFile = TestHelper.createFile('bytes 0-3/4');
@@ -362,6 +379,7 @@ describe('File Controller (API) - preview', () => {
 			describe('WHEN preview does not already exist', () => {
 				const setup = async () => {
 					const { result: uploadedFile } = await api.postUploadFile(uploadPath);
+					await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
 					const error = new NotFoundException();
 					const originalFile = TestHelper.createFile();
