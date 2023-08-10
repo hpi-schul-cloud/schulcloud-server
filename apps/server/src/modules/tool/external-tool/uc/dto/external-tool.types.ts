@@ -20,6 +20,8 @@ export type ExternalToolDto<T> = {
 
 	url?: string;
 
+	logo?: string;
+
 	logoUrl?: string;
 
 	config: T;
