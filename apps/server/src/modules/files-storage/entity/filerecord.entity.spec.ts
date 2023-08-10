@@ -647,5 +647,23 @@ describe('FileRecord Entity', () => {
 				expect(result).toEqual(PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR);
 			});
 		});
+
+		describe('WHEN file record preview status is BLOCKED', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+
+				fileRecord.securityCheck.status = ScanStatus.BLOCKED;
+
+				return { fileRecord };
+			};
+
+			it('should return PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.getPreviewStatus();
+
+				expect(result).toEqual(PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED);
+			});
+		});
 	});
 });
