@@ -1,11 +1,9 @@
 /* istanbul ignore file */
 /* eslint-disable no-console */
-// eslint-disable @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call
 import { NestFactory } from '@nestjs/core';
 import { install as sourceMapInstall } from 'source-map-support';
 import { TldrawModule } from '@src/modules/tldraw';
-import { AppStartLoggable } from '@src/apps/helpers/app-start-loggable';
-import { LegacyLogger, Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import * as WebSocket from 'ws';
 import { WsAdapter } from '@nestjs/platform-ws';
 import express from 'express';
@@ -21,29 +19,23 @@ async function bootstrap() {
 
 	const wss = new WebSocket.Server({ noServer: true });
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
-	const logger = await nestApp.resolve(Logger);
 	nestApp.useWebSocketAdapter(new WsAdapter(wss));
 	nestApp.enableCors();
 	enableOpenApiDocs(nestApp, 'docs');
 	await nestApp.init();
 
 	const rootExpress = express();
+	const basePath = '/';
 	const port = 4449;
 
-	rootExpress.use('/', nestExpress);
-	rootExpress.listen(port, () => {
-		logger.log(
-			new AppStartLoggable({
-				appName: 'Tldraw server app',
-				port: 3345,
-			})
-		);
-	});
+	rootExpress.use(basePath, nestExpress);
+	rootExpress.listen(port);
 
-	// console.log('##########################################');
-	// console.log(`### Tldraw Server            			###`);
-	// console.log(`### Port: ${port}                    	###`);
-	// console.log('##########################################');
+	console.log('##########################################');
+	console.log(`### Tldraw Server            			###`);
+	console.log(`### App Port: ${port}                  ###`);
+	console.log(`### WebSocket Gateway Port: ${3345}    ###`);
+	console.log('##########################################');
 }
 
 void bootstrap();
