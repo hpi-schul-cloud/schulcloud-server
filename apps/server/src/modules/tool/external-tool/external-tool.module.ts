@@ -4,6 +4,7 @@ import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
 import { EncryptionModule } from '@shared/infra/encryption';
 import { ExternalToolRepo } from '@shared/repo';
 import {
+	ExternalToolConfigurationService,
 	ExternalToolParameterValidationService,
 	ExternalToolService,
 	ExternalToolServiceMapper,
@@ -20,6 +21,7 @@ import { CommonToolModule } from '../common';
 		ExternalToolParameterValidationService,
 		ExternalToolValidationService,
 		ExternalToolVersionService,
+		ExternalToolConfigurationService,
 		ExternalToolRepo,
 	],
 	exports: [ExternalToolService, ExternalToolValidationService, ExternalToolVersionService],

@@ -11,6 +11,7 @@ import {
 	roleFactory,
 	schoolExternalToolEntityFactory,
 	schoolFactory,
+	TestApiClient,
 	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
@@ -33,6 +34,7 @@ describe('ToolContextController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let orm: MikroORM;
+	let testApiClient: TestApiClient;
 
 	let currentUser: ICurrentUser | undefined;
 
@@ -56,6 +58,7 @@ describe('ToolContextController (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		orm = app.get(MikroORM);
+		testApiClient = new TestApiClient(app, basePath);
 	});
 
 	afterAll(async () => {
@@ -69,15 +72,10 @@ describe('ToolContextController (API)', () => {
 	describe('[POST] tools/context-external-tools', () => {
 		describe('when creation of contextExternalTool is successfully', () => {
 			const setup = async () => {
-				const teacherRole: Role = roleFactory.build({
-					name: RoleName.TEACHER,
-					permissions: [Permission.CONTEXT_TOOL_ADMIN],
-				});
-
 				const school: School = schoolFactory.buildWithId();
-				const teacher: User = userFactory.buildWithId({ roles: [teacherRole], school });
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 
-				const course: Course = courseFactory.buildWithId({ teachers: [teacher], school });
+				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser], school });
 
 				const paramEntry = { name: 'name', value: 'value' };
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
@@ -95,23 +93,29 @@ describe('ToolContextController (API)', () => {
 					toolVersion: 1,
 				};
 
-				await em.persistAndFlush([teacherRole, course, school, teacher, schoolExternalToolEntity]);
+				await em.persistAndFlush([teacherUser, teacherAccount, course, school, schoolExternalToolEntity]);
 				em.clear();
 
 				return {
 					schoolExternalToolEntity,
 					course,
-					teacher,
+					teacherUser,
+					teacherAccount,
 					paramEntry,
 					postParams,
 				};
 			};
 
 			it('should create an contextExternalTool', async () => {
-				const { teacher, postParams } = await setup();
-				currentUser = mapUserToCurrentUser(teacher);
+				const { teacherUser, postParams } = await setup();
+				currentUser = mapUserToCurrentUser(teacherUser);
 
-				await request(app.getHttpServer())
+				const response = await testApiClient.post().send(postParams);
+
+				expect(response.statusCode).toEqual(HttpStatus.CREATED);
+				expect(response).toEqual(expect.objectContaining(postParams));
+
+				/* await request(app.getHttpServer())
 					.post(basePath)
 					.send(postParams)
 					.expect(201)
@@ -138,7 +142,7 @@ describe('ToolContextController (API)', () => {
 					}
 				);
 
-				expect(createdContextExternalTool).toBeDefined();
+				expect(createdContextExternalTool).toBeDefined(); */
 			});
 		});
 

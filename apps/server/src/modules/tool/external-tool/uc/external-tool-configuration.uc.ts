@@ -8,7 +8,6 @@ import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ExternalToolService } from '../service';
 import { ContextExternalToolTemplateInfo } from './dto';
@@ -22,8 +21,7 @@ export class ExternalToolConfigurationUc {
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly toolPermissionHelper: ToolPermissionHelper,
-		private readonly externalToolConfigurationService: ExternalToolConfigurationService,
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
+		private readonly externalToolConfigurationService: ExternalToolConfigurationService
 	) {}
 
 	public async getAvailableToolsForSchool(userId: EntityId, schoolId: EntityId): Promise<ExternalTool[]> {
@@ -43,7 +41,7 @@ export class ExternalToolConfigurationUc {
 			(schoolExternalTool: SchoolExternalTool): EntityId => schoolExternalTool.toolId
 		);
 
-		const availableTools: ExternalTool[] = this.externalToolConfigurationService.filterForAvalableTools(
+		const availableTools: ExternalTool[] = this.externalToolConfigurationService.filterForAvailableTools(
 			externalTools,
 			toolIdsInUse
 		);

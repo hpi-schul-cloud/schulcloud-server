@@ -12,7 +12,7 @@ import { ContextExternalToolTemplateInfo } from '../uc/dto';
 export class ExternalToolConfigurationService {
 	constructor(@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures) {}
 
-	public filterForAvalableTools(externalTools: Page<ExternalTool>, toolIdsInUse: EntityId[]): ExternalTool[] {
+	public filterForAvailableTools(externalTools: Page<ExternalTool>, toolIdsInUse: EntityId[]): ExternalTool[] {
 		const availableTools: ExternalTool[] = externalTools.data.filter(
 			(tool: ExternalTool): boolean => !tool.isHidden && !!tool.id && !toolIdsInUse.includes(tool.id)
 		);
