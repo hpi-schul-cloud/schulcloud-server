@@ -252,7 +252,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="97" class="link-to-prism">apps/server/src/modules/learnroom/mapper/room-board-response.mapper.ts:97</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="93" class="link-to-prism">apps/server/src/modules/learnroom/mapper/room-board-response.mapper.ts:93</a></div>
                         </td>
                     </tr>
 
@@ -278,7 +278,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="77" class="link-to-prism">apps/server/src/modules/learnroom/mapper/room-board-response.mapper.ts:77</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="73" class="link-to-prism">apps/server/src/modules/learnroom/mapper/room-board-response.mapper.ts:73</a></div>
                         </td>
                     </tr>
 
@@ -375,10 +375,6 @@ export class RoomBoardResponseMapper {
 			updatedAt: boardTask.updatedAt,
 			status: boardTaskStatus,
 		});
-
-		if (boardTask.taskCard) {
-			mappedTask.taskCardId &#x3D; boardTask.taskCard;
-		}
 
 		const taskCourse &#x3D; boardTask.course as Course;
 		mappedTask.courseName &#x3D; taskCourse.name;

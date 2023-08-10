@@ -603,7 +603,6 @@ import { CourseGroup } from &#x27;./coursegroup.entity&#x27;;
 import type { ILessonParent } from &#x27;./lesson.entity&#x27;;
 import type { School } from &#x27;./school.entity&#x27;;
 import type { ITaskParent } from &#x27;./task.entity&#x27;;
-import { UsersList } from &#x27;./task.entity&#x27;;
 import type { User } from &#x27;./user.entity&#x27;;
 
 export interface ICourseProperties {
@@ -725,22 +724,6 @@ export class Course
 		const ids &#x3D; objectIds.map((id): string &#x3D;&gt; id.toString());
 
 		return ids;
-	}
-
-	public getStudentsList(): UsersList[] {
-		const users &#x3D; this.students.getItems();
-		if (users.length) {
-			const usersList: UsersList[] &#x3D; users.map((user) &#x3D;&gt; {
-				return {
-					id: user.id,
-					firstName: user.firstName,
-					lastName: user.lastName,
-				};
-			});
-			return usersList;
-		}
-
-		return [];
 	}
 
 	public isUserSubstitutionTeacher(user: User): boolean {

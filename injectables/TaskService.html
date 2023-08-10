@@ -86,10 +86,6 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#create" >create</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
                                 <a href="#delete" >delete</a>
                             </li>
                             <li>
@@ -99,23 +95,11 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#find" >find</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
                                 <a href="#findById" >findById</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#findBySingleParent" >findBySingleParent</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#taskDateValidation" >taskDateValidation</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#update" >update</a>
                             </li>
                         </ul>
                     </td>
@@ -135,12 +119,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(taskRepo: <a href="../injectables/TaskRepo.html" target="_self">TaskRepo</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>, lessonRepo: <a href="../injectables/LessonRepo.html" target="_self">LessonRepo</a>, submissionService: <a href="../injectables/SubmissionService.html" target="_self">SubmissionService</a>, filesStorageClientAdapterService: <a href="../injectables/FilesStorageClientAdapterService.html" target="_self">FilesStorageClientAdapterService</a>)</code>
+<code>constructor(taskRepo: <a href="../injectables/TaskRepo.html" target="_self">TaskRepo</a>, submissionService: <a href="../injectables/SubmissionService.html" target="_self">SubmissionService</a>, filesStorageClientAdapterService: <a href="../injectables/FilesStorageClientAdapterService.html" target="_self">FilesStorageClientAdapterService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:20</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:8</a></div>
                             </td>
                         </tr>
 
@@ -162,54 +146,6 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/TaskRepo.html" target="_self" >TaskRepo</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>userRepo</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/UserRepo.html" target="_self" >UserRepo</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>authorizationService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/AuthorizationService.html" target="_self" >AuthorizationService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>courseRepo</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/CourseRepo.html" target="_self" >CourseRepo</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>lessonRepo</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/LessonRepo.html" target="_self" >LessonRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -259,89 +195,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="create"></a>
-                    <span class="name">
-                        <span class="modifier">Async</span>
-                        <span ><b>create</b></span>
-                        <a href="#create"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>create(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, params: <a href="../interfaces/ITaskCreate.html" target="_self">ITaskCreate</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="62"
-                            class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:62</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>userId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>params</td>
-                                    <td>
-                                                <code><a href="../interfaces/ITaskCreate.html" target="_self" >ITaskCreate</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/Task.html" target="_self" >Promise&lt;TaskWithStatusVo&gt;</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="delete"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -360,8 +213,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="47"
-                            class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:47</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="24"
+                            class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:24</a></div>
                 </td>
             </tr>
 
@@ -432,8 +285,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="55"
-                            class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:55</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="32"
+                            class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:32</a></div>
                 </td>
             </tr>
 
@@ -485,89 +338,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="find"></a>
-                    <span class="name">
-                        <span class="modifier">Async</span>
-                        <span ><b>find</b></span>
-                        <a href="#find"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>find(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, taskId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="112"
-                            class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:112</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>userId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>taskId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>    <code>unknown</code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="findById"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -586,8 +356,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="127"
-                            class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:127</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:39</a></div>
                 </td>
             </tr>
 
@@ -657,8 +427,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="32"
-                            class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:32</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="15"
+                            class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:15</a></div>
                 </td>
             </tr>
 
@@ -742,226 +512,15 @@
             </tr>
         </tbody>
     </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="taskDateValidation"></a>
-                    <span class="name">
-                        <span class="modifier">Private</span>
-                        <span ><b>taskDateValidation</b></span>
-                        <a href="#taskDateValidation"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>taskDateValidation(availableDate?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>, dueDate?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="192"
-                            class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:192</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>availableDate</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
-                                    </td>
-
-                                    <td>
-                                        Yes
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>dueDate</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
-                                    </td>
-
-                                    <td>
-                                        Yes
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="update"></a>
-                    <span class="name">
-                        <span class="modifier">Async</span>
-                        <span ><b>update</b></span>
-                        <a href="#update"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>update(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, taskId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, params: <a href="../interfaces/ITaskUpdate.html" target="_self">ITaskUpdate</a>, remove)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="131"
-                            class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:131</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                    <td>Default value</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>userId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-                                    <td>
-                                    </td>
-
-                                </tr>
-                                <tr>
-                                    <td>taskId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-                                    <td>
-                                    </td>
-
-                                </tr>
-                                <tr>
-                                    <td>params</td>
-                                    <td>
-                                                <code><a href="../interfaces/ITaskUpdate.html" target="_self" >ITaskUpdate</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-                                    <td>
-                                    </td>
-
-                                </tr>
-                                <tr>
-                                    <td>remove</td>
-                                    <td>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-                                    <td>
-                                        <code>false</code>
-                                    </td>
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/Task.html" target="_self" >Promise&lt;TaskWithStatusVo&gt;</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
 </section>
 
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ForbiddenException, forwardRef, Inject, Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
-import { ValidationError } from &#x27;@shared/common&#x27;;
-import {
-	Counted,
-	EntityId,
-	IFindOptions,
-	ITaskCreate,
-	ITaskProperties,
-	ITaskUpdate,
-	Permission,
-	Task,
-	TaskWithStatusVo,
-} from &#x27;@shared/domain&#x27;;
-import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from &#x27;@shared/repo&#x27;;
-import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { Counted, EntityId, IFindOptions, Task } from &#x27;@shared/domain&#x27;;
+import { TaskRepo } from &#x27;@shared/repo&#x27;;
 import { FilesStorageClientAdapterService } from &#x27;@src/modules/files-storage-client&#x27;;
 import { SubmissionService } from &#x27;./submission.service&#x27;;
 
@@ -969,11 +528,6 @@ import { SubmissionService } from &#x27;./submission.service&#x27;;
 export class TaskService {
 	constructor(
 		private readonly taskRepo: TaskRepo,
-		private readonly userRepo: UserRepo,
-		@Inject(forwardRef(() &#x3D;&gt; AuthorizationService))
-		private readonly authorizationService: AuthorizationService,
-		private readonly courseRepo: CourseRepo,
-		private readonly lessonRepo: LessonRepo,
 		private readonly submissionService: SubmissionService,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
 	) {}
@@ -984,13 +538,7 @@ export class TaskService {
 		filters?: { draft?: boolean; noFutureAvailableDate?: boolean },
 		options?: IFindOptions&lt;Task&gt;
 	): Promise&lt;Counted&lt;Task[]&gt;&gt; {
-		const repoFilters: { draft?: boolean; noFutureAvailableDate?: boolean; userId?: EntityId } &#x3D; { ...filters };
-		const user &#x3D; await this.authorizationService.getUserWithPermissions(creatorId);
-		if (!this.authorizationService.hasAllPermissions(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3])) {
-			repoFilters.userId &#x3D; user.id;
-		}
-
-		return this.taskRepo.findBySingleParent(creatorId, courseId, repoFilters, options);
+		return this.taskRepo.findBySingleParent(creatorId, courseId, filters, options);
 	}
 
 	async delete(task: Task): Promise&lt;void&gt; {
@@ -1008,140 +556,8 @@ export class TaskService {
 		await Promise.all(promises);
 	}
 
-	async create(userId: EntityId, params: ITaskCreate): Promise&lt;TaskWithStatusVo&gt; {
-		const user &#x3D; await this.authorizationService.getUserWithPermissions(userId);
-		const taskParams: ITaskProperties &#x3D; {
-			...params,
-			school: user.school,
-			creator: user,
-		};
-
-		this.taskDateValidation(taskParams.availableDate, taskParams.dueDate);
-
-		if (!this.authorizationService.hasAllPermissions(user, [Permission.HOMEWORK_CREATE])) {
-			// TODO: Should be ForbiddenException
-			throw new UnauthorizedException();
-		}
-
-		if (params.courseId) {
-			const course &#x3D; await this.courseRepo.findById(params.courseId);
-			this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([]));
-			taskParams.course &#x3D; course;
-
-			if (params.usersIds) {
-				const courseUsers &#x3D; course.getStudentIds();
-				const isAllUsersInCourse &#x3D; params.usersIds.every((id) &#x3D;&gt; courseUsers.includes(id));
-				if (!isAllUsersInCourse) {
-					throw new ForbiddenException(&#x27;Users do not belong to course&#x27;);
-				}
-				const users &#x3D; await Promise.all(params.usersIds.map(async (id) &#x3D;&gt; this.userRepo.findById(id)));
-				taskParams.users &#x3D; users;
-			}
-		}
-
-		if (params.lessonId) {
-			const lesson &#x3D; await this.lessonRepo.findById(params.lessonId);
-			if (!taskParams.course || lesson.course.id !&#x3D;&#x3D; taskParams.course.id) {
-				throw new ForbiddenException(&#x27;Lesson does not belong to Course&#x27;);
-			}
-			this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.write([]));
-			taskParams.lesson &#x3D; lesson;
-		}
-
-		const task &#x3D; new Task(taskParams);
-
-		await this.taskRepo.save(task);
-
-		const status &#x3D; task.createTeacherStatusForUser(user);
-		const taskWithStatusVo &#x3D; new TaskWithStatusVo(task, status);
-
-		return taskWithStatusVo;
-	}
-
-	async find(userId: EntityId, taskId: EntityId) {
-		const user &#x3D; await this.authorizationService.getUserWithPermissions(userId);
-		const task &#x3D; await this.taskRepo.findById(taskId);
-
-		this.authorizationService.checkPermission(user, task, AuthorizationContextBuilder.read([Permission.HOMEWORK_VIEW]));
-
-		const status &#x3D; this.authorizationService.hasOneOfPermissions(user, [Permission.HOMEWORK_EDIT])
-			? task.createTeacherStatusForUser(user)
-			: task.createStudentStatusForUser(user);
-
-		const result &#x3D; new TaskWithStatusVo(task, status);
-
-		return result;
-	}
-
 	async findById(taskId: EntityId): Promise&lt;Task&gt; {
 		return this.taskRepo.findById(taskId);
-	}
-
-	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate, remove &#x3D; false): Promise&lt;TaskWithStatusVo&gt; {
-		const user &#x3D; await this.authorizationService.getUserWithPermissions(userId);
-		const task &#x3D; await this.taskRepo.findById(taskId);
-
-		this.authorizationService.checkPermission(
-			user,
-			task,
-			AuthorizationContextBuilder.write([Permission.HOMEWORK_EDIT])
-		);
-
-		// eslint-disable-next-line no-restricted-syntax
-		for (const [key, value] of Object.entries(params)) {
-			if (value) {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				task[key] &#x3D; value;
-			}
-		}
-
-		if (params.courseId) {
-			const course &#x3D; await this.courseRepo.findById(params.courseId);
-			this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([]));
-			task.course &#x3D; course;
-
-			if (params.usersIds) {
-				const courseUsers &#x3D; course.getStudentIds();
-				const isAllUsersInCourse &#x3D; params.usersIds.every((id) &#x3D;&gt; courseUsers.includes(id));
-				if (!isAllUsersInCourse) {
-					throw new ForbiddenException(&#x27;Users do not belong to course&#x27;);
-				}
-				const users &#x3D; await Promise.all(params.usersIds.map(async (id) &#x3D;&gt; this.userRepo.findById(id)));
-				task.users.set(users);
-			} else if (remove) {
-				task.users.removeAll();
-			}
-		} else if (remove) {
-			task.course &#x3D; undefined;
-			task.lesson &#x3D; undefined;
-			task.users.removeAll();
-		}
-
-		if (params.lessonId) {
-			const lesson &#x3D; await this.lessonRepo.findById(params.lessonId);
-			if (!task.course || lesson.course.id !&#x3D;&#x3D; task.course.id) {
-				throw new ForbiddenException(&#x27;Lesson does not belong to Course&#x27;);
-			}
-			this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.write([]));
-			task.lesson &#x3D; lesson;
-		} else if (remove) {
-			task.lesson &#x3D; undefined;
-		}
-
-		this.taskDateValidation(params.availableDate, params.dueDate);
-
-		await this.taskRepo.save(task);
-
-		const status &#x3D; task.createTeacherStatusForUser(user);
-		const taskWithStatusVo &#x3D; new TaskWithStatusVo(task, status);
-
-		return taskWithStatusVo;
-	}
-
-	private taskDateValidation(availableDate?: Date, dueDate?: Date) {
-		if (availableDate &amp;&amp; dueDate &amp;&amp; !(availableDate &lt; dueDate)) {
-			throw new ValidationError(&#x27;availableDate must be before dueDate&#x27;);
-		}
 	}
 }
 </code></pre>

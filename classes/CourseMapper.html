@@ -91,10 +91,6 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Static</span>
-                                <a href="#mapToCourseResponse" >mapToCourseResponse</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Static</span>
                                 <a href="#mapToMetadataResponse" >mapToMetadataResponse</a>
                             </li>
                         </ul>
@@ -116,77 +112,6 @@
     <h3 id="methods">
         Methods
     </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="mapToCourseResponse"></a>
-                    <span class="name">
-                        <span class="modifier">Static</span>
-                        <span ><b>mapToCourseResponse</b></span>
-                        <a href="#mapToCourseResponse"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToCourseResponse(course: <a href="../entitys/Course.html" target="_self">Course</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="19"
-                            class="link-to-prism">apps/server/src/modules/learnroom/mapper/course.mapper.ts:19</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>course</td>
-                                    <td>
-                                                <code><a href="../entitys/Course.html" target="_self" >Course</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/CourseResponse.html" target="_self" >CourseResponse</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -269,7 +194,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Course } from &#x27;@shared/domain&#x27;;
-import { CourseMetadataResponse, CourseResponse } from &#x27;../controller/dto&#x27;;
+import { CourseMetadataResponse } from &#x27;../controller/dto&#x27;;
 
 export class CourseMapper {
 	static mapToMetadataResponse(course: Course): CourseMetadataResponse {
@@ -283,11 +208,6 @@ export class CourseMapper {
 			courseMetadata.untilDate,
 			courseMetadata.copyingSince
 		);
-		return dto;
-	}
-
-	static mapToCourseResponse(course: Course): CourseResponse {
-		const dto &#x3D; new CourseResponse(course);
 		return dto;
 	}
 }

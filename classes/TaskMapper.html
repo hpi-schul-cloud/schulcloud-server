@@ -142,8 +142,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="62"
-                            class="link-to-prism">apps/server/src/modules/task/mapper/task.mapper.ts:62</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="54"
+                            class="link-to-prism">apps/server/src/modules/task/mapper/task.mapper.ts:54</a></div>
                 </td>
             </tr>
 
@@ -213,8 +213,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="46"
-                            class="link-to-prism">apps/server/src/modules/task/mapper/task.mapper.ts:46</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">apps/server/src/modules/task/mapper/task.mapper.ts:39</a></div>
                 </td>
             </tr>
 
@@ -369,9 +369,6 @@ export class TaskMapper {
 				type: task.descriptionInputFormat || InputFormat.RICH_TEXT_CK4,
 			});
 		}
-		if (task.taskCard) {
-			dto.taskCardId &#x3D; task.taskCard;
-		}
 		dto.availableDate &#x3D; task.availableDate;
 		dto.dueDate &#x3D; task.dueDate;
 
@@ -380,10 +377,6 @@ export class TaskMapper {
 			dto.lessonName &#x3D; taskDesc.lessonName;
 		}
 		dto.lessonHidden &#x3D; taskDesc.lessonHidden;
-
-		if (task.users) {
-			dto.users &#x3D; task.getUsersList();
-		}
 
 		return dto;
 	}
@@ -396,7 +389,6 @@ export class TaskMapper {
 			description: params.description,
 			availableDate: params.availableDate,
 			dueDate: params.dueDate,
-			usersIds: params.usersIds,
 		};
 		if (params.description) {
 			dto.descriptionInputFormat &#x3D; InputFormat.RICH_TEXT_CK5;
@@ -412,7 +404,6 @@ export class TaskMapper {
 			description: params.description,
 			availableDate: params.availableDate,
 			dueDate: params.dueDate,
-			usersIds: params.usersIds,
 		};
 		if (params.description) {
 			dto.descriptionInputFormat &#x3D; InputFormat.RICH_TEXT_CK5;

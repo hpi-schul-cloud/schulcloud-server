@@ -274,14 +274,6 @@ export interface ITaskParent {
 	getStudentIds(): EntityId[];
 }
 
-export class UsersList {
-	id!: string;
-
-	firstName!: string;
-
-	lastName!: string;
-}
-
 @Entity({ tableName: &#x27;homeworks&#x27; })
 @Index({ properties: [&#x27;private&#x27;, &#x27;dueDate&#x27;, &#x27;finished&#x27;] })
 @Index({ properties: [&#x27;id&#x27;, &#x27;private&#x27;] })
@@ -313,9 +305,6 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	@Property({ nullable: true })
 	teamSubmissions?: boolean;
 
-	@Property({ nullable: true })
-	taskCard?: string;
-
 	@Index()
 	@ManyToOne(&#x27;User&#x27;, { fieldName: &#x27;teacherId&#x27; })
 	creator: User;
@@ -336,10 +325,6 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	submissions &#x3D; new Collection&lt;Submission&gt;(this);
 
 	@Index()
-	@ManyToMany(&#x27;User&#x27;, undefined, { fieldName: &#x27;userIds&#x27; })
-	users &#x3D; new Collection&lt;User&gt;(this);
-
-	@Index()
 	@ManyToMany(&#x27;User&#x27;, undefined, { fieldName: &#x27;archived&#x27; })
 	finished &#x3D; new Collection&lt;User&gt;(this);
 
@@ -357,7 +342,6 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		this.school &#x3D; props.school;
 		this.lesson &#x3D; props.lesson;
 		this.submissions.set(props.submissions || []);
-		if (props.users) this.users.set(props.users);
 		this.finished.set(props.finished || []);
 		this.publicSubmissions &#x3D; props.publicSubmissions || false;
 		this.teamSubmissions &#x3D; props.teamSubmissions || false;
@@ -381,22 +365,6 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		const finishedIds &#x3D; finishedObjectIds.map((id): string &#x3D;&gt; id.toString());
 
 		return finishedIds;
-	}
-
-	public getUsersList(): UsersList[] {
-		const users &#x3D; this.users.getItems();
-		if (users.length) {
-			const usersList: UsersList[] &#x3D; users.map((user) &#x3D;&gt; {
-				return {
-					id: user.id,
-					firstName: user.firstName,
-					lastName: user.lastName,
-				};
-			});
-			return usersList;
-		}
-
-		return [];
 	}
 
 	private getParent(): ITaskParent | User {
