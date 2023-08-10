@@ -7,10 +7,12 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { config } from '@src/modules/tldraw/config';
 import * as Utils from '@src/modules/tldraw/utils/utils';
-import { WSSharedDoc } from '@src/modules/tldraw/utils/utils';
+import { messageHandler, WSSharedDoc } from '@src/modules/tldraw/utils/utils';
 import { TextEncoder } from 'util';
+import * as SyncProtocols from 'y-protocols/sync';
 import { Awareness } from 'y-protocols/awareness';
 import { TldrawGateway } from '.';
+import { decoding, encoding } from 'lib0';
 
 describe('TldrawGateway', () => {
 	let app: INestApplication;
@@ -164,6 +166,27 @@ describe('TldrawGateway', () => {
 		expect(mockIDs.has(3)).toBe(true);
 		expect(mockIDs.has(2)).toBe(false);
 		expect(sendSpy).toBeCalled();
+		ws.close();
+		sendSpy.mockClear();
+	});
+
+	it('should not call send method when received empty message', async () => {
+		await app.listen(3000);
+
+		ws = new WebSocket(`ws://localhost:${gatewayPort}`);
+		await new Promise((resolve) => {
+			ws.on('open', resolve);
+		});
+
+		jest.spyOn(SyncProtocols, 'readSyncMessage').mockReturnValue(0);
+		const sendSpy = jest.spyOn(Utils, 'send');
+		const doc = new WSSharedDoc('TEST');
+		const encoder = encoding.createEncoder();
+		encoding.writeVarUint(encoder, 0);
+		encoding.writeVarUint(encoder, 1);
+		const newMessageByteArray = encoding.toUint8Array(encoder);
+		Utils.messageHandler(ws, doc, newMessageByteArray);
+		expect(sendSpy).toHaveBeenCalledTimes(0);
 		ws.close();
 		sendSpy.mockClear();
 	});
