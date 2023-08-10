@@ -218,7 +218,9 @@ describe('ToolContextController (API)', () => {
 				const { teacher, contextExternalToolEntity } = await setup();
 				currentUser = mapUserToCurrentUser(teacher);
 
-				await request(app.getHttpServer()).delete(`${basePath}/${contextExternalToolEntity.id}`).expect(204);
+				await request(app.getHttpServer())
+					.delete(`${basePath}/${contextExternalToolEntity.id}`)
+					.expect(HttpStatus.NO_CONTENT);
 
 				const deleted: ContextExternalToolEntity | null = await em.findOne(ContextExternalToolEntity, {
 					contextId: contextExternalToolEntity.id,

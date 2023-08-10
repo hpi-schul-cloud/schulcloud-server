@@ -10,7 +10,7 @@ import {
 	ApiUnprocessableEntityResponse,
 	ApiOperation,
 } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, Param, Post, Query, Put, HttpCode } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, Put, HttpCode, HttpStatus } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { LegacyLogger } from '@src/core/logger';
@@ -98,7 +98,7 @@ export class ToolSchoolController {
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
 	@ApiOperation({ summary: 'Deletes a SchoolExternalTool' })
-	@HttpCode(204)
+	@HttpCode(HttpStatus.NO_CONTENT)
 	async deleteSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams

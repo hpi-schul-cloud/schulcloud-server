@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Query, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query, Res } from '@nestjs/common';
 import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
@@ -30,7 +30,7 @@ import {
 	ExternalToolSearchParams,
 	ExternalToolUpdateParams,
 	SortExternalToolParams,
-	ToolIdParams,
+	ExternalToolIdParams,
 	ToolReferenceListResponse,
 	ToolReferenceResponse,
 } from './dto';
@@ -103,7 +103,7 @@ export class ToolController {
 	@ApiOperation({ summary: 'Returns an ExternalTool for the given id' })
 	async getExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ToolIdParams
+		@Param() params: ExternalToolIdParams
 	): Promise<ExternalToolResponse> {
 		const externalTool: ExternalTool = await this.externalToolUc.getExternalTool(
 			currentUser.userId,
@@ -122,7 +122,7 @@ export class ToolController {
 	@ApiOperation({ summary: 'Updates an ExternalTool' })
 	async updateExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ToolIdParams,
+		@Param() params: ExternalToolIdParams,
 		@Body() externalToolParams: ExternalToolUpdateParams
 	): Promise<ExternalToolResponse> {
 		const externalTool: ExternalToolUpdate = this.externalToolDOMapper.mapUpdateRequest(externalToolParams);
@@ -141,8 +141,11 @@ export class ToolController {
 	@ApiForbiddenResponse({ description: 'User is not allowed to access this resource.' })
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
 	@ApiOperation({ summary: 'Deletes an ExternalTool' })
-	@HttpCode(204)
-	async deleteExternalTool(@CurrentUser() currentUser: ICurrentUser, @Param() params: ToolIdParams): Promise<void> {
+	@HttpCode(HttpStatus.NO_CONTENT)
+	async deleteExternalTool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ExternalToolIdParams
+	): Promise<void> {
 		const promise: Promise<void> = this.externalToolUc.deleteExternalTool(currentUser.userId, params.externalToolId);
 		this.logger.debug(
 			`ExternalTool with id ${params.externalToolId} was deleted by user with id ${currentUser.userId}`
@@ -183,7 +186,7 @@ export class ToolController {
 		description: 'Logo of external tool fetched successfully.',
 	})
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
-	async getExternalToolLogo(@Param() params: ToolIdParams, @Res() res: Response): Promise<void> {
+	async getExternalToolLogo(@Param() params: ExternalToolIdParams, @Res() res: Response): Promise<void> {
 		const externalToolLogo: ExternalToolLogo = await this.externalToolUc.getExternalToolBinaryLogo(
 			params.externalToolId
 		);

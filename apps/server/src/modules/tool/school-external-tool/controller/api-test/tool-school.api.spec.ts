@@ -1,5 +1,5 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, Role, RoleName, School, User } from '@shared/domain';
 import {
@@ -179,7 +179,9 @@ describe('ToolSchoolController (API)', () => {
 			const { adminUser, schoolExternalToolEntity } = await setup();
 			currentUser = mapUserToCurrentUser(adminUser);
 
-			await request(app.getHttpServer()).delete(`${basePath}/${schoolExternalToolEntity.id}`).expect(204);
+			await request(app.getHttpServer())
+				.delete(`${basePath}/${schoolExternalToolEntity.id}`)
+				.expect(HttpStatus.NO_CONTENT);
 
 			const deleted: SchoolExternalToolEntity | null = await em.findOne(SchoolExternalToolEntity, {
 				id: schoolExternalToolEntity.id,
