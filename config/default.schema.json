@@ -1148,11 +1148,6 @@
 				}
 			}
 		},
-		"FEATURE_TASK_CARD_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enable task card feature"
-		},
 		"FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1187,6 +1182,17 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the configuration of custom parameters for context external tools"
+		},
+		"CTL_TOOLS": {
+			"type": "object",
+			"description": "CTL Tools properties",
+			"properties": {
+				"EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES": {
+					"type": "integer",
+					"default": 300000,
+					"description": "Maximum size of the logo of an external tool in bytes"
+				}
+			}
 		},
 		"TSP_SCHOOL_SYNCER": {
 			"type": "object",

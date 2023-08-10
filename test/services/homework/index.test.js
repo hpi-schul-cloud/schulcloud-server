@@ -64,41 +64,6 @@ describe('homework service', () => {
 		};
 	};
 
-	const setupHomeworkWithAssignment = async ({ asPrivate = false } = {}) => {
-		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
-		const substitutionTeacher = await testObjects.createTestUser({ roles: ['teacher'] });
-		const owner = await testObjects.createTestUser({ roles: ['teacher'] });
-		const student1 = await testObjects.createTestUser({ roles: ['student'] });
-		const student2 = await testObjects.createTestUser({ roles: ['student'] });
-		const course = await testObjects.createTestCourse({
-			teacherIds: [teacher._id, owner._id],
-			substitutionIds: [substitutionTeacher._id],
-			userIds: [student1._id, student2._id],
-		});
-		const homework = await testObjects.createTestHomework({
-			teacherId: owner._id,
-			name: 'Testaufgabe with assignment',
-			description: '\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n',
-			availableDate: Date.now(),
-			dueDate: '2030-11-16T12:47:00.000Z',
-			private: asPrivate,
-			archived: [],
-			lessonId: null,
-			courseId: course._id,
-			userIds: [student1._id],
-		});
-
-		return {
-			teacher,
-			substitutionTeacher,
-			owner,
-			student1,
-			student2,
-			course,
-			homework,
-		};
-	};
-
 	before(async () => {
 		app = await appPromise();
 		homeworkService = app.service('homework');
@@ -437,148 +402,115 @@ describe('homework service', () => {
 			expect(result.total).to.equal(0);
 		});
 
-		describe('when task has assignees', () => {
-			it('as a teacher, I am able to FIND a task which has assignees', async () => {
-				const { teacher } = await setupHomeworkWithAssignment();
-				const params = await testObjects.generateRequestParamsFromUser(teacher);
-				params.query = {};
-				const result = await homeworkService.find(params);
-				expect(result.total).to.equal(1);
-			});
-			it('as a substitue teacher, I am able to FIND a task which has assignees', async () => {
-				const { substitutionTeacher } = await setupHomeworkWithAssignment();
-				const params = await testObjects.generateRequestParamsFromUser(substitutionTeacher);
-				params.query = {};
-				const result = await homeworkService.find(params);
-				expect(result.total).to.equal(1);
-			});
-			it('as a student, I am able to FIND a task to which I am assigned', async () => {
-				const { student1 } = await setupHomeworkWithAssignment();
-				const params = await testObjects.generateRequestParamsFromUser(student1);
-				params.query = {};
-				const result = await homeworkService.find(params);
-				expect(result.total).to.equal(1);
-			});
-			it('as a student, I not able to FIND a task to which I am not assigned', async () => {
-				const { student2 } = await setupHomeworkWithAssignment();
-				const params = await testObjects.generateRequestParamsFromUser(student2);
-				params.query = {};
-				const result = await homeworkService.find(params);
-				expect(result.total).to.equal(0);
-			});
+		it('teacher sees homework statistics', async () => {
+			const { homework, teacher } = await setupHomeworkWithGrades();
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			params.query = { _id: homework._id };
+			const result = await homeworkService.find(params);
+
+			expect(result.data[0].stats.userCount).to.equal(2);
+			expect(result.data[0].stats.submissionCount).to.equal(1);
+			expect(result.data[0].stats.submissionPercentage).to.equal('50.00');
+			expect(result.data[0].stats.gradeCount).to.equal(1);
+			expect(result.data[0].stats.gradePercentage).to.equal('50.00');
+			expect(result.data[0].stats.averageGrade).to.equal('67.00');
+			// no grade as a teacher
+			expect(result.data[0].grade).to.equal(undefined);
 		});
 
-		describe('with submissions', () => {
-			it('teacher sees homework statistics', async () => {
-				const { homework, teacher } = await setupHomeworkWithGrades();
-				const params = await testObjects.generateRequestParamsFromUser(teacher);
-				params.query = { _id: homework._id };
-				const result = await homeworkService.find(params);
+		it('student sees grade but no stats', async () => {
+			const { students, homework } = await setupHomeworkWithGrades();
 
-				expect(result.data[0].stats.userCount).to.equal(2);
-				expect(result.data[0].stats.submissionCount).to.equal(1);
-				expect(result.data[0].stats.submissionPercentage).to.equal('50.00');
-				expect(result.data[0].stats.gradeCount).to.equal(1);
-				expect(result.data[0].stats.gradePercentage).to.equal('50.00');
-				expect(result.data[0].stats.averageGrade).to.equal('67.00');
-				// no grade as a teacher
-				expect(result.data[0].grade).to.equal(undefined);
+			const params = await testObjects.generateRequestParamsFromUser(students[0]);
+			params.query = { _id: homework._id };
+			const result = await homeworkService.find(params);
+			expect(result.data[0].grade).to.equal('67.00');
+			// no stats as a student
+			expect(result.data[0].stats).to.equal(undefined);
+		});
+
+		it('student sees if he submitted or not', async () => {
+			const { students, course, homework } = await setupHomeworkWithGrades();
+			await testObjects.createTestSubmission({
+				schoolId: course.schoolId,
+				courseId: course._id,
+				homeworkId: homework._id,
+				studentId: students[1]._id,
+				comment: 'hello teacher, his dog has eaten this database entry also...',
+				grade: 67,
+				submitted: true,
+				graded: true,
 			});
 
-			it('student sees grade but no stats', async () => {
-				const { students, homework } = await setupHomeworkWithGrades();
+			const params = await testObjects.generateRequestParamsFromUser(students[0]);
+			params.query = { _id: homework._id };
+			const result = await homeworkService.find(params);
+			expect(result.data[0].submissions).to.equal(1);
+		});
 
-				const params = await testObjects.generateRequestParamsFromUser(students[0]);
-				params.query = { _id: homework._id };
-				const result = await homeworkService.find(params);
-				expect(result.data[0].grade).to.equal('67.00');
-				// no stats as a student
-				expect(result.data[0].stats).to.equal(undefined);
+		it('homework contains course details', async () => {
+			const { teacher, course } = await setupHomeworkWithCourse();
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			params.query = {};
+			const result = await homeworkService.find(params);
+
+			expect(course._id.toString()).to.equal(result.data[0].courseId._id.toString());
+
+			const schoolId = result.data[0].schoolId.toString();
+			const courseSchoolId = result.data[0].courseId.schoolId.toString();
+			expect(schoolId).to.equal(courseSchoolId);
+		});
+
+		const createHomeworkWithSubmissions = async (teacherId, studentIds = [], courseId) => {
+			const { _id: homeworkId } = await testObjects.createTestHomework({
+				teacherId,
+				name: 'Testaufgabe',
+				description: '\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n',
+				availableDate: Date.now(),
+				dueDate: Date.now() + 86400000,
+				lessonId: null,
+				courseId,
+			});
+			const submissionPromises = [];
+			studentIds.forEach((studentId) => {
+				submissionPromises.push(
+					testObjects.createTestSubmission({
+						homeworkId,
+						studentId,
+						comment: 'I dont know the answer',
+						submitted: true,
+						graded: true,
+					})
+				);
+			});
+			await Promise.all(submissionPromises);
+		};
+		it('does not paginate the submissions', async () => {
+			const { _id: teacherId } = await testObjects.createTestUser({ roles: ['teacher'] });
+			const student = await testObjects.createTestUser({ roles: ['student'] });
+			const otherStudentPromises = [];
+			for (let i = 0; i < 25; i += 1) {
+				otherStudentPromises.push(testObjects.createTestUser({ roles: ['student'] }));
+			}
+			let otherStudents = await Promise.all(otherStudentPromises);
+			otherStudents = otherStudents.map((s) => s._id);
+			const { _id: courseId } = await testObjects.createTestCourse({
+				teacherIds: [teacherId],
+				userIds: [student._id, ...otherStudents],
 			});
 
-			it('student sees if he submitted or not', async () => {
-				const { students, course, homework } = await setupHomeworkWithGrades();
-				await testObjects.createTestSubmission({
-					schoolId: course.schoolId,
-					courseId: course._id,
-					homeworkId: homework._id,
-					studentId: students[1]._id,
-					comment: 'hello teacher, his dog has eaten this database entry also...',
-					grade: 67,
-					submitted: true,
-					graded: true,
-				});
+			const homeworkPromises = [];
+			for (let i = 0; i < 50; i += 1) {
+				homeworkPromises.push(createHomeworkWithSubmissions(teacherId, [student._id, ...otherStudents], courseId));
+			}
+			await Promise.all(homeworkPromises);
 
-				const params = await testObjects.generateRequestParamsFromUser(students[0]);
-				params.query = { _id: homework._id };
-				const result = await homeworkService.find(params);
-				expect(result.data[0].submissions).to.equal(1);
-			});
+			const params = await testObjects.generateRequestParamsFromUser(student);
+			const result = await homeworkService.find(params);
 
-			it('homework contains course details', async () => {
-				const { teacher, course } = await setupHomeworkWithCourse();
-				const params = await testObjects.generateRequestParamsFromUser(teacher);
-				params.query = {};
-				const result = await homeworkService.find(params);
-
-				expect(course._id.toString()).to.equal(result.data[0].courseId._id.toString());
-
-				const schoolId = result.data[0].schoolId.toString();
-				const courseSchoolId = result.data[0].courseId.schoolId.toString();
-				expect(schoolId).to.equal(courseSchoolId);
-			});
-
-			const createHomeworkWithSubmissions = async (teacherId, studentIds = [], courseId) => {
-				const { _id: homeworkId } = await testObjects.createTestHomework({
-					teacherId,
-					name: 'Testaufgabe',
-					description: '\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n',
-					availableDate: Date.now(),
-					dueDate: Date.now() + 86400000,
-					lessonId: null,
-					courseId,
-				});
-				const submissionPromises = [];
-				studentIds.forEach((studentId) => {
-					submissionPromises.push(
-						testObjects.createTestSubmission({
-							homeworkId,
-							studentId,
-							comment: 'I dont know the answer',
-							submitted: true,
-							graded: true,
-						})
-					);
-				});
-				await Promise.all(submissionPromises);
-			};
-			it('does not paginate the submissions', async () => {
-				const { _id: teacherId } = await testObjects.createTestUser({ roles: ['teacher'] });
-				const student = await testObjects.createTestUser({ roles: ['student'] });
-				const otherStudentPromises = [];
-				for (let i = 0; i < 25; i += 1) {
-					otherStudentPromises.push(testObjects.createTestUser({ roles: ['student'] }));
-				}
-				let otherStudents = await Promise.all(otherStudentPromises);
-				otherStudents = otherStudents.map((s) => s._id);
-				const { _id: courseId } = await testObjects.createTestCourse({
-					teacherIds: [teacherId],
-					userIds: [student._id, ...otherStudents],
-				});
-
-				const homeworkPromises = [];
-				for (let i = 0; i < 50; i += 1) {
-					homeworkPromises.push(createHomeworkWithSubmissions(teacherId, [student._id, ...otherStudents], courseId));
-				}
-				await Promise.all(homeworkPromises);
-
-				const params = await testObjects.generateRequestParamsFromUser(student);
-				const result = await homeworkService.find(params);
-
-				expect(result.data.length).to.equal(50);
-				result.data.forEach((homework) => {
-					expect(homework.submissions).to.equal(1);
-				});
+			expect(result.data.length).to.equal(50);
+			result.data.forEach((homework) => {
+				expect(homework.submissions).to.equal(1);
 			});
 		});
 	});
@@ -652,40 +584,6 @@ describe('homework service', () => {
 				chai.expect(err.code).to.equal(403);
 				chai.expect(err.message).to.equal("You don't have permissions!");
 			}
-		});
-
-		describe('when task has assignees', () => {
-			it('as a teacher I am able to get a task which has assignees', async () => {
-				const { teacher, homework } = await setupHomeworkWithAssignment();
-				const params = await testObjects.generateRequestParamsFromUser(teacher);
-				const result = await homeworkService.get(homework._id, params);
-				expect(result.name).to.equal('Testaufgabe with assignment');
-			});
-			it('as a substitute teacher I am able to get a task which has assignees', async () => {
-				const { substitutionTeacher, homework } = await setupHomeworkWithAssignment();
-				const params = await testObjects.generateRequestParamsFromUser(substitutionTeacher);
-				const result = await homeworkService.get(homework._id, params);
-				expect(result.name).to.equal('Testaufgabe with assignment');
-			});
-			it('as a student I am able to GET a task to which I am assigned', async () => {
-				const { student1, homework } = await setupHomeworkWithAssignment();
-				const params = await testObjects.generateRequestParamsFromUser(student1);
-				const result = await homeworkService.get(homework._id, params);
-				expect(result.name).to.equal('Testaufgabe with assignment');
-			});
-			it('as a student I not able to GET a task to which I am not assigned', async () => {
-				const { student2, homework } = await setupHomeworkWithAssignment();
-				const params = await testObjects.generateRequestParamsFromUser(student2);
-
-				try {
-					await homeworkService.get(homework._id, params);
-					throw new Error('should have failed');
-				} catch (err) {
-					expect(err.message).to.not.equal('should have failed');
-					expect(err.code).to.equal(403);
-					expect(err.message).to.equal("You don't have permissions!");
-				}
-			});
 		});
 	});
 

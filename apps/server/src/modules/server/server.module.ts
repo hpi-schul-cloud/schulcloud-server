@@ -25,7 +25,6 @@ import { RocketChatModule } from '@src/modules/rocketchat';
 import { SchoolApiModule } from '@src/modules/school/school-api.module';
 import { SharingApiModule } from '@src/modules/sharing/sharing.module';
 import { SystemApiModule } from '@src/modules/system/system-api.module';
-import { TaskCardModule } from '@src/modules/task-card';
 import { TaskApiModule } from '@src/modules/task/task-api.module';
 import { ToolApiModule } from '@src/modules/tool/tool-api.module';
 import { ImportUserModule } from '@src/modules/user-import';
@@ -46,7 +45,6 @@ const serverModules = [
 	CollaborativeStorageModule,
 	OauthApiModule,
 	TaskApiModule,
-	TaskCardModule,
 	LessonApiModule,
 	NewsModule,
 	UserApiModule,
