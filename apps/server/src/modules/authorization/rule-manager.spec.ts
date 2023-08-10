@@ -10,7 +10,6 @@ import {
 	SchoolExternalToolRule,
 	SchoolRule,
 	SubmissionRule,
-	TaskCardRule,
 	TaskRule,
 	TeamRule,
 	UserRule,
@@ -28,7 +27,6 @@ describe('RuleManager', () => {
 	let schoolRule: DeepMocked<SchoolRule>;
 	let userRule: DeepMocked<UserRule>;
 	let taskRule: DeepMocked<TaskRule>;
-	let taskCardRule: DeepMocked<TaskCardRule>;
 	let teamRule: DeepMocked<TeamRule>;
 	let submissionRule: DeepMocked<SubmissionRule>;
 	let schoolExternalToolRule: DeepMocked<SchoolExternalToolRule>;
@@ -48,7 +46,6 @@ describe('RuleManager', () => {
 				{ provide: SchoolRule, useValue: createMock<SchoolRule>() },
 				{ provide: UserRule, useValue: createMock<UserRule>() },
 				{ provide: TaskRule, useValue: createMock<TaskRule>() },
-				{ provide: TaskCardRule, useValue: createMock<TaskCardRule>() },
 				{ provide: TeamRule, useValue: createMock<TeamRule>() },
 				{ provide: SubmissionRule, useValue: createMock<SubmissionRule>() },
 				{ provide: SchoolExternalToolRule, useValue: createMock<SchoolExternalToolRule>() },
@@ -65,7 +62,6 @@ describe('RuleManager', () => {
 		schoolRule = await module.get(SchoolRule);
 		userRule = await module.get(UserRule);
 		taskRule = await module.get(TaskRule);
-		taskCardRule = await module.get(TaskCardRule);
 		teamRule = await module.get(TeamRule);
 		submissionRule = await module.get(SubmissionRule);
 		schoolExternalToolRule = await module.get(SchoolExternalToolRule);
@@ -96,7 +92,6 @@ describe('RuleManager', () => {
 				schoolRule.isApplicable.mockReturnValueOnce(false);
 				userRule.isApplicable.mockReturnValueOnce(false);
 				taskRule.isApplicable.mockReturnValueOnce(false);
-				taskCardRule.isApplicable.mockReturnValueOnce(false);
 				teamRule.isApplicable.mockReturnValueOnce(false);
 				submissionRule.isApplicable.mockReturnValueOnce(false);
 				schoolExternalToolRule.isApplicable.mockReturnValueOnce(false);
@@ -118,7 +113,6 @@ describe('RuleManager', () => {
 				expect(schoolRule.isApplicable).toBeCalled();
 				expect(userRule.isApplicable).toBeCalled();
 				expect(taskRule.isApplicable).toBeCalled();
-				expect(taskCardRule.isApplicable).toBeCalled();
 				expect(teamRule.isApplicable).toBeCalled();
 				expect(submissionRule.isApplicable).toBeCalled();
 				expect(schoolExternalToolRule.isApplicable).toBeCalled();
@@ -148,7 +142,6 @@ describe('RuleManager', () => {
 				schoolRule.isApplicable.mockReturnValueOnce(false);
 				userRule.isApplicable.mockReturnValueOnce(false);
 				taskRule.isApplicable.mockReturnValueOnce(false);
-				taskCardRule.isApplicable.mockReturnValueOnce(false);
 				teamRule.isApplicable.mockReturnValueOnce(false);
 				submissionRule.isApplicable.mockReturnValueOnce(false);
 				schoolExternalToolRule.isApplicable.mockReturnValueOnce(false);
@@ -178,7 +171,6 @@ describe('RuleManager', () => {
 				schoolRule.isApplicable.mockReturnValueOnce(false);
 				userRule.isApplicable.mockReturnValueOnce(false);
 				taskRule.isApplicable.mockReturnValueOnce(false);
-				taskCardRule.isApplicable.mockReturnValueOnce(false);
 				teamRule.isApplicable.mockReturnValueOnce(false);
 				submissionRule.isApplicable.mockReturnValueOnce(false);
 				schoolExternalToolRule.isApplicable.mockReturnValueOnce(false);
