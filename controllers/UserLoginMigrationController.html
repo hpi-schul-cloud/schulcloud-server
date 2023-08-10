@@ -95,6 +95,14 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
+                                <a href="#findUserLoginMigrationBySchool" >findUserLoginMigrationBySchool</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
                                 <a href="#getMigrations" >getMigrations</a>
                             </li>
                             <li>
@@ -155,6 +163,100 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findUserLoginMigrationBySchool"></a>
+                    <span class="name">
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier">Async</span>
+                        <span ><b>findUserLoginMigrationBySchool</b></span>
+                        <a href="#findUserLoginMigrationBySchool"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findUserLoginMigrationBySchool(user: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/SchoolIdParams.html" target="_self">SchoolIdParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;schools/:schoolId&#x27;)<br />@ApiForbiddenResponse()<br />@ApiOkResponse({description: &#x27;UserLoginMigrations has been found&#x27;, type: UserLoginMigrationSearchListResponse})<br />@ApiNotFoundResponse({description: &#x27;Cannot find UserLoginMigration&#x27;})<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="82"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:82</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>user</td>
+                                    <td>
+                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>params</td>
+                                    <td>
+                                                <code><a href="../classes/SchoolIdParams.html" target="_self" >SchoolIdParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;UserLoginMigrationResponse&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getMigrations"></a>
                     <span class="name">
                         <span class="modifier"></span>
@@ -178,14 +280,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get()<br />@ApiForbiddenResponse()<br />@ApiOkResponse({description: &#x27;UserLoginMigrations has been found.&#x27;, type: UserLoginMigrationSearchListResponse})<br />@ApiInternalServerErrorResponse({description: &#x27;Cannot find Sanis system information.&#x27;})<br /></code>
+                    <code>@Get()<br />@ApiForbiddenResponse()<br />@ApiOkResponse({description: &#x27;UserLoginMigrations has been found.&#x27;, type: UserLoginMigrationSearchListResponse})<br />@ApiInternalServerErrorResponse({description: &#x27;Cannot find target system information.&#x27;})<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="51"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:51</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="52"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:52</a></div>
                 </td>
             </tr>
 
@@ -277,8 +379,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="159"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:159</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="179"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:179</a></div>
                 </td>
             </tr>
 
@@ -385,8 +487,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="112"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:112</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="132"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:132</a></div>
                 </td>
             </tr>
 
@@ -470,8 +572,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="140"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:140</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="160"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:160</a></div>
                 </td>
             </tr>
 
@@ -565,8 +667,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="88"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:88</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="108"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:108</a></div>
                 </td>
             </tr>
 
@@ -618,7 +720,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Get, Post, Put, Query } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Get, Param, Post, Put, Query } from &#x27;@nestjs/common&#x27;;
 import {
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
@@ -651,6 +753,7 @@ import {
 	UserLoginMigrationSearchParams,
 } from &#x27;./dto&#x27;;
 import { Oauth2MigrationParams } from &#x27;./dto/oauth2-migration.params&#x27;;
+import { SchoolIdParams } from &#x27;./dto/request/school-id.params&#x27;;
 import { UserLoginMigrationMandatoryParams } from &#x27;./dto/request/user-login-migration-mandatory.params&#x27;;
 
 @ApiTags(&#x27;UserLoginMigration&#x27;)
@@ -667,7 +770,7 @@ export class UserLoginMigrationController {
 	@Get()
 	@ApiForbiddenResponse()
 	@ApiOkResponse({ description: &#x27;UserLoginMigrations has been found.&#x27;, type: UserLoginMigrationSearchListResponse })
-	@ApiInternalServerErrorResponse({ description: &#x27;Cannot find Sanis system information.&#x27; })
+	@ApiInternalServerErrorResponse({ description: &#x27;Cannot find target system information.&#x27; })
 	async getMigrations(
 		@CurrentUser() user: ICurrentUser,
 		@Query() params: UserLoginMigrationSearchParams
@@ -690,6 +793,25 @@ export class UserLoginMigrationController {
 			undefined,
 			undefined
 		);
+
+		return response;
+	}
+
+	@Get(&#x27;schools/:schoolId&#x27;)
+	@ApiForbiddenResponse()
+	@ApiOkResponse({ description: &#x27;UserLoginMigrations has been found&#x27;, type: UserLoginMigrationSearchListResponse })
+	@ApiNotFoundResponse({ description: &#x27;Cannot find UserLoginMigration&#x27; })
+	async findUserLoginMigrationBySchool(
+		@CurrentUser() user: ICurrentUser,
+		@Param() params: SchoolIdParams
+	): Promise&lt;UserLoginMigrationResponse&gt; {
+		const userLoginMigration: UserLoginMigrationDO &#x3D; await this.userLoginMigrationUc.findUserLoginMigrationBySchool(
+			user.userId,
+			params.schoolId
+		);
+
+		const response: UserLoginMigrationResponse &#x3D;
+			UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(userLoginMigration);
 
 		return response;
 	}

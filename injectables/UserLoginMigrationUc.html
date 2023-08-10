@@ -86,6 +86,10 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#findUserLoginMigrationBySchool" >findUserLoginMigrationBySchool</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#getMigrations" >getMigrations</a>
                             </li>
                             <li>
@@ -118,12 +122,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userMigrationService: <a href="../injectables/UserMigrationService.html" target="_self">UserMigrationService</a>, userLoginMigrationService: <a href="../injectables/UserLoginMigrationService.html" target="_self">UserLoginMigrationService</a>, oauthService: <a href="../injectables/OAuthService.html" target="_self">OAuthService</a>, provisioningService: <a href="../injectables/ProvisioningService.html" target="_self">ProvisioningService</a>, schoolMigrationService: <a href="../injectables/SchoolMigrationService.html" target="_self">SchoolMigrationService</a>, authenticationService: <a href="../injectables/AuthenticationService.html" target="_self">AuthenticationService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
+<code>constructor(userMigrationService: <a href="../injectables/UserMigrationService.html" target="_self">UserMigrationService</a>, userLoginMigrationService: <a href="../injectables/UserLoginMigrationService.html" target="_self">UserLoginMigrationService</a>, oauthService: <a href="../injectables/OAuthService.html" target="_self">OAuthService</a>, provisioningService: <a href="../injectables/ProvisioningService.html" target="_self">ProvisioningService</a>, schoolMigrationService: <a href="../injectables/SchoolMigrationService.html" target="_self">SchoolMigrationService</a>, authenticationService: <a href="../injectables/AuthenticationService.html" target="_self">AuthenticationService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:18</a></div>
                             </td>
                         </tr>
 
@@ -213,6 +217,18 @@
                                                     
                                                 </tr>
                                                 <tr>
+                                                        <td>authorizationService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AuthorizationService.html" target="_self" >AuthorizationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
                                                         <td>logger</td>
                                                   
                                                         <td>
@@ -242,6 +258,89 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findUserLoginMigrationBySchool"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>findUserLoginMigrationBySchool</b></span>
+                        <a href="#findUserLoginMigrationBySchool"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findUserLoginMigrationBySchool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="60"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:60</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>schoolId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;UserLoginMigrationDO&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getMigrations"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -260,8 +359,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="37"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:37</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="40"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:40</a></div>
                 </td>
             </tr>
 
@@ -343,8 +442,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="27"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:27</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="30"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:30</a></div>
                 </td>
             </tr>
 
@@ -438,8 +537,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="134"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:134</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="155"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:155</a></div>
                 </td>
             </tr>
 
@@ -557,8 +656,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="57"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:57</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="78"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:78</a></div>
                 </td>
             </tr>
 
@@ -661,9 +760,11 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ForbiddenException, Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId, Page, SchoolDO, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
+import { NotFoundLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
+import { EntityId, Page, Permission, SchoolDO, User, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { AuthenticationService } from &#x27;@src/modules/authentication/services/authentication.service&#x27;;
+import { Action, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
 import { OAuthTokenDto } from &#x27;@src/modules/oauth&#x27;;
 import { OAuthService } from &#x27;@src/modules/oauth/service/oauth.service&#x27;;
 import { ProvisioningService } from &#x27;@src/modules/provisioning&#x27;;
@@ -672,7 +773,7 @@ import { OAuthMigrationError, SchoolMigrationError, UserLoginMigrationError } fr
 import { PageTypes } from &#x27;../interface/page-types.enum&#x27;;
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from &#x27;../service&#x27;;
 import { MigrationDto, PageContentDto } from &#x27;../service/dto&#x27;;
-import { UserLoginMigrationQuery } from &#x27;./dto/user-login-migration-query&#x27;;
+import { UserLoginMigrationQuery } from &#x27;./dto&#x27;;
 
 @Injectable()
 export class UserLoginMigrationUc {
@@ -683,6 +784,7 @@ export class UserLoginMigrationUc {
 		private readonly provisioningService: ProvisioningService,
 		private readonly schoolMigrationService: SchoolMigrationService,
 		private readonly authenticationService: AuthenticationService,
+		private readonly authorizationService: AuthorizationService,
 		private readonly logger: LegacyLogger
 	) {}
 
@@ -714,6 +816,24 @@ export class UserLoginMigrationUc {
 		}
 
 		return page;
+	}
+
+	async findUserLoginMigrationBySchool(userId: EntityId, schoolId: EntityId): Promise&lt;UserLoginMigrationDO&gt; {
+		const userLoginMigration: UserLoginMigrationDO | null &#x3D; await this.userLoginMigrationService.findMigrationBySchool(
+			schoolId
+		);
+
+		if (!userLoginMigration) {
+			throw new NotFoundLoggableException(&#x27;UserLoginMigration&#x27;, &#x27;schoolId&#x27;, schoolId);
+		}
+
+		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkPermission(user, userLoginMigration, {
+			requiredPermissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
+			action: Action.read,
+		});
+
+		return userLoginMigration;
 	}
 
 	async migrate(

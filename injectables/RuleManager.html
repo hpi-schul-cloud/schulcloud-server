@@ -126,12 +126,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(courseRule: <a href="../injectables/CourseRule.html" target="_self">CourseRule</a>, courseGroupRule: <a href="../injectables/CourseGroupRule.html" target="_self">CourseGroupRule</a>, lessonRule: <a href="../injectables/LessonRule.html" target="_self">LessonRule</a>, schoolRule: <a href="../injectables/SchoolRule.html" target="_self">SchoolRule</a>, taskRule: <a href="../injectables/TaskRule.html" target="_self">TaskRule</a>, taskCardRule: <a href="../injectables/TaskCardRule.html" target="_self">TaskCardRule</a>, userRule: <a href="../injectables/UserRule.html" target="_self">UserRule</a>, teamRule: <a href="../injectables/TeamRule.html" target="_self">TeamRule</a>, submissionRule: <a href="../injectables/SubmissionRule.html" target="_self">SubmissionRule</a>, schoolExternalToolRule: <a href="../injectables/SchoolExternalToolRule.html" target="_self">SchoolExternalToolRule</a>, boardDoRule: <a href="../injectables/BoardDoRule.html" target="_self">BoardDoRule</a>, contextExternalToolRule: <a href="../injectables/ContextExternalToolRule.html" target="_self">ContextExternalToolRule</a>)</code>
+<code>constructor(courseRule: <a href="../injectables/CourseRule.html" target="_self">CourseRule</a>, courseGroupRule: <a href="../injectables/CourseGroupRule.html" target="_self">CourseGroupRule</a>, lessonRule: <a href="../injectables/LessonRule.html" target="_self">LessonRule</a>, schoolRule: <a href="../injectables/SchoolRule.html" target="_self">SchoolRule</a>, taskRule: <a href="../injectables/TaskRule.html" target="_self">TaskRule</a>, taskCardRule: <a href="../injectables/TaskCardRule.html" target="_self">TaskCardRule</a>, userRule: <a href="../injectables/UserRule.html" target="_self">UserRule</a>, teamRule: <a href="../injectables/TeamRule.html" target="_self">TeamRule</a>, submissionRule: <a href="../injectables/SubmissionRule.html" target="_self">SubmissionRule</a>, schoolExternalToolRule: <a href="../injectables/SchoolExternalToolRule.html" target="_self">SchoolExternalToolRule</a>, boardDoRule: <a href="../injectables/BoardDoRule.html" target="_self">BoardDoRule</a>, contextExternalToolRule: <a href="../injectables/ContextExternalToolRule.html" target="_self">ContextExternalToolRule</a>, userLoginMigrationRule: <a href="../injectables/UserLoginMigrationRule.html" target="_self">UserLoginMigrationRule</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/authorization/rule-manager.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/authorization/rule-manager.ts:23</a></div>
                             </td>
                         </tr>
 
@@ -292,6 +292,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>userLoginMigrationRule</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/UserLoginMigrationRule.html" target="_self" >UserLoginMigrationRule</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -328,8 +340,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="61"
-                            class="link-to-prism">apps/server/src/modules/authorization/rule-manager.ts:61</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="64"
+                            class="link-to-prism">apps/server/src/modules/authorization/rule-manager.ts:64</a></div>
                 </td>
             </tr>
 
@@ -399,8 +411,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="54"
-                            class="link-to-prism">apps/server/src/modules/authorization/rule-manager.ts:54</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="57"
+                            class="link-to-prism">apps/server/src/modules/authorization/rule-manager.ts:57</a></div>
                 </td>
             </tr>
 
@@ -499,7 +511,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/authorization/rule-manager.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/authorization/rule-manager.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -529,6 +541,7 @@ import {
 	UserRule,
 } from &#x27;@shared/domain/rules&#x27;;
 import { ContextExternalToolRule } from &#x27;@shared/domain/rules/context-external-tool.rule&#x27;;
+import { UserLoginMigrationRule } from &#x27;@shared/domain/rules/user-login-migration.rule&#x27;;
 import { AuthorizationContext, Rule } from &#x27;./types&#x27;;
 
 @Injectable()
@@ -547,7 +560,8 @@ export class RuleManager {
 		private readonly submissionRule: SubmissionRule,
 		private readonly schoolExternalToolRule: SchoolExternalToolRule,
 		private readonly boardDoRule: BoardDoRule,
-		private readonly contextExternalToolRule: ContextExternalToolRule
+		private readonly contextExternalToolRule: ContextExternalToolRule,
+		private readonly userLoginMigrationRule: UserLoginMigrationRule
 	) {
 		this.rules &#x3D; [
 			this.courseRule,
@@ -562,6 +576,7 @@ export class RuleManager {
 			this.schoolExternalToolRule,
 			this.boardDoRule,
 			this.contextExternalToolRule,
+			this.userLoginMigrationRule,
 		];
 	}
 

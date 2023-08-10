@@ -371,6 +371,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                             <a href="injectables/TeamsRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TeamsRepo</a>
                                         </li>
                                         <li class="link">
+                                            <a href="injectables/UserLoginMigrationRule.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >UserLoginMigrationRule</a>
+                                        </li>
+                                        <li class="link">
                                             <a href="injectables/UserRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >UserRepo</a>
                                         </li>
                                         <li class="link">
@@ -3465,6 +3468,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/NewsUrlParams.html" data-type="entity-link" >NewsUrlParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/NotFoundLoggableException.html" data-type="entity-link" >NotFoundLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/Oauth2AuthorizationBodyParams.html" data-type="entity-link" >Oauth2AuthorizationBodyParams</a>
                             </li>
                             <li class="link">
@@ -3760,6 +3766,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/SchoolIdParams.html" data-type="entity-link" >SchoolIdParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchoolIdParams-1.html" data-type="entity-link" >SchoolIdParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/SchoolInfoMapper.html" data-type="entity-link" >SchoolInfoMapper</a>
@@ -4760,6 +4769,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/UserLoginMigrationRevertService.html" data-type="entity-link" >UserLoginMigrationRevertService</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/UserLoginMigrationRule.html" data-type="entity-link" >UserLoginMigrationRule</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/UserLoginMigrationService.html" data-type="entity-link" >UserLoginMigrationService</a>
