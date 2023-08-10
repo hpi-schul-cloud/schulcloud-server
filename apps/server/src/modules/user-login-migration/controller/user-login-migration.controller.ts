@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Param, Post, Put, Query, Res } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import {
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
@@ -12,7 +12,6 @@ import {
 import { Page, UserLoginMigrationDO } from '@shared/domain';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
-import { Response } from 'express';
 import {
 	SchoolNumberMissingLoggableException,
 	UserLoginMigrationAlreadyClosedLoggableException,
@@ -194,20 +193,11 @@ export class UserLoginMigrationController {
 	@ApiNoContentResponse({ description: 'User login migration was reverted' })
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
-	async closeMigration(
-		@Res() response: Response,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<UserLoginMigrationResponse | void> {
-		const userLoginMigration: UserLoginMigrationDO | null = await this.closeUserLoginMigrationUc.closeMigration(
+	async closeMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse | void> {
+		const userLoginMigration: UserLoginMigrationDO = await this.closeUserLoginMigrationUc.closeMigration(
 			currentUser.userId,
 			currentUser.schoolId
 		);
-
-		if (!userLoginMigration) {
-			response.sendStatus(HttpStatus.NO_CONTENT);
-
-			return undefined;
-		}
 
 		const migrationResponse: UserLoginMigrationResponse =
 			UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(userLoginMigration);

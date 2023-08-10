@@ -12,9 +12,9 @@ import {
 	TestApiClient,
 	UserAndAccountTestFactory,
 	userFactory,
+	userLoginMigrationFactory,
 } from '@shared/testing';
 import { JwtTestFactory } from '@shared/testing/factory/jwt.test.factory';
-import { userLoginMigrationFactory } from '@shared/testing/factory/user-login-migration.factory';
 import { OauthTokenResponse } from '@src/modules/oauth/service/dto';
 import { SanisResponse, SanisRole } from '@src/modules/provisioning';
 import { ServerTestModule } from '@src/modules/server';
@@ -1019,7 +1019,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const response: Response = await loggedInClient.post('/close');
 
-				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.status).toEqual(HttpStatus.CREATED);
 			});
 
 			it('should return the closed user login migration', async () => {
@@ -1027,54 +1027,13 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const response: Response = await loggedInClient.post('/close');
 
-				expect(response.body).toEqual<UserLoginMigrationResponse>({
+				expect(response.body).toEqual({
 					targetSystemId: userLoginMigration.targetSystem.id,
 					sourceSystemId: userLoginMigration.sourceSystem?.id,
-					startedAt: userLoginMigration.startedAt,
-					closedAt: expect.any(Date) as unknown as Date,
-					finishedAt: expect.any(Date) as unknown as Date,
+					startedAt: userLoginMigration.startedAt.toISOString(),
+					closedAt: expect.any(String),
+					finishedAt: expect.any(String),
 				});
-			});
-		});
-
-		describe('when the user login migration is running but nothing is migrated yet', () => {
-			const setup = async () => {
-				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
-				const school: School = schoolFactory.buildWithId({
-					systems: [sourceSystem],
-					officialSchoolNumber: '12345',
-				});
-
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
-					school,
-					targetSystem,
-					sourceSystem,
-					startedAt: new Date(2023, 1, 4),
-				});
-
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.USER_LOGIN_MIGRATION_ADMIN,
-				]);
-
-				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
-				em.clear();
-
-				const loggedInClient = await testApiClient.login(adminAccount);
-
-				return {
-					loggedInClient,
-					userLoginMigration,
-				};
-			};
-
-			it('should return no content', async () => {
-				const { loggedInClient } = await setup();
-
-				const response: Response = await loggedInClient.post('/close');
-
-				expect(response.status).toEqual(HttpStatus.NO_CONTENT);
-				expect(response.body).toEqual({});
 			});
 		});
 
@@ -1150,8 +1109,8 @@ describe('UserLoginMigrationController (API)', () => {
 				expect(response.body).toEqual({
 					targetSystemId: userLoginMigration.targetSystem.id,
 					sourceSystemId: userLoginMigration.sourceSystem?.id,
-					startedAt: userLoginMigration.startedAt,
-					closedAt: userLoginMigration.closedAt,
+					startedAt: userLoginMigration.startedAt.toISOString(),
+					closedAt: userLoginMigration.closedAt?.toISOString(),
 				});
 			});
 		});
@@ -1222,7 +1181,6 @@ describe('UserLoginMigrationController (API)', () => {
 					startedAt: new Date(2023, 1, 4),
 					closedAt: new Date(2023, 1, 5),
 				});
-				school.userLoginMigration = userLoginMigration;
 
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, []);
 

@@ -16,7 +16,7 @@ export class CloseUserLoginMigrationUc {
 		private readonly authorizationService: AuthorizationService
 	) {}
 
-	async closeMigration(userId: EntityId, schoolId: EntityId): Promise<UserLoginMigrationDO | null> {
+	async closeMigration(userId: EntityId, schoolId: EntityId): Promise<UserLoginMigrationDO> {
 		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
 			schoolId
 		);
@@ -47,11 +47,9 @@ export class CloseUserLoginMigrationUc {
 
 			if (!hasSchoolMigratedUser) {
 				await this.userLoginMigrationRevertService.revertUserLoginMigration(updatedUserLoginMigration);
-
-				return null;
+			} else {
+				await this.schoolMigrationService.markUnmigratedUsersAsOutdated(schoolId);
 			}
-
-			await this.schoolMigrationService.markUnmigratedUsersAsOutdated(schoolId);
 
 			return updatedUserLoginMigration;
 		}

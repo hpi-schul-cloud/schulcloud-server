@@ -179,14 +179,6 @@ describe('CloseUserLoginMigrationUc', () => {
 
 				expect(userLoginMigrationRevertService.revertUserLoginMigration).toHaveBeenCalledWith(closedUserLoginMigration);
 			});
-
-			it('should return null', async () => {
-				const { user, schoolId } = setup();
-
-				const result = await uc.closeMigration(user.id, schoolId);
-
-				expect(result).toBeNull();
-			});
 		});
 
 		describe('when the user login migration was already closed', () => {
