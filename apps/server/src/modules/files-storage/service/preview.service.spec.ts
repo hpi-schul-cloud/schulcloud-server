@@ -705,6 +705,42 @@ describe('FilesStorageService download method', () => {
 					).rejects.toThrowError(error);
 				});
 			});
+
+			describe('WHEN scan status is blocked', () => {
+				const setup = () => {
+					const bytesRange = 'bytes=0-100';
+					const mimeType = 'image/png';
+					const format = mimeType.split('/')[1];
+					const { fileRecord } = buildFileRecordWithParams(mimeType, ScanStatus.BLOCKED);
+					const downloadParams = {
+						fileRecordId: fileRecord.id,
+						fileName: fileRecord.name,
+					};
+					const previewParams = { ...defaultPreviewParams, forceUpdate: true };
+
+					const originalFileResponse = TestHelper.createFileResponse();
+					fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
+
+					const error = new UnprocessableEntityException(ErrorType.PREVIEW_NOT_POSSIBLE);
+
+					return {
+						bytesRange,
+						fileRecord,
+						downloadParams,
+						previewParams,
+						format,
+						error,
+					};
+				};
+
+				it('calls download with correct params', async () => {
+					const { fileRecord, downloadParams, previewParams, bytesRange, error } = setup();
+
+					await expect(
+						previewService.getPreview(fileRecord, downloadParams, previewParams, bytesRange)
+					).rejects.toThrowError(error);
+				});
+			});
 		});
 	});
 });
