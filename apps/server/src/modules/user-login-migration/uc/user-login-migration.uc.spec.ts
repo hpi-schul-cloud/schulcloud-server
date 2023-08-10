@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Page, SchoolDO, System, User, UserLoginMigrationDO } from '@shared/domain';
+import { Page, Permission, SchoolDO, System, User, UserLoginMigrationDO } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
 	schoolDOFactory,
@@ -13,7 +13,7 @@ import {
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
-import { AuthorizationService } from '@src/modules/authorization';
+import { Action, AuthorizationService } from '@src/modules/authorization';
 import { OAuthTokenDto } from '@src/modules/oauth';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { ProvisioningService } from '@src/modules/provisioning';
@@ -218,6 +218,17 @@ describe('UserLoginMigrationUc', () => {
 				return { user, schoolId, migration };
 			};
 
+			it('should should check the users permission', async () => {
+				const { user, migration, schoolId } = setup();
+
+				await uc.findUserLoginMigrationBySchool(user.id, schoolId);
+
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, migration, {
+					requiredPermissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
+					action: Action.read,
+				});
+			});
+
 			it('should return the user login migration', async () => {
 				const { user, migration, schoolId } = setup();
 
@@ -239,7 +250,7 @@ describe('UserLoginMigrationUc', () => {
 				return { user, schoolId };
 			};
 
-			it('should return the user login migration', async () => {
+			it('should return throw not found exception', async () => {
 				const { user, schoolId } = setup();
 
 				const func = () => uc.findUserLoginMigrationBySchool(user.id, schoolId);
@@ -248,7 +259,7 @@ describe('UserLoginMigrationUc', () => {
 			});
 		});
 
-		describe('when a user login migration does not exist', () => {
+		describe('when the authorization fails', () => {
 			const setup = () => {
 				const schoolId = 'schoolId';
 
@@ -271,7 +282,7 @@ describe('UserLoginMigrationUc', () => {
 				return { user, schoolId, error };
 			};
 
-			it('should return the user login migration', async () => {
+			it('should throw an error', async () => {
 				const { user, schoolId, error } = setup();
 
 				const func = () => uc.findUserLoginMigrationBySchool(user.id, schoolId);
