@@ -29,6 +29,7 @@ import { H5PPlayerService } from './service/h5p-player.service';
 import { TemporaryFileStorage } from './temporary-file-storage/temporary-file-storage';
 import { TemporaryFileRepo } from './temporary-file-storage/temporary-file.repo';
 import { H5PEditorUc } from './uc/h5p.uc';
+import { UserModule } from '..';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -54,6 +55,7 @@ const imports = [
 	AuthenticationModule,
 	AuthorizationModule,
 	CoreModule,
+	UserModule,
 	RabbitMQWrapperModule,
 	MikroOrmModule.forRoot({
 		...defaultMikroOrmOptions,

@@ -15,10 +15,10 @@ import {
 	InternalServerErrorException,
 	NotFoundException,
 } from '@nestjs/common';
+import { UserService } from '@src/modules';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Request } from 'express';
 import { Readable } from 'stream';
-import { UserRepo } from '@shared/repo';
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams } from '../controller/dto';
 
 @Injectable()
@@ -27,7 +27,7 @@ export class H5PEditorUc {
 		private h5pEditor: H5PEditor,
 		private h5pPlayer: H5PPlayer,
 		private h5pAjaxEndpoint: H5PAjaxEndpoint,
-		private readonly userRepo: UserRepo
+		private readonly userService: UserService
 	) {}
 
 	/**
@@ -67,6 +67,7 @@ export class H5PEditorUc {
 
 	public async getAjax(query: AjaxGetQueryParams, currentUser: ICurrentUser) {
 		const user = this.changeUserType(currentUser);
+		const language = await this.getUserLanguage(currentUser);
 
 		try {
 			const result = await this.h5pAjaxEndpoint.getAjax(
@@ -74,7 +75,7 @@ export class H5PEditorUc {
 				query.machineName,
 				query.majorVersion,
 				query.minorVersion,
-				query.language,
+				language,
 				user
 			);
 
@@ -320,7 +321,7 @@ export class H5PEditorUc {
 	}
 
 	private async getUserLanguage(currentUser: ICurrentUser): Promise<string> {
-		const languageUser = await this.userRepo.findById(currentUser.userId);
+		const languageUser = await this.userService.findById(currentUser.userId);
 		let language = 'de';
 		if (languageUser && languageUser.language) {
 			language = languageUser.language.toString();
