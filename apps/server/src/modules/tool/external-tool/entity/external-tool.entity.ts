@@ -18,6 +18,9 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	logoUrl?: string;
 
+	@Property({ nullable: true })
+	logoBase64?: string;
+
 	@Embedded(() => [BasicToolConfigEntity, Oauth2ToolConfigEntity, Lti11ToolConfigEntity])
 	config: BasicToolConfigEntity | Oauth2ToolConfigEntity | Lti11ToolConfigEntity;
 
@@ -38,6 +41,7 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 		this.name = props.name;
 		this.url = props.url;
 		this.logoUrl = props.logoUrl;
+		this.logoBase64 = props.logoBase64;
 		this.config = props.config;
 		this.parameters = props.parameters;
 		this.isHidden = props.isHidden;

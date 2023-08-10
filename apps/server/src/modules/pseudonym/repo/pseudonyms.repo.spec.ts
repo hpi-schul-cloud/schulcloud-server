@@ -3,7 +3,7 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, pseudonymFactory } from '@shared/testing';
+import { cleanupCollections, pseudonymFactory, userFactory } from '@shared/testing';
 import { pseudonymEntityFactory } from '@shared/testing/factory/pseudonym.factory';
 import { v4 as uuidv4 } from 'uuid';
 import { LegacyLogger } from '@src/core/logger';
@@ -118,6 +118,65 @@ describe('PseudonymRepo', () => {
 		});
 	});
 
+	describe('findPseudonymsByUserId', () => {
+		describe('when pseudonym is existing', () => {
+			const setup = async () => {
+				const user1 = userFactory.buildWithId();
+				const user2 = userFactory.buildWithId();
+				const pseudonym1: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user1.id });
+				const pseudonym2: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user1.id });
+				const pseudonym3: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user2.id });
+				const pseudonym4: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user2.id });
+
+				await em.persistAndFlush([pseudonym1, pseudonym2, pseudonym3, pseudonym4]);
+
+				return {
+					user1,
+					pseudonym1,
+					pseudonym2,
+				};
+			};
+
+			it('should return array of pseudonyms', async () => {
+				const { user1, pseudonym1, pseudonym2 } = await setup();
+
+				const result: Pseudonym[] = await repo.findByUserId(user1.id);
+
+				const expectedArray = [
+					{
+						id: pseudonym1.id,
+						pseudonym: pseudonym1.pseudonym,
+						toolId: pseudonym1.toolId.toHexString(),
+						userId: pseudonym1.userId.toHexString(),
+						createdAt: pseudonym1.createdAt,
+						updatedAt: pseudonym1.updatedAt,
+					},
+					{
+						id: pseudonym2.id,
+						pseudonym: pseudonym2.pseudonym,
+						toolId: pseudonym2.toolId.toHexString(),
+						userId: pseudonym2.userId.toHexString(),
+						createdAt: pseudonym2.createdAt,
+						updatedAt: pseudonym2.updatedAt,
+					},
+				];
+
+				expect(result).toHaveLength(2);
+				expect(result).toEqual(
+					expect.arrayContaining([expect.objectContaining(expectedArray[0]), expect.objectContaining(expectedArray[1])])
+				);
+			});
+		});
+
+		describe('should return empty array when there is no pseudonym', () => {
+			it('should return empty array', async () => {
+				const result: Pseudonym[] = await repo.findByUserId(new ObjectId().toHexString());
+
+				expect(result).toHaveLength(0);
+			});
+		});
+	});
+
 	describe('createOrUpdate', () => {
 		describe('when pseudonym is new', () => {
 			const setup = () => {
@@ -166,6 +225,40 @@ describe('PseudonymRepo', () => {
 				expect(result.pseudonym).toEqual(domainObject.pseudonym);
 				expect(result.toolId).toEqual(domainObject.toolId);
 				expect(result.userId).toEqual(domainObject.userId);
+			});
+		});
+	});
+
+	describe('deletePseudonymsByUserId', () => {
+		describe('when pseudonyms are existing', () => {
+			const setup = async () => {
+				const user1 = userFactory.buildWithId();
+				const user2 = userFactory.buildWithId();
+				const pseudonym1: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user1.id });
+				const pseudonym2: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user1.id });
+				const pseudonym3: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user2.id });
+				const pseudonym4: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user2.id });
+
+				await em.persistAndFlush([pseudonym1, pseudonym2, pseudonym3, pseudonym4]);
+
+				return {
+					user1,
+				};
+			};
+
+			it('should delete all pseudonyms for userId', async () => {
+				const { user1 } = await setup();
+
+				const result: number = await repo.deletePseudonymsByUserId(user1.id);
+
+				expect(result).toEqual(2);
+			});
+		});
+
+		describe('should return empty array when there is no pseudonym', () => {
+			it('should return empty array', async () => {
+				const result: Pseudonym[] = await repo.findByUserId(new ObjectId().toHexString());
+				expect(result).toHaveLength(0);
 			});
 		});
 	});

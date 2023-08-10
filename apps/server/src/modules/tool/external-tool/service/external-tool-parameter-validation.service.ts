@@ -20,6 +20,12 @@ export class ExternalToolParameterValidationService {
 				);
 			}
 
+			if (this.hasInvalidBooleanValue(externalTool.parameters)) {
+				throw new ValidationError(
+					`tool_param_boolean_invalid: The tool ${externalTool.name || ''} does not contain a valid boolean.`
+				);
+			}
+
 			if (this.hasDuplicateAttributes(externalTool.parameters)) {
 				throw new ValidationError(
 					`tool_param_duplicate: The tool ${externalTool.name || ''} contains multiple of the same custom parameters.`
@@ -82,6 +88,15 @@ export class ExternalToolParameterValidationService {
 					itemIndex !== otherIndex && item.name.toLocaleLowerCase() === other.name.toLocaleLowerCase()
 			)
 		);
+	}
+
+	private hasInvalidBooleanValue(customParameter: CustomParameter[]): boolean {
+		return customParameter.every((param: CustomParameter) => {
+			if (param.type === 'boolean' && param.default) {
+				return !['true', 'false'].includes(param.default);
+			}
+			return false;
+		});
 	}
 
 	private validateByRegex(customParameter: CustomParameter[]): boolean {

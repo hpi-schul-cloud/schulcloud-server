@@ -15,6 +15,7 @@ import {
 	UserRule,
 } from '@shared/domain/rules';
 import { ContextExternalToolRule } from '@shared/domain/rules/context-external-tool.rule';
+import { UserLoginMigrationRule } from '@shared/domain/rules/user-login-migration.rule';
 import { AuthorizationContext, Rule } from './types';
 
 @Injectable()
@@ -33,7 +34,8 @@ export class RuleManager {
 		private readonly submissionRule: SubmissionRule,
 		private readonly schoolExternalToolRule: SchoolExternalToolRule,
 		private readonly boardDoRule: BoardDoRule,
-		private readonly contextExternalToolRule: ContextExternalToolRule
+		private readonly contextExternalToolRule: ContextExternalToolRule,
+		private readonly userLoginMigrationRule: UserLoginMigrationRule
 	) {
 		this.rules = [
 			this.courseRule,
@@ -48,6 +50,7 @@ export class RuleManager {
 			this.schoolExternalToolRule,
 			this.boardDoRule,
 			this.contextExternalToolRule,
+			this.userLoginMigrationRule,
 		];
 	}
 
