@@ -95,12 +95,14 @@ export class ExternalToolParameterValidationService {
 			return false;
 		}
 
-		return customParameter.every((param: CustomParameter) => {
+		const isValid = customParameter.every((param: CustomParameter) => {
 			if (param.type === 'boolean' && param.default) {
 				return !['true', 'false'].includes(param.default);
 			}
 			return false;
 		});
+
+		return isValid;
 	}
 
 	private validateByRegex(customParameter: CustomParameter[]): boolean {
