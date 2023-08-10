@@ -1183,6 +1183,17 @@
 			"default": false,
 			"description": "Enables the configuration of custom parameters for context external tools"
 		},
+		"CTL_TOOLS": {
+			"type": "object",
+			"description": "CTL Tools properties",
+			"properties": {
+				"EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES": {
+					"type": "integer",
+					"default": 300000,
+					"description": "Maximum size of the logo of an external tool in bytes"
+				}
+			}
+		},
 		"TSP_SCHOOL_SYNCER": {
 			"type": "object",
 			"description": "TSP School Syncer properties",

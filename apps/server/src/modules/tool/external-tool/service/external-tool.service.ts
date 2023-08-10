@@ -1,14 +1,18 @@
+import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId, IFindOptions, Page } from '@shared/domain';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger, Logger } from '@src/core/logger';
+import { AxiosResponse } from 'axios';
+import { lastValueFrom } from 'rxjs';
 import { TokenEndpointAuthMethod } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ExternalTool, Oauth2ToolConfig } from '../domain';
+import { ExternalToolLogoFetchedLoggable } from '../loggable';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { ExternalToolVersionService } from './external-tool-version.service';
 
@@ -21,8 +25,10 @@ export class ExternalToolService {
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly contextExternalToolRepo: ContextExternalToolRepo,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: IEncryptionService,
-		private readonly logger: LegacyLogger,
-		private readonly externalToolVersionService: ExternalToolVersionService
+		private readonly legacyLogger: LegacyLogger,
+		private readonly externalToolVersionService: ExternalToolVersionService,
+		private readonly logger: Logger,
+		private readonly httpService: HttpService
 	) {}
 
 	async createExternalTool(externalTool: ExternalTool): Promise<ExternalTool> {
@@ -60,7 +66,7 @@ export class ExternalToolService {
 					try {
 						await this.addExternalOauth2DataToConfig(tool.config);
 					} catch (e) {
-						this.logger.debug(
+						this.legacyLogger.debug(
 							`Could not resolve oauth2Config of tool with clientId ${tool.config.clientId}. It will be filtered out.`
 						);
 						return undefined;
@@ -81,7 +87,7 @@ export class ExternalToolService {
 			try {
 				await this.addExternalOauth2DataToConfig(tool.config);
 			} catch (e) {
-				this.logger.debug(
+				this.legacyLogger.debug(
 					`Could not resolve oauth2Config of tool with clientId ${tool.config.clientId}. It will be filtered out.`
 				);
 				throw new UnprocessableEntityException(`Could not resolve oauth2Config of tool ${tool.name}.`);
@@ -147,5 +153,17 @@ export class ExternalToolService {
 		config.tokenEndpointAuthMethod = oauthClient.token_endpoint_auth_method as TokenEndpointAuthMethod;
 		config.redirectUris = oauthClient.redirect_uris;
 		config.frontchannelLogoutUri = oauthClient.frontchannel_logout_uri;
+	}
+
+	async fetchBase64Logo(logoUrl: string): Promise<string> {
+		const response: AxiosResponse<ArrayBuffer> = await lastValueFrom(
+			this.httpService.get(logoUrl, { responseType: 'arraybuffer' })
+		);
+		this.logger.info(new ExternalToolLogoFetchedLoggable(logoUrl));
+
+		const buffer: Buffer = Buffer.from(response.data);
+		const logoBase64: string = buffer.toString('base64');
+
+		return logoBase64;
 	}
 }
