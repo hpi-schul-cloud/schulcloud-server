@@ -1,4 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import WebSocket from 'ws';
 import { WsAdapter } from '@nestjs/platform-ws';
@@ -7,41 +7,42 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { config } from '@src/modules/tldraw/config';
 import * as Utils from '@src/modules/tldraw/utils/utils';
-import { Awareness } from 'y-protocols/awareness';
 import { WSSharedDoc } from '@src/modules/tldraw/utils/utils';
 import { TextEncoder } from 'util';
+import { Awareness } from 'y-protocols/awareness';
 import { TldrawGateway } from '.';
 
-const message =
-	'AZQBAaCbuLANBIsBeyJ0ZFVzZXIiOnsiaWQiOiJkNGIxZThmYi0yMWUwLTQ3ZDAtMDI0Y' +
-	'S0zZGEwYjMzNjQ3MjIiLCJjb2xvciI6IiNGMDRGODgiLCJwb2ludCI6WzAsMF0sInNlbGVjdGVkSWRzIjpbXSwiYWN' +
-	'0aXZlU2hhcGVzIjpbXSwic2Vzc2lvbiI6ZmFsc2V9fQ==';
-
 describe('TldrawGateway', () => {
-	let gateway: TldrawGateway;
-	let clientSocket: WebSocket;
 	let app: INestApplication;
+	let gateway: TldrawGateway;
+	let ws: WebSocket;
+
 	const gatewayPort = 3346;
+	const testMessage =
+		'AZQBAaCbuLANBIsBeyJ0ZFVzZXIiOnsiaWQiOiJkNGIxZThmYi0yMWUwLTQ3ZDAtMDI0Y' +
+		'S0zZGEwYjMzNjQ3MjIiLCJjb2xvciI6IiNGMDRGODgiLCJwb2ludCI6WzAsMF0sInNlbGVjdGVkSWRzIjpbXSwiYWN' +
+		'0aXZlU2hhcGVzIjpbXSwic2Vzc2lvbiI6ZmFsc2V9fQ==';
 
 	beforeEach(async () => {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
-		const module: TestingModule = await Test.createTestingModule({
+		const testingModule = await Test.createTestingModule({
 			imports,
 			providers: [TldrawGateway],
 		}).compile();
-		app = module.createNestApplication();
-		app.useWebSocketAdapter(new WsAdapter(app));
-		gateway = module.get<TldrawGateway>(TldrawGateway);
-		await app.init();
 
-		clientSocket = new WebSocket(`ws://localhost:${gatewayPort}/TEST`);
+		gateway = testingModule.get<TldrawGateway>(TldrawGateway);
+		app = testingModule.createNestApplication();
+		app.useWebSocketAdapter(new WsAdapter(app));
 	});
 
 	afterEach(async () => {
 		await app.close();
 	});
 
-	it('should gateway properties be defined', () => {
+	it('should gateway properties be defined', async () => {
+		jest.spyOn(gateway, 'afterInit').mockImplementationOnce(() => {});
+		await app.listen(3000);
+
 		expect(gateway).toBeDefined();
 		expect(gateway.configService).toBeDefined();
 		expect(gateway.server).toBeDefined();
@@ -50,49 +51,83 @@ describe('TldrawGateway', () => {
 		expect(gateway.handleConnection).toBeDefined();
 	});
 
-	it('should throw error for send message -> close connection (due to not connected client socket to WS) ', () => {
+	it('should throw error for send message -> close connection (due to not connected client socket to WS) ', async () => {
+		jest.spyOn(gateway, 'afterInit').mockImplementationOnce(() => {});
+		await app.listen(3000);
+
+		ws = new WebSocket(`ws://localhost:${gatewayPort}`);
+		await new Promise((resolve) => {
+			ws.on('open', resolve);
+		});
+
 		const closeConSpy = jest.spyOn(Utils, 'closeConn').mockImplementationOnce(() => {});
 		const sendSpy = jest.spyOn(Utils, 'send');
 		const doc: { conns: Map<WebSocket, Set<number>> } = { conns: new Map() };
-		const byteArray = new TextEncoder().encode(message);
-		Utils.send(doc as WSSharedDoc, clientSocket, byteArray);
+		const byteArray = new TextEncoder().encode(testMessage);
+		Utils.send(doc as WSSharedDoc, ws, byteArray);
 		expect(sendSpy).toThrow();
-		expect(sendSpy).toHaveBeenCalledWith(doc, clientSocket, byteArray);
+		expect(sendSpy).toHaveBeenCalledWith(doc, ws, byteArray);
 		expect(closeConSpy).toHaveBeenCalled();
-		closeConSpy.mockClear();
+		ws.close();
+		// closeConSpy.mockClear();
 		sendSpy.mockClear();
 	});
 
-	it('should close connection if websocket has ready state different than 0 or 1', () => {
+	it('should close connection if websocket has ready state different than 0 or 1', async () => {
+		jest.spyOn(gateway, 'afterInit').mockImplementationOnce(() => {});
+		await app.listen(3000);
+
+		ws = new WebSocket(`ws://localhost:${gatewayPort}`);
+		await new Promise((resolve) => {
+			ws.on('open', resolve);
+		});
+
 		const closeConSpy = jest.spyOn(Utils, 'closeConn');
 		const sendSpy = jest.spyOn(Utils, 'send');
 		const doc: { conns: Map<WebSocket, Set<number>> } = { conns: new Map() };
 		const socketMock = { readyState: 3, close: () => {} };
-		const byteArray = new TextEncoder().encode(message);
+		const byteArray = new TextEncoder().encode(testMessage);
 
 		Utils.send(doc as WSSharedDoc, socketMock as WebSocket, byteArray);
 
 		expect(sendSpy).toHaveBeenCalledWith(doc, socketMock, byteArray);
 		expect(sendSpy).toHaveBeenCalledTimes(1);
 		expect(closeConSpy).toHaveBeenCalled();
+		ws.close();
 		closeConSpy.mockClear();
 		sendSpy.mockClear();
 	});
 
-	it('update handler check if send is runned', () => {
+	it('update handler check if send was called', async () => {
+		jest.spyOn(gateway, 'afterInit').mockImplementationOnce(() => {});
+		await app.listen(3000);
+
+		ws = new WebSocket(`ws://localhost:${gatewayPort}`);
+		await new Promise((resolve) => {
+			ws.on('open', resolve);
+		});
+
 		const sendSpy = jest.spyOn(Utils, 'send');
 		const doc: { conns: Map<WebSocket, Set<number>> } = { conns: new Map() };
 		const socketMock = { readyState: 0, close: () => {} };
 		doc.conns.set(socketMock as WebSocket, new Set());
-		const byteArray = new TextEncoder().encode(message);
-
+		const byteArray = new TextEncoder().encode(testMessage);
 		Utils.updateHandler(byteArray, {}, doc as WSSharedDoc);
 
 		expect(sendSpy).toHaveBeenCalled();
+		ws.close();
 		sendSpy.mockClear();
 	});
 
-	it('awareness change handler testing', () => {
+	it('awareness change handler testing', async () => {
+		jest.useFakeTimers();
+		await app.listen(3000);
+
+		ws = new WebSocket(`ws://localhost:${gatewayPort}`);
+		await new Promise((resolve) => {
+			ws.on('open', resolve);
+		});
+
 		class MockAwareness {
 			on = jest.fn();
 		}
@@ -113,7 +148,7 @@ describe('TldrawGateway', () => {
 
 		const mockIDs = new Set<number>();
 		const mockConns = new Map<WebSocket, Set<number>>();
-		mockConns.set(clientSocket, mockIDs);
+		mockConns.set(ws, mockIDs);
 		doc.conns = mockConns;
 
 		const awarenessUpdate = {
@@ -122,13 +157,14 @@ describe('TldrawGateway', () => {
 			removed: [2],
 		};
 
-		doc.awarenessChangeHandler(awarenessUpdate, clientSocket);
+		doc.awarenessChangeHandler(awarenessUpdate, ws);
 
 		expect(mockIDs.size).toBe(2);
 		expect(mockIDs.has(1)).toBe(true);
 		expect(mockIDs.has(3)).toBe(true);
 		expect(mockIDs.has(2)).toBe(false);
 		expect(sendSpy).toBeCalled();
+		ws.close();
 		sendSpy.mockClear();
 	});
 });
