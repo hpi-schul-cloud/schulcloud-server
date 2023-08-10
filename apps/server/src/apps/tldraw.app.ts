@@ -1,5 +1,6 @@
 /* istanbul ignore file */
 /* eslint-disable no-console */
+// eslint-disable @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call
 import { NestFactory } from '@nestjs/core';
 import { install as sourceMapInstall } from 'source-map-support';
 import { TldrawModule } from '@src/modules/tldraw';
