@@ -68,7 +68,7 @@
                 <h3>Prefix</h3>
             </p>
             <p class="comment">
-                <code>tools</code>
+                <code>tools/external-tools</code>
             </p>
 
 
@@ -96,10 +96,13 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#createExternalTool" >createExternalTool</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
@@ -111,10 +114,12 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#findExternalTool" >findExternalTool</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#getExternalTool" >getExternalTool</a>
@@ -137,6 +142,7 @@
                                 <a href="#getToolReferences" >getToolReferences</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
@@ -174,6 +180,7 @@
                         <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>createExternalTool</b></span>
                         <a href="#createExternalTool"><span class="icon ion-ios-link"></span></a>
@@ -191,14 +198,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post()<br />@ApiCreatedResponse({description: &#x27;The Tool has been successfully created.&#x27;, type: ExternalToolResponse})<br />@ApiForbiddenResponse()<br />@ApiUnprocessableEntityResponse()<br />@ApiUnauthorizedResponse()<br />@ApiResponse({status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27;})<br /></code>
+                    <code>@Post()<br />@ApiCreatedResponse({description: &#x27;The Tool has been successfully created.&#x27;, type: ExternalToolResponse})<br />@ApiForbiddenResponse()<br />@ApiUnprocessableEntityResponse()<br />@ApiUnauthorizedResponse()<br />@ApiResponse({status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27;})<br />@ApiOperation({summary: &#x27;Creates an ExternalTool&#x27;})<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="55"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:55</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="56"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:56</a></div>
                 </td>
             </tr>
 
@@ -267,6 +274,8 @@
                         <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>deleteExternalTool</b></span>
                         <a href="#deleteExternalTool"><span class="icon ion-ios-link"></span></a>
@@ -276,7 +285,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteExternalTool(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/ToolIdParams.html" target="_self">ToolIdParams</a>)</code>
+                    <code>deleteExternalTool(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/ExternalToolIdParams.html" target="_self">ExternalToolIdParams</a>)</code>
                 </td>
             </tr>
 
@@ -284,14 +293,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Delete(&#x27;:toolId&#x27;)<br />@ApiForbiddenResponse({description: &#x27;User is not allowed to access this resource.&#x27;})<br />@ApiUnauthorizedResponse({description: &#x27;User is not logged in.&#x27;})<br /></code>
+                    <code>@Delete(&#x27;:externalToolId&#x27;)<br />@ApiForbiddenResponse({description: &#x27;User is not allowed to access this resource.&#x27;})<br />@ApiUnauthorizedResponse({description: &#x27;User is not logged in.&#x27;})<br />@ApiOperation({summary: &#x27;Deletes an ExternalTool&#x27;})<br />@HttpCode(HttpStatus.NO_CONTENT)<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="136"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:136</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="145"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:145</a></div>
                 </td>
             </tr>
 
@@ -326,7 +335,7 @@
                                 <tr>
                                     <td>params</td>
                                     <td>
-                                                <code><a href="../classes/ToolIdParams.html" target="_self" >ToolIdParams</a></code>
+                                                <code><a href="../classes/ExternalToolIdParams.html" target="_self" >ExternalToolIdParams</a></code>
                                     </td>
 
                                     <td>
@@ -361,6 +370,7 @@
                         <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>findExternalTool</b></span>
                         <a href="#findExternalTool"><span class="icon ion-ios-link"></span></a>
@@ -378,14 +388,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get()<br />@ApiFoundResponse({description: &#x27;Tools has been found.&#x27;, type: ExternalToolSearchListResponse})<br />@ApiUnauthorizedResponse()<br />@ApiForbiddenResponse()<br /></code>
+                    <code>@Get()<br />@ApiFoundResponse({description: &#x27;Tools has been found.&#x27;, type: ExternalToolSearchListResponse})<br />@ApiUnauthorizedResponse()<br />@ApiForbiddenResponse()<br />@ApiOperation({summary: &#x27;Returns a list of ExternalTools&#x27;})<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="74"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:74</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="76"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:76</a></div>
                 </td>
             </tr>
 
@@ -476,6 +486,7 @@
                     <a name="getExternalTool"></a>
                     <span class="name">
                         <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>getExternalTool</b></span>
                         <a href="#getExternalTool"><span class="icon ion-ios-link"></span></a>
@@ -485,7 +496,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getExternalTool(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/ToolIdParams.html" target="_self">ToolIdParams</a>)</code>
+                    <code>getExternalTool(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/ExternalToolIdParams.html" target="_self">ExternalToolIdParams</a>)</code>
                 </td>
             </tr>
 
@@ -493,14 +504,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;:toolId&#x27;)<br /></code>
+                    <code>@Get(&#x27;:externalToolId&#x27;)<br />@ApiOperation({summary: &#x27;Returns an ExternalTool for the given id&#x27;})<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="101"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:101</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="104"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:104</a></div>
                 </td>
             </tr>
 
@@ -535,7 +546,7 @@
                                 <tr>
                                     <td>params</td>
                                     <td>
-                                                <code><a href="../classes/ToolIdParams.html" target="_self" >ToolIdParams</a></code>
+                                                <code><a href="../classes/ExternalToolIdParams.html" target="_self" >ExternalToolIdParams</a></code>
                                     </td>
 
                                     <td>
@@ -579,7 +590,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getExternalToolLogo(params: <a href="../classes/ToolIdParams.html" target="_self">ToolIdParams</a>, res: Response)</code>
+                    <code>getExternalToolLogo(params: <a href="../classes/ExternalToolIdParams.html" target="_self">ExternalToolIdParams</a>, res: Response)</code>
                 </td>
             </tr>
 
@@ -587,14 +598,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;external-tools/:toolId/logo&#x27;)<br />@ApiOperation({summary: &#x27;Gets the logo of an external tool.&#x27;})<br />@ApiOkResponse({description: &#x27;Logo of external tool fetched successfully.&#x27;})<br />@ApiUnauthorizedResponse({description: &#x27;User is not logged in.&#x27;})<br /></code>
+                    <code>@Get(&#x27;/:externalToolId/logo&#x27;)<br />@ApiOperation({summary: &#x27;Gets the logo of an external tool.&#x27;})<br />@ApiOkResponse({description: &#x27;Logo of external tool fetched successfully.&#x27;})<br />@ApiUnauthorizedResponse({description: &#x27;User is not logged in.&#x27;})<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="175"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:175</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="189"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:189</a></div>
                 </td>
             </tr>
 
@@ -617,7 +628,7 @@
                                 <tr>
                                     <td>params</td>
                                     <td>
-                                                <code><a href="../classes/ToolIdParams.html" target="_self" >ToolIdParams</a></code>
+                                                <code><a href="../classes/ExternalToolIdParams.html" target="_self" >ExternalToolIdParams</a></code>
                                     </td>
 
                                     <td>
@@ -682,14 +693,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;/references/:contextType/:contextId&#x27;)<br />@ApiOperation({summary: &#x27;Get Tool References&#x27;})<br />@ApiOkResponse({description: &#x27;The Tool References has been successfully fetched.&#x27;, type: ToolReferenceListResponse})<br />@ApiForbiddenResponse({description: &#x27;User is not allowed to access this resource.&#x27;})<br />@ApiUnauthorizedResponse({description: &#x27;User is not logged in.&#x27;})<br /></code>
+                    <code>@Get(&#x27;/:contextType/:contextId/references&#x27;)<br />@ApiOperation({summary: &#x27;Get ExternalTool References for a given context&#x27;})<br />@ApiOkResponse({description: &#x27;The Tool References has been successfully fetched.&#x27;, type: ToolReferenceListResponse})<br />@ApiForbiddenResponse({description: &#x27;User is not allowed to access this resource.&#x27;})<br />@ApiUnauthorizedResponse({description: &#x27;User is not logged in.&#x27;})<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="151"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:151</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="165"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:165</a></div>
                 </td>
             </tr>
 
@@ -760,6 +771,7 @@
                         <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>updateExternalTool</b></span>
                         <a href="#updateExternalTool"><span class="icon ion-ios-link"></span></a>
@@ -769,7 +781,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateExternalTool(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/ToolIdParams.html" target="_self">ToolIdParams</a>, externalToolParams: <a href="../classes/ExternalToolUpdateParams.html" target="_self">ExternalToolUpdateParams</a>)</code>
+                    <code>updateExternalTool(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/ExternalToolIdParams.html" target="_self">ExternalToolIdParams</a>, externalToolParams: <a href="../classes/ExternalToolUpdateParams.html" target="_self">ExternalToolUpdateParams</a>)</code>
                 </td>
             </tr>
 
@@ -777,14 +789,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;/:toolId&#x27;)<br />@ApiOkResponse({description: &#x27;The Tool has been successfully updated.&#x27;, type: ExternalToolResponse})<br />@ApiForbiddenResponse()<br />@ApiUnauthorizedResponse()<br />@ApiResponse({status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27;})<br /></code>
+                    <code>@Post(&#x27;/:externalToolId&#x27;)<br />@ApiOkResponse({description: &#x27;The Tool has been successfully updated.&#x27;, type: ExternalToolResponse})<br />@ApiForbiddenResponse()<br />@ApiUnauthorizedResponse()<br />@ApiResponse({status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27;})<br />@ApiOperation({summary: &#x27;Updates an ExternalTool&#x27;})<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="116"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:116</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="123"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:123</a></div>
                 </td>
             </tr>
 
@@ -819,7 +831,7 @@
                                 <tr>
                                     <td>params</td>
                                     <td>
-                                                <code><a href="../classes/ToolIdParams.html" target="_self" >ToolIdParams</a></code>
+                                                <code><a href="../classes/ExternalToolIdParams.html" target="_self" >ExternalToolIdParams</a></code>
                                     </td>
 
                                     <td>
@@ -860,7 +872,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Delete, Get, Param, Post, Query, Res } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query, Res } from &#x27;@nestjs/common&#x27;;
 import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
@@ -892,14 +904,14 @@ import {
 	ExternalToolSearchParams,
 	ExternalToolUpdateParams,
 	SortExternalToolParams,
-	ToolIdParams,
+	ExternalToolIdParams,
 	ToolReferenceListResponse,
 	ToolReferenceResponse,
 } from &#x27;./dto&#x27;;
 
 @ApiTags(&#x27;Tool&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
-@Controller(&#x27;tools&#x27;)
+@Controller(&#x27;tools/external-tools&#x27;)
 export class ToolController {
 	constructor(
 		private readonly externalToolUc: ExternalToolUc,
@@ -914,6 +926,7 @@ export class ToolController {
 	@ApiUnprocessableEntityResponse()
 	@ApiUnauthorizedResponse()
 	@ApiResponse({ status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27; })
+	@ApiOperation({ summary: &#x27;Creates an ExternalTool&#x27; })
 	async createExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() externalToolParams: ExternalToolCreateParams
@@ -933,6 +946,7 @@ export class ToolController {
 	@ApiFoundResponse({ description: &#x27;Tools has been found.&#x27;, type: ExternalToolSearchListResponse })
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
+	@ApiOperation({ summary: &#x27;Returns a list of ExternalTools&#x27; })
 	async findExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() filterQuery: ExternalToolSearchParams,
@@ -959,31 +973,36 @@ export class ToolController {
 		return response;
 	}
 
-	@Get(&#x27;:toolId&#x27;)
+	@Get(&#x27;:externalToolId&#x27;)
+	@ApiOperation({ summary: &#x27;Returns an ExternalTool for the given id&#x27; })
 	async getExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ToolIdParams
+		@Param() params: ExternalToolIdParams
 	): Promise&lt;ExternalToolResponse&gt; {
-		const externalTool: ExternalTool &#x3D; await this.externalToolUc.getExternalTool(currentUser.userId, params.toolId);
+		const externalTool: ExternalTool &#x3D; await this.externalToolUc.getExternalTool(
+			currentUser.userId,
+			params.externalToolId
+		);
 		const mapped: ExternalToolResponse &#x3D; ExternalToolResponseMapper.mapToExternalToolResponse(externalTool);
 
 		return mapped;
 	}
 
-	@Post(&#x27;/:toolId&#x27;)
+	@Post(&#x27;/:externalToolId&#x27;)
 	@ApiOkResponse({ description: &#x27;The Tool has been successfully updated.&#x27;, type: ExternalToolResponse })
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
 	@ApiResponse({ status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27; })
+	@ApiOperation({ summary: &#x27;Updates an ExternalTool&#x27; })
 	async updateExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ToolIdParams,
+		@Param() params: ExternalToolIdParams,
 		@Body() externalToolParams: ExternalToolUpdateParams
 	): Promise&lt;ExternalToolResponse&gt; {
 		const externalTool: ExternalToolUpdate &#x3D; this.externalToolDOMapper.mapUpdateRequest(externalToolParams);
 		const updated: ExternalTool &#x3D; await this.externalToolUc.updateExternalTool(
 			currentUser.userId,
-			params.toolId,
+			params.externalToolId,
 			externalTool
 		);
 		const mapped: ExternalToolResponse &#x3D; ExternalToolResponseMapper.mapToExternalToolResponse(updated);
@@ -992,18 +1011,25 @@ export class ToolController {
 		return mapped;
 	}
 
-	@Delete(&#x27;:toolId&#x27;)
+	@Delete(&#x27;:externalToolId&#x27;)
 	@ApiForbiddenResponse({ description: &#x27;User is not allowed to access this resource.&#x27; })
 	@ApiUnauthorizedResponse({ description: &#x27;User is not logged in.&#x27; })
-	async deleteExternalTool(@CurrentUser() currentUser: ICurrentUser, @Param() params: ToolIdParams): Promise&lt;void&gt; {
-		const promise: Promise&lt;void&gt; &#x3D; this.externalToolUc.deleteExternalTool(currentUser.userId, params.toolId);
-		this.logger.debug(&#x60;ExternalTool with id ${params.toolId} was deleted by user with id ${currentUser.userId}&#x60;);
+	@ApiOperation({ summary: &#x27;Deletes an ExternalTool&#x27; })
+	@HttpCode(HttpStatus.NO_CONTENT)
+	async deleteExternalTool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ExternalToolIdParams
+	): Promise&lt;void&gt; {
+		const promise: Promise&lt;void&gt; &#x3D; this.externalToolUc.deleteExternalTool(currentUser.userId, params.externalToolId);
+		this.logger.debug(
+			&#x60;ExternalTool with id ${params.externalToolId} was deleted by user with id ${currentUser.userId}&#x60;
+		);
 
 		return promise;
 	}
 
-	@Get(&#x27;/references/:contextType/:contextId&#x27;)
-	@ApiOperation({ summary: &#x27;Get Tool References&#x27; })
+	@Get(&#x27;/:contextType/:contextId/references&#x27;)
+	@ApiOperation({ summary: &#x27;Get ExternalTool References for a given context&#x27; })
 	@ApiOkResponse({
 		description: &#x27;The Tool References has been successfully fetched.&#x27;,
 		type: ToolReferenceListResponse,
@@ -1028,14 +1054,16 @@ export class ToolController {
 		return toolReferenceListResponse;
 	}
 
-	@Get(&#x27;external-tools/:toolId/logo&#x27;)
+	@Get(&#x27;/:externalToolId/logo&#x27;)
 	@ApiOperation({ summary: &#x27;Gets the logo of an external tool.&#x27; })
 	@ApiOkResponse({
 		description: &#x27;Logo of external tool fetched successfully.&#x27;,
 	})
 	@ApiUnauthorizedResponse({ description: &#x27;User is not logged in.&#x27; })
-	async getExternalToolLogo(@Param() params: ToolIdParams, @Res() res: Response): Promise&lt;void&gt; {
-		const externalToolLogo: ExternalToolLogo &#x3D; await this.externalToolUc.getExternalToolBinaryLogo(params.toolId);
+	async getExternalToolLogo(@Param() params: ExternalToolIdParams, @Res() res: Response): Promise&lt;void&gt; {
+		const externalToolLogo: ExternalToolLogo &#x3D; await this.externalToolUc.getExternalToolBinaryLogo(
+			params.externalToolId
+		);
 		res.setHeader(&#x27;Content-Type&#x27;, externalToolLogo.contentType);
 		res.setHeader(&#x27;Cache-Control&#x27;, &#x27;must-revalidate&#x27;);
 		res.send(externalToolLogo.logo);

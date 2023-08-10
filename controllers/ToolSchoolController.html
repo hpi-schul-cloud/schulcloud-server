@@ -68,7 +68,7 @@
                 <h3>Prefix</h3>
             </p>
             <p class="comment">
-                <code>tools/school</code>
+                <code>tools/school-external-tools</code>
             </p>
 
 
@@ -96,6 +96,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#createSchoolExternalTool" >createSchoolExternalTool</a>
                             </li>
@@ -103,10 +104,13 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#deleteSchoolExternalTool" >deleteSchoolExternalTool</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
@@ -118,10 +122,12 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#getSchoolExternalTools" >getSchoolExternalTools</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
@@ -159,6 +165,7 @@
                         <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>createSchoolExternalTool</b></span>
                         <a href="#createSchoolExternalTool"><span class="icon ion-ios-link"></span></a>
@@ -176,14 +183,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post()<br />@ApiCreatedResponse({description: &#x27;The SchoolExternalTool has been successfully created.&#x27;, type: SchoolExternalToolResponse})<br />@ApiForbiddenResponse()<br />@ApiUnprocessableEntityResponse()<br />@ApiUnauthorizedResponse()<br />@ApiResponse({status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27;})<br /></code>
+                    <code>@Post()<br />@ApiCreatedResponse({description: &#x27;The SchoolExternalTool has been successfully created.&#x27;, type: SchoolExternalToolResponse})<br />@ApiForbiddenResponse()<br />@ApiUnprocessableEntityResponse()<br />@ApiUnauthorizedResponse()<br />@ApiResponse({status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27;})<br />@ApiOperation({summary: &#x27;Creates a SchoolExternalTool&#x27;})<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="115"
-                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:115</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="122"
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:122</a></div>
                 </td>
             </tr>
 
@@ -252,6 +259,8 @@
                         <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>deleteSchoolExternalTool</b></span>
                         <a href="#deleteSchoolExternalTool"><span class="icon ion-ios-link"></span></a>
@@ -269,14 +278,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Delete(&#x27;:schoolExternalToolId&#x27;)<br />@ApiForbiddenResponse()<br />@ApiUnauthorizedResponse()<br /></code>
+                    <code>@Delete(&#x27;:schoolExternalToolId&#x27;)<br />@ApiForbiddenResponse()<br />@ApiUnauthorizedResponse()<br />@ApiOperation({summary: &#x27;Deletes a SchoolExternalTool&#x27;})<br />@HttpCode(HttpStatus.NO_CONTENT)<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="96"
-                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:96</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="102"
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:102</a></div>
                 </td>
             </tr>
 
@@ -345,6 +354,7 @@
                         <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>getSchoolExternalTool</b></span>
                         <a href="#getSchoolExternalTool"><span class="icon ion-ios-link"></span></a>
@@ -362,14 +372,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;:schoolExternalToolId&#x27;)<br />@ApiForbiddenResponse()<br />@ApiUnauthorizedResponse()<br /></code>
+                    <code>@Get(&#x27;:schoolExternalToolId&#x27;)<br />@ApiForbiddenResponse()<br />@ApiUnauthorizedResponse()<br />@ApiOperation({summary: &#x27;Returns a SchoolExternalTool for the given id&#x27;})<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="59"
-                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:59</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="62"
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:62</a></div>
                 </td>
             </tr>
 
@@ -439,6 +449,7 @@
                         <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>getSchoolExternalTools</b></span>
                         <a href="#getSchoolExternalTools"><span class="icon ion-ios-link"></span></a>
@@ -456,14 +467,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get()<br />@ApiFoundResponse({description: &#x27;SchoolExternalTools has been found.&#x27;, type: ExternalToolSearchListResponse})<br />@ApiForbiddenResponse()<br />@ApiUnauthorizedResponse()<br /></code>
+                    <code>@Get()<br />@ApiFoundResponse({description: &#x27;SchoolExternalTools has been found.&#x27;, type: ExternalToolSearchListResponse})<br />@ApiForbiddenResponse()<br />@ApiUnauthorizedResponse()<br />@ApiOperation({summary: &#x27;Returns a list of SchoolExternalTools for a given school&#x27;})<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="45"
-                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:45</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="47"
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:47</a></div>
                 </td>
             </tr>
 
@@ -534,6 +545,7 @@
                         <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>updateSchoolExternalTool</b></span>
                         <a href="#updateSchoolExternalTool"><span class="icon ion-ios-link"></span></a>
@@ -551,14 +563,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Put(&#x27;/:schoolExternalToolId&#x27;)<br />@ApiOkResponse({description: &#x27;The Tool has been successfully updated.&#x27;, type: SchoolExternalToolResponse})<br />@ApiForbiddenResponse()<br />@ApiUnauthorizedResponse()<br />@ApiBadRequestResponse({type: ValidationError, description: &#x27;Request data has invalid format.&#x27;})<br /></code>
+                    <code>@Put(&#x27;/:schoolExternalToolId&#x27;)<br />@ApiOkResponse({description: &#x27;The Tool has been successfully updated.&#x27;, type: SchoolExternalToolResponse})<br />@ApiForbiddenResponse()<br />@ApiUnauthorizedResponse()<br />@ApiBadRequestResponse({type: ValidationError, description: &#x27;Request data has invalid format.&#x27;})<br />@ApiOperation({summary: &#x27;Updates a SchoolExternalTool&#x27;})<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="76"
-                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:76</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="80"
+                            class="link-to-prism">apps/server/src/modules/tool/school-external-tool/controller/tool-school.controller.ts:80</a></div>
                 </td>
             </tr>
 
@@ -644,8 +656,9 @@
 	ApiTags,
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
+	ApiOperation,
 } from &#x27;@nestjs/swagger&#x27;;
-import { Body, Controller, Delete, Get, Param, Post, Query, Put } from &#x27;@nestjs/common&#x27;;
+import { Body, Controller, Delete, Get, Param, Post, Query, Put, HttpCode, HttpStatus } from &#x27;@nestjs/common&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
@@ -665,7 +678,7 @@ import { SchoolExternalTool } from &#x27;../domain&#x27;;
 
 @ApiTags(&#x27;Tool&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
-@Controller(&#x27;tools/school&#x27;)
+@Controller(&#x27;tools/school-external-tools&#x27;)
 export class ToolSchoolController {
 	constructor(
 		private readonly schoolExternalToolUc: SchoolExternalToolUc,
@@ -678,6 +691,7 @@ export class ToolSchoolController {
 	@ApiFoundResponse({ description: &#x27;SchoolExternalTools has been found.&#x27;, type: ExternalToolSearchListResponse })
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
+	@ApiOperation({ summary: &#x27;Returns a list of SchoolExternalTools for a given school&#x27; })
 	async getSchoolExternalTools(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() schoolExternalToolParams: SchoolExternalToolSearchParams
@@ -692,6 +706,7 @@ export class ToolSchoolController {
 	@Get(&#x27;:schoolExternalToolId&#x27;)
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
+	@ApiOperation({ summary: &#x27;Returns a SchoolExternalTool for the given id&#x27; })
 	async getSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams
@@ -709,6 +724,7 @@ export class ToolSchoolController {
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
 	@ApiBadRequestResponse({ type: ValidationError, description: &#x27;Request data has invalid format.&#x27; })
+	@ApiOperation({ summary: &#x27;Updates a SchoolExternalTool&#x27; })
 	async updateSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams,
@@ -729,6 +745,8 @@ export class ToolSchoolController {
 	@Delete(&#x27;:schoolExternalToolId&#x27;)
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
+	@ApiOperation({ summary: &#x27;Deletes a SchoolExternalTool&#x27; })
+	@HttpCode(HttpStatus.NO_CONTENT)
 	async deleteSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams
@@ -748,6 +766,7 @@ export class ToolSchoolController {
 	@ApiUnprocessableEntityResponse()
 	@ApiUnauthorizedResponse()
 	@ApiResponse({ status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27; })
+	@ApiOperation({ summary: &#x27;Creates a SchoolExternalTool&#x27; })
 	async createSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: SchoolExternalToolPostParams

@@ -105,6 +105,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#deleteContextExternalTool" >deleteContextExternalTool</a>
                             </li>
@@ -261,6 +262,7 @@
                         <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>deleteContextExternalTool</b></span>
                         <a href="#deleteContextExternalTool"><span class="icon ion-ios-link"></span></a>
@@ -278,14 +280,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Delete(&#x27;:contextExternalToolId&#x27;)<br />@ApiForbiddenResponse()<br />@ApiUnauthorizedResponse()<br />@ApiOperation({summary: &#x27;Deletes a ContextExternalTool&#x27;})<br /></code>
+                    <code>@Delete(&#x27;:contextExternalToolId&#x27;)<br />@ApiForbiddenResponse()<br />@ApiUnauthorizedResponse()<br />@ApiOperation({summary: &#x27;Deletes a ContextExternalTool&#x27;})<br />@HttpCode(HttpStatus.NO_CONTENT)<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="68"
-                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/tool-context.controller.ts:68</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="69"
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/tool-context.controller.ts:69</a></div>
                 </td>
             </tr>
 
@@ -380,8 +382,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="120"
-                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/tool-context.controller.ts:120</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="121"
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/tool-context.controller.ts:121</a></div>
                 </td>
             </tr>
 
@@ -475,8 +477,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="87"
-                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/tool-context.controller.ts:87</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="88"
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/tool-context.controller.ts:88</a></div>
                 </td>
             </tr>
 
@@ -571,8 +573,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="144"
-                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/tool-context.controller.ts:144</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="145"
+                            class="link-to-prism">apps/server/src/modules/tool/context-external-tool/controller/tool-context.controller.ts:145</a></div>
                 </td>
             </tr>
 
@@ -648,7 +650,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Delete, Get, Param, Post, Put } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from &#x27;@nestjs/common&#x27;;
 import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
@@ -715,6 +717,7 @@ export class ToolContextController {
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
 	@ApiOperation({ summary: &#x27;Deletes a ContextExternalTool&#x27; })
+	@HttpCode(HttpStatus.NO_CONTENT)
 	async deleteContextExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextExternalToolIdParams

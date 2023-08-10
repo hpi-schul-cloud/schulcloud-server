@@ -3047,6 +3047,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ExternalToolFactory.html" data-type="entity-link" >ExternalToolFactory</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ExternalToolIdParams.html" data-type="entity-link" >ExternalToolIdParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ExternalToolLogo.html" data-type="entity-link" >ExternalToolLogo</a>
                             </li>
                             <li class="link">
@@ -3969,9 +3972,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/ToolConfigurationMapper.html" data-type="entity-link" >ToolConfigurationMapper</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/ToolIdParams.html" data-type="entity-link" >ToolIdParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ToolLaunchData.html" data-type="entity-link" >ToolLaunchData</a>
