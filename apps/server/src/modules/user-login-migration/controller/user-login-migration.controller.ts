@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, Put, Query, Res } from '@nestjs/common';
 import {
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
+	ApiNoContentResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiTags,
@@ -11,6 +12,7 @@ import {
 import { Page, UserLoginMigrationDO } from '@shared/domain';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
+import { Response } from 'express';
 import {
 	SchoolNumberMissingLoggableException,
 	UserLoginMigrationAlreadyClosedLoggableException,
@@ -19,6 +21,7 @@ import {
 } from '../error';
 import { UserLoginMigrationMapper } from '../mapper';
 import {
+	CloseUserLoginMigrationUc,
 	RestartUserLoginMigrationUc,
 	StartUserLoginMigrationUc,
 	ToggleUserLoginMigrationUc,
@@ -42,7 +45,8 @@ export class UserLoginMigrationController {
 		private readonly userLoginMigrationUc: UserLoginMigrationUc,
 		private readonly startUserLoginMigrationUc: StartUserLoginMigrationUc,
 		private readonly restartUserLoginMigrationUc: RestartUserLoginMigrationUc,
-		private readonly toggleUserLoginMigrationUc: ToggleUserLoginMigrationUc
+		private readonly toggleUserLoginMigrationUc: ToggleUserLoginMigrationUc,
+		private readonly closeUserLoginMigrationUc: CloseUserLoginMigrationUc
 	) {}
 
 	@Get()
@@ -169,6 +173,44 @@ export class UserLoginMigrationController {
 
 		const migrationResponse: UserLoginMigrationResponse =
 			UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(migrationDto);
+
+		return migrationResponse;
+	}
+
+	@Post('close')
+	@ApiUnprocessableEntityResponse({
+		description: 'User login migration is already closed and cannot be modified. Restart is possible.',
+		type: UserLoginMigrationAlreadyClosedLoggableException,
+	})
+	@ApiUnprocessableEntityResponse({
+		description: 'User login migration is already closed and cannot be modified. It cannot be restarted.',
+		type: UserLoginMigrationGracePeriodExpiredLoggableException,
+	})
+	@ApiNotFoundResponse({
+		description: 'User login migration does not exist',
+		type: UserLoginMigrationNotFoundLoggableException,
+	})
+	@ApiOkResponse({ description: 'User login migration closed', type: UserLoginMigrationResponse })
+	@ApiNoContentResponse({ description: 'User login migration was reverted' })
+	@ApiUnauthorizedResponse()
+	@ApiForbiddenResponse()
+	async closeMigration(
+		@Res() response: Response,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<UserLoginMigrationResponse | void> {
+		const userLoginMigration: UserLoginMigrationDO | null = await this.closeUserLoginMigrationUc.closeMigration(
+			currentUser.userId,
+			currentUser.schoolId
+		);
+
+		if (!userLoginMigration) {
+			response.sendStatus(HttpStatus.NO_CONTENT);
+
+			return undefined;
+		}
+
+		const migrationResponse: UserLoginMigrationResponse =
+			UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(userLoginMigration);
 
 		return migrationResponse;
 	}
