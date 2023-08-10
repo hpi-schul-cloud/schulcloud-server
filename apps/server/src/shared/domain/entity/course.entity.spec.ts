@@ -214,31 +214,6 @@ describe('CourseEntity', () => {
 		});
 	});
 
-	describe('getStudentList', () => {
-		const setup = () => {
-			const students = userFactory.buildListWithId(2);
-			const course = courseFactory.build({ students });
-			return { course, students };
-		};
-		it('should return the students of the course', () => {
-			const { course, students } = setup();
-			const [student1, student2] = students;
-
-			const result = course.getStudentsList();
-
-			expect(result.length).toEqual(2);
-			expect(result[0].id).toEqual(student1.id);
-			expect(result[1].id).toEqual(student2.id);
-		});
-		it('should return an empty array if no students are in the course', () => {
-			const course = courseFactory.build({ students: [] });
-
-			const result = course.getStudentsList();
-
-			expect(result.length).toEqual(0);
-		});
-	});
-
 	describe('isUserSubstitutionTeacher is called', () => {
 		describe('when user is a subsitution teacher', () => {
 			const setup = () => {
