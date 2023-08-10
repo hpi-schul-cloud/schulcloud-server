@@ -9,10 +9,9 @@ import { ContextExternalToolService } from '../../context-external-tool/service'
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ExternalTool } from '../domain';
-import { ExternalToolService } from '../service';
+import { ExternalToolService, ExternalToolConfigurationService } from '../service';
 import { ContextExternalToolTemplateInfo } from './dto';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
-import { ExternalToolConfigurationService } from '../service/external-tool-configuration.service';
 
 @Injectable()
 export class ExternalToolConfigurationUc {
@@ -154,10 +153,11 @@ export class ExternalToolConfigurationUc {
 		tools: SchoolExternalTool[],
 		context: AuthorizationContext
 	): Promise<void> {
-		for (const tool of tools) {
-			// eslint-disable-next-line no-await-in-loop
-			await this.toolPermissionHelper.ensureSchoolPermissions(userId, tool, context);
-		}
+		await Promise.all(
+			tools.map(async (tool: SchoolExternalTool) =>
+				this.toolPermissionHelper.ensureSchoolPermissions(userId, tool, context)
+			)
+		);
 	}
 
 	private async ensureContextPermissions(
@@ -165,9 +165,10 @@ export class ExternalToolConfigurationUc {
 		tools: ContextExternalTool[],
 		context: AuthorizationContext
 	): Promise<void> {
-		for (const tool of tools) {
-			// eslint-disable-next-line no-await-in-loop
-			await this.toolPermissionHelper.ensureContextPermissions(userId, tool, context);
-		}
+		await Promise.all(
+			tools.map(async (tool: ContextExternalTool) =>
+				this.toolPermissionHelper.ensureContextPermissions(userId, tool, context)
+			)
+		);
 	}
 }
