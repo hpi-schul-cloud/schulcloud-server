@@ -82,201 +82,333 @@ describe('FilesRepo', () => {
 		});
 	});
 
-	describe('findByPermissionRefId', () => {
-		const testStorageProvider = storageProviderFactory.buildWithId();
+	const testStorageProvider = storageProviderFactory.buildWithId();
+	const testMainUserId = new ObjectId().toHexString();
+	const testOtherUserId = new ObjectId().toHexString();
 
-		const testUserId = new ObjectId().toHexString();
-		const testOtherUserId = new ObjectId().toHexString();
+	const otherUserFilesProps = [
+		// Test file created, owned and accessible only by the other user.
+		{
+			name: 'test-file-1.txt',
+			size: 42,
+			type: 'text/plain',
+			storageFileName: '001-test-file-1.txt',
+			bucket: 'bucket-001',
+			storageProvider: testStorageProvider,
+			thumbnail: 'https://example.com/thumbnail.png',
+			ownerId: testOtherUserId,
+			refOwnerModel: FileRefOwnerModel.USER,
+			creatorId: testOtherUserId,
+			permissions: [
+				new FilePermission({
+					refId: testOtherUserId,
+					refPermModel: RefPermModel.USER,
+				}),
+			],
+			versionKey: 0,
+		},
+		// A second file also created, owned and accessible only by the other user.
+		{
+			name: 'test-file-2.txt',
+			size: 42,
+			type: 'text/plain',
+			storageFileName: '002-test-file-2.txt',
+			bucket: 'bucket-002',
+			storageProvider: testStorageProvider,
+			thumbnail: 'https://example.com/thumbnail.png',
+			ownerId: testOtherUserId,
+			refOwnerModel: FileRefOwnerModel.USER,
+			creatorId: testOtherUserId,
+			permissions: [
+				new FilePermission({
+					refId: testOtherUserId,
+					refPermModel: RefPermModel.USER,
+				}),
+			],
+			versionKey: 0,
+		},
+	];
 
-		it('should return proper files that given user has permission to access', async () => {
-			// Test files created, owned and accessible only by the other user.
-			const testFile1 = new File({
-				name: 'test-file-1.txt',
-				size: 42,
-				type: 'text/plain',
-				storageFileName: '001-test-file-1.txt',
-				bucket: 'bucket-001',
-				storageProvider: testStorageProvider,
-				thumbnail: 'https://example.com/thumbnail.png',
-				ownerId: testOtherUserId,
-				refOwnerModel: FileRefOwnerModel.USER,
-				creatorId: testOtherUserId,
-				permissions: [
-					new FilePermission({
-						refId: testOtherUserId,
-						refPermModel: RefPermModel.USER,
-					}),
-				],
-				versionKey: 0,
-			});
+	const setup = async () => {
+		const otherUserFiles = [new File(otherUserFilesProps[0]), new File(otherUserFilesProps[1])];
 
-			// Test file created and owned by the main user, but also accessible by the other user.
-			const testFile2 = new File({
-				name: 'test-file-2.txt',
-				size: 42,
-				type: 'text/plain',
-				storageFileName: '002-test-file-2.txt',
-				bucket: 'bucket-002',
-				storageProvider: testStorageProvider,
-				thumbnail: 'https://example.com/thumbnail.png',
-				ownerId: testUserId,
-				refOwnerModel: FileRefOwnerModel.USER,
-				creatorId: testUserId,
-				permissions: [
-					new FilePermission({
-						refId: testUserId,
-						refPermModel: RefPermModel.USER,
-					}),
-					new FilePermission({
-						refId: testOtherUserId,
-						refPermModel: RefPermModel.USER,
-					}),
-				],
-				versionKey: 0,
-			});
+		// Test files created, owned and accessible only by the other user.
+		const otherUserFile = new File({
+			name: 'test-file-1.txt',
+			size: 42,
+			type: 'text/plain',
+			storageFileName: '001-test-file-1.txt',
+			bucket: 'bucket-001',
+			storageProvider: testStorageProvider,
+			thumbnail: 'https://example.com/thumbnail.png',
+			ownerId: testOtherUserId,
+			refOwnerModel: FileRefOwnerModel.USER,
+			creatorId: testOtherUserId,
+			permissions: [
+				new FilePermission({
+					refId: testOtherUserId,
+					refPermModel: RefPermModel.USER,
+				}),
+			],
+			versionKey: 0,
+		});
 
-			// Test file created and owned by the other user, but also accessible by the main user.
-			const testFile3 = new File({
-				name: 'test-file-3.txt',
-				size: 42,
-				type: 'text/plain',
-				storageFileName: '003-test-file-3.txt',
-				bucket: 'bucket-003',
-				storageProvider: testStorageProvider,
-				thumbnail: 'https://example.com/thumbnail.png',
-				ownerId: testOtherUserId,
-				refOwnerModel: FileRefOwnerModel.USER,
-				creatorId: testOtherUserId,
-				permissions: [
-					new FilePermission({
-						refId: testOtherUserId,
-						refPermModel: RefPermModel.USER,
-					}),
-					new FilePermission({
-						refId: testUserId,
-						refPermModel: RefPermModel.USER,
-					}),
-				],
-				versionKey: 0,
-			});
+		// Test file created and owned by the main user, but also accessible by the other user.
+		const mainUserSharedFile = new File({
+			name: 'test-file-2.txt',
+			size: 42,
+			type: 'text/plain',
+			storageFileName: '002-test-file-2.txt',
+			bucket: 'bucket-002',
+			storageProvider: testStorageProvider,
+			thumbnail: 'https://example.com/thumbnail.png',
+			ownerId: testMainUserId,
+			refOwnerModel: FileRefOwnerModel.USER,
+			creatorId: testMainUserId,
+			permissions: [
+				new FilePermission({
+					refId: testMainUserId,
+					refPermModel: RefPermModel.USER,
+				}),
+				new FilePermission({
+					refId: testOtherUserId,
+					refPermModel: RefPermModel.USER,
+				}),
+			],
+			versionKey: 0,
+		});
 
-			await em.persistAndFlush([testFile1, testFile2, testFile3]);
-			em.clear();
+		// Test file created and owned by the other user, but also accessible by the main user.
+		const otherUserSharedFile = new File({
+			name: 'test-file-3.txt',
+			size: 42,
+			type: 'text/plain',
+			storageFileName: '003-test-file-3.txt',
+			bucket: 'bucket-003',
+			storageProvider: testStorageProvider,
+			thumbnail: 'https://example.com/thumbnail.png',
+			ownerId: testOtherUserId,
+			refOwnerModel: FileRefOwnerModel.USER,
+			creatorId: testOtherUserId,
+			permissions: [
+				new FilePermission({
+					refId: testOtherUserId,
+					refPermModel: RefPermModel.USER,
+				}),
+				new FilePermission({
+					refId: testMainUserId,
+					refPermModel: RefPermModel.USER,
+				}),
+			],
+			versionKey: 0,
+		});
 
-			const expectedRecords = [
-				{
-					_id: new ObjectId(testFile2.id),
-					createdAt: testFile2.createdAt,
-					updatedAt: testFile2.updatedAt,
-					deleted: false,
-					isDirectory: false,
-					name: testFile2.name,
-					size: testFile2.size,
-					type: testFile2.type,
-					storageFileName: testFile2.storageFileName,
-					bucket: testFile2.bucket,
-					storageProviderId: new ObjectId(testFile2.storageProvider?.id),
-					thumbnail: testFile2.thumbnail,
-					thumbnailRequestToken: testFile2.thumbnailRequestToken,
-					securityCheck: testFile2.securityCheck,
-					shareTokens: [],
-					owner: new ObjectId(testFile2.ownerId),
-					refOwnerModel: testFile2.refOwnerModel,
-					permissions: testFile2.permissions,
-					__v: 0,
-				},
-				{
-					_id: new ObjectId(testFile3.id),
-					createdAt: testFile3.createdAt,
-					updatedAt: testFile3.updatedAt,
-					deleted: false,
-					isDirectory: false,
-					name: testFile3.name,
-					size: testFile3.size,
-					type: testFile3.type,
-					storageFileName: testFile3.storageFileName,
-					bucket: testFile3.bucket,
-					storageProviderId: new ObjectId(testFile3.storageProvider?.id),
-					thumbnail: testFile3.thumbnail,
-					thumbnailRequestToken: testFile3.thumbnailRequestToken,
-					securityCheck: testFile3.securityCheck,
-					shareTokens: [],
-					owner: new ObjectId(testFile3.ownerId),
-					refOwnerModel: testFile3.refOwnerModel,
-					permissions: testFile3.permissions,
-					__v: 0,
-				},
-			];
+		// Test file created, owned and accessible only by the main user.
+		const mainUserFile = new File({
+			name: 'test-file-4.txt',
+			size: 42,
+			type: 'text/plain',
+			storageFileName: '004-test-file-4.txt',
+			bucket: 'bucket-004',
+			storageProvider: testStorageProvider,
+			thumbnail: 'https://example.com/thumbnail.png',
+			ownerId: testMainUserId,
+			refOwnerModel: FileRefOwnerModel.USER,
+			creatorId: testMainUserId,
+			permissions: [
+				new FilePermission({
+					refId: testMainUserId,
+					refPermModel: RefPermModel.USER,
+				}),
+			],
+			versionKey: 0,
+		});
 
-			const result = await repo.findByPermissionRefId(testUserId);
+		await em.persistAndFlush([...otherUserFiles, otherUserFile, mainUserSharedFile, otherUserSharedFile, mainUserFile]);
+		em.clear();
 
-			expect(result).toHaveLength(2);
-			expect(result).toEqual(
+		const expectedMainUserSharedFile = {
+			id: mainUserSharedFile.id,
+			createdAt: mainUserSharedFile.createdAt,
+			updatedAt: mainUserSharedFile.updatedAt,
+			deleted: false,
+			isDirectory: false,
+			name: mainUserSharedFile.name,
+			size: mainUserSharedFile.size,
+			type: mainUserSharedFile.type,
+			storageFileName: mainUserSharedFile.storageFileName,
+			bucket: mainUserSharedFile.bucket,
+			thumbnail: mainUserSharedFile.thumbnail,
+			thumbnailRequestToken: mainUserSharedFile.thumbnailRequestToken,
+			securityCheck: mainUserSharedFile.securityCheck,
+			shareTokens: [],
+			refOwnerModel: mainUserSharedFile.refOwnerModel,
+			permissions: mainUserSharedFile.permissions,
+			versionKey: 0,
+		};
+
+		const expectedOtherUserSharedFile = {
+			id: otherUserSharedFile.id,
+			createdAt: otherUserSharedFile.createdAt,
+			updatedAt: otherUserSharedFile.updatedAt,
+			deleted: false,
+			isDirectory: false,
+			name: otherUserSharedFile.name,
+			size: otherUserSharedFile.size,
+			type: otherUserSharedFile.type,
+			storageFileName: otherUserSharedFile.storageFileName,
+			bucket: otherUserSharedFile.bucket,
+			thumbnail: otherUserSharedFile.thumbnail,
+			thumbnailRequestToken: otherUserSharedFile.thumbnailRequestToken,
+			securityCheck: otherUserSharedFile.securityCheck,
+			shareTokens: [],
+			refOwnerModel: otherUserSharedFile.refOwnerModel,
+			permissions: otherUserSharedFile.permissions,
+			versionKey: 0,
+		};
+
+		const expectedMainUserFile = {
+			id: mainUserFile.id,
+			createdAt: mainUserFile.createdAt,
+			updatedAt: mainUserFile.updatedAt,
+			deleted: false,
+			isDirectory: false,
+			name: mainUserFile.name,
+			size: mainUserFile.size,
+			type: mainUserFile.type,
+			storageFileName: mainUserFile.storageFileName,
+			bucket: mainUserFile.bucket,
+			thumbnail: mainUserFile.thumbnail,
+			thumbnailRequestToken: mainUserFile.thumbnailRequestToken,
+			securityCheck: mainUserFile.securityCheck,
+			shareTokens: [],
+			refOwnerModel: mainUserFile.refOwnerModel,
+			permissions: mainUserFile.permissions,
+			versionKey: 0,
+		};
+
+		return {
+			mainUserSharedFile,
+			otherUserSharedFile,
+			mainUserFile,
+			expectedMainUserSharedFile,
+			expectedOtherUserSharedFile,
+			expectedMainUserFile,
+		};
+	};
+
+	describe('findByOwnerUserId', () => {
+		it('should return proper files that are owned by the user with given userId', async () => {
+			const { mainUserSharedFile, mainUserFile, expectedMainUserSharedFile, expectedMainUserFile } = await setup();
+
+			const results = await repo.findByOwnerUserId(testMainUserId);
+
+			expect(results).toHaveLength(2);
+
+			// Verify explicit fields.
+			expect(results).toEqual(
 				expect.arrayContaining([
-					expect.objectContaining(expectedRecords[0]),
-					expect.objectContaining(expectedRecords[1]),
+					expect.objectContaining(expectedMainUserSharedFile),
+					expect.objectContaining(expectedMainUserFile),
 				])
+			);
+
+			// Verify storage provider id.
+			expect(results.map((result) => result.storageProvider?.id)).toEqual(
+				expect.arrayContaining([mainUserSharedFile.storageProvider?.id, mainUserFile.storageProvider?.id])
+			);
+
+			// Verify implicit ownerId field.
+			expect(results.map((result) => result.ownerId)).toEqual(
+				expect.arrayContaining([mainUserSharedFile.ownerId, mainUserFile.ownerId])
+			);
+
+			// Verify implicit creatorId field.
+			expect(results.map((result) => result.creatorId)).toEqual(
+				expect.arrayContaining([mainUserSharedFile.creatorId, mainUserFile.creatorId])
 			);
 		});
 
 		describe('should return an empty array in case of', () => {
-			it('no files with given permissionRefId', async () => {
-				// Test files created, owned and accessible only by the other user.
-				const testFile1 = new File({
-					name: 'test-file-1.txt',
-					size: 42,
-					type: 'text/plain',
-					storageFileName: '001-test-file-1.txt',
-					bucket: 'bucket-001',
-					storageProvider: testStorageProvider,
-					thumbnail: 'https://example.com/thumbnail.png',
-					ownerId: testOtherUserId,
-					refOwnerModel: FileRefOwnerModel.USER,
-					creatorId: testOtherUserId,
-					permissions: [
-						new FilePermission({
-							refId: testOtherUserId,
-							refPermModel: RefPermModel.USER,
-						}),
-					],
-					versionKey: 0,
-				});
-
-				// A second file also created, owned and accessible only by the other user.
-				const testFile2 = new File({
-					name: 'test-file-2.txt',
-					size: 42,
-					type: 'text/plain',
-					storageFileName: '002-test-file-2.txt',
-					bucket: 'bucket-002',
-					storageProvider: testStorageProvider,
-					thumbnail: 'https://example.com/thumbnail.png',
-					ownerId: testOtherUserId,
-					refOwnerModel: FileRefOwnerModel.USER,
-					creatorId: testOtherUserId,
-					permissions: [
-						new FilePermission({
-							refId: testOtherUserId,
-							refPermModel: RefPermModel.USER,
-						}),
-					],
-					versionKey: 0,
-				});
-
-				await em.persistAndFlush([testFile1, testFile2]);
+			it('no files owned by user with given userId', async () => {
+				await em.persistAndFlush([new File(otherUserFilesProps[0]), new File(otherUserFilesProps[1])]);
 				em.clear();
 
-				const result = await repo.findByPermissionRefId(testUserId);
+				const results = await repo.findByOwnerUserId(testMainUserId);
 
-				expect(result).toHaveLength(0);
+				expect(results).toHaveLength(0);
 			});
 
 			it('no files in the database at all', async () => {
 				const testPermissionRefId = new ObjectId().toHexString();
 
-				const result = await repo.findByPermissionRefId(testPermissionRefId);
+				const results = await repo.findByOwnerUserId(testPermissionRefId);
 
-				expect(result).toHaveLength(0);
+				expect(results).toHaveLength(0);
+			});
+		});
+	});
+
+	describe('findByPermissionRefId', () => {
+		it('should return proper files that given user has permission to access', async () => {
+			const {
+				mainUserSharedFile,
+				otherUserSharedFile,
+				mainUserFile,
+				expectedMainUserSharedFile,
+				expectedOtherUserSharedFile,
+				expectedMainUserFile,
+			} = await setup();
+
+			const results = await repo.findByPermissionRefId(testMainUserId);
+
+			expect(results).toHaveLength(3);
+
+			// Verify explicit fields.
+			expect(results).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining(expectedMainUserSharedFile),
+					expect.objectContaining(expectedOtherUserSharedFile),
+					expect.objectContaining(expectedMainUserFile),
+				])
+			);
+
+			// Verify storage provider id.
+			expect(results.map((result) => result.storageProvider?.id)).toEqual(
+				expect.arrayContaining([
+					mainUserSharedFile.storageProvider?.id,
+					otherUserSharedFile.storageProvider?.id,
+					mainUserFile.storageProvider?.id,
+				])
+			);
+
+			// Verify implicit ownerId field.
+			expect(results.map((result) => result.ownerId)).toEqual(
+				expect.arrayContaining([mainUserSharedFile.ownerId, otherUserSharedFile.ownerId, mainUserFile.ownerId])
+			);
+
+			// Verify implicit creatorId field.
+			expect(results.map((result) => result.creatorId)).toEqual(
+				expect.arrayContaining([mainUserSharedFile.creatorId, otherUserSharedFile.creatorId, mainUserFile.creatorId])
+			);
+		});
+
+		describe('should return an empty array in case of', () => {
+			it('no files with given permissionRefId', async () => {
+				await em.persistAndFlush([new File(otherUserFilesProps[0]), new File(otherUserFilesProps[1])]);
+				em.clear();
+
+				const results = await repo.findByPermissionRefId(testMainUserId);
+
+				expect(results).toHaveLength(0);
+			});
+
+			it('no files in the database at all', async () => {
+				const testPermissionRefId = new ObjectId().toHexString();
+
+				const results = await repo.findByPermissionRefId(testPermissionRefId);
+
+				expect(results).toHaveLength(0);
 			});
 		});
 	});

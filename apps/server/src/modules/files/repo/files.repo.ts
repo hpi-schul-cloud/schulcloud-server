@@ -1,7 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 
-import { EntityId, File } from '@shared/domain';
+import { EntityId, File, FileRefOwnerModel, User } from '@shared/domain';
 import { BaseRepo } from '@shared/repo/base.repo';
 
 @Injectable()
@@ -22,6 +22,16 @@ export class FilesRepo extends BaseRepo<File> {
 		return files;
 	}
 
+	public async findByOwnerUserId(ownerUserId: EntityId): Promise<File[]> {
+		const ownerUserObjectId = new ObjectId(ownerUserId);
+
+		const filter = { owner: ownerUserObjectId, refOwnerModel: FileRefOwnerModel.USER };
+
+		const files = await this._em.find(File, filter);
+
+		return files as File[];
+	}
+
 	public async findByPermissionRefId(permissionRefId: EntityId): Promise<File[]> {
 		const permissionRefObjectId = new ObjectId(permissionRefId);
 
@@ -37,6 +47,11 @@ export class FilesRepo extends BaseRepo<File> {
 			},
 		];
 
-		return (await this._em.aggregate(File, pipeline)) as File[];
+		const rawFilesDocuments = await this._em.aggregate(File, pipeline);
+
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+		const files = rawFilesDocuments.map((rawFileDocument) => this._em.map(File, rawFileDocument));
+
+		return files;
 	}
 }
