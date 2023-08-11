@@ -2,7 +2,6 @@ import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import {
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
-	ApiNoContentResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiTags,
@@ -190,7 +189,6 @@ export class UserLoginMigrationController {
 		type: UserLoginMigrationNotFoundLoggableException,
 	})
 	@ApiOkResponse({ description: 'User login migration closed', type: UserLoginMigrationResponse })
-	@ApiNoContentResponse({ description: 'User login migration was reverted' })
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
 	async closeMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse | void> {
