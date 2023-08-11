@@ -5,6 +5,8 @@ import {
 	columnFactory,
 	fileElementFactory,
 	richTextElementFactory,
+	submissionContainerElementFactory,
+	submissionItemFactory,
 } from '@shared/testing';
 import { FileContentBody, RichTextContentBody } from '../controller/dto';
 import { ContentElementUpdateVisitor } from './content-element-update.visitor';
@@ -18,9 +20,10 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const content = new RichTextContentBody();
 			content.text = 'a text';
 			content.inputFormat = InputFormat.RICH_TEXT_CK5;
+			const submissionItem = submissionItemFactory.build();
 			const updater = new ContentElementUpdateVisitor(content);
 
-			return { board, column, card, updater };
+			return { board, column, card, submissionItem, updater };
 		};
 
 		describe('when component is a column board', () => {
@@ -43,6 +46,31 @@ describe(ContentElementUpdateVisitor.name, () => {
 				expect(() => updater.visitCard(card)).toThrow();
 			});
 		});
+
+		describe('when component is a submission-item', () => {
+			it('should throw an error', () => {
+				const { submissionItem, updater } = setup();
+				expect(() => updater.visitSubmissionItem(submissionItem)).toThrow();
+			});
+		});
+	});
+
+	describe('when visiting a file element using the wrong content', () => {
+		const setup = () => {
+			const fileElement = fileElementFactory.build();
+			const content = new RichTextContentBody();
+			content.text = 'a text';
+			content.inputFormat = InputFormat.RICH_TEXT_CK5;
+			const updater = new ContentElementUpdateVisitor(content);
+
+			return { fileElement, updater };
+		};
+
+		it('should throw an error', () => {
+			const { fileElement, updater } = setup();
+
+			expect(() => updater.visitFileElement(fileElement)).toThrow();
+		});
 	});
 
 	describe('when visiting a rich text element using the wrong content', () => {
@@ -62,21 +90,21 @@ describe(ContentElementUpdateVisitor.name, () => {
 		});
 	});
 
-	describe('when visiting a file element using the wrong content', () => {
+	describe('when visiting a submission container element using the wrong content', () => {
 		const setup = () => {
-			const fileElement = fileElementFactory.build();
+			const submissionContainerElement = submissionContainerElementFactory.build();
 			const content = new RichTextContentBody();
 			content.text = 'a text';
 			content.inputFormat = InputFormat.RICH_TEXT_CK5;
 			const updater = new ContentElementUpdateVisitor(content);
 
-			return { fileElement, updater };
+			return { submissionContainerElement, updater };
 		};
 
 		it('should throw an error', () => {
-			const { fileElement, updater } = setup();
+			const { submissionContainerElement, updater } = setup();
 
-			expect(() => updater.visitFileElement(fileElement)).toThrow();
+			expect(() => updater.visitSubmissionContainerElement(submissionContainerElement)).toThrow();
 		});
 	});
 });

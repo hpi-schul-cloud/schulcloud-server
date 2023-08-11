@@ -7,8 +7,20 @@ import type {
 	ColumnNode,
 	FileElementNode,
 	RichTextElementNode,
+	SubmissionContainerElementNode,
+	SubmissionItemNode,
 } from '@shared/domain';
-import { AnyBoardDo, BoardNodeType, Card, Column, ColumnBoard, FileElement, RichTextElement } from '@shared/domain';
+import {
+	AnyBoardDo,
+	BoardNodeType,
+	Card,
+	Column,
+	ColumnBoard,
+	FileElement,
+	RichTextElement,
+	SubmissionContainerElement,
+	SubmissionItem,
+} from '@shared/domain';
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
 	private childrenMap: Record<string, BoardNode[]> = {};
@@ -58,11 +70,12 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 
 	public buildCard(boardNode: CardNode): Card {
 		this.ensureBoardNodeType(this.getChildren(boardNode), [
-			BoardNodeType.RICH_TEXT_ELEMENT,
 			BoardNodeType.FILE_ELEMENT,
+			BoardNodeType.RICH_TEXT_ELEMENT,
+			BoardNodeType.SUBMISSION_CONTAINER_ELEMENT,
 		]);
 
-		const elements = this.buildChildren<RichTextElement>(boardNode);
+		const elements = this.buildChildren<RichTextElement | SubmissionContainerElement>(boardNode);
 
 		const card = new Card({
 			id: boardNode.id,
@@ -73,6 +86,19 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			updatedAt: boardNode.updatedAt,
 		});
 		return card;
+	}
+
+	public buildFileElement(boardNode: FileElementNode): FileElement {
+		this.ensureLeafNode(boardNode);
+
+		const element = new FileElement({
+			id: boardNode.id,
+			caption: boardNode.caption,
+			children: [],
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+		});
+		return element;
 	}
 
 	public buildRichTextElement(boardNode: RichTextElementNode): RichTextElement {
@@ -89,15 +115,30 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 		return element;
 	}
 
-	public buildFileElement(boardNode: FileElementNode): FileElement {
-		this.ensureLeafNode(boardNode);
+	public buildSubmissionContainerElement(boardNode: SubmissionContainerElementNode): SubmissionContainerElement {
+		this.ensureBoardNodeType(this.getChildren(boardNode), [BoardNodeType.SUBMISSION_ITEM]);
+		const elements = this.buildChildren<SubmissionItem>(boardNode);
 
-		const element = new FileElement({
+		const element = new SubmissionContainerElement({
 			id: boardNode.id,
-			caption: boardNode.caption,
-			children: [],
+			dueDate: boardNode.dueDate,
+			children: elements,
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
+		});
+		return element;
+	}
+
+	public buildSubmissionItem(boardNode: SubmissionItemNode): SubmissionItem {
+		this.ensureLeafNode(boardNode);
+
+		const element = new SubmissionItem({
+			id: boardNode.id,
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+			completed: boardNode.completed,
+			userId: boardNode.userId,
+			children: [],
 		});
 		return element;
 	}

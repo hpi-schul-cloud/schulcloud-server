@@ -1,15 +1,24 @@
 import { NotImplementedException } from '@nestjs/common';
-import { fileElementFactory, richTextElementFactory } from '@shared/testing';
-import { FileElementResponse, RichTextElementResponse } from '../dto';
+import { fileElementFactory, richTextElementFactory, submissionContainerElementFactory } from '@shared/testing';
+import { FileElementResponse, RichTextElementResponse, SubmissionContainerElementResponse } from '../dto';
 import { ContentElementResponseFactory } from './content-element-response.factory';
 
 describe(ContentElementResponseFactory.name, () => {
 	const setup = () => {
-		const richTextElement = richTextElementFactory.build();
 		const fileElement = fileElementFactory.build();
+		const richTextElement = richTextElementFactory.build();
+		const submissionContainerElement = submissionContainerElementFactory.build();
 
-		return { richTextElement, fileElement };
+		return { fileElement, richTextElement, submissionContainerElement };
 	};
+
+	it('should return instance of FileElementResponse', () => {
+		const { fileElement } = setup();
+
+		const result = ContentElementResponseFactory.mapToResponse(fileElement);
+
+		expect(result).toBeInstanceOf(FileElementResponse);
+	});
 
 	it('should return instance of RichTextElementResponse', () => {
 		const { richTextElement } = setup();
@@ -19,12 +28,12 @@ describe(ContentElementResponseFactory.name, () => {
 		expect(result).toBeInstanceOf(RichTextElementResponse);
 	});
 
-	it('should return instance of FileElementResponse', () => {
-		const { fileElement } = setup();
+	it('should return instance of SubmissionContainerElementResponse', () => {
+		const { submissionContainerElement } = setup();
 
-		const result = ContentElementResponseFactory.mapToResponse(fileElement);
+		const result = ContentElementResponseFactory.mapToResponse(submissionContainerElement);
 
-		expect(result).toBeInstanceOf(FileElementResponse);
+		expect(result).toBeInstanceOf(SubmissionContainerElementResponse);
 	});
 
 	it('should throw NotImplementedException', () => {

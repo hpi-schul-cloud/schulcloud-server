@@ -10,24 +10,24 @@ export class Logger {
 
 	constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: WinstonLogger) {}
 
-	public log(loggable: Loggable): void {
+	public warning(loggable: Loggable): void {
 		const message = LoggingUtils.createMessageWithContext(loggable, this.context);
-		this.logger.info(message);
+		this.logger.warning(message);
 	}
 
-	public warn(loggable: Loggable): void {
+	public notice(loggable: Loggable): void {
 		const message = LoggingUtils.createMessageWithContext(loggable, this.context);
-		this.logger.warn(message);
+		this.logger.notice(message);
+	}
+
+	public info(loggable: Loggable): void {
+		const message = LoggingUtils.createMessageWithContext(loggable, this.context);
+		this.logger.info(message);
 	}
 
 	public debug(loggable: Loggable): void {
 		const message = LoggingUtils.createMessageWithContext(loggable, this.context);
 		this.logger.debug(message);
-	}
-
-	public verbose(loggable: Loggable): void {
-		const message = LoggingUtils.createMessageWithContext(loggable, this.context);
-		this.logger.verbose(message);
 	}
 
 	public setContext(name: string) {

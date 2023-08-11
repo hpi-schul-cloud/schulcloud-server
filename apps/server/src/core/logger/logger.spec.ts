@@ -1,9 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { WinstonLogger, WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger as WinstonLogger } from 'winston';
 import { Loggable } from './interfaces';
 import { Logger } from './logger';
-import { LogMessage, ErrorLogMessage, ValidationErrorLogMessage } from './types';
+import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from './types';
 
 class SampleLoggable implements Loggable {
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
@@ -44,7 +45,7 @@ describe('Logger', () => {
 		await module.close();
 	});
 
-	describe('log', () => {
+	describe('info', () => {
 		it('should call info method of WinstonLogger with appropriate message', () => {
 			const loggable = new SampleLoggable();
 			service.setContext('test context');
@@ -55,11 +56,9 @@ describe('Logger', () => {
 				context: 'test context',
 			});
 
-			service.log(loggable);
+			service.info(loggable);
 
-			// info does not exist on type WinstonLogger. Thus the access with bracket notation.
-			// eslint-disable-next-line @typescript-eslint/dot-notation
-			expect(winstonLogger['info']).toBeCalledWith(expectedMessage);
+			expect(winstonLogger.info).toBeCalledWith(expectedMessage);
 		});
 	});
 
@@ -74,9 +73,9 @@ describe('Logger', () => {
 				context: 'test context',
 			});
 
-			service.warn(loggable);
+			service.warning(loggable);
 
-			expect(winstonLogger.warn).toBeCalledWith(expectedMessage);
+			expect(winstonLogger.warning).toBeCalledWith(expectedMessage);
 		});
 	});
 
@@ -97,8 +96,17 @@ describe('Logger', () => {
 		});
 	});
 
-	describe('verbose', () => {
-		it('should call verbose method of WinstonLogger with appropriate message', () => {
+	describe('setContext', () => {
+		it('should set the context', () => {
+			service.setContext('test');
+
+			// eslint-disable-next-line @typescript-eslint/dot-notation
+			expect(service['context']).toEqual('test');
+		});
+	});
+
+	describe('notice', () => {
+		it('should call notice method of WinstonLogger with appropriate message', () => {
 			const loggable = new SampleLoggable();
 			service.setContext('test context');
 
@@ -108,18 +116,9 @@ describe('Logger', () => {
 				context: 'test context',
 			});
 
-			service.verbose(loggable);
+			service.notice(loggable);
 
-			expect(winstonLogger.verbose).toBeCalledWith(expectedMessage);
-		});
-	});
-
-	describe('setContext', () => {
-		it('should set the context', () => {
-			service.setContext('test');
-
-			// eslint-disable-next-line @typescript-eslint/dot-notation
-			expect(service['context']).toEqual('test');
+			expect(winstonLogger.notice).toBeCalledWith(expectedMessage);
 		});
 	});
 });

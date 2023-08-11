@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, setupEntities, taskFactory } from '@shared/testing';
-import { BoardElementResponse, BoardTaskResponse, SingleColumnBoardResponse } from '../controller/dto';
+import { ObjectId } from 'bson';
+import { BoardElementResponse, SingleColumnBoardResponse } from '../controller/dto';
 import { RoomBoardElementTypes } from '../types';
 import { RoomBoardResponseMapper } from './room-board-response.mapper';
 
@@ -29,6 +30,7 @@ describe('room board response mapper', () => {
 				displayColor: '#ACACAC',
 				title: 'boardTitle',
 				elements: [],
+				isArchived: false,
 			};
 
 			const result = mapper.mapToResponse(board);
@@ -52,6 +54,7 @@ describe('room board response mapper', () => {
 				displayColor: '#ACACAC',
 				title: 'boardTitle',
 				elements: [{ type: RoomBoardElementTypes.TASK, content: { task, status } }],
+				isArchived: false,
 			};
 
 			const result = mapper.mapToResponse(board);
@@ -59,11 +62,9 @@ describe('room board response mapper', () => {
 			expect(result.elements[0] instanceof BoardElementResponse).toEqual(true);
 		});
 
-		it('should map tasks with status and its task card on board to response', () => {
+		it('should map tasks with status on board to response', () => {
 			const course = courseFactory.buildWithId();
 			const linkedTask = taskFactory.buildWithId({ course });
-			const mockTaskCardId = 'taskCardId #1';
-			linkedTask.taskCard = mockTaskCardId;
 			const status = {
 				graded: 0,
 				maxSubmissions: 0,
@@ -77,12 +78,12 @@ describe('room board response mapper', () => {
 				displayColor: '#ACACAC',
 				title: 'boardTitle',
 				elements: [{ type: RoomBoardElementTypes.TASK, content: { task: linkedTask, status } }],
+				isArchived: false,
 			};
 
 			const result = mapper.mapToResponse(board);
 
 			expect(result.elements[0] instanceof BoardElementResponse).toEqual(true);
-			expect((result.elements[0].content as BoardTaskResponse).taskCardId).toEqual(mockTaskCardId);
 		});
 
 		it('should map lessons on board to response', () => {
@@ -103,6 +104,7 @@ describe('room board response mapper', () => {
 				displayColor: '#ACACAC',
 				title: 'boardTitle',
 				elements: [{ type: RoomBoardElementTypes.LESSON, content: lessonMetadata }],
+				isArchived: false,
 			};
 
 			const result = mapper.mapToResponse(board);
@@ -140,12 +142,35 @@ describe('room board response mapper', () => {
 					{ type: RoomBoardElementTypes.LESSON, content: lessonMetadata },
 					{ type: RoomBoardElementTypes.TASK, content: { task, status } },
 				],
+				isArchived: false,
 			};
 
 			const result = mapper.mapToResponse(board);
 
 			expect(result.elements[0] instanceof BoardElementResponse).toEqual(true);
 			expect(result.elements[1] instanceof BoardElementResponse).toEqual(true);
+		});
+
+		it('should map column board targets on board to response', () => {
+			const columnBoardMetaData = {
+				id: new ObjectId().toHexString(),
+				columnBoardId: new ObjectId().toHexString(),
+				title: 'column board #1',
+				published: true,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			};
+			const board = {
+				roomId: 'roomId',
+				displayColor: '#ACACAC',
+				title: 'boardTitle',
+				elements: [{ type: RoomBoardElementTypes.COLUMN_BOARD, content: columnBoardMetaData }],
+				isArchived: false,
+			};
+
+			const result = mapper.mapToResponse(board);
+
+			expect(result.elements[0] instanceof BoardElementResponse).toEqual(true);
 		});
 	});
 });

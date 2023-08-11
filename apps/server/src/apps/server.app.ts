@@ -6,7 +6,7 @@ import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { Mail, MailService } from '@shared/infra/mail';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger, Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountValidationService } from '@src/modules/account/services/account.validation.service';
 import { AccountUc } from '@src/modules/account/uc/account.uc';
@@ -20,6 +20,12 @@ import { join } from 'path';
 import { install as sourceMapInstall } from 'source-map-support';
 import legacyAppPromise = require('../../../../src/app');
 
+import { AppStartLoggable } from './helpers/app-start-loggable';
+import {
+	addPrometheusMetricsMiddlewaresIfEnabled,
+	createAndStartPrometheusMetricsAppIfEnabled,
+} from './helpers/prometheus-metrics';
+
 async function bootstrap() {
 	sourceMapInstall();
 
@@ -30,8 +36,10 @@ async function bootstrap() {
 	const orm = nestApp.get(MikroORM);
 
 	// WinstonLogger
-	const logger = await nestApp.resolve(LegacyLogger);
-	nestApp.useLogger(logger);
+	const legacyLogger = await nestApp.resolve(LegacyLogger);
+	nestApp.useLogger(legacyLogger);
+
+	const logger = await nestApp.resolve(Logger);
 
 	// load the legacy feathers/express server
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -74,6 +82,8 @@ async function bootstrap() {
 	// mount instances
 	const rootExpress = express();
 
+	addPrometheusMetricsMiddlewaresIfEnabled(logger, rootExpress);
+
 	// exposed alias mounts
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	rootExpress.use('/api/v1', feathersExpress);
@@ -83,7 +93,7 @@ async function bootstrap() {
 	// logger middleware for deprecated paths
 	// TODO remove when all calls to the server are migrated
 	const logDeprecatedPaths = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-		logger.error(req.path, 'DEPRECATED-PATH');
+		legacyLogger.error(req.path, 'DEPRECATED-PATH');
 		next();
 	};
 
@@ -95,7 +105,18 @@ async function bootstrap() {
 	rootExpress.use('/', logDeprecatedPaths, feathersExpress);
 
 	const port = 3030;
-	rootExpress.listen(port);
+
+	rootExpress.listen(port, () => {
+		logger.info(
+			new AppStartLoggable({
+				appName: 'Main server app',
+				port,
+				mountsDescription: '/, /api, /api/v1 --> FeathersJS, /api/v3 --> NestJS',
+			})
+		);
+
+		createAndStartPrometheusMetricsAppIfEnabled(logger);
+	});
 
 	console.log('#################################');
 	console.log(`### Start Server              ###`);

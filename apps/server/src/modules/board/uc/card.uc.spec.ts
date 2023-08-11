@@ -48,9 +48,7 @@ describe(CardUc.name, () => {
 		uc = module.get(CardUc);
 		authorizationService = module.get(AuthorizationService);
 		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
-		boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-			new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
-		);
+
 		cardService = module.get(CardService);
 		elementService = module.get(ContentElementService);
 		await setupEntities();
@@ -60,12 +58,20 @@ describe(CardUc.name, () => {
 		await module.close();
 	});
 
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
 	describe('findCards', () => {
 		describe('when finding many cards', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const cards = cardFactory.buildList(3);
 				const cardIds = cards.map((c) => c.id);
+
+				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
+					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
+				);
 
 				return { user, cards, cardIds };
 			};
@@ -99,6 +105,10 @@ describe(CardUc.name, () => {
 				cardService.findById.mockResolvedValueOnce(card);
 				elementService.create.mockResolvedValueOnce(element);
 
+				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
+					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
+				);
+
 				return { user, card, element };
 			};
 
@@ -117,6 +127,20 @@ describe(CardUc.name, () => {
 
 				expect(elementService.create).toHaveBeenCalledWith(card, ContentElementType.RICH_TEXT);
 			});
+			it('should call the service to move the element', async () => {
+				const { user, card, element } = setup();
+
+				await uc.createElement(user.id, card.id, ContentElementType.RICH_TEXT, 3);
+
+				expect(elementService.move).toHaveBeenCalledWith(element, card, 3);
+			});
+			it('should not call the service to move the element if position is not a number', async () => {
+				const { user, card } = setup();
+
+				await uc.createElement(user.id, card.id, ContentElementType.RICH_TEXT, 'not a number' as unknown as number);
+
+				expect(elementService.move).not.toHaveBeenCalled();
+			});
 
 			it('should return new content element', async () => {
 				const { user, card, element } = setup();
@@ -134,6 +158,10 @@ describe(CardUc.name, () => {
 				const user = userFactory.build();
 				const element = richTextElementFactory.build();
 				const card = cardFactory.build();
+
+				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
+					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
+				);
 
 				return { user, card, element };
 			};

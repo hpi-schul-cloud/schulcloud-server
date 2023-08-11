@@ -8,6 +8,7 @@ import { UserModule } from '@src/modules/user';
 import {
 	MigrationCheckService,
 	SchoolMigrationService,
+	UserLoginMigrationRevertService,
 	UserLoginMigrationService,
 	UserMigrationService,
 } from './service';
@@ -20,7 +21,14 @@ import {
 		MigrationCheckService,
 		UserLoginMigrationService,
 		UserLoginMigrationRepo,
+		UserLoginMigrationRevertService,
 	],
-	exports: [UserMigrationService, SchoolMigrationService, MigrationCheckService, UserLoginMigrationService],
+	exports: [
+		UserMigrationService,
+		SchoolMigrationService,
+		MigrationCheckService,
+		UserLoginMigrationService,
+		UserLoginMigrationRevertService,
+	],
 })
 export class UserLoginMigrationModule {}

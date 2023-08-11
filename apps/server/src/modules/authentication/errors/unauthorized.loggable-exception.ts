@@ -8,7 +8,7 @@ export class UnauthorizedLoggableException extends UnauthorizedException impleme
 	}
 
 	getLogMessage(): ErrorLogMessage {
-		const message = {
+		const message: ErrorLogMessage = {
 			type: 'UNAUTHORIZED_EXCEPTION',
 			stack: this.stack,
 			data: {

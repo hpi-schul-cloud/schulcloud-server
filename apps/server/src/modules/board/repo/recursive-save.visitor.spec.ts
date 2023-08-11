@@ -1,4 +1,4 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import {
 	BoardNodeType,
@@ -7,6 +7,8 @@ import {
 	ColumnNode,
 	FileElementNode,
 	RichTextElementNode,
+	SubmissionContainerElementNode,
+	SubmissionItemNode,
 } from '@shared/domain';
 import {
 	cardFactory,
@@ -15,16 +17,22 @@ import {
 	columnFactory,
 	fileElementFactory,
 	richTextElementFactory,
+	submissionContainerElementFactory,
+	submissionItemFactory,
 } from '@shared/testing';
+import { BoardNodeRepo } from './board-node.repo';
 import { RecursiveSaveVisitor } from './recursive-save.visitor';
 
 describe(RecursiveSaveVisitor.name, () => {
 	let visitor: RecursiveSaveVisitor;
 	let em: DeepMocked<EntityManager>;
+	let boardNodeRepo: DeepMocked<BoardNodeRepo>;
 
 	beforeAll(() => {
 		em = createMock<EntityManager>();
-		visitor = new RecursiveSaveVisitor(em);
+		boardNodeRepo = createMock<BoardNodeRepo>();
+
+		visitor = new RecursiveSaveVisitor(em, boardNodeRepo);
 	});
 
 	describe('when visiting a board composite', () => {
@@ -106,6 +114,22 @@ describe(RecursiveSaveVisitor.name, () => {
 		});
 	});
 
+	describe('when visiting a file element composite', () => {
+		it('should create or update the node', () => {
+			const fileElement = fileElementFactory.build();
+			jest.spyOn(visitor, 'createOrUpdateBoardNode');
+
+			visitor.visitFileElement(fileElement);
+
+			const expectedNode: Partial<FileElementNode> = {
+				id: fileElement.id,
+				type: BoardNodeType.FILE_ELEMENT,
+				caption: fileElement.caption,
+			};
+			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
+		});
+	});
+
 	describe('when visiting a rich text element composite', () => {
 		it('should create or update the node', () => {
 			const richTextElement = richTextElementFactory.build();
@@ -122,17 +146,33 @@ describe(RecursiveSaveVisitor.name, () => {
 		});
 	});
 
-	describe('when visiting a file element composite', () => {
+	describe('when visiting a submission container element composite', () => {
 		it('should create or update the node', () => {
-			const fileElement = fileElementFactory.build();
+			const submissionContainerElement = submissionContainerElementFactory.build();
 			jest.spyOn(visitor, 'createOrUpdateBoardNode');
 
-			visitor.visitFileElement(fileElement);
+			visitor.visitSubmissionContainerElement(submissionContainerElement);
 
-			const expectedNode: Partial<FileElementNode> = {
-				id: fileElement.id,
-				type: BoardNodeType.FILE_ELEMENT,
-				caption: fileElement.caption,
+			const expectedNode: Partial<SubmissionContainerElementNode> = {
+				id: submissionContainerElement.id,
+				type: BoardNodeType.SUBMISSION_CONTAINER_ELEMENT,
+				dueDate: submissionContainerElement.dueDate,
+			};
+			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
+		});
+	});
+
+	describe('when visiting a submission item composite', () => {
+		it('should create or update the node', () => {
+			const submissionItem = submissionItemFactory.build();
+			jest.spyOn(visitor, 'createOrUpdateBoardNode');
+
+			visitor.visitSubmissionItem(submissionItem);
+
+			const expectedNode: Partial<SubmissionItemNode> = {
+				id: submissionItem.id,
+				type: BoardNodeType.SUBMISSION_ITEM,
+				completed: submissionItem.completed,
 			};
 			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
 		});

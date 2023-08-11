@@ -5,6 +5,7 @@ import {
 	columnNodeFactory,
 	fileElementNodeFactory,
 	richTextElementNodeFactory,
+	submissionContainerElementNodeFactory,
 	setupEntities,
 } from '@shared/testing';
 import { BoardDoBuilderImpl } from './board-do.builder-impl';
@@ -161,6 +162,25 @@ describe(BoardDoBuilderImpl.name, () => {
 
 			expect(() => {
 				new BoardDoBuilderImpl([columnNode]).buildRichTextElement(richTextElementNode);
+			}).toThrowError();
+		});
+	});
+
+	describe('when building a submission container element', () => {
+		it('should work without descendants', () => {
+			const submissionContainerElementNode = submissionContainerElementNodeFactory.build();
+
+			const domainObject = new BoardDoBuilderImpl().buildSubmissionContainerElement(submissionContainerElementNode);
+
+			expect(domainObject.constructor.name).toBe('SubmissionContainerElement');
+		});
+
+		it('should throw error if submissionContainerElement is not a leaf', () => {
+			const submissionContainerElementNode = submissionContainerElementNodeFactory.buildWithId();
+			const columnNode = columnNodeFactory.buildWithId({ parent: submissionContainerElementNode });
+
+			expect(() => {
+				new BoardDoBuilderImpl([columnNode]).buildSubmissionContainerElement(submissionContainerElementNode);
 			}).toThrowError();
 		});
 	});

@@ -25,7 +25,7 @@
 		"__v": 0,
 		"fileStorageType": "awsS3",
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e78"
+			"$oid": "5ebd6dc14a431f75ec9a3e79"
 		},
 		"purpose": "demo",
 		"permissions": {
@@ -50,7 +50,7 @@
 		},
 		"__v": 0,
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e78"
+			"$oid": "5ebd6dc14a431f75ec9a3e79"
 		},
 		"purpose": "demo",
 		"permissions": {
@@ -86,7 +86,7 @@
 		},
 		"__v": 0,
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e78"
+			"$oid": "5ebd6dc14a431f75ec9a3e79"
 		},
 		"purpose": "demo",
 		"features": [
@@ -128,7 +128,7 @@
 		"__v": 0,
 		"fileStorageType": "awsS3",
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e78"
+			"$oid": "5ebd6dc14a431f75ec9a3e79"
 		},
 		"purpose": "expert",
         "features" : [
@@ -164,7 +164,7 @@
 		},
 		"fileStorageType": "awsS3",
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e78"
+			"$oid": "5ebd6dc14a431f75ec9a3e79"
 		},
 		"createdAt": {
 			"$date": "2020-11-04T15:16:28.827Z"
@@ -211,7 +211,7 @@
 		},
 		"fileStorageType": "awsS3",
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e78"
+			"$oid": "5ebd6dc14a431f75ec9a3e79"
 		},
 		"createdAt": {
 			"$date": "2020-11-04T21:11:14.312Z"
@@ -252,7 +252,7 @@
 		"fileStorageType": "awsS3",
 		"timezone": "America/Belem",
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e78"
+			"$oid": "5ebd6dc14a431f75ec9a3e79"
 		},
 		"createdAt": {
 			"$date": "2020-11-04T21:38:05.110Z"
@@ -296,7 +296,7 @@
 		},
 		"fileStorageType": "awsS3",
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e78"
+			"$oid": "5ebd6dc14a431f75ec9a3e79"
 		},
 		"createdAt": {
 			"$date": "2020-12-08T16:58:36.527Z"
@@ -360,7 +360,49 @@
 		},
 		"__v": 0,
 		"currentYear": {
-			"$oid": "5ebd6dc14a431f75ec9a3e78"
+			"$oid": "5ebd6dc14a431f75ec9a3e79"
+		},
+		"purpose": "demo",
+		"features": [
+			"rocketChat",
+			"ldapUniventionMigrationSchool",
+			"videoconference",
+			"oauthProvisioningEnabled"
+		],
+		"enableStudentTeamCreation": false,
+		"permissions": {
+			"teacher": {
+				"STUDENT_LIST": true
+			}
+		}
+	},
+	{
+		"_id": {
+			"$oid": "6492cc63ad0aa141f4e361d1"
+		},
+		"name": "Schulcloud-Verbund",
+		"fileStorageType": "awsS3",
+		"federalState": {
+			"$oid": "0000b186816abba584714c53"
+		},
+		"county": {
+			"antaresKey": "BRB",
+			"_id": {
+				"$oid": "5fa55eb53f472a2d986c8812"
+			},
+			"countyId": 12051,
+			"name": "Brandenburg an der Havel"
+		},
+		"systems": [],
+		"updatedAt": {
+			"$date": "2020-07-27T08:21:14.719Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"__v": 0,
+		"currentYear": {
+			"$oid": "5ebd6dc14a431f75ec9a3e79"
 		},
 		"purpose": "demo",
 		"features": [

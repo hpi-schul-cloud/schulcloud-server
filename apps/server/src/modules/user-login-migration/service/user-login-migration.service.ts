@@ -5,6 +5,8 @@ import { UserLoginMigrationRepo } from '@shared/repo';
 import { SchoolService } from '@src/modules/school';
 import { SystemDto, SystemService } from '@src/modules/system';
 import { UserService } from '@src/modules/user';
+import { UserLoginMigrationNotFoundLoggableException } from '../error';
+import { SchoolMigrationService } from './school-migration.service';
 
 @Injectable()
 export class UserLoginMigrationService {
@@ -12,7 +14,8 @@ export class UserLoginMigrationService {
 		private readonly userService: UserService,
 		private readonly userLoginMigrationRepo: UserLoginMigrationRepo,
 		private readonly schoolService: SchoolService,
-		private readonly systemService: SystemService
+		private readonly systemService: SystemService,
+		private readonly schoolMigrationService: SchoolMigrationService
 	) {}
 
 	async setMigration(
@@ -63,6 +66,71 @@ export class UserLoginMigrationService {
 		return savedMigration;
 	}
 
+	async startMigration(schoolId: string): Promise<UserLoginMigrationDO> {
+		const schoolDo: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+
+		const userLoginMigrationDO: UserLoginMigrationDO = await this.createNewMigration(schoolDo);
+
+		this.enableOauthMigrationFeature(schoolDo);
+		await this.schoolService.save(schoolDo);
+
+		const userLoginMigration: UserLoginMigrationDO = await this.userLoginMigrationRepo.save(userLoginMigrationDO);
+
+		return userLoginMigration;
+	}
+
+	async restartMigration(schoolId: string): Promise<UserLoginMigrationDO> {
+		const existingUserLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(
+			schoolId
+		);
+
+		if (!existingUserLoginMigration) {
+			throw new UserLoginMigrationNotFoundLoggableException(schoolId);
+		}
+
+		const updatedUserLoginMigration = await this.updateExistingMigration(existingUserLoginMigration);
+
+		await this.schoolMigrationService.unmarkOutdatedUsers(schoolId);
+
+		return updatedUserLoginMigration;
+	}
+
+	async setMigrationMandatory(schoolId: string, mandatory: boolean): Promise<UserLoginMigrationDO> {
+		let userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
+
+		if (!userLoginMigration) {
+			throw new UserLoginMigrationNotFoundLoggableException(schoolId);
+		}
+
+		if (mandatory) {
+			userLoginMigration.mandatorySince = userLoginMigration.mandatorySince ?? new Date();
+		} else {
+			userLoginMigration.mandatorySince = undefined;
+		}
+
+		userLoginMigration = await this.userLoginMigrationRepo.save(userLoginMigration);
+
+		return userLoginMigration;
+	}
+
+	async closeMigration(schoolId: string): Promise<UserLoginMigrationDO> {
+		let userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
+
+		if (!userLoginMigration) {
+			throw new UserLoginMigrationNotFoundLoggableException(schoolId);
+		}
+
+		const now: Date = new Date();
+		const gracePeriodDuration: number = Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number;
+
+		userLoginMigration.closedAt = now;
+		userLoginMigration.finishedAt = new Date(now.getTime() + gracePeriodDuration);
+
+		userLoginMigration = await this.userLoginMigrationRepo.save(userLoginMigration);
+
+		return userLoginMigration;
+	}
+
 	private async createNewMigration(school: SchoolDO): Promise<UserLoginMigrationDO> {
 		const oauthSystems: SystemDto[] = await this.systemService.findByType(SystemTypeEnum.OAUTH);
 		const sanisSystem: SystemDto | undefined = oauthSystems.find((system: SystemDto) => system.alias === 'SANIS');
@@ -75,12 +143,24 @@ export class UserLoginMigrationService {
 			school.systems?.filter((systemId: EntityId) => systemId !== (sanisSystem.id as string)) || [];
 		const sourceSystemId = systemIds[0];
 
-		return new UserLoginMigrationDO({
+		const userLoginMigrationDO: UserLoginMigrationDO = new UserLoginMigrationDO({
 			schoolId: school.id as string,
 			targetSystemId: sanisSystem.id as string,
 			sourceSystemId,
 			startedAt: new Date(),
 		});
+
+		return userLoginMigrationDO;
+	}
+
+	private async updateExistingMigration(userLoginMigrationDO: UserLoginMigrationDO) {
+		userLoginMigrationDO.startedAt = new Date();
+		userLoginMigrationDO.closedAt = undefined;
+		userLoginMigrationDO.finishedAt = undefined;
+
+		const userLoginMigration: UserLoginMigrationDO = await this.userLoginMigrationRepo.save(userLoginMigrationDO);
+
+		return userLoginMigration;
 	}
 
 	private enableOauthMigrationFeature(schoolDo: SchoolDO) {
@@ -101,7 +181,7 @@ export class UserLoginMigrationService {
 		const userDO: UserDO = await this.userService.findById(userId);
 		const { schoolId } = userDO;
 
-		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
+		const userLoginMigration: UserLoginMigrationDO | null = await this.findMigrationBySchool(schoolId);
 
 		if (!userLoginMigration) {
 			return null;
@@ -115,5 +195,9 @@ export class UserLoginMigrationService {
 		}
 
 		return userLoginMigration;
+	}
+
+	async deleteUserLoginMigration(userLoginMigration: UserLoginMigrationDO): Promise<void> {
+		await this.userLoginMigrationRepo.delete(userLoginMigration);
 	}
 }

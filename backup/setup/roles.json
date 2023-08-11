@@ -69,7 +69,7 @@
 		},
 		"name": "administrator",
 		"updatedAt": {
-			"$date": "2023-04-03T13:27:56.587Z"
+			"$date": "2023-05-16T08:17:53.317Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -130,7 +130,8 @@
 			"SYSTEM_EDIT",
 			"SYSTEM_CREATE",
 			"SYSTEM_VIEW",
-			"SCHOOL_TOOL_ADMIN"
+			"SCHOOL_TOOL_ADMIN",
+			"USER_LOGIN_MIGRATION_ADMIN"
 		],
 		"__v": 2
 	},
@@ -237,8 +238,6 @@
 			"USERGROUP_EDIT",
 			"USER_CREATE",
 			"TASK_DASHBOARD_TEACHER_VIEW_V3",
-			"TASK_CARD_VIEW",
-			"TASK_CARD_EDIT",
 			"TEAM_CREATE",
 			"TEAM_EDIT",
 			"START_MEETING",
@@ -267,7 +266,6 @@
 		"permissions": [
 			"TASK_DASHBOARD_VIEW_V3",
 			"JOIN_MEETING",
-			"TASK_CARD_VIEW",
 			"TEAM_CREATE",
 			"TEAM_EDIT",
 			"TOOL_CREATE_ETHERPAD"

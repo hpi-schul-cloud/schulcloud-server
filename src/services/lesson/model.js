@@ -4,7 +4,6 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
-const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 
@@ -48,8 +47,6 @@ schulcloud.lessons             count        {"courseId": 1}
 */
 // the ref don't exists in entity
 lessonSchema.index({ courseGroupId: 1 });
-
-enableAuditLog(lessonSchema);
 
 const LessonModel = mongoose.model('lesson', lessonSchema);
 

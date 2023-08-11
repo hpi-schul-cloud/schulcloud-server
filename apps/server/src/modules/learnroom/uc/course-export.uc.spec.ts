@@ -3,6 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CommonCartridgeExportService } from '@src/modules/learnroom/service/common-cartridge-export.service';
 import { AuthorizationService } from '@src/modules';
 import { CourseExportUc } from './course-export.uc';
+import { CommonCartridgeVersion } from '../common-cartridge';
 
 describe('CourseExportUc', () => {
 	let module: TestingModule;
@@ -34,10 +35,10 @@ describe('CourseExportUc', () => {
 	});
 
 	describe('exportCourse', () => {
+		const version: CommonCartridgeVersion = CommonCartridgeVersion.V_1_1_0;
 		it('should check for permissions', async () => {
 			authorizationServiceMock.checkPermissionByReferences.mockResolvedValueOnce();
-
-			await expect(courseExportUc.exportCourse('', '')).resolves.not.toThrow();
+			await expect(courseExportUc.exportCourse('', '', version)).resolves.not.toThrow();
 			expect(authorizationServiceMock.checkPermissionByReferences).toBeCalledTimes(1);
 		});
 
@@ -45,7 +46,7 @@ describe('CourseExportUc', () => {
 			courseExportServiceMock.exportCourse.mockResolvedValueOnce(Buffer.from(''));
 			authorizationServiceMock.checkPermissionByReferences.mockResolvedValueOnce();
 
-			await expect(courseExportUc.exportCourse('', '')).resolves.toBeInstanceOf(Buffer);
+			await expect(courseExportUc.exportCourse('', '', version)).resolves.toBeInstanceOf(Buffer);
 		});
 	});
 });

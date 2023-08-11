@@ -1,4 +1,3 @@
-export * from './course.response';
 export * from './course.url.params';
 export * from './course-metadata.response';
 export * from './dashboard.response';
@@ -11,3 +10,4 @@ export * from './patch-visibility.params';
 export * from './room-element.url.params';
 export * from './room.url.params';
 export * from './single-column-board';
+export * from './course.query.params';

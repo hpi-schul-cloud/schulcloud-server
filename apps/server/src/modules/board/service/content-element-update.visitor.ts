@@ -7,10 +7,12 @@ import {
 	ColumnBoard,
 	FileElement,
 	RichTextElement,
+	SubmissionContainerElement,
+	SubmissionItem,
 } from '@shared/domain';
-import { FileContentBody, RichTextContentBody } from '../controller/dto';
+import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from '../controller/dto';
 
-type ContentType = RichTextContentBody | FileContentBody;
+type ContentType = FileContentBody | RichTextContentBody | SubmissionContainerContentBody;
 
 export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 	private readonly content: ContentType;
@@ -31,6 +33,14 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 		this.throwNotHandled(card);
 	}
 
+	visitFileElement(fileElement: FileElement): void {
+		if (this.content instanceof FileContentBody) {
+			fileElement.caption = this.content.caption;
+		} else {
+			this.throwNotHandled(fileElement);
+		}
+	}
+
 	visitRichTextElement(richTextElement: RichTextElement): void {
 		if (this.content instanceof RichTextContentBody) {
 			richTextElement.text = sanitizeRichText(this.content.text, this.content.inputFormat);
@@ -40,12 +50,16 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 		}
 	}
 
-	visitFileElement(fileElement: FileElement): void {
-		if (this.content instanceof FileContentBody) {
-			fileElement.caption = this.content.caption;
+	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void {
+		if (this.content instanceof SubmissionContainerContentBody) {
+			submissionContainerElement.dueDate = this.content.dueDate;
 		} else {
-			this.throwNotHandled(fileElement);
+			this.throwNotHandled(submissionContainerElement);
 		}
+	}
+
+	visitSubmissionItem(submission: SubmissionItem): void {
+		this.throwNotHandled(submission);
 	}
 
 	private throwNotHandled(component: AnyBoardDo) {

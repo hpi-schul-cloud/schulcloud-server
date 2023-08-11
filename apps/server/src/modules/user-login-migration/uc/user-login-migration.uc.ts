@@ -1,18 +1,18 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { EntityId, Page, SchoolDO, UserLoginMigrationDO } from '@shared/domain';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { EntityId, Page, Permission, SchoolDO, User, UserLoginMigrationDO } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
+import { Action, AuthorizationService } from '@src/modules/authorization';
 import { OAuthTokenDto } from '@src/modules/oauth';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
-import { OAuthMigrationError } from '../error/oauth-migration.error';
-import { SchoolMigrationError } from '../error/school-migration.error';
-import { UserLoginMigrationError } from '../error/user-login-migration.error';
+import { OAuthMigrationError, SchoolMigrationError, UserLoginMigrationError } from '../error';
 import { PageTypes } from '../interface/page-types.enum';
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
 import { MigrationDto, PageContentDto } from '../service/dto';
-import { UserLoginMigrationQuery } from './dto/user-login-migration-query';
+import { UserLoginMigrationQuery } from './dto';
 
 @Injectable()
 export class UserLoginMigrationUc {
@@ -23,6 +23,7 @@ export class UserLoginMigrationUc {
 		private readonly provisioningService: ProvisioningService,
 		private readonly schoolMigrationService: SchoolMigrationService,
 		private readonly authenticationService: AuthenticationService,
+		private readonly authorizationService: AuthorizationService,
 		private readonly logger: LegacyLogger
 	) {}
 
@@ -54,6 +55,24 @@ export class UserLoginMigrationUc {
 		}
 
 		return page;
+	}
+
+	async findUserLoginMigrationBySchool(userId: EntityId, schoolId: EntityId): Promise<UserLoginMigrationDO> {
+		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
+			schoolId
+		);
+
+		if (!userLoginMigration) {
+			throw new NotFoundLoggableException('UserLoginMigration', 'schoolId', schoolId);
+		}
+
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkPermission(user, userLoginMigration, {
+			requiredPermissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
+			action: Action.read,
+		});
+
+		return userLoginMigration;
 	}
 
 	async migrate(

@@ -3,6 +3,7 @@ import { InputFormat } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { FileElement } from './file-element.do';
 import { RichTextElement } from './rich-text-element.do';
+import { SubmissionContainerElement } from './submission-container-element.do';
 import { AnyContentElementDo } from './types/any-content-element-do';
 import { ContentElementType } from './types/content-elements.enum';
 
@@ -12,11 +13,14 @@ export class ContentElementFactory {
 		let element!: AnyContentElementDo;
 
 		switch (type) {
+			case ContentElementType.FILE:
+				element = this.buildFile();
+				break;
 			case ContentElementType.RICH_TEXT:
 				element = this.buildRichText();
 				break;
-			case ContentElementType.FILE:
-				element = this.buildFile();
+			case ContentElementType.SUBMISSION_CONTAINER:
+				element = this.buildSubmissionContainer();
 				break;
 			default:
 				break;
@@ -25,6 +29,18 @@ export class ContentElementFactory {
 		if (!element) {
 			throw new NotImplementedException(`unknown type ${type} of element`);
 		}
+
+		return element;
+	}
+
+	private buildFile() {
+		const element = new FileElement({
+			id: new ObjectId().toHexString(),
+			caption: '',
+			children: [],
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
 
 		return element;
 	}
@@ -42,10 +58,10 @@ export class ContentElementFactory {
 		return element;
 	}
 
-	private buildFile() {
-		const element = new FileElement({
+	private buildSubmissionContainer() {
+		const element = new SubmissionContainerElement({
 			id: new ObjectId().toHexString(),
-			caption: '',
+			dueDate: new Date(),
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),

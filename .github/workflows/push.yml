@@ -69,6 +69,16 @@ jobs:
           tags: ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }}
           labels: ${{ steps.docker_meta_img.outputs.labels }}
 
+      - name: Send Notification to Rocket Chat if docker image build failed
+        if: ${{ failure() && github.ref == 'refs/heads/main' }}
+        uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
+        with:
+          type: ${{ job.status }}
+          job_name: 'docker image build from ${{ github.repository }} triggered from branch ${{ github.ref_name }}:'
+          url: ${{ secrets.RC_MAIN_BROKEN_TOKEN }}
+          channel: '#softwaredevelopment-teams-and-groups'
+          username: Autodeployment Info
+
   branch_meta:
     runs-on: ubuntu-latest
     outputs:
@@ -99,6 +109,7 @@ jobs:
       token: ${{ secrets.GITHUB_TOKEN }}
       DEV_VAULT: ${{ secrets.DEV_VAULT }}
       DEV_KUBE_CONFIG: ${{ secrets.DEV_KUBE_CONFIG }}
+      BINGO_REPO_TOKEN: ${{ secrets.BINGO_REPO_TOKEN }}
 
   deploy-successful:
     needs:
@@ -139,6 +150,15 @@ jobs:
     with:
       ref: ${{ needs.branch_meta.outputs.branch }}
 
+  cy-e2e-tests:
+    needs:
+      - branch_meta
+      - deploy
+    uses: hpi-schul-cloud/e2e-system-tests/.github/workflows/remote-trigger.yml@main
+    with:
+      ref: ${{ needs.branch_meta.outputs.branch }}
+    secrets: inherit
+    
   test-successful:
     runs-on: ubuntu-latest
     needs:

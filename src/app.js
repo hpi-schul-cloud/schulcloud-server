@@ -26,7 +26,6 @@ const defaultHeaders = require('./middleware/defaultHeaders');
 const handleResponseType = require('./middleware/handleReponseType');
 const errorHandler = require('./middleware/errorHandler');
 const rabbitMq = require('./utils/rabbitmq');
-const prometheus = require('./utils/prometheus');
 
 const { setupFacadeLocator } = require('./utils/facadeLocator');
 const setupSwagger = require('./swagger');
@@ -48,8 +47,6 @@ const setupApp = async (orm) => {
 			next();
 		});
 	}
-
-	app.configure(prometheus);
 
 	setupFacadeLocator(app);
 	setupSwagger(app);

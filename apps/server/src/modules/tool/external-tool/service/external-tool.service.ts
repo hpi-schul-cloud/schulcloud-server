@@ -1,0 +1,169 @@
+import { HttpService } from '@nestjs/axios';
+import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { EntityId, IFindOptions, Page } from '@shared/domain';
+import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
+import { OauthProviderService } from '@shared/infra/oauth-provider';
+import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
+import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
+import { LegacyLogger, Logger } from '@src/core/logger';
+import { AxiosResponse } from 'axios';
+import { lastValueFrom } from 'rxjs';
+import { TokenEndpointAuthMethod } from '../../common/enum';
+import { ExternalToolSearchQuery } from '../../common/interface';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { ExternalTool, Oauth2ToolConfig } from '../domain';
+import { ExternalToolLogoFetchedLoggable } from '../loggable';
+import { ExternalToolServiceMapper } from './external-tool-service.mapper';
+import { ExternalToolVersionService } from './external-tool-version.service';
+
+@Injectable()
+export class ExternalToolService {
+	constructor(
+		private readonly externalToolRepo: ExternalToolRepo,
+		private readonly oauthProviderService: OauthProviderService,
+		private readonly mapper: ExternalToolServiceMapper,
+		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
+		private readonly contextExternalToolRepo: ContextExternalToolRepo,
+		@Inject(DefaultEncryptionService) private readonly encryptionService: IEncryptionService,
+		private readonly legacyLogger: LegacyLogger,
+		private readonly externalToolVersionService: ExternalToolVersionService,
+		private readonly logger: Logger,
+		private readonly httpService: HttpService
+	) {}
+
+	async createExternalTool(externalTool: ExternalTool): Promise<ExternalTool> {
+		if (ExternalTool.isLti11Config(externalTool.config) && externalTool.config.secret) {
+			externalTool.config.secret = this.encryptionService.encrypt(externalTool.config.secret);
+		} else if (ExternalTool.isOauth2Config(externalTool.config)) {
+			const oauthClient: ProviderOauthClient = this.mapper.mapDoToProviderOauthClient(
+				externalTool.name,
+				externalTool.config
+			);
+
+			await this.oauthProviderService.createOAuth2Client(oauthClient);
+		}
+
+		const created: ExternalTool = await this.externalToolRepo.save(externalTool);
+		return created;
+	}
+
+	async updateExternalTool(toUpdate: ExternalTool, loadedTool: ExternalTool): Promise<ExternalTool> {
+		await this.updateOauth2ToolConfig(toUpdate);
+		this.externalToolVersionService.increaseVersionOfNewToolIfNecessary(loadedTool, toUpdate);
+		const externalTool: ExternalTool = await this.externalToolRepo.save(toUpdate);
+		return externalTool;
+	}
+
+	async findExternalTools(
+		query: ExternalToolSearchQuery,
+		options?: IFindOptions<ExternalTool>
+	): Promise<Page<ExternalTool>> {
+		const tools: Page<ExternalTool> = await this.externalToolRepo.find(query, options);
+
+		const resolvedTools: (ExternalTool | undefined)[] = await Promise.all(
+			tools.data.map(async (tool: ExternalTool): Promise<ExternalTool | undefined> => {
+				if (ExternalTool.isOauth2Config(tool.config)) {
+					try {
+						await this.addExternalOauth2DataToConfig(tool.config);
+					} catch (e) {
+						this.legacyLogger.debug(
+							`Could not resolve oauth2Config of tool with clientId ${tool.config.clientId}. It will be filtered out.`
+						);
+						return undefined;
+					}
+				}
+				return tool;
+			})
+		);
+
+		tools.data = resolvedTools.filter((tool) => tool !== undefined) as ExternalTool[];
+
+		return tools;
+	}
+
+	async findExternalToolById(id: EntityId): Promise<ExternalTool> {
+		const tool: ExternalTool = await this.externalToolRepo.findById(id);
+		if (ExternalTool.isOauth2Config(tool.config)) {
+			try {
+				await this.addExternalOauth2DataToConfig(tool.config);
+			} catch (e) {
+				this.legacyLogger.debug(
+					`Could not resolve oauth2Config of tool with clientId ${tool.config.clientId}. It will be filtered out.`
+				);
+				throw new UnprocessableEntityException(`Could not resolve oauth2Config of tool ${tool.name}.`);
+			}
+		}
+		return tool;
+	}
+
+	findExternalToolByName(name: string): Promise<ExternalTool | null> {
+		const externalTool: Promise<ExternalTool | null> = this.externalToolRepo.findByName(name);
+		return externalTool;
+	}
+
+	findExternalToolByOAuth2ConfigClientId(clientId: string): Promise<ExternalTool | null> {
+		const externalTool: Promise<ExternalTool | null> = this.externalToolRepo.findByOAuth2ConfigClientId(clientId);
+		return externalTool;
+	}
+
+	async deleteExternalTool(toolId: EntityId): Promise<void> {
+		const schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolRepo.findByExternalToolId(toolId);
+		const schoolExternalToolIds: string[] = schoolExternalTools.map(
+			(schoolExternalTool: SchoolExternalTool): string =>
+				// We can be sure that the repo returns the id
+				schoolExternalTool.id as string
+		);
+
+		await Promise.all([
+			this.contextExternalToolRepo.deleteBySchoolExternalToolIds(schoolExternalToolIds),
+			this.schoolExternalToolRepo.deleteByExternalToolId(toolId),
+			this.externalToolRepo.deleteById(toolId),
+		]);
+	}
+
+	private async updateOauth2ToolConfig(toUpdate: ExternalTool) {
+		if (ExternalTool.isOauth2Config(toUpdate.config)) {
+			const toUpdateOauthClient: ProviderOauthClient = this.mapper.mapDoToProviderOauthClient(
+				toUpdate.name,
+				toUpdate.config
+			);
+			const loadedOauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(
+				toUpdate.config.clientId
+			);
+			await this.updateOauthClientOrThrow(loadedOauthClient, toUpdateOauthClient, toUpdate);
+		}
+	}
+
+	private async updateOauthClientOrThrow(
+		loadedOauthClient: ProviderOauthClient,
+		toUpdateOauthClient: ProviderOauthClient,
+		toUpdate: ExternalTool
+	) {
+		if (loadedOauthClient && loadedOauthClient.client_id) {
+			await this.oauthProviderService.updateOAuth2Client(loadedOauthClient.client_id, toUpdateOauthClient);
+		} else {
+			throw new UnprocessableEntityException(`The oAuthConfigs clientId of tool ${toUpdate.name}" does not exist`);
+		}
+	}
+
+	private async addExternalOauth2DataToConfig(config: Oauth2ToolConfig) {
+		const oauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(config.clientId);
+
+		config.scope = oauthClient.scope;
+		config.tokenEndpointAuthMethod = oauthClient.token_endpoint_auth_method as TokenEndpointAuthMethod;
+		config.redirectUris = oauthClient.redirect_uris;
+		config.frontchannelLogoutUri = oauthClient.frontchannel_logout_uri;
+	}
+
+	async fetchBase64Logo(logoUrl: string): Promise<string> {
+		const response: AxiosResponse<ArrayBuffer> = await lastValueFrom(
+			this.httpService.get(logoUrl, { responseType: 'arraybuffer' })
+		);
+		this.logger.info(new ExternalToolLogoFetchedLoggable(logoUrl));
+
+		const buffer: Buffer = Buffer.from(response.data);
+		const logoBase64: string = buffer.toString('base64');
+
+		return logoBase64;
+	}
+}

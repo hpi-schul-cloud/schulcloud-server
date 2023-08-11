@@ -7,6 +7,7 @@ import {
 	HttpCode,
 	NotFoundException,
 	Param,
+	Patch,
 	Post,
 	Put,
 	Query,
@@ -21,11 +22,13 @@ import {
 	CardIdsParams,
 	CardListResponse,
 	CardUrlParams,
-	CreateContentElementBody,
+	CreateContentElementBodyParams,
 	FileElementResponse,
 	MoveCardBodyParams,
 	RenameBodyParams,
+	SubmissionContainerElementResponse,
 } from './dto';
+import { SetHeightBodyParams } from './dto/board/set-height.body.params';
 import { RichTextElementResponse } from './dto/element/rich-text-element.response';
 import { CardResponseMapper, ContentElementResponseFactory } from './mapper';
 
@@ -69,13 +72,28 @@ export class CardController {
 		await this.boardUc.moveCard(currentUser.userId, urlParams.cardId, bodyParams.toColumnId, bodyParams.toPosition);
 	}
 
+	@ApiOperation({ summary: 'Update the height of a single card.' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Patch(':cardId/height')
+	async updateCardHeight(
+		@Param() urlParams: CardUrlParams,
+		@Body() bodyParams: SetHeightBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.boardUc.updateCardHeight(currentUser.userId, urlParams.cardId, bodyParams.height);
+	}
+
 	@ApiOperation({ summary: 'Update the title of a single card.' })
 	@ApiResponse({ status: 204 })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
-	@Put(':cardId/title')
+	@Patch(':cardId/title')
 	async updateCardTitle(
 		@Param() urlParams: CardUrlParams,
 		@Body() bodyParams: RenameBodyParams,
@@ -96,11 +114,15 @@ export class CardController {
 	}
 
 	@ApiOperation({ summary: 'Create a new element on a card.' })
-	@ApiExtraModels(RichTextElementResponse, FileElementResponse)
+	@ApiExtraModels(RichTextElementResponse, FileElementResponse, SubmissionContainerElementResponse)
 	@ApiResponse({
 		status: 201,
 		schema: {
-			oneOf: [{ $ref: getSchemaPath(RichTextElementResponse) }, { $ref: getSchemaPath(FileElementResponse) }],
+			oneOf: [
+				{ $ref: getSchemaPath(RichTextElementResponse) },
+				{ $ref: getSchemaPath(FileElementResponse) },
+				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
+			],
 		},
 	})
 	@ApiResponse({ status: 400, type: ApiValidationError })
@@ -109,11 +131,11 @@ export class CardController {
 	@Post(':cardId/elements')
 	async createElement(
 		@Param() urlParams: CardUrlParams, // TODO add type-property ?
-		@Body() bodyParams: CreateContentElementBody,
+		@Body() bodyParams: CreateContentElementBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<AnyContentElementResponse> {
-		const { type } = bodyParams;
-		const element = await this.cardUc.createElement(currentUser.userId, urlParams.cardId, type);
+		const { type, toPosition } = bodyParams;
+		const element = await this.cardUc.createElement(currentUser.userId, urlParams.cardId, type, toPosition);
 		const response = ContentElementResponseFactory.mapToResponse(element);
 
 		return response;

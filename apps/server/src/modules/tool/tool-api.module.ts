@@ -2,30 +2,23 @@ import { Module } from '@nestjs/common';
 import { LtiToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '@src/modules/authorization';
-import { UserModule } from '@src/modules/user';
 import { SchoolModule } from '@src/modules/school';
-import {
-	ExternalToolRequestMapper,
-	ExternalToolResponseMapper,
-	Lti11ResponseMapper,
-	SchoolExternalToolRequestMapper,
-	SchoolExternalToolResponseMapper,
-} from './controller/mapper';
-import { ToolConfigurationController, ToolContextController, ToolController, ToolSchoolController } from './controller';
+import { UserModule } from '@src/modules/user';
+import { ToolContextController } from './context-external-tool/controller';
+import { ContextExternalToolUc } from './context-external-tool/uc';
+import { ToolConfigurationController, ToolController } from './external-tool/controller';
+import { ExternalToolRequestMapper, ExternalToolResponseMapper } from './external-tool/mapper';
+import { ExternalToolConfigurationUc, ExternalToolUc, ToolReferenceUc } from './external-tool/uc';
+import { ToolSchoolController } from './school-external-tool/controller';
+import { SchoolExternalToolRequestMapper, SchoolExternalToolResponseMapper } from './school-external-tool/mapper';
+import { SchoolExternalToolUc } from './school-external-tool/uc';
+import { ToolConfigModule } from './tool-config.module';
+import { ToolLaunchController } from './tool-launch/controller/tool-launch.controller';
+import { ToolLaunchUc } from './tool-launch/uc';
 import { ToolModule } from './tool.module';
-import {
-	ContextExternalToolUc,
-	ExternalToolConfigurationUc,
-	ExternalToolUc,
-	Lti11Uc,
-	SchoolExternalToolUc,
-} from './uc';
-import { LtiRoleMapper } from './uc/mapper';
-import { ToolLaunchController } from './launch-tool/controller/tool-launch.controller';
-import { ToolLaunchUc } from './launch-tool/uc/tool-launch.uc';
 
 @Module({
-	imports: [ToolModule, UserModule, AuthorizationModule, LoggerModule, SchoolModule],
+	imports: [ToolModule, UserModule, AuthorizationModule, LoggerModule, SchoolModule, ToolConfigModule],
 	controllers: [
 		ToolLaunchController,
 		ToolConfigurationController,
@@ -34,9 +27,6 @@ import { ToolLaunchUc } from './launch-tool/uc/tool-launch.uc';
 		ToolController,
 	],
 	providers: [
-		Lti11Uc,
-		LtiRoleMapper,
-		Lti11ResponseMapper,
 		LtiToolRepo,
 		ExternalToolUc,
 		ExternalToolConfigurationUc,
@@ -47,6 +37,7 @@ import { ToolLaunchUc } from './launch-tool/uc/tool-launch.uc';
 		SchoolExternalToolRequestMapper,
 		ContextExternalToolUc,
 		ToolLaunchUc,
+		ToolReferenceUc,
 	],
 })
 export class ToolApiModule {}

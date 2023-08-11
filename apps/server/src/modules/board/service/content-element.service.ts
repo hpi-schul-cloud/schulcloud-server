@@ -7,7 +7,7 @@ import {
 	EntityId,
 	isAnyContentElement,
 } from '@shared/domain';
-import { FileContentBody, RichTextContentBody } from '../controller/dto';
+import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementUpdateVisitor } from './content-element-update.visitor';
@@ -33,9 +33,7 @@ export class ContentElementService {
 	async create(parent: Card, type: ContentElementType): Promise<AnyContentElementDo> {
 		const element = this.contentElementFactory.build(type);
 		parent.addChild(element);
-
 		await this.boardDoRepo.save(parent.children, parent);
-
 		return element;
 	}
 
@@ -47,7 +45,10 @@ export class ContentElementService {
 		await this.boardDoService.move(element, targetCard, targetPosition);
 	}
 
-	async update(element: AnyContentElementDo, content: RichTextContentBody | FileContentBody): Promise<void> {
+	async update(
+		element: AnyContentElementDo,
+		content: FileContentBody | RichTextContentBody | SubmissionContainerContentBody
+	): Promise<void> {
 		const updater = new ContentElementUpdateVisitor(content);
 		element.accept(updater);
 		const parent = await this.boardDoRepo.findParentOfId(element.id);

@@ -221,17 +221,6 @@
 	},
 	{
 		"_id": {
-			"$oid": "644bc358c994f501e40c73e0"
-		},
-		"state": "up",
-		"name": "add-context-tool-admin-permission-to-teachers",
-		"createdAt": {
-			"$date": "2023-04-28T11:00:42.924Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
 			"$oid": "6458ecb692a2c4444867d973"
 		},
 		"state": "up",
@@ -243,12 +232,45 @@
 	},
 	{
 		"_id": {
-			"$oid": "646365887db4bf4c882a8514"
+			"$oid": "645cd5c0925829be40c28eb2"
+		},
+		"state": "up",
+		"name": "add-context-tool-admin-permission-to-teachers",
+		"createdAt": {
+			"$date": "2023-04-28T11:00:42.924Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6475c08fb0c19a8a6ceed37c"
 		},
 		"state": "up",
 		"name": "add-context-tool-user-to-user",
 		"createdAt": {
 			"$date": "2023-05-16T11:09:04.602Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "649edddd0a10f0671489a4c3"
+		},
+		"state": "up",
+		"name": "add-user-login-migration-admin-permission-to-admin",
+		"createdAt": {
+			"$date": "2023-05-16T08:02:20.719Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "64cb7789b3f7ad8d586809c0"
+		},
+		"state": "up",
+		"name": "ctl_tools_add_lti_locale",
+		"createdAt": {
+			"$date": "2023-08-03T09:46:49.653Z"
 		},
 		"__v": 0
 	}

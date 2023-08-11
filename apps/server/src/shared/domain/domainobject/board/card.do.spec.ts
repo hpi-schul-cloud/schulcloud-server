@@ -1,5 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import { cardFactory, richTextElementFactory } from '@shared/testing';
+import { cardFactory, richTextElementFactory, submissionContainerElementFactory } from '@shared/testing';
 import { Card } from './card.do';
 import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
@@ -9,6 +9,12 @@ describe(Card.name, () => {
 			const card = cardFactory.build();
 			const richTextElement = richTextElementFactory.build();
 			expect(card.isAllowedAsChild(richTextElement)).toBe(true);
+		});
+
+		it('should allow submission container element objects', () => {
+			const card = cardFactory.build();
+			const submissionContainerElement = submissionContainerElementFactory.build();
+			expect(card.isAllowedAsChild(submissionContainerElement)).toBe(true);
 		});
 	});
 
@@ -31,6 +37,22 @@ describe(Card.name, () => {
 			await card.acceptAsync(visitor);
 
 			expect(visitor.visitCardAsync).toHaveBeenCalledWith(card);
+		});
+	});
+
+	describe('set title', () => {
+		it('should set the title property', () => {
+			const card = cardFactory.build({ title: 'card #1' });
+			card.title = 'card #2';
+			expect(card.title).toEqual('card #2');
+		});
+	});
+
+	describe('set height', () => {
+		it('should set the height property', () => {
+			const card = cardFactory.build({ height: 10 });
+			card.height = 42;
+			expect(card.height).toEqual(42);
 		});
 	});
 });

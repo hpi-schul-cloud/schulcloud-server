@@ -1,15 +1,22 @@
-import { Scope } from '@shared/repo';
-import { ExternalTool } from '@shared/domain';
+import { Scope } from '@shared/repo/scope';
+import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
 
-export class ExternalToolScope extends Scope<ExternalTool> {
-	byName(name: string | undefined): ExternalToolScope {
+export class ExternalToolScope extends Scope<ExternalToolEntity> {
+	byName(name: string | undefined): this {
 		if (name) {
 			this.addQuery({ name: { $re: name } });
 		}
 		return this;
 	}
 
-	byHidden(isHidden: boolean | undefined): ExternalToolScope {
+	byClientId(clientId: string | undefined): this {
+		if (clientId) {
+			this.addQuery({ config: { clientId } });
+		}
+		return this;
+	}
+
+	byHidden(isHidden: boolean | undefined): this {
 		if (isHidden !== undefined) {
 			this.addQuery({ isHidden });
 		}

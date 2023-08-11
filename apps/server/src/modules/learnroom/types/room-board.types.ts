@@ -5,11 +5,13 @@ export type RoomBoardDTO = {
 	displayColor: string;
 	title: string;
 	elements: RoomBoardElementDTO[];
+	isArchived: boolean;
 };
 
 export enum RoomBoardElementTypes {
 	TASK = 'task',
 	LESSON = 'lesson',
+	COLUMN_BOARD = 'column-board',
 }
 
 export type LessonMetaData = {
@@ -24,7 +26,16 @@ export type LessonMetaData = {
 	courseName: string;
 };
 
+export type ColumnBoardMetaData = {
+	id: EntityId;
+	columnBoardId: EntityId;
+	title: string;
+	published: boolean;
+	createdAt: Date;
+	updatedAt: Date;
+};
+
 export type RoomBoardElementDTO = {
 	type: RoomBoardElementTypes;
-	content: TaskWithStatusVo | LessonMetaData;
+	content: TaskWithStatusVo | LessonMetaData | ColumnBoardMetaData;
 };

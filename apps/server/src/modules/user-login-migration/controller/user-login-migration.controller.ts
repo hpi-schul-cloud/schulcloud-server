@@ -1,29 +1,56 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
-import { ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { UserLoginMigrationDO } from '@shared/domain';
-import { Page } from '@shared/domain/domainobject/page';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import {
+	ApiForbiddenResponse,
+	ApiInternalServerErrorResponse,
+	ApiNotFoundResponse,
+	ApiOkResponse,
+	ApiTags,
+	ApiUnauthorizedResponse,
+	ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
+import { Page, UserLoginMigrationDO } from '@shared/domain';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
-import { UserLoginMigrationMapper } from '../mapper/user-login-migration.mapper';
-import { UserLoginMigrationQuery } from '../uc/dto/user-login-migration-query';
-import { UserLoginMigrationUc } from '../uc/user-login-migration.uc';
+import {
+	SchoolNumberMissingLoggableException,
+	UserLoginMigrationAlreadyClosedLoggableException,
+	UserLoginMigrationGracePeriodExpiredLoggableException,
+	UserLoginMigrationNotFoundLoggableException,
+} from '../error';
+import { UserLoginMigrationMapper } from '../mapper';
+import {
+	CloseUserLoginMigrationUc,
+	RestartUserLoginMigrationUc,
+	StartUserLoginMigrationUc,
+	ToggleUserLoginMigrationUc,
+	UserLoginMigrationQuery,
+	UserLoginMigrationUc,
+} from '../uc';
 import {
 	UserLoginMigrationResponse,
 	UserLoginMigrationSearchListResponse,
 	UserLoginMigrationSearchParams,
 } from './dto';
 import { Oauth2MigrationParams } from './dto/oauth2-migration.params';
+import { SchoolIdParams } from './dto/request/school-id.params';
+import { UserLoginMigrationMandatoryParams } from './dto/request/user-login-migration-mandatory.params';
 
 @ApiTags('UserLoginMigration')
 @Controller('user-login-migrations')
 @Authenticate('jwt')
 export class UserLoginMigrationController {
-	constructor(private readonly userLoginMigrationUc: UserLoginMigrationUc) {}
+	constructor(
+		private readonly userLoginMigrationUc: UserLoginMigrationUc,
+		private readonly startUserLoginMigrationUc: StartUserLoginMigrationUc,
+		private readonly restartUserLoginMigrationUc: RestartUserLoginMigrationUc,
+		private readonly toggleUserLoginMigrationUc: ToggleUserLoginMigrationUc,
+		private readonly closeUserLoginMigrationUc: CloseUserLoginMigrationUc
+	) {}
 
 	@Get()
 	@ApiForbiddenResponse()
 	@ApiOkResponse({ description: 'UserLoginMigrations has been found.', type: UserLoginMigrationSearchListResponse })
-	@ApiInternalServerErrorResponse({ description: 'Cannot find Sanis system information.' })
+	@ApiInternalServerErrorResponse({ description: 'Cannot find target system information.' })
 	async getMigrations(
 		@CurrentUser() user: ICurrentUser,
 		@Query() params: UserLoginMigrationSearchParams
@@ -48,6 +75,132 @@ export class UserLoginMigrationController {
 		);
 
 		return response;
+	}
+
+	@Get('schools/:schoolId')
+	@ApiForbiddenResponse()
+	@ApiOkResponse({ description: 'UserLoginMigrations has been found', type: UserLoginMigrationSearchListResponse })
+	@ApiNotFoundResponse({ description: 'Cannot find UserLoginMigration' })
+	async findUserLoginMigrationBySchool(
+		@CurrentUser() user: ICurrentUser,
+		@Param() params: SchoolIdParams
+	): Promise<UserLoginMigrationResponse> {
+		const userLoginMigration: UserLoginMigrationDO = await this.userLoginMigrationUc.findUserLoginMigrationBySchool(
+			user.userId,
+			params.schoolId
+		);
+
+		const response: UserLoginMigrationResponse =
+			UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(userLoginMigration);
+
+		return response;
+	}
+
+	@Post('start')
+	@ApiUnprocessableEntityResponse({
+		description: 'User login migration is already closed and cannot be modified',
+		type: UserLoginMigrationAlreadyClosedLoggableException,
+	})
+	@ApiUnprocessableEntityResponse({
+		description: 'School has no official school number',
+		type: SchoolNumberMissingLoggableException,
+	})
+	@ApiOkResponse({ description: 'User login migration started', type: UserLoginMigrationResponse })
+	@ApiForbiddenResponse()
+	async startMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
+		const migrationDto: UserLoginMigrationDO = await this.startUserLoginMigrationUc.startMigration(
+			currentUser.userId,
+			currentUser.schoolId
+		);
+
+		const migrationResponse: UserLoginMigrationResponse =
+			UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(migrationDto);
+
+		return migrationResponse;
+	}
+
+	@Put('restart')
+	@ApiNotFoundResponse({
+		description: 'User login migration was not found',
+		type: UserLoginMigrationNotFoundLoggableException,
+	})
+	@ApiUnprocessableEntityResponse({
+		description: 'Grace period for changing the user login migration is expired',
+		type: UserLoginMigrationGracePeriodExpiredLoggableException,
+	})
+	@ApiOkResponse({ description: 'User login migration started', type: UserLoginMigrationResponse })
+	@ApiUnauthorizedResponse()
+	@ApiForbiddenResponse()
+	async restartMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
+		const migrationDto: UserLoginMigrationDO = await this.restartUserLoginMigrationUc.restartMigration(
+			currentUser.userId,
+			currentUser.schoolId
+		);
+
+		const migrationResponse: UserLoginMigrationResponse =
+			UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(migrationDto);
+
+		return migrationResponse;
+	}
+
+	@Put('mandatory')
+	@ApiNotFoundResponse({
+		description: 'User login migration was not found',
+		type: UserLoginMigrationNotFoundLoggableException,
+	})
+	@ApiUnprocessableEntityResponse({
+		description: 'Grace period for changing the user login migration is expired',
+		type: UserLoginMigrationGracePeriodExpiredLoggableException,
+	})
+	@ApiUnprocessableEntityResponse({
+		description: 'User login migration is already closed and cannot be modified',
+		type: UserLoginMigrationAlreadyClosedLoggableException,
+	})
+	@ApiOkResponse({ description: 'User login migration is set mandatory/optional', type: UserLoginMigrationResponse })
+	@ApiUnauthorizedResponse()
+	@ApiForbiddenResponse()
+	async setMigrationMandatory(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() body: UserLoginMigrationMandatoryParams
+	): Promise<UserLoginMigrationResponse> {
+		const migrationDto: UserLoginMigrationDO = await this.toggleUserLoginMigrationUc.setMigrationMandatory(
+			currentUser.userId,
+			currentUser.schoolId,
+			body.mandatory
+		);
+
+		const migrationResponse: UserLoginMigrationResponse =
+			UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(migrationDto);
+
+		return migrationResponse;
+	}
+
+	@Post('close')
+	@ApiUnprocessableEntityResponse({
+		description: 'User login migration is already closed and cannot be modified. Restart is possible.',
+		type: UserLoginMigrationAlreadyClosedLoggableException,
+	})
+	@ApiUnprocessableEntityResponse({
+		description: 'User login migration is already closed and cannot be modified. It cannot be restarted.',
+		type: UserLoginMigrationGracePeriodExpiredLoggableException,
+	})
+	@ApiNotFoundResponse({
+		description: 'User login migration does not exist',
+		type: UserLoginMigrationNotFoundLoggableException,
+	})
+	@ApiOkResponse({ description: 'User login migration closed', type: UserLoginMigrationResponse })
+	@ApiUnauthorizedResponse()
+	@ApiForbiddenResponse()
+	async closeMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse | void> {
+		const userLoginMigration: UserLoginMigrationDO = await this.closeUserLoginMigrationUc.closeMigration(
+			currentUser.userId,
+			currentUser.schoolId
+		);
+
+		const migrationResponse: UserLoginMigrationResponse =
+			UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(userLoginMigration);
+
+		return migrationResponse;
 	}
 
 	@Post('migrate-to-oauth2')

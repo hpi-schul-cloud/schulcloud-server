@@ -1,5 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { AnyBoardDo, Card, ContentElementType, EntityId, FileElement, RichTextElement } from '@shared/domain';
+import {
+	AnyBoardDo,
+	Card,
+	ContentElementType,
+	EntityId,
+	FileElement,
+	RichTextElement,
+	SubmissionContainerElement,
+} from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { Action } from '@src/modules/authorization/types/action.enum';
@@ -31,14 +39,18 @@ export class CardUc {
 	async createElement(
 		userId: EntityId,
 		cardId: EntityId,
-		type: ContentElementType
-	): Promise<RichTextElement | FileElement> {
+		type: ContentElementType,
+		toPosition?: number
+	): Promise<FileElement | RichTextElement | SubmissionContainerElement> {
 		this.logger.debug({ action: 'createElement', userId, cardId, type });
 
 		const card = await this.cardService.findById(cardId);
 		await this.checkPermission(userId, card, Action.write);
 
 		const element = await this.elementService.create(card, type);
+		if (toPosition !== undefined && typeof toPosition === 'number') {
+			await this.elementService.move(element, card, toPosition);
+		}
 
 		return element;
 	}

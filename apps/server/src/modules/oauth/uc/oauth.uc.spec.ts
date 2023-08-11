@@ -5,7 +5,7 @@ import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { ISession } from '@shared/domain/types/session';
-import { setupEntities } from '@shared/testing';
+import { schoolDOFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
@@ -216,7 +216,7 @@ describe('OAuthUc', () => {
 				firstName: 'firstName',
 				lastName: 'lastame',
 				email: '',
-				roleIds: [],
+				roles: [],
 				schoolId: 'mockSchoolId',
 				externalId: 'mockExternalId',
 			});
@@ -621,7 +621,7 @@ describe('OAuthUc', () => {
 
 					oauthService.requestToken.mockResolvedValue(tokenDto);
 					provisioningService.getData.mockResolvedValue(oauthData);
-					const schoolToMigrate: SchoolDO | void = new SchoolDO({ name: 'mockName' });
+					const schoolToMigrate: SchoolDO | void = schoolDOFactory.build({ name: 'mockName' });
 					oauthService.authenticateUser.mockResolvedValue(tokenDto);
 					schoolMigrationService.schoolToMigrate.mockResolvedValue(schoolToMigrate);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);

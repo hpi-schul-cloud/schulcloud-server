@@ -3,8 +3,13 @@ import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ContentElementFactory, ContentElementType, FileElement, InputFormat, RichTextElement } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
-import { cardFactory, fileElementFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
-import { FileContentBody, RichTextContentBody } from '../controller/dto';
+import {
+	cardFactory,
+	fileElementFactory,
+	richTextElementFactory,
+	submissionContainerElementFactory,
+} from '@shared/testing/factory/domainobject';
+import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementService } from './content-element.service';
@@ -219,6 +224,36 @@ describe(ContentElementService.name, () => {
 				await service.update(fileElement, content);
 
 				expect(boardDoRepo.save).toHaveBeenCalledWith(fileElement, card);
+			});
+		});
+
+		describe('when element is a submission container element', () => {
+			const setup = () => {
+				const submissionContainerElement = submissionContainerElementFactory.build();
+
+				const content = new SubmissionContainerContentBody();
+				content.dueDate = new Date();
+
+				const card = cardFactory.build();
+				boardDoRepo.findParentOfId.mockResolvedValue(card);
+
+				return { submissionContainerElement, content, card };
+			};
+
+			it('should update the element', async () => {
+				const { submissionContainerElement, content } = setup();
+
+				await service.update(submissionContainerElement, content);
+
+				expect(submissionContainerElement.dueDate).toEqual(content.dueDate);
+			});
+
+			it('should persist the element', async () => {
+				const { submissionContainerElement, content, card } = setup();
+
+				await service.update(submissionContainerElement, content);
+
+				expect(boardDoRepo.save).toHaveBeenCalledWith(submissionContainerElement, card);
 			});
 		});
 	});
