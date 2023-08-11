@@ -18,7 +18,7 @@ export class TldrawGateway implements OnGatewayInit, OnGatewayConnection {
 	}
 
 	handleConnection(client: WebSocket, request: Request) {
-		const docName = request.url.slice(1).split('?')[0];
+		const docName = request.url.slice(1).split('?')[0].replace('tldraw-server/', '');
 
 		if (docName.length > 0) {
 			setupWSConnection(client, docName);
