@@ -17,6 +17,7 @@ import { ToolLaunchController } from './tool-launch/controller/tool-launch.contr
 import { ToolLaunchUc } from './tool-launch/uc';
 import { ToolModule } from './tool.module';
 import { ToolPermissionHelperModule } from './common/tool-permission-helper.module';
+import { ExternalToolConfigurationService } from './external-tool/service';
 
 @Module({
 	imports: [
@@ -39,6 +40,7 @@ import { ToolPermissionHelperModule } from './common/tool-permission-helper.modu
 		LtiToolRepo,
 		ExternalToolUc,
 		ExternalToolConfigurationUc,
+		ExternalToolConfigurationService,
 		ExternalToolRequestMapper,
 		ExternalToolResponseMapper,
 		SchoolExternalToolUc,

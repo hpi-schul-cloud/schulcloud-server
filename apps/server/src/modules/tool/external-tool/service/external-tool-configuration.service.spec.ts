@@ -55,7 +55,7 @@ describe('ExternalToolConfigurationService', () => {
 			it('should filter out hidden tools', () => {
 				const { externalToolsPage, toolIdsInUse } = setup();
 
-				const result:  = service.filterForAvailableTools(externalToolsPage, toolIdsInUse);
+				const result = service.filterForAvailableTools(externalToolsPage, toolIdsInUse);
 
 				expect(result.some((tool) => tool.id === 'usedToolId')).toBe(false);
 			});

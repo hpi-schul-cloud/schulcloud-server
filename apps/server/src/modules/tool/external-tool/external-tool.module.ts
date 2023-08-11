@@ -12,9 +12,10 @@ import {
 	ExternalToolVersionService,
 } from './service';
 import { CommonToolModule } from '../common';
+import { ToolConfigModule } from '../tool-config.module';
 
 @Module({
-	imports: [CommonToolModule, LoggerModule, OauthProviderServiceModule, EncryptionModule],
+	imports: [CommonToolModule, LoggerModule, OauthProviderServiceModule, EncryptionModule, ToolConfigModule],
 	providers: [
 		ExternalToolService,
 		ExternalToolServiceMapper,
@@ -24,6 +25,11 @@ import { CommonToolModule } from '../common';
 		ExternalToolConfigurationService,
 		ExternalToolRepo,
 	],
-	exports: [ExternalToolService, ExternalToolValidationService, ExternalToolVersionService],
+	exports: [
+		ExternalToolService,
+		ExternalToolValidationService,
+		ExternalToolVersionService,
+		ExternalToolConfigurationService,
+	],
 })
 export class ExternalToolModule {}
