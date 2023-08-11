@@ -74,7 +74,7 @@ describe('TldrawGateway', () => {
 		expect(closeConSpy).toHaveBeenCalled();
 
 		ws.close();
-		sendSpy.mockReset();
+		sendSpy.mockRestore();
 	});
 
 	it('should close connection if websocket has ready state different than 0 or 1', async () => {
@@ -92,8 +92,8 @@ describe('TldrawGateway', () => {
 		expect(sendSpy).toHaveBeenCalledTimes(1);
 		expect(closeConSpy).toHaveBeenCalled();
 
-		closeConSpy.mockReset();
-		sendSpy.mockReset();
+		closeConSpy.mockRestore();
+		sendSpy.mockRestore();
 	});
 
 	it('update handler check if send was called', async () => {
@@ -114,7 +114,7 @@ describe('TldrawGateway', () => {
 		expect(sendSpy).toHaveBeenCalled();
 
 		ws.close();
-		sendSpy.mockReset();
+		sendSpy.mockRestore();
 	});
 
 	it('awareness change handler testing', async () => {
@@ -163,10 +163,10 @@ describe('TldrawGateway', () => {
 		expect(sendSpy).toBeCalled();
 
 		ws.close();
-		sendSpy.mockReset();
+		sendSpy.mockRestore();
 	});
 
-	it('should not call send method when received empty message', async () => {
+	it('should call send method when received message of type SYNC', async () => {
 		await app.init();
 
 		ws = new WebSocket(wsUrl);
@@ -174,7 +174,8 @@ describe('TldrawGateway', () => {
 			ws.on('open', resolve);
 		});
 
-		jest.spyOn(SyncProtocols, 'readSyncMessage').mockReturnValue(0);
+		jest.spyOn(SyncProtocols, 'readSyncMessage').mockReturnValueOnce(1);
+		// jest.spyOn(encoding, 'length').mockReturnValue(2);
 		const sendSpy = jest.spyOn(Utils, 'send');
 		const doc = new WSSharedDoc('TEST');
 		const encoder = encoding.createEncoder();
@@ -186,6 +187,28 @@ describe('TldrawGateway', () => {
 		expect(sendSpy).toHaveBeenCalledTimes(0);
 
 		ws.close();
-		sendSpy.mockReset();
+		sendSpy.mockRestore();
+	});
+
+	it('should throw error when trying to close already closed connection', async () => {
+		await app.init();
+
+		ws = new WebSocket(wsUrl);
+		await new Promise((resolve) => {
+			ws.on('open', resolve);
+		});
+
+		jest.spyOn(ws, 'close').mockImplementationOnce(() => {
+			throw new Error('some error');
+		});
+
+		try {
+			const doc: { conns: Map<WebSocket, Set<number>> } = { conns: new Map() };
+			Utils.closeConn(doc as WSSharedDoc, ws);
+		} catch (err) {
+			expect(err).toBeDefined();
+		}
+
+		ws.close();
 	});
 });
