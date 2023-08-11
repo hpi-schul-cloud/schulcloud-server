@@ -2,9 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { EntityId, IFindOptions, Page, Permission, User } from '@shared/domain';
 import { AuthorizationService } from '@src/modules/authorization';
 import { ExternalToolSearchQuery } from '../../common/interface';
+import { ExternalTool, ExternalToolConfig } from '../domain';
+import { ExternalToolLogo } from '../domain/external-tool-logo';
+import { ExternalToolLogoNotFoundLoggableException } from '../loggable';
 import { ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
-import { ExternalToolConfig, ExternalTool } from '../domain';
+
+const contentTypeDetector: Record<string, string> = {
+	ffd8ffe0: 'image/jpeg',
+	ffd8ffe1: 'image/jpeg',
+	'89504e47': 'image/png',
+	'47494638': 'image/gif',
+};
 
 @Injectable()
 export class ExternalToolUc {
@@ -16,17 +25,21 @@ export class ExternalToolUc {
 
 	async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
 		const externalTool = new ExternalTool({ ...externalToolCreate });
+		externalTool.logo = await this.fetchLogo(externalTool);
 
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 		await this.toolValidationService.validateCreate(externalTool);
 
-		const tool: Promise<ExternalTool> = this.externalToolService.createExternalTool(externalTool);
+		const tool: ExternalTool = await this.externalToolService.createExternalTool(externalTool);
 
 		return tool;
 	}
 
 	async updateExternalTool(userId: EntityId, toolId: string, externalTool: ExternalToolUpdate): Promise<ExternalTool> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+
+		externalTool.logo = await this.fetchLogo(externalTool);
+
 		await this.toolValidationService.validateUpdate(toolId, externalTool);
 
 		const loaded: ExternalTool = await this.externalToolService.findExternalToolById(toolId);
@@ -38,8 +51,21 @@ export class ExternalToolUc {
 			version: loaded.version,
 		});
 
-		const saved = await this.externalToolService.updateExternalTool(toUpdate, loaded);
+		const saved: ExternalTool = await this.externalToolService.updateExternalTool(toUpdate, loaded);
+
 		return saved;
+	}
+
+	private async fetchLogo(externalTool: Partial<ExternalTool>): Promise<string | undefined> {
+		if (externalTool.logoUrl) {
+			const base64Logo: string = await this.externalToolService.fetchBase64Logo(externalTool.logoUrl);
+
+			if (base64Logo) {
+				return base64Logo;
+			}
+		}
+
+		return undefined;
 	}
 
 	async findExternalTool(
@@ -70,5 +96,30 @@ export class ExternalToolUc {
 	private async ensurePermission(userId: EntityId, permission: Permission) {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [permission]);
+	}
+
+	async getExternalToolBinaryLogo(toolId: EntityId): Promise<ExternalToolLogo> {
+		const tool: ExternalTool = await this.externalToolService.findExternalToolById(toolId);
+
+		if (!tool.logo) {
+			throw new ExternalToolLogoNotFoundLoggableException(toolId);
+		}
+
+		const logoBinaryData: Buffer = Buffer.from(tool.logo, 'base64');
+
+		const externalToolLogo: ExternalToolLogo = new ExternalToolLogo({
+			contentType: this.detectContentType(logoBinaryData),
+			logo: logoBinaryData,
+		});
+
+		return externalToolLogo;
+	}
+
+	private detectContentType(imageBuffer: Buffer): string {
+		const imageSignature: string = imageBuffer.toString('hex', 0, 4);
+
+		const contentType: string = contentTypeDetector[imageSignature] || 'application/octet-stream';
+
+		return contentType;
 	}
 }

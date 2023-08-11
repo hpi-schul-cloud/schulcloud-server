@@ -12,7 +12,7 @@ export class FileRecordParams {
 	@IsMongoId()
 	parentId!: EntityId;
 
-	@ApiProperty({ enum: FileRecordParentType })
+	@ApiProperty({ enum: FileRecordParentType, enumName: 'FileRecordParentType' })
 	@IsEnum(FileRecordParentType)
 	parentType!: FileRecordParentType;
 }
