@@ -9,7 +9,7 @@ import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
-import { createPreviewFilePath, createPreviewNameHash } from '../helper';
+import { createPreviewDirectoryPath, createPreviewFilePath, createPreviewNameHash } from '../helper';
 import { TestHelper } from '../helper/test-helper';
 import { PreviewHeight, PreviewWidth } from '../interface';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
@@ -739,6 +739,60 @@ describe('PreviewService', () => {
 						previewService.getPreview(fileRecord, downloadParams, previewParams, bytesRange)
 					).rejects.toThrowError(error);
 				});
+			});
+		});
+	});
+
+	describe('deletePreviews', () => {
+		describe('WHEN deleteDirectory deletes successfully', () => {
+			const setup = () => {
+				const { fileRecord } = buildFileRecordWithParams('image/png');
+				const previewParams = {
+					...defaultPreviewParams,
+				};
+				const format = previewParams.outputFormat.split('/')[1];
+				const directoryPath = createPreviewDirectoryPath(fileRecord.schoolId, fileRecord.id);
+
+				return {
+					fileRecord,
+					previewParams,
+					format,
+					directoryPath,
+				};
+			};
+
+			it('calls deleteDirectory with correct params', async () => {
+				const { fileRecord, directoryPath } = setup();
+
+				await previewService.deletePreviews([fileRecord]);
+
+				expect(s3ClientAdapter.deleteDirectory).toHaveBeenCalledWith(directoryPath);
+			});
+		});
+
+		describe('WHEN deleteDirectory throws error', () => {
+			const setup = () => {
+				const { fileRecord } = buildFileRecordWithParams('image/png');
+				const previewParams = {
+					...defaultPreviewParams,
+				};
+				const format = previewParams.outputFormat.split('/')[1];
+
+				const error = new Error('testError');
+				s3ClientAdapter.deleteDirectory.mockRejectedValueOnce(error);
+
+				return {
+					fileRecord,
+					previewParams,
+					format,
+					error,
+				};
+			};
+
+			it('does not pass error', async () => {
+				const { fileRecord } = setup();
+
+				await previewService.deletePreviews([fileRecord]);
 			});
 		});
 	});
