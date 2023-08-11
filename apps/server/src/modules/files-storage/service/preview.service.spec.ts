@@ -34,7 +34,7 @@ const buildFileRecordWithParams = (mimeType: string, scanStatus?: ScanStatus) =>
 	const fileRecord = fileRecordFactory.buildWithId({
 		parentId,
 		schoolId: parentSchoolId,
-		name: 'text.txt',
+		name: 'text.png',
 		mimeType,
 	});
 	fileRecord.securityCheck.status = scanStatus ?? ScanStatus.VERIFIED;
@@ -102,19 +102,18 @@ describe('FilesStorageService download method', () => {
 	describe('getPreview is called', () => {
 		describe('WHEN preview is possbile', () => {
 			describe('WHEN forceUpdate is true', () => {
-				describe('WHEN width and height are not set', () => {
+				describe('WHEN width, height and outputformat are not set', () => {
 					describe('WHEN download of original and preview file is successfull', () => {
 						const setup = () => {
 							const bytesRange = 'bytes=0-100';
 							const orignalMimeType = 'image/png';
-							const previewMimeType = 'image/webp';
-							const format = previewMimeType.split('/')[1];
+							const format = orignalMimeType.split('/')[1];
 							const { fileRecord } = buildFileRecordWithParams(orignalMimeType);
 							const downloadParams = {
 								fileRecordId: fileRecord.id,
 								fileName: fileRecord.name,
 							};
-							const previewParams = { outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP, forceUpdate: true };
+							const previewParams = { forceUpdate: true };
 
 							const originalFileResponse = TestHelper.createFileResponse();
 							fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
@@ -126,8 +125,8 @@ describe('FilesStorageService download method', () => {
 							const name = `${fileNameWithoutExtension}.${format}`;
 							const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
-							const hash = createPreviewNameHash(fileRecord.id, { outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP });
-							const previewFileDto = FileDtoBuilder.build(hash, previewFile.data, previewMimeType);
+							const hash = createPreviewNameHash(fileRecord.id, {});
+							const previewFileDto = FileDtoBuilder.build(hash, previewFile.data, orignalMimeType);
 							const previewPath = createPreviewPath(fileRecord.getSchoolId(), hash);
 							streamMock.mockClear();
 							streamMock.mockReturnValueOnce(previewFileDto.data);
@@ -196,7 +195,7 @@ describe('FilesStorageService download method', () => {
 								fileRecordId: fileRecord.id,
 								fileName: fileRecord.name,
 							};
-							const previewParams = { ...defaultPreviewParams, forceUpdate: true };
+							const previewParams = { forceUpdate: true };
 
 							const error = new Error('testError');
 							fileStorageService.download.mockRejectedValueOnce(error);
@@ -221,7 +220,7 @@ describe('FilesStorageService download method', () => {
 								fileRecordId: fileRecord.id,
 								fileName: fileRecord.name,
 							};
-							const previewParams = { ...defaultPreviewParams, forceUpdate: true };
+							const previewParams = { forceUpdate: true };
 
 							const originalFileResponse = TestHelper.createFileResponse();
 							fileStorageService.download.mockResolvedValueOnce(originalFileResponse);
@@ -249,7 +248,7 @@ describe('FilesStorageService download method', () => {
 								fileRecordId: fileRecord.id,
 								fileName: fileRecord.name,
 							};
-							const previewParams = { ...defaultPreviewParams, forceUpdate: true };
+							const previewParams = { forceUpdate: true };
 
 							const originalFileResponse = TestHelper.createFileResponse();
 							fileStorageService.download.mockResolvedValueOnce(originalFileResponse);

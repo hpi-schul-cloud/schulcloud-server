@@ -106,9 +106,10 @@ export class CopyFilesOfParentPayload {
 }
 
 export class PreviewParams {
-	@ApiProperty({ enum: PreviewOutputMimeTypes })
+	@ApiPropertyOptional({ enum: PreviewOutputMimeTypes })
+	@IsOptional()
 	@IsEnum(PreviewOutputMimeTypes)
-	outputFormat!: PreviewOutputMimeTypes;
+	outputFormat?: PreviewOutputMimeTypes;
 
 	@ApiPropertyOptional({ enum: PreviewWidth })
 	@IsOptional()
