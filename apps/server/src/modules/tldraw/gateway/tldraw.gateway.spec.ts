@@ -20,10 +20,13 @@ describe('TldrawGateway', () => {
 	let ws: WebSocket;
 
 	const gatewayPort = 3346;
+	const wsUrl = `ws://localhost:${gatewayPort}`;
 	const testMessage =
 		'AZQBAaCbuLANBIsBeyJ0ZFVzZXIiOnsiaWQiOiJkNGIxZThmYi0yMWUwLTQ3ZDAtMDI0Y' +
 		'S0zZGEwYjMzNjQ3MjIiLCJjb2xvciI6IiNGMDRGODgiLCJwb2ludCI6WzAsMF0sInNlbGVjdGVkSWRzIjpbXSwiYWN' +
 		'0aXZlU2hhcGVzIjpbXSwic2Vzc2lvbiI6ZmFsc2V9fQ==';
+
+	jest.useFakeTimers();
 
 	beforeEach(async () => {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
@@ -42,8 +45,7 @@ describe('TldrawGateway', () => {
 	});
 
 	it('should gateway properties be defined', async () => {
-		jest.spyOn(gateway, 'afterInit').mockImplementationOnce(() => {});
-		await app.listen(3000);
+		await app.init();
 
 		expect(gateway).toBeDefined();
 		expect(gateway.configService).toBeDefined();
@@ -54,10 +56,9 @@ describe('TldrawGateway', () => {
 	});
 
 	it('should throw error for send message -> close connection (due to not connected client socket to WS) ', async () => {
-		jest.spyOn(gateway, 'afterInit').mockImplementationOnce(() => {});
-		await app.listen(3000);
+		await app.init();
 
-		ws = new WebSocket(`ws://localhost:${gatewayPort}`);
+		ws = new WebSocket(wsUrl);
 		await new Promise((resolve) => {
 			ws.on('open', resolve);
 		});
@@ -67,19 +68,19 @@ describe('TldrawGateway', () => {
 		const doc: { conns: Map<WebSocket, Set<number>> } = { conns: new Map() };
 		const byteArray = new TextEncoder().encode(testMessage);
 		Utils.send(doc as WSSharedDoc, ws, byteArray);
+
 		expect(sendSpy).toThrow();
 		expect(sendSpy).toHaveBeenCalledWith(doc, ws, byteArray);
 		expect(closeConSpy).toHaveBeenCalled();
+
 		ws.close();
-		// closeConSpy.mockClear();
-		sendSpy.mockClear();
+		sendSpy.mockReset();
 	});
 
 	it('should close connection if websocket has ready state different than 0 or 1', async () => {
-		jest.spyOn(gateway, 'afterInit').mockImplementationOnce(() => {});
-		await app.listen(3000);
+		await app.init();
 
-		ws = new WebSocket(`ws://localhost:${gatewayPort}`);
+		ws = new WebSocket(wsUrl);
 		await new Promise((resolve) => {
 			ws.on('open', resolve);
 		});
@@ -95,16 +96,16 @@ describe('TldrawGateway', () => {
 		expect(sendSpy).toHaveBeenCalledWith(doc, socketMock, byteArray);
 		expect(sendSpy).toHaveBeenCalledTimes(1);
 		expect(closeConSpy).toHaveBeenCalled();
+
 		ws.close();
-		closeConSpy.mockClear();
-		sendSpy.mockClear();
+		closeConSpy.mockReset();
+		sendSpy.mockReset();
 	});
 
 	it('update handler check if send was called', async () => {
-		jest.spyOn(gateway, 'afterInit').mockImplementationOnce(() => {});
-		await app.listen(3000);
+		await app.init();
 
-		ws = new WebSocket(`ws://localhost:${gatewayPort}`);
+		ws = new WebSocket(wsUrl);
 		await new Promise((resolve) => {
 			ws.on('open', resolve);
 		});
@@ -117,15 +118,15 @@ describe('TldrawGateway', () => {
 		Utils.updateHandler(byteArray, {}, doc as WSSharedDoc);
 
 		expect(sendSpy).toHaveBeenCalled();
+
 		ws.close();
-		sendSpy.mockClear();
+		sendSpy.mockReset();
 	});
 
 	it('awareness change handler testing', async () => {
-		jest.useFakeTimers();
-		await app.listen(3000);
+		await app.init();
 
-		ws = new WebSocket(`ws://localhost:${gatewayPort}`);
+		ws = new WebSocket(wsUrl);
 		await new Promise((resolve) => {
 			ws.on('open', resolve);
 		});
@@ -166,14 +167,15 @@ describe('TldrawGateway', () => {
 		expect(mockIDs.has(3)).toBe(true);
 		expect(mockIDs.has(2)).toBe(false);
 		expect(sendSpy).toBeCalled();
+
 		ws.close();
-		sendSpy.mockClear();
+		sendSpy.mockReset();
 	});
 
 	it('should not call send method when received empty message', async () => {
-		await app.listen(3000);
+		await app.init();
 
-		ws = new WebSocket(`ws://localhost:${gatewayPort}`);
+		ws = new WebSocket(wsUrl);
 		await new Promise((resolve) => {
 			ws.on('open', resolve);
 		});
@@ -186,8 +188,10 @@ describe('TldrawGateway', () => {
 		encoding.writeVarUint(encoder, 1);
 		const newMessageByteArray = encoding.toUint8Array(encoder);
 		Utils.messageHandler(ws, doc, newMessageByteArray);
+
 		expect(sendSpy).toHaveBeenCalledTimes(0);
+
 		ws.close();
-		sendSpy.mockClear();
+		sendSpy.mockReset();
 	});
 });

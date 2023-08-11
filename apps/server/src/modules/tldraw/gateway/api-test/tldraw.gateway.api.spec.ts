@@ -10,15 +10,17 @@ import { config } from '@src/modules/tldraw/config';
 import * as Utils from '../../utils/utils';
 import { TldrawGateway } from '../tldraw.gateway';
 
-const message =
-	'AZQBAaCbuLANBIsBeyJ0ZFVzZXIiOnsiaWQiOiJkNGIxZThmYi0yMWUwLTQ3ZDAtMDI0Y' +
-	'S0zZGEwYjMzNjQ3MjIiLCJjb2xvciI6IiNGMDRGODgiLCJwb2ludCI6WzAsMF0sInNlbGVjdGVkSWRzIjpbXSwiYWN' +
-	'0aXZlU2hhcGVzIjpbXSwic2Vzc2lvbiI6ZmFsc2V9fQ==';
-
 describe('WebSocketGateway (WsAdapter)', () => {
-	let ws: WebSocket;
 	let app: INestApplication;
 	let gateway: TldrawGateway;
+	let ws: WebSocket;
+
+	const gatewayPort = 3346;
+	const wsUrl = `ws://localhost:${gatewayPort}`;
+	const testMessage =
+		'AZQBAaCbuLANBIsBeyJ0ZFVzZXIiOnsiaWQiOiJkNGIxZThmYi0yMWUwLTQ3ZDAtMDI0Y' +
+		'S0zZGEwYjMzNjQ3MjIiLCJjb2xvciI6IiNGMDRGODgiLCJwb2ludCI6WzAsMF0sInNlbGVjdGVkSWRzIjpbXSwiYWN' +
+		'0aXZlU2hhcGVzIjpbXSwic2Vzc2lvbiI6ZmFsc2V9fQ==';
 
 	const delay = (ms: number) =>
 		new Promise((resolve) => {
@@ -31,11 +33,9 @@ describe('WebSocketGateway (WsAdapter)', () => {
 			imports,
 			providers: [TldrawGateway],
 		}).compile();
-		const testingApp = testingModule.createNestApplication();
-		testingApp.useWebSocketAdapter(new WsAdapter(testingApp));
-
 		gateway = testingModule.get<TldrawGateway>(TldrawGateway);
-		app = testingApp;
+		app = testingModule.createNestApplication();
+		app.useWebSocketAdapter(new WsAdapter(app));
 		await app.init();
 	});
 
@@ -44,93 +44,93 @@ describe('WebSocketGateway (WsAdapter)', () => {
 	});
 
 	it(`should handle connection and data transfer`, async () => {
-		ws = new WebSocket(`ws://localhost:3346/TEST1`);
 		const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
-
+		const reduceMock = jest.spyOn(Uint8Array.prototype, 'reduce').mockReturnValue(1);
+		ws = new WebSocket(`${wsUrl}/TEST1`);
 		await new Promise((resolve) => {
 			ws.on('open', resolve);
 		});
 
-		const byteArray = new TextEncoder().encode(message);
+		const byteArray = new TextEncoder().encode(testMessage);
 		const { buffer } = byteArray;
-
 		ws.send(buffer);
 
 		expect(handleConnectionSpy).toHaveBeenCalled();
 		expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
 
-		handleConnectionSpy.mockReset();
-		await delay(20);
+		await delay(200);
 		ws.close();
+		handleConnectionSpy.mockReset();
+		reduceMock.mockReset();
 	});
 
 	it(`should refuse connection if there is no docName`, async () => {
-		ws = new WebSocket(`ws://localhost:3346/`);
-		const utilsSpy = jest.spyOn(Utils, 'messageHandler').mockReturnValue();
-		jest.mock('../../utils/utils');
 		const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
+		const utilsSpy = jest.spyOn(Utils, 'messageHandler').mockReturnValue();
 
+		ws = new WebSocket(wsUrl);
 		await new Promise((resolve) => {
 			ws.on('open', resolve);
 		});
 
-		const byteArray = new TextEncoder().encode(message);
+		const byteArray = new TextEncoder().encode(testMessage);
 		const { buffer } = byteArray;
-
 		ws.send(buffer);
 
 		expect(gateway.server).toBeDefined();
 		expect(handleConnectionSpy).toHaveBeenCalled();
 		expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
 		expect(utilsSpy).not.toHaveBeenCalled();
+
+		await delay(200);
+		ws.close();
 		handleConnectionSpy.mockReset();
 		utilsSpy.mockReset();
-		await delay(20);
-		ws.close();
 	});
 
 	it(`should handle 2 connections at same doc and data transfer`, async () => {
-		ws = new WebSocket(`ws://localhost:3346/TEST2`);
-		const ws2 = new WebSocket(`ws://localhost:3346/TEST2`);
 		const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
 
+		ws = new WebSocket(`${wsUrl}/TEST2`);
+		const ws2 = new WebSocket(`${wsUrl}/TEST2`);
 		await new Promise((resolve) => {
 			ws.on('open', resolve);
 		});
-
 		await new Promise((resolve) => {
 			ws2.on('open', resolve);
 		});
-		const byteArray = new TextEncoder().encode(message);
-		const { buffer } = byteArray;
 
+		const byteArray = new TextEncoder().encode(testMessage);
+		const { buffer } = byteArray;
 		ws.send(buffer);
 		ws2.send(buffer);
 
 		expect(handleConnectionSpy).toHaveBeenCalled();
 		expect(handleConnectionSpy).toHaveBeenCalledTimes(2);
-		await delay(20);
-		ws2.close();
+
+		await delay(200);
 		ws.close();
+		ws2.close();
+		handleConnectionSpy.mockReset();
 	});
 
 	it(`check if client will receive message`, async () => {
-		ws = new WebSocket(`ws://localhost:3346/TEST3`);
-		jest.mock('../../utils/utils');
-
-		const byteArray = new TextEncoder().encode(message);
-		const { buffer } = byteArray;
-
-		ws.on('open', () => {
-			ws.send(buffer, () => {});
+		ws = new WebSocket(`${wsUrl}/TEST3`);
+		await new Promise((resolve) => {
+			ws.on('open', resolve);
 		});
+
+		const byteArray = new TextEncoder().encode(testMessage);
+		const { buffer } = byteArray;
+		ws.send(buffer, () => {});
+
 		gateway.server.on('connection', (client) => {
 			client.on('message', (payload) => {
 				expect(payload).toBeInstanceOf(Buffer);
 			});
 		});
 
-		await delay(20);
+		await delay(200);
 		ws.close();
 	});
 });
