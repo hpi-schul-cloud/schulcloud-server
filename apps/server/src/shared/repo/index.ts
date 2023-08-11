@@ -7,7 +7,6 @@
 export * from './base.do.repo';
 export * from './base.repo';
 export * from './board';
-export * from './card';
 export * from './course';
 export * from './coursegroup';
 export * from './dashboard';

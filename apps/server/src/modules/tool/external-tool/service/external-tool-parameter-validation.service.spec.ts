@@ -272,6 +272,110 @@ describe('ExternalToolParameterValidationService', () => {
 				});
 			});
 
+			describe('when the type is boolean', () => {
+				describe('when default value is not matching the criteria', () => {
+					const setup = () => {
+						const externalTool: ExternalTool = externalToolFactory
+							.withCustomParameters(1, {
+								scope: CustomParameterScope.GLOBAL,
+								type: CustomParameterType.BOOLEAN,
+								default: 'ttt',
+							})
+							.build();
+
+						externalToolService.findExternalToolByName.mockResolvedValue(null);
+
+						return {
+							externalTool,
+						};
+					};
+
+					it('should throw an exception', async () => {
+						const { externalTool } = setup();
+
+						const result: Promise<void> = service.validateCommon(externalTool);
+
+						await expect(result).rejects.toThrow(
+							new ValidationError(
+								`tool_param_boolean_invalid: The tool ${externalTool.name || ''} does not contain a valid boolean.`
+							)
+						);
+					});
+				});
+
+				describe('when tool has no custom parameters', () => {
+					const setup = () => {
+						const externalTool: ExternalTool = externalToolFactory.build({ parameters: [] });
+
+						externalToolService.findExternalToolByName.mockResolvedValue(null);
+
+						return {
+							externalTool,
+						};
+					};
+
+					it('should pass', async () => {
+						const { externalTool } = setup();
+
+						const result: Promise<void> = service.validateCommon(externalTool);
+
+						await expect(result).resolves.not.toThrow();
+					});
+				});
+
+				describe('when default value is matching the criteria', () => {
+					const setup = () => {
+						const externalTool: ExternalTool = externalToolFactory
+							.withCustomParameters(1, {
+								scope: CustomParameterScope.GLOBAL,
+								type: CustomParameterType.BOOLEAN,
+								default: 'true',
+							})
+							.build();
+
+						externalToolService.findExternalToolByName.mockResolvedValue(null);
+
+						return {
+							externalTool,
+						};
+					};
+
+					it('should pass', async () => {
+						const { externalTool } = setup();
+
+						const result: Promise<void> = service.validateCommon(externalTool);
+
+						await expect(result).resolves.not.toThrow();
+					});
+				});
+
+				describe('when default value is not defined', () => {
+					const setup = () => {
+						const externalTool: ExternalTool = externalToolFactory
+							.withCustomParameters(1, {
+								scope: CustomParameterScope.SCHOOL,
+								type: CustomParameterType.BOOLEAN,
+								default: undefined,
+							})
+							.build();
+
+						externalToolService.findExternalToolByName.mockResolvedValue(null);
+
+						return {
+							externalTool,
+						};
+					};
+
+					it('should pass', async () => {
+						const { externalTool } = setup();
+
+						const result: Promise<void> = service.validateCommon(externalTool);
+
+						await expect(result).resolves.not.toThrow();
+					});
+				});
+			});
+
 			describe('when the type is an auto type', () => {
 				const setup = () => {
 					const externalTool: ExternalTool = externalToolFactory
