@@ -1,7 +1,8 @@
-import i18next from 'i18next';
-import path from 'path';
 import { ITranslationFunction } from '@lumieducation/h5p-server';
+import i18next from 'i18next';
 import i18nextFsBackend from 'i18next-fs-backend';
+import path from 'path';
+import { translatorConfig } from '../h5p-editor.config';
 
 export const Translator = {
 	async translate() {
@@ -23,7 +24,7 @@ export const Translator = {
 				'server',
 				'storage-file-implementations',
 			],
-			preload: ['es', 'de', 'en', 'uk'],
+			preload: translatorConfig.AVAILABLE_LANGUAGES,
 		});
 
 		const translate: ITranslationFunction = (key, language) => translationFunction(key, { lng: language });
