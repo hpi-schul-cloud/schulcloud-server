@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { H5PContent } from './h5p-content.entity';
+import { H5PContent } from '../entity';
 
 @Injectable()
 export class H5PContentRepo extends BaseRepo<H5PContent> {

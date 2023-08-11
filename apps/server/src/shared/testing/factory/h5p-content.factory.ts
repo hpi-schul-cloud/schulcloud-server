@@ -1,4 +1,4 @@
-import { ContentMetadata, H5PContent } from '@src/modules/h5p-editor/contentStorage/h5p-content.entity';
+import { ContentMetadata, H5PContent } from '@src/modules/h5p-editor/entity';
 import { BaseFactory } from './base.factory';
 
 class H5PContentFactory extends BaseFactory<H5PContent, { metadata: ContentMetadata; content: unknown }> {}

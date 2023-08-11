@@ -18,7 +18,9 @@ describe('H5PEditor Controller (api)', () => {
 		const module = await Test.createTestingModule({
 			imports: [H5PEditorTestModule],
 		})
-			.overrideProvider(S3ClientAdapter)
+			.overrideProvider('S3ClientAdapter_Content')
+			.useValue(createMock<S3ClientAdapter>())
+			.overrideProvider('S3ClientAdapter_Libraries')
 			.useValue(createMock<S3ClientAdapter>())
 			.overrideProvider(H5PAjaxEndpoint)
 			.useValue(createMock<H5PAjaxEndpoint>())

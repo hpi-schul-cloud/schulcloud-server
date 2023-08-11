@@ -1,7 +1,7 @@
 import { H5PPlayer } from '@lumieducation/h5p-server';
 
-import { ContentStorage } from '../contentStorage/contentStorage';
-import { LibraryStorage } from '../libraryStorage/libraryStorage';
+import { ContentStorage } from './contentStorage.service';
+import { LibraryStorage } from './libraryStorage.service';
 import { h5pConfig, h5pUrlGenerator } from './config/h5p-service-config';
 
 export const H5PPlayerService = {

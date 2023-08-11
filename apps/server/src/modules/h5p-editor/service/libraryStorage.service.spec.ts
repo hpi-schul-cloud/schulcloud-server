@@ -8,9 +8,9 @@ import { ILibraryMetadata, ILibraryName } from '@lumieducation/h5p-server';
 import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 import { IGetFileResponse } from '@src/modules/files-storage/interface';
 
-import { LibraryRepo } from './library.repo';
-import { LibraryStorage } from './libraryStorage';
-import { FileMetadata, InstalledLibrary } from './library.entity';
+import { LibraryRepo } from '../repo/library.repo';
+import { LibraryStorage } from './libraryStorage.service';
+import { FileMetadata, InstalledLibrary } from '../entity/library.entity';
 
 async function readStream(stream: Readable): Promise<string> {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -37,14 +37,14 @@ describe('LibraryStorage', () => {
 					useValue: createMock<LibraryRepo>(),
 				},
 				{
-					provide: S3ClientAdapter,
+					provide: 'S3ClientAdapter_Libraries',
 					useValue: createMock<S3ClientAdapter>(),
 				},
 			],
 		}).compile();
 
 		storage = module.get(LibraryStorage);
-		s3ClientAdapter = module.get(S3ClientAdapter);
+		s3ClientAdapter = module.get('S3ClientAdapter_Libraries');
 		repo = module.get(LibraryRepo);
 	});
 

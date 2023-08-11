@@ -81,7 +81,9 @@ describe('H5PEditor Controller (api)', () => {
 					return true;
 				},
 			})
-			.overrideProvider(S3ClientAdapter)
+			.overrideProvider('S3ClientAdapter_Content')
+			.useValue(createMock<S3ClientAdapter>())
+			.overrideProvider('S3ClientAdapter_Libraries')
 			.useValue(createMock<S3ClientAdapter>())
 			.overrideProvider(H5PEditorUc)
 			.useValue(createMock<H5PEditorUc>())

@@ -8,18 +8,20 @@ import {
 	IUser,
 	LibraryName,
 	Permission,
-	streamToString,
 } from '@lumieducation/h5p-server';
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { FileDto } from '@src/modules/files-storage/dto';
 import { Readable } from 'stream';
 import { S3ClientAdapter } from '../../files-storage/client/s3-client.adapter';
-import { H5PContent } from './h5p-content.entity';
-import { H5PContentRepo } from './h5p-content.repo';
+import { H5PContent } from '../entity';
+import { H5PContentRepo } from '../repo';
 
 @Injectable()
 export class ContentStorage implements IContentStorage {
-	constructor(private readonly repo: H5PContentRepo, private readonly storageClient: S3ClientAdapter) {}
+	constructor(
+		private readonly repo: H5PContentRepo,
+		@Inject('S3ClientAdapter_Content') private readonly storageClient: S3ClientAdapter
+	) {}
 
 	public async addContent(
 		metadata: IContentMetadata,
@@ -254,7 +256,7 @@ export class ContentStorage implements IContentStorage {
 			throw new Error('COULD_NOT_CREATE_PATH');
 		}
 
-		const path = `h5p/${contentId}/`;
+		const path = `h5p-content/${contentId}/`;
 		return path;
 	}
 

@@ -1,5 +1,3 @@
-import path from 'node:path';
-import type { Readable } from 'stream';
 import {
 	LibraryName,
 	type IAdditionalLibraryMetadata,
@@ -9,18 +7,23 @@ import {
 	type ILibraryName,
 	type ILibraryStorage,
 } from '@lumieducation/h5p-server';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 import { FileDto } from '@src/modules/files-storage/dto';
-import { FileMetadata, InstalledLibrary } from './library.entity';
-import { LibraryRepo } from './library.repo';
+import path from 'node:path';
+import type { Readable } from 'stream';
+import { FileMetadata, InstalledLibrary } from '../entity/library.entity';
+import { LibraryRepo } from '../repo/library.repo';
 
 @Injectable()
 export class LibraryStorage implements ILibraryStorage {
 	/**
 	 * @param
 	 */
-	constructor(private readonly libraryRepo: LibraryRepo, private readonly s3Client: S3ClientAdapter) {}
+	constructor(
+		private readonly libraryRepo: LibraryRepo,
+		@Inject('S3ClientAdapter_Libraries') private readonly s3Client: S3ClientAdapter
+	) {}
 
 	/**
 	 * Checks if the filename is absolute or traverses outside the directory.
@@ -41,7 +44,7 @@ export class LibraryStorage implements ILibraryStorage {
 	 */
 	private getFilePath(library: ILibraryName, filename: string): string {
 		const uberName = LibraryName.toUberName(library);
-		const filePath = path.join(uberName, filename);
+		const filePath = `h5p-libraries/${uberName}/${filename}`;
 		return filePath;
 	}
 
@@ -354,11 +357,8 @@ export class LibraryStorage implements ILibraryStorage {
 	 */
 	public async listAddons(): Promise<ILibraryMetadata[]> {
 		const installedLibraryNames = await this.getInstalledLibraryNames();
-		console.log(installedLibraryNames);
 		const installedLibraries = await Promise.all(installedLibraryNames.map((addonName) => this.getLibrary(addonName)));
-		console.log(installedLibraries);
 		const addons = installedLibraries.filter((library) => library.addTo !== undefined);
-		console.log(addons);
 
 		return addons;
 	}

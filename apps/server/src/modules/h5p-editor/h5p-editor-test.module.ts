@@ -1,8 +1,5 @@
-import os from 'node:os';
-import path from 'node:path';
-
 import { DynamicModule, Module } from '@nestjs/common';
-import { Account, Role, School, SchoolYear, User } from '@shared/domain';
+import { ALL_ENTITIES } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
 import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
@@ -12,37 +9,23 @@ import { AuthenticationApiModule } from '@src/modules/authentication/authenticat
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { AuthorizationModule } from '@src/modules/authorization';
 
-import { ContentStorage } from './contentStorage/contentStorage';
+import { H5PContentRepo, TemporaryFileRepo, LibraryRepo } from './repo';
 import { H5PEditorController } from './controller';
-import { H5PEditorModule, createS3ClientAdapter } from './h5p-editor.module';
-import { LibraryStorage } from './libraryStorage/libraryStorage';
-import { H5PAjaxEndpointService, H5PEditorService, H5PPlayerService } from './service';
-import { TemporaryFileStorage } from './temporary-file-storage/temporary-file-storage';
-import { H5PEditorUc } from './uc/h5p.uc';
-import { S3ClientAdapter } from '../files-storage/client/s3-client.adapter';
-import { H5PContentRepo } from './contentStorage/h5p-content.repo';
-import { LibraryRepo } from './libraryStorage/library.repo';
-import { s3ConfigLibraries } from './s3-config';
-
-const storages = [
+import { s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
+import { createS3ClientAdapter, H5PEditorModule } from './h5p-editor.module';
+import {
+	H5PAjaxEndpointService,
+	H5PEditorService,
+	H5PPlayerService,
 	ContentStorage,
+	TemporaryFileStorage,
 	LibraryStorage,
-	{
-		provide: 'S3ClientAdapter_Libraries',
-		useFactory: createS3ClientAdapter,
-		inject: ['S3Config_Libraries', LegacyLogger],
-	},
-	LibraryRepo,
-	{
-		provide: 'S3Config_Libraries',
-		useValue: s3ConfigLibraries,
-	},
-	{ provide: TemporaryFileStorage, useValue: new TemporaryFileStorage(path.join(os.tmpdir(), '/h5p_temporary')) },
-];
+} from './service';
+import { H5PEditorUc } from './uc/h5p.uc';
 
 const imports = [
 	H5PEditorModule,
-	MongoMemoryDatabaseModule.forRoot({ entities: [Account, Role, School, SchoolYear, User] }),
+	MongoMemoryDatabaseModule.forRoot({ entities: [...ALL_ENTITIES] }),
 	AuthenticationApiModule,
 	AuthorizationModule,
 	AuthenticationModule,
@@ -56,9 +39,30 @@ const providers = [
 	H5PPlayerService,
 	H5PEditorService,
 	H5PAjaxEndpointService,
-	S3ClientAdapter,
 	H5PContentRepo,
-	...storages,
+	LibraryRepo,
+	TemporaryFileRepo,
+	ContentStorage,
+	LibraryStorage,
+	TemporaryFileStorage,
+	{
+		provide: 'S3Config_Content',
+		useValue: s3ConfigContent,
+	},
+	{
+		provide: 'S3Config_Libraries',
+		useValue: s3ConfigLibraries,
+	},
+	{
+		provide: 'S3ClientAdapter_Content',
+		useFactory: createS3ClientAdapter,
+		inject: ['S3Config_Content', LegacyLogger],
+	},
+	{
+		provide: 'S3ClientAdapter_Libraries',
+		useFactory: createS3ClientAdapter,
+		inject: ['S3Config_Libraries', LegacyLogger],
+	},
 ];
 
 @Module({
