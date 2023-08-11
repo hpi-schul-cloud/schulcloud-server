@@ -80,11 +80,6 @@ describe('TldrawGateway', () => {
 	it('should close connection if websocket has ready state different than 0 or 1', async () => {
 		await app.init();
 
-		ws = new WebSocket(wsUrl);
-		await new Promise((resolve) => {
-			ws.on('open', resolve);
-		});
-
 		const closeConSpy = jest.spyOn(Utils, 'closeConn');
 		const sendSpy = jest.spyOn(Utils, 'send');
 		const doc: { conns: Map<WebSocket, Set<number>> } = { conns: new Map() };
@@ -97,7 +92,6 @@ describe('TldrawGateway', () => {
 		expect(sendSpy).toHaveBeenCalledTimes(1);
 		expect(closeConSpy).toHaveBeenCalled();
 
-		ws.close();
 		closeConSpy.mockReset();
 		sendSpy.mockReset();
 	});
