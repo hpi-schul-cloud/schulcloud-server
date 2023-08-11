@@ -8,18 +8,19 @@ import { LegacyLogger, LoggerModule } from '@src/core/logger';
 import { AuthenticationApiModule } from '@src/modules/authentication/authentication-api.module';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { AuthorizationModule } from '@src/modules/authorization';
-import { UserRepo } from '@shared/repo';
 
-import { ContentStorage } from './contentStorage/contentStorage';
-import { H5PContentRepo } from './contentStorage/h5p-content.repo';
+import { H5PContentRepo, TemporaryFileRepo, LibraryRepo } from './repo';
 import { H5PEditorController } from './controller';
 import { s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
-import { H5PEditorModule, createS3ClientAdapter } from './h5p-editor.module';
-import { LibraryRepo } from './libraryStorage/library.repo';
-import { LibraryStorage } from './libraryStorage/libraryStorage';
-import { H5PAjaxEndpointService, H5PEditorService, H5PPlayerService } from './service';
-import { TemporaryFileStorage } from './temporary-file-storage/temporary-file-storage';
-import { TemporaryFileRepo } from './temporary-file-storage/temporary-file.repo';
+import { createS3ClientAdapter, H5PEditorModule } from './h5p-editor.module';
+import {
+	H5PAjaxEndpointService,
+	H5PEditorService,
+	H5PPlayerService,
+	ContentStorage,
+	TemporaryFileStorage,
+	LibraryStorage,
+} from './service';
 import { H5PEditorUc } from './uc/h5p.uc';
 
 const imports = [
@@ -62,7 +63,6 @@ const providers = [
 		useFactory: createS3ClientAdapter,
 		inject: ['S3Config_Libraries', LegacyLogger],
 	},
-	UserRepo,
 ];
 
 @Module({

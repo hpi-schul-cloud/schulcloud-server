@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, h5pContentFactory } from '@shared/testing';
-import { H5PContent } from './h5p-content.entity';
+import { H5PContent } from '../entity';
 import { H5PContentRepo } from './h5p-content.repo';
 
 const contentSortFunction = ({ id: aId }: H5PContent, { id: bId }: H5PContent) => aId.localeCompare(bId);

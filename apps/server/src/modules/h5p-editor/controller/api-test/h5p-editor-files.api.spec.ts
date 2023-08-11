@@ -7,10 +7,8 @@ import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 import { H5PEditorTestModule } from '@src/modules/h5p-editor/h5p-editor-test.module';
 import { Readable } from 'stream';
-import { ContentStorage } from '../../contentStorage/contentStorage';
-import { LibraryStorage } from '../../libraryStorage/libraryStorage';
-import { TemporaryFileStorage } from '../../temporary-file-storage/temporary-file-storage';
-import { TemporaryFile } from '../../temporary-file-storage/temporary-file.entity';
+import { LibraryStorage, TemporaryFileStorage, ContentStorage } from '../../service';
+import { TemporaryFile } from '../../entity';
 
 describe('H5PEditor Controller (api)', () => {
 	let app: INestApplication;
@@ -207,13 +205,13 @@ describe('H5PEditor Controller (api)', () => {
 					content: 'File Content',
 				};
 
-				const mockTempFile = new TemporaryFile(
-					mockFile.name,
-					studentUser.id,
-					new Date(),
-					new Date(),
-					mockFile.content.length
-				);
+				const mockTempFile = new TemporaryFile({
+					filename: mockFile.name,
+					ownedByUserId: studentUser.id,
+					expiresAt: new Date(),
+					birthtime: new Date(),
+					size: mockFile.content.length,
+				});
 
 				return { loggedInClient, mockFile, mockTempFile };
 			};

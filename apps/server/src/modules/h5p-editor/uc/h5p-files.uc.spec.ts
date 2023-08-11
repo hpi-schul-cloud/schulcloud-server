@@ -4,13 +4,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { Request } from 'express';
 import { Readable } from 'stream';
-import { UserRepo } from '@shared/repo';
 import { H5PEditorUc } from './h5p.uc';
-import { ContentStorage } from '../contentStorage/contentStorage';
-import { LibraryStorage } from '../libraryStorage/libraryStorage';
-import { TemporaryFileStorage } from '../temporary-file-storage/temporary-file-storage';
-import { H5PAjaxEndpointService, H5PEditorService, H5PPlayerService } from '../service';
-import { TemporaryFile } from '../temporary-file-storage/temporary-file.entity';
+import { LibraryStorage, ContentStorage, H5PAjaxEndpointService, H5PEditorService, H5PPlayerService } from '../service';
+import { TemporaryFileStorage } from '../service/temporary-file-storage.service';
+import { TemporaryFile } from '../entity/temporary-file.entity';
 
 describe('H5P Files', () => {
 	let module: TestingModule;
@@ -37,10 +34,6 @@ describe('H5P Files', () => {
 				{
 					provide: TemporaryFileStorage,
 					useValue: createMock<TemporaryFileStorage>(),
-				},
-				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
 				},
 			],
 		}).compile();
@@ -257,7 +250,13 @@ describe('H5P Files', () => {
 				contentRange = rangeCallbackReturnValue[0];
 			}
 
-			const tempFile = new TemporaryFile(filename, 'dummyId', fileDate, fileDate, contentLength);
+			const tempFile = new TemporaryFile({
+				filename,
+				ownedByUserId: 'dummyId',
+				expiresAt: fileDate,
+				birthtime: fileDate,
+				size: contentLength,
+			});
 
 			temporaryStorage.getFileStats.mockResolvedValueOnce(tempFile);
 			temporaryStorage.getFileStream.mockResolvedValueOnce(readableContent);

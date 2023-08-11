@@ -32,3 +32,4 @@ export * from './user-login-migration.factory';
 export * from './base.factory';
 export * from './external-tool-pseudonym.factory';
 export * from './h5p-content.factory';
+export * from './h5p-temporary-file.factory';

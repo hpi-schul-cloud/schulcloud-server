@@ -13,8 +13,8 @@ import { Inject, Injectable, InternalServerErrorException, NotFoundException } f
 import { FileDto } from '@src/modules/files-storage/dto';
 import { Readable } from 'stream';
 import { S3ClientAdapter } from '../../files-storage/client/s3-client.adapter';
-import { H5PContent } from './h5p-content.entity';
-import { H5PContentRepo } from './h5p-content.repo';
+import { H5PContent } from '../entity';
+import { H5PContentRepo } from '../repo';
 
 @Injectable()
 export class ContentStorage implements IContentStorage {

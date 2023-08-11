@@ -8,9 +8,9 @@ import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.ada
 import { IGetFileResponse } from '@src/modules/files-storage/interface';
 import { ObjectID } from 'bson';
 import { Readable } from 'stream';
-import { ContentStorage } from './contentStorage';
-import { H5PContent } from './h5p-content.entity';
-import { H5PContentRepo } from './h5p-content.repo';
+import { ContentStorage } from './contentStorage.service';
+import { H5PContent } from '../entity';
+import { H5PContentRepo } from '../repo';
 
 const helpers = {
 	buildMetadata(
