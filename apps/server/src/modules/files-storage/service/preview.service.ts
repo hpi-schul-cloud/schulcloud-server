@@ -6,7 +6,7 @@ import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { DownloadFileParams, PreviewParams } from '../controller/dto';
 import { FileRecord, PreviewStatus } from '../entity';
 import { ErrorType } from '../error';
-import { createPreviewNameHash, createPreviewPath } from '../helper';
+import { createPreviewDirectoryPath, createPreviewFilePath, createPreviewNameHash } from '../helper';
 import { IGetFile, IGetFileResponse } from '../interface';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
 import { FileDtoBuilder, FileResponseBuilder } from '../mapper';
@@ -41,7 +41,7 @@ export class PreviewService {
 
 		const { forceUpdate, outputFormat } = previewParams;
 		const hash = createPreviewNameHash(fileRecord.id, previewParams);
-		const filePath = createPreviewPath(fileRecord.getSchoolId(), hash);
+		const filePath = createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
 		const name = this.getPreviewName(fileRecord, outputFormat);
 		let file: IGetFile;
 
@@ -56,6 +56,20 @@ export class PreviewService {
 		const response = FileResponseBuilder.build(file, name);
 
 		return response;
+	}
+
+	public async deletePreviews(fileRecords: FileRecord[]): Promise<void> {
+		try {
+			const paths = fileRecords.map((fileRecord) =>
+				createPreviewDirectoryPath(fileRecord.getSchoolId(), fileRecord.id)
+			);
+
+			const promises = paths.map((path) => this.storageClient.deleteDirectory(path));
+
+			await Promise.all(promises);
+		} catch (error) {
+			this.logger.warn(error);
+		}
 	}
 
 	private checkIfPreviewPossible(fileRecord: FileRecord): void | UnprocessableEntityException {

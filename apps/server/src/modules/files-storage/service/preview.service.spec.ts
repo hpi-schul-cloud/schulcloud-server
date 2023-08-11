@@ -9,7 +9,7 @@ import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
-import { createPreviewNameHash, createPreviewPath } from '../helper';
+import { createPreviewFilePath, createPreviewNameHash } from '../helper';
 import { TestHelper } from '../helper/test-helper';
 import { PreviewHeight, PreviewWidth } from '../interface';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
@@ -59,7 +59,7 @@ const defaultPreviewParamsWithWidthAndHeight = {
 	height: PreviewHeight.HEIGHT_1000,
 };
 
-describe('FilesStorageService download method', () => {
+describe('PreviewService', () => {
 	let module: TestingModule;
 	let previewService: PreviewService;
 	let fileStorageService: DeepMocked<FilesStorageService>;
@@ -127,7 +127,7 @@ describe('FilesStorageService download method', () => {
 
 							const hash = createPreviewNameHash(fileRecord.id, {});
 							const previewFileDto = FileDtoBuilder.build(hash, previewFile.data, orignalMimeType);
-							const previewPath = createPreviewPath(fileRecord.getSchoolId(), hash);
+							const previewPath = createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
 							streamMock.mockClear();
 							streamMock.mockReturnValueOnce(previewFileDto.data);
 
@@ -297,7 +297,7 @@ describe('FilesStorageService download method', () => {
 
 							const hash = createPreviewNameHash(fileRecord.id, previewParams);
 							const previewFileDto = FileDtoBuilder.build(hash, previewFile.data, previewParams.outputFormat);
-							const previewPath = createPreviewPath(fileRecord.getSchoolId(), hash);
+							const previewPath = createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
 
 							streamMock.mockClear();
 							streamMock.mockReturnValueOnce(previewFileDto.data);
@@ -419,7 +419,7 @@ describe('FilesStorageService download method', () => {
 							const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
 							const hash = createPreviewNameHash(fileRecord.id, previewParams);
-							const previewPath = createPreviewPath(fileRecord.getSchoolId(), hash);
+							const previewPath = createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
 
 							resizeMock.mockClear();
 							streamMock.mockClear();
@@ -489,7 +489,7 @@ describe('FilesStorageService download method', () => {
 
 							const hash = createPreviewNameHash(fileRecord.id, previewParams);
 							const previewFileDto = FileDtoBuilder.build(hash, previewFile.data, previewParams.outputFormat);
-							const previewPath = createPreviewPath(fileRecord.getSchoolId(), hash);
+							const previewPath = createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
 
 							streamMock.mockClear();
 							streamMock.mockReturnValueOnce(previewFileDto.data);

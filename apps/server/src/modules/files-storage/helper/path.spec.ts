@@ -1,7 +1,7 @@
 import { EntityId } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { createICopyFiles, createPath, createPreviewPath, getPaths } from '.';
+import { createICopyFiles, createPath, createPreviewFilePath, getPaths } from '.';
 import { FileRecord } from '../entity';
 import { ErrorType } from '../error';
 
@@ -50,8 +50,8 @@ describe('Path Helper', () => {
 
 	describe('createPreviewPath', () => {
 		it('should create path', () => {
-			const path = createPreviewPath('schoolId', 'fileRecordId');
-			expect(path).toBe('previews/schoolId/fileRecordId');
+			const path = createPreviewFilePath('schoolId', 'previewId', 'fileRecordId');
+			expect(path).toBe('previews/schoolId/fileRecordId/previewId');
 		});
 	});
 

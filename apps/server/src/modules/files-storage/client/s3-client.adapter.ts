@@ -4,6 +4,7 @@ import {
 	CreateBucketCommand,
 	DeleteObjectsCommand,
 	GetObjectCommand,
+	ListObjectsCommand,
 	S3Client,
 	ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
@@ -183,6 +184,29 @@ export class S3ClientAdapter implements IStorageClient {
 		});
 
 		return this.client.send(req);
+	}
+
+	public async deleteDirectory(path: string) {
+		try {
+			this.logger.log({ action: 'deleteDirectory', params: { path, bucket: this.config.bucket } });
+
+			const req = new ListObjectsCommand({
+				Bucket: this.config.bucket,
+				Prefix: path,
+			});
+
+			const data = await this.client.send(req);
+
+			if (data.Contents?.length && data.Contents?.length > 0) {
+				const pathObjects = data.Contents.map((p) => p.Key);
+
+				const filteredPathObjects = pathObjects.filter((p): p is string => !!p);
+
+				await this.delete(filteredPathObjects);
+			}
+		} catch (err) {
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:deleteDirectory');
+		}
 	}
 
 	/* istanbul ignore next */

@@ -162,6 +162,7 @@ export class FilesStorageUC {
 	public async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.delete);
 		const [fileRecords, count] = await this.filesStorageService.deleteFilesOfParent(params.parentId);
+		await this.previewService.deletePreviews(fileRecords);
 
 		return [fileRecords, count];
 	}
@@ -172,6 +173,7 @@ export class FilesStorageUC {
 
 		await this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.delete);
 		await this.filesStorageService.delete([fileRecord]);
+		await this.previewService.deletePreviews([fileRecord]);
 
 		return fileRecord;
 	}
