@@ -303,6 +303,26 @@ describe('ExternalToolParameterValidationService', () => {
 					});
 				});
 
+				describe('when tool has no custom parameters', () => {
+					const setup = () => {
+						const externalTool: ExternalTool = externalToolFactory.build({ parameters: [] });
+
+						externalToolService.findExternalToolByName.mockResolvedValue(null);
+
+						return {
+							externalTool,
+						};
+					};
+
+					it('should pass', async () => {
+						const { externalTool } = setup();
+
+						const result: Promise<void> = service.validateCommon(externalTool);
+
+						await expect(result).resolves.not.toThrow();
+					});
+				});
+
 				describe('when default value is matching the criteria', () => {
 					const setup = () => {
 						const externalTool: ExternalTool = externalToolFactory
