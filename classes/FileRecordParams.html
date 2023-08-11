@@ -183,7 +183,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({enum: FileRecordParentType})<br />@IsEnum(FileRecordParentType)<br />
+                            @ApiProperty({enum: FileRecordParentType, enumName: &#x27;FileRecordParentType&#x27;})<br />@IsEnum(FileRecordParentType)<br />
                         </code>
                     </td>
                 </tr>
@@ -259,7 +259,7 @@ export class FileRecordParams {
 	@IsMongoId()
 	parentId!: EntityId;
 
-	@ApiProperty({ enum: FileRecordParentType })
+	@ApiProperty({ enum: FileRecordParentType, enumName: &#x27;FileRecordParentType&#x27; })
 	@IsEnum(FileRecordParentType)
 	parentType!: FileRecordParentType;
 }
