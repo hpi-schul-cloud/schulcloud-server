@@ -114,6 +114,8 @@ export class FilePermission {
 }
 
 export interface FileProps {
+	createdAt?: Date;
+	updatedAt?: Date;
 	deletedAt?: Date;
 	deleted?: boolean;
 	isDirectory?: boolean;
@@ -229,10 +231,24 @@ export class File extends BaseEntityWithTimestamps {
 		}
 	}
 
+	public removePermissionsByRefId(refId: EntityId): void {
+		const refObjectId = new ObjectId(refId);
+
+		this.permissions = this.permissions.filter((permission) => !permission.refId.equals(refObjectId));
+	}
+
 	constructor(props: FileProps) {
 		super();
 
 		this.validate(props);
+
+		if (props.createdAt !== undefined) {
+			this.createdAt = props.createdAt;
+		}
+
+		if (props.updatedAt !== undefined) {
+			this.updatedAt = props.updatedAt;
+		}
 
 		this.deletedAt = props.deletedAt;
 
