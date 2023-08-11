@@ -19,13 +19,11 @@ async function bootstrap() {
 	enableOpenApiDocs(nestApp, 'docs');
 
 	const logger = await nestApp.resolve(Logger);
-	const port = 3344;
-	await nestApp.listen(port);
+	await nestApp.init();
 
 	logger.info(
 		new AppStartLoggable({
 			appName: 'Tldraw server app',
-			port,
 		})
 	);
 }
