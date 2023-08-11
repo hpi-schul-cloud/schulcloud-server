@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
@@ -65,6 +65,7 @@ export class ToolContextController {
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
 	@ApiOperation({ summary: 'Deletes a ContextExternalTool' })
+	@HttpCode(HttpStatus.NO_CONTENT)
 	async deleteContextExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextExternalToolIdParams
