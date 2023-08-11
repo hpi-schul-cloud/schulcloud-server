@@ -1054,4 +1054,62 @@ describe('UserLoginMigrationService', () => {
 			});
 		});
 	});
+
+	describe('closeMigration', () => {
+		describe('when a migration can be closed', () => {
+			const setup = () => {
+				const schoolId: EntityId = new ObjectId().toHexString();
+				const userLoginMigration = userLoginMigrationDOFactory.buildWithId();
+				const closedUserLoginMigration = new UserLoginMigrationDO({
+					...userLoginMigration,
+					closedAt: mockedDate,
+					finishedAt: finishDate,
+				});
+
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
+				userLoginMigrationRepo.save.mockResolvedValue(closedUserLoginMigration);
+
+				return {
+					schoolId,
+					closedUserLoginMigration,
+				};
+			};
+
+			it('should save the closed user login migration', async () => {
+				const { schoolId, closedUserLoginMigration } = setup();
+
+				await service.closeMigration(schoolId);
+
+				expect(userLoginMigrationRepo.save).toHaveBeenCalledWith(closedUserLoginMigration);
+			});
+
+			it('should return the closed user login migration', async () => {
+				const { schoolId, closedUserLoginMigration } = setup();
+
+				const result = await service.closeMigration(schoolId);
+
+				expect(result).toEqual(closedUserLoginMigration);
+			});
+		});
+
+		describe('when a migration can be closed', () => {
+			const setup = () => {
+				const schoolId: EntityId = new ObjectId().toHexString();
+
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
+
+				return {
+					schoolId,
+				};
+			};
+
+			it('should save the closed user login migration', async () => {
+				const { schoolId } = setup();
+
+				const func = () => service.closeMigration(schoolId);
+
+				await expect(func).rejects.toThrow(UserLoginMigrationNotFoundLoggableException);
+			});
+		});
+	});
 });
