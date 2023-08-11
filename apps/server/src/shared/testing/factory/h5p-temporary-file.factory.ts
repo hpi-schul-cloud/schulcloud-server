@@ -1,7 +1,4 @@
-import {
-	ITemporaryFileProperties,
-	TemporaryFile,
-} from '@src/modules/h5p-editor/temporary-file-storage/temporary-file.entity';
+import { ITemporaryFileProperties, TemporaryFile } from '@src/modules/h5p-editor/entity';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 

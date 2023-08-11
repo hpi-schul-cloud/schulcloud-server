@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { TemporaryFile } from './temporary-file.entity';
+import { TemporaryFile } from '../entity';
 
 @Injectable()
 export class TemporaryFileRepo extends BaseRepo<TemporaryFile> {

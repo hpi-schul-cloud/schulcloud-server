@@ -8,9 +8,9 @@ import { IUser } from '@lumieducation/h5p-server';
 import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 import { IGetFileResponse } from '@src/modules/files-storage/interface';
 import { FileDto } from '@src/modules/files-storage/dto';
-import { TemporaryFileStorage } from './temporary-file-storage';
-import { TemporaryFile } from './temporary-file.entity';
-import { TemporaryFileRepo } from './temporary-file.repo';
+import { TemporaryFileStorage } from './temporary-file-storage.service';
+import { TemporaryFile } from '../entity/temporary-file.entity';
+import { TemporaryFileRepo } from '../repo/temporary-file.repo';
 
 const today = new Date();
 const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);

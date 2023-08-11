@@ -12,8 +12,8 @@ import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.ada
 import { FileDto } from '@src/modules/files-storage/dto';
 import path from 'node:path';
 import type { Readable } from 'stream';
-import { FileMetadata, InstalledLibrary } from './library.entity';
-import { LibraryRepo } from './library.repo';
+import { FileMetadata, InstalledLibrary } from '../entity/library.entity';
+import { LibraryRepo } from '../repo/library.repo';
 
 @Injectable()
 export class LibraryStorage implements ILibraryStorage {

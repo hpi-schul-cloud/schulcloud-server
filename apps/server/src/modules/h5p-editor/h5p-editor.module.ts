@@ -13,20 +13,19 @@ import { AuthenticationModule } from '@src/modules/authentication/authentication
 import { AuthorizationModule } from '@src/modules/authorization';
 import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 
-import { ContentStorage } from './contentStorage/contentStorage';
-import { H5PContent } from './contentStorage/h5p-content.entity';
-import { H5PContentRepo } from './contentStorage/h5p-content.repo';
+import { H5PContent, InstalledLibrary } from './entity';
+import { H5PContentRepo, LibraryRepo, TemporaryFileRepo } from './repo';
 import { H5PEditorController } from './controller/h5p-editor.controller';
 import { config, s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
 import { S3Config } from './interface/config';
-import { InstalledLibrary } from './libraryStorage/library.entity';
-import { LibraryRepo } from './libraryStorage/library.repo';
-import { LibraryStorage } from './libraryStorage/libraryStorage';
-import { H5PAjaxEndpointService } from './service';
-import { H5PEditorService } from './service/h5p-editor.service';
-import { H5PPlayerService } from './service/h5p-player.service';
-import { TemporaryFileStorage } from './temporary-file-storage/temporary-file-storage';
-import { TemporaryFileRepo } from './temporary-file-storage/temporary-file.repo';
+import {
+	H5PAjaxEndpointService,
+	ContentStorage,
+	LibraryStorage,
+	H5PEditorService,
+	H5PPlayerService,
+	TemporaryFileStorage,
+} from './service';
 import { H5PEditorUc } from './uc/h5p.uc';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

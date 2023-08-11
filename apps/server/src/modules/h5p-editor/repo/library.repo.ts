@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { InstalledLibrary } from './library.entity';
+import { InstalledLibrary } from '../entity';
 
 @Injectable()
 export class LibraryRepo extends BaseRepo<InstalledLibrary> {

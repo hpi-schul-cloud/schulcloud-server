@@ -4,8 +4,8 @@ import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.ada
 import { FileDto } from '@src/modules/files-storage/dto/file.dto';
 import { ReadStream } from 'fs';
 import { Readable } from 'stream';
-import { TemporaryFile } from './temporary-file.entity';
-import { TemporaryFileRepo } from './temporary-file.repo';
+import { TemporaryFile } from '../entity/temporary-file.entity';
+import { TemporaryFileRepo } from '../repo/temporary-file.repo';
 
 @Injectable()
 export class TemporaryFileStorage implements ITemporaryFileStorage {
