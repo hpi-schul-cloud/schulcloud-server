@@ -3,14 +3,10 @@ import { Server, WebSocket } from 'ws';
 import { encodeStateVector, encodeStateAsUpdate, applyUpdate, Doc } from 'yjs';
 import { MongodbPersistence } from 'y-mongodb-provider';
 import { ConfigService } from '@nestjs/config';
-import { TldrawConfig } from '@src/modules/tldraw/config';
-import { NodeEnvType } from '@src/modules/server';
-import { Configuration } from '@hpi-schul-cloud/commons';
+import { TldrawConfig, SOCKET_PORT } from '@src/modules/tldraw/config';
 import { setupWSConnection, setPersistence } from '../utils';
 
-const socketPort: number = Configuration.get('NODE_ENV') === NodeEnvType.TEST ? 3346 : 3345;
-
-@WebSocketGateway(socketPort)
+@WebSocketGateway(SOCKET_PORT)
 export class TldrawGateway implements OnGatewayInit, OnGatewayConnection {
 	@WebSocketServer()
 	server!: Server;
