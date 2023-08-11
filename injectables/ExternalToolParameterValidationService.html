@@ -355,8 +355,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="153"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-parameter-validation.service.ts:153</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="159"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-parameter-validation.service.ts:159</a></div>
                 </td>
             </tr>
 
@@ -497,8 +497,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="137"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-parameter-validation.service.ts:137</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="143"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-parameter-validation.service.ts:143</a></div>
                 </td>
             </tr>
 
@@ -640,8 +640,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="129"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-parameter-validation.service.ts:129</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="135"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-parameter-validation.service.ts:135</a></div>
                 </td>
             </tr>
 
@@ -711,8 +711,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="102"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-parameter-validation.service.ts:102</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="108"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-parameter-validation.service.ts:108</a></div>
                 </td>
             </tr>
 
@@ -853,8 +853,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="116"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-parameter-validation.service.ts:116</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="122"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-parameter-validation.service.ts:122</a></div>
                 </td>
             </tr>
 
@@ -1001,12 +1001,18 @@ export class ExternalToolParameterValidationService {
 	}
 
 	private hasInvalidBooleanValue(customParameter: CustomParameter[]): boolean {
-		return customParameter.every((param: CustomParameter) &#x3D;&gt; {
+		if (customParameter.length &#x3D;&#x3D;&#x3D; 0) {
+			return false;
+		}
+
+		const isValid &#x3D; customParameter.every((param: CustomParameter) &#x3D;&gt; {
 			if (param.type &#x3D;&#x3D;&#x3D; &#x27;boolean&#x27; &amp;&amp; param.default) {
 				return ![&#x27;true&#x27;, &#x27;false&#x27;].includes(param.default);
 			}
 			return false;
 		});
+
+		return isValid;
 	}
 
 	private validateByRegex(customParameter: CustomParameter[]): boolean {
