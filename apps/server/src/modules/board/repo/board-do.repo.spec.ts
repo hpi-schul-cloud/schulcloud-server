@@ -141,6 +141,51 @@ describe(BoardDoRepo.name, () => {
 		});
 	});
 
+	describe('getTitlesByIds', () => {
+		const setup = async () => {
+			const cardsWithTitles = cardNodeFactory.buildList(3);
+			const cardWithoutTitle = cardNodeFactory.build({ title: undefined });
+
+			await em.persistAndFlush([...cardsWithTitles, cardWithoutTitle]);
+
+			return { cardsWithTitles, cardWithoutTitle };
+		};
+
+		it('should return titles of node for list of ids', async () => {
+			const { cardsWithTitles } = await setup();
+
+			const titleMap = await repo.getTitlesByIds(cardsWithTitles.map((card) => card.id));
+
+			cardsWithTitles.forEach((card) => {
+				expect(titleMap[card.id]).toEqual(card.title);
+			});
+		});
+
+		it('should return node of card for single id', async () => {
+			const { cardsWithTitles } = await setup();
+
+			const titleMap = await repo.getTitlesByIds(cardsWithTitles[0].id);
+
+			expect(titleMap[cardsWithTitles[0].id]).toEqual(cardsWithTitles[0].title);
+		});
+
+		it('should handle node without title', async () => {
+			const { cardWithoutTitle } = await setup();
+
+			const titleMap = await repo.getTitlesByIds(cardWithoutTitle.id);
+
+			expect(titleMap[cardWithoutTitle.id]).toEqual('');
+		});
+
+		it('should not return title of node that has not been asked about', async () => {
+			const { cardsWithTitles } = await setup();
+
+			const titleMap = await repo.getTitlesByIds(cardsWithTitles[0].id);
+
+			expect(titleMap[cardsWithTitles[1].id]).toEqual(undefined);
+		});
+	});
+
 	describe('findParentOfId', () => {
 		describe('when fetching a parent', () => {
 			const setup = async () => {
