@@ -11,3 +11,4 @@
       namespace: "{{ NAMESPACE }}"
       template: api-h5p-deployment.yml.j2
     when: WITH_H5P_EDITOR is defined and WITH_H5P_EDITOR|bool
+    
