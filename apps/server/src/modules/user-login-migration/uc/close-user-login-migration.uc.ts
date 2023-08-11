@@ -31,7 +31,7 @@ export class CloseUserLoginMigrationUc {
 			action: Action.write,
 		});
 
-		if (userLoginMigration.finishedAt && Date.now() >= userLoginMigration.finishedAt.getTime()) {
+		if (userLoginMigration.finishedAt && this.isGracePeriodExpired(userLoginMigration)) {
 			throw new UserLoginMigrationGracePeriodExpiredLoggableException(
 				userLoginMigration.id as string,
 				userLoginMigration.finishedAt
@@ -53,5 +53,12 @@ export class CloseUserLoginMigrationUc {
 
 			return updatedUserLoginMigration;
 		}
+	}
+
+	private isGracePeriodExpired(userLoginMigration: UserLoginMigrationDO): boolean {
+		const isGracePeriodExpired: boolean =
+			!!userLoginMigration.finishedAt && Date.now() >= userLoginMigration.finishedAt.getTime();
+
+		return isGracePeriodExpired;
 	}
 }
