@@ -3,7 +3,15 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AnyBoardDo, Card, CardNode, Column, ColumnBoard, RichTextElementNode } from '@shared/domain';
+import {
+	AnyBoardDo,
+	BoardExternalReferenceType,
+	Card,
+	CardNode,
+	Column,
+	ColumnBoard,
+	RichTextElementNode,
+} from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cardFactory,
@@ -13,6 +21,7 @@ import {
 	columnBoardNodeFactory,
 	columnFactory,
 	columnNodeFactory,
+	courseFactory,
 	fileElementFactory,
 	richTextElementFactory,
 	richTextElementNodeFactory,
@@ -183,6 +192,33 @@ describe(BoardDoRepo.name, () => {
 			const titleMap = await repo.getTitlesByIds(cardsWithTitles[0].id);
 
 			expect(titleMap[cardsWithTitles[1].id]).toEqual(undefined);
+		});
+	});
+
+	describe('findIdsByExternalReference', () => {
+		const setup = async () => {
+			const course = courseFactory.build();
+			await em.persistAndFlush(course);
+			const boardNode = columnBoardNodeFactory.build({
+				context: {
+					type: BoardExternalReferenceType.Course,
+					id: course.id,
+				},
+			});
+			await em.persistAndFlush(boardNode);
+
+			return { boardNode, course };
+		};
+
+		it('should find courseboard by course', async () => {
+			const { course, boardNode } = await setup();
+
+			const ids = await repo.findIdsByExternalReference({
+				type: BoardExternalReferenceType.Course,
+				id: course.id,
+			});
+
+			expect(ids[0]).toEqual(boardNode.id);
 		});
 	});
 
