@@ -1,23 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import { Course, EntityId, IComponentProperties, Lesson } from '@shared/domain';
+import { Course, EntityId, IComponentProperties, Lesson, Task } from '@shared/domain';
 import { LessonService } from '@src/modules/lesson/service';
 import { ComponentType } from '@src/shared/domain/entity/lesson.entity';
+import { TaskService } from '@src/modules/task/service';
 import {
 	CommonCartridgeFileBuilder,
+	CommonCartridgeIntendedUseType,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
 	ICommonCartridgeOrganizationProps,
 	ICommonCartridgeResourceProps,
+	ICommonCartridgeWebContentResourceProps,
 } from '../common-cartridge';
 import { CourseService } from './course.service';
 
 @Injectable()
 export class CommonCartridgeExportService {
-	constructor(private readonly courseService: CourseService, private readonly lessonService: LessonService) {}
+	constructor(
+		private readonly courseService: CourseService,
+		private readonly lessonService: LessonService,
+		private readonly taskService: TaskService
+	) {}
 
 	async exportCourse(courseId: EntityId, userId: EntityId, version: CommonCartridgeVersion): Promise<Buffer> {
 		const course = await this.courseService.findById(courseId);
 		const [lessons] = await this.lessonService.findByCourseIds([courseId]);
+		const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
 		const builder = new CommonCartridgeFileBuilder({
 			identifier: `i${course.id}`,
 			title: course.name,
@@ -25,6 +33,7 @@ export class CommonCartridgeExportService {
 			copyrightOwners: this.mapCourseTeachersToCopyrightOwners(course),
 			creationYear: course.createdAt.getFullYear().toString(),
 		});
+
 		lessons.forEach((lesson) => {
 			const organizationBuilder = builder.addOrganization(this.mapLessonToOrganization(lesson, version));
 			lesson.contents.forEach((content) => {
@@ -35,15 +44,10 @@ export class CommonCartridgeExportService {
 			});
 		});
 
-		// TODO: add tasks as assignments, will be done in EW-526: https://ticketsystem.dbildungscloud.de/browse/EW-526
-		// const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
-		// const builder = new CommonCartridgeFileBuilder({
-		// 	identifier: `i${course.id}`,
-		// 	title: course.name,
-		// })
-		// 	.addOrganizationItems(this.mapLessonsToOrganizationItems(lessons))
-		// 	.addAssignments(this.mapTasksToAssignments(tasks));
-		// return builder.build();
+		tasks.forEach((task) => {
+			const resourceProps = this.mapTaskToWebContentResource(task, version);
+			builder.addResourceToFile(resourceProps);
+		});
 
 		return builder.build();
 	}
@@ -107,5 +111,21 @@ export class CommonCartridgeExportService {
 			.map((teacher) => `${teacher.firstName} ${teacher.lastName}`)
 			.reduce((previousTeachers, currentTeacher) => `${previousTeachers}, ${currentTeacher}`);
 		return result;
+	}
+
+	private mapTaskToWebContentResource(
+		task: Task,
+		version: CommonCartridgeVersion
+	): ICommonCartridgeWebContentResourceProps {
+		const taskIdentifier = `i${task._id.toString()}`;
+		return {
+			version,
+			identifier: taskIdentifier,
+			href: `${taskIdentifier}/${taskIdentifier}.html`,
+			title: task.name,
+			type: CommonCartridgeResourceType.WEB_CONTENT,
+			html: `<h1>${task.name}</h1><p>${task.description}</p>`,
+			intendedUse: CommonCartridgeIntendedUseType.ASSIGNMENT,
+		};
 	}
 }
