@@ -13,7 +13,6 @@ export class LibraryRepo extends BaseRepo<InstalledLibrary> {
 	}
 
 	async getAll(): Promise<InstalledLibrary[]> {
-		// delete all: await this._em.nativeDelete(this.entityName, {});
 		return this._em.find(this.entityName, {});
 	}
 
