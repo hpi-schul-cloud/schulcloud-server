@@ -2134,13 +2134,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/UserLoginMigrationApiModule.html" data-type="entity-link" >UserLoginMigrationApiModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-UserLoginMigrationApiModule-86ad738d633be21b03851c1e8c5f805e65a263cc73ccdef878111929cf7df07a98848ac85591d6a2b2a88b35bc415630016c4c321651f80affc6138ad05fc13b"' : 'data-bs-target="#xs-controllers-links-module-UserLoginMigrationApiModule-86ad738d633be21b03851c1e8c5f805e65a263cc73ccdef878111929cf7df07a98848ac85591d6a2b2a88b35bc415630016c4c321651f80affc6138ad05fc13b"' }>
+                                            'data-bs-target="#controllers-links-module-UserLoginMigrationApiModule-9b3cd5cf77ef3a3e46aa74cee514392b8f3b93f2a123e9aad78752dac600f242a0f448d5ef03d3568eb6cca09b809f2880c5fb46df0ce118f280dda0b55d325e"' : 'data-bs-target="#xs-controllers-links-module-UserLoginMigrationApiModule-9b3cd5cf77ef3a3e46aa74cee514392b8f3b93f2a123e9aad78752dac600f242a0f448d5ef03d3568eb6cca09b809f2880c5fb46df0ce118f280dda0b55d325e"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-UserLoginMigrationApiModule-86ad738d633be21b03851c1e8c5f805e65a263cc73ccdef878111929cf7df07a98848ac85591d6a2b2a88b35bc415630016c4c321651f80affc6138ad05fc13b"' :
-                                            'id="xs-controllers-links-module-UserLoginMigrationApiModule-86ad738d633be21b03851c1e8c5f805e65a263cc73ccdef878111929cf7df07a98848ac85591d6a2b2a88b35bc415630016c4c321651f80affc6138ad05fc13b"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-UserLoginMigrationApiModule-9b3cd5cf77ef3a3e46aa74cee514392b8f3b93f2a123e9aad78752dac600f242a0f448d5ef03d3568eb6cca09b809f2880c5fb46df0ce118f280dda0b55d325e"' :
+                                            'id="xs-controllers-links-module-UserLoginMigrationApiModule-9b3cd5cf77ef3a3e46aa74cee514392b8f3b93f2a123e9aad78752dac600f242a0f448d5ef03d3568eb6cca09b809f2880c5fb46df0ce118f280dda0b55d325e"' }>
                                             <li class="link">
                                                 <a href="controllers/UserLoginMigrationController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >UserLoginMigrationController</a>
                                             </li>
@@ -2151,13 +2151,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     </li>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-UserLoginMigrationApiModule-86ad738d633be21b03851c1e8c5f805e65a263cc73ccdef878111929cf7df07a98848ac85591d6a2b2a88b35bc415630016c4c321651f80affc6138ad05fc13b"' : 'data-bs-target="#xs-injectables-links-module-UserLoginMigrationApiModule-86ad738d633be21b03851c1e8c5f805e65a263cc73ccdef878111929cf7df07a98848ac85591d6a2b2a88b35bc415630016c4c321651f80affc6138ad05fc13b"' }>
+                                        'data-bs-target="#injectables-links-module-UserLoginMigrationApiModule-9b3cd5cf77ef3a3e46aa74cee514392b8f3b93f2a123e9aad78752dac600f242a0f448d5ef03d3568eb6cca09b809f2880c5fb46df0ce118f280dda0b55d325e"' : 'data-bs-target="#xs-injectables-links-module-UserLoginMigrationApiModule-9b3cd5cf77ef3a3e46aa74cee514392b8f3b93f2a123e9aad78752dac600f242a0f448d5ef03d3568eb6cca09b809f2880c5fb46df0ce118f280dda0b55d325e"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-UserLoginMigrationApiModule-86ad738d633be21b03851c1e8c5f805e65a263cc73ccdef878111929cf7df07a98848ac85591d6a2b2a88b35bc415630016c4c321651f80affc6138ad05fc13b"' :
-                                        'id="xs-injectables-links-module-UserLoginMigrationApiModule-86ad738d633be21b03851c1e8c5f805e65a263cc73ccdef878111929cf7df07a98848ac85591d6a2b2a88b35bc415630016c4c321651f80affc6138ad05fc13b"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-UserLoginMigrationApiModule-9b3cd5cf77ef3a3e46aa74cee514392b8f3b93f2a123e9aad78752dac600f242a0f448d5ef03d3568eb6cca09b809f2880c5fb46df0ce118f280dda0b55d325e"' :
+                                        'id="xs-injectables-links-module-UserLoginMigrationApiModule-9b3cd5cf77ef3a3e46aa74cee514392b8f3b93f2a123e9aad78752dac600f242a0f448d5ef03d3568eb6cca09b809f2880c5fb46df0ce118f280dda0b55d325e"' }>
+                                        <li class="link">
+                                            <a href="injectables/CloseUserLoginMigrationUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >CloseUserLoginMigrationUc</a>
+                                        </li>
                                         <li class="link">
                                             <a href="injectables/PageContentMapper.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >PageContentMapper</a>
                                         </li>
@@ -4234,6 +4237,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/CardUc.html" data-type="entity-link" >CardUc</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/CloseUserLoginMigrationUc.html" data-type="entity-link" >CloseUserLoginMigrationUc</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/CollaborativeStorageAdapterMapper.html" data-type="entity-link" >CollaborativeStorageAdapterMapper</a>
