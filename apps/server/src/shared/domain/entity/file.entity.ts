@@ -237,6 +237,11 @@ export class File extends BaseEntityWithTimestamps {
 		this.permissions = this.permissions.filter((permission) => !permission.refId.equals(refObjectId));
 	}
 
+	public markForDeletion(): void {
+		this.deletedAt = new Date();
+		this.deleted = true;
+	}
+
 	constructor(props: FileProps) {
 		super();
 

@@ -13,28 +13,30 @@ describe('File entity', () => {
 		await setupEntities();
 	});
 
-	describe('removePermissionsByRefId', () => {
-		const copyFile = (file: File) =>
-			new File({
-				createdAt: file.createdAt,
-				updatedAt: file.updatedAt,
-				name: 'test-file-1.txt',
-				size: 42,
-				type: 'text/plain',
-				storageFileName: '001-test-file-1.txt',
-				bucket: 'bucket-001',
-				storageProvider,
-				thumbnail: 'https://example.com/thumbnail.png',
-				thumbnailRequestToken: file.thumbnailRequestToken,
-				securityCheck: file.securityCheck,
-				shareTokens: file.shareTokens,
-				ownerId: mainUserId,
-				refOwnerModel: FileRefOwnerModel.USER,
-				creatorId: mainUserId,
-				permissions: file.permissions,
-				versionKey: 0,
-			});
+	const copyFile = (file: File) =>
+		new File({
+			createdAt: file.createdAt,
+			updatedAt: file.updatedAt,
+			deletedAt: file.deletedAt,
+			deleted: file.deleted,
+			name: 'test-file-1.txt',
+			size: 42,
+			type: 'text/plain',
+			storageFileName: '001-test-file-1.txt',
+			bucket: 'bucket-001',
+			storageProvider,
+			thumbnail: 'https://example.com/thumbnail.png',
+			thumbnailRequestToken: file.thumbnailRequestToken,
+			securityCheck: file.securityCheck,
+			shareTokens: file.shareTokens,
+			ownerId: mainUserId,
+			refOwnerModel: FileRefOwnerModel.USER,
+			creatorId: mainUserId,
+			permissions: file.permissions,
+			versionKey: 0,
+		});
 
+	describe('removePermissionsByRefId', () => {
 		it('should remove proper permission with given refId', () => {
 			const file = new File({
 				name: 'test-file-1.txt',
@@ -139,6 +141,38 @@ describe('File entity', () => {
 
 				expect(file).toEqual(originalFile);
 			});
+		});
+	});
+
+	describe('markForDeletion', () => {
+		it('should properly mark the file for deletion', () => {
+			const file = new File({
+				name: 'test-file-1.txt',
+				size: 42,
+				type: 'text/plain',
+				storageFileName: '001-test-file-1.txt',
+				bucket: 'bucket-001',
+				storageProvider,
+				thumbnail: 'https://example.com/thumbnail.png',
+				ownerId: mainUserId,
+				refOwnerModel: FileRefOwnerModel.USER,
+				creatorId: mainUserId,
+				permissions: [],
+				versionKey: 0,
+			});
+
+			const expectedFile = copyFile(file);
+
+			const fakeCurrentDate = new Date('2023-01-01');
+
+			expectedFile.deletedAt = fakeCurrentDate;
+			expectedFile.deleted = true;
+
+			jest.useFakeTimers().setSystemTime(fakeCurrentDate);
+
+			file.markForDeletion();
+
+			expect(file).toEqual(expectedFile);
 		});
 	});
 
