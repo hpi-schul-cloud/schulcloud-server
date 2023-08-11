@@ -31,7 +31,7 @@ export class FileRecordResponse {
 	@ApiProperty()
 	url: string;
 
-	@ApiProperty({ enum: ScanStatus })
+	@ApiProperty({ enum: ScanStatus, enumName: 'FileRecordScanStatus' })
 	securityCheckStatus: ScanStatus;
 
 	@ApiProperty()
@@ -43,7 +43,7 @@ export class FileRecordResponse {
 	@ApiProperty()
 	mimeType: string;
 
-	@ApiProperty({ enum: FileRecordParentType })
+	@ApiProperty({ enum: FileRecordParentType, enumName: 'FileRecordParentType' })
 	parentType: FileRecordParentType;
 
 	@ApiProperty()

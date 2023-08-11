@@ -104,6 +104,17 @@ jobs:
           tags: ghcr.io/${{ github.repository }}:file-storage-${{ needs.branch_meta.outputs.sha }}
           labels: |
             ${{ steps.docker_meta_img_file_storage.outputs.labels }}
+
+      - name: Send Notification to Rocket Chat if docker image build failed
+        if: ${{ failure() && github.ref == 'refs/heads/main' }}
+        uses: RocketChat/Rocket.Chat.GitHub.Action.Notification@1.1.1
+        with:
+          type: ${{ job.status }}
+          job_name: 'docker image build from ${{ github.repository }} triggered from branch ${{ github.ref_name }}:'
+          url: ${{ secrets.RC_MAIN_BROKEN_TOKEN }}
+          channel: '#softwaredevelopment-teams-and-groups'
+          username: Autodeployment Info
+
   branch_meta:
     runs-on: ubuntu-latest
     outputs:
