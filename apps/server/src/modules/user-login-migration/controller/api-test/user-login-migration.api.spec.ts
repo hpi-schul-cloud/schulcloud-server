@@ -128,6 +128,93 @@ describe('UserLoginMigrationController (API)', () => {
 		});
 	});
 
+	describe('[GET] /user-login-migrations/schools/:schoolId', () => {
+		describe('when a user login migration is found', () => {
+			const setup = async () => {
+				const date: Date = new Date(2023, 5, 4);
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+				});
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: date,
+					mandatorySince: date,
+					closedAt: undefined,
+					finishedAt: undefined,
+				});
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					sourceSystem,
+					targetSystem,
+					loggedInClient,
+					userLoginMigration,
+					school,
+				};
+			};
+
+			it('should return the users migration', async () => {
+				const { sourceSystem, targetSystem, userLoginMigration, loggedInClient, school } = await setup();
+
+				const response: Response = await loggedInClient.get(`schools/${school.id}`);
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual({
+					sourceSystemId: sourceSystem.id,
+					targetSystemId: targetSystem.id,
+					startedAt: userLoginMigration.startedAt.toISOString(),
+					closedAt: userLoginMigration.closedAt?.toISOString(),
+					finishedAt: userLoginMigration.finishedAt?.toISOString(),
+					mandatorySince: userLoginMigration.mandatorySince?.toISOString(),
+				});
+			});
+		});
+
+		describe('when no user login migration is found', () => {
+			const setup = async () => {
+				const school: School = schoolFactory.buildWithId();
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
+
+				await em.persistAndFlush([school, adminAccount, adminUser]);
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+					school,
+				};
+			};
+
+			it('should return the users migration', async () => {
+				const { loggedInClient, school } = await setup();
+
+				const response: Response = await loggedInClient.get(`schools/${school.id}`);
+
+				expect(response.status).toEqual(HttpStatus.NOT_FOUND);
+			});
+		});
+
+		describe('when unauthorized', () => {
+			it('should return Unauthorized', async () => {
+				const response: Response = await testApiClient.get(`schools/${new ObjectId().toHexString()}`);
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+	});
+
 	describe('[POST] /start', () => {
 		describe('when current User start the migration successfully', () => {
 			const setup = async () => {
