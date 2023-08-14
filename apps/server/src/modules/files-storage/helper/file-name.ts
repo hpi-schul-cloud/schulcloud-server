@@ -28,7 +28,7 @@ export function createPreviewNameHash(fileRecordId: EntityId, previewParams: Pre
 	const height = previewParams.height ?? '';
 	const format = previewParams.outputFormat ?? '';
 	const fileParamsString = `${fileRecordId}${width}${height}${format}`;
-	const hash = crypto.createHash('sha512').update(fileParamsString).digest('hex');
+	const hash = crypto.createHash('md5').update(fileParamsString).digest('hex');
 
 	return hash;
 }
