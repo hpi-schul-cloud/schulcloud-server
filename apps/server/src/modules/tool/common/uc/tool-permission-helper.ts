@@ -1,13 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId, User } from '@shared/domain';
-import { AuthorizableReferenceType, AuthorizationContext, AuthorizationService } from '../../../authorization';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { EntityId, SchoolDO, User } from '@shared/domain';
+import { AuthorizableReferenceType, AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ContextTypeMapper } from '../mapper';
+import { SchoolService } from '../../../school';
 
 @Injectable()
 export class ToolPermissionHelper {
-	constructor(private readonly authorizationService: AuthorizationService) {}
+	constructor(
+		@Inject(forwardRef(() => AuthorizationService)) private authorizationService: AuthorizationService,
+		private readonly schoolService: SchoolService
+	) {}
 
 	// TODO build interface to get contextDO by contextType
 	public async ensureContextPermissions(
@@ -38,6 +42,7 @@ export class ToolPermissionHelper {
 		context: AuthorizationContext
 	): Promise<void> {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkPermission(user, schoolExternalTool, context);
+		const school: SchoolDO = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
+		this.authorizationService.checkPermission(user, school, context);
 	}
 }

@@ -49,10 +49,11 @@ export class SchoolExternalToolUc {
 		tools: SchoolExternalTool[],
 		context: AuthorizationContext
 	): Promise<void> {
-		for (const tool of tools) {
-			// eslint-disable-next-line no-await-in-loop
-			await this.toolPermissionHelper.ensureSchoolPermissions(userId, tool, context);
-		}
+		await Promise.all(
+			tools.map(async (tool: SchoolExternalTool) =>
+				this.toolPermissionHelper.ensureSchoolPermissions(userId, tool, context)
+			)
+		);
 	}
 
 	async deleteSchoolExternalTool(userId: EntityId, schoolExternalToolId: EntityId): Promise<void> {
@@ -75,7 +76,7 @@ export class SchoolExternalToolUc {
 		);
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 
-		await this.toolPermissionHelper.ensureSchoolPermissions(userId, schoolExternalTool, context); // use helper
+		await this.toolPermissionHelper.ensureSchoolPermissions(userId, schoolExternalTool, context);
 		return schoolExternalTool;
 	}
 

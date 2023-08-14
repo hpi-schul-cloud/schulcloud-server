@@ -13,8 +13,10 @@ export class ExternalToolConfigurationService {
 	constructor(@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures) {}
 
 	public filterForAvailableTools(externalTools: Page<ExternalTool>, toolIdsInUse: EntityId[]): ExternalTool[] {
-		const availableTools: ExternalTool[] = externalTools.data.filter(
-			(tool: ExternalTool): boolean => !tool.isHidden && !!tool.id && !toolIdsInUse.includes(tool.id)
+		const visibleTools: ExternalTool[] = externalTools.data.filter((tool: ExternalTool): boolean => !tool.isHidden);
+
+		const availableTools: ExternalTool[] = visibleTools.filter(
+			(tool: ExternalTool): boolean => !!tool.id && !toolIdsInUse.includes(tool.id)
 		);
 		return availableTools;
 	}
@@ -62,8 +64,11 @@ export class ExternalToolConfigurationService {
 			}
 		);
 
-		const availableTools: ContextExternalToolTemplateInfo[] = toolsWithSchoolTool.filter(
-			(toolRef): toolRef is ContextExternalToolTemplateInfo => !!toolRef && !toolRef.externalTool.isHidden
+		const unusedTools: ContextExternalToolTemplateInfo[] = toolsWithSchoolTool.filter(
+			(toolRef): toolRef is ContextExternalToolTemplateInfo => !!toolRef
+		);
+		const availableTools: ContextExternalToolTemplateInfo[] = unusedTools.filter(
+			(toolRef): toolRef is ContextExternalToolTemplateInfo => !toolRef.externalTool.isHidden
 		);
 
 		return availableTools;

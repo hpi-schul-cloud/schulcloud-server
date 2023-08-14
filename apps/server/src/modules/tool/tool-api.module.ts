@@ -16,18 +16,18 @@ import { ToolConfigModule } from './tool-config.module';
 import { ToolLaunchController } from './tool-launch/controller/tool-launch.controller';
 import { ToolLaunchUc } from './tool-launch/uc';
 import { ToolModule } from './tool.module';
-import { ToolPermissionHelperModule } from './common/tool-permission-helper.module';
 import { ExternalToolConfigurationService } from './external-tool/service';
+import { CommonToolModule } from './common';
 
 @Module({
 	imports: [
 		ToolModule,
+		CommonToolModule,
 		UserModule,
 		AuthorizationModule,
 		LoggerModule,
 		SchoolModule,
 		ToolConfigModule,
-		ToolPermissionHelperModule,
 	],
 	controllers: [
 		ToolLaunchController,

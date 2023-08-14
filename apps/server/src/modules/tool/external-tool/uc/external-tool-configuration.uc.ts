@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { EntityId, Permission } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
@@ -19,6 +19,7 @@ export class ExternalToolConfigurationUc {
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
+		@Inject(forwardRef(() => ToolPermissionHelper))
 		private readonly toolPermissionHelper: ToolPermissionHelper,
 		private readonly externalToolConfigurationService: ExternalToolConfigurationService
 	) {}

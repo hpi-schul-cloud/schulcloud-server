@@ -19,12 +19,16 @@ import { ServerTestModule } from '@src/modules/server';
 import { ObjectId } from 'bson';
 import { CustomParameterScope, ToolContextType } from '../../../common/enum';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
-import { ContextExternalToolPostParams, ContextExternalToolSearchListResponse } from '../dto';
+import {
+	ContextExternalToolPostParams,
+	ContextExternalToolResponse,
+	ContextExternalToolSearchListResponse,
+} from '../dto';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../entity';
 import { ExternalToolEntity } from '../../../external-tool/entity';
+import { CustomParameterEntryResponse } from '../../../school-external-tool/controller/dto';
 
 describe('ToolContextController (API)', () => {
-	jest.setTimeout(60000);
 	let app: INestApplication;
 	let em: EntityManager;
 	let orm: MikroORM;
@@ -62,7 +66,7 @@ describe('ToolContextController (API)', () => {
 
 				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser], school });
 
-				const paramEntry = { name: 'name', value: 'value' };
+				const paramEntry: CustomParameterEntryResponse = { name: 'name', value: 'value' };
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
 					schoolParameters: [paramEntry],
@@ -83,13 +87,13 @@ describe('ToolContextController (API)', () => {
 
 				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 
-				const expected = {
+				const expected: ContextExternalToolResponse = {
 					id: expect.any(String),
 					schoolToolId: postParams.schoolToolId,
 					contextId: postParams.contextId,
 					displayName: postParams.displayName,
 					contextType: postParams.contextType,
-					parameters: postParams.parameters,
+					parameters: [paramEntry],
 					toolVersion: postParams.toolVersion,
 				};
 
@@ -229,7 +233,7 @@ describe('ToolContextController (API)', () => {
 
 				const result = await loggedInClient.delete(`${contextExternalToolEntity.id}`);
 
-				expect(result.statusCode).toEqual(403);
+				expect(result.statusCode).toEqual(HttpStatus.NO_CONTENT);
 			});
 		});
 	});

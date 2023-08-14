@@ -410,7 +410,7 @@ describe('ContextExternalToolUc', () => {
 				});
 			});
 
-			it('should call toolPermissionHelper to ensure permissions', async () => {
+			it('should call Authorization Service to ensure permissions', async () => {
 				const { userId, user, contextType, contextId, contextExternalTool } = setup();
 
 				await uc.getContextExternalToolsForContext(userId, contextType, contextId);
@@ -474,7 +474,9 @@ describe('ContextExternalToolUc', () => {
 			it('should rethrow any exception other than ForbiddenLoggableException', async () => {
 				const { userId, contextType, contextId } = setup();
 
-				await expect(uc.getContextExternalToolsForContext(userId, contextType, contextId)).rejects.toThrow(Error);
+				const func = () => uc.getContextExternalToolsForContext(userId, contextType, contextId);
+
+				await expect(func()).rejects.toThrow(Error);
 			});
 		});
 	});
