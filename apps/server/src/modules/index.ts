@@ -18,7 +18,6 @@ export * from './school';
 export * from './sharing';
 export * from './system';
 export * from './task';
-export * from './task-card';
 export * from './tool';
 export * from './user';
 export * from './user-import';

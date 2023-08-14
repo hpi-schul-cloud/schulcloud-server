@@ -5,6 +5,7 @@ import { Course, Permission, Role, RoleName, School, User } from '@shared/domain
 import {
 	contextExternalToolEntityFactory,
 	courseFactory,
+	customParameterEntityFactory,
 	externalToolEntityFactory,
 	mapUserToCurrentUser,
 	roleFactory,
@@ -18,7 +19,7 @@ import { ServerTestModule } from '@src/modules/server';
 import { ObjectId } from 'bson';
 import { Request } from 'express';
 import request, { Response } from 'supertest';
-import { ToolContextType } from '../../../common/enum';
+import { CustomParameterScope, ToolContextType } from '../../../common/enum';
 import { ExternalToolEntity } from '../../../external-tool/entity';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../entity';
@@ -217,7 +218,9 @@ describe('ToolContextController (API)', () => {
 				const { teacher, contextExternalToolEntity } = await setup();
 				currentUser = mapUserToCurrentUser(teacher);
 
-				await request(app.getHttpServer()).delete(`${basePath}/${contextExternalToolEntity.id}`).expect(200);
+				await request(app.getHttpServer())
+					.delete(`${basePath}/${contextExternalToolEntity.id}`)
+					.expect(HttpStatus.NO_CONTENT);
 
 				const deleted: ContextExternalToolEntity | null = await em.findOne(ContextExternalToolEntity, {
 					contextId: contextExternalToolEntity.id,
@@ -596,6 +599,157 @@ describe('ToolContextController (API)', () => {
 				const response: Response = await request(app.getHttpServer()).get(`${basePath}/${contextExternalTool.id}`);
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+			});
+		});
+	});
+
+	describe('[PUT] tools/context-external-tools/:contextExternalToolId', () => {
+		describe('when update of contextExternalTool is successfully', () => {
+			const setup = async () => {
+				const school: School = schoolFactory.buildWithId();
+
+				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
+					Permission.CONTEXT_TOOL_ADMIN,
+				]);
+
+				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser], school });
+
+				const contextParameter = customParameterEntityFactory.build({
+					scope: CustomParameterScope.CONTEXT,
+					regex: 'testValue123',
+				});
+
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					parameters: [contextParameter],
+					version: 2,
+				});
+
+				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+					tool: externalToolEntity,
+					school,
+					schoolParameters: [],
+					toolVersion: 2,
+				});
+
+				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
+					schoolTool: schoolExternalToolEntity,
+					contextId: course.id,
+					contextType: ContextExternalToolType.COURSE,
+					displayName: 'CoolTool123',
+					parameters: [],
+					toolVersion: 1,
+				});
+
+				const postParams: ContextExternalToolPostParams = {
+					schoolToolId: schoolExternalToolEntity.id,
+					contextId: course.id,
+					contextType: ToolContextType.COURSE,
+					displayName: 'CoolTool123',
+					parameters: [
+						{
+							name: contextParameter.name,
+							value: 'testValue123',
+						},
+					],
+					toolVersion: 2,
+				};
+
+				await em.persistAndFlush([
+					course,
+					school,
+					teacherUser,
+					teacherAccount,
+					externalToolEntity,
+					schoolExternalToolEntity,
+					contextExternalToolEntity,
+				]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacherUser);
+
+				return {
+					contextExternalToolEntity,
+					course,
+					teacherUser,
+					postParams,
+				};
+			};
+
+			it('should update an contextExternalTool', async () => {
+				const { contextExternalToolEntity, postParams } = await setup();
+
+				const response = await request(app.getHttpServer())
+					.put(`${basePath}/${contextExternalToolEntity.id}`)
+					.send(postParams);
+
+				expect(response.status).toEqual(HttpStatus.OK);
+			});
+
+			it('should update an contextExternalTool', async () => {
+				const { contextExternalToolEntity, postParams } = await setup();
+
+				const response = await request(app.getHttpServer())
+					.put(`${basePath}/${contextExternalToolEntity.id}`)
+					.send(postParams);
+
+				expect(response.body).toEqual({
+					id: contextExternalToolEntity.id,
+					schoolToolId: postParams.schoolToolId,
+					contextId: postParams.contextId,
+					displayName: postParams.displayName,
+					contextType: postParams.contextType,
+					parameters: postParams.parameters,
+					toolVersion: postParams.toolVersion,
+				});
+			});
+		});
+
+		describe('when the user is not authorized', () => {
+			const setup = async () => {
+				const roleWithoutPermission = roleFactory.buildWithId();
+
+				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher();
+
+				teacherUser.roles.set([roleWithoutPermission]);
+
+				await em.persistAndFlush([teacherUser, teacherAccount]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacherUser);
+			};
+
+			it('should return forbidden', async () => {
+				await setup();
+
+				const response = await request(app.getHttpServer()).put(`${basePath}/${new ObjectId().toString()}`).send({
+					schoolToolId: new ObjectId().toString(),
+					contextId: new ObjectId().toString(),
+					contextType: ToolContextType.COURSE,
+					parameters: [],
+					toolVersion: 1,
+				});
+
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+			});
+		});
+
+		describe('when the user is not authenticated', () => {
+			const setup = () => {
+				currentUser = undefined;
+			};
+
+			it('should return unauthorized', async () => {
+				setup();
+
+				const response = await request(app.getHttpServer()).put(`${basePath}/${new ObjectId().toHexString()}`).send({
+					schoolToolId: new ObjectId().toHexString(),
+					contextId: new ObjectId().toHexString(),
+					contextType: ToolContextType.COURSE,
+					parameters: [],
+					toolVersion: 1,
+				});
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
 		});
 	});

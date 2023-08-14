@@ -20,7 +20,7 @@ import { FileRecordListResponse, FileRecordResponse } from '@src/modules/files-s
 import { Request } from 'express';
 import request from 'supertest';
 import { S3ClientAdapter } from '../../client/s3-client.adapter';
-import { FileRecordParentType } from '../../entity';
+import { FileRecordParentType, PreviewStatus } from '../../entity';
 import { availableParentTypes } from './mocks';
 
 const baseRouteName = '/file/restore';
@@ -227,6 +227,7 @@ describe(`${baseRouteName} (api)`, () => {
 					mimeType: 'text/plain',
 					securityCheckStatus: 'pending',
 					size: expect.any(Number),
+					previewStatus: PreviewStatus.AWAITING_SCAN_STATUS,
 				});
 			});
 
@@ -321,6 +322,7 @@ describe(`${baseRouteName} (api)`, () => {
 					mimeType: 'text/plain',
 					securityCheckStatus: 'pending',
 					size: expect.any(Number),
+					previewStatus: PreviewStatus.AWAITING_SCAN_STATUS,
 				});
 			});
 
