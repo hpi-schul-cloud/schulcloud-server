@@ -1,5 +1,6 @@
 import {
 	LibraryName,
+	streamToString,
 	type IAdditionalLibraryMetadata,
 	type IFileStats,
 	type IInstalledLibrary,
@@ -10,9 +11,9 @@ import {
 import { Inject, Injectable } from '@nestjs/common';
 import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 import { FileDto } from '@src/modules/files-storage/dto';
-import path from 'node:path';
+import path from 'node:path/posix';
 import type { Readable } from 'stream';
-import { FileMetadata, InstalledLibrary } from '../entity/library.entity';
+import { InstalledLibrary } from '../entity/library.entity';
 import { LibraryRepo } from '../repo/library.repo';
 
 @Injectable()
@@ -44,7 +45,13 @@ export class LibraryStorage implements ILibraryStorage {
 	 */
 	private getFilePath(library: ILibraryName, filename: string): string {
 		const uberName = LibraryName.toUberName(library);
-		const filePath = `h5p-libraries/${uberName}/${filename}`;
+		const filePath = path.join('h5p-libraries', uberName, filename);
+		return filePath;
+	}
+
+	private getLibraryPath(library: ILibraryName): string {
+		const uberName = LibraryName.toUberName(library);
+		const filePath = path.join('h5p-libraries', uberName);
 		return filePath;
 	}
 
@@ -58,17 +65,6 @@ export class LibraryStorage implements ILibraryStorage {
 	public async addFile(libraryName: ILibraryName, filename: string, dataStream: Readable): Promise<boolean> {
 		this.checkFilename(filename); // TODO: do this everywhere?
 
-		const library = await this.libraryRepo.findOneByNameAndVersionOrFail(
-			libraryName.machineName,
-			libraryName.majorVersion,
-			libraryName.minorVersion
-		);
-
-		if (await this.fileExists(libraryName, filename)) {
-			return false;
-		}
-
-		let size = 0;
 		const filepath = this.getFilePath(libraryName, filename);
 
 		try {
@@ -80,13 +76,9 @@ export class LibraryStorage implements ILibraryStorage {
 					data: dataStream,
 				})
 			);
-			size = (await this.s3Client.head(filepath)).ContentLength ?? 0;
 		} catch (error) {
-			return false;
+			throw new Error('COULD NOT ADD FILE');
 		}
-
-		library.files.push({ name: filename, birthtime: new Date(), size });
-		await this.libraryRepo.save(library);
 
 		return true;
 	}
@@ -148,13 +140,9 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param library
 	 */
 	public async clearFiles(libraryName: ILibraryName): Promise<void> {
-		const library = await this.libraryRepo.findOneByNameAndVersionOrFail(
-			libraryName.machineName,
-			libraryName.majorVersion,
-			libraryName.minorVersion
-		);
+		const files = await this.s3Client.list(this.getLibraryPath(libraryName));
 
-		await this.s3Client.delete(library.files.map((file) => this.getFilePath(library, file.name)));
+		await this.s3Client.delete(files.map((file) => this.getFilePath(libraryName, file)));
 	}
 
 	/**
@@ -168,22 +156,9 @@ export class LibraryStorage implements ILibraryStorage {
 			libraryName.minorVersion
 		);
 
-		await this.s3Client.delete(library.files.map((file) => this.getFilePath(library, file.name)));
+		const files = await this.s3Client.list(this.getLibraryPath(libraryName));
+		await this.s3Client.delete(files.map((file) => this.getFilePath(libraryName, file)));
 		await this.libraryRepo.delete(library);
-	}
-
-	public async getFileMetadata(libraryName: ILibraryName, filename: string): Promise<FileMetadata> {
-		const library = await this.libraryRepo.findOneByNameAndVersionOrFail(
-			libraryName.machineName,
-			libraryName.majorVersion,
-			libraryName.minorVersion
-		);
-		for (const file of library.files) {
-			if (file.name === filename) {
-				return file;
-			}
-		}
-		throw new Error('File does not exist');
 	}
 
 	/**
@@ -194,7 +169,7 @@ export class LibraryStorage implements ILibraryStorage {
 	 */
 	public async fileExists(libraryName: ILibraryName, filename: string): Promise<boolean> {
 		try {
-			await this.getFileMetadata(libraryName, filename);
+			await this.s3Client.head(this.getFilePath(libraryName, filename));
 			return true;
 		} catch (error) {
 			return false;
@@ -269,11 +244,9 @@ export class LibraryStorage implements ILibraryStorage {
 	 */
 	public async getFileAsString(library: ILibraryName, file: string): Promise<string> {
 		const response = await this.s3Client.get(this.getFilePath(library, file));
-		const chunks: Buffer[] = [];
-		for await (const chunk of response.data) {
-			chunks.push(Buffer.from(chunk as Buffer));
-		}
-		return Buffer.concat(chunks).toString('utf-8');
+
+		const data = await streamToString(response.data);
+		return data;
 	}
 
 	/**
@@ -282,7 +255,12 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param file
 	 */
 	public async getFileStats(libraryName: ILibraryName, file: string): Promise<IFileStats> {
-		return this.getFileMetadata(libraryName, file);
+		const head = await this.s3Client.head(this.getFilePath(libraryName, file));
+
+		return {
+			birthtime: head.LastModified!,
+			size: head.ContentLength!,
+		};
 	}
 
 	/**
@@ -369,12 +347,8 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @returns an array of filenames
 	 */
 	public async listFiles(libraryName: ILibraryName): Promise<string[]> {
-		const library = await this.libraryRepo.findOneByNameAndVersionOrFail(
-			libraryName.machineName,
-			libraryName.majorVersion,
-			libraryName.minorVersion
-		);
-		return library.files.map((file) => file.name);
+		const files = await this.s3Client.list(this.getLibraryPath(libraryName));
+		return files;
 	}
 
 	/**

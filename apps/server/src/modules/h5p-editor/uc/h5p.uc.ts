@@ -59,6 +59,8 @@ export class H5PEditorUc {
 	}
 
 	private mapH5pError(error: unknown) {
+		console.error(error);
+
 		if (error instanceof H5pError) {
 			return new HttpException(error.message, error.httpStatusCode);
 		}
@@ -311,7 +313,7 @@ export class H5PEditorUc {
 	private changeUserType(currentUser: ICurrentUser): IUser {
 		// TODO: declare IUser (e.g. add roles, schoolId, etc.)
 		const user: IUser = {
-			canCreateRestricted: true,
+			canCreateRestricted: false,
 			canInstallRecommended: true,
 			canUpdateAndInstallLibraries: true,
 			email: '',
