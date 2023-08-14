@@ -186,12 +186,16 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import internal from &#x27;stream&#x27;;
 import { FileDto } from &#x27;../dto&#x27;;
 
-export interface IGetFileResponse {
+export interface IGetFile {
 	data: internal.Readable;
 	contentType: string | undefined;
 	contentLength: number | undefined;
 	contentRange: string | undefined;
 	etag: string | undefined;
+}
+
+export interface IGetFileResponse extends IGetFile {
+	name: string;
 }
 
 export interface ICopyFiles {

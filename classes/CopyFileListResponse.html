@@ -136,7 +136,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="80" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:80</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="84" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:84</a></div>
                             </td>
                         </tr>
 
@@ -250,7 +250,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/PaginationResponse.html#source" target="_self" >PaginationResponse:87</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/PaginationResponse.html#source" target="_self" >PaginationResponse:91</a></code>
 </div>
                         </td>
                     </tr>
@@ -403,7 +403,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
 import { DecodeHtmlEntities, PaginationResponse } from &#x27;@shared/controller&#x27;;
-import { FileRecord, FileRecordParentType, ScanStatus } from &#x27;../../entity&#x27;;
+import { FileRecord, FileRecordParentType, PreviewStatus, ScanStatus } from &#x27;../../entity&#x27;;
 import { API_VERSION_PATH } from &#x27;../../files-storage.const&#x27;;
 
 export class FileRecordResponse {
@@ -418,6 +418,7 @@ export class FileRecordResponse {
 		this.mimeType &#x3D; fileRecord.mimeType;
 		this.parentType &#x3D; fileRecord.parentType;
 		this.deletedSince &#x3D; fileRecord.deletedSince;
+		this.previewStatus &#x3D; fileRecord.getPreviewStatus();
 	}
 
 	@ApiProperty()
@@ -447,6 +448,9 @@ export class FileRecordResponse {
 
 	@ApiProperty({ enum: FileRecordParentType, enumName: &#x27;FileRecordParentType&#x27; })
 	parentType: FileRecordParentType;
+
+	@ApiProperty({ enum: PreviewStatus, enumName: &#x27;PreviewStatus&#x27; })
+	previewStatus: PreviewStatus;
 
 	@ApiPropertyOptional()
 	deletedSince?: Date;

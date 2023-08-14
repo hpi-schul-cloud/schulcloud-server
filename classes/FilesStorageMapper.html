@@ -109,6 +109,10 @@
                                     <span class="modifier">Static</span>
                                 <a href="#mapToSingleFileParams" >mapToSingleFileParams</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Static</span>
+                                <a href="#mapToStreamableFile" >mapToStreamableFile</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -150,8 +154,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="38"
-                            class="link-to-prism">apps/server/src/modules/files-storage/mapper/files-storage.mapper.ts:38</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">apps/server/src/modules/files-storage/mapper/files-storage.mapper.ts:39</a></div>
                 </td>
             </tr>
 
@@ -221,8 +225,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="14"
-                            class="link-to-prism">apps/server/src/modules/files-storage/mapper/files-storage.mapper.ts:14</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="15"
+                            class="link-to-prism">apps/server/src/modules/files-storage/mapper/files-storage.mapper.ts:15</a></div>
                 </td>
             </tr>
 
@@ -292,8 +296,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="52"
-                            class="link-to-prism">apps/server/src/modules/files-storage/mapper/files-storage.mapper.ts:52</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="53"
+                            class="link-to-prism">apps/server/src/modules/files-storage/mapper/files-storage.mapper.ts:53</a></div>
                 </td>
             </tr>
 
@@ -399,8 +403,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="48"
-                            class="link-to-prism">apps/server/src/modules/files-storage/mapper/files-storage.mapper.ts:48</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="49"
+                            class="link-to-prism">apps/server/src/modules/files-storage/mapper/files-storage.mapper.ts:49</a></div>
                 </td>
             </tr>
 
@@ -470,8 +474,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="32"
-                            class="link-to-prism">apps/server/src/modules/files-storage/mapper/files-storage.mapper.ts:32</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="33"
+                            class="link-to-prism">apps/server/src/modules/files-storage/mapper/files-storage.mapper.ts:33</a></div>
                 </td>
             </tr>
 
@@ -519,6 +523,77 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapToStreamableFile"></a>
+                    <span class="name">
+                        <span class="modifier">Static</span>
+                        <span ><b>mapToStreamableFile</b></span>
+                        <a href="#mapToStreamableFile"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapToStreamableFile(fileResponse: <a href="../interfaces/IGetFileResponse.html" target="_self">IGetFileResponse</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="65"
+                            class="link-to-prism">apps/server/src/modules/files-storage/mapper/files-storage.mapper.ts:65</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>fileResponse</td>
+                                    <td>
+                                                <code><a href="../interfaces/IGetFileResponse.html" target="_self" >IGetFileResponse</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/File.html" target="_self" >StreamableFile</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
 
@@ -529,7 +604,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { NotImplementedException } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { NotImplementedException, StreamableFile } from &#x27;@nestjs/common&#x27;;
 import { AuthorizableReferenceType } from &#x27;@src/modules/authorization&#x27;;
 import { plainToClass } from &#x27;class-transformer&#x27;;
 import {
@@ -540,6 +615,7 @@ import {
 	SingleFileParams,
 } from &#x27;../controller/dto&#x27;;
 import { FileRecord, FileRecordParentType } from &#x27;../entity&#x27;;
+import { IGetFileResponse } from &#x27;../interface&#x27;;
 
 export class FilesStorageMapper {
 	static mapToAllowedAuthorizationEntityType(type: FileRecordParentType): AuthorizableReferenceType {
@@ -590,6 +666,16 @@ export class FilesStorageMapper {
 
 		const response &#x3D; new FileRecordListResponse(responseFileRecords, total, skip, limit);
 		return response;
+	}
+
+	static mapToStreamableFile(fileResponse: IGetFileResponse): StreamableFile {
+		const streamableFile &#x3D; new StreamableFile(fileResponse.data, {
+			type: fileResponse.contentType,
+			disposition: &#x60;inline; filename&#x3D;&quot;${encodeURI(fileResponse.name)}&quot;&#x60;,
+			length: fileResponse.contentLength,
+		});
+
+		return streamableFile;
 	}
 }
 </code></pre>

@@ -148,7 +148,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="100" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.params.ts:100</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="102" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.params.ts:102</a></div>
                         </td>
                     </tr>
 
@@ -184,7 +184,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="103" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.params.ts:103</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="105" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.params.ts:105</a></div>
                         </td>
                     </tr>
 
@@ -220,7 +220,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="97" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.params.ts:97</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="99" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.params.ts:99</a></div>
                         </td>
                     </tr>
 
@@ -239,10 +239,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
+import { StringToBoolean } from &#x27;@shared/controller&#x27;;
 import { EntityId } from &#x27;@shared/domain&#x27;;
-import { Allow, IsEnum, IsMongoId, IsNotEmpty, IsString, ValidateNested } from &#x27;class-validator&#x27;;
+import { Allow, IsBoolean, IsEnum, IsMongoId, IsNotEmpty, IsOptional, IsString, ValidateNested } from &#x27;class-validator&#x27;;
 import { FileRecordParentType } from &#x27;../../entity&#x27;;
+import { PreviewOutputMimeTypes, PreviewWidth } from &#x27;../../interface&#x27;;
 
 export class FileRecordParams {
 	@ApiProperty()
@@ -342,6 +344,26 @@ export class CopyFilesOfParentPayload {
 
 	@ValidateNested()
 	target!: FileRecordParams;
+}
+
+export class PreviewParams {
+	@ApiPropertyOptional({ enum: PreviewOutputMimeTypes, enumName: &#x27;PreviewOutputMimeTypes&#x27; })
+	@IsOptional()
+	@IsEnum(PreviewOutputMimeTypes)
+	outputFormat?: PreviewOutputMimeTypes;
+
+	@ApiPropertyOptional({ enum: PreviewWidth, enumName: &#x27;PreviewWidth&#x27; })
+	@IsOptional()
+	@IsEnum(PreviewWidth)
+	width?: PreviewWidth;
+
+	@IsOptional()
+	@IsBoolean()
+	@StringToBoolean()
+	@ApiPropertyOptional({
+		description: &#x27;If true, the preview will be generated again.&#x27;,
+	})
+	forceUpdate?: boolean;
 }
 </code></pre>
     </div>

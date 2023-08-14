@@ -232,6 +232,18 @@
                             <a href="#Permission" title="apps/server/src/shared/domain/interface/permission.enum.ts" ><b>Permission</b>&nbsp;&nbsp;&nbsp;(apps/.../permission.enum.ts)</a>
                         </li>
                         <li>
+                            <a href="#PreviewInputMimeTypes" title="apps/server/src/modules/files-storage/interface/preview-input-mime-types.enum.ts" ><b>PreviewInputMimeTypes</b>&nbsp;&nbsp;&nbsp;(apps/.../preview-input-mime-types.enum.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#PreviewOutputMimeTypes" title="apps/server/src/modules/files-storage/interface/preview-output-mime-types.enum.ts" ><b>PreviewOutputMimeTypes</b>&nbsp;&nbsp;&nbsp;(apps/.../preview-output-mime-types.enum.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#PreviewStatus" title="apps/server/src/modules/files-storage/entity/filerecord.entity.ts" ><b>PreviewStatus</b>&nbsp;&nbsp;&nbsp;(apps/.../filerecord.entity.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#PreviewWidth" title="apps/server/src/modules/files-storage/interface/preview-width.enum.ts" ><b>PreviewWidth</b>&nbsp;&nbsp;&nbsp;(apps/.../preview-width.enum.ts)</a>
+                        </li>
+                        <li>
                             <a href="#PrometheusMetricsSetupState" title="apps/server/src/apps/helpers/prometheus-metrics.ts" ><b>PrometheusMetricsSetupState</b>&nbsp;&nbsp;&nbsp;(apps/.../prometheus-metrics.ts)</a>
                         </li>
                         <li>
@@ -2089,6 +2101,16 @@
                                 <i>Value : </i><code>FILE_TOO_BIG</code>
                             </td>
                         </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;PREVIEW_NOT_POSSIBLE
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>PREVIEW_NOT_POSSIBLE</code>
+                            </td>
+                        </tr>
             </tbody>
         </table>
 </section>
@@ -2226,6 +2248,66 @@
                         <tr>
                             <td class="col-md-4">
                                 <i>Value : </i><code>boardnodes</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="PreviewStatus"></a>
+                        <span class="name "><b>PreviewStatus</b><a href="#PreviewStatus"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;PREVIEW_POSSIBLE
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>preview_possible</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;AWAITING_SCAN_STATUS
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>awaiting_scan_status</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>preview_not_possible_scan_status_error</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>preview_not_possible_scan_status_blocked</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>preview_not_possible_wrong_mime_type</code>
                             </td>
                         </tr>
             </tbody>
@@ -4978,6 +5060,155 @@
                         <tr>
                             <td class="col-md-4">
                                 <i>Value : </i><code>YEARS_EDIT</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <h3>apps/server/src/modules/files-storage/interface/preview-input-mime-types.enum.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="PreviewInputMimeTypes"></a>
+                        <span class="name "><b>PreviewInputMimeTypes</b><a href="#PreviewInputMimeTypes"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;IMAGE_BMP
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>image/bmp</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;IMAGE_GIF
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>image/gif</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;IMAGE_JPEG
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>image/jpeg</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;IMAGE_PNG
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>image/png</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;IMAGE_SVG
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>image/svg+xml</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;IMAGE_HEIC
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>image/heic</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;IMAGE_HEIF
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>image/heif</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;IMAGE_TIFF
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>image/tiff</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;IMAGE_WEBP
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>image/webp</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <h3>apps/server/src/modules/files-storage/interface/preview-output-mime-types.enum.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="PreviewOutputMimeTypes"></a>
+                        <span class="name "><b>PreviewOutputMimeTypes</b><a href="#PreviewOutputMimeTypes"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;IMAGE_WEBP
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>image/webp</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <h3>apps/server/src/modules/files-storage/interface/preview-width.enum.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="PreviewWidth"></a>
+                        <span class="name "><b>PreviewWidth</b><a href="#PreviewWidth"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;WIDTH_500
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>500</code>
                             </td>
                         </tr>
             </tbody>

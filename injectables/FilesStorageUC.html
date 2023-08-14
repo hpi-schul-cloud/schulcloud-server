@@ -122,6 +122,11 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#downloadPreview" >downloadPreview</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#getFileRecordsOfParent" >getFileRecordsOfParent</a>
                             </li>
                             <li>
@@ -182,12 +187,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, httpService: HttpService, filesStorageService: <a href="../injectables/FilesStorageService.html" target="_self">FilesStorageService</a>)</code>
+<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, httpService: HttpService, filesStorageService: <a href="../injectables/FilesStorageService.html" target="_self">FilesStorageService</a>, previewService: <a href="../injectables/PreviewService.html" target="_self">PreviewService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:30</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:32</a></div>
                             </td>
                         </tr>
 
@@ -252,6 +257,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>previewService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/PreviewService.html" target="_self" >PreviewService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -289,8 +306,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="40"
-                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:40</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="43"
+                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:43</a></div>
                 </td>
             </tr>
 
@@ -397,8 +414,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="178"
-                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:178</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="200"
+                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:200</a></div>
                 </td>
             </tr>
 
@@ -493,8 +510,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="198"
-                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:198</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="220"
+                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:220</a></div>
                 </td>
             </tr>
 
@@ -589,8 +606,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="142"
-                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:142</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="162"
+                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:162</a></div>
                 </td>
             </tr>
 
@@ -673,8 +690,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="149"
-                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:149</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="170"
+                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:170</a></div>
                 </td>
             </tr>
 
@@ -757,8 +774,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="124"
-                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:124</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="127"
+                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:127</a></div>
                 </td>
             </tr>
 
@@ -820,7 +837,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../interfaces/IGetFileResponse.html" target="_self" >Promise&lt;IGetFileResponse&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/File.html" target="_self" >Promise&lt;IGetFileResponse&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -853,8 +870,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="134"
-                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:134</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="137"
+                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:137</a></div>
                 </td>
             </tr>
 
@@ -892,7 +909,115 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../interfaces/IGetFileResponse.html" target="_self" >Promise&lt;IGetFileResponse&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../interfaces/IGetFile.html" target="_self" >Promise&lt;IGetFile&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="downloadPreview"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>downloadPreview</b></span>
+                        <a href="#downloadPreview"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>downloadPreview(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, params: <a href="../classes/DownloadFileParams.html" target="_self">DownloadFileParams</a>, previewParams: <a href="../classes/PreviewParams.html" target="_self">PreviewParams</a>, bytesRange?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="144"
+                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:144</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>params</td>
+                                    <td>
+                                                <code><a href="../classes/DownloadFileParams.html" target="_self" >DownloadFileParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>previewParams</td>
+                                    <td>
+                                                <code><a href="../classes/PreviewParams.html" target="_self" >PreviewParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>bytesRange</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/File.html" target="_self" >Promise&lt;IGetFileResponse&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -925,8 +1050,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="239"
-                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:239</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="261"
+                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:261</a></div>
                 </td>
             </tr>
 
@@ -1009,8 +1134,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="94"
-                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:94</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="97"
+                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:97</a></div>
                 </td>
             </tr>
 
@@ -1077,8 +1202,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="222"
-                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:222</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="244"
+                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:244</a></div>
                 </td>
             </tr>
 
@@ -1173,8 +1298,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="160"
-                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:160</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="182"
+                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:182</a></div>
                 </td>
             </tr>
 
@@ -1257,8 +1382,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="167"
-                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:167</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="189"
+                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:189</a></div>
                 </td>
             </tr>
 
@@ -1341,8 +1466,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="233"
-                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:233</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="255"
+                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:255</a></div>
                 </td>
             </tr>
 
@@ -1425,8 +1550,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="51"
-                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:51</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="54"
+                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:54</a></div>
                 </td>
             </tr>
 
@@ -1521,8 +1646,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="59"
-                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:59</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="62"
+                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:62</a></div>
                 </td>
             </tr>
 
@@ -1617,8 +1742,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="82"
-                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:82</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="85"
+                            class="link-to-prism">apps/server/src/modules/files-storage/uc/files-storage.uc.ts:85</a></div>
                 </td>
             </tr>
 
@@ -1700,6 +1825,7 @@ import {
 	DownloadFileParams,
 	FileRecordParams,
 	FileUrlParams,
+	PreviewParams,
 	RenameFileParams,
 	ScanResultParams,
 	SingleFileParams,
@@ -1707,9 +1833,10 @@ import {
 import { FileRecord, FileRecordParentType } from &#x27;../entity&#x27;;
 import { ErrorType } from &#x27;../error&#x27;;
 import { FileStorageAuthorizationContext } from &#x27;../files-storage.const&#x27;;
-import { IGetFileResponse } from &#x27;../interface&#x27;;
+import { IGetFile, IGetFileResponse } from &#x27;../interface&#x27;;
 import { FileDtoBuilder, FilesStorageMapper } from &#x27;../mapper&#x27;;
 import { FilesStorageService } from &#x27;../service/files-storage.service&#x27;;
+import { PreviewService } from &#x27;../service/preview.service&#x27;;
 
 @Injectable()
 export class FilesStorageUC {
@@ -1717,7 +1844,8 @@ export class FilesStorageUC {
 		private logger: LegacyLogger,
 		private readonly authorizationService: AuthorizationService,
 		private readonly httpService: HttpService,
-		private readonly filesStorageService: FilesStorageService
+		private readonly filesStorageService: FilesStorageService,
+		private readonly previewService: PreviewService
 	) {
 		this.logger.setContext(FilesStorageUC.name);
 	}
@@ -1816,17 +1944,35 @@ export class FilesStorageUC {
 		return this.filesStorageService.download(fileRecord, params, bytesRange);
 	}
 
-	public async downloadBySecurityToken(token: string): Promise&lt;IGetFileResponse&gt; {
+	public async downloadBySecurityToken(token: string): Promise&lt;IGetFile&gt; {
 		const fileRecord &#x3D; await this.filesStorageService.getFileRecordBySecurityCheckRequestToken(token);
 		const res &#x3D; await this.filesStorageService.downloadFile(fileRecord.getSchoolId(), fileRecord.id);
 
 		return res;
 	}
 
+	public async downloadPreview(
+		userId: EntityId,
+		params: DownloadFileParams,
+		previewParams: PreviewParams,
+		bytesRange?: string
+	): Promise&lt;IGetFileResponse&gt; {
+		const singleFileParams &#x3D; FilesStorageMapper.mapToSingleFileParams(params);
+		const fileRecord &#x3D; await this.filesStorageService.getFileRecord(singleFileParams);
+		const { parentType, parentId } &#x3D; fileRecord.getParentInfo();
+
+		await this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.read);
+
+		const result &#x3D; this.previewService.getPreview(fileRecord, params, previewParams, bytesRange);
+
+		return result;
+	}
+
 	// delete
 	public async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise&lt;Counted&lt;FileRecord[]&gt;&gt; {
 		await this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.delete);
 		const [fileRecords, count] &#x3D; await this.filesStorageService.deleteFilesOfParent(params.parentId);
+		await this.previewService.deletePreviews(fileRecords);
 
 		return [fileRecords, count];
 	}
@@ -1837,6 +1983,7 @@ export class FilesStorageUC {
 
 		await this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.delete);
 		await this.filesStorageService.delete([fileRecord]);
+		await this.previewService.deletePreviews([fileRecord]);
 
 		return fileRecord;
 	}

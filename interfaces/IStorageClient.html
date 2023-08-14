@@ -151,8 +151,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="18"
-                            class="link-to-prism">apps/server/src/modules/files-storage/interface/storage-client.ts:18</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="22"
+                            class="link-to-prism">apps/server/src/modules/files-storage/interface/storage-client.ts:22</a></div>
                 </td>
             </tr>
 
@@ -225,8 +225,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="24"
-                            class="link-to-prism">apps/server/src/modules/files-storage/interface/storage-client.ts:24</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="28"
+                            class="link-to-prism">apps/server/src/modules/files-storage/interface/storage-client.ts:28</a></div>
                 </td>
             </tr>
 
@@ -287,8 +287,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="20"
-                            class="link-to-prism">apps/server/src/modules/files-storage/interface/storage-client.ts:20</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="24"
+                            class="link-to-prism">apps/server/src/modules/files-storage/interface/storage-client.ts:24</a></div>
                 </td>
             </tr>
 
@@ -361,8 +361,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="22"
-                            class="link-to-prism">apps/server/src/modules/files-storage/interface/storage-client.ts:22</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="26"
+                            class="link-to-prism">apps/server/src/modules/files-storage/interface/storage-client.ts:26</a></div>
                 </td>
             </tr>
 
@@ -423,8 +423,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="26"
-                            class="link-to-prism">apps/server/src/modules/files-storage/interface/storage-client.ts:26</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="30"
+                            class="link-to-prism">apps/server/src/modules/files-storage/interface/storage-client.ts:30</a></div>
                 </td>
             </tr>
 
@@ -474,12 +474,16 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import internal from &#x27;stream&#x27;;
 import { FileDto } from &#x27;../dto&#x27;;
 
-export interface IGetFileResponse {
+export interface IGetFile {
 	data: internal.Readable;
 	contentType: string | undefined;
 	contentLength: number | undefined;
 	contentRange: string | undefined;
 	etag: string | undefined;
+}
+
+export interface IGetFileResponse extends IGetFile {
+	name: string;
 }
 
 export interface ICopyFiles {

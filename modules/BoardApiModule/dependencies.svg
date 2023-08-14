@@ -24,79 +24,79 @@
 <title>cluster_BoardApiModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-195 595,-195 595,-70 8,-70"/>
 </g>
-<g id="clust3" class="cluster">
-<title>cluster_BoardApiModule_imports</title>
-<polygon fill="none" stroke="black" points="359,-78 359,-130 587,-130 587,-78 359,-78"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_BoardApiModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 351,-130 351,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="252,-78 252,-130 587,-130 587,-78 252,-78"/>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_BoardApiModule_imports</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 244,-130 244,-78 16,-78"/>
 </g>
 <!-- BoardModule -->
 <g id="node1" class="node">
 <title>BoardModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="578.76,-122 575.76,-126 554.76,-126 551.76,-122 485.24,-122 485.24,-86 578.76,-86 578.76,-122"/>
-<text text-anchor="middle" x="532" y="-99.8" font-family="Times,serif" font-size="14.00">BoardModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="235.76,-122 232.76,-126 211.76,-126 208.76,-122 142.24,-122 142.24,-86 235.76,-86 235.76,-122"/>
+<text text-anchor="middle" x="189" y="-99.8" font-family="Times,serif" font-size="14.00">BoardModule</text>
 </g>
 <!-- BoardApiModule -->
 <g id="node3" class="node">
 <title>BoardApiModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="354.26,-187 351.26,-191 330.26,-191 327.26,-187 239.74,-187 239.74,-151 354.26,-151 354.26,-187"/>
-<text text-anchor="middle" x="297" y="-164.8" font-family="Times,serif" font-size="14.00">BoardApiModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="371.26,-187 368.26,-191 347.26,-191 344.26,-187 256.74,-187 256.74,-151 371.26,-151 371.26,-187"/>
+<text text-anchor="middle" x="314" y="-164.8" font-family="Times,serif" font-size="14.00">BoardApiModule</text>
 </g>
 <!-- BoardModule&#45;&gt;BoardApiModule -->
 <g id="edge1" class="edge">
 <title>BoardModule&#45;&gt;BoardApiModule</title>
-<path fill="none" stroke="black" d="M532,-122.11C532,-141.34 532,-169 532,-169 532,-169 364.49,-169 364.49,-169"/>
-<polygon fill="black" stroke="black" points="364.49,-165.5 354.49,-169 364.49,-172.5 364.49,-165.5"/>
+<path fill="none" stroke="black" d="M189,-122.02C189,-139.37 189,-163 189,-163 189,-163 246.62,-163 246.62,-163"/>
+<polygon fill="black" stroke="black" points="246.62,-166.5 256.62,-163 246.62,-159.5 246.62,-166.5"/>
 </g>
 <!-- LoggerModule -->
 <g id="node2" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="466.98,-122 463.98,-126 442.98,-126 439.98,-122 367.02,-122 367.02,-86 466.98,-86 466.98,-122"/>
-<text text-anchor="middle" x="417" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="123.98,-122 120.98,-126 99.98,-126 96.98,-122 24.02,-122 24.02,-86 123.98,-86 123.98,-122"/>
+<text text-anchor="middle" x="74" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;BoardApiModule -->
 <g id="edge2" class="edge">
 <title>LoggerModule&#45;&gt;BoardApiModule</title>
-<path fill="none" stroke="black" d="M366.96,-104C356.53,-104 348.64,-104 348.64,-104 348.64,-104 348.64,-140.89 348.64,-140.89"/>
-<polygon fill="black" stroke="black" points="345.14,-140.89 348.64,-150.89 352.14,-140.89 345.14,-140.89"/>
+<path fill="none" stroke="black" d="M74,-122.28C74,-143.32 74,-175 74,-175 74,-175 246.51,-175 246.51,-175"/>
+<polygon fill="black" stroke="black" points="246.51,-178.5 256.51,-175 246.51,-171.5 246.51,-178.5"/>
 </g>
 <!-- BoardUc -->
 <g id="node4" class="node">
 <title>BoardUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="297" cy="-104" rx="45.79" ry="18"/>
-<text text-anchor="middle" x="297" y="-99.8" font-family="Times,serif" font-size="14.00">BoardUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="533" cy="-104" rx="45.79" ry="18"/>
+<text text-anchor="middle" x="533" y="-99.8" font-family="Times,serif" font-size="14.00">BoardUc</text>
 </g>
 <!-- BoardUc&#45;&gt;BoardApiModule -->
 <g id="edge3" class="edge">
 <title>BoardUc&#45;&gt;BoardApiModule</title>
-<path fill="none" stroke="black" d="M297,-122.11C297,-122.11 297,-140.99 297,-140.99"/>
-<polygon fill="black" stroke="black" points="293.5,-140.99 297,-150.99 300.5,-140.99 293.5,-140.99"/>
+<path fill="none" stroke="black" d="M533,-122.28C533,-143.32 533,-175 533,-175 533,-175 381.54,-175 381.54,-175"/>
+<polygon fill="black" stroke="black" points="381.54,-171.5 371.54,-175 381.54,-178.5 381.54,-171.5"/>
 </g>
 <!-- CardUc -->
 <g id="node5" class="node">
 <title>CardUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="192" cy="-104" rx="41.13" ry="18"/>
-<text text-anchor="middle" x="192" y="-99.8" font-family="Times,serif" font-size="14.00">CardUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="428" cy="-104" rx="41.13" ry="18"/>
+<text text-anchor="middle" x="428" y="-99.8" font-family="Times,serif" font-size="14.00">CardUc</text>
 </g>
 <!-- CardUc&#45;&gt;BoardApiModule -->
 <g id="edge4" class="edge">
 <title>CardUc&#45;&gt;BoardApiModule</title>
-<path fill="none" stroke="black" d="M233.25,-104C240.28,-104 245.36,-104 245.36,-104 245.36,-104 245.36,-140.89 245.36,-140.89"/>
-<polygon fill="black" stroke="black" points="241.86,-140.89 245.36,-150.89 248.86,-140.89 241.86,-140.89"/>
+<path fill="none" stroke="black" d="M428,-122.02C428,-139.37 428,-163 428,-163 428,-163 381.33,-163 381.33,-163"/>
+<polygon fill="black" stroke="black" points="381.33,-159.5 371.33,-163 381.33,-166.5 381.33,-159.5"/>
 </g>
 <!-- ElementUc -->
 <g id="node6" class="node">
 <title>ElementUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="78" cy="-104" rx="54.45" ry="18"/>
-<text text-anchor="middle" x="78" y="-99.8" font-family="Times,serif" font-size="14.00">ElementUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="314" cy="-104" rx="54.45" ry="18"/>
+<text text-anchor="middle" x="314" y="-99.8" font-family="Times,serif" font-size="14.00">ElementUc</text>
 </g>
 <!-- ElementUc&#45;&gt;BoardApiModule -->
 <g id="edge5" class="edge">
 <title>ElementUc&#45;&gt;BoardApiModule</title>
-<path fill="none" stroke="black" d="M78,-122.11C78,-141.34 78,-169 78,-169 78,-169 229.46,-169 229.46,-169"/>
-<polygon fill="black" stroke="black" points="229.46,-172.5 239.46,-169 229.46,-165.5 229.46,-172.5"/>
+<path fill="none" stroke="black" d="M314,-122.11C314,-122.11 314,-140.99 314,-140.99"/>
+<polygon fill="black" stroke="black" points="310.5,-140.99 314,-150.99 317.5,-140.99 310.5,-140.99"/>
 </g>
 </g>
 </svg>

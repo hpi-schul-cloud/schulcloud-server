@@ -90,7 +90,6 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Private</span>
                                     <span class="modifier">Static</span>
                                 <a href="#build" >build</a>
                             </li>
@@ -127,7 +126,6 @@
                 <td class="col-md-4">
                     <a name="build"></a>
                     <span class="name">
-                        <span class="modifier">Private</span>
                         <span class="modifier">Static</span>
                         <span ><b>build</b></span>
                         <a href="#build"><span class="icon ion-ios-link"></span></a>
@@ -399,7 +397,7 @@ import { Readable } from &#x27;stream&#x27;;
 import { FileDto } from &#x27;../dto/file.dto&#x27;;
 
 export class FileDtoBuilder {
-	private static build(name: string, data: Readable, mimeType: string): FileDto {
+	public static build(name: string, data: Readable, mimeType: string): FileDto {
 		const file &#x3D; new FileDto({ name, data, mimeType });
 
 		return file;

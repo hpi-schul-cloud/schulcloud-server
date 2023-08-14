@@ -142,8 +142,23 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#download" >download</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#downloadPreview" >downloadPreview</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
@@ -183,6 +198,10 @@
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#restoreFile" >restoreFile</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#streamFileToClient" >streamFileToClient</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
@@ -259,8 +278,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="256"
-                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:256</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="294"
+                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:294</a></div>
                 </td>
             </tr>
 
@@ -368,8 +387,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="273"
-                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:273</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="311"
+                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:311</a></div>
                 </td>
             </tr>
 
@@ -477,8 +496,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="190"
-                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:190</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="228"
+                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:228</a></div>
                 </td>
             </tr>
 
@@ -574,8 +593,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="207"
-                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:207</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="245"
+                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:245</a></div>
                 </td>
             </tr>
 
@@ -650,6 +669,7 @@
                         <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>download</b></span>
                         <a href="#download"><span class="icon ion-ios-link"></span></a>
@@ -659,7 +679,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>download(params: <a href="../classes/DownloadFileParams.html" target="_self">DownloadFileParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, req: Request, response: Response)</code>
+                    <code>download(params: <a href="../classes/DownloadFileParams.html" target="_self">DownloadFileParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, req: Request, response: Response, bytesRange?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -667,14 +687,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@ApiOperation({summary: &#x27;Streamable download of a binary file.&#x27;})<br />@ApiResponse({status: 200, type: StreamableFile})<br />@ApiResponse({status: 206, type: StreamableFile})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@ApiResponse({status: 406, type: NotAcceptableException})<br />@ApiResponse({status: 500, type: InternalServerErrorException})<br />@Get(&#x27;/download/:fileRecordId/:fileName&#x27;)<br /></code>
+                    <code>@ApiOperation({summary: &#x27;Streamable download of a binary file.&#x27;})<br />@ApiResponse({status: 200, type: StreamableFile})<br />@ApiResponse({status: 206, type: StreamableFile})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@ApiResponse({status: 406, type: NotAcceptableException})<br />@ApiResponse({status: 500, type: InternalServerErrorException})<br />@ApiHeader({name: &#x27;Range&#x27;, required: false})<br />@Get(&#x27;/download/:fileRecordId/:fileName&#x27;)<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="100"
-                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:100</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="106"
+                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:106</a></div>
                 </td>
             </tr>
 
@@ -742,6 +762,166 @@
 
 
                                 </tr>
+                                <tr>
+                                    <td>bytesRange</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/File.html" target="_self" >Promise&lt;StreamableFile&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="downloadPreview"></a>
+                    <span class="name">
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier">Async</span>
+                        <span ><b>downloadPreview</b></span>
+                        <a href="#downloadPreview"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>downloadPreview(params: <a href="../classes/DownloadFileParams.html" target="_self">DownloadFileParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, previewParams: <a href="../classes/PreviewParams.html" target="_self">PreviewParams</a>, req: Request, response: Response, bytesRange?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@ApiOperation({summary: &#x27;Streamable download of a preview file.&#x27;})<br />@ApiResponse({status: 200, type: StreamableFile})<br />@ApiResponse({status: 206, type: StreamableFile})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@ApiResponse({status: 422, type: UnprocessableEntityException})<br />@ApiResponse({status: 500, type: InternalServerErrorException})<br />@ApiHeader({name: &#x27;Range&#x27;, required: false})<br />@Get(&#x27;/preview/:fileRecordId/:fileName&#x27;)<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="130"
+                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:130</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>params</td>
+                                    <td>
+                                                <code><a href="../classes/DownloadFileParams.html" target="_self" >DownloadFileParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>currentUser</td>
+                                    <td>
+                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>previewParams</td>
+                                    <td>
+                                                <code><a href="../classes/PreviewParams.html" target="_self" >PreviewParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>req</td>
+                                    <td>
+                                            <code>Request</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>response</td>
+                                    <td>
+                                            <code>Response</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>bytesRange</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -792,8 +972,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="144"
-                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:144</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="182"
+                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:182</a></div>
                 </td>
             </tr>
 
@@ -902,8 +1082,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="168"
-                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:168</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="206"
+                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:206</a></div>
                 </td>
             </tr>
 
@@ -1009,8 +1189,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="223"
-                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:223</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="261"
+                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:261</a></div>
                 </td>
             </tr>
 
@@ -1104,8 +1284,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="239"
-                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:239</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="277"
+                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:277</a></div>
                 </td>
             </tr>
 
@@ -1169,6 +1349,113 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="streamFileToClient"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>streamFileToClient</b></span>
+                        <a href="#streamFileToClient"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>streamFileToClient(req: Request, fileResponse: <a href="../interfaces/IGetFileResponse.html" target="_self">IGetFileResponse</a>, httpResponse: Response, bytesRange?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="150"
+                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:150</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>req</td>
+                                    <td>
+                                            <code>Request</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>fileResponse</td>
+                                    <td>
+                                                <code><a href="../interfaces/IGetFileResponse.html" target="_self" >IGetFileResponse</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>httpResponse</td>
+                                    <td>
+                                            <code>Response</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>bytesRange</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/File.html" target="_self" >StreamableFile</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="upload"></a>
                     <span class="name">
                         <span class="modifier"></span>
@@ -1202,8 +1489,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="78"
-                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:78</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="83"
+                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:83</a></div>
                 </td>
             </tr>
 
@@ -1323,8 +1610,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="58"
-                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:58</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="63"
+                            class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.controller.ts:63</a></div>
                 </td>
             </tr>
 
@@ -1408,6 +1695,7 @@
 	Delete,
 	ForbiddenException,
 	Get,
+	Headers,
 	HttpStatus,
 	InternalServerErrorException,
 	NotAcceptableException,
@@ -1419,14 +1707,17 @@
 	Req,
 	Res,
 	StreamableFile,
+	UnprocessableEntityException,
 	UseInterceptors,
 } from &#x27;@nestjs/common&#x27;;
-import { ApiConsumes, ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { ApiConsumes, ApiHeader, ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { ApiValidationError, RequestLoggingInterceptor } from &#x27;@shared/common&#x27;;
 import { PaginationParams } from &#x27;@shared/controller&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { Request, Response } from &#x27;express&#x27;;
+import { IGetFileResponse } from &#x27;../interface&#x27;;
+import { FilesStorageMapper } from &#x27;../mapper&#x27;;
 import { FileRecordMapper } from &#x27;../mapper/file-record.mapper&#x27;;
 import { FilesStorageUC } from &#x27;../uc&#x27;;
 import {
@@ -1440,6 +1731,7 @@ import {
 	FileRecordParams,
 	FileRecordResponse,
 	FileUrlParams,
+	PreviewParams,
 	RenameFileParams,
 	SingleFileParams,
 } from &#x27;./dto&#x27;;
@@ -1498,44 +1790,77 @@ export class FilesStorageController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@ApiResponse({ status: 406, type: NotAcceptableException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
+	@ApiHeader({ name: &#x27;Range&#x27;, required: false })
 	@Get(&#x27;/download/:fileRecordId/:fileName&#x27;)
 	async download(
 		@Param() params: DownloadFileParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Req() req: Request,
-		@Res({ passthrough: true }) response: Response
+		@Res({ passthrough: true }) response: Response,
+		@Headers(&#x27;Range&#x27;) bytesRange?: string
 	): Promise&lt;StreamableFile&gt; {
-		// Get Range HTTP header value to check if caller
-		// requested either partial or full data stream.
-		const bytesRange &#x3D; req.header(&#x27;Range&#x27;);
+		const fileResponse &#x3D; await this.filesStorageUC.download(currentUser.userId, params, bytesRange);
 
-		// Call download method with either defined or undefined bytes range.
-		const res &#x3D; await this.filesStorageUC.download(currentUser.userId, params, bytesRange);
+		const streamableFile &#x3D; this.streamFileToClient(req, fileResponse, response, bytesRange);
 
-		// Destroy the stream after it has been closed.
-		req.on(&#x27;close&#x27;, () &#x3D;&gt; res.data.destroy());
+		return streamableFile;
+	}
+
+	@ApiOperation({ summary: &#x27;Streamable download of a preview file.&#x27; })
+	@ApiResponse({ status: 200, type: StreamableFile })
+	@ApiResponse({ status: 206, type: StreamableFile })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@ApiResponse({ status: 422, type: UnprocessableEntityException })
+	@ApiResponse({ status: 500, type: InternalServerErrorException })
+	@ApiHeader({ name: &#x27;Range&#x27;, required: false })
+	@Get(&#x27;/preview/:fileRecordId/:fileName&#x27;)
+	async downloadPreview(
+		@Param() params: DownloadFileParams,
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() previewParams: PreviewParams,
+		@Req() req: Request,
+		@Res({ passthrough: true }) response: Response,
+		@Headers(&#x27;Range&#x27;) bytesRange?: string
+	): Promise&lt;StreamableFile&gt; {
+		const fileResponse &#x3D; await this.filesStorageUC.downloadPreview(
+			currentUser.userId,
+			params,
+			previewParams,
+			bytesRange
+		);
+
+		const streamableFile &#x3D; this.streamFileToClient(req, fileResponse, response, bytesRange);
+
+		return streamableFile;
+	}
+
+	private streamFileToClient(
+		req: Request,
+		fileResponse: IGetFileResponse,
+		httpResponse: Response,
+		bytesRange?: string
+	): StreamableFile {
+		req.on(&#x27;close&#x27;, () &#x3D;&gt; fileResponse.data.destroy());
 
 		// If bytes range has been defined, set Accept-Ranges and Content-Range HTTP headers
 		// in a response and also set 206 Partial Content HTTP status code to inform the caller
 		// about the partial data stream. Otherwise, just set a 200 OK HTTP status code.
 		if (bytesRange) {
-			response.set({
+			httpResponse.set({
 				&#x27;Accept-Ranges&#x27;: &#x27;bytes&#x27;,
-				&#x27;Content-Range&#x27;: res.contentRange,
+				&#x27;Content-Range&#x27;: fileResponse.contentRange,
 			});
 
-			response.status(HttpStatus.PARTIAL_CONTENT);
+			httpResponse.status(HttpStatus.PARTIAL_CONTENT);
 		} else {
-			response.status(HttpStatus.OK);
+			httpResponse.status(HttpStatus.OK);
 		}
 
-		// Return StreamableFile with stream data and options that will additionally set
-		// Content-Type, Content-Disposition and Content-Length headers in a response.
-		return new StreamableFile(res.data, {
-			type: res.contentType,
-			disposition: &#x60;inline; filename&#x3D;&quot;${encodeURI(params.fileName)}&quot;&#x60;,
-			length: res.contentLength,
-		});
+		const streamableFile &#x3D; FilesStorageMapper.mapToStreamableFile(fileResponse);
+
+		return streamableFile;
 	}
 
 	@ApiOperation({ summary: &#x27;Get a list of file meta data of a parent entityId.&#x27; })

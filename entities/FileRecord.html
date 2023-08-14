@@ -181,7 +181,7 @@ and instead just use the plain object ids.</p>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="118" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:118</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="128" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:128</a></div>
                         </td>
                     </tr>
 
@@ -218,7 +218,7 @@ and instead just use the plain object ids.</p>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="132" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:132</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="142" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:142</a></div>
                         </td>
                     </tr>
 
@@ -255,7 +255,7 @@ and instead just use the plain object ids.</p>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="111" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:111</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="121" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:121</a></div>
                         </td>
                     </tr>
 
@@ -291,7 +291,7 @@ and instead just use the plain object ids.</p>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="125" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:125</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="135" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:135</a></div>
                         </td>
                     </tr>
 
@@ -329,7 +329,7 @@ and instead just use the plain object ids.</p>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="91" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:91</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="101" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:101</a></div>
                         </td>
                     </tr>
 
@@ -365,7 +365,7 @@ and instead just use the plain object ids.</p>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="100" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:100</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="110" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:110</a></div>
                         </td>
                     </tr>
 
@@ -401,7 +401,7 @@ and instead just use the plain object ids.</p>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="97" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:97</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="107" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:107</a></div>
                         </td>
                     </tr>
 
@@ -438,7 +438,7 @@ and instead just use the plain object ids.</p>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="107" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:107</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="117" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:117</a></div>
                         </td>
                     </tr>
 
@@ -474,7 +474,7 @@ and instead just use the plain object ids.</p>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="103" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:103</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="113" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:113</a></div>
                         </td>
                     </tr>
 
@@ -510,7 +510,7 @@ and instead just use the plain object ids.</p>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="94" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:94</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="104" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:104</a></div>
                         </td>
                     </tr>
 
@@ -528,6 +528,7 @@ import { BadRequestException } from &#x27;@nestjs/common&#x27;;
 import { BaseEntityWithTimestamps, type EntityId } from &#x27;@shared/domain&#x27;;
 import { v4 as uuid } from &#x27;uuid&#x27;;
 import { ErrorType } from &#x27;../error&#x27;;
+import { PreviewInputMimeTypes } from &#x27;../interface/preview-input-mime-types.enum&#x27;;
 
 export enum ScanStatus {
 	PENDING &#x3D; &#x27;pending&#x27;,
@@ -545,6 +546,15 @@ export enum FileRecordParentType {
 	&#x27;Submission&#x27; &#x3D; &#x27;submissions&#x27;,
 	&#x27;BoardNode&#x27; &#x3D; &#x27;boardnodes&#x27;,
 }
+
+export enum PreviewStatus {
+	PREVIEW_POSSIBLE &#x3D; &#x27;preview_possible&#x27;,
+	AWAITING_SCAN_STATUS &#x3D; &#x27;awaiting_scan_status&#x27;,
+	PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR &#x3D; &#x27;preview_not_possible_scan_status_error&#x27;,
+	PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED &#x3D; &#x27;preview_not_possible_scan_status_blocked&#x27;,
+	PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE &#x3D; &#x27;preview_not_possible_wrong_mime_type&#x27;,
+}
+
 export interface IFileSecurityCheckProperties {
 	status?: ScanStatus;
 	reason?: string;
@@ -742,6 +752,12 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return isBlocked;
 	}
 
+	public hasScanStatusError(): boolean {
+		const hasError &#x3D; this.securityCheck.status &#x3D;&#x3D;&#x3D; ScanStatus.ERROR;
+
+		return hasError;
+	}
+
 	public isPending(): boolean {
 		const isPending &#x3D; this.securityCheck.status &#x3D;&#x3D;&#x3D; ScanStatus.PENDING;
 
@@ -762,6 +778,26 @@ export class FileRecord extends BaseEntityWithTimestamps {
 
 	public getSchoolId(): EntityId {
 		return this.schoolId;
+	}
+
+	public getPreviewStatus(): PreviewStatus {
+		if (this.isPending()) {
+			return PreviewStatus.AWAITING_SCAN_STATUS;
+		}
+
+		if (this.hasScanStatusError()) {
+			return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR;
+		}
+
+		if (this.isBlocked()) {
+			return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED;
+		}
+
+		if (!Object.values&lt;string&gt;(PreviewInputMimeTypes).includes(this.mimeType)) {
+			return PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE;
+		}
+
+		return PreviewStatus.PREVIEW_POSSIBLE;
 	}
 }
 </code></pre>
