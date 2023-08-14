@@ -5,7 +5,9 @@ export enum BoardRoles {
 	EDITOR = 'editor',
 	READER = 'reader',
 }
-
+/**
+	@deprecated This is a temporary solution. This will be replaced with a more proper permission system.
+ */
 export enum UserRoleEnum {
 	TEACHER = 'teacher',
 	STUDENT = 'student',
