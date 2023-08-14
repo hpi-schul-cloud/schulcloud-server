@@ -32,7 +32,7 @@ export class CommonCartridgeWebContentResource implements ICommonCartridgeElemen
 			$: {
 				identifier: this.props.identifier,
 				type: this.props.type,
-				intendedUse: this.props.intendedUse ?? CommonCartridgeIntendedUseType.UNSPECIFIED,
+				intendeduse: this.props.intendedUse ?? CommonCartridgeIntendedUseType.UNSPECIFIED,
 			},
 			file: {
 				$: {

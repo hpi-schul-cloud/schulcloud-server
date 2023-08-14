@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Course, EntityId, IComponentProperties, Lesson, Task } from '@shared/domain';
+import { Course, EntityId, IComponentProperties, Task } from '@shared/domain';
 import { LessonService } from '@src/modules/lesson/service';
 import { ComponentType } from '@src/shared/domain/entity/lesson.entity';
 import { TaskService } from '@src/modules/task/service';
@@ -8,11 +8,11 @@ import {
 	CommonCartridgeIntendedUseType,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
-	ICommonCartridgeOrganizationProps,
 	ICommonCartridgeResourceProps,
 	ICommonCartridgeWebContentResourceProps,
 } from '../common-cartridge';
 import { CourseService } from './course.service';
+import { createIdentifier } from '../common-cartridge/utils';
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -24,18 +24,35 @@ export class CommonCartridgeExportService {
 
 	async exportCourse(courseId: EntityId, userId: EntityId, version: CommonCartridgeVersion): Promise<Buffer> {
 		const course = await this.courseService.findById(courseId);
-		const [lessons] = await this.lessonService.findByCourseIds([courseId]);
-		const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
 		const builder = new CommonCartridgeFileBuilder({
-			identifier: `i${course.id}`,
+			identifier: createIdentifier(courseId),
 			title: course.name,
 			version,
 			copyrightOwners: this.mapCourseTeachersToCopyrightOwners(course),
 			creationYear: course.createdAt.getFullYear().toString(),
 		});
 
+		await this.addLessons(builder, version, courseId);
+		await this.addTasks(builder, version, courseId, userId);
+
+		return builder.build();
+	}
+
+	private async addLessons(
+		builder: CommonCartridgeFileBuilder,
+		version: CommonCartridgeVersion,
+		courseId: EntityId
+	): Promise<void> {
+		const [lessons] = await this.lessonService.findByCourseIds([courseId]);
+
 		lessons.forEach((lesson) => {
-			const organizationBuilder = builder.addOrganization(this.mapLessonToOrganization(lesson, version));
+			const organizationBuilder = builder.addOrganization({
+				version,
+				identifier: createIdentifier(lesson.id),
+				title: lesson.name,
+				resources: [],
+			});
+
 			lesson.contents.forEach((content) => {
 				const resourceProps = this.mapContentToResource(lesson.id, content, version);
 				if (resourceProps) {
@@ -43,22 +60,25 @@ export class CommonCartridgeExportService {
 				}
 			});
 		});
-
-		tasks.forEach((task) => {
-			const resourceProps = this.mapTaskToWebContentResource(task, version);
-			builder.addResourceToFile(resourceProps);
-		});
-
-		return builder.build();
 	}
 
-	private mapLessonToOrganization(lesson: Lesson, version: CommonCartridgeVersion): ICommonCartridgeOrganizationProps {
-		return {
-			identifier: `i${lesson.id}`,
+	private async addTasks(
+		builder: CommonCartridgeFileBuilder,
+		version: CommonCartridgeVersion,
+		courseId: EntityId,
+		userId: EntityId
+	): Promise<void> {
+		const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
+		const organizationBuilder = builder.addOrganization({
 			version,
-			title: lesson.name,
+			identifier: createIdentifier(),
+			title: 'Aufgaben',
 			resources: [],
-		};
+		});
+
+		tasks.forEach((task) => {
+			organizationBuilder.addResourceToOrganization(this.mapTaskToWebContentResource(task, version));
+		});
 	}
 
 	private mapContentToResource(
@@ -68,18 +88,19 @@ export class CommonCartridgeExportService {
 	): ICommonCartridgeResourceProps | undefined {
 		const commonProps = {
 			version,
-			identifier: `i${content._id as string}`,
-			href: `i${lessonId}/i${content._id as string}.xml`,
+			identifier: createIdentifier(content._id),
+			href: `${createIdentifier(lessonId)}/${createIdentifier(content._id)}.html`,
 			title: content.title,
 		};
 
 		if (content.component === ComponentType.TEXT) {
 			return {
 				version,
-				identifier: `i${content._id as string}`,
-				href: `i${lessonId}/i${content._id as string}.html`,
+				identifier: createIdentifier(content._id),
+				href: `${createIdentifier(lessonId)}/${createIdentifier(content._id)}.html`,
 				title: content.title,
 				type: CommonCartridgeResourceType.WEB_CONTENT,
+				intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 				html: `<h1>${content.title}</h1><p>${content.content.text}</p>`,
 			};
 		}
@@ -117,7 +138,7 @@ export class CommonCartridgeExportService {
 		task: Task,
 		version: CommonCartridgeVersion
 	): ICommonCartridgeWebContentResourceProps {
-		const taskIdentifier = `i${task._id.toString()}`;
+		const taskIdentifier = createIdentifier(task.id);
 		return {
 			version,
 			identifier: taskIdentifier,
