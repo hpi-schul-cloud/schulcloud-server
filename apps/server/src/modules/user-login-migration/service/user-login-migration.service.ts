@@ -113,6 +113,24 @@ export class UserLoginMigrationService {
 		return userLoginMigration;
 	}
 
+	async closeMigration(schoolId: string): Promise<UserLoginMigrationDO> {
+		let userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
+
+		if (!userLoginMigration) {
+			throw new UserLoginMigrationNotFoundLoggableException(schoolId);
+		}
+
+		const now: Date = new Date();
+		const gracePeriodDuration: number = Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number;
+
+		userLoginMigration.closedAt = now;
+		userLoginMigration.finishedAt = new Date(now.getTime() + gracePeriodDuration);
+
+		userLoginMigration = await this.userLoginMigrationRepo.save(userLoginMigration);
+
+		return userLoginMigration;
+	}
+
 	private async createNewMigration(school: SchoolDO): Promise<UserLoginMigrationDO> {
 		const oauthSystems: SystemDto[] = await this.systemService.findByType(SystemTypeEnum.OAUTH);
 		const sanisSystem: SystemDto | undefined = oauthSystems.find((system: SystemDto) => system.alias === 'SANIS');
