@@ -2,16 +2,16 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { H5PAjaxEndpoint, H5PEditor, H5PPlayer, H5pError } from '@lumieducation/h5p-server';
 import { HttpException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { LanguageType, UserDO } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
-import { UserRepo } from '@shared/repo';
-import { User } from '@shared/domain';
+import { UserService } from '@src/modules';
 import { H5PEditorUc } from './h5p.uc';
 
 describe('H5P Ajax', () => {
 	let module: TestingModule;
 	let uc: H5PEditorUc;
 	let ajaxEndpoint: DeepMocked<H5PAjaxEndpoint>;
-	let userRepo: DeepMocked<UserRepo>;
+	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -30,15 +30,15 @@ describe('H5P Ajax', () => {
 					useValue: createMock<H5PAjaxEndpoint>(),
 				},
 				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
+					provide: UserService,
+					useValue: createMock<UserService>(),
 				},
 			],
 		}).compile();
 
 		uc = module.get(H5PEditorUc);
 		ajaxEndpoint = module.get(H5PAjaxEndpoint);
-		userRepo = module.get(UserRepo);
+		userService = module.get(UserService);
 		await setupEntities();
 	});
 
@@ -64,7 +64,7 @@ describe('H5P Ajax', () => {
 			};
 
 			ajaxEndpoint.getAjax.mockResolvedValueOnce(dummyResponse);
-			userRepo.findById.mockResolvedValueOnce({ language: 'de' } as User);
+			userService.findById.mockResolvedValueOnce({ language: LanguageType.DE } as UserDO);
 
 			const result = await uc.getAjax({ action: 'content-type-cache' }, userMock);
 

@@ -92,6 +92,7 @@ export class H5PEditorUc {
 		files?: Express.Multer.File[]
 	) {
 		const user = this.changeUserType(currentUser);
+		const language = await this.getUserLanguage(currentUser);
 
 		try {
 			const filesFile = files?.find((file) => file.fieldname === 'file');
@@ -100,7 +101,7 @@ export class H5PEditorUc {
 			const result = await this.h5pAjaxEndpoint.postAjax(
 				query.action,
 				body,
-				query.language,
+				language,
 				user,
 				filesFile && {
 					data: filesFile.buffer,

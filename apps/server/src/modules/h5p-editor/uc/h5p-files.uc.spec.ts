@@ -2,12 +2,13 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { ContentMetadata } from '@lumieducation/h5p-server/build/src/ContentMetadata';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
+import { UserService } from '@src/modules';
 import { Request } from 'express';
 import { Readable } from 'stream';
-import { H5PEditorUc } from './h5p.uc';
-import { LibraryStorage, ContentStorage, H5PAjaxEndpointService, H5PEditorService, H5PPlayerService } from '../service';
-import { TemporaryFileStorage } from '../service/temporary-file-storage.service';
 import { TemporaryFile } from '../entity/temporary-file.entity';
+import { ContentStorage, H5PAjaxEndpointService, H5PEditorService, H5PPlayerService, LibraryStorage } from '../service';
+import { TemporaryFileStorage } from '../service/temporary-file-storage.service';
+import { H5PEditorUc } from './h5p.uc';
 
 describe('H5P Files', () => {
 	let module: TestingModule;
@@ -34,6 +35,10 @@ describe('H5P Files', () => {
 				{
 					provide: TemporaryFileStorage,
 					useValue: createMock<TemporaryFileStorage>(),
+				},
+				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
 				},
 			],
 		}).compile();

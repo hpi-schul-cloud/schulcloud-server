@@ -1,9 +1,10 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { H5PEditor, H5PPlayer } from '@lumieducation/h5p-server';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
 import { UserRepo } from '@shared/repo';
+import { setupEntities } from '@shared/testing';
+import { UserService } from '@src/modules';
+import { ICurrentUser } from '@src/modules/authentication';
 import { H5PAjaxEndpointService } from '../service';
 import { H5PEditorUc } from './h5p.uc';
 
@@ -16,6 +17,8 @@ const setup = () => {
 		schoolId: '',
 		accountId: '',
 	};
+
+	const language = 'de';
 
 	const playerModel = {
 		contentId,
@@ -36,22 +39,7 @@ const setup = () => {
 		},
 	};
 
-	return { contentId, contentIdCreate, currentUser, playerModel, editorModel, exampleContent };
-	const editorModel = {
-		scripts: ['example.js'],
-		styles: ['example.css'],
-	};
-
-	const exampleContent = {
-		h5p: {},
-		library: 'ExampleLib-1.0',
-		params: {
-			metadata: {},
-			params: { anything: true },
-		},
-	};
-
-	return { contentId, contentIdCreate, language, currentUser, playerModel, editorModel, exampleContent };
+	return { contentId, contentIdCreate, currentUser, playerModel, editorModel, exampleContent, language };
 };
 
 describe('get H5P editor', () => {
@@ -76,6 +64,10 @@ describe('get H5P editor', () => {
 					provide: UserRepo,
 					useValue: createMock<UserRepo>(),
 				},
+				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
+				},
 			],
 		}).compile();
 
@@ -94,9 +86,6 @@ describe('get H5P editor', () => {
 
 	describe('when value of contentId is create', () => {
 		it('should render new h5p editor', async () => {
-			const { currentUser, editorModel } = setup();
-			h5pEditor.render.mockResolvedValueOnce(editorModel);
-			const result = await uc.getEmptyH5pEditor(currentUser);
 			const { language, currentUser, editorModel } = setup();
 			h5pEditor.render.mockResolvedValueOnce(editorModel);
 			const result = await uc.getEmptyH5pEditor(currentUser, language);
@@ -107,11 +96,6 @@ describe('get H5P editor', () => {
 
 	describe('when contentId is given', () => {
 		it('should render h5p editor', async () => {
-			const { contentId, currentUser, editorModel, exampleContent } = setup();
-			h5pEditor.render.mockResolvedValueOnce(editorModel);
-			// @ts-expect-error partial object
-			h5pEditor.getContent.mockResolvedValueOnce(exampleContent);
-			const result = await uc.getH5pEditor(currentUser, contentId);
 			const { contentId, language, currentUser, editorModel, exampleContent } = setup();
 			h5pEditor.render.mockResolvedValueOnce(editorModel);
 			// @ts-expect-error partial object
@@ -124,9 +108,9 @@ describe('get H5P editor', () => {
 
 	describe('when contentId does not exist', () => {
 		it('should throw an error ', async () => {
-			const { contentId, currentUser } = setup();
+			const { contentId, currentUser, language } = setup();
 			h5pEditor.render.mockRejectedValueOnce(new Error('Could not get H5P editor'));
-			const result = uc.getH5pEditor(currentUser, contentId);
+			const result = uc.getH5pEditor(currentUser, contentId, language);
 
 			await expect(result).rejects.toThrow();
 		});
