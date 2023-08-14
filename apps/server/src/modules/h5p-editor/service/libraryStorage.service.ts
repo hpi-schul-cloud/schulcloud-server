@@ -1,4 +1,5 @@
 import {
+	H5pError,
 	LibraryName,
 	streamToString,
 	type IAdditionalLibraryMetadata,
@@ -12,7 +13,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 import { FileDto } from '@src/modules/files-storage/dto';
 import path from 'node:path/posix';
-import type { Readable } from 'stream';
+import { Readable } from 'stream';
 import { InstalledLibrary } from '../entity/library.entity';
 import { LibraryRepo } from '../repo/library.repo';
 
@@ -32,27 +33,17 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param filename the requested file
 	 */
 	private checkFilename(filename: string): void {
-		if (path.normalize(filename).startsWith(`..${path.sep}`) || path.isAbsolute(filename)) {
-			throw new Error('Illegal filename');
+		if (/\.\.\//.test(filename)) {
+			throw new H5pError('illegal-filename', { filename }, 400);
+		}
+		if (filename.startsWith('/')) {
+			throw new H5pError('illegal-filename', { filename }, 400);
 		}
 	}
 
-	/**
-	 * Returns the path of the file from the library.
-	 * @param library
-	 * @param filename
-	 * @returns the absolute path to the file
-	 */
-	private getFilePath(library: ILibraryName, filename: string): string {
+	private getS3Key(library: ILibraryName, filename: string) {
 		const uberName = LibraryName.toUberName(library);
-		const filePath = path.join('h5p-libraries', uberName, filename);
-		return filePath;
-	}
-
-	private getLibraryPath(library: ILibraryName): string {
-		const uberName = LibraryName.toUberName(library);
-		const filePath = path.join('h5p-libraries', uberName);
-		return filePath;
+		return `h5p-libraries/${uberName}/${filename}`;
 	}
 
 	/**
@@ -65,19 +56,23 @@ export class LibraryStorage implements ILibraryStorage {
 	public async addFile(libraryName: ILibraryName, filename: string, dataStream: Readable): Promise<boolean> {
 		this.checkFilename(filename); // TODO: do this everywhere?
 
-		const filepath = this.getFilePath(libraryName, filename);
+		const s3Key = this.getS3Key(libraryName, filename);
 
 		try {
 			await this.s3Client.create(
-				filepath,
+				s3Key,
 				new FileDto({
-					name: filepath,
+					name: s3Key,
 					mimeType: 'application/octet-stream',
 					data: dataStream,
 				})
 			);
 		} catch (error) {
-			throw new Error('COULD NOT ADD FILE');
+			throw new H5pError(
+				`mongo-s3-library-storage:s3-upload-error`,
+				{ ubername: LibraryName.toUberName(libraryName), filename },
+				500
+			);
 		}
 
 		return true;
@@ -140,9 +135,15 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param library
 	 */
 	public async clearFiles(libraryName: ILibraryName): Promise<void> {
-		const files = await this.s3Client.list(this.getLibraryPath(libraryName));
+		if (!(await this.isInstalled(libraryName))) {
+			throw new H5pError('mongo-s3-library-storage:clear-library-not-found', {
+				ubername: LibraryName.toUberName(libraryName),
+			});
+		}
 
-		await this.s3Client.delete(files.map((file) => this.getFilePath(libraryName, file)));
+		const filesToDelete = await this.listFiles(libraryName);
+
+		await this.s3Client.delete(filesToDelete.map((file) => this.getS3Key(libraryName, file)));
 	}
 
 	/**
@@ -150,14 +151,18 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param library
 	 */
 	public async deleteLibrary(libraryName: ILibraryName): Promise<void> {
+		if (!(await this.isInstalled(libraryName))) {
+			throw new H5pError('mongo-s3-library-storage:library-not-found');
+		}
+
+		await this.clearFiles(libraryName);
+
 		const library = await this.libraryRepo.findOneByNameAndVersionOrFail(
 			libraryName.machineName,
 			libraryName.majorVersion,
 			libraryName.minorVersion
 		);
 
-		const files = await this.s3Client.list(this.getLibraryPath(libraryName));
-		await this.s3Client.delete(files.map((file) => this.getFilePath(libraryName, file)));
 		await this.libraryRepo.delete(library);
 	}
 
@@ -168,8 +173,10 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @returns true if the file exists, false otherwise
 	 */
 	public async fileExists(libraryName: ILibraryName, filename: string): Promise<boolean> {
+		this.checkFilename(filename);
+
 		try {
-			await this.s3Client.head(this.getFilePath(libraryName, filename));
+			await this.s3Client.head(this.getS3Key(libraryName, filename));
 			return true;
 		} catch (error) {
 			return false;
@@ -243,9 +250,8 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param file
 	 */
 	public async getFileAsString(library: ILibraryName, file: string): Promise<string> {
-		const response = await this.s3Client.get(this.getFilePath(library, file));
-
-		const data = await streamToString(response.data);
+		const stream = await this.getFileStream(library, file);
+		const data = await streamToString(stream);
 		return data;
 	}
 
@@ -255,7 +261,9 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param file
 	 */
 	public async getFileStats(libraryName: ILibraryName, file: string): Promise<IFileStats> {
-		const head = await this.s3Client.head(this.getFilePath(libraryName, file));
+		this.checkFilename(file);
+
+		const head = await this.s3Client.head(this.getS3Key(libraryName, file));
 
 		return {
 			birthtime: head.LastModified!,
@@ -269,7 +277,15 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param file
 	 */
 	public async getFileStream(library: ILibraryName, file: string): Promise<Readable> {
-		const response = await this.s3Client.get(this.getFilePath(library, file));
+		this.checkFilename(file);
+
+		if (file === 'library.json') {
+			const metadata = JSON.stringify(await this.getMetadata(library));
+			const readable = Readable.from(metadata);
+			return readable;
+		}
+
+		const response = await this.s3Client.get(this.getS3Key(library, file));
 		return response.data;
 	}
 
@@ -289,20 +305,11 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param library
 	 */
 	public async getLanguages(libraryName: ILibraryName): Promise<string[]> {
-		const library = await this.libraryRepo.findOneByNameAndVersionOrFail(
-			libraryName.machineName,
-			libraryName.majorVersion,
-			libraryName.minorVersion
-		);
+		const prefix = this.getS3Key(libraryName, 'language');
 
-		const languages: string[] = [];
-		for (const file of library.files) {
-			if (file.name.startsWith('language') && file.name.endsWith('.json')) {
-				languages.push(path.basename(file.name, '.json'));
-			}
-		}
+		const files = await this.s3Client.list(prefix);
 
-		return languages;
+		return files.filter((file) => path.extname(file) === '.json').map((file) => path.basename(file, '.json'));
 	}
 
 	/**
@@ -347,7 +354,7 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @returns an array of filenames
 	 */
 	public async listFiles(libraryName: ILibraryName): Promise<string[]> {
-		const files = await this.s3Client.list(this.getLibraryPath(libraryName));
+		const files = await this.s3Client.list(this.getS3Key(libraryName, ''));
 		return files;
 	}
 
@@ -403,5 +410,19 @@ export class LibraryStorage implements ILibraryStorage {
 		}
 
 		return existingLibrary;
+	}
+
+	private async getMetadata(library: ILibraryName): Promise<ILibraryMetadata> {
+		if (!library) {
+			throw new Error('You must pass in a library name to getLibrary.');
+		}
+
+		const result = await this.libraryRepo.findOneByNameAndVersionOrFail(
+			library.machineName,
+			library.majorVersion,
+			library.minorVersion
+		);
+
+		return result;
 	}
 }
