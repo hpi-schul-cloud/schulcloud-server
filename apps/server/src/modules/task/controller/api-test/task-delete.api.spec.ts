@@ -15,7 +15,6 @@ import { ServerTestModule } from '@src/modules/server';
 
 const createStudent = () => {
 	const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({}, [
-		Permission.TASK_CARD_VIEW,
 		Permission.TASK_DASHBOARD_VIEW_V3,
 		Permission.HOMEWORK_VIEW,
 	]);
@@ -64,7 +63,7 @@ describe('Task Controller (API)', () => {
 				teachers: [teacher.user],
 				students: [student.user],
 			});
-			const task = taskFactory.isPublished().build({ course, users: [student.user] });
+			const task = taskFactory.isPublished().build({ course });
 
 			await em.persistAndFlush([teacher.user, teacher.account, student.user, student.account, task]);
 			em.clear();
