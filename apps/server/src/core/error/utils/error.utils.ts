@@ -1,4 +1,4 @@
-import { HttpException } from '@nestjs/common';
+import { HttpException, HttpExceptionOptions } from '@nestjs/common';
 import { BusinessError } from '@shared/common';
 import { FeathersError } from '../interface';
 
@@ -19,5 +19,17 @@ export class ErrorUtils {
 
 	static isNestHttpException(error: unknown): error is HttpException {
 		return error instanceof HttpException;
+	}
+
+	static convertUnknownError(error: unknown, description?: string): HttpExceptionOptions {
+		let causeError: Error | undefined;
+
+		if (error instanceof Error) {
+			causeError = error;
+		} else {
+			causeError = error ? new Error(JSON.stringify(error)) : undefined;
+		}
+
+		return { cause: causeError, description };
 	}
 }

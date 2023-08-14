@@ -1,5 +1,6 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ErrorUtils } from '@src/core/error/utils';
 import { API_VERSION_PATH, FilesStorageInternalActions } from '@src/modules/files-storage/files-storage.const';
 
 interface AntivirusServiceOptions {
@@ -17,16 +18,20 @@ export class AntivirusService {
 	) {}
 
 	public send(requestToken: string | undefined) {
-		if (this.options.enabled && requestToken) {
-			const downloadUri = this.getUrl(FilesStorageInternalActions.downloadBySecurityToken, requestToken);
-			const callbackUri = this.getUrl(FilesStorageInternalActions.updateSecurityStatus, requestToken);
+		try {
+			if (this.options.enabled && requestToken) {
+				const downloadUri = this.getUrl(FilesStorageInternalActions.downloadBySecurityToken, requestToken);
+				const callbackUri = this.getUrl(FilesStorageInternalActions.updateSecurityStatus, requestToken);
 
-			this.amqpConnection.publish(
-				this.options.exchange,
-				this.options.routingKey,
-				{ download_uri: downloadUri, callback_uri: callbackUri },
-				{ persistent: true }
-			);
+				this.amqpConnection.publish(
+					this.options.exchange,
+					this.options.routingKey,
+					{ download_uri: downloadUri, callback_uri: callbackUri },
+					{ persistent: true }
+				);
+			}
+		} catch (err) {
+			throw new InternalServerErrorException(ErrorUtils.convertUnknownError(err, 'AntivirusService:send'));
 		}
 	}
 

@@ -9,6 +9,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ErrorUtils } from '@src/core/error/utils';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
 import { FileDto } from '../dto';
@@ -37,9 +38,7 @@ export class S3ClientAdapter implements IStorageClient {
 			if (err instanceof Error) {
 				this.logger.error(`${err.message} "${this.config.bucket}"`);
 			}
-			throw new InternalServerErrorException('S3ClientAdapter:createBucket', {
-				cause: err instanceof Error ? err : undefined,
-			});
+			throw new InternalServerErrorException('S3ClientAdapter:createBucket', ErrorUtils.convertUnknownError(err));
 		}
 	}
 
@@ -70,9 +69,7 @@ export class S3ClientAdapter implements IStorageClient {
 				this.logger.log(`could not find one of the files for deletion with id ${path}`);
 				throw new NotFoundException('NoSuchKey');
 			}
-			throw new InternalServerErrorException('S3ClientAdapter:get', {
-				cause: err instanceof Error ? err : undefined,
-			});
+			throw new InternalServerErrorException('S3ClientAdapter:get', ErrorUtils.convertUnknownError(err));
 		}
 	}
 
@@ -101,9 +98,7 @@ export class S3ClientAdapter implements IStorageClient {
 				return await this.create(path, file);
 			}
 
-			throw new InternalServerErrorException('S3ClientAdapter:create', {
-				cause: err instanceof Error ? err : undefined,
-			});
+			throw new InternalServerErrorException('S3ClientAdapter:create', ErrorUtils.convertUnknownError(err));
 		}
 	}
 
@@ -126,9 +121,7 @@ export class S3ClientAdapter implements IStorageClient {
 				this.logger.log(`could not find one of the files for deletion with ids ${paths.join(',')}`);
 				return [];
 			}
-			throw new InternalServerErrorException('S3ClientAdapter:delete', {
-				cause: err instanceof Error ? err : undefined,
-			});
+			throw new InternalServerErrorException('S3ClientAdapter:delete', ErrorUtils.convertUnknownError(err));
 		}
 	}
 
@@ -149,9 +142,7 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return result;
 		} catch (err) {
-			throw new InternalServerErrorException('S3ClientAdapter:restore', {
-				cause: err instanceof Error ? err : undefined,
-			});
+			throw new InternalServerErrorException('S3ClientAdapter:restore', ErrorUtils.convertUnknownError(err));
 		}
 	}
 
@@ -175,24 +166,28 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return result;
 		} catch (err) {
-			throw new InternalServerErrorException('S3ClientAdapter:copy', {
-				cause: err instanceof Error ? err : undefined,
-			});
+			throw new InternalServerErrorException('S3ClientAdapter:copy', ErrorUtils.convertUnknownError(err));
 		}
 	}
 
 	public async delete(paths: string[]) {
-		this.logger.log({ action: 'delete', params: { paths, bucket: this.config.bucket } });
+		try {
+			this.logger.log({ action: 'delete', params: { paths, bucket: this.config.bucket } });
 
-		const pathObjects = paths.map((p) => {
-			return { Key: p };
-		});
-		const req = new DeleteObjectsCommand({
-			Bucket: this.config.bucket,
-			Delete: { Objects: pathObjects },
-		});
+			const pathObjects = paths.map((p) => {
+				return { Key: p };
+			});
+			const req = new DeleteObjectsCommand({
+				Bucket: this.config.bucket,
+				Delete: { Objects: pathObjects },
+			});
 
-		return this.client.send(req);
+			const result = await this.client.send(req);
+
+			return result;
+		} catch (err) {
+			throw new InternalServerErrorException('S3ClientAdapter:delete', ErrorUtils.convertUnknownError(err));
+		}
 	}
 
 	/* istanbul ignore next */

@@ -1,6 +1,7 @@
 import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { BaseDO, EntityId, User } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object';
+import { ErrorUtils } from '@src/core/error/utils';
 import { AuthorizationHelper } from './authorization.helper';
 import { ForbiddenLoggableException } from './errors/forbidden.loggable-exception';
 import { ReferenceLoader } from './reference.loader';
@@ -62,7 +63,9 @@ export class AuthorizationService {
 
 			return hasPermission;
 		} catch (error) {
-			throw new ForbiddenException(null, { cause: error instanceof Error ? error : undefined });
+			throw new ForbiddenException(
+				ErrorUtils.convertUnknownError(error, 'AuthorizationService:hasPermissionByReferences')
+			);
 		}
 	}
 

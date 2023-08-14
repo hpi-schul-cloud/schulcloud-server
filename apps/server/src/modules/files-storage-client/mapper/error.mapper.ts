@@ -1,5 +1,6 @@
 import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { ApiValidationError } from '@shared/common';
+import { ErrorUtils } from '@src/core/error/utils';
 import { FileStorageError, IFileStorageError } from '../interfaces';
 
 export const isValidationError = (error: IFileStorageError): boolean => {
@@ -17,7 +18,10 @@ export class ErrorMapper {
 		} else if (errorObj.status === 403) {
 			error = new ForbiddenException(errorObj.message);
 		} else {
-			error = new InternalServerErrorException(errorObj.message, { cause: errorObj });
+			error = new InternalServerErrorException(
+				'FileStorageClientErrorMapper',
+				ErrorUtils.convertUnknownError(errorObj)
+			);
 		}
 
 		return error;

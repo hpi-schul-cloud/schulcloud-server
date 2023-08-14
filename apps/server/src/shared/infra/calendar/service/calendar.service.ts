@@ -5,7 +5,7 @@ import { EntityId } from '@shared/domain';
 import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
 import { CalendarMapper } from '@shared/infra/calendar/mapper/calendar.mapper';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { firstValueFrom, Observable } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { URL, URLSearchParams } from 'url';
 import { ICalendarEvent } from '../interface/calendar-event.interface';
 
@@ -32,11 +32,7 @@ export class CalendarService {
 				},
 				timeout: this.timeoutMs,
 			})
-		)
-			.then((resp: AxiosResponse<ICalendarEvent>) => this.calendarMapper.mapToDto(resp.data))
-			.catch((error) => {
-				throw error;
-			});
+		).then((resp: AxiosResponse<ICalendarEvent>) => this.calendarMapper.mapToDto(resp.data));
 	}
 
 	private get(

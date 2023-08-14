@@ -1,13 +1,14 @@
-import crypto from 'crypto';
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { AxiosResponse } from 'axios';
 import { HttpService } from '@nestjs/axios';
-import { URL, URLSearchParams } from 'url';
-import { firstValueFrom, Observable } from 'rxjs';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConverterUtil } from '@shared/common/utils';
+import { ErrorUtils } from '@src/core/error/utils';
+import { AxiosResponse } from 'axios';
+import crypto from 'crypto';
+import { Observable, firstValueFrom } from 'rxjs';
+import { URL, URLSearchParams } from 'url';
 import { BbbSettings, IBbbSettings } from './bbb-settings.interface';
-import { BBBBaseResponse, BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse, BBBStatus } from './response';
 import { BBBBaseMeetingConfig, BBBCreateConfig, BBBJoinConfig } from './request';
+import { BBBBaseResponse, BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse, BBBStatus } from './response';
 
 @Injectable()
 export class BBBService {
@@ -51,7 +52,7 @@ export class BBBService {
 				return bbbResp as BBBResponse<BBBCreateResponse>;
 			})
 			.catch((error) => {
-				throw error;
+				throw new InternalServerErrorException(ErrorUtils.convertUnknownError(error, 'BBBService:create'));
 			});
 	}
 
@@ -91,7 +92,7 @@ export class BBBService {
 				return bbbResp;
 			})
 			.catch((error) => {
-				throw error;
+				throw new InternalServerErrorException(ErrorUtils.convertUnknownError(error, 'BBBService:end'));
 			});
 	}
 
@@ -116,7 +117,7 @@ export class BBBService {
 				return bbbResp as BBBResponse<BBBMeetingInfoResponse>;
 			})
 			.catch((error) => {
-				throw error;
+				throw new InternalServerErrorException(ErrorUtils.convertUnknownError(error, 'BBBService:getMeetingInfo'));
 			});
 	}
 
