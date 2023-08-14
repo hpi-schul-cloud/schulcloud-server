@@ -72,7 +72,8 @@ export class CommonCartridgeExportService {
 		const organizationBuilder = builder.addOrganization({
 			version,
 			identifier: createIdentifier(),
-			title: 'Aufgaben',
+			// FIXME: change the title for tasks organization
+			title: '',
 			resources: [],
 		});
 
@@ -146,7 +147,10 @@ export class CommonCartridgeExportService {
 			title: task.name,
 			type: CommonCartridgeResourceType.WEB_CONTENT,
 			html: `<h1>${task.name}</h1><p>${task.description}</p>`,
-			intendedUse: CommonCartridgeIntendedUseType.ASSIGNMENT,
+			intendedUse:
+				version === CommonCartridgeVersion.V_1_1_0
+					? CommonCartridgeIntendedUseType.UNSPECIFIED
+					: CommonCartridgeIntendedUseType.ASSIGNMENT,
 		};
 	}
 }
