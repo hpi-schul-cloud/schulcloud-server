@@ -50,7 +50,7 @@ export class BoardDoRepo {
 		return domainObjects;
 	}
 
-	async getTitleById(id: EntityId[] | EntityId): Promise<Record<EntityId, string>> {
+	async getTitlesByIds(id: EntityId[] | EntityId): Promise<Record<EntityId, string>> {
 		const ids = Utils.asArray(id);
 		const boardNodes = await this.em.find(BoardNode, { id: { $in: ids } });
 
