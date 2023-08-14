@@ -25,9 +25,8 @@ export function resolveFileNameDuplicates(filename: string, fileRecords: FileRec
 
 export function createPreviewNameHash(fileRecordId: EntityId, previewParams: PreviewParams): string {
 	const width = previewParams.width ?? '';
-	const height = previewParams.height ?? '';
 	const format = previewParams.outputFormat ?? '';
-	const fileParamsString = `${fileRecordId}${width}${height}${format}`;
+	const fileParamsString = `${fileRecordId}${width}${format}`;
 	const hash = crypto.createHash('md5').update(fileParamsString).digest('hex');
 
 	return hash;

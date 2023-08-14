@@ -121,10 +121,10 @@ export class PreviewService {
 		const im = subClass({ imageMagick: true });
 
 		const preview = im(original.data, fileRecord.name);
-		const { width, height } = previewParams;
+		const { width } = previewParams;
 
 		if (width) {
-			preview.resize(width, height);
+			preview.resize(width);
 		}
 
 		const result = preview.stream(format);

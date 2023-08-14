@@ -3,7 +3,7 @@ import { StringToBoolean } from '@shared/controller';
 import { EntityId } from '@shared/domain';
 import { Allow, IsBoolean, IsEnum, IsMongoId, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { FileRecordParentType } from '../../entity';
-import { PreviewHeight, PreviewOutputMimeTypes, PreviewWidth } from '../../interface';
+import { PreviewOutputMimeTypes, PreviewWidth } from '../../interface';
 
 export class FileRecordParams {
 	@ApiProperty()
@@ -115,11 +115,6 @@ export class PreviewParams {
 	@IsOptional()
 	@IsEnum(PreviewWidth)
 	width?: PreviewWidth;
-
-	@ApiPropertyOptional({ enum: PreviewHeight, enumName: 'PreviewHeight' })
-	@IsOptional()
-	@IsEnum(PreviewHeight)
-	height?: PreviewHeight;
 
 	@IsOptional()
 	@IsBoolean()

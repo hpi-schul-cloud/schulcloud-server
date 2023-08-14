@@ -16,7 +16,7 @@ import { S3ClientAdapter } from '../../client/s3-client.adapter';
 import { FileRecord, ScanStatus } from '../../entity';
 import { ErrorType } from '../../error';
 import { TestHelper } from '../../helper/test-helper';
-import { PreviewHeight, PreviewWidth } from '../../interface';
+import { PreviewWidth } from '../../interface';
 import { PreviewOutputMimeTypes } from '../../interface/preview-output-mime-types.enum';
 
 class API {
@@ -72,7 +72,6 @@ const createRndInt = (max) => Math.floor(Math.random() * max);
 
 const defaultQueryParameters = {
 	width: PreviewWidth.WIDTH_500,
-	height: PreviewHeight.HEIGHT_1000,
 	outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
 };
 
@@ -173,26 +172,6 @@ describe('File Controller (API) - preview', () => {
 						{
 							errors: ['width must be one of the following values: 500'],
 							field: ['width'],
-						},
-					]);
-					expect(response.status).toEqual(400);
-				});
-			});
-
-			describe('WHEN height is other than PreviewWidth Enum', () => {
-				it('should return status 400', async () => {
-					const { result } = await api.postUploadFile(uploadPath);
-					const query = {
-						...defaultQueryParameters,
-						height: 2000,
-					};
-
-					const response = await api.getPreview(`/file/preview/${result.id}/${result.name}`, query);
-
-					expect(response.error.validationErrors).toEqual([
-						{
-							errors: ['height must be one of the following values: 1000'],
-							field: ['height'],
 						},
 					]);
 					expect(response.status).toEqual(400);

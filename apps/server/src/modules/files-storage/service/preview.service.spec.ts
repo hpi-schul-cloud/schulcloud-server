@@ -11,7 +11,7 @@ import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
 import { createPreviewDirectoryPath, createPreviewFilePath, createPreviewNameHash } from '../helper';
 import { TestHelper } from '../helper/test-helper';
-import { PreviewHeight, PreviewWidth } from '../interface';
+import { PreviewWidth } from '../interface';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
 import { FileDtoBuilder, FileResponseBuilder } from '../mapper';
 import { FilesStorageService } from './files-storage.service';
@@ -53,10 +53,9 @@ const defaultPreviewParams = {
 	forceUpdate: false,
 };
 
-const defaultPreviewParamsWithWidthAndHeight = {
+const defaultPreviewParamsWithWidth = {
 	...defaultPreviewParams,
 	width: PreviewWidth.WIDTH_500,
-	height: PreviewHeight.HEIGHT_1000,
 };
 
 describe('PreviewService', () => {
@@ -102,7 +101,7 @@ describe('PreviewService', () => {
 	describe('getPreview is called', () => {
 		describe('WHEN preview is possbile', () => {
 			describe('WHEN forceUpdate is true', () => {
-				describe('WHEN width, height and outputformat are not set', () => {
+				describe('WHEN width and outputformat are not set', () => {
 					describe('WHEN download of original and preview file is successfull', () => {
 						const setup = () => {
 							const bytesRange = 'bytes=0-100';
@@ -269,7 +268,7 @@ describe('PreviewService', () => {
 					});
 				});
 
-				describe('WHEN width, height and outputFormat are set', () => {
+				describe('WHEN width and outputFormat are set', () => {
 					describe('WHEN download of original and preview file is successfull', () => {
 						const setup = () => {
 							const bytesRange = 'bytes=0-100';
@@ -280,7 +279,7 @@ describe('PreviewService', () => {
 								fileName: fileRecord.name,
 							};
 							const previewParams = {
-								...defaultPreviewParamsWithWidthAndHeight,
+								...defaultPreviewParamsWithWidth,
 								forceUpdate: true,
 							};
 							const format = previewParams.outputFormat.split('/')[1];
@@ -329,7 +328,7 @@ describe('PreviewService', () => {
 
 							await previewService.getPreview(fileRecord, downloadParams, previewParams);
 
-							expect(resizeMock).toHaveBeenCalledWith(previewParams.width, previewParams.height);
+							expect(resizeMock).toHaveBeenCalledWith(previewParams.width);
 							expect(resizeMock).toHaveBeenCalledTimes(1);
 						});
 
@@ -397,7 +396,7 @@ describe('PreviewService', () => {
 			});
 
 			describe('WHEN forceUpdate is false', () => {
-				describe('WHEN width, height and outputFormat are set', () => {
+				describe('WHEN width and outputFormat are set', () => {
 					describe('WHEN S3ClientAdapter get returns already stored preview file', () => {
 						const setup = () => {
 							const mimeType = 'image/png';
@@ -407,7 +406,7 @@ describe('PreviewService', () => {
 								fileName: fileRecord.name,
 							};
 							const previewParams = {
-								...defaultPreviewParamsWithWidthAndHeight,
+								...defaultPreviewParamsWithWidth,
 							};
 							const format = previewParams.outputFormat.split('/')[1];
 
@@ -470,7 +469,7 @@ describe('PreviewService', () => {
 								fileName: fileRecord.name,
 							};
 							const previewParams = {
-								...defaultPreviewParamsWithWidthAndHeight,
+								...defaultPreviewParamsWithWidth,
 							};
 							const format = previewParams.outputFormat.split('/')[1];
 
@@ -521,7 +520,7 @@ describe('PreviewService', () => {
 
 							await previewService.getPreview(fileRecord, downloadParams, previewParams);
 
-							expect(resizeMock).toHaveBeenCalledWith(previewParams.width, previewParams.height);
+							expect(resizeMock).toHaveBeenCalledWith(previewParams.width);
 							expect(resizeMock).toHaveBeenCalledTimes(1);
 						});
 
@@ -570,7 +569,7 @@ describe('PreviewService', () => {
 								fileName: fileRecord.name,
 							};
 							const previewParams = {
-								...defaultPreviewParamsWithWidthAndHeight,
+								...defaultPreviewParamsWithWidth,
 							};
 							const format = previewParams.outputFormat.split('/')[1];
 

@@ -241,14 +241,12 @@ describe('File Name Helper', () => {
 			it('should return hash', () => {
 				const fileRecordId = new ObjectId().toHexString();
 				const width = 100;
-				const height = 100;
 				const outputFormat = PreviewOutputMimeTypes.IMAGE_WEBP;
 				const previewParams = {
 					width,
-					height,
 					outputFormat,
 				};
-				const fileParamsString = `${fileRecordId}${width}${height}${outputFormat}`;
+				const fileParamsString = `${fileRecordId}${width}${outputFormat}`;
 				const hash = crypto.createHash('md5').update(fileParamsString).digest('hex');
 
 				const result = createPreviewNameHash(fileRecordId, previewParams);
