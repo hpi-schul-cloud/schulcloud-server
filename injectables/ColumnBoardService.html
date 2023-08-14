@@ -847,7 +847,7 @@ export class ColumnBoardService {
 	}
 
 	async getBoardObjectTitlesById(boardIds: EntityId[]): Promise&lt;Record&lt;EntityId, string&gt;&gt; {
-		const titleMap &#x3D; this.boardDoRepo.getTitleById(boardIds);
+		const titleMap &#x3D; this.boardDoRepo.getTitlesByIds(boardIds);
 		return titleMap;
 	}
 

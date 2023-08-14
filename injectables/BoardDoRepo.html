@@ -114,7 +114,7 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#getTitleById" >getTitleById</a>
+                                <a href="#getTitlesByIds" >getTitlesByIds</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -756,18 +756,18 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getTitleById"></a>
+                    <a name="getTitlesByIds"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
-                        <span ><b>getTitleById</b></span>
-                        <a href="#getTitleById"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getTitlesByIds</b></span>
+                        <a href="#getTitlesByIds"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getTitleById(id: <a href="../undefineds/EntityId.html" target="_self">EntityId[] | EntityId</a>)</code>
+                    <code>getTitlesByIds(id: <a href="../undefineds/EntityId.html" target="_self">EntityId[] | EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -964,7 +964,7 @@ export class BoardDoRepo {
 		return domainObjects;
 	}
 
-	async getTitleById(id: EntityId[] | EntityId): Promise&lt;Record&lt;EntityId, string&gt;&gt; {
+	async getTitlesByIds(id: EntityId[] | EntityId): Promise&lt;Record&lt;EntityId, string&gt;&gt; {
 		const ids &#x3D; Utils.asArray(id);
 		const boardNodes &#x3D; await this.em.find(BoardNode, { id: { $in: ids } });
 
