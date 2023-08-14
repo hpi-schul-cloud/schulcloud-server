@@ -76,7 +76,7 @@ export const customParameterFactory = CustomParameterFactory.define(CustomParame
 		name: `custom-parameter-${sequence}`,
 		displayName: 'User Friendly Name',
 		type: CustomParameterType.STRING,
-		scope: CustomParameterScope.GLOBAL,
+		scope: CustomParameterScope.SCHOOL,
 		location: CustomParameterLocation.BODY,
 		isOptional: false,
 	};
