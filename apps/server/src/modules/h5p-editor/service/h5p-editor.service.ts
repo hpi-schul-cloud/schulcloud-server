@@ -1,11 +1,11 @@
 import { H5PEditor, cacheImplementations } from '@lumieducation/h5p-server';
 
+import { IH5PEditorOptions, ITranslationFunction } from '@lumieducation/h5p-server/build/src/types';
+import { h5pConfig, h5pUrlGenerator } from './config/h5p-service-config';
 import { ContentStorage } from './contentStorage.service';
+import { Translator } from './h5p-translator.service';
 import { LibraryStorage } from './libraryStorage.service';
 import { TemporaryFileStorage } from './temporary-file-storage.service';
-import { IH5PEditorOptions } from '@lumieducation/h5p-server/build/src/types';
-import { Translator } from './h5p-translator.service';
-import { h5pConfig, h5pUrlGenerator } from './config/h5p-service-config';
 
 export const H5PEditorService = {
 	provide: H5PEditor,
@@ -21,14 +21,14 @@ export const H5PEditorService = {
 			enableHubLocalization: true,
 			enableLibraryNameLocalization: true,
 		};
-
+		const translationFunction: ITranslationFunction = await Translator.translate();
 		const h5pEditor = new H5PEditor(
 			cache,
 			h5pConfig,
 			libraryStorage,
 			contentStorage,
 			temporaryStorage,
-			await Translator.translate(),
+			translationFunction,
 			h5pUrlGenerator,
 			h5pOptions
 		);
