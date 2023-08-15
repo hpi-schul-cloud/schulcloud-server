@@ -2,7 +2,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { EntityId, File, FilePermission, FileRefOwnerModel, RefPermModel } from '@shared/domain';
+import { File, FilePermission, FileRefOwnerModel, RefPermModel } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { storageProviderFactory, userFileFactory } from '@shared/testing';
 
@@ -82,9 +82,9 @@ describe('FilesRepo', () => {
 		});
 	});
 
-	const testStorageProvider = storageProviderFactory.buildWithId();
-	const testMainUserId = new ObjectId().toHexString();
-	const testOtherUserId = new ObjectId().toHexString();
+	const storageProvider = storageProviderFactory.buildWithId();
+	const mainUserId = new ObjectId().toHexString();
+	const otherUserId = new ObjectId().toHexString();
 
 	const otherUserFilesProps = [
 		// Test file created, owned and accessible only by the other user.
@@ -94,14 +94,14 @@ describe('FilesRepo', () => {
 			type: 'text/plain',
 			storageFileName: '001-test-file-1.txt',
 			bucket: 'bucket-001',
-			storageProvider: testStorageProvider,
+			storageProvider,
 			thumbnail: 'https://example.com/thumbnail.png',
-			ownerId: testOtherUserId,
+			ownerId: otherUserId,
 			refOwnerModel: FileRefOwnerModel.USER,
-			creatorId: testOtherUserId,
+			creatorId: otherUserId,
 			permissions: [
 				new FilePermission({
-					refId: testOtherUserId,
+					refId: otherUserId,
 					refPermModel: RefPermModel.USER,
 				}),
 			],
@@ -114,14 +114,14 @@ describe('FilesRepo', () => {
 			type: 'text/plain',
 			storageFileName: '002-test-file-2.txt',
 			bucket: 'bucket-002',
-			storageProvider: testStorageProvider,
+			storageProvider,
 			thumbnail: 'https://example.com/thumbnail.png',
-			ownerId: testOtherUserId,
+			ownerId: otherUserId,
 			refOwnerModel: FileRefOwnerModel.USER,
-			creatorId: testOtherUserId,
+			creatorId: otherUserId,
 			permissions: [
 				new FilePermission({
-					refId: testOtherUserId,
+					refId: otherUserId,
 					refPermModel: RefPermModel.USER,
 				}),
 			],
@@ -139,14 +139,14 @@ describe('FilesRepo', () => {
 			type: 'text/plain',
 			storageFileName: '001-test-file-1.txt',
 			bucket: 'bucket-001',
-			storageProvider: testStorageProvider,
+			storageProvider,
 			thumbnail: 'https://example.com/thumbnail.png',
-			ownerId: testOtherUserId,
+			ownerId: otherUserId,
 			refOwnerModel: FileRefOwnerModel.USER,
-			creatorId: testOtherUserId,
+			creatorId: otherUserId,
 			permissions: [
 				new FilePermission({
-					refId: testOtherUserId,
+					refId: otherUserId,
 					refPermModel: RefPermModel.USER,
 				}),
 			],
@@ -160,18 +160,18 @@ describe('FilesRepo', () => {
 			type: 'text/plain',
 			storageFileName: '002-test-file-2.txt',
 			bucket: 'bucket-002',
-			storageProvider: testStorageProvider,
+			storageProvider,
 			thumbnail: 'https://example.com/thumbnail.png',
-			ownerId: testMainUserId,
+			ownerId: mainUserId,
 			refOwnerModel: FileRefOwnerModel.USER,
-			creatorId: testMainUserId,
+			creatorId: mainUserId,
 			permissions: [
 				new FilePermission({
-					refId: testMainUserId,
+					refId: mainUserId,
 					refPermModel: RefPermModel.USER,
 				}),
 				new FilePermission({
-					refId: testOtherUserId,
+					refId: otherUserId,
 					refPermModel: RefPermModel.USER,
 				}),
 			],
@@ -185,18 +185,18 @@ describe('FilesRepo', () => {
 			type: 'text/plain',
 			storageFileName: '003-test-file-3.txt',
 			bucket: 'bucket-003',
-			storageProvider: testStorageProvider,
+			storageProvider,
 			thumbnail: 'https://example.com/thumbnail.png',
-			ownerId: testOtherUserId,
+			ownerId: otherUserId,
 			refOwnerModel: FileRefOwnerModel.USER,
-			creatorId: testOtherUserId,
+			creatorId: otherUserId,
 			permissions: [
 				new FilePermission({
-					refId: testOtherUserId,
+					refId: otherUserId,
 					refPermModel: RefPermModel.USER,
 				}),
 				new FilePermission({
-					refId: testMainUserId,
+					refId: mainUserId,
 					refPermModel: RefPermModel.USER,
 				}),
 			],
@@ -210,14 +210,14 @@ describe('FilesRepo', () => {
 			type: 'text/plain',
 			storageFileName: '004-test-file-4.txt',
 			bucket: 'bucket-004',
-			storageProvider: testStorageProvider,
+			storageProvider,
 			thumbnail: 'https://example.com/thumbnail.png',
-			ownerId: testMainUserId,
+			ownerId: mainUserId,
 			refOwnerModel: FileRefOwnerModel.USER,
-			creatorId: testMainUserId,
+			creatorId: mainUserId,
 			permissions: [
 				new FilePermission({
-					refId: testMainUserId,
+					refId: mainUserId,
 					refPermModel: RefPermModel.USER,
 				}),
 			],
@@ -227,7 +227,7 @@ describe('FilesRepo', () => {
 		await em.persistAndFlush([...otherUserFiles, otherUserFile, mainUserSharedFile, otherUserSharedFile, mainUserFile]);
 		em.clear();
 
-		const expectedMainUserSharedFile = {
+		const expectedMainUserSharedFileProps = {
 			id: mainUserSharedFile.id,
 			createdAt: mainUserSharedFile.createdAt,
 			updatedAt: mainUserSharedFile.updatedAt,
@@ -247,7 +247,7 @@ describe('FilesRepo', () => {
 			versionKey: 0,
 		};
 
-		const expectedOtherUserSharedFile = {
+		const expectedOtherUserSharedFileProps = {
 			id: otherUserSharedFile.id,
 			createdAt: otherUserSharedFile.createdAt,
 			updatedAt: otherUserSharedFile.updatedAt,
@@ -267,7 +267,7 @@ describe('FilesRepo', () => {
 			versionKey: 0,
 		};
 
-		const expectedMainUserFile = {
+		const expectedMainUserFileProps = {
 			id: mainUserFile.id,
 			createdAt: mainUserFile.createdAt,
 			updatedAt: mainUserFile.updatedAt,
@@ -291,25 +291,26 @@ describe('FilesRepo', () => {
 			mainUserSharedFile,
 			otherUserSharedFile,
 			mainUserFile,
-			expectedMainUserSharedFile,
-			expectedOtherUserSharedFile,
-			expectedMainUserFile,
+			expectedMainUserSharedFileProps,
+			expectedOtherUserSharedFileProps,
+			expectedMainUserFileProps,
 		};
 	};
 
 	describe('findByOwnerUserId', () => {
 		it('should return proper files that are owned by the user with given userId', async () => {
-			const { mainUserSharedFile, mainUserFile, expectedMainUserSharedFile, expectedMainUserFile } = await setup();
+			const { mainUserSharedFile, mainUserFile, expectedMainUserSharedFileProps, expectedMainUserFileProps } =
+				await setup();
 
-			const results = await repo.findByOwnerUserId(testMainUserId);
+			const results = await repo.findByOwnerUserId(mainUserId);
 
 			expect(results).toHaveLength(2);
 
 			// Verify explicit fields.
 			expect(results).toEqual(
 				expect.arrayContaining([
-					expect.objectContaining(expectedMainUserSharedFile),
-					expect.objectContaining(expectedMainUserFile),
+					expect.objectContaining(expectedMainUserSharedFileProps),
+					expect.objectContaining(expectedMainUserFileProps),
 				])
 			);
 
@@ -334,7 +335,7 @@ describe('FilesRepo', () => {
 				await em.persistAndFlush([new File(otherUserFilesProps[0]), new File(otherUserFilesProps[1])]);
 				em.clear();
 
-				const results = await repo.findByOwnerUserId(testMainUserId);
+				const results = await repo.findByOwnerUserId(mainUserId);
 
 				expect(results).toHaveLength(0);
 			});
@@ -349,27 +350,121 @@ describe('FilesRepo', () => {
 		});
 	});
 
+	describe('save', () => {
+		it('should properly update given file permissions', async () => {
+			const initialFiles = await setup();
+			let { otherUserSharedFile } = initialFiles;
+			const { expectedOtherUserSharedFileProps } = initialFiles;
+
+			// Pre-check to make sure the main user has access to the file right now.
+			expect(otherUserSharedFile.permissions).toEqual(
+				expect.arrayContaining([
+					new FilePermission({
+						refId: mainUserId,
+						refPermModel: RefPermModel.USER,
+					}),
+				])
+			);
+
+			otherUserSharedFile.removePermissionsByRefId(mainUserId);
+
+			await repo.save(otherUserSharedFile);
+
+			otherUserSharedFile = await repo.findById(otherUserSharedFile.id);
+
+			// Verify if the main user has for sure lost the permission to given file.
+			expect(otherUserSharedFile.permissions).not.toEqual(
+				expect.arrayContaining([
+					new FilePermission({
+						refId: mainUserId,
+						refPermModel: RefPermModel.USER,
+					}),
+				])
+			);
+
+			expectedOtherUserSharedFileProps.permissions = expectedOtherUserSharedFileProps.permissions.filter(
+				(permission) => !permission.refId.equals(new ObjectId(mainUserId))
+			);
+
+			// Verify if other file fields are still untouched after the update,
+			//  except the updatedAt field which is expected to change.
+			expect(expectedOtherUserSharedFileProps.updatedAt.getTime()).toBeLessThanOrEqual(
+				otherUserSharedFile.updatedAt.getTime()
+			);
+
+			expectedOtherUserSharedFileProps.updatedAt = otherUserSharedFile.updatedAt;
+
+			expect(otherUserSharedFile).toEqual(expect.objectContaining(expectedOtherUserSharedFileProps));
+		});
+
+		it('should properly update the file marked for deletion', async () => {
+			const initialFiles = await setup();
+			let { mainUserFile } = initialFiles;
+
+			const originalUpdatedAt = mainUserFile.updatedAt;
+
+			// Pre-check to make sure the file is not marked as deleted yet.
+			expect(mainUserFile.isMarkedForDeletion()).toEqual(false);
+
+			mainUserFile.markForDeletion();
+
+			await repo.save(mainUserFile);
+
+			mainUserFile = await repo.findById(mainUserFile.id);
+
+			// Verify if the file has for sure been marked as deleted.
+			expect(mainUserFile.isMarkedForDeletion()).toEqual(true);
+
+			// Verify if other file fields are still untouched after the update,
+			//  except the updatedAt field which is expected to change.
+			expect(originalUpdatedAt.getTime()).toBeLessThanOrEqual(originalUpdatedAt.getTime());
+
+			const expectedMainUserFileProps = {
+				id: mainUserFile.id,
+				createdAt: mainUserFile.createdAt,
+				updatedAt: mainUserFile.updatedAt,
+				deletedAt: mainUserFile.deletedAt,
+				deleted: true,
+				isDirectory: false,
+				name: mainUserFile.name,
+				size: mainUserFile.size,
+				type: mainUserFile.type,
+				storageFileName: mainUserFile.storageFileName,
+				bucket: mainUserFile.bucket,
+				thumbnail: mainUserFile.thumbnail,
+				thumbnailRequestToken: mainUserFile.thumbnailRequestToken,
+				securityCheck: mainUserFile.securityCheck,
+				shareTokens: [],
+				refOwnerModel: mainUserFile.refOwnerModel,
+				permissions: mainUserFile.permissions,
+				versionKey: 0,
+			};
+
+			expect(mainUserFile).toEqual(expect.objectContaining(expectedMainUserFileProps));
+		});
+	});
+
 	describe('findByPermissionRefId', () => {
 		it('should return proper files that given user has permission to access', async () => {
 			const {
 				mainUserSharedFile,
 				otherUserSharedFile,
 				mainUserFile,
-				expectedMainUserSharedFile,
-				expectedOtherUserSharedFile,
-				expectedMainUserFile,
+				expectedMainUserSharedFileProps,
+				expectedOtherUserSharedFileProps,
+				expectedMainUserFileProps,
 			} = await setup();
 
-			const results = await repo.findByPermissionRefId(testMainUserId);
+			const results = await repo.findByPermissionRefId(mainUserId);
 
 			expect(results).toHaveLength(3);
 
 			// Verify explicit fields.
 			expect(results).toEqual(
 				expect.arrayContaining([
-					expect.objectContaining(expectedMainUserSharedFile),
-					expect.objectContaining(expectedOtherUserSharedFile),
-					expect.objectContaining(expectedMainUserFile),
+					expect.objectContaining(expectedMainUserSharedFileProps),
+					expect.objectContaining(expectedOtherUserSharedFileProps),
+					expect.objectContaining(expectedMainUserFileProps),
 				])
 			);
 
@@ -398,7 +493,7 @@ describe('FilesRepo', () => {
 				await em.persistAndFlush([new File(otherUserFilesProps[0]), new File(otherUserFilesProps[1])]);
 				em.clear();
 
-				const results = await repo.findByPermissionRefId(testMainUserId);
+				const results = await repo.findByPermissionRefId(mainUserId);
 
 				expect(results).toHaveLength(0);
 			});

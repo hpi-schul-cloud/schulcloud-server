@@ -1,8 +1,9 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 
-import { EntityId, File, FileRefOwnerModel, User } from '@shared/domain';
+import { EntityId, File, FileProps, FileRefOwnerModel } from '@shared/domain';
 import { BaseRepo } from '@shared/repo/base.repo';
+import { EntityDictionary } from '@mikro-orm/core';
 
 @Injectable()
 export class FilesRepo extends BaseRepo<File> {
@@ -49,8 +50,9 @@ export class FilesRepo extends BaseRepo<File> {
 
 		const rawFilesDocuments = await this._em.aggregate(File, pipeline);
 
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-		const files = rawFilesDocuments.map((rawFileDocument) => this._em.map(File, rawFileDocument));
+		const files = rawFilesDocuments.map((rawFileDocument) =>
+			this._em.map(File, rawFileDocument as EntityDictionary<File>)
+		);
 
 		return files;
 	}
