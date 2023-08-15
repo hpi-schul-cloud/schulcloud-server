@@ -6,6 +6,7 @@ import {
 	Delete,
 	ForbiddenException,
 	Get,
+	Headers,
 	HttpStatus,
 	InternalServerErrorException,
 	NotAcceptableException,
@@ -17,14 +18,17 @@ import {
 	Req,
 	Res,
 	StreamableFile,
+	UnprocessableEntityException,
 	UseInterceptors,
 } from '@nestjs/common';
-import { ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError, RequestLoggingInterceptor } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request, Response } from 'express';
+import { IGetFileResponse } from '../interface';
+import { FilesStorageMapper } from '../mapper';
 import { FileRecordMapper } from '../mapper/file-record.mapper';
 import { FilesStorageUC } from '../uc';
 import {
@@ -38,6 +42,7 @@ import {
 	FileRecordParams,
 	FileRecordResponse,
 	FileUrlParams,
+	PreviewParams,
 	RenameFileParams,
 	SingleFileParams,
 } from './dto';
@@ -96,44 +101,77 @@ export class FilesStorageController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@ApiResponse({ status: 406, type: NotAcceptableException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
+	@ApiHeader({ name: 'Range', required: false })
 	@Get('/download/:fileRecordId/:fileName')
 	async download(
 		@Param() params: DownloadFileParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Req() req: Request,
-		@Res({ passthrough: true }) response: Response
+		@Res({ passthrough: true }) response: Response,
+		@Headers('Range') bytesRange?: string
 	): Promise<StreamableFile> {
-		// Get Range HTTP header value to check if caller
-		// requested either partial or full data stream.
-		const bytesRange = req.header('Range');
+		const fileResponse = await this.filesStorageUC.download(currentUser.userId, params, bytesRange);
 
-		// Call download method with either defined or undefined bytes range.
-		const res = await this.filesStorageUC.download(currentUser.userId, params, bytesRange);
+		const streamableFile = this.streamFileToClient(req, fileResponse, response, bytesRange);
 
-		// Destroy the stream after it has been closed.
-		req.on('close', () => res.data.destroy());
+		return streamableFile;
+	}
+
+	@ApiOperation({ summary: 'Streamable download of a preview file.' })
+	@ApiResponse({ status: 200, type: StreamableFile })
+	@ApiResponse({ status: 206, type: StreamableFile })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@ApiResponse({ status: 422, type: UnprocessableEntityException })
+	@ApiResponse({ status: 500, type: InternalServerErrorException })
+	@ApiHeader({ name: 'Range', required: false })
+	@Get('/preview/:fileRecordId/:fileName')
+	async downloadPreview(
+		@Param() params: DownloadFileParams,
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() previewParams: PreviewParams,
+		@Req() req: Request,
+		@Res({ passthrough: true }) response: Response,
+		@Headers('Range') bytesRange?: string
+	): Promise<StreamableFile> {
+		const fileResponse = await this.filesStorageUC.downloadPreview(
+			currentUser.userId,
+			params,
+			previewParams,
+			bytesRange
+		);
+
+		const streamableFile = this.streamFileToClient(req, fileResponse, response, bytesRange);
+
+		return streamableFile;
+	}
+
+	private streamFileToClient(
+		req: Request,
+		fileResponse: IGetFileResponse,
+		httpResponse: Response,
+		bytesRange?: string
+	): StreamableFile {
+		req.on('close', () => fileResponse.data.destroy());
 
 		// If bytes range has been defined, set Accept-Ranges and Content-Range HTTP headers
 		// in a response and also set 206 Partial Content HTTP status code to inform the caller
 		// about the partial data stream. Otherwise, just set a 200 OK HTTP status code.
 		if (bytesRange) {
-			response.set({
+			httpResponse.set({
 				'Accept-Ranges': 'bytes',
-				'Content-Range': res.contentRange,
+				'Content-Range': fileResponse.contentRange,
 			});
 
-			response.status(HttpStatus.PARTIAL_CONTENT);
+			httpResponse.status(HttpStatus.PARTIAL_CONTENT);
 		} else {
-			response.status(HttpStatus.OK);
+			httpResponse.status(HttpStatus.OK);
 		}
 
-		// Return StreamableFile with stream data and options that will additionally set
-		// Content-Type, Content-Disposition and Content-Length headers in a response.
-		return new StreamableFile(res.data, {
-			type: res.contentType,
-			disposition: `inline; filename="${encodeURI(params.fileName)}"`,
-			length: res.contentLength,
-		});
+		const streamableFile = FilesStorageMapper.mapToStreamableFile(fileResponse);
+
+		return streamableFile;
 	}
 
 	@ApiOperation({ summary: 'Get a list of file meta data of a parent entityId.' })
