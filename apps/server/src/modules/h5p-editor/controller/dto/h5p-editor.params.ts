@@ -1,14 +1,14 @@
 import { IContentMetadata } from '@lumieducation/h5p-server';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { SanitizeHtml } from '@shared/controller';
-import { IsMongoId, IsNotEmpty, IsObject, IsOptional, IsString, Matches } from 'class-validator';
+import { LanguageType } from '@shared/domain';
+import { IsEnum, IsMongoId, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
 
 export class GetH5PContentParams {
-	@ApiPropertyOptional()
-	@Matches('([a-z]+-[a-z]+)')
-	@IsString()
+	@ApiProperty({ enum: LanguageType, enumName: 'LanguageType' })
+	@IsEnum(LanguageType)
 	@IsOptional()
-	language?: string;
+	language?: LanguageType;
 
 	@ApiProperty()
 	@IsMongoId()
@@ -16,10 +16,9 @@ export class GetH5PContentParams {
 }
 
 export class GetH5PEditorParamsCreate {
-	@ApiPropertyOptional()
-	// @Matches('([a-z]+-[a-z]+)') is in zum check
-	@IsString()
-	language!: string;
+	@ApiProperty({ enum: LanguageType, enumName: 'LanguageType' })
+	@IsEnum(LanguageType)
+	language!: LanguageType;
 }
 
 export class GetH5PEditorParams {
@@ -27,10 +26,9 @@ export class GetH5PEditorParams {
 	@IsMongoId()
 	contentId!: string;
 
-	@ApiPropertyOptional()
-	// @Matches('([a-z]+-[a-z]+)')
-	@IsString()
-	language!: string;
+	@ApiProperty({ enum: LanguageType, enumName: 'LanguageType' })
+	@IsEnum(LanguageType)
+	language!: LanguageType;
 }
 
 export class SaveH5PEditorParams {

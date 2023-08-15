@@ -15,6 +15,7 @@ import {
 	InternalServerErrorException,
 	NotFoundException,
 } from '@nestjs/common';
+import { LanguageType } from '@shared/domain';
 import { UserService } from '@src/modules';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Request } from 'express';
@@ -223,7 +224,7 @@ export class H5PEditorUc {
 		return playerModel;
 	}
 
-	public async getEmptyH5pEditor(currentUser: ICurrentUser, language: string) {
+	public async getEmptyH5pEditor(currentUser: ICurrentUser, language: LanguageType) {
 		// TODO: await this.checkPermission...
 		const user = this.changeUserType(currentUser);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -236,7 +237,7 @@ export class H5PEditorUc {
 		return createdH5PEditor;
 	}
 
-	public async getH5pEditor(currentUser: ICurrentUser, contentId: string, language: string) {
+	public async getH5pEditor(currentUser: ICurrentUser, contentId: string, language: LanguageType) {
 		// TODO: await this.checkPermission...
 		const user = this.changeUserType(currentUser);
 
