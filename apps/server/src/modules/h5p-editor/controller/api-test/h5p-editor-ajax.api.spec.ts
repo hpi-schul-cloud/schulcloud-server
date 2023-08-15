@@ -96,7 +96,7 @@ describe('H5PEditor Controller (api)', () => {
 					undefined, // MachineName
 					undefined, // MajorVersion
 					undefined, // MinorVersion
-					undefined, // Language
+					'de', // Language
 					expect.objectContaining({ id })
 				);
 			});
@@ -162,7 +162,7 @@ describe('H5PEditor Controller (api)', () => {
 					expect(ajaxEndpoint.postAjax).toHaveBeenCalledWith(
 						'libraries',
 						dummyBody,
-						undefined,
+						'de',
 						expect.objectContaining({ id }),
 						undefined,
 						undefined,

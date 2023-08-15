@@ -2,6 +2,7 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { H5PEditor, H5PPlayer } from '@lumieducation/h5p-server';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
+import { UserService } from '@src/modules';
 import { ICurrentUser } from '@src/modules/authentication';
 import { H5PAjaxEndpointService } from '../service';
 import { H5PEditorUc } from './h5p.uc';
@@ -44,6 +45,10 @@ describe('save or create H5P content', () => {
 				{
 					provide: H5PPlayer,
 					useValue: createMock<H5PPlayer>(),
+				},
+				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
 				},
 			],
 		}).compile();

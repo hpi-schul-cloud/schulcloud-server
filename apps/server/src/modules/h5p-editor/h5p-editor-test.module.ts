@@ -8,18 +8,18 @@ import { LegacyLogger, LoggerModule } from '@src/core/logger';
 import { AuthenticationApiModule } from '@src/modules/authentication/authentication-api.module';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { AuthorizationModule } from '@src/modules/authorization';
-
-import { H5PContentRepo, TemporaryFileRepo, LibraryRepo } from './repo';
+import { UserModule } from '..';
 import { H5PEditorController } from './controller';
 import { s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
-import { createS3ClientAdapter, H5PEditorModule } from './h5p-editor.module';
+import { H5PEditorModule, createS3ClientAdapter } from './h5p-editor.module';
+import { H5PContentRepo, LibraryRepo, TemporaryFileRepo } from './repo';
 import {
+	ContentStorage,
 	H5PAjaxEndpointService,
 	H5PEditorService,
 	H5PPlayerService,
-	ContentStorage,
-	TemporaryFileStorage,
 	LibraryStorage,
+	TemporaryFileStorage,
 } from './service';
 import { H5PEditorUc } from './uc/h5p.uc';
 
@@ -29,6 +29,7 @@ const imports = [
 	AuthenticationApiModule,
 	AuthorizationModule,
 	AuthenticationModule,
+	UserModule,
 	CoreModule,
 	LoggerModule,
 	RabbitMQWrapperTestModule,

@@ -32,6 +32,7 @@ import {
 	ContentFileUrlParams,
 	GetH5PContentParams,
 	GetH5PEditorParams,
+	GetH5PEditorParamsCreate,
 	LibraryFileUrlParams,
 	PostH5PContentCreateParams,
 	SaveH5PEditorParams,
@@ -169,19 +170,21 @@ export class H5PEditorController {
 		return deleteSuccessfull;
 	}
 
-	@Get('/edit')
+	@Get('/edit/:language')
 	@ApiResponse({ status: 200, type: H5PEditorModelResponse })
-	async getNewH5PEditor(@CurrentUser() currentUser: ICurrentUser) {
-		// TODO: Get user language
-		const editorModel = await this.h5pEditorUc.getEmptyH5pEditor(currentUser, 'de');
+	async getNewH5PEditor(@Param() params: GetH5PEditorParamsCreate, @CurrentUser() currentUser: ICurrentUser) {
+		const editorModel = await this.h5pEditorUc.getEmptyH5pEditor(currentUser, params.language);
 		return new H5PEditorModelResponse(editorModel);
 	}
 
-	@Get('/edit/:contentId')
+	@Get('/edit/:contentId/:language')
 	@ApiResponse({ status: 200, type: H5PEditorModelContentResponse })
 	async getH5PEditor(@Param() params: GetH5PEditorParams, @CurrentUser() currentUser: ICurrentUser) {
-		// TODO: Get user language
-		const { editorModel, content } = await this.h5pEditorUc.getH5pEditor(currentUser, params.contentId, 'de');
+		const { editorModel, content } = await this.h5pEditorUc.getH5pEditor(
+			currentUser,
+			params.contentId,
+			params.language
+		);
 		return new H5PEditorModelContentResponse(editorModel, content);
 	}
 

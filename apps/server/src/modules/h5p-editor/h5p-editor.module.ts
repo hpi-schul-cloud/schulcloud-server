@@ -18,6 +18,7 @@ import { H5PContentRepo, LibraryRepo, TemporaryFileRepo } from './repo';
 import { H5PEditorController } from './controller/h5p-editor.controller';
 import { config, s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
 import { S3Config } from './interface/config';
+import { UserModule } from '..';
 import {
 	H5PAjaxEndpointService,
 	ContentStorage,
@@ -52,6 +53,7 @@ const imports = [
 	AuthenticationModule,
 	AuthorizationModule,
 	CoreModule,
+	UserModule,
 	RabbitMQWrapperModule,
 	MikroOrmModule.forRoot({
 		...defaultMikroOrmOptions,

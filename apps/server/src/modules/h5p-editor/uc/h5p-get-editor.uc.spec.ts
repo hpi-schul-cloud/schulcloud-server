@@ -1,7 +1,9 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { H5PEditor, H5PPlayer } from '@lumieducation/h5p-server';
 import { Test, TestingModule } from '@nestjs/testing';
+import { UserRepo } from '@shared/repo';
 import { setupEntities } from '@shared/testing';
+import { UserService } from '@src/modules';
 import { ICurrentUser } from '@src/modules/authentication';
 import { H5PAjaxEndpointService } from '../service';
 import { H5PEditorUc } from './h5p.uc';
@@ -9,13 +11,14 @@ import { H5PEditorUc } from './h5p.uc';
 const setup = () => {
 	const contentId = '123456789';
 	const contentIdCreate = 'create';
-	const language = 'de';
 	const currentUser: ICurrentUser = {
 		userId: '123',
 		roles: [],
 		schoolId: '',
 		accountId: '',
 	};
+
+	const language = 'de';
 
 	const playerModel = {
 		contentId,
@@ -36,7 +39,7 @@ const setup = () => {
 		},
 	};
 
-	return { contentId, contentIdCreate, language, currentUser, playerModel, editorModel, exampleContent };
+	return { contentId, contentIdCreate, currentUser, playerModel, editorModel, exampleContent, language };
 };
 
 describe('get H5P editor', () => {
@@ -56,6 +59,14 @@ describe('get H5P editor', () => {
 				{
 					provide: H5PPlayer,
 					useValue: createMock<H5PPlayer>(),
+				},
+				{
+					provide: UserRepo,
+					useValue: createMock<UserRepo>(),
+				},
+				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
 				},
 			],
 		}).compile();
@@ -97,7 +108,7 @@ describe('get H5P editor', () => {
 
 	describe('when contentId does not exist', () => {
 		it('should throw an error ', async () => {
-			const { contentId, language, currentUser } = setup();
+			const { contentId, currentUser, language } = setup();
 			h5pEditor.render.mockRejectedValueOnce(new Error('Could not get H5P editor'));
 			const result = uc.getH5pEditor(currentUser, contentId, language);
 

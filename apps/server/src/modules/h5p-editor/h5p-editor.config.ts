@@ -6,6 +6,10 @@ const h5pEditorConfig = {
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
 };
 
+export const translatorConfig = {
+	AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(','),
+};
+
 export const s3ConfigContent: S3Config = {
 	endpoint: Configuration.get('H5P_EDITOR__S3_ENDPOINT') as string,
 	region: Configuration.get('H5P_EDITOR__S3_REGION') as string,

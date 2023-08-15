@@ -15,15 +15,21 @@ import {
 	InternalServerErrorException,
 	NotFoundException,
 } from '@nestjs/common';
+import { LanguageType } from '@shared/domain';
+import { UserService } from '@src/modules';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Request } from 'express';
 import { Readable } from 'stream';
-
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams } from '../controller/dto';
 
 @Injectable()
 export class H5PEditorUc {
-	constructor(private h5pEditor: H5PEditor, private h5pPlayer: H5PPlayer, private h5pAjaxEndpoint: H5PAjaxEndpoint) {}
+	constructor(
+		private h5pEditor: H5PEditor,
+		private h5pPlayer: H5PPlayer,
+		private h5pAjaxEndpoint: H5PAjaxEndpoint,
+		private readonly userService: UserService
+	) {}
 
 	/**
 	 * Returns a callback that parses the request range.
@@ -62,6 +68,7 @@ export class H5PEditorUc {
 
 	public async getAjax(query: AjaxGetQueryParams, currentUser: ICurrentUser) {
 		const user = this.changeUserType(currentUser);
+		const language = await this.getUserLanguage(currentUser);
 
 		try {
 			const result = await this.h5pAjaxEndpoint.getAjax(
@@ -69,7 +76,7 @@ export class H5PEditorUc {
 				query.machineName,
 				query.majorVersion,
 				query.minorVersion,
-				query.language,
+				language,
 				user
 			);
 
@@ -86,6 +93,7 @@ export class H5PEditorUc {
 		files?: Express.Multer.File[]
 	) {
 		const user = this.changeUserType(currentUser);
+		const language = await this.getUserLanguage(currentUser);
 
 		try {
 			const filesFile = files?.find((file) => file.fieldname === 'file');
@@ -94,7 +102,7 @@ export class H5PEditorUc {
 			const result = await this.h5pAjaxEndpoint.postAjax(
 				query.action,
 				body,
-				undefined, // Todo: Language
+				language,
 				user,
 				filesFile && {
 					data: filesFile.buffer,
@@ -103,7 +111,7 @@ export class H5PEditorUc {
 					size: filesFile.size,
 				},
 				query.id,
-				undefined, // TODO: Translation callback
+				undefined,
 				libraryUploadFile && {
 					data: libraryUploadFile.buffer,
 					mimetype: libraryUploadFile.mimetype,
@@ -216,7 +224,7 @@ export class H5PEditorUc {
 		return playerModel;
 	}
 
-	public async getEmptyH5pEditor(currentUser: ICurrentUser, language: string) {
+	public async getEmptyH5pEditor(currentUser: ICurrentUser, language: LanguageType) {
 		// TODO: await this.checkPermission...
 		const user = this.changeUserType(currentUser);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -229,7 +237,7 @@ export class H5PEditorUc {
 		return createdH5PEditor;
 	}
 
-	public async getH5pEditor(currentUser: ICurrentUser, contentId: string, language: string) {
+	public async getH5pEditor(currentUser: ICurrentUser, contentId: string, language: LanguageType) {
 		// TODO: await this.checkPermission...
 		const user = this.changeUserType(currentUser);
 
@@ -303,14 +311,23 @@ export class H5PEditorUc {
 	private changeUserType(currentUser: ICurrentUser): IUser {
 		// TODO: declare IUser (e.g. add roles, schoolId, etc.)
 		const user: IUser = {
-			canCreateRestricted: false,
-			canInstallRecommended: false,
-			canUpdateAndInstallLibraries: false,
+			canCreateRestricted: true,
+			canInstallRecommended: true,
+			canUpdateAndInstallLibraries: true,
 			email: '',
 			id: currentUser.userId,
 			name: '',
 			type: '',
 		};
 		return user;
+	}
+
+	private async getUserLanguage(currentUser: ICurrentUser): Promise<string> {
+		const languageUser = await this.userService.findById(currentUser.userId);
+		let language = 'de';
+		if (languageUser && languageUser.language) {
+			language = languageUser.language.toString();
+		}
+		return language;
 	}
 }
