@@ -130,9 +130,9 @@ describe('ToolSchoolController (API)', () => {
 		it('should return forbidden when user is not authorized', async () => {
 			const { loggedInClientWithMissingPermission, postParams } = await setup();
 
-			const respose = await loggedInClientWithMissingPermission.post().send(postParams);
+			const response = await loggedInClientWithMissingPermission.post().send(postParams);
 
-			expect(respose.statusCode).toEqual(HttpStatus.FORBIDDEN);
+			expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 		});
 
 		it('should create an school external tool', async () => {

@@ -145,7 +145,7 @@ describe('ToolContextController (API)', () => {
 				};
 			};
 
-			it('should return forbidden when user is not authorized', async () => {
+			it('when user is not authorized, it should return forbidden', async () => {
 				const { postParams, loggedInClient } = await setup();
 
 				const response = await loggedInClient.post().send(postParams);
@@ -228,7 +228,7 @@ describe('ToolContextController (API)', () => {
 				};
 			};
 
-			it('should return forbidden when user is not authorized', async () => {
+			it('when user is not authorized, it should return forbidden', async () => {
 				const { loggedInClient, contextExternalToolEntity } = await setup();
 
 				const result = await loggedInClient.delete(`${contextExternalToolEntity.id}`);
@@ -310,6 +310,7 @@ describe('ToolContextController (API)', () => {
 			return {
 				contextExternalTool1,
 				contextExternalTool2,
+				contextExternalToolFromOtherSchool,
 				loggedInClient,
 				otherLoggedInClient,
 			};
@@ -317,7 +318,8 @@ describe('ToolContextController (API)', () => {
 
 		describe('when user is authorized and has the required permissions', () => {
 			it('should return context external tools he has permission for', async () => {
-				const { contextExternalTool1, contextExternalTool2, loggedInClient } = await setup();
+				const { contextExternalTool1, contextExternalTool2, loggedInClient, contextExternalToolFromOtherSchool } =
+					await setup();
 
 				const response = await loggedInClient.get(
 					`${contextExternalTool1.contextType}/${contextExternalTool1.contextId}`
@@ -353,6 +355,24 @@ describe('ToolContextController (API)', () => {
 							contextType: ToolContextType.COURSE,
 							displayName: contextExternalTool2.displayName,
 							toolVersion: contextExternalTool2.toolVersion,
+						},
+					],
+				});
+				expect(response.body).not.toEqual<ContextExternalToolSearchListResponse>({
+					data: [
+						{
+							parameters: [
+								{
+									name: contextExternalToolFromOtherSchool.parameters[0].name,
+									value: contextExternalToolFromOtherSchool.parameters[0].value,
+								},
+							],
+							id: contextExternalToolFromOtherSchool.id,
+							schoolToolId: contextExternalToolFromOtherSchool.schoolTool.id,
+							contextId: contextExternalToolFromOtherSchool.contextId,
+							contextType: ToolContextType.COURSE,
+							displayName: contextExternalToolFromOtherSchool.displayName,
+							toolVersion: contextExternalToolFromOtherSchool.toolVersion,
 						},
 					],
 				});
