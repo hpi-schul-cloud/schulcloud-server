@@ -15,6 +15,7 @@ import {
 	DownloadFileParams,
 	FileRecordParams,
 	FileUrlParams,
+	PreviewParams,
 	RenameFileParams,
 	ScanResultParams,
 	SingleFileParams,
@@ -22,9 +23,10 @@ import {
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
-import { IGetFileResponse } from '../interface';
+import { IGetFile, IGetFileResponse } from '../interface';
 import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
+import { PreviewService } from '../service/preview.service';
 
 @Injectable()
 export class FilesStorageUC {
@@ -32,7 +34,8 @@ export class FilesStorageUC {
 		private logger: LegacyLogger,
 		private readonly authorizationService: AuthorizationService,
 		private readonly httpService: HttpService,
-		private readonly filesStorageService: FilesStorageService
+		private readonly filesStorageService: FilesStorageService,
+		private readonly previewService: PreviewService
 	) {
 		this.logger.setContext(FilesStorageUC.name);
 	}
@@ -131,17 +134,35 @@ export class FilesStorageUC {
 		return this.filesStorageService.download(fileRecord, params, bytesRange);
 	}
 
-	public async downloadBySecurityToken(token: string): Promise<IGetFileResponse> {
+	public async downloadBySecurityToken(token: string): Promise<IGetFile> {
 		const fileRecord = await this.filesStorageService.getFileRecordBySecurityCheckRequestToken(token);
 		const res = await this.filesStorageService.downloadFile(fileRecord.getSchoolId(), fileRecord.id);
 
 		return res;
 	}
 
+	public async downloadPreview(
+		userId: EntityId,
+		params: DownloadFileParams,
+		previewParams: PreviewParams,
+		bytesRange?: string
+	): Promise<IGetFileResponse> {
+		const singleFileParams = FilesStorageMapper.mapToSingleFileParams(params);
+		const fileRecord = await this.filesStorageService.getFileRecord(singleFileParams);
+		const { parentType, parentId } = fileRecord.getParentInfo();
+
+		await this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.read);
+
+		const result = this.previewService.getPreview(fileRecord, params, previewParams, bytesRange);
+
+		return result;
+	}
+
 	// delete
 	public async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.delete);
 		const [fileRecords, count] = await this.filesStorageService.deleteFilesOfParent(params.parentId);
+		await this.previewService.deletePreviews(fileRecords);
 
 		return [fileRecords, count];
 	}
@@ -152,6 +173,7 @@ export class FilesStorageUC {
 
 		await this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.delete);
 		await this.filesStorageService.delete([fileRecord]);
+		await this.previewService.deletePreviews([fileRecord]);
 
 		return fileRecord;
 	}

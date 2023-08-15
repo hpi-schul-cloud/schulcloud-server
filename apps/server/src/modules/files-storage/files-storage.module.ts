@@ -7,7 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
 import { AntivirusModule } from '@shared/infra/antivirus/antivirus.module';
 import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq/rabbitmq.module';
-import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
+import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
 import { S3ClientAdapter } from './client/s3-client.adapter';
 import { FileRecord, FileSecurityCheck } from './entity';
@@ -15,6 +15,7 @@ import { config, s3Config } from './files-storage.config';
 import { S3Config } from './interface/config';
 import { FileRecordRepo } from './repo';
 import { FilesStorageService } from './service/files-storage.service';
+import { PreviewService } from './service/preview.service';
 
 const imports = [
 	LoggerModule,
@@ -28,6 +29,7 @@ const imports = [
 ];
 const providers = [
 	FilesStorageService,
+	PreviewService,
 	{
 		provide: 'S3_Client',
 		useFactory: (configProvider: S3Config) =>
@@ -74,6 +76,6 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		}),
 	],
 	providers,
-	exports: [FilesStorageService],
+	exports: [FilesStorageService, PreviewService],
 })
 export class FilesStorageModule {}
