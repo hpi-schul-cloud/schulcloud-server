@@ -61,9 +61,9 @@ describe('ToolConfigurationController (API)', () => {
 			const setup = async () => {
 				const school: School = schoolFactory.buildWithId();
 
-				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school });
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
 
-				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser], school });
+				const course: Course = courseFactory.buildWithId({ teachers: [studentUser], school });
 
 				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({
@@ -77,20 +77,22 @@ describe('ToolConfigurationController (API)', () => {
 
 				const contextExternalTool: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
 					schoolTool: schoolExternalTool,
+					contextType: ContextExternalToolType.COURSE,
+					contextId: course.id,
 				});
 
 				await em.persistAndFlush([
 					school,
 					course,
-					teacherUser,
-					teacherAccount,
+					studentUser,
+					studentAccount,
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
 				]);
 				em.clear();
 
-				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+				const loggedInClient: TestApiClient = await testApiClient.login(studentAccount);
 
 				return {
 					course,
