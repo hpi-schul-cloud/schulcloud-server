@@ -1,4 +1,4 @@
-import { NotImplementedException } from '@nestjs/common';
+import { NotImplementedException, StreamableFile } from '@nestjs/common';
 import { AuthorizableReferenceType } from '@src/modules/authorization';
 import { plainToClass } from 'class-transformer';
 import {
@@ -9,6 +9,7 @@ import {
 	SingleFileParams,
 } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
+import { IGetFileResponse } from '../interface';
 
 export class FilesStorageMapper {
 	static mapToAllowedAuthorizationEntityType(type: FileRecordParentType): AuthorizableReferenceType {
@@ -59,5 +60,15 @@ export class FilesStorageMapper {
 
 		const response = new FileRecordListResponse(responseFileRecords, total, skip, limit);
 		return response;
+	}
+
+	static mapToStreamableFile(fileResponse: IGetFileResponse): StreamableFile {
+		const streamableFile = new StreamableFile(fileResponse.data, {
+			type: fileResponse.contentType,
+			disposition: `inline; filename="${encodeURI(fileResponse.name)}"`,
+			length: fileResponse.contentLength,
+		});
+
+		return streamableFile;
 	}
 }
