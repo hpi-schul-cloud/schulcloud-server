@@ -88,8 +88,8 @@ describe('ToolSchoolController', () => {
 		};
 	};
 
-	describe('getSchoolExternalTools is called', () => {
-		describe('when endpoint is called', () => {
+	describe('getSchoolExternalTools', () => {
+		describe('when endpoint', () => {
 			it('should call the uc', async () => {
 				const { currentUser, searchParams } = setup();
 
@@ -138,7 +138,7 @@ describe('ToolSchoolController', () => {
 		});
 	});
 
-	describe('deleteSchoolExternalTool is called', () => {
+	describe('deleteSchoolExternalTool', () => {
 		describe('when params are given', () => {
 			it('should call the uc', async () => {
 				const { currentUser, idParams } = setup();
@@ -153,7 +153,7 @@ describe('ToolSchoolController', () => {
 		});
 	});
 
-	describe('createSchoolExternalTool is called', () => {
+	describe('createSchoolExternalTool', () => {
 		describe('when params are given', () => {
 			it('should call the schoolExternalToolRequestMapper', async () => {
 				const { currentUser, createParams } = setup();

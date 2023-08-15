@@ -76,7 +76,7 @@ describe('ExternalToolConfigurationUc', () => {
 		await module.close();
 	});
 
-	describe('getAvailableToolsForSchool is called', () => {
+	describe('getAvailableToolsForSchool', () => {
 		describe('when checking for the users permission', () => {
 			const setup = () => {
 				const tool: SchoolExternalTool = schoolExternalToolFactory.build();
@@ -180,7 +180,7 @@ describe('ExternalToolConfigurationUc', () => {
 		});
 	});
 
-	describe('getAvailableToolsForContext is called', () => {
+	describe('getAvailableToolsForContext', () => {
 		describe('when the user has insufficient permission', () => {
 			const setup = () => {
 				const tool: ContextExternalTool = contextExternalToolFactory.build();
@@ -400,7 +400,7 @@ describe('ExternalToolConfigurationUc', () => {
 		});
 	});
 
-	describe('getTemplateForSchoolExternalTool is called', () => {
+	describe('getTemplateForSchoolExternalTool', () => {
 		describe('when the user has permission to read an external tool', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
@@ -505,7 +505,7 @@ describe('ExternalToolConfigurationUc', () => {
 		});
 	});
 
-	describe('getTemplateForContextExternalTool is called', () => {
+	describe('getTemplateForContextExternalTool', () => {
 		describe('when the user has permission to read an external tool', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();

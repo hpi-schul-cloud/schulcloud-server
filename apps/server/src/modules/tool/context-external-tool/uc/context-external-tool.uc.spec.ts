@@ -65,7 +65,7 @@ describe('ContextExternalToolUc', () => {
 		jest.resetAllMocks();
 	});
 
-	describe('createContextExternalTool is called', () => {
+	describe('createContextExternalTool', () => {
 		describe('when contextExternalTool is given and user has permission ', () => {
 			const setup = () => {
 				const userId: EntityId = 'userId';
@@ -191,7 +191,7 @@ describe('ContextExternalToolUc', () => {
 		});
 	});
 
-	describe('updateContextExternalTool is called', () => {
+	describe('updateContextExternalTool', () => {
 		describe('when contextExternalTool is given and user has permission ', () => {
 			const setup = () => {
 				const userId: EntityId = 'userId';
@@ -331,7 +331,7 @@ describe('ContextExternalToolUc', () => {
 		});
 	});
 
-	describe('deleteContextExternalTool is called', () => {
+	describe('deleteContextExternalTool', () => {
 		describe('when contextExternalTool is given and user has permission ', () => {
 			const setup = () => {
 				const userId: EntityId = 'userId';
@@ -370,7 +370,7 @@ describe('ContextExternalToolUc', () => {
 		});
 	});
 
-	describe('getContextExternalToolsForContext is called', () => {
+	describe('getContextExternalToolsForContext', () => {
 		describe('when parameters are given and user has permission ', () => {
 			const setup = () => {
 				const userId: EntityId = 'userId';

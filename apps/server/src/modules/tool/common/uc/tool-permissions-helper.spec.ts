@@ -44,7 +44,7 @@ describe('ToolPermissionHelper', () => {
 		jest.resetAllMocks();
 	});
 
-	describe('ensureContextPermissions is called', () => {
+	describe('ensureContextPermissions', () => {
 		describe('when context external tool is given', () => {
 			const setup = () => {
 				const userId = 'userId';
@@ -73,7 +73,7 @@ describe('ToolPermissionHelper', () => {
 		});
 	});
 
-	describe('ensureSchoolPermissions is called', () => {
+	describe('ensureSchoolPermissions', () => {
 		describe('when school external tool is given', () => {
 			const setup = () => {
 				const userId = 'userId';

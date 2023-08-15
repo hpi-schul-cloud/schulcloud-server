@@ -58,7 +58,7 @@ describe('SchoolExternalToolUc', () => {
 		jest.resetAllMocks();
 	});
 
-	describe('findSchoolExternalTools is called', () => {
+	describe('findSchoolExternalTools', () => {
 		describe('when checks permission', () => {
 			const setup = () => {
 				const tool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
@@ -144,7 +144,7 @@ describe('SchoolExternalToolUc', () => {
 		});
 	});
 
-	describe('deleteSchoolExternalTool is called', () => {
+	describe('deleteSchoolExternalTool', () => {
 		describe('when checks permission', () => {
 			const setup = () => {
 				const tool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
@@ -199,7 +199,7 @@ describe('SchoolExternalToolUc', () => {
 		});
 	});
 
-	describe('createSchoolExternalTool is called', () => {
+	describe('createSchoolExternalTool', () => {
 		describe('when checks permission', () => {
 			const setup = () => {
 				const tool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
@@ -253,13 +253,13 @@ describe('SchoolExternalToolUc', () => {
 		});
 	});
 
-	describe('getSchoolExternalTool is called', () => {
+	describe('getSchoolExternalTool', () => {
 		describe('when checks permission', () => {
 			const setup = () => {
 				const tool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 				const user: User = userFactory.buildWithId();
 
-				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([tool]);
+				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValue(tool);
 
 				return {
 					user,
@@ -304,7 +304,7 @@ describe('SchoolExternalToolUc', () => {
 		});
 	});
 
-	describe('updateSchoolExternalTool is called', () => {
+	describe('updateSchoolExternalTool', () => {
 		const setup = () => {
 			const tool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 			const updatedTool: SchoolExternalTool = schoolExternalToolFactory.build({ ...tool });

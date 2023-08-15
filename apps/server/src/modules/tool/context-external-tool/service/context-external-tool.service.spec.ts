@@ -46,7 +46,7 @@ describe('ContextExternalToolService', () => {
 		jest.resetAllMocks();
 	});
 
-	describe('findContextExternalTools is called', () => {
+	describe('findContextExternalTools', () => {
 		describe('when query is given', () => {
 			const setup = () => {
 				const contextExternalTools: ContextExternalTool[] = contextExternalToolFactory.buildList(2);
@@ -68,7 +68,7 @@ describe('ContextExternalToolService', () => {
 		});
 	});
 
-	describe('deleteBySchoolExternalToolId is called', () => {
+	describe('deleteBySchoolExternalToolId', () => {
 		describe('when schoolExternalToolId is given', () => {
 			const setup = () => {
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
@@ -109,7 +109,7 @@ describe('ContextExternalToolService', () => {
 		});
 	});
 
-	describe('saveContextExternalTool is called', () => {
+	describe('saveContextExternalTool', () => {
 		describe('when contextExternalTool is given', () => {
 			const setup = () => {
 				jest.useFakeTimers().setSystemTime(new Date('2023-01-01'));
@@ -130,7 +130,7 @@ describe('ContextExternalToolService', () => {
 		});
 	});
 
-	describe('getContextExternalToolById is called', () => {
+	describe('getContextExternalToolById', () => {
 		describe('when contextExternalToolId is given', () => {
 			const setup = () => {
 				const schoolId: string = schoolDOFactory.buildWithId().id as string;
@@ -172,7 +172,7 @@ describe('ContextExternalToolService', () => {
 		});
 	});
 
-	describe('deleteContextExternalTool is called', () => {
+	describe('deleteContextExternalTool', () => {
 		describe('when contextExternalToolId is given', () => {
 			const setup = () => {
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
@@ -192,7 +192,7 @@ describe('ContextExternalToolService', () => {
 		});
 	});
 
-	describe('getContextExternalToolsForContext is called', () => {
+	describe('getContextExternalToolsForContext', () => {
 		describe('when contextType and contextId are given', () => {
 			it('should call the repository', async () => {
 				const contextRef: ContextRef = new ContextRef({ type: ToolContextType.COURSE, id: 'contextId' });

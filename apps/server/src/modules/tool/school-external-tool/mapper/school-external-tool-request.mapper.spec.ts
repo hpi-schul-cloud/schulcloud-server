@@ -5,7 +5,7 @@ import { CustomParameterEntryParam, SchoolExternalToolPostParams } from '../cont
 describe('SchoolExternalToolRequestMapper', () => {
 	const mapper: SchoolExternalToolRequestMapper = new SchoolExternalToolRequestMapper();
 
-	describe('mapSchoolExternalToolRequest is called', () => {
+	describe('mapSchoolExternalToolRequest', () => {
 		describe('when SchoolExternalToolPostParams is given', () => {
 			const setup = () => {
 				const param: CustomParameterEntryParam = {

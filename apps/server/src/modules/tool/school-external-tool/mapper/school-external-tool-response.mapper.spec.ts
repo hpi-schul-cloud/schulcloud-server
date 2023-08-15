@@ -11,7 +11,7 @@ describe('SchoolExternalToolResponseMapper', () => {
 		mapper = new SchoolExternalToolResponseMapper();
 	});
 
-	describe('mapToSearchListResponse is called', () => {
+	describe('mapToSearchListResponse', () => {
 		it('should return a schoolExternalToolResponse', () => {
 			const response: SchoolExternalToolSearchListResponse = mapper.mapToSearchListResponse([]);
 

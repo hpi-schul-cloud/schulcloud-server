@@ -216,6 +216,7 @@ describe('ExternalToolResponseMapper', () => {
 					type: ToolConfigType.LTI11,
 					baseUrl: 'mockUrl',
 					launch_presentation_locale: 'de-DE',
+					resource_link_id: 'linkId',
 				});
 
 				const customParameterResponse: CustomParameterResponse = new CustomParameterResponse({
@@ -273,7 +274,7 @@ describe('ExternalToolResponseMapper', () => {
 				};
 			};
 
-			it('should map a lti11 tool DO to a lti11 tool response', () => {
+			it('should map an lti11 tool DO to an lti11 tool response', () => {
 				const { externalTool, externalToolResponse } = setup();
 
 				const result: ExternalToolResponse = ExternalToolResponseMapper.mapToExternalToolResponse(externalTool);
