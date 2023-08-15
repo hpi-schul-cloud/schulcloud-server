@@ -233,7 +233,7 @@ describe('ToolContextController (API)', () => {
 
 				const result = await loggedInClient.delete(`${contextExternalToolEntity.id}`);
 
-				expect(result.statusCode).toEqual(HttpStatus.NO_CONTENT);
+				expect(result.statusCode).toEqual(HttpStatus.FORBIDDEN);
 			});
 		});
 	});
