@@ -16,7 +16,6 @@ export class SubmissionItemUc {
 	) {
 		this.logger.setContext(SubmissionItemUc.name);
 	}
-	// TODO: add spec file
 
 	async findSubmissionItems(userId: EntityId, submissionContainerId: EntityId): Promise<SubmissionItem[]> {
 		const submissionContainer = (await this.elementService.findById(
