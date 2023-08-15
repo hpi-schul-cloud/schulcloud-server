@@ -18,10 +18,7 @@ export class ErrorMapper {
 		} else if (errorObj.status === 403) {
 			error = new ForbiddenException(errorObj.message);
 		} else {
-			error = new InternalServerErrorException(
-				'FileStorageClientErrorMapper',
-				ErrorUtils.convertUnknownError(errorObj)
-			);
+			error = new InternalServerErrorException(ErrorUtils.convertUnknownError(errorObj));
 		}
 
 		return error;

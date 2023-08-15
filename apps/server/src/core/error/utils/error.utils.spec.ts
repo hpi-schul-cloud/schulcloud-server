@@ -70,4 +70,46 @@ describe('ErrorUtils', () => {
 			expect(result).toBe(false);
 		});
 	});
+
+	describe('convertUnknownError', () => {
+		it('should return HttpExceptionOptions if error is instance of Error', () => {
+			const error = new BadRequestException();
+
+			const result = ErrorUtils.convertUnknownError(error);
+
+			const expectedResult = { cause: error };
+
+			expect(result).toEqual(expectedResult);
+		});
+
+		it('should return HttpExceptionOptions if error is a string', () => {
+			const error = 'test string';
+
+			const result = ErrorUtils.convertUnknownError(error);
+
+			const expectedResult = { cause: new Error(JSON.stringify(error)) };
+
+			expect(result).toEqual(expectedResult);
+		});
+
+		it('should return HttpExceptionOptions if error is a number', () => {
+			const error = 1;
+
+			const result = ErrorUtils.convertUnknownError(error);
+
+			const expectedResult = { cause: new Error(JSON.stringify(error)) };
+
+			expect(result).toEqual(expectedResult);
+		});
+
+		it('should return HttpExceptionOptions if error is a object', () => {
+			const error = { a: 1 };
+
+			const result = ErrorUtils.convertUnknownError(error);
+
+			const expectedResult = { cause: new Error(JSON.stringify(error)) };
+
+			expect(result).toEqual(expectedResult);
+		});
+	});
 });

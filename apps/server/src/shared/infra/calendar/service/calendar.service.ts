@@ -1,9 +1,10 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
 import { CalendarMapper } from '@shared/infra/calendar/mapper/calendar.mapper';
+import { ErrorUtils } from '@src/core/error/utils';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Observable, firstValueFrom } from 'rxjs';
 import { URL, URLSearchParams } from 'url';
@@ -32,7 +33,11 @@ export class CalendarService {
 				},
 				timeout: this.timeoutMs,
 			})
-		).then((resp: AxiosResponse<ICalendarEvent>) => this.calendarMapper.mapToDto(resp.data));
+		)
+			.then((resp: AxiosResponse<ICalendarEvent>) => this.calendarMapper.mapToDto(resp.data))
+			.catch((error) => {
+				throw new InternalServerErrorException(ErrorUtils.convertUnknownError(error, 'CalendarService:findEvent'));
+			});
 	}
 
 	private get(

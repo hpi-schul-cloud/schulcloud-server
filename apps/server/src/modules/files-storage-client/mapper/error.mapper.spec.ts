@@ -52,7 +52,7 @@ describe('ErrorMapper', () => {
 
 			const result = ErrorMapper.mapErrorToDomainError(json);
 
-			expect(result).toStrictEqual(new InternalServerErrorException(errorText));
+			expect(result).toStrictEqual(new InternalServerErrorException());
 		});
 
 		it('Should map unknown error code to InternalServerErrorException.', () => {
@@ -60,7 +60,10 @@ describe('ErrorMapper', () => {
 			const json = _.toPlainObject(new ConflictException(errorText)) as IFileStorageError;
 			const result = ErrorMapper.mapErrorToDomainError(json);
 
-			expect(result).toStrictEqual(new InternalServerErrorException(errorText));
+			const a = new InternalServerErrorException();
+			console.log(a.message);
+
+			expect(result).toStrictEqual(a.name);
 		});
 
 		it('Should map generic error to InternalServerErrorException.', () => {
@@ -68,7 +71,7 @@ describe('ErrorMapper', () => {
 			const error = new Error(errorText) as IFileStorageError;
 			const result = ErrorMapper.mapErrorToDomainError(error);
 
-			expect(result).toStrictEqual(new InternalServerErrorException(errorText));
+			expect(result).toStrictEqual(new InternalServerErrorException());
 		});
 
 		it('Should map 400 api validation error response to ApiValidationError.', () => {
