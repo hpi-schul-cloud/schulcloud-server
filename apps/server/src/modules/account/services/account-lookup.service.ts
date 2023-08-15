@@ -30,7 +30,7 @@ export class AccountLookupService {
 		}
 		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
 			const account = await this.idmService.findAccountById(id);
-			return new ObjectId(account.attRefTechnicalId);
+			return new ObjectId(account.attDbcAccountId);
 		}
 		return null;
 	}

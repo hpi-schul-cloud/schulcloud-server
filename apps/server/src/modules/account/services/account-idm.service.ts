@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
-import { Counted, EntityId, IAccount, IAccountUpdate } from '@shared/domain';
+import { Counted, EntityId, IdmAccount, IdmAccountUpdate } from '@shared/domain';
 import { IdentityManagementService, IdentityManagementOauthService } from '@shared/infra/identity-management';
 import { LegacyLogger } from '@src/core/logger';
 import { AccountIdmToDtoMapper } from '../mapper';
@@ -28,7 +28,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 	}
 
 	async findMultipleByUserId(userIds: EntityId[]): Promise<AccountDto[]> {
-		const results = new Array<IAccount>();
+		const results = new Array<IdmAccount>();
 		for (const userId of userIds) {
 			try {
 				// eslint-disable-next-line no-await-in-loop
@@ -87,11 +87,11 @@ export class AccountServiceIdm extends AbstractAccountService {
 
 	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
 		let accountId: string;
-		const idmAccount: IAccountUpdate = {
+		const idmAccount: IdmAccountUpdate = {
 			username: accountDto.username,
-			attRefTechnicalId: accountDto.idmReferenceId,
-			attRefFunctionalIntId: accountDto.userId,
-			attRefFunctionalExtId: accountDto.systemId,
+			attDbcAccountId: accountDto.idmReferenceId,
+			attDbcUserId: accountDto.userId,
+			attDbcSystemId: accountDto.systemId,
 		};
 		if (accountDto.id) {
 			let idmId: string | undefined;
@@ -114,7 +114,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
-	private async updateAccount(idmAccountId: string, idmAccount: IAccountUpdate, password?: string): Promise<string> {
+	private async updateAccount(idmAccountId: string, idmAccount: IdmAccountUpdate, password?: string): Promise<string> {
 		const updatedAccountId = await this.identityManager.updateAccount(idmAccountId, idmAccount);
 		if (password) {
 			await this.identityManager.updateAccountPassword(idmAccountId, password);
@@ -122,7 +122,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		return updatedAccountId;
 	}
 
-	private async createAccount(idmAccount: IAccountUpdate, password?: string): Promise<string> {
+	private async createAccount(idmAccount: IdmAccountUpdate, password?: string): Promise<string> {
 		const accountId = await this.identityManager.createAccount(idmAccount, password);
 		return accountId;
 	}

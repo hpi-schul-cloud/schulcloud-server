@@ -66,9 +66,9 @@ describe('KeycloakSeedService', () => {
 			email: 'john.doe@email.tld',
 			username: 'john.doe',
 			attributes: {
-				refTechnicalId: '1tec',
-				refFunctionalIntId: '1int',
-				refFunctionalExtId: 'sysId',
+				dbcAccountId: '1tec',
+				dbcUserId: '1int',
+				dbcSystemId: 'sysId',
 			},
 		},
 		{

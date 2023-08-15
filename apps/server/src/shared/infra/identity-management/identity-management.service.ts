@@ -1,4 +1,4 @@
-import { Counted, IAccount, IAccountUpdate } from '@shared/domain';
+import { Counted, IdmAccount, IdmAccountUpdate } from '@shared/domain';
 
 export type SearchOptions = {
 	exact?: boolean;
@@ -14,7 +14,7 @@ export abstract class IdentityManagementService {
 	 * @param [password] the account's password (optional)
 	 * @returns the account id if created successfully
 	 */
-	abstract createAccount(account: IAccountUpdate, password?: string | undefined): Promise<string>;
+	abstract createAccount(account: IdmAccountUpdate, password?: string | undefined): Promise<string>;
 
 	/**
 	 * Update an existing account's details.
@@ -23,7 +23,7 @@ export abstract class IdentityManagementService {
 	 * @param account the account data to be applied.
 	 * @returns the account id if updated successfully
 	 */
-	abstract updateAccount(accountId: string, account: IAccountUpdate): Promise<string>;
+	abstract updateAccount(accountId: string, account: IdmAccountUpdate): Promise<string>;
 
 	/**
 	 * Update an existing account's password.
@@ -40,7 +40,7 @@ export abstract class IdentityManagementService {
 	 * @param accountId the account to be loaded.
 	 * @returns the account if exists
 	 */
-	abstract findAccountById(accountId: string): Promise<IAccount>;
+	abstract findAccountById(accountId: string): Promise<IdmAccount>;
 
 	/**
 	 * Load a specific account by its technical reference id.
@@ -48,7 +48,7 @@ export abstract class IdentityManagementService {
 	 * @param accountTecRefId the account to be loaded.
 	 * @returns the account if exists
 	 */
-	abstract findAccountByTecRefId(accountTecRefId: string): Promise<IAccount>;
+	abstract findAccountByTecRefId(accountTecRefId: string): Promise<IdmAccount>;
 
 	/**
 	 * Load a specific account by its functional internal reference id.
@@ -56,7 +56,7 @@ export abstract class IdentityManagementService {
 	 * @param accountTecRefId the account to be loaded.
 	 * @returns the account if exists
 	 */
-	abstract findAccountByFctIntId(accountFctIntId: string): Promise<IAccount>;
+	abstract findAccountByFctIntId(accountFctIntId: string): Promise<IdmAccount>;
 
 	/**
 	 * Loads the account with the specific username.
@@ -64,14 +64,14 @@ export abstract class IdentityManagementService {
 	 * @param options the search options to be applied.
 	 * @returns the found accounts (might be empty).
 	 */
-	abstract findAccountsByUsername(username: string, options?: SearchOptions): Promise<Counted<IAccount[]>>;
+	abstract findAccountsByUsername(username: string, options?: SearchOptions): Promise<Counted<IdmAccount[]>>;
 
 	/**
 	 * Load all accounts.
 	 *
 	 * @returns an array of all accounts (might be empty)
 	 */
-	abstract getAllAccounts(): Promise<IAccount[]>;
+	abstract getAllAccounts(): Promise<IdmAccount[]>;
 
 	/**
 	 * Deletes an account from the identity management.

@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
-import { IAccount } from '@shared/domain';
+import { IdmAccount } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { IdentityManagementOauthService, IdentityManagementService } from '@shared/infra/identity-management';
 import { NotImplementedException } from '@nestjs/common';
@@ -21,16 +21,16 @@ describe('AccountIdmService', () => {
 	let idmOauthServiceMock: DeepMocked<IdentityManagementOauthService>;
 
 	const mockIdmAccountRefId = 'tecId';
-	const mockIdmAccount: IAccount = {
+	const mockIdmAccount: IdmAccount = {
 		id: 'id',
 		username: 'username',
 		email: 'email',
 		firstName: 'firstName',
 		lastName: 'lastName',
 		createdDate: new Date(2020, 1, 1, 0, 0, 0, 0),
-		attRefTechnicalId: mockIdmAccountRefId,
-		attRefFunctionalIntId: 'fctIntId',
-		attRefFunctionalExtId: 'fctExtId',
+		attDbcAccountId: mockIdmAccountRefId,
+		attDbcUserId: 'fctIntId',
+		attDbcSystemId: 'fctExtId',
 	};
 
 	beforeAll(async () => {
@@ -101,7 +101,7 @@ describe('AccountIdmService', () => {
 
 			expect(ret).toBeDefined();
 			expect(ret).toMatchObject<Partial<AccountDto>>({
-				id: mockIdmAccount.attRefTechnicalId,
+				id: mockIdmAccount.attDbcAccountId,
 				idmReferenceId: mockIdmAccount.id,
 				createdAt: mockIdmAccount.createdDate,
 				updatedAt: mockIdmAccount.createdDate,
@@ -141,7 +141,7 @@ describe('AccountIdmService', () => {
 
 			expect(ret).toBeDefined();
 			expect(ret).toMatchObject<Partial<AccountDto>>({
-				id: mockIdmAccount.attRefTechnicalId,
+				id: mockIdmAccount.attDbcAccountId,
 				idmReferenceId: mockIdmAccount.id,
 				createdAt: mockIdmAccount.createdDate,
 				updatedAt: mockIdmAccount.createdDate,
@@ -163,7 +163,7 @@ describe('AccountIdmService', () => {
 			expect(idmServiceMock.createAccount).toHaveBeenCalled();
 			expect(ret).toBeDefined();
 			expect(ret).toMatchObject<Partial<AccountDto>>({
-				id: mockIdmAccount.attRefTechnicalId,
+				id: mockIdmAccount.attDbcAccountId,
 				idmReferenceId: mockIdmAccount.id,
 				createdAt: mockIdmAccount.createdDate,
 				updatedAt: mockIdmAccount.createdDate,
@@ -179,7 +179,7 @@ describe('AccountIdmService', () => {
 
 			expect(ret).toBeDefined();
 			expect(ret).toMatchObject<Partial<AccountDto>>({
-				id: mockIdmAccount.attRefTechnicalId,
+				id: mockIdmAccount.attDbcAccountId,
 				idmReferenceId: mockIdmAccount.id,
 				createdAt: mockIdmAccount.createdDate,
 				updatedAt: mockIdmAccount.createdDate,
@@ -195,7 +195,7 @@ describe('AccountIdmService', () => {
 
 			expect(ret).toBeDefined();
 			expect(ret).toMatchObject<Partial<AccountDto>>({
-				id: mockIdmAccount.attRefTechnicalId,
+				id: mockIdmAccount.attDbcAccountId,
 				idmReferenceId: mockIdmAccount.id,
 				createdAt: mockIdmAccount.createdDate,
 				updatedAt: mockIdmAccount.createdDate,
@@ -264,7 +264,7 @@ describe('AccountIdmService', () => {
 			setup();
 			const deleteSpy = jest.spyOn(idmServiceMock, 'deleteAccountById');
 
-			await accountIdmService.deleteByUserId(mockIdmAccount.attRefFunctionalIntId ?? '');
+			await accountIdmService.deleteByUserId(mockIdmAccount.attDbcUserId ?? '');
 			expect(deleteSpy).toHaveBeenCalledWith(mockIdmAccount.id);
 		});
 	});
@@ -299,7 +299,7 @@ describe('AccountIdmService', () => {
 			const setup = () => {
 				const accounts = [mockIdmAccount];
 				idmServiceMock.findAccountByFctIntId.mockImplementation(() => {
-					const element = accounts.pop() as IAccount;
+					const element = accounts.pop() as IdmAccount;
 					if (element) {
 						return Promise.resolve(element);
 					}
@@ -323,14 +323,14 @@ describe('AccountIdmService', () => {
 
 			it('should return the account', async () => {
 				setup();
-				const result = await accountIdmService.findByUserId(mockIdmAccount.attRefFunctionalIntId ?? '');
+				const result = await accountIdmService.findByUserId(mockIdmAccount.attDbcUserId ?? '');
 				expect(result).toStrictEqual<AccountDto>(mapper.mapToDto(mockIdmAccount));
 			});
 		});
 
 		describe('when not finding an account', () => {
 			const setup = () => {
-				idmServiceMock.findAccountByFctIntId.mockResolvedValue(undefined as unknown as IAccount);
+				idmServiceMock.findAccountByFctIntId.mockResolvedValue(undefined as unknown as IdmAccount);
 			};
 
 			it('should return null', async () => {
@@ -356,7 +356,7 @@ describe('AccountIdmService', () => {
 
 		describe('when not finding an account', () => {
 			const setup = () => {
-				idmServiceMock.findAccountByFctIntId.mockResolvedValue(undefined as unknown as IAccount);
+				idmServiceMock.findAccountByFctIntId.mockResolvedValue(undefined as unknown as IdmAccount);
 			};
 
 			it('should throw', async () => {

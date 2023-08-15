@@ -3,7 +3,7 @@ import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-ad
 import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
-import { IAccount } from '@shared/domain/interface/account';
+import { IdmAccount } from '@shared/domain/interface/account';
 import { IdentityManagementService } from '../../identity-management.service';
 import { KeycloakSettings } from '../../keycloak-administration/interface/keycloak-settings.interface';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
@@ -159,7 +159,7 @@ describe('KeycloakIdentityManagementService', () => {
 			const ret = await idm.findAccountById(mockedAccount1.id);
 			expect(ret).not.toBeNull();
 			expect(ret).toEqual(
-				expect.objectContaining<IAccount>({
+				expect.objectContaining<IdmAccount>({
 					id: '',
 				})
 			);
@@ -188,7 +188,7 @@ describe('KeycloakIdentityManagementService', () => {
 
 			expect(ret).not.toBeNull();
 			expect(ret).toEqual(
-				expect.objectContaining<IAccount>({
+				expect.objectContaining<IdmAccount>({
 					id: ret.id,
 					createdDate: date,
 				})
@@ -201,20 +201,20 @@ describe('KeycloakIdentityManagementService', () => {
 			kcUsersMock.findOne.mockResolvedValueOnce({
 				...mockedAccount1,
 				attributes: {
-					refTechnicalId: 'tecId',
-					refFunctionalIntId: 'fctIntId',
-					refFunctionalExtId: 'fctExtId',
+					dbcAccountId: 'tecId',
+					dbcUserId: 'fctIntId',
+					dbcSystemId: 'fctExtId',
 				},
 			});
 
 			const ret = await idm.findAccountById(mockedAccount1.id);
 			expect(ret).not.toBeNull();
 			expect(ret).toEqual(
-				expect.objectContaining<IAccount>({
+				expect.objectContaining<IdmAccount>({
 					id: ret.id,
-					attRefTechnicalId: 'tecId',
-					attRefFunctionalIntId: 'fctIntId',
-					attRefFunctionalExtId: 'fctExtId',
+					attDbcAccountId: 'tecId',
+					attDbcUserId: 'fctIntId',
+					attDbcSystemId: 'fctExtId',
 				})
 			);
 		});
@@ -225,20 +225,20 @@ describe('KeycloakIdentityManagementService', () => {
 			kcUsersMock.findOne.mockResolvedValueOnce({
 				...mockedAccount1,
 				attributes: {
-					refTechnicalId: ['tecId', 'ignore'],
-					refFunctionalIntId: ['fctIntId', 'ignore', 'ignore'],
-					refFunctionalExtId: ['fctExtId'],
+					dbcAccountId: ['tecId', 'ignore'],
+					dbcUserId: ['fctIntId', 'ignore', 'ignore'],
+					dbcSystemId: ['fctExtId'],
 				},
 			});
 
 			const ret = await idm.findAccountById(mockedAccount1.id);
 			expect(ret).not.toBeNull();
 			expect(ret).toEqual(
-				expect.objectContaining<IAccount>({
+				expect.objectContaining<IdmAccount>({
 					id: ret.id,
-					attRefTechnicalId: 'tecId',
-					attRefFunctionalIntId: 'fctIntId',
-					attRefFunctionalExtId: 'fctExtId',
+					attDbcAccountId: 'tecId',
+					attDbcUserId: 'fctIntId',
+					attDbcSystemId: 'fctExtId',
 				})
 			);
 		});
