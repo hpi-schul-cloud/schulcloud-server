@@ -242,6 +242,10 @@ export class File extends BaseEntityWithTimestamps {
 		this.deleted = true;
 	}
 
+	public isMarkedForDeletion(): boolean {
+		return this.deleted && this.deletedAt !== undefined && !Number.isNaN(this.deletedAt.getTime());
+	}
+
 	constructor(props: FileProps) {
 		super();
 

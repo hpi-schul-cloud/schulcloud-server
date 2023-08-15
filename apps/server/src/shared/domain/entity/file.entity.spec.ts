@@ -144,22 +144,28 @@ describe('File entity', () => {
 		});
 	});
 
+	const setup = () => {
+		const file = new File({
+			name: 'test-file-1.txt',
+			size: 42,
+			type: 'text/plain',
+			storageFileName: '001-test-file-1.txt',
+			bucket: 'bucket-001',
+			storageProvider,
+			thumbnail: 'https://example.com/thumbnail.png',
+			ownerId: mainUserId,
+			refOwnerModel: FileRefOwnerModel.USER,
+			creatorId: mainUserId,
+			permissions: [],
+			versionKey: 0,
+		});
+
+		return { file };
+	};
+
 	describe('markForDeletion', () => {
 		it('should properly mark the file for deletion', () => {
-			const file = new File({
-				name: 'test-file-1.txt',
-				size: 42,
-				type: 'text/plain',
-				storageFileName: '001-test-file-1.txt',
-				bucket: 'bucket-001',
-				storageProvider,
-				thumbnail: 'https://example.com/thumbnail.png',
-				ownerId: mainUserId,
-				refOwnerModel: FileRefOwnerModel.USER,
-				creatorId: mainUserId,
-				permissions: [],
-				versionKey: 0,
-			});
+			const { file } = setup();
 
 			const expectedFile = copyFile(file);
 
@@ -173,6 +179,48 @@ describe('File entity', () => {
 			file.markForDeletion();
 
 			expect(file).toEqual(expectedFile);
+		});
+	});
+
+	describe('isMarkedForDeletion', () => {
+		it('should say the file is marked for deletion in case of a valid marking', () => {
+			const { file } = setup();
+
+			file.markForDeletion();
+
+			expect(file.isMarkedForDeletion()).toEqual(true);
+		});
+
+		describe('should say the file is not marked for deletion', () => {
+			it('in case of just some random file', () => {
+				const { file } = setup();
+
+				expect(file.isMarkedForDeletion()).toEqual(false);
+			});
+
+			it("in case of an invalid 'deleteAt' date", () => {
+				const { file } = setup();
+
+				file.deletedAt = new Date(0);
+
+				expect(file.isMarkedForDeletion()).toEqual(false);
+			});
+
+			it("in case of the 'deleted' flag being false", () => {
+				const { file } = setup();
+
+				file.deleted = false;
+
+				expect(file.isMarkedForDeletion()).toEqual(false);
+			});
+
+			it("in case of a deleted flag being set to 'true', but no deletedAt date being set", () => {
+				const { file } = setup();
+
+				file.deleted = true;
+
+				expect(file.isMarkedForDeletion()).toEqual(false);
+			});
 		});
 	});
 
