@@ -7,7 +7,7 @@ import {
 	SchoolExternalToolResponse,
 	SchoolExternalToolSearchListResponse,
 } from '../controller/dto';
-import { SchoolExternalTool } from '../domain';
+import { SchoolExternalToolComposite } from '../uc/dto/school-external-tool-composite';
 
 export const statusMapping: Record<ToolConfigurationStatus, ToolConfigurationStatusResponse> = {
 	[ToolConfigurationStatus.LATEST]: ToolConfigurationStatusResponse.LATEST,
@@ -17,14 +17,14 @@ export const statusMapping: Record<ToolConfigurationStatus, ToolConfigurationSta
 
 @Injectable()
 export class SchoolExternalToolResponseMapper {
-	mapToSearchListResponse(externalTools: SchoolExternalTool[]): SchoolExternalToolSearchListResponse {
-		const responses: SchoolExternalToolResponse[] = externalTools.map((toolDO: SchoolExternalTool) =>
-			this.mapToSchoolExternalToolResponse(toolDO)
+	mapToSearchListResponse(externalTools: SchoolExternalToolComposite[]): SchoolExternalToolSearchListResponse {
+		const responses: SchoolExternalToolResponse[] = externalTools.map((tool: SchoolExternalToolComposite) =>
+			this.mapToSchoolExternalToolResponse(tool)
 		);
 		return new SchoolExternalToolSearchListResponse(responses);
 	}
 
-	mapToSchoolExternalToolResponse(schoolExternalTool: SchoolExternalTool): SchoolExternalToolResponse {
+	mapToSchoolExternalToolResponse(schoolExternalTool: SchoolExternalToolComposite): SchoolExternalToolResponse {
 		return {
 			id: schoolExternalTool.id ?? '',
 			name: schoolExternalTool.name ?? '',
@@ -35,6 +35,7 @@ export class SchoolExternalToolResponseMapper {
 			status: schoolExternalTool.status
 				? statusMapping[schoolExternalTool.status]
 				: ToolConfigurationStatusResponse.UNKNOWN,
+			logoUrl: schoolExternalTool.logoUrl,
 		};
 	}
 

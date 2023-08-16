@@ -95,7 +95,10 @@ export class ContextExternalToolUc {
 
 		const toolsWithPermission: ContextExternalTool[] = await this.filterToolsWithPermissions(userId, tools);
 
-		const toolsWithPermissionComposite = await this.addLogoUrlsToTools(logoUrlTemplate, toolsWithPermission);
+		const toolsWithPermissionComposite: ContextExternalToolComposite[] = await this.addLogoUrlsToTools(
+			logoUrlTemplate,
+			toolsWithPermission
+		);
 
 		return toolsWithPermissionComposite;
 	}

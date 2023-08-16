@@ -27,6 +27,7 @@ import {
 import { SchoolExternalToolDto } from '../uc/dto/school-external-tool.types';
 import { SchoolExternalToolUc } from '../uc';
 import { SchoolExternalTool } from '../domain';
+import { SchoolExternalToolComposite } from '../uc/dto/school-external-tool-composite';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -48,9 +49,13 @@ export class ToolSchoolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() schoolExternalToolParams: SchoolExternalToolSearchParams
 	): Promise<SchoolExternalToolSearchListResponse> {
-		const found: SchoolExternalTool[] = await this.schoolExternalToolUc.findSchoolExternalTools(currentUser.userId, {
-			schoolId: schoolExternalToolParams.schoolId,
-		});
+		const found: SchoolExternalToolComposite[] = await this.schoolExternalToolUc.findSchoolExternalTools(
+			currentUser.userId,
+			{
+				schoolId: schoolExternalToolParams.schoolId,
+			},
+			'/v3/tools/external-tools/{id}/logo'
+		);
 		const response: SchoolExternalToolSearchListResponse = this.responseMapper.mapToSearchListResponse(found);
 		return response;
 	}

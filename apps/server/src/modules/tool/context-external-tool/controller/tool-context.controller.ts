@@ -95,7 +95,7 @@ export class ToolContextController {
 				currentUser.userId,
 				params.contextType,
 				params.contextId,
-				'/v3/tools/external-tools/{id}/logo' // TEST
+				'/v3/tools/external-tools/{id}/logo'
 			);
 
 		const mappedTools: ContextExternalToolResponse[] = contextExternalTools.map(
