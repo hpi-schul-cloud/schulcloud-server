@@ -1,9 +1,11 @@
 import { CustomParameterEntryParam, CustomParameterEntryResponse } from '../../school-external-tool/controller/dto';
 import { ContextExternalToolResponse } from '../controller/dto';
-import { ContextExternalTool } from '../domain';
+import { ContextExternalToolComposite } from '../uc/dto/context-external-tool-composite';
 
 export class ContextExternalToolResponseMapper {
-	static mapContextExternalToolResponse(contextExternalTool: ContextExternalTool): ContextExternalToolResponse {
+	static mapContextExternalToolResponse(
+		contextExternalTool: ContextExternalToolComposite
+	): ContextExternalToolResponse {
 		const mapped: ContextExternalToolResponse = new ContextExternalToolResponse({
 			id: contextExternalTool.id ?? '',
 			contextId: contextExternalTool.contextRef.id,
@@ -12,6 +14,7 @@ export class ContextExternalToolResponseMapper {
 			displayName: contextExternalTool.displayName,
 			toolVersion: contextExternalTool.toolVersion,
 			parameters: this.mapRequestToCustomParameterEntryDO(contextExternalTool.parameters),
+			logoUrl: contextExternalTool.logoUrl,
 		});
 
 		return mapped;

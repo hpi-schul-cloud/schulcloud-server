@@ -17,7 +17,7 @@ import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator
 import { ContextExternalTool } from '../domain';
 import { ContextExternalToolRequestMapper, ContextExternalToolResponseMapper } from '../mapper';
 import { ContextExternalToolUc } from '../uc';
-import { ContextExternalToolDto } from '../uc/dto/context-external-tool.types';
+import { ContextExternalToolComposite } from '../uc/dto/context-external-tool-composite';
 import {
 	ContextExternalToolContextParams,
 	ContextExternalToolIdParams,
@@ -25,6 +25,7 @@ import {
 	ContextExternalToolResponse,
 	ContextExternalToolSearchListResponse,
 } from './dto';
+import { ContextExternalToolDto } from '../uc/dto/context-external-tool.types';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -46,7 +47,7 @@ export class ToolContextController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: ContextExternalToolPostParams
 	): Promise<ContextExternalToolResponse> {
-		const contextExternalTool: ContextExternalToolDto =
+		const contextExternalTool: ContextExternalToolComposite =
 			ContextExternalToolRequestMapper.mapContextExternalToolRequest(body);
 
 		const createdTool: ContextExternalTool = await this.contextExternalToolUc.createContextExternalTool(
@@ -89,15 +90,16 @@ export class ToolContextController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextExternalToolContextParams
 	): Promise<ContextExternalToolSearchListResponse> {
-		const contextExternalTools: ContextExternalTool[] =
+		const contextExternalTools: ContextExternalToolComposite[] =
 			await this.contextExternalToolUc.getContextExternalToolsForContext(
 				currentUser.userId,
 				params.contextType,
-				params.contextId
+				params.contextId,
+				'/v3/tools/external-tools/{id}/logo' // TEST
 			);
 
 		const mappedTools: ContextExternalToolResponse[] = contextExternalTools.map(
-			(tool: ContextExternalTool): ContextExternalToolResponse =>
+			(tool: ContextExternalToolComposite): ContextExternalToolResponse =>
 				ContextExternalToolResponseMapper.mapContextExternalToolResponse(tool)
 		);
 
