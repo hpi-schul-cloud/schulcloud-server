@@ -20,7 +20,7 @@ export interface SecurityCheckProps {
 }
 
 @Embeddable()
-export class SecurityCheck {
+export class FileSecurityCheckEntity {
 	@Enum()
 	status: SecurityCheckScanStatus = SecurityCheckScanStatus.PENDING;
 
@@ -127,7 +127,7 @@ export interface FileProps {
 	storageProvider?: StorageProviderEntity;
 	thumbnail?: string;
 	thumbnailRequestToken?: string;
-	securityCheck?: SecurityCheck;
+	securityCheck?: FileSecurityCheckEntity;
 	shareTokens?: string[];
 	parentId?: EntityId;
 	ownerId: EntityId;
@@ -174,8 +174,8 @@ export class FileEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	thumbnailRequestToken?: string = uuid();
 
-	@Embedded(() => SecurityCheck, { object: true, nullable: false })
-	securityCheck: SecurityCheck = new SecurityCheck({});
+	@Embedded(() => FileSecurityCheckEntity, { object: true, nullable: false })
+	securityCheck: FileSecurityCheckEntity = new FileSecurityCheckEntity({});
 
 	@Property({ nullable: true })
 	@Index()
