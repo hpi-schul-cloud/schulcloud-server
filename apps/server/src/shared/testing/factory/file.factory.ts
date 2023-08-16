@@ -1,10 +1,10 @@
-import { File, FilePermission, FileProps, FileRefOwnerModel, RefPermModel } from '@shared/domain';
+import { FileEntity, FilePermission, FileProps, FileRefOwnerModel, RefPermModel } from '@shared/domain';
 
 import { BaseFactory } from './base.factory';
 import { storageProviderFactory } from './storageprovider.factory';
 import { userFactory } from './user.factory';
 
-export const userFileFactory = BaseFactory.define<File, FileProps>(File, ({ sequence }) => {
+export const userFileFactory = BaseFactory.define<FileEntity, FileProps>(FileEntity, ({ sequence }) => {
 	const user = userFactory.build();
 	const userId = user.id;
 

@@ -18,7 +18,7 @@ import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
 import { FederalState } from './federal-state.entity';
-import { File } from './file.entity';
+import { FileEntity } from './file.entity';
 import { ImportUser } from './import-user.entity';
 import {
 	Board,
@@ -66,7 +66,7 @@ export const ALL_ENTITIES = [
 	DashboardModelEntity,
 	ExternalToolEntity,
 	FederalState,
-	File,
+	FileEntity,
 	ImportUser,
 	Lesson,
 	LessonBoardElement,

@@ -1,39 +1,39 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 
-import { EntityId, File, FileProps, FileRefOwnerModel } from '@shared/domain';
+import { EntityId, FileEntity, FileProps, FileRefOwnerModel } from '@shared/domain';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { EntityDictionary } from '@mikro-orm/core';
 
 @Injectable()
-export class FilesRepo extends BaseRepo<File> {
+export class FilesRepo extends BaseRepo<FileEntity> {
 	constructor(protected readonly _em: EntityManager) {
 		super(_em);
 	}
 
 	get entityName() {
-		return File;
+		return FileEntity;
 	}
 
-	public async findFilesForCleanup(thresholdDate: Date, batchSize: number, offset: number): Promise<File[]> {
+	public async findFilesForCleanup(thresholdDate: Date, batchSize: number, offset: number): Promise<FileEntity[]> {
 		const query = { deletedAt: { $lte: thresholdDate } };
 		const options = { orderBy: { id: 'asc' }, limit: batchSize, offset, populate: ['storageProvider'] as never[] };
-		const files = await this._em.find(File, query, options);
+		const files = await this._em.find(FileEntity, query, options);
 
 		return files;
 	}
 
-	public async findByOwnerUserId(ownerUserId: EntityId): Promise<File[]> {
+	public async findByOwnerUserId(ownerUserId: EntityId): Promise<FileEntity[]> {
 		const ownerUserObjectId = new ObjectId(ownerUserId);
 
 		const filter = { owner: ownerUserObjectId, refOwnerModel: FileRefOwnerModel.USER };
 
-		const files = await this._em.find(File, filter);
+		const files = await this._em.find(FileEntity, filter);
 
-		return files as File[];
+		return files as FileEntity[];
 	}
 
-	public async findByPermissionRefId(permissionRefId: EntityId): Promise<File[]> {
+	public async findByPermissionRefId(permissionRefId: EntityId): Promise<FileEntity[]> {
 		const permissionRefObjectId = new ObjectId(permissionRefId);
 
 		const pipeline = [
@@ -48,10 +48,10 @@ export class FilesRepo extends BaseRepo<File> {
 			},
 		];
 
-		const rawFilesDocuments = await this._em.aggregate(File, pipeline);
+		const rawFilesDocuments = await this._em.aggregate(FileEntity, pipeline);
 
 		const files = rawFilesDocuments.map((rawFileDocument) =>
-			this._em.map(File, rawFileDocument as EntityDictionary<File>)
+			this._em.map(FileEntity, rawFileDocument as EntityDictionary<FileEntity>)
 		);
 
 		return files;

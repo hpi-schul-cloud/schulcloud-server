@@ -140,7 +140,7 @@ export interface FileProps {
 
 @Entity({ collection: 'files' })
 @Index({ options: { 'permissions.refId': 1 } })
-export class File extends BaseEntityWithTimestamps {
+export class FileEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	deletedAt?: Date;
 

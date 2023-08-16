@@ -2,7 +2,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { File, FilePermission, FileRefOwnerModel, RefPermModel } from '@shared/domain';
+import { FileEntity, FilePermission, FileRefOwnerModel, RefPermModel } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { storageProviderFactory, userFileFactory } from '@shared/testing';
 
@@ -24,7 +24,7 @@ describe('FilesRepo', () => {
 	});
 
 	beforeEach(async () => {
-		await em.nativeDelete(File, {});
+		await em.nativeDelete(FileEntity, {});
 	});
 
 	afterAll(async () => {
@@ -41,7 +41,7 @@ describe('FilesRepo', () => {
 		});
 
 		it('should implement entityName getter', () => {
-			expect(repo.entityName).toBe(File);
+			expect(repo.entityName).toBe(FileEntity);
 		});
 	});
 
@@ -130,10 +130,10 @@ describe('FilesRepo', () => {
 	];
 
 	const setup = async () => {
-		const otherUserFiles = [new File(otherUserFilesProps[0]), new File(otherUserFilesProps[1])];
+		const otherUserFiles = [new FileEntity(otherUserFilesProps[0]), new FileEntity(otherUserFilesProps[1])];
 
 		// Test files created, owned and accessible only by the other user.
-		const otherUserFile = new File({
+		const otherUserFile = new FileEntity({
 			name: 'test-file-1.txt',
 			size: 42,
 			type: 'text/plain',
@@ -154,7 +154,7 @@ describe('FilesRepo', () => {
 		});
 
 		// Test file created and owned by the main user, but also accessible by the other user.
-		const mainUserSharedFile = new File({
+		const mainUserSharedFile = new FileEntity({
 			name: 'test-file-2.txt',
 			size: 42,
 			type: 'text/plain',
@@ -179,7 +179,7 @@ describe('FilesRepo', () => {
 		});
 
 		// Test file created and owned by the other user, but also accessible by the main user.
-		const otherUserSharedFile = new File({
+		const otherUserSharedFile = new FileEntity({
 			name: 'test-file-3.txt',
 			size: 42,
 			type: 'text/plain',
@@ -204,7 +204,7 @@ describe('FilesRepo', () => {
 		});
 
 		// Test file created, owned and accessible only by the main user.
-		const mainUserFile = new File({
+		const mainUserFile = new FileEntity({
 			name: 'test-file-4.txt',
 			size: 42,
 			type: 'text/plain',
@@ -332,7 +332,7 @@ describe('FilesRepo', () => {
 
 		describe('should return an empty array in case of', () => {
 			it('no files owned by user with given userId', async () => {
-				await em.persistAndFlush([new File(otherUserFilesProps[0]), new File(otherUserFilesProps[1])]);
+				await em.persistAndFlush([new FileEntity(otherUserFilesProps[0]), new FileEntity(otherUserFilesProps[1])]);
 				em.clear();
 
 				const results = await repo.findByOwnerUserId(mainUserId);
@@ -490,7 +490,7 @@ describe('FilesRepo', () => {
 
 		describe('should return an empty array in case of', () => {
 			it('no files with given permissionRefId', async () => {
-				await em.persistAndFlush([new File(otherUserFilesProps[0]), new File(otherUserFilesProps[1])]);
+				await em.persistAndFlush([new FileEntity(otherUserFilesProps[0]), new FileEntity(otherUserFilesProps[1])]);
 				em.clear();
 
 				const results = await repo.findByPermissionRefId(mainUserId);

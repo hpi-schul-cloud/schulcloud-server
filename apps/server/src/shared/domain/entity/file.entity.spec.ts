@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 
 import { setupEntities, storageProviderFactory } from '@shared/testing';
-import { File, FilePermission, FileRefOwnerModel, RefPermModel } from './file.entity';
+import { FileEntity, FilePermission, FileRefOwnerModel, RefPermModel } from './file.entity';
 
 describe('File entity', () => {
 	const storageProvider = storageProviderFactory.buildWithId();
@@ -13,8 +13,8 @@ describe('File entity', () => {
 		await setupEntities();
 	});
 
-	const copyFile = (file: File) =>
-		new File({
+	const copyFile = (file: FileEntity) =>
+		new FileEntity({
 			createdAt: file.createdAt,
 			updatedAt: file.updatedAt,
 			deletedAt: file.deletedAt,
@@ -38,7 +38,7 @@ describe('File entity', () => {
 
 	describe('removePermissionsByRefId', () => {
 		it('should remove proper permission with given refId', () => {
-			const file = new File({
+			const file = new FileEntity({
 				name: 'test-file-1.txt',
 				size: 42,
 				type: 'text/plain',
@@ -86,7 +86,7 @@ describe('File entity', () => {
 
 		describe('should not remove any permissions', () => {
 			it('if there are none at all', () => {
-				const file = new File({
+				const file = new FileEntity({
 					name: 'test-file-1.txt',
 					size: 42,
 					type: 'text/plain',
@@ -109,7 +109,7 @@ describe('File entity', () => {
 			});
 
 			it('if none of them contains given refId', () => {
-				const file = new File({
+				const file = new FileEntity({
 					name: 'test-file-1.txt',
 					size: 42,
 					type: 'text/plain',
@@ -145,7 +145,7 @@ describe('File entity', () => {
 	});
 
 	const setup = () => {
-		const file = new File({
+		const file = new FileEntity({
 			name: 'test-file-1.txt',
 			size: 42,
 			type: 'text/plain',
@@ -229,7 +229,7 @@ describe('File entity', () => {
 			const userId = new ObjectId().toHexString();
 
 			it('should create file', () => {
-				const file = new File({
+				const file = new FileEntity({
 					name: 'name',
 					size: 42,
 					storageFileName: 'name',
@@ -240,11 +240,11 @@ describe('File entity', () => {
 					creatorId: userId,
 					permissions: [new FilePermission({ refId: userId, refPermModel: RefPermModel.USER })],
 				});
-				expect(file).toBeInstanceOf(File);
+				expect(file).toBeInstanceOf(FileEntity);
 			});
 			it('should throw without bucket', () => {
 				const call = () =>
-					new File({
+					new FileEntity({
 						name: 'name',
 						size: 42,
 						storageFileName: 'name',
@@ -259,7 +259,7 @@ describe('File entity', () => {
 
 			it('should throw without storageFileName', () => {
 				const call = () =>
-					new File({
+					new FileEntity({
 						name: 'name',
 						size: 42,
 						bucket: 'bucket',
@@ -274,7 +274,7 @@ describe('File entity', () => {
 
 			it('should throw without storageProvider', () => {
 				const call = () =>
-					new File({
+					new FileEntity({
 						name: 'name',
 						size: 42,
 						bucket: 'bucket',
