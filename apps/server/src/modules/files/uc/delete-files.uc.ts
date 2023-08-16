@@ -2,7 +2,7 @@
 import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 
-import { FileEntity, StorageProvider } from '@shared/domain';
+import { FileEntity, StorageProviderEntity } from '@shared/domain';
 import { StorageProviderRepo } from '@shared/repo/storageprovider/storageprovider.repo';
 import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 
@@ -74,7 +74,7 @@ export class DeleteFilesUc {
 		this.logger.log(`Initialized s3ClientMap with ${this.s3ClientMap.size} clients.`);
 	}
 
-	private createClient(storageProvider: StorageProvider): S3Client {
+	private createClient(storageProvider: StorageProviderEntity): S3Client {
 		const client = new S3Client({
 			endpoint: storageProvider.endpointUrl,
 			forcePathStyle: true,
@@ -109,7 +109,7 @@ export class DeleteFilesUc {
 		const storageFileName = file.storageFileName as string;
 		const deletionCommand = new DeleteObjectCommand({ Bucket: bucket, Key: storageFileName });
 
-		const storageProvider = file.storageProvider as StorageProvider;
+		const storageProvider = file.storageProvider as StorageProviderEntity;
 		const client = this.s3ClientMap.get(storageProvider.id) as S3Client;
 
 		await client.send(deletionCommand);

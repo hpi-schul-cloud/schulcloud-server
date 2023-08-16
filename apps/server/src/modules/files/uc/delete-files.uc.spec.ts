@@ -4,7 +4,13 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from 'bson';
 
-import { FileEntity, FilePermission, FileRefOwnerModel, RefPermModel, StorageProvider } from '@shared/domain/entity';
+import {
+	FileEntity,
+	FilePermission,
+	FileRefOwnerModel,
+	RefPermModel,
+	StorageProviderEntity,
+} from '@shared/domain/entity';
 import { StorageProviderRepo } from '@shared/repo/storageprovider/storageprovider.repo';
 import { storageProviderFactory } from '@shared/testing';
 
@@ -19,7 +25,7 @@ describe('DeleteFileUC', () => {
 	let s3Mock: AwsClientStub<S3Client>;
 	let logger: DeepMocked<LegacyLogger>;
 
-	const exampleStorageProvider = new StorageProvider({
+	const exampleStorageProvider = new StorageProviderEntity({
 		endpointUrl: 'endpointUrl',
 		accessKeyId: 'accessKey',
 		secretAccessKey: 'secret',

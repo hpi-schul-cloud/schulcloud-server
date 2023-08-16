@@ -35,7 +35,7 @@ import { CourseNews, News, SchoolNews, TeamNews } from './news.entity';
 import { Role } from './role.entity';
 import { School, SchoolRolePermission, SchoolRoles } from './school.entity';
 import { SchoolYear } from './schoolyear.entity';
-import { StorageProvider } from './storageprovider.entity';
+import { StorageProviderEntity } from './storageprovider.entity';
 import { Submission } from './submission.entity';
 import { System } from './system.entity';
 import { Task } from './task.entity';
@@ -83,7 +83,7 @@ export const ALL_ENTITIES = [
 	SchoolRoles,
 	SchoolYear,
 	ShareToken,
-	StorageProvider,
+	StorageProviderEntity,
 	Submission,
 	System,
 	Task,

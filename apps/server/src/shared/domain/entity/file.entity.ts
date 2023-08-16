@@ -4,7 +4,7 @@ import { v4 as uuid } from 'uuid';
 
 import { EntityId } from '@shared/domain';
 import { BaseEntityWithTimestamps } from './base.entity';
-import { StorageProvider } from './storageprovider.entity';
+import { StorageProviderEntity } from './storageprovider.entity';
 
 export const enum SecurityCheckScanStatus {
 	PENDING = 'pending',
@@ -124,7 +124,7 @@ export interface FileProps {
 	type?: string;
 	storageFileName?: string;
 	bucket?: string;
-	storageProvider?: StorageProvider;
+	storageProvider?: StorageProviderEntity;
 	thumbnail?: string;
 	thumbnailRequestToken?: string;
 	securityCheck?: SecurityCheck;
@@ -166,7 +166,7 @@ export class FileEntity extends BaseEntityWithTimestamps {
 	bucket?: string; // not for directories
 
 	@ManyToOne('StorageProvider', { fieldName: 'storageProviderId', nullable: true })
-	storageProvider?: StorageProvider; // not for directories
+	storageProvider?: StorageProviderEntity; // not for directories
 
 	@Property({ nullable: true })
 	thumbnail?: string;
