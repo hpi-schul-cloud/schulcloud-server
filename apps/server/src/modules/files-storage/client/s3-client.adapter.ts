@@ -67,7 +67,7 @@ export class S3ClientAdapter implements IStorageClient {
 			};
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (err.Code && err.Code === 'NoSuchKey') {
+			if (err?.Code === 'NoSuchKey') {
 				this.logger.log(`could not find one of the files for deletion with id ${path}`);
 				throw new NotFoundException('NoSuchKey');
 			} else {
@@ -95,7 +95,7 @@ export class S3ClientAdapter implements IStorageClient {
 			return commandOutput;
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (err.Code && err.Code === 'NoSuchBucket') {
+			if (err?.Code === 'NoSuchBucket') {
 				await this.createBucket();
 
 				return await this.create(path, file);
@@ -120,7 +120,7 @@ export class S3ClientAdapter implements IStorageClient {
 			return result;
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (err.cause && err.cause.name && err.cause.name === 'NoSuchKey') {
+			if (err?.cause?.name === 'NoSuchKey') {
 				this.logger.log(`could not find one of the files for deletion with ids ${paths.join(',')}`);
 				return [];
 			}
@@ -189,6 +189,7 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return result;
 		} catch (err) {
+			// throw new InternalServerErrorException('S3ClientAdapter:delete', { cause: err });
 			throw new InternalServerErrorException('S3ClientAdapter:delete', ErrorUtils.convertUnknownError(err));
 		}
 	}
