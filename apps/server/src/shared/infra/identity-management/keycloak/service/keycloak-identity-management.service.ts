@@ -81,30 +81,30 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 		return this.extractAccount(keycloakUser);
 	}
 
-	async findAccountByTecRefId(accountTecRefId: string): Promise<IdmAccount> {
+	async findAccountByDbcAccountId(accountDbcAccountId: string): Promise<IdmAccount> {
 		const keycloakUsers = await (
 			await this.kcAdminClient.callKcAdminClient()
-		).users.find({ q: `dbcAccountId:${accountTecRefId} }` });
+		).users.find({ q: `dbcAccountId:${accountDbcAccountId} }` });
 		if (keycloakUsers.length > 1) {
 			throw new Error('Multiple accounts for the same id!');
 		}
 		if (keycloakUsers.length === 0) {
-			throw new Error(`Account '${accountTecRefId}' not found`);
+			throw new Error(`Account '${accountDbcAccountId}' not found`);
 		}
 
 		return this.extractAccount(keycloakUsers[0]);
 	}
 
-	async findAccountByFctIntId(accountFctIntId: string): Promise<IdmAccount> {
+	async findAccountByDbcUserId(accountDbcUserId: string): Promise<IdmAccount> {
 		const keycloakUsers = await (
 			await this.kcAdminClient.callKcAdminClient()
-		).users.find({ q: `dbcUserId:${accountFctIntId} }` });
+		).users.find({ q: `dbcUserId:${accountDbcUserId} }` });
 
 		if (keycloakUsers.length > 1) {
 			throw new Error('Multiple accounts for the same id!');
 		}
 		if (keycloakUsers.length === 0) {
-			throw new Error(`Account '${accountFctIntId}' not found`);
+			throw new Error(`Account '${accountDbcUserId}' not found`);
 		}
 
 		return this.extractAccount(keycloakUsers[0]);

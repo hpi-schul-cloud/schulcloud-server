@@ -43,20 +43,20 @@ export abstract class IdentityManagementService {
 	abstract findAccountById(accountId: string): Promise<IdmAccount>;
 
 	/**
-	 * Load a specific account by its technical reference id.
+	 * Load a specific account by its dbc account id.
 	 *
-	 * @param accountTecRefId the account to be loaded.
+	 * @param accountDbcAccountId the account to be loaded.
 	 * @returns the account if exists
 	 */
-	abstract findAccountByTecRefId(accountTecRefId: string): Promise<IdmAccount>;
+	abstract findAccountByDbcAccountId(accountDbcAccountId: string): Promise<IdmAccount>;
 
 	/**
-	 * Load a specific account by its functional internal reference id.
+	 * Load a specific account by its dbc user id.
 	 *
-	 * @param accountTecRefId the account to be loaded.
+	 * @param accountDbcUserId the account to be loaded.
 	 * @returns the account if exists
 	 */
-	abstract findAccountByFctIntId(accountFctIntId: string): Promise<IdmAccount>;
+	abstract findAccountByDbcUserId(accountDbcUserId: string): Promise<IdmAccount>;
 
 	/**
 	 * Loads the account with the specific username.

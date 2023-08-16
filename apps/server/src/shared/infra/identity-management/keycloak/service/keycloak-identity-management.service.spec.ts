@@ -201,9 +201,9 @@ describe('KeycloakIdentityManagementService', () => {
 			kcUsersMock.findOne.mockResolvedValueOnce({
 				...mockedAccount1,
 				attributes: {
-					dbcAccountId: 'tecId',
-					dbcUserId: 'fctIntId',
-					dbcSystemId: 'fctExtId',
+					dbcAccountId: 'dbcAccountId',
+					dbcUserId: 'dbcUserId',
+					dbcSystemId: 'dbcSystemId',
 				},
 			});
 
@@ -212,9 +212,9 @@ describe('KeycloakIdentityManagementService', () => {
 			expect(ret).toEqual(
 				expect.objectContaining<IdmAccount>({
 					id: ret.id,
-					attDbcAccountId: 'tecId',
-					attDbcUserId: 'fctIntId',
-					attDbcSystemId: 'fctExtId',
+					attDbcAccountId: 'dbcAccountId',
+					attDbcUserId: 'dbcUserId',
+					attDbcSystemId: 'dbcSystemId',
 				})
 			);
 		});
@@ -225,9 +225,9 @@ describe('KeycloakIdentityManagementService', () => {
 			kcUsersMock.findOne.mockResolvedValueOnce({
 				...mockedAccount1,
 				attributes: {
-					dbcAccountId: ['tecId', 'ignore'],
-					dbcUserId: ['fctIntId', 'ignore', 'ignore'],
-					dbcSystemId: ['fctExtId'],
+					dbcAccountId: ['dbcAccountId', 'ignore'],
+					dbcUserId: ['dbcUserId', 'ignore', 'ignore'],
+					dbcSystemId: ['dbcSystemId'],
 				},
 			});
 
@@ -236,9 +236,9 @@ describe('KeycloakIdentityManagementService', () => {
 			expect(ret).toEqual(
 				expect.objectContaining<IdmAccount>({
 					id: ret.id,
-					attDbcAccountId: 'tecId',
-					attDbcUserId: 'fctIntId',
-					attDbcSystemId: 'fctExtId',
+					attDbcAccountId: 'dbcAccountId',
+					attDbcUserId: 'dbcUserId',
+					attDbcSystemId: 'dbcSystemId',
 				})
 			);
 		});
@@ -278,10 +278,10 @@ describe('KeycloakIdentityManagementService', () => {
 		});
 	});
 
-	describe('findAccountByTecRefId', () => {
-		it('should find an existing account by technical reference id', async () => {
+	describe('findAccountByDbcAccountId', () => {
+		it('should find an existing account by dbc account id', async () => {
 			kcUsersMock.find.mockResolvedValueOnce([mockedAccount1]);
-			const ret = await idm.findAccountByTecRefId('any');
+			const ret = await idm.findAccountByDbcAccountId('any');
 
 			expect(ret).not.toBeNull();
 			expect(ret).toEqual(
@@ -296,18 +296,18 @@ describe('KeycloakIdentityManagementService', () => {
 		});
 		it('should throw if no account found', async () => {
 			kcUsersMock.find.mockResolvedValueOnce([]);
-			await expect(idm.findAccountByTecRefId('any')).rejects.toThrow();
+			await expect(idm.findAccountByDbcAccountId('any')).rejects.toThrow();
 		});
 		it('should throw if multiple accounts found', async () => {
 			kcUsersMock.find.mockResolvedValueOnce([mockedAccount1, mockedAccount2]);
-			await expect(idm.findAccountByTecRefId('any')).rejects.toThrow();
+			await expect(idm.findAccountByDbcAccountId('any')).rejects.toThrow();
 		});
 	});
 
-	describe('findAccountByTecRefId', () => {
-		it('should find an existing account by technical reference id', async () => {
+	describe('findAccountByDbcUserId', () => {
+		it('should find an existing account by dbc user id', async () => {
 			kcUsersMock.find.mockResolvedValueOnce([mockedAccount1]);
-			const ret = await idm.findAccountByFctIntId('any');
+			const ret = await idm.findAccountByDbcUserId('any');
 
 			expect(ret).not.toBeNull();
 			expect(ret).toEqual(
@@ -322,11 +322,11 @@ describe('KeycloakIdentityManagementService', () => {
 		});
 		it('should throw if no account found', async () => {
 			kcUsersMock.find.mockResolvedValueOnce([]);
-			await expect(idm.findAccountByFctIntId('any')).rejects.toThrow();
+			await expect(idm.findAccountByDbcUserId('any')).rejects.toThrow();
 		});
 		it('should throw if multiple accounts found', async () => {
 			kcUsersMock.find.mockResolvedValueOnce([mockedAccount1, mockedAccount2]);
-			await expect(idm.findAccountByFctIntId('any')).rejects.toThrow();
+			await expect(idm.findAccountByDbcUserId('any')).rejects.toThrow();
 		});
 	});
 

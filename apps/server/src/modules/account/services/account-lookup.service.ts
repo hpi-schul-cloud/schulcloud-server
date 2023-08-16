@@ -46,7 +46,7 @@ export class AccountLookupService {
 			return id;
 		}
 		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
-			const account = await this.idmService.findAccountByTecRefId(id.toString());
+			const account = await this.idmService.findAccountByDbcAccountId(id.toString());
 			return account.id;
 		}
 		return null;

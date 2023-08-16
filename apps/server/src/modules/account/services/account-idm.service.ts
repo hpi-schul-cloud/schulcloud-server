@@ -32,7 +32,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		for (const userId of userIds) {
 			try {
 				// eslint-disable-next-line no-await-in-loop
-				results.push(await this.identityManager.findAccountByFctIntId(userId));
+				results.push(await this.identityManager.findAccountByDbcUserId(userId));
 			} catch {
 				// ignore entry
 			}
@@ -43,7 +43,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 
 	async findByUserId(userId: EntityId): Promise<AccountDto | null> {
 		try {
-			const result = await this.identityManager.findAccountByFctIntId(userId);
+			const result = await this.identityManager.findAccountByDbcUserId(userId);
 			return this.accountIdmToDtoMapper.mapToDto(result);
 		} catch {
 			return null;
@@ -52,7 +52,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 
 	async findByUserIdOrFail(userId: EntityId): Promise<AccountDto> {
 		try {
-			const result = await this.identityManager.findAccountByFctIntId(userId);
+			const result = await this.identityManager.findAccountByDbcUserId(userId);
 			return this.accountIdmToDtoMapper.mapToDto(result);
 		} catch {
 			throw new EntityNotFoundError(`Account with userId ${userId} not found`);
@@ -152,7 +152,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 	}
 
 	async deleteByUserId(userId: EntityId): Promise<void> {
-		const idmAccount = await this.identityManager.findAccountByFctIntId(userId);
+		const idmAccount = await this.identityManager.findAccountByDbcUserId(userId);
 		await this.identityManager.deleteAccountById(idmAccount.id);
 	}
 

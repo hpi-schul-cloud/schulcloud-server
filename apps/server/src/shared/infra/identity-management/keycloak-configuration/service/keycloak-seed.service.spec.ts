@@ -66,8 +66,8 @@ describe('KeycloakSeedService', () => {
 			email: 'john.doe@email.tld',
 			username: 'john.doe',
 			attributes: {
-				dbcAccountId: '1tec',
-				dbcUserId: '1int',
+				dbcAccountId: 'accId',
+				dbcUserId: 'usrId',
 				dbcSystemId: 'sysId',
 			},
 		},
@@ -153,10 +153,10 @@ describe('KeycloakSeedService', () => {
 
 		validAccountsNoDuplicates = [
 			{
-				_id: { $oid: '1tec' },
+				_id: { $oid: 'accId' },
 				username: users[0].username ?? missingUsername,
 				password: '',
-				userId: { $oid: '1int' },
+				userId: { $oid: 'usrId' },
 				systemId: 'sysId',
 			},
 			{ _id: { $oid: '2' }, username: users[1].username ?? missingUsername, password: '', userId: { $oid: '2' } },
@@ -170,7 +170,7 @@ describe('KeycloakSeedService', () => {
 		jsonAccounts = [...validAccounts, { _id: { $oid: '4' }, username: 'NoUser', password: '', userId: { $oid: '99' } }];
 
 		jsonUsers = [
-			{ _id: { $oid: '1int' }, firstName: users[0].firstName ?? missingFirstName, lastName: '', email: '' },
+			{ _id: { $oid: 'usrId' }, firstName: users[0].firstName ?? missingFirstName, lastName: '', email: '' },
 			{ _id: { $oid: '2' }, firstName: users[1].firstName ?? missingFirstName, lastName: '', email: '' },
 			{ _id: { $oid: '3' }, firstName: users[2].firstName ?? missingFirstName, lastName: '', email: '' },
 			{ _id: { $oid: '4' }, firstName: 'NoAccount', lastName: '', email: '' },

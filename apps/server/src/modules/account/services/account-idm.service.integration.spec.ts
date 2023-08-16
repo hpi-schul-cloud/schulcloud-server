@@ -23,13 +23,13 @@ describe('AccountIdmService Integration', () => {
 	let accountIdmService: AbstractAccountService;
 
 	const testRealm = `test-realm-${v1()}`;
-	const technicalRefId = new ObjectId().toString();
+	const testDbcAccountId = new ObjectId().toString();
 	const testAccount = new AccountSaveDto({
 		username: 'john.doe@mail.tld',
 		password: 'super-secret-password',
 		userId: new ObjectId().toString(),
 		systemId: new ObjectId().toString(),
-		idmReferenceId: technicalRefId,
+		idmReferenceId: testDbcAccountId,
 	});
 	const createAccount = async (): Promise<string> =>
 		identityManagementService.createAccount(
@@ -37,7 +37,7 @@ describe('AccountIdmService Integration', () => {
 				username: testAccount.username,
 				attDbcUserId: testAccount.userId,
 				attDbcSystemId: testAccount.systemId,
-				attDbcAccountId: technicalRefId,
+				attDbcAccountId: testDbcAccountId,
 			},
 			testAccount.password
 		);
@@ -103,7 +103,7 @@ describe('AccountIdmService Integration', () => {
 			expect.objectContaining<IdmAccount>({
 				id: createdAccount.idmReferenceId ?? '',
 				username: createdAccount.username,
-				attDbcAccountId: technicalRefId,
+				attDbcAccountId: testDbcAccountId,
 				attDbcUserId: createdAccount.userId,
 				attDbcSystemId: createdAccount.systemId,
 			})
@@ -116,7 +116,7 @@ describe('AccountIdmService Integration', () => {
 		const idmId = await createAccount();
 
 		await accountIdmService.save({
-			id: technicalRefId,
+			id: testDbcAccountId,
 			username: newUsername,
 		});
 		const foundAccount = await identityManagementService.findAccountById(idmId);
@@ -133,7 +133,7 @@ describe('AccountIdmService Integration', () => {
 		if (!isIdmReachable) return;
 		const newUserName = 'jane.doe@mail.tld';
 		const idmId = await createAccount();
-		await accountIdmService.updateUsername(technicalRefId, newUserName);
+		await accountIdmService.updateUsername(testDbcAccountId, newUserName);
 
 		const foundAccount = await identityManagementService.findAccountById(idmId);
 
@@ -147,7 +147,7 @@ describe('AccountIdmService Integration', () => {
 	it('updatePassword should update password', async () => {
 		if (!isIdmReachable) return;
 		await createAccount();
-		await expect(accountIdmService.updatePassword(technicalRefId, 'newPassword')).resolves.not.toThrow();
+		await expect(accountIdmService.updatePassword(testDbcAccountId, 'newPassword')).resolves.not.toThrow();
 	});
 
 	it('delete should remove account', async () => {
@@ -156,7 +156,7 @@ describe('AccountIdmService Integration', () => {
 		const foundAccount = await identityManagementService.findAccountById(idmId);
 		expect(foundAccount).toBeDefined();
 
-		await accountIdmService.delete(technicalRefId);
+		await accountIdmService.delete(testDbcAccountId);
 		await expect(identityManagementService.findAccountById(idmId)).rejects.toThrow();
 	});
 
