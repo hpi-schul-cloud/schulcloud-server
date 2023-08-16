@@ -6,7 +6,7 @@ import { ObjectId } from 'bson';
 
 import {
 	FileEntity,
-	FilePermission,
+	FilePermissionEntity,
 	FileRefOwnerModel,
 	RefPermModel,
 	StorageProviderEntity,
@@ -43,7 +43,7 @@ describe('DeleteFileUC', () => {
 			ownerId: userId,
 			refOwnerModel: FileRefOwnerModel.USER,
 			creatorId: userId,
-			permissions: [new FilePermission({ refId: userId, refPermModel: RefPermModel.USER })],
+			permissions: [new FilePermissionEntity({ refId: userId, refPermModel: RefPermModel.USER })],
 		}),
 		new FileEntity({
 			name: 'filename2',
@@ -54,7 +54,7 @@ describe('DeleteFileUC', () => {
 			ownerId: userId,
 			refOwnerModel: FileRefOwnerModel.USER,
 			creatorId: userId,
-			permissions: [new FilePermission({ refId: userId, refPermModel: RefPermModel.USER })],
+			permissions: [new FilePermissionEntity({ refId: userId, refPermModel: RefPermModel.USER })],
 		}),
 	];
 

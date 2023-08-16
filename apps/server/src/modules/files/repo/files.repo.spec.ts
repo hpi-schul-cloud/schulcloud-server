@@ -2,7 +2,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { FileEntity, FilePermission, FileRefOwnerModel, RefPermModel } from '@shared/domain';
+import { FileEntity, FilePermissionEntity, FileRefOwnerModel, RefPermModel } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { storageProviderFactory, userFileFactory } from '@shared/testing';
 
@@ -100,7 +100,7 @@ describe('FilesRepo', () => {
 			refOwnerModel: FileRefOwnerModel.USER,
 			creatorId: otherUserId,
 			permissions: [
-				new FilePermission({
+				new FilePermissionEntity({
 					refId: otherUserId,
 					refPermModel: RefPermModel.USER,
 				}),
@@ -120,7 +120,7 @@ describe('FilesRepo', () => {
 			refOwnerModel: FileRefOwnerModel.USER,
 			creatorId: otherUserId,
 			permissions: [
-				new FilePermission({
+				new FilePermissionEntity({
 					refId: otherUserId,
 					refPermModel: RefPermModel.USER,
 				}),
@@ -145,7 +145,7 @@ describe('FilesRepo', () => {
 			refOwnerModel: FileRefOwnerModel.USER,
 			creatorId: otherUserId,
 			permissions: [
-				new FilePermission({
+				new FilePermissionEntity({
 					refId: otherUserId,
 					refPermModel: RefPermModel.USER,
 				}),
@@ -166,11 +166,11 @@ describe('FilesRepo', () => {
 			refOwnerModel: FileRefOwnerModel.USER,
 			creatorId: mainUserId,
 			permissions: [
-				new FilePermission({
+				new FilePermissionEntity({
 					refId: mainUserId,
 					refPermModel: RefPermModel.USER,
 				}),
-				new FilePermission({
+				new FilePermissionEntity({
 					refId: otherUserId,
 					refPermModel: RefPermModel.USER,
 				}),
@@ -191,11 +191,11 @@ describe('FilesRepo', () => {
 			refOwnerModel: FileRefOwnerModel.USER,
 			creatorId: otherUserId,
 			permissions: [
-				new FilePermission({
+				new FilePermissionEntity({
 					refId: otherUserId,
 					refPermModel: RefPermModel.USER,
 				}),
-				new FilePermission({
+				new FilePermissionEntity({
 					refId: mainUserId,
 					refPermModel: RefPermModel.USER,
 				}),
@@ -216,7 +216,7 @@ describe('FilesRepo', () => {
 			refOwnerModel: FileRefOwnerModel.USER,
 			creatorId: mainUserId,
 			permissions: [
-				new FilePermission({
+				new FilePermissionEntity({
 					refId: mainUserId,
 					refPermModel: RefPermModel.USER,
 				}),
@@ -359,7 +359,7 @@ describe('FilesRepo', () => {
 			// Pre-check to make sure the main user has access to the file right now.
 			expect(otherUserSharedFile.permissions).toEqual(
 				expect.arrayContaining([
-					new FilePermission({
+					new FilePermissionEntity({
 						refId: mainUserId,
 						refPermModel: RefPermModel.USER,
 					}),
@@ -375,7 +375,7 @@ describe('FilesRepo', () => {
 			// Verify if the main user has for sure lost the permission to given file.
 			expect(otherUserSharedFile.permissions).not.toEqual(
 				expect.arrayContaining([
-					new FilePermission({
+					new FilePermissionEntity({
 						refId: mainUserId,
 						refPermModel: RefPermModel.USER,
 					}),

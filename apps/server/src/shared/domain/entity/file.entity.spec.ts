@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 
 import { setupEntities, storageProviderFactory } from '@shared/testing';
-import { FileEntity, FilePermission, FileRefOwnerModel, RefPermModel } from './file.entity';
+import { FileEntity, FilePermissionEntity, FileRefOwnerModel, RefPermModel } from './file.entity';
 
 describe('File entity', () => {
 	const storageProvider = storageProviderFactory.buildWithId();
@@ -50,15 +50,15 @@ describe('File entity', () => {
 				refOwnerModel: FileRefOwnerModel.USER,
 				creatorId: mainUserId,
 				permissions: [
-					new FilePermission({
+					new FilePermissionEntity({
 						refId: mainUserId,
 						refPermModel: RefPermModel.USER,
 					}),
-					new FilePermission({
+					new FilePermissionEntity({
 						refId: anotherUserId,
 						refPermModel: RefPermModel.USER,
 					}),
-					new FilePermission({
+					new FilePermissionEntity({
 						refId: yetAnotherUserId,
 						refPermModel: RefPermModel.USER,
 					}),
@@ -69,11 +69,11 @@ describe('File entity', () => {
 			const expectedFile = copyFile(file);
 
 			expectedFile.permissions = [
-				new FilePermission({
+				new FilePermissionEntity({
 					refId: anotherUserId,
 					refPermModel: RefPermModel.USER,
 				}),
-				new FilePermission({
+				new FilePermissionEntity({
 					refId: yetAnotherUserId,
 					refPermModel: RefPermModel.USER,
 				}),
@@ -121,11 +121,11 @@ describe('File entity', () => {
 					refOwnerModel: FileRefOwnerModel.USER,
 					creatorId: mainUserId,
 					permissions: [
-						new FilePermission({
+						new FilePermissionEntity({
 							refId: mainUserId,
 							refPermModel: RefPermModel.USER,
 						}),
-						new FilePermission({
+						new FilePermissionEntity({
 							refId: anotherUserId,
 							refPermModel: RefPermModel.USER,
 						}),
@@ -238,7 +238,7 @@ describe('File entity', () => {
 					ownerId: userId,
 					refOwnerModel: FileRefOwnerModel.USER,
 					creatorId: userId,
-					permissions: [new FilePermission({ refId: userId, refPermModel: RefPermModel.USER })],
+					permissions: [new FilePermissionEntity({ refId: userId, refPermModel: RefPermModel.USER })],
 				});
 				expect(file).toBeInstanceOf(FileEntity);
 			});
@@ -252,7 +252,7 @@ describe('File entity', () => {
 						ownerId: userId,
 						refOwnerModel: FileRefOwnerModel.USER,
 						creatorId: userId,
-						permissions: [new FilePermission({ refId: userId, refPermModel: RefPermModel.USER })],
+						permissions: [new FilePermissionEntity({ refId: userId, refPermModel: RefPermModel.USER })],
 					});
 				expect(call).toThrow();
 			});
@@ -267,7 +267,7 @@ describe('File entity', () => {
 						ownerId: userId,
 						refOwnerModel: FileRefOwnerModel.USER,
 						creatorId: userId,
-						permissions: [new FilePermission({ refId: userId, refPermModel: RefPermModel.USER })],
+						permissions: [new FilePermissionEntity({ refId: userId, refPermModel: RefPermModel.USER })],
 					});
 				expect(call).toThrow();
 			});
@@ -282,7 +282,7 @@ describe('File entity', () => {
 						ownerId: userId,
 						refOwnerModel: FileRefOwnerModel.USER,
 						creatorId: userId,
-						permissions: [new FilePermission({ refId: userId, refPermModel: RefPermModel.USER })],
+						permissions: [new FilePermissionEntity({ refId: userId, refPermModel: RefPermModel.USER })],
 					});
 				expect(call).toThrow();
 			});

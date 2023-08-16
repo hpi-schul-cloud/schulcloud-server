@@ -13,7 +13,7 @@ export const enum SecurityCheckScanStatus {
 	WONT_CHECK = 'wont-check',
 }
 
-export interface SecurityCheckProps {
+export interface FileSecurityCheckEntityProps {
 	status?: SecurityCheckScanStatus;
 	reason?: string;
 	requestToken?: string;
@@ -36,7 +36,7 @@ export class FileSecurityCheckEntity {
 	@Property()
 	updatedAt = new Date();
 
-	constructor(props: SecurityCheckProps) {
+	constructor(props: FileSecurityCheckEntityProps) {
 		if (props.status !== undefined) {
 			this.status = props.status;
 		}
@@ -62,7 +62,7 @@ export const enum RefPermModel {
 	ROLE = 'role',
 }
 
-export interface FilePermissionProps {
+export interface FilePermissionEntityProps {
 	refId: EntityId;
 	refPermModel: RefPermModel;
 	write?: boolean;
@@ -72,7 +72,7 @@ export interface FilePermissionProps {
 }
 
 @Embeddable()
-export class FilePermission {
+export class FilePermissionEntity {
 	@Property({ nullable: false })
 	refId: ObjectId;
 
@@ -91,7 +91,7 @@ export class FilePermission {
 	@Property()
 	delete = true;
 
-	constructor(props: FilePermissionProps) {
+	constructor(props: FilePermissionEntityProps) {
 		this.refId = new ObjectId(props.refId);
 		this.refPermModel = props.refPermModel;
 
@@ -113,7 +113,7 @@ export class FilePermission {
 	}
 }
 
-export interface FileProps {
+export interface FileEntityProps {
 	createdAt?: Date;
 	updatedAt?: Date;
 	deletedAt?: Date;
@@ -133,7 +133,7 @@ export interface FileProps {
 	ownerId: EntityId;
 	refOwnerModel: FileRefOwnerModel;
 	creatorId: EntityId;
-	permissions: FilePermission[];
+	permissions: FilePermissionEntity[];
 	lockId?: EntityId;
 	versionKey?: number;
 }
@@ -208,8 +208,8 @@ export class FileEntity extends BaseEntityWithTimestamps {
 		return this._creatorId.toHexString();
 	}
 
-	@Embedded(() => FilePermission, { array: true, nullable: false })
-	permissions: FilePermission[];
+	@Embedded(() => FilePermissionEntity, { array: true, nullable: false })
+	permissions: FilePermissionEntity[];
 
 	@Property({ fieldName: 'lockId', nullable: true })
 	_lockId?: ObjectId;
@@ -221,7 +221,7 @@ export class FileEntity extends BaseEntityWithTimestamps {
 	@Property({ fieldName: '__v', nullable: true })
 	versionKey?: number; // mongoose model version key
 
-	private validate(props: FileProps) {
+	private validate(props: FileEntityProps) {
 		if (props.isDirectory) return;
 
 		if (!props.size || !props.storageFileName || !props.bucket || !props.storageProvider) {
@@ -246,7 +246,7 @@ export class FileEntity extends BaseEntityWithTimestamps {
 		return this.deleted && this.deletedAt !== undefined && !Number.isNaN(this.deletedAt.getTime());
 	}
 
-	constructor(props: FileProps) {
+	constructor(props: FileEntityProps) {
 		super();
 
 		this.validate(props);
