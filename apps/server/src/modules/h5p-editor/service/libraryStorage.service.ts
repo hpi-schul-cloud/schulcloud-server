@@ -9,9 +9,10 @@ import {
 	type ILibraryName,
 	type ILibraryStorage,
 } from '@lumieducation/h5p-server';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 import { FileDto } from '@src/modules/files-storage/dto';
+import mime from 'mime';
 import path from 'node:path/posix';
 import { Readable } from 'stream';
 import { InstalledLibrary } from '../entity/library.entity';
@@ -141,7 +142,7 @@ export class LibraryStorage implements ILibraryStorage {
 			});
 		}
 
-		const filesToDelete = await this.listFiles(libraryName);
+		const filesToDelete = await this.listFiles(libraryName, false);
 
 		await this.s3Client.delete(filesToDelete.map((file) => this.getS3Key(libraryName, file)));
 	}
@@ -265,9 +266,13 @@ export class LibraryStorage implements ILibraryStorage {
 
 		const head = await this.s3Client.head(this.getS3Key(libraryName, file));
 
+		if (head.LastModified === undefined || head.ContentLength === undefined) {
+			throw new NotFoundException();
+		}
+
 		return {
-			birthtime: head.LastModified!,
-			size: head.ContentLength!,
+			birthtime: head.LastModified,
+			size: head.ContentLength,
 		};
 	}
 
@@ -277,16 +282,11 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param file
 	 */
 	public async getFileStream(library: ILibraryName, file: string): Promise<Readable> {
-		this.checkFilename(file);
+		const ubername = LibraryName.toUberName(library);
 
-		if (file === 'library.json') {
-			const metadata = JSON.stringify(await this.getMetadata(library));
-			const readable = Readable.from(metadata);
-			return readable;
-		}
+		const response = await this.getLibraryFile(ubername, file);
 
-		const response = await this.s3Client.get(this.getS3Key(library, file));
-		return response.data;
+		return response.stream;
 	}
 
 	/**
@@ -351,10 +351,16 @@ export class LibraryStorage implements ILibraryStorage {
 	/**
 	 * Returns all files that are a part of the library
 	 * @param library
+	 * @param withMetadata wether to include metadata file
 	 * @returns an array of filenames
 	 */
-	public async listFiles(libraryName: ILibraryName): Promise<string[]> {
+	public async listFiles(libraryName: ILibraryName, withMetadata = true): Promise<string[]> {
 		const files = await this.s3Client.list(this.getS3Key(libraryName, ''));
+
+		if (withMetadata) {
+			return files.concat('library.json');
+		}
+
 		return files;
 	}
 
@@ -424,5 +430,38 @@ export class LibraryStorage implements ILibraryStorage {
 		);
 
 		return result;
+	}
+
+	/**
+	 * Returns a file from a library
+	 * @param ubername Library ubername
+	 * @param file file
+	 * @returns a readable stream, mimetype and size
+	 */
+	public async getLibraryFile(ubername: string, file: string) {
+		const libraryName = LibraryName.fromUberName(ubername);
+
+		this.checkFilename(file);
+
+		if (file === 'library.json') {
+			const metadata = JSON.stringify(await this.getMetadata(libraryName));
+			const readable = Readable.from(metadata);
+
+			return {
+				stream: readable,
+				mimetype: 'application/json',
+				size: metadata.length,
+			};
+		}
+
+		const response = await this.s3Client.get(this.getS3Key(libraryName, file));
+
+		const mimetype = mime.lookup(file, 'application/octet-stream');
+
+		return {
+			stream: response.data,
+			mimetype,
+			size: response.contentLength,
+		};
 	}
 }
