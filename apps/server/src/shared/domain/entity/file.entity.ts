@@ -147,7 +147,7 @@ export class FileEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	bucket?: string; // not for directories
 
-	@ManyToOne('StorageProvider', { fieldName: 'storageProviderId', nullable: true })
+	@ManyToOne('StorageProviderEntity', { fieldName: 'storageProviderId', nullable: true })
 	storageProvider?: StorageProviderEntity; // not for directories
 
 	@Property({ nullable: true })
