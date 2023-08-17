@@ -26,11 +26,7 @@ export class ExternalToolConfigurationUc {
 		private readonly externalToolLogoService: ExternalToolLogoService
 	) {}
 
-	public async getAvailableToolsForSchool(
-		userId: EntityId,
-		schoolId: EntityId,
-		logoUrlTemplate: string
-	): Promise<ExternalTool[]> {
+	public async getAvailableToolsForSchool(userId: EntityId, schoolId: EntityId): Promise<ExternalTool[]> {
 		await this.ensureSchoolPermission(userId, schoolId);
 
 		const externalTools: Page<ExternalTool> = await this.externalToolService.findExternalTools({});
@@ -54,7 +50,10 @@ export class ExternalToolConfigurationUc {
 		});
 
 		availableTools.forEach((externalTool) => {
-			externalTool.logoUrl = this.externalToolLogoService.buildLogoUrl(logoUrlTemplate, externalTool);
+			externalTool.logoUrl = this.externalToolLogoService.buildLogoUrl(
+				'/v3/tools/external-tools/{id}/logo',
+				externalTool
+			);
 		});
 
 		return availableTools;
@@ -64,8 +63,7 @@ export class ExternalToolConfigurationUc {
 		userId: EntityId,
 		schoolId: EntityId,
 		contextId: EntityId,
-		contextType: ToolContextType,
-		logoUrlTemplate: string
+		contextType: ToolContextType
 	): Promise<ContextExternalToolTemplateInfo[]> {
 		await this.ensureContextPermission(userId, contextId, contextType);
 
@@ -97,7 +95,7 @@ export class ExternalToolConfigurationUc {
 			this.filterParametersForScope(toolTemplateInfo.externalTool, CustomParameterScope.CONTEXT);
 		});
 
-		this.addLogoUrlsToTools(logoUrlTemplate, availableToolsForContext);
+		this.addLogoUrlsToTools('/v3/tools/external-tools/{id}/logo', availableToolsForContext);
 
 		return availableToolsForContext;
 	}
