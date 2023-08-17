@@ -1,7 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardDoAuthorizable, BoardRoles, UserRoleEnum } from '@shared/domain';
-import { setupEntities, submissionContainerElementFactory, submissionItemFactory, userFactory } from '@shared/testing';
+import {
+	fileElementFactory,
+	setupEntities,
+	submissionContainerElementFactory,
+	submissionItemFactory,
+	userFactory,
+} from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { ObjectId } from 'bson';
@@ -54,7 +60,7 @@ describe(SubmissionItemUc.name, () => {
 	});
 
 	describe('findSubmissionItems', () => {
-		describe('with two students having submission items', () => {
+		describe('when two students having submission items', () => {
 			const setup = () => {
 				const user1 = userFactory.buildWithId();
 				const user2 = userFactory.buildWithId();
@@ -90,7 +96,7 @@ describe(SubmissionItemUc.name, () => {
 				expect(items[0]).toStrictEqual(submissionItemEl1);
 			});
 		});
-		describe('with teacher of two students', () => {
+		describe('when teacher of two students', () => {
 			const setup = () => {
 				const teacher = userFactory.buildWithId();
 				const user1 = userFactory.buildWithId();
@@ -127,6 +133,43 @@ describe(SubmissionItemUc.name, () => {
 				expect(items.length).toBe(2);
 				expect(items.map((item) => item.id)).toContain(submissionItemEl1.id);
 				expect(items.map((item) => item.id)).toContain(submissionItemEl2.id);
+			});
+		});
+		describe('when called with wrong board node', () => {
+			const setup = () => {
+				const teacher = userFactory.buildWithId();
+				const fileEl = fileElementFactory.build();
+				elementService.findById.mockResolvedValue(fileEl);
+
+				return { teacher, fileEl };
+			};
+
+			it('should throw HttpException', async () => {
+				const { teacher, fileEl } = setup();
+
+				await expect(uc.findSubmissionItems(teacher.id, fileEl.id)).rejects.toThrow(
+					'Id does not belong to a submission container'
+				);
+			});
+		});
+		describe('when called with invalid submission container children', () => {
+			const setup = () => {
+				const teacher = userFactory.buildWithId();
+				const fileEl = fileElementFactory.build();
+				const submissionContainer = submissionContainerElementFactory.build({
+					children: [fileEl],
+				});
+				elementService.findById.mockResolvedValue(submissionContainer);
+
+				return { teacher, submissionContainer };
+			};
+
+			it('should throw HttpException', async () => {
+				const { teacher, submissionContainer } = setup();
+
+				await expect(uc.findSubmissionItems(teacher.id, submissionContainer.id)).rejects.toThrow(
+					'Children of submission-container-element must be of type submission-item'
+				);
 			});
 		});
 	});
