@@ -14,6 +14,7 @@ import { FileRecord, FileRecordParentType } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
+import { PreviewService } from '../service/preview.service';
 import { FilesStorageUC } from './files-storage.uc';
 
 const buildFileRecordsWithParams = () => {
@@ -55,6 +56,7 @@ describe('FilesStorageUC delete methods', () => {
 	let module: TestingModule;
 	let filesStorageUC: FilesStorageUC;
 	let filesStorageService: DeepMocked<FilesStorageService>;
+	let previewService: DeepMocked<PreviewService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
@@ -87,12 +89,17 @@ describe('FilesStorageUC delete methods', () => {
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
 				},
+				{
+					provide: PreviewService,
+					useValue: createMock<PreviewService>(),
+				},
 			],
 		}).compile();
 
 		filesStorageUC = module.get(FilesStorageUC);
 		authorizationService = module.get(AuthorizationService);
 		filesStorageService = module.get(FilesStorageService);
+		previewService = module.get(PreviewService);
 	});
 
 	beforeEach(() => {
@@ -118,7 +125,7 @@ describe('FilesStorageUC delete methods', () => {
 				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
 				filesStorageService.deleteFilesOfParent.mockResolvedValueOnce(mockedResult);
 
-				return { params, userId, mockedResult, requestParams };
+				return { params, userId, mockedResult, requestParams, fileRecord };
 			};
 
 			it('should call authorizationService.checkPermissionByReferences', async () => {
@@ -141,6 +148,14 @@ describe('FilesStorageUC delete methods', () => {
 				await filesStorageUC.deleteFilesOfParent(userId, requestParams);
 
 				expect(filesStorageService.deleteFilesOfParent).toHaveBeenCalledWith(requestParams.parentId);
+			});
+
+			it('should call deletePreviews', async () => {
+				const { requestParams, userId, fileRecord } = setup();
+
+				await filesStorageUC.deleteFilesOfParent(userId, requestParams);
+
+				expect(previewService.deletePreviews).toHaveBeenCalledWith([fileRecord]);
 			});
 
 			it('should return results of service', async () => {
@@ -242,6 +257,14 @@ describe('FilesStorageUC delete methods', () => {
 				await filesStorageUC.deleteOneFile(userId, requestParams);
 
 				expect(filesStorageService.delete).toHaveBeenCalledWith([fileRecord]);
+			});
+
+			it('should call deletePreviews', async () => {
+				const { userId, requestParams, fileRecord } = setup();
+
+				await filesStorageUC.deleteOneFile(userId, requestParams);
+
+				expect(previewService.deletePreviews).toHaveBeenCalledWith([fileRecord]);
 			});
 
 			it('should return fileRecord', async () => {
