@@ -1307,6 +1307,11 @@
 				"DB_FLUSH_SIZE": 400,
 				"DB_MULTIPLE_COLLECTIONS": false
 			}
+		},
+		"FEATURE_TLDRAW_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Tldraw feature enabled"
 		}
 	},
 	"required": [

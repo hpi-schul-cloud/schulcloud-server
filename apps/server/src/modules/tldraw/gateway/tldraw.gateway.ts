@@ -20,10 +20,10 @@ export class TldrawGateway implements OnGatewayInit, OnGatewayConnection {
 	handleConnection(client: WebSocket, request: Request) {
 		const docName = request.url.slice(1).split('?')[0].replace('tldraw-server/', '');
 
-		if (docName.length > 0) {
+		if (docName.length > 0 && this.configService.get<string>('FEATURE_TLDRAW_ENABLED')) {
 			setupWSConnection(client, docName);
 		} else {
-			client.close(4000, 'Document name is mandatory in url.');
+			client.close(4000, 'Document name is mandatory in url or Tldraw Tool is turned off.');
 		}
 	}
 
