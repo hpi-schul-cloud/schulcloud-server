@@ -1,3 +1,5 @@
+import cloneDeep from 'lodash/cloneDeep';
+
 import { EntityId } from '@shared/domain';
 
 import { FileSecurityCheck } from './file-security-check.do';
@@ -34,6 +36,10 @@ export class File {
 
 	constructor(props: FileProps) {
 		this.props = props;
+	}
+
+	public getProps(): FileProps {
+		return cloneDeep(this.props);
 	}
 
 	get id(): EntityId {

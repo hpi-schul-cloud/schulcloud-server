@@ -4,7 +4,7 @@ import { FileSecurityCheckStatus, FileOwnerModel, FilePermissionReferenceModel }
 import { FilePermission } from './file-permission.do';
 
 describe(File.name, () => {
-	it('getters should return proper values from the props passed via constructor', () => {
+	const setup = () => {
 		const props = {
 			id: '8bd8456a-afcd-435d-a9cf-1ddc675c2a55',
 			createdAt: new Date(2023, 8, 1),
@@ -69,33 +69,61 @@ describe(File.name, () => {
 			lockId: 'bb3a21db-c70e-4c1d-8e08-9230fa423c85',
 		};
 
-		const file = new File(props);
+		const domainObject = new File(props);
 
-		const gettersValues = {
-			id: file.id,
-			createdAt: file.createdAt,
-			updatedAt: file.updatedAt,
-			deletedAt: file.deletedAt,
-			deleted: file.deleted,
-			isDirectory: file.isDirectory,
-			name: file.name,
-			size: file.size,
-			type: file.type,
-			storageFileName: file.storageFileName,
-			bucket: file.bucket,
-			storageProviderId: file.storageProviderId,
-			thumbnail: file.thumbnail,
-			thumbnailRequestToken: file.thumbnailRequestToken,
-			securityCheck: file.securityCheck,
-			shareTokens: file.shareTokens,
-			parentId: file.parentId,
-			ownerId: file.ownerId,
-			ownerModel: file.ownerModel,
-			creatorId: file.creatorId,
-			permissions: file.permissions,
-			lockId: file.lockId,
-		};
+		return { props, domainObject };
+	};
 
-		expect(gettersValues).toEqual(props);
+	describe('getProps', () => {
+		it('should return proper copy of the props object', () => {
+			const { props, domainObject } = setup();
+
+			const doProps = domainObject.getProps();
+
+			expect(doProps).toEqual(props);
+
+			// Verify if the returned props object is an actual
+			// (deep) copy and not just the original props object.
+			expect(doProps === props).toEqual(false);
+			expect(doProps.createdAt === props.createdAt).toEqual(false);
+			expect(doProps.updatedAt === props.updatedAt).toEqual(false);
+			expect(doProps.deletedAt === props.deletedAt).toEqual(false);
+			expect(doProps.securityCheck === props.securityCheck).toEqual(false);
+			expect(doProps.shareTokens === props.shareTokens).toEqual(false);
+			expect(doProps.permissions === props.permissions).toEqual(false);
+		});
+	});
+
+	describe('getters', () => {
+		it('getters should return proper values from the props passed via constructor', () => {
+			const { props, domainObject } = setup();
+
+			const gettersValues = {
+				id: domainObject.id,
+				createdAt: domainObject.createdAt,
+				updatedAt: domainObject.updatedAt,
+				deletedAt: domainObject.deletedAt,
+				deleted: domainObject.deleted,
+				isDirectory: domainObject.isDirectory,
+				name: domainObject.name,
+				size: domainObject.size,
+				type: domainObject.type,
+				storageFileName: domainObject.storageFileName,
+				bucket: domainObject.bucket,
+				storageProviderId: domainObject.storageProviderId,
+				thumbnail: domainObject.thumbnail,
+				thumbnailRequestToken: domainObject.thumbnailRequestToken,
+				securityCheck: domainObject.securityCheck,
+				shareTokens: domainObject.shareTokens,
+				parentId: domainObject.parentId,
+				ownerId: domainObject.ownerId,
+				ownerModel: domainObject.ownerModel,
+				creatorId: domainObject.creatorId,
+				permissions: domainObject.permissions,
+				lockId: domainObject.lockId,
+			};
+
+			expect(gettersValues).toEqual(props);
+		});
 	});
 });

@@ -1,3 +1,5 @@
+import cloneDeep from 'lodash/cloneDeep';
+
 import { FileSecurityCheckStatus } from './types';
 
 export interface FileSecurityCheckProps {
@@ -13,6 +15,10 @@ export class FileSecurityCheck {
 
 	constructor(props: FileSecurityCheckProps) {
 		this.props = props;
+	}
+
+	public getProps(): FileSecurityCheckProps {
+		return cloneDeep(this.props);
 	}
 
 	get createdAt(): Date {

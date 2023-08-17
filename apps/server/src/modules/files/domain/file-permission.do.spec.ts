@@ -2,7 +2,7 @@ import { FilePermission } from './file-permission.do';
 import { FilePermissionReferenceModel } from './types';
 
 describe(FilePermission.name, () => {
-	it('getters should return proper values from the props passed via constructor', () => {
+	const setup = () => {
 		const props = {
 			referenceId: 'b2b8b500-7236-4c8e-9009-30bc4fc471bf',
 			referenceModel: FilePermissionReferenceModel.USER,
@@ -12,17 +12,39 @@ describe(FilePermission.name, () => {
 			deletePermission: true,
 		};
 
-		const filePermission = new FilePermission(props);
+		const domainObject = new FilePermission(props);
 
-		const gettersValues = {
-			referenceId: filePermission.referenceId,
-			referenceModel: filePermission.referenceModel,
-			readPermission: filePermission.readPermission,
-			writePermission: filePermission.writePermission,
-			createPermission: filePermission.createPermission,
-			deletePermission: filePermission.deletePermission,
-		};
+		return { props, domainObject };
+	};
 
-		expect(gettersValues).toEqual(props);
+	describe('getProps', () => {
+		it('should return proper copy of the props object', () => {
+			const { props, domainObject } = setup();
+
+			const doProps = domainObject.getProps();
+
+			expect(doProps).toEqual(props);
+
+			// Verify if the returned props object is an actual
+			// (deep) copy and not just the original props object.
+			expect(doProps === props).toEqual(false);
+		});
+	});
+
+	describe('getters', () => {
+		it('getters should return proper values from the props passed via constructor', () => {
+			const { props, domainObject } = setup();
+
+			const gettersValues = {
+				referenceId: domainObject.referenceId,
+				referenceModel: domainObject.referenceModel,
+				readPermission: domainObject.readPermission,
+				writePermission: domainObject.writePermission,
+				createPermission: domainObject.createPermission,
+				deletePermission: domainObject.deletePermission,
+			};
+
+			expect(gettersValues).toEqual(props);
+		});
 	});
 });

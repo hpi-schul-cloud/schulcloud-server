@@ -18,6 +18,10 @@ export class FilePermission {
 		this.props = props;
 	}
 
+	public getProps(): FilePermissionProps {
+		return { ...this.props };
+	}
+
 	get referenceId(): EntityId {
 		return this.props.referenceId;
 	}
