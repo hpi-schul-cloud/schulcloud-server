@@ -4,18 +4,13 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from 'bson';
 
-import {
-	FileEntity,
-	FilePermissionEntity,
-	FileRefOwnerModel,
-	RefPermModel,
-	StorageProviderEntity,
-} from '@shared/domain/entity';
+import { FileEntity, FilePermissionEntity, StorageProviderEntity } from '@shared/domain/entity';
 import { StorageProviderRepo } from '@shared/repo/storageprovider/storageprovider.repo';
 import { storageProviderFactory } from '@shared/testing';
 
 import { LegacyLogger } from '@src/core/logger';
 import { DeleteFilesUc } from './delete-files.uc';
+import { FileOwnerModel, FilePermissionReferenceModel } from '../domain';
 import { FilesRepo } from '../repo';
 
 describe('DeleteFileUC', () => {
@@ -41,9 +36,9 @@ describe('DeleteFileUC', () => {
 			bucket: 'bucket',
 			storageProvider: exampleStorageProvider,
 			ownerId: userId,
-			refOwnerModel: FileRefOwnerModel.USER,
+			refOwnerModel: FileOwnerModel.USER,
 			creatorId: userId,
-			permissions: [new FilePermissionEntity({ refId: userId, refPermModel: RefPermModel.USER })],
+			permissions: [new FilePermissionEntity({ refId: userId, refPermModel: FilePermissionReferenceModel.USER })],
 		}),
 		new FileEntity({
 			name: 'filename2',
@@ -52,9 +47,9 @@ describe('DeleteFileUC', () => {
 			bucket: 'bucket',
 			storageProvider: exampleStorageProvider,
 			ownerId: userId,
-			refOwnerModel: FileRefOwnerModel.USER,
+			refOwnerModel: FileOwnerModel.USER,
 			creatorId: userId,
-			permissions: [new FilePermissionEntity({ refId: userId, refPermModel: RefPermModel.USER })],
+			permissions: [new FilePermissionEntity({ refId: userId, refPermModel: FilePermissionReferenceModel.USER })],
 		}),
 	];
 

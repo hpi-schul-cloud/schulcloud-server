@@ -1,9 +1,10 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 
-import { EntityId, FileEntity, FileEntityProps, FileRefOwnerModel } from '@shared/domain';
+import { EntityId, FileEntity } from '@shared/domain';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { EntityDictionary } from '@mikro-orm/core';
+import { FileOwnerModel } from '../domain';
 
 @Injectable()
 export class FilesRepo extends BaseRepo<FileEntity> {
@@ -26,7 +27,7 @@ export class FilesRepo extends BaseRepo<FileEntity> {
 	public async findByOwnerUserId(ownerUserId: EntityId): Promise<FileEntity[]> {
 		const ownerUserObjectId = new ObjectId(ownerUserId);
 
-		const filter = { owner: ownerUserObjectId, refOwnerModel: FileRefOwnerModel.USER };
+		const filter = { owner: ownerUserObjectId, refOwnerModel: FileOwnerModel.USER };
 
 		const files = await this._em.find(FileEntity, filter);
 

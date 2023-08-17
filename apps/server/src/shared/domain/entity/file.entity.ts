@@ -2,19 +2,12 @@ import { Embeddable, Embedded, Entity, Enum, Index, ManyToOne, Property } from '
 import { ObjectId } from '@mikro-orm/mongodb';
 import { v4 as uuid } from 'uuid';
 
-import { EntityId } from '@shared/domain';
+import { EntityId, StorageProviderEntity } from '@shared/domain';
+import { FileOwnerModel, FilePermissionReferenceModel, FileSecurityCheckStatus } from '@src/modules/files/domain';
 import { BaseEntityWithTimestamps } from './base.entity';
-import { StorageProviderEntity } from './storageprovider.entity';
-
-export const enum SecurityCheckScanStatus {
-	PENDING = 'pending',
-	VERIFIED = 'verified',
-	BLOCKED = 'blocked',
-	WONT_CHECK = 'wont-check',
-}
 
 export interface FileSecurityCheckEntityProps {
-	status?: SecurityCheckScanStatus;
+	status?: FileSecurityCheckStatus;
 	reason?: string;
 	requestToken?: string;
 }
@@ -22,7 +15,7 @@ export interface FileSecurityCheckEntityProps {
 @Embeddable()
 export class FileSecurityCheckEntity {
 	@Enum()
-	status: SecurityCheckScanStatus = SecurityCheckScanStatus.PENDING;
+	status: FileSecurityCheckStatus = FileSecurityCheckStatus.PENDING;
 
 	@Property()
 	reason = 'not yet scanned';
@@ -51,20 +44,9 @@ export class FileSecurityCheckEntity {
 	}
 }
 
-export const enum FileRefOwnerModel {
-	USER = 'user',
-	COURSE = 'course',
-	TEAMS = 'teams',
-}
-
-export const enum RefPermModel {
-	USER = 'user',
-	ROLE = 'role',
-}
-
 export interface FilePermissionEntityProps {
 	refId: EntityId;
-	refPermModel: RefPermModel;
+	refPermModel: FilePermissionReferenceModel;
 	write?: boolean;
 	read?: boolean;
 	create?: boolean;
@@ -77,7 +59,7 @@ export class FilePermissionEntity {
 	refId: ObjectId;
 
 	@Enum({ nullable: false })
-	refPermModel: RefPermModel;
+	refPermModel: FilePermissionReferenceModel;
 
 	@Property()
 	write = true;
@@ -131,7 +113,7 @@ export interface FileEntityProps {
 	shareTokens?: string[];
 	parentId?: EntityId;
 	ownerId: EntityId;
-	refOwnerModel: FileRefOwnerModel;
+	refOwnerModel: FileOwnerModel;
 	creatorId: EntityId;
 	permissions: FilePermissionEntity[];
 	lockId?: EntityId;
@@ -198,7 +180,7 @@ export class FileEntity extends BaseEntityWithTimestamps {
 	}
 
 	@Enum({ nullable: false })
-	refOwnerModel: FileRefOwnerModel;
+	refOwnerModel: FileOwnerModel;
 
 	@Property({ fieldName: 'creator' })
 	@Index()

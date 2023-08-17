@@ -2,9 +2,10 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { FileEntity, FilePermissionEntity, FileRefOwnerModel, RefPermModel } from '@shared/domain';
+import { FileEntity, FilePermissionEntity } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { storageProviderFactory, userFileFactory } from '@shared/testing';
+import { FileOwnerModel, FilePermissionReferenceModel } from '../domain';
 
 import { FilesRepo } from './files.repo';
 
@@ -47,7 +48,7 @@ describe('FilesRepo', () => {
 
 	describe('findAllFilesForCleanup', () => {
 		it('should return files marked for deletion', async () => {
-			const file = userFileFactory.build({ deletedAt: new Date() });
+			const file: FileEntity = userFileFactory.build({ deletedAt: new Date() });
 			await em.persistAndFlush(file);
 			em.clear();
 
@@ -97,12 +98,12 @@ describe('FilesRepo', () => {
 			storageProvider,
 			thumbnail: 'https://example.com/thumbnail.png',
 			ownerId: otherUserId,
-			refOwnerModel: FileRefOwnerModel.USER,
+			refOwnerModel: FileOwnerModel.USER,
 			creatorId: otherUserId,
 			permissions: [
 				new FilePermissionEntity({
 					refId: otherUserId,
-					refPermModel: RefPermModel.USER,
+					refPermModel: FilePermissionReferenceModel.USER,
 				}),
 			],
 			versionKey: 0,
@@ -117,12 +118,12 @@ describe('FilesRepo', () => {
 			storageProvider,
 			thumbnail: 'https://example.com/thumbnail.png',
 			ownerId: otherUserId,
-			refOwnerModel: FileRefOwnerModel.USER,
+			refOwnerModel: FileOwnerModel.USER,
 			creatorId: otherUserId,
 			permissions: [
 				new FilePermissionEntity({
 					refId: otherUserId,
-					refPermModel: RefPermModel.USER,
+					refPermModel: FilePermissionReferenceModel.USER,
 				}),
 			],
 			versionKey: 0,
@@ -142,12 +143,12 @@ describe('FilesRepo', () => {
 			storageProvider,
 			thumbnail: 'https://example.com/thumbnail.png',
 			ownerId: otherUserId,
-			refOwnerModel: FileRefOwnerModel.USER,
+			refOwnerModel: FileOwnerModel.USER,
 			creatorId: otherUserId,
 			permissions: [
 				new FilePermissionEntity({
 					refId: otherUserId,
-					refPermModel: RefPermModel.USER,
+					refPermModel: FilePermissionReferenceModel.USER,
 				}),
 			],
 			versionKey: 0,
@@ -163,16 +164,16 @@ describe('FilesRepo', () => {
 			storageProvider,
 			thumbnail: 'https://example.com/thumbnail.png',
 			ownerId: mainUserId,
-			refOwnerModel: FileRefOwnerModel.USER,
+			refOwnerModel: FileOwnerModel.USER,
 			creatorId: mainUserId,
 			permissions: [
 				new FilePermissionEntity({
 					refId: mainUserId,
-					refPermModel: RefPermModel.USER,
+					refPermModel: FilePermissionReferenceModel.USER,
 				}),
 				new FilePermissionEntity({
 					refId: otherUserId,
-					refPermModel: RefPermModel.USER,
+					refPermModel: FilePermissionReferenceModel.USER,
 				}),
 			],
 			versionKey: 0,
@@ -188,16 +189,16 @@ describe('FilesRepo', () => {
 			storageProvider,
 			thumbnail: 'https://example.com/thumbnail.png',
 			ownerId: otherUserId,
-			refOwnerModel: FileRefOwnerModel.USER,
+			refOwnerModel: FileOwnerModel.USER,
 			creatorId: otherUserId,
 			permissions: [
 				new FilePermissionEntity({
 					refId: otherUserId,
-					refPermModel: RefPermModel.USER,
+					refPermModel: FilePermissionReferenceModel.USER,
 				}),
 				new FilePermissionEntity({
 					refId: mainUserId,
-					refPermModel: RefPermModel.USER,
+					refPermModel: FilePermissionReferenceModel.USER,
 				}),
 			],
 			versionKey: 0,
@@ -213,12 +214,12 @@ describe('FilesRepo', () => {
 			storageProvider,
 			thumbnail: 'https://example.com/thumbnail.png',
 			ownerId: mainUserId,
-			refOwnerModel: FileRefOwnerModel.USER,
+			refOwnerModel: FileOwnerModel.USER,
 			creatorId: mainUserId,
 			permissions: [
 				new FilePermissionEntity({
 					refId: mainUserId,
-					refPermModel: RefPermModel.USER,
+					refPermModel: FilePermissionReferenceModel.USER,
 				}),
 			],
 			versionKey: 0,
@@ -361,7 +362,7 @@ describe('FilesRepo', () => {
 				expect.arrayContaining([
 					new FilePermissionEntity({
 						refId: mainUserId,
-						refPermModel: RefPermModel.USER,
+						refPermModel: FilePermissionReferenceModel.USER,
 					}),
 				])
 			);
@@ -377,7 +378,7 @@ describe('FilesRepo', () => {
 				expect.arrayContaining([
 					new FilePermissionEntity({
 						refId: mainUserId,
-						refPermModel: RefPermModel.USER,
+						refPermModel: FilePermissionReferenceModel.USER,
 					}),
 				])
 			);

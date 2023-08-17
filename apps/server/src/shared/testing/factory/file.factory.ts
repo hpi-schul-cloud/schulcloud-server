@@ -1,4 +1,5 @@
-import { FileEntity, FilePermissionEntity, FileEntityProps, FileRefOwnerModel, RefPermModel } from '@shared/domain';
+import { FileEntity, FilePermissionEntity, FileEntityProps } from '@shared/domain';
+import { FileOwnerModel, FilePermissionReferenceModel } from '@src/modules/files/domain';
 
 import { BaseFactory } from './base.factory';
 import { storageProviderFactory } from './storageprovider.factory';
@@ -16,8 +17,8 @@ export const userFileFactory = BaseFactory.define<FileEntity, FileEntityProps>(F
 		bucket: 'test-bucket',
 		storageProvider: storageProviderFactory.build(),
 		ownerId: userId,
-		refOwnerModel: FileRefOwnerModel.USER,
+		refOwnerModel: FileOwnerModel.USER,
 		creatorId: userId,
-		permissions: [new FilePermissionEntity({ refId: userId, refPermModel: RefPermModel.USER })],
+		permissions: [new FilePermissionEntity({ refId: userId, refPermModel: FilePermissionReferenceModel.USER })],
 	};
 });
