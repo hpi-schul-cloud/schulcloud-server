@@ -599,8 +599,7 @@ describe('LibraryStorage', () => {
 
 				expect(stats).toMatchObject({
 					size: mockStats.ContentLength,
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					birthtime: mockStats.LastModified, // expect.any(Date) behaves incorrectly
+					birthtime: mockStats.LastModified,
 				});
 			});
 
