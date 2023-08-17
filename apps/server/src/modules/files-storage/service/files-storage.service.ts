@@ -33,8 +33,8 @@ import {
 	resolveFileNameDuplicates,
 	unmarkForDelete,
 } from '../helper';
-import { IGetFileResponse } from '../interface';
-import { CopyFileResponseBuilder, FileRecordMapper, FilesStorageMapper } from '../mapper';
+import { IGetFile, IGetFileResponse } from '../interface';
+import { CopyFileResponseBuilder, FileRecordMapper, FileResponseBuilder, FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
 
 @Injectable()
@@ -191,11 +191,7 @@ export class FilesStorageService {
 		}
 	}
 
-	public async downloadFile(
-		schoolId: EntityId,
-		fileRecordId: EntityId,
-		bytesRange?: string
-	): Promise<IGetFileResponse> {
+	public async downloadFile(schoolId: EntityId, fileRecordId: EntityId, bytesRange?: string): Promise<IGetFile> {
 		const pathToFile = createPath(schoolId, fileRecordId);
 		const response = await this.storageClient.get(pathToFile, bytesRange);
 
@@ -210,7 +206,8 @@ export class FilesStorageService {
 		this.checkFileName(fileRecord, params);
 		this.checkScanStatus(fileRecord);
 
-		const response = await this.downloadFile(fileRecord.getSchoolId(), fileRecord.id, bytesRange);
+		const file = await this.downloadFile(fileRecord.getSchoolId(), fileRecord.id, bytesRange);
+		const response = FileResponseBuilder.build(file, fileRecord.getName());
 
 		return response;
 	}
