@@ -189,7 +189,6 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return result;
 		} catch (err) {
-			// throw new InternalServerErrorException('S3ClientAdapter:delete', { cause: err });
 			throw new InternalServerErrorException('S3ClientAdapter:delete', ErrorUtils.convertUnknownError(err));
 		}
 	}
