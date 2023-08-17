@@ -67,7 +67,8 @@ export class ToolConfigurationController {
 				currentUser.userId,
 				currentUser.schoolId,
 				params.contextId,
-				params.contextType
+				params.contextType,
+				'/v3/tools/external-tools/{id}/logo'
 			);
 
 		const mapped: ContextExternalToolConfigurationTemplateListResponse =

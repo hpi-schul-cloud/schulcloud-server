@@ -12,8 +12,9 @@ import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
-import { ExternalToolService } from '../service';
+import { ExternalToolLogoService, ExternalToolService } from '../service';
 import { ContextExternalToolTemplateInfo } from './dto';
+import { ContextExternalToolComposite } from '../../context-external-tool/uc/dto/context-external-tool-composite';
 
 @Injectable()
 export class ExternalToolConfigurationUc {
@@ -22,7 +23,8 @@ export class ExternalToolConfigurationUc {
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly authorizationService: AuthorizationService,
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
+		private readonly externalToolLogoService: ExternalToolLogoService
 	) {}
 
 	public async getAvailableToolsForSchool(userId: EntityId, schoolId: EntityId): Promise<ExternalTool[]> {
@@ -55,7 +57,8 @@ export class ExternalToolConfigurationUc {
 		userId: EntityId,
 		schoolId: EntityId,
 		contextId: EntityId,
-		contextType: ToolContextType
+		contextType: ToolContextType,
+		logoUrlTemplate: string
 	): Promise<ContextExternalToolTemplateInfo[]> {
 		await this.ensureContextPermission(userId, contextId, contextType);
 
@@ -86,6 +89,8 @@ export class ExternalToolConfigurationUc {
 		availableToolsForContext.forEach((toolTemplateInfo) => {
 			this.filterParametersForScope(toolTemplateInfo.externalTool, CustomParameterScope.CONTEXT);
 		});
+
+		this.addLogoUrlsToTools(logoUrlTemplate, availableToolsForContext);
 
 		return availableToolsForContext;
 	}
@@ -219,5 +224,16 @@ export class ExternalToolConfigurationUc {
 				requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 			}
 		);
+	}
+
+	private addLogoUrlsToTools(
+		logoUrlTemplate: string,
+		tools: ContextExternalToolTemplateInfo[]
+	): ContextExternalToolTemplateInfo[] {
+		const toolsWithLogoUrl = tools.map((tool): ContextExternalToolTemplateInfo => {
+			tool.externalTool.logoUrl = this.externalToolLogoService.buildLogoUrl(logoUrlTemplate, tool.externalTool);
+			return tool;
+		});
+		return toolsWithLogoUrl;
 	}
 }
