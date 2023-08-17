@@ -4,6 +4,7 @@ import { BadRequestException } from '@nestjs/common';
 import { BaseEntityWithTimestamps, type EntityId } from '@shared/domain';
 import { v4 as uuid } from 'uuid';
 import { ErrorType } from '../error';
+import { PreviewInputMimeTypes } from '../interface/preview-input-mime-types.enum';
 
 export enum ScanStatus {
 	PENDING = 'pending',
@@ -21,6 +22,15 @@ export enum FileRecordParentType {
 	'Submission' = 'submissions',
 	'BoardNode' = 'boardnodes',
 }
+
+export enum PreviewStatus {
+	PREVIEW_POSSIBLE = 'preview_possible',
+	AWAITING_SCAN_STATUS = 'awaiting_scan_status',
+	PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR = 'preview_not_possible_scan_status_error',
+	PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED = 'preview_not_possible_scan_status_blocked',
+	PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE = 'preview_not_possible_wrong_mime_type',
+}
+
 export interface IFileSecurityCheckProperties {
 	status?: ScanStatus;
 	reason?: string;
@@ -218,6 +228,12 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return isBlocked;
 	}
 
+	public hasScanStatusError(): boolean {
+		const hasError = this.securityCheck.status === ScanStatus.ERROR;
+
+		return hasError;
+	}
+
 	public isPending(): boolean {
 		const isPending = this.securityCheck.status === ScanStatus.PENDING;
 
@@ -238,5 +254,25 @@ export class FileRecord extends BaseEntityWithTimestamps {
 
 	public getSchoolId(): EntityId {
 		return this.schoolId;
+	}
+
+	public getPreviewStatus(): PreviewStatus {
+		if (this.isPending()) {
+			return PreviewStatus.AWAITING_SCAN_STATUS;
+		}
+
+		if (this.hasScanStatusError()) {
+			return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR;
+		}
+
+		if (this.isBlocked()) {
+			return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED;
+		}
+
+		if (!Object.values<string>(PreviewInputMimeTypes).includes(this.mimeType)) {
+			return PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE;
+		}
+
+		return PreviewStatus.PREVIEW_POSSIBLE;
 	}
 }

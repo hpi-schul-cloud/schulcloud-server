@@ -11,11 +11,11 @@ import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { FilesStorageTestModule } from '@src/modules/files-storage';
 import { FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { Request } from 'express';
-import { Readable } from 'node:stream';
 import request from 'supertest';
 import { S3ClientAdapter } from '../../client/s3-client.adapter';
 import { FileRecord } from '../../entity';
 import { ErrorType } from '../../error';
+import { TestHelper } from '../../helper/test-helper';
 import { availableParentTypes } from './mocks';
 
 class API {
@@ -78,21 +78,6 @@ class API {
 }
 
 const createRndInt = (max) => Math.floor(Math.random() * max);
-
-const createFileResponse = (contentRange?: string) => {
-	const text = 'testText';
-	const readable = Readable.from(text);
-
-	const fileResponse = {
-		data: readable,
-		contentType: 'text/plain',
-		contentLength: text.length,
-		contentRange,
-		etag: 'testTag',
-	};
-
-	return fileResponse;
-};
 
 describe('files-storage controller (API)', () => {
 	let module: TestingModule;
@@ -282,7 +267,7 @@ describe('files-storage controller (API)', () => {
 		describe(`with valid request data`, () => {
 			describe(`with new file`, () => {
 				beforeEach(async () => {
-					const expectedResponse = createFileResponse('bytes 0-3/4');
+					const expectedResponse = TestHelper.createFile('bytes 0-3/4');
 					s3ClientAdapter.get.mockResolvedValueOnce(expectedResponse);
 
 					const uploadResponse = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
@@ -307,7 +292,7 @@ describe('files-storage controller (API)', () => {
 							name: 'test (1).txt',
 							parentId: validId,
 							creatorId: currentUser.userId,
-							mimeType: 'text/plain',
+							mimeType: 'image/webp',
 							parentType: 'schools',
 							securityCheckStatus: 'pending',
 						})
@@ -317,8 +302,8 @@ describe('files-storage controller (API)', () => {
 
 			describe(`with already existing file`, () => {
 				beforeEach(async () => {
-					const expectedResponse1 = createFileResponse();
-					const expectedResponse2 = createFileResponse();
+					const expectedResponse1 = TestHelper.createFile('bytes 0-3/4');
+					const expectedResponse2 = TestHelper.createFile('bytes 0-3/4');
 
 					s3ClientAdapter.get.mockResolvedValueOnce(expectedResponse1).mockResolvedValueOnce(expectedResponse2);
 
@@ -373,7 +358,7 @@ describe('files-storage controller (API)', () => {
 		describe(`with valid request data`, () => {
 			const setup = async () => {
 				const { result: uploadedFile } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
-				const expectedResponse = createFileResponse('bytes 0-3/4');
+				const expectedResponse = TestHelper.createFile('bytes 0-3/4');
 
 				s3ClientAdapter.get.mockResolvedValueOnce(expectedResponse);
 
@@ -415,7 +400,7 @@ describe('files-storage controller (API)', () => {
 
 		describe(`with valid request data`, () => {
 			const setup = async () => {
-				const expectedResponse = createFileResponse('bytes 0-3/4');
+				const expectedResponse = TestHelper.createFile('bytes 0-3/4');
 				s3ClientAdapter.get.mockResolvedValueOnce(expectedResponse);
 
 				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);

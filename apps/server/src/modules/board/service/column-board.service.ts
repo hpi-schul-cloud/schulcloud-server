@@ -35,7 +35,7 @@ export class ColumnBoardService {
 	}
 
 	async getBoardObjectTitlesById(boardIds: EntityId[]): Promise<Record<EntityId, string>> {
-		const titleMap = this.boardDoRepo.getTitleById(boardIds);
+		const titleMap = this.boardDoRepo.getTitlesByIds(boardIds);
 		return titleMap;
 	}
 
