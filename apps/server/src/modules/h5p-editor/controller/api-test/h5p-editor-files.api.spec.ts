@@ -82,8 +82,11 @@ describe('H5PEditor Controller (api)', () => {
 
 				const mockFile = { content: 'Test File', size: 9, name: 'test.txt', birthtime: new Date() };
 
-				libraryStorage.getFileStream.mockResolvedValueOnce(Readable.from(mockFile.content));
-				libraryStorage.getFileStats.mockResolvedValueOnce({ birthtime: mockFile.birthtime, size: mockFile.size });
+				libraryStorage.getLibraryFile.mockResolvedValueOnce({
+					stream: Readable.from(mockFile.content),
+					size: mockFile.size,
+					mimetype: 'text/plain',
+				});
 
 				const response = await loggedInClient.get(`libraries/dummyLib-1.0/${mockFile.name}`);
 
@@ -94,7 +97,7 @@ describe('H5PEditor Controller (api)', () => {
 			it('should return 404 if file does not exist', async () => {
 				const { loggedInClient } = await setup();
 
-				libraryStorage.getFileStats.mockRejectedValueOnce(new Error('Does not exist'));
+				libraryStorage.getLibraryFile.mockRejectedValueOnce(new Error('Does not exist'));
 
 				const response = await loggedInClient.get(`libraries/dummyLib-1.0/nonexistant.txt`);
 

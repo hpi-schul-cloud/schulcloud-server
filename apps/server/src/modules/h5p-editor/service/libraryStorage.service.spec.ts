@@ -4,6 +4,7 @@ import { HeadObjectCommandOutput, ServiceOutputTypes } from '@aws-sdk/client-s3'
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { ILibraryMetadata, ILibraryName } from '@lumieducation/h5p-server';
+import { NotFoundException } from '@nestjs/common';
 
 import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 import { IGetFileResponse } from '@src/modules/files-storage/interface';
@@ -493,13 +494,6 @@ describe('LibraryStorage', () => {
 				await setup();
 			});
 
-			it('should fail if library is not installed', async () => {
-				const { testingLib, testFile } = await setup(false, false);
-
-				const addFile = storage.addFile(testingLib, testFile.name, Readable.from(Buffer.from(testFile.content)));
-				await expect(addFile).rejects.toThrowError('Library not found');
-			});
-
 			it('should fail on illegal filename', async () => {
 				const { testingLib } = await setup();
 
@@ -507,8 +501,8 @@ describe('LibraryStorage', () => {
 
 				await Promise.all(
 					filenames.map((filename) => {
-						const addFile = storage.addFile(testingLib, filename, Readable.from(Buffer.from('')));
-						return expect(addFile).rejects.toThrowError('Illegal filename');
+						const addFile = () => storage.addFile(testingLib, filename, Readable.from(Buffer.from('')));
+						return expect(addFile).rejects.toThrow('illegal-filename');
 					})
 				);
 			});
@@ -516,6 +510,8 @@ describe('LibraryStorage', () => {
 
 		it('should list all files', async () => {
 			const { testingLib, testFile } = await setup();
+
+			s3ClientAdapter.list.mockResolvedValueOnce([testFile.name]);
 
 			const files = await storage.listFiles(testingLib);
 			expect(files).toContainEqual(expect.stringContaining(testFile.name));
@@ -539,18 +535,20 @@ describe('LibraryStorage', () => {
 
 		describe('when clearing files', () => {
 			it('should remove all files', async () => {
-				const { testingLib } = await setup();
+				const { testingLib, testFile } = await setup();
+
+				s3ClientAdapter.list.mockResolvedValue([testFile.name]);
 
 				await storage.clearFiles(testingLib);
-				const files = await storage.listFiles(testingLib);
-				expect(files).toEqual([expect.stringContaining('abc.json')]);
+
+				expect(s3ClientAdapter.delete).toHaveBeenCalledWith([expect.stringContaining(testFile.name)]);
 			});
 
 			it("should fail if library doesn't exist", async () => {
 				const { testingLib } = await setup(false, false);
 
-				const clearFiles = storage.clearFiles(testingLib);
-				await expect(clearFiles).rejects.toThrowError('Library not found');
+				const clearFiles = () => storage.clearFiles(testingLib);
+				await expect(clearFiles).rejects.toThrow('mongo-s3-library-storage:clear-library-not-found');
 			});
 		});
 
@@ -574,8 +572,6 @@ describe('LibraryStorage', () => {
 
 				const fileStream = await storage.getFileStream(testingLib, testFile.name);
 
-				console.log(fileStream);
-
 				const streamContents = await new Promise((resolve, reject) => {
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					const chunks: any[] = [];
@@ -584,29 +580,55 @@ describe('LibraryStorage', () => {
 					fileStream.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')));
 				});
 
-				console.log(3);
-
 				expect(streamContents).toEqual(testFile.content);
 			});
 		});
 		describe('when getting file stats', () => {
-			it('should return parsed json', async () => {
+			it('should return file stats', async () => {
 				const { testingLib, testFile } = await setup();
+
+				const mockStats = {
+					LastModified: new Date(),
+					ContentLength: 15,
+				};
+
+				// @ts-expect-error partial mock
+				s3ClientAdapter.head.mockResolvedValueOnce(mockStats);
 
 				const stats = await storage.getFileStats(testingLib, testFile.name);
 
 				expect(stats).toMatchObject({
-					size: expect.any(Number),
+					size: mockStats.ContentLength,
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					birthtime: expect.any(Object), // expect.any(Date) behaves incorrectly
+					birthtime: mockStats.LastModified, // expect.any(Date) behaves incorrectly
 				});
 			});
 
-			it("should fail if file doesn't exist", async () => {
-				const { testingLib, testFile } = await setup(true, false);
+			it('should fail if filename is invalid', async () => {
+				const { testingLib } = await setup(true, false);
 
-				const getStats = storage.getFileStats(testingLib, testFile.name);
-				await expect(getStats).rejects.toThrowError('File does not exist');
+				const getStats = storage.getFileStats(testingLib, '../invalid');
+				await expect(getStats).rejects.toThrowError('illegal-filename');
+			});
+
+			it('should throw NotFoundException if length or birthtime are undefined', async () => {
+				const { testingLib, testFile } = await setup();
+
+				s3ClientAdapter.head
+					// @ts-expect-error partial mock
+					.mockResolvedValueOnce({
+						LastModified: new Date(),
+					})
+					// @ts-expect-error partial mock
+					.mockResolvedValueOnce({
+						ContentLength: 10,
+					});
+
+				const undefinedLength = storage.getFileStats(testingLib, testFile.name);
+				await expect(undefinedLength).rejects.toThrowError(NotFoundException);
+
+				const undefinedBirthtime = storage.getFileStats(testingLib, testFile.name);
+				await expect(undefinedBirthtime).rejects.toThrow(NotFoundException);
 			});
 		});
 	});
@@ -619,13 +641,10 @@ describe('LibraryStorage', () => {
 
 			await storage.addLibrary(testingLib, false);
 
+			const languageFiles = ['en.json', 'de.json'];
 			const languages = ['en', 'de'];
 
-			await Promise.all(
-				languages.map((language) =>
-					storage.addFile(testingLib, `language/${language}.json`, Readable.from(Buffer.from('')))
-				)
-			);
+			s3ClientAdapter.list.mockResolvedValueOnce(languageFiles);
 
 			return { testingLib, languages };
 		};
