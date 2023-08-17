@@ -1,12 +1,16 @@
 import internal from 'stream';
 import { FileDto } from '../dto';
 
-export interface IGetFileResponse {
+export interface IGetFile {
 	data: internal.Readable;
 	contentType: string | undefined;
 	contentLength: number | undefined;
 	contentRange: string | undefined;
 	etag: string | undefined;
+}
+
+export interface IGetFileResponse extends IGetFile {
+	name: string;
 }
 
 export interface ICopyFiles {

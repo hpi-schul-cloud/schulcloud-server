@@ -19,6 +19,7 @@ import { ErrorType } from '../error';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
+import { PreviewService } from '../service/preview.service';
 import { FilesStorageUC } from './files-storage.uc';
 
 const createAxiosResponse = (data: Readable, headers: AxiosResponseHeaders = {}): AxiosResponse<Readable> => {
@@ -116,6 +117,10 @@ describe('FilesStorageUC upload methods', () => {
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
+				},
+				{
+					provide: PreviewService,
+					useValue: createMock<PreviewService>(),
 				},
 			],
 		}).compile();

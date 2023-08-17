@@ -13,6 +13,7 @@ import { FileRecord, FileRecordParentType } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
+import { PreviewService } from '../service/preview.service';
 import { FilesStorageUC } from './files-storage.uc';
 
 const buildFileRecordsWithParams = () => {
@@ -82,6 +83,10 @@ describe('FilesStorageUC', () => {
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
+				},
+				{
+					provide: PreviewService,
+					useValue: createMock<PreviewService>(),
 				},
 			],
 		}).compile();

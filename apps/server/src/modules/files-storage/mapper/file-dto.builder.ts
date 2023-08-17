@@ -4,7 +4,7 @@ import { Readable } from 'stream';
 import { FileDto } from '../dto/file.dto';
 
 export class FileDtoBuilder {
-	private static build(name: string, data: Readable, mimeType: string): FileDto {
+	public static build(name: string, data: Readable, mimeType: string): FileDto {
 		const file = new FileDto({ name, data, mimeType });
 
 		return file;
