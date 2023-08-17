@@ -5,9 +5,6 @@ import { SchoolExternalToolService, SchoolExternalToolValidationService } from '
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { SchoolExternalToolDto, SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
 import { SchoolExternalTool } from '../domain';
-import { SchoolExternalToolComposite } from './dto/school-external-tool-composite';
-import { ExternalTool } from '../../external-tool/domain';
-import { ExternalToolLogoService, ExternalToolService } from '../../external-tool/service';
 
 @Injectable()
 export class SchoolExternalToolUc {
@@ -15,25 +12,16 @@ export class SchoolExternalToolUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService,
-		private readonly externalToolService: ExternalToolService,
-		private readonly externalToolLogoService: ExternalToolLogoService
+		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService
 	) {}
 
-	async findSchoolExternalTools(
-		userId: EntityId,
-		query: SchoolExternalToolQueryInput,
-		logoUrlTemplate: string
-	): Promise<SchoolExternalToolComposite[]> {
+	async findSchoolExternalTools(userId: EntityId, query: SchoolExternalToolQueryInput): Promise<SchoolExternalTool[]> {
 		let tools: SchoolExternalTool[] = [];
 		if (query.schoolId) {
 			await this.ensureSchoolPermission(userId, query.schoolId);
 			tools = await this.schoolExternalToolService.findSchoolExternalTools({ schoolId: query.schoolId });
 		}
-
-		const toolsComposite: SchoolExternalToolComposite[] = await this.addLogoUrlsToTools(logoUrlTemplate, tools);
-
-		return toolsComposite;
+		return tools;
 	}
 
 	async createSchoolExternalTool(
@@ -106,28 +94,5 @@ export class SchoolExternalToolUc {
 				requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
 			}
 		);
-	}
-
-	private async fetchExternalTool(schoolExternalTool: SchoolExternalTool): Promise<ExternalTool> {
-		return this.externalToolService.findExternalToolById(schoolExternalTool.toolId);
-	}
-
-	private async addLogoUrlsToTools(
-		logoUrlTemplate: string,
-		tools: SchoolExternalTool[]
-	): Promise<SchoolExternalToolComposite[]> {
-		const toolsComposite = await Promise.all(
-			tools.map(async (schoolExternalTool): Promise<SchoolExternalToolComposite> => {
-				const tool: ExternalTool = await this.fetchExternalTool(schoolExternalTool);
-
-				const schoolExternalToolComposite: SchoolExternalToolComposite = new SchoolExternalToolComposite(
-					schoolExternalTool
-				);
-
-				schoolExternalToolComposite.logoUrl = this.externalToolLogoService.buildLogoUrl(logoUrlTemplate, tool);
-				return schoolExternalToolComposite;
-			})
-		);
-		return toolsComposite;
 	}
 }

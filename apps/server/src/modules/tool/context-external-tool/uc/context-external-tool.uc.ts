@@ -7,21 +7,13 @@ import { ToolContextType } from '../../common/enum';
 import { ContextExternalTool, ContextRef } from '../domain';
 import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
 import { ContextExternalToolDto } from './dto/context-external-tool.types';
-import { ExternalToolLogoService, ExternalToolService } from '../../external-tool/service';
-import { ExternalTool } from '../../external-tool/domain';
-import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ContextExternalToolComposite } from './dto/context-external-tool-composite';
 
 @Injectable()
 export class ContextExternalToolUc {
 	constructor(
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly contextExternalToolValidationService: ContextExternalToolValidationService,
-		private readonly logger: LegacyLogger,
-		private readonly externalToolLogoService: ExternalToolLogoService,
-		private readonly schoolExternalToolService: SchoolExternalToolService,
-		private readonly externalToolService: ExternalToolService
+		private readonly logger: LegacyLogger
 	) {}
 
 	async createContextExternalTool(
@@ -83,24 +75,14 @@ export class ContextExternalToolUc {
 		return promise;
 	}
 
-	async getContextExternalToolsForContext(
-		userId: EntityId,
-		contextType: ToolContextType,
-		contextId: string,
-		logoUrlTemplate: string
-	) {
+	async getContextExternalToolsForContext(userId: EntityId, contextType: ToolContextType, contextId: string) {
 		const tools: ContextExternalTool[] = await this.contextExternalToolService.findAllByContext(
 			new ContextRef({ id: contextId, type: contextType })
 		);
 
 		const toolsWithPermission: ContextExternalTool[] = await this.filterToolsWithPermissions(userId, tools);
 
-		const toolsWithPermissionComposite: ContextExternalToolComposite[] = await this.addLogoUrlsToTools(
-			logoUrlTemplate,
-			toolsWithPermission
-		);
-
-		return toolsWithPermissionComposite;
+		return toolsWithPermission;
 	}
 
 	async getContextExternalTool(userId: EntityId, contextToolId: EntityId) {
@@ -140,33 +122,5 @@ export class ContextExternalToolUc {
 			(tool) => tool !== null
 		) as ContextExternalTool[];
 		return filteredTools;
-	}
-
-	private async fetchSchoolExternalTool(contextExternalTool: ContextExternalTool): Promise<SchoolExternalTool> {
-		return this.schoolExternalToolService.getSchoolExternalToolById(contextExternalTool.schoolToolRef.schoolToolId);
-	}
-
-	private async fetchExternalTool(schoolExternalTool: SchoolExternalTool): Promise<ExternalTool> {
-		return this.externalToolService.findExternalToolById(schoolExternalTool.toolId);
-	}
-
-	private async addLogoUrlsToTools(
-		logoUrlTemplate: string,
-		tools: ContextExternalTool[]
-	): Promise<ContextExternalToolComposite[]> {
-		const toolsWithPermissionComposite = await Promise.all(
-			tools.map(async (contextExternalTool): Promise<ContextExternalToolComposite> => {
-				const schoolExternalTool: SchoolExternalTool = await this.fetchSchoolExternalTool(contextExternalTool);
-				const tool: ExternalTool = await this.fetchExternalTool(schoolExternalTool);
-
-				const contextExternalToolComposite: ContextExternalToolComposite = new ContextExternalToolComposite(
-					contextExternalTool
-				);
-
-				contextExternalToolComposite.logoUrl = this.externalToolLogoService.buildLogoUrl(logoUrlTemplate, tool);
-				return contextExternalToolComposite;
-			})
-		);
-		return toolsWithPermissionComposite;
 	}
 }
