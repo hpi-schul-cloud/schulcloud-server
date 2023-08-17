@@ -42,7 +42,8 @@ export class ToolConfigurationController {
 	): Promise<SchoolExternalToolConfigurationTemplateListResponse> {
 		const availableTools: ExternalTool[] = await this.externalToolConfigurationUc.getAvailableToolsForSchool(
 			currentUser.userId,
-			params.schoolId
+			params.schoolId,
+			'/v3/tools/external-tools/{id}/logo'
 		);
 
 		const mapped: SchoolExternalToolConfigurationTemplateListResponse =

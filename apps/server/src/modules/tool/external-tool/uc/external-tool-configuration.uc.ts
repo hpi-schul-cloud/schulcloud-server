@@ -14,7 +14,6 @@ import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ExternalToolLogoService, ExternalToolService } from '../service';
 import { ContextExternalToolTemplateInfo } from './dto';
-import { ContextExternalToolComposite } from '../../context-external-tool/uc/dto/context-external-tool-composite';
 
 @Injectable()
 export class ExternalToolConfigurationUc {
@@ -27,7 +26,11 @@ export class ExternalToolConfigurationUc {
 		private readonly externalToolLogoService: ExternalToolLogoService
 	) {}
 
-	public async getAvailableToolsForSchool(userId: EntityId, schoolId: EntityId): Promise<ExternalTool[]> {
+	public async getAvailableToolsForSchool(
+		userId: EntityId,
+		schoolId: EntityId,
+		logoUrlTemplate: string
+	): Promise<ExternalTool[]> {
 		await this.ensureSchoolPermission(userId, schoolId);
 
 		const externalTools: Page<ExternalTool> = await this.externalToolService.findExternalTools({});
@@ -48,6 +51,10 @@ export class ExternalToolConfigurationUc {
 
 		availableTools.forEach((externalTool) => {
 			this.filterParametersForScope(externalTool, CustomParameterScope.SCHOOL);
+		});
+
+		availableTools.forEach((externalTool) => {
+			externalTool.logoUrl = this.externalToolLogoService.buildLogoUrl(logoUrlTemplate, externalTool);
 		});
 
 		return availableTools;
