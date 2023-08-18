@@ -22,6 +22,10 @@ export class GlobalValidationPipe extends ValidationPipe {
 			forbidNonWhitelisted: false, // additional params are just skipped (required when extracting multiple DTO from single query)
 			forbidUnknownValues: true,
 			exceptionFactory: (errors: ValidationError[]) => new ApiValidationError(errors),
+			validationError: {
+				target: true,
+				value: true,
+			},
 		});
 	}
 }
