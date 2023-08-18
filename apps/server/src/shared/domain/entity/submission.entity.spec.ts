@@ -2,7 +2,6 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import {
 	courseGroupFactory,
-	userFileFactory,
 	schoolFactory,
 	setupEntities,
 	submissionFactory,
@@ -25,10 +24,9 @@ describe('Submission entity', () => {
 			const school = schoolFactory.build();
 			const student = userFactory.build();
 			const task = taskFactory.buildWithId();
-			const file = userFileFactory.buildWithId();
 			const teamMember = userFactory.build();
 
-			return { school, student, task, file, teamMember };
+			return { school, student, task, teamMember };
 		};
 
 		describe('when required pros are set', () => {
