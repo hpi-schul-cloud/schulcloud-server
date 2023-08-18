@@ -1,4 +1,5 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { ValidationError } from '@shared/common';
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
@@ -46,8 +47,8 @@ export class ContextExternalToolValidationService {
 		);
 
 		if (duplicate.length > 0) {
-			throw new UnprocessableEntityException(
-				'A tool with the same name is already assigned to this course. Tool names must be unique within a course.'
+			throw new ValidationError(
+				`tool_param_name_duplicate: A tool with the same name is already assigned to this course. Tool names must be unique within a course.`
 			);
 		}
 	}
