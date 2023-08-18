@@ -1,16 +1,9 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Task } from '@shared/domain/entity';
 import { TaskRepo } from '@shared/repo';
-import {
-	courseFactory,
-	userFileFactory,
-	lessonFactory,
-	schoolFactory,
-	setupEntities,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
+import { courseFactory, lessonFactory, schoolFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@src/modules/copy-helper';
 import { CopyFilesService } from '@src/modules/files-storage-client';
 import { TaskCopyService } from './task-copy.service';
@@ -410,8 +403,8 @@ describe('task copy service', () => {
 
 			const setupWithFiles = () => {
 				const school = schoolFactory.build();
-				const file1 = userFileFactory.buildWithId({ name: 'file1.jpg' });
-				const file2 = userFileFactory.buildWithId({ name: 'file2.jpg' });
+				const file1 = { id: new ObjectId().toHexString(), name: 'file1.jpg' };
+				const file2 = { id: new ObjectId().toHexString(), name: 'file2.jpg' };
 				const imageHTML1 = getImageHTML(file1.id, file1.name);
 				const imageHTML2 = getImageHTML(file2.id, file2.name);
 
