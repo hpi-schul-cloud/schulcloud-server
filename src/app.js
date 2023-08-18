@@ -75,7 +75,6 @@ const setupApp = async (orm) => {
 			res.send({ message: 'pong', timestamp: new Date().getTime() });
 		})
 		.configure(rest(handleResponseType))
-		// .configure(socketio())
 		.use((req, res, next) => {
 			// pass header into hooks.params
 			// todo: To create a fake requestId on this place is a temporary solution
