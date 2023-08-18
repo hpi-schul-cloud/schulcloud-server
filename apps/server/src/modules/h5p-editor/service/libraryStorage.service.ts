@@ -34,17 +34,19 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param filename the requested file
 	 */
 	private checkFilename(filename: string): void {
-		if (/\.\.\//.test(filename)) {
-			throw new H5pError('illegal-filename', { filename }, 400);
-		}
-		if (filename.startsWith('/')) {
+		const hasPathTraversal = /\.\.\//.test(filename);
+		const isAbsolutePath = filename.startsWith('/');
+
+		if (hasPathTraversal || isAbsolutePath) {
 			throw new H5pError('illegal-filename', { filename }, 400);
 		}
 	}
 
 	private getS3Key(library: ILibraryName, filename: string) {
 		const uberName = LibraryName.toUberName(library);
-		return `h5p-libraries/${uberName}/${filename}`;
+		const s3Key = `h5p-libraries/${uberName}/${filename}`;
+
+		return s3Key;
 	}
 
 	/**
@@ -136,7 +138,9 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param library
 	 */
 	public async clearFiles(libraryName: ILibraryName): Promise<void> {
-		if (!(await this.isInstalled(libraryName))) {
+		const isInstalled = await this.isInstalled(libraryName);
+
+		if (!isInstalled) {
 			throw new H5pError('mongo-s3-library-storage:clear-library-not-found', {
 				ubername: LibraryName.toUberName(libraryName),
 			});
@@ -152,7 +156,9 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param library
 	 */
 	public async deleteLibrary(libraryName: ILibraryName): Promise<void> {
-		if (!(await this.isInstalled(libraryName))) {
+		const isInstalled = await this.isInstalled(libraryName);
+
+		if (!isInstalled) {
 			throw new H5pError('mongo-s3-library-storage:library-not-found');
 		}
 
@@ -264,7 +270,8 @@ export class LibraryStorage implements ILibraryStorage {
 	public async getFileStats(libraryName: ILibraryName, file: string): Promise<IFileStats> {
 		this.checkFilename(file);
 
-		const head = await this.s3Client.head(this.getS3Key(libraryName, file));
+		const s3Key = this.getS3Key(libraryName, file);
+		const head = await this.s3Client.head(s3Key);
 
 		if (head.LastModified === undefined || head.ContentLength === undefined) {
 			throw new NotFoundException();
@@ -309,7 +316,10 @@ export class LibraryStorage implements ILibraryStorage {
 
 		const files = await this.s3Client.list(prefix);
 
-		return files.filter((file) => path.extname(file) === '.json').map((file) => path.basename(file, '.json'));
+		const jsonFiles = files.filter((file) => path.extname(file) === '.json');
+		const languages = jsonFiles.map((file) => path.basename(file, '.json'));
+
+		return languages;
 	}
 
 	/**

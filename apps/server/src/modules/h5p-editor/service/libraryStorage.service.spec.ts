@@ -610,7 +610,7 @@ describe('LibraryStorage', () => {
 				await expect(getStats).rejects.toThrowError('illegal-filename');
 			});
 
-			it('should throw NotFoundException if length or birthtime are undefined', async () => {
+			it('should throw NotFoundException if the file has no content-length or birthtime', async () => {
 				const { testingLib, testFile } = await setup();
 
 				s3ClientAdapter.head
