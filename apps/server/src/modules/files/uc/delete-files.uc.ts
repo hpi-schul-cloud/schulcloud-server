@@ -30,7 +30,7 @@ export class DeleteFilesUc {
 
 		do {
 			const offset = failingFileIds.length;
-			const files = await this.filesRepo.findFilesForCleanup(thresholdDate, batchSize, offset);
+			const files = await this.filesRepo.findForCleanup(thresholdDate, batchSize, offset);
 
 			const promises = files.map((file) => this.deleteFile(file));
 			const results = await Promise.all(promises);

@@ -16,18 +16,25 @@ export class FilesRepo extends BaseRepo<FileEntity> {
 		return FileEntity;
 	}
 
-	public async findFilesForCleanup(thresholdDate: Date, batchSize: number, offset: number): Promise<FileEntity[]> {
-		const query = { deletedAt: { $lte: thresholdDate } };
-		const options = { orderBy: { id: 'asc' }, limit: batchSize, offset, populate: ['storageProvider'] as never[] };
-		const files = await this._em.find(FileEntity, query, options);
+	public async findForCleanup(thresholdDate: Date, batchSize: number, offset: number): Promise<FileEntity[]> {
+		const filter = { deletedAt: { $lte: thresholdDate } };
+		const options = {
+			orderBy: { id: 'asc' },
+			limit: batchSize,
+			offset,
+			populate: ['storageProvider'] as never[],
+		};
 
-		return files;
+		const files = await this._em.find(FileEntity, filter, options);
+
+		return files as FileEntity[];
 	}
 
 	public async findByOwnerUserId(ownerUserId: EntityId): Promise<FileEntity[]> {
-		const ownerUserObjectId = new ObjectId(ownerUserId);
-
-		const filter = { owner: ownerUserObjectId, refOwnerModel: FileOwnerModel.USER };
+		const filter = {
+			owner: new ObjectId(ownerUserId),
+			refOwnerModel: FileOwnerModel.USER,
+		};
 
 		const files = await this._em.find(FileEntity, filter);
 
@@ -35,14 +42,12 @@ export class FilesRepo extends BaseRepo<FileEntity> {
 	}
 
 	public async findByPermissionRefId(permissionRefId: EntityId): Promise<FileEntity[]> {
-		const permissionRefObjectId = new ObjectId(permissionRefId);
-
 		const pipeline = [
 			{
 				$match: {
 					permissions: {
 						$elemMatch: {
-							refId: permissionRefObjectId,
+							refId: new ObjectId(permissionRefId),
 						},
 					},
 				},

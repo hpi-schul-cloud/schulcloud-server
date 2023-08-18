@@ -98,8 +98,8 @@ describe('DeleteFileUC', () => {
 			const setup = () => {
 				const thresholdDate = new Date();
 				const batchSize = 3;
-				filesRepo.findFilesForCleanup.mockResolvedValueOnce(exampleFiles);
-				filesRepo.findFilesForCleanup.mockResolvedValueOnce([]);
+				filesRepo.findForCleanup.mockResolvedValueOnce(exampleFiles);
+				filesRepo.findForCleanup.mockResolvedValueOnce([]);
 
 				const storageProvider = storageProviderFactory.build();
 				storageProviderRepo.findAll.mockResolvedValueOnce([storageProvider]);
@@ -132,8 +132,8 @@ describe('DeleteFileUC', () => {
 				const batchSize = 3;
 				const error = new Error();
 
-				filesRepo.findFilesForCleanup.mockResolvedValueOnce(exampleFiles);
-				filesRepo.findFilesForCleanup.mockResolvedValueOnce([]);
+				filesRepo.findForCleanup.mockResolvedValueOnce(exampleFiles);
+				filesRepo.findForCleanup.mockResolvedValueOnce([]);
 
 				const storageProvider = storageProviderFactory.build();
 				storageProviderRepo.findAll.mockResolvedValueOnce([storageProvider]);

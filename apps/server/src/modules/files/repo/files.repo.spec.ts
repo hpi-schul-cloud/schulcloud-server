@@ -2,14 +2,36 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { FileEntity, FilePermissionEntity } from '@shared/domain';
+import { FileEntity, FileEntityProps, FilePermissionEntity } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { storageProviderFactory, userFileFactory } from '@shared/testing';
+import { BaseFactory, storageProviderFactory } from '@shared/testing';
 import { FileOwnerModel, FilePermissionReferenceModel } from '../domain';
 
 import { FilesRepo } from './files.repo';
 
-describe('FilesRepo', () => {
+const userFileFactory = BaseFactory.define<FileEntity, FileEntityProps>(FileEntity, ({ sequence }) => {
+	const userId = new ObjectId().toHexString();
+
+	return {
+		name: `test-file-${sequence}.txt`,
+		size: Math.floor(Math.random() * 4200) + 1,
+		storageFileName: `00${sequence}-test-file-${sequence}.txt`,
+		bucket: `bucket-00${sequence}`,
+		storageProvider: storageProviderFactory.buildWithId(),
+		thumbnail: 'https://example.com/thumbnail.png',
+		ownerId: userId,
+		refOwnerModel: FileOwnerModel.USER,
+		creatorId: userId,
+		permissions: [
+			new FilePermissionEntity({
+				refId: userId,
+				refPermModel: FilePermissionReferenceModel.USER,
+			}),
+		],
+	};
+});
+
+describe(FilesRepo.name, () => {
 	let repo: FilesRepo;
 	let em: EntityManager;
 	let module: TestingModule;
@@ -46,15 +68,16 @@ describe('FilesRepo', () => {
 		});
 	});
 
-	describe('findAllFilesForCleanup', () => {
-		it('should return files marked for deletion', async () => {
+	describe('findForCleanup', () => {
+		it('should return files marked for deletion according to given params', async () => {
 			const file: FileEntity = userFileFactory.build({ deletedAt: new Date() });
+
 			await em.persistAndFlush(file);
 			em.clear();
 
 			const thresholdDate = new Date();
 
-			const result = await repo.findFilesForCleanup(thresholdDate, 3, 0);
+			const result = await repo.findForCleanup(thresholdDate, 3, 0);
 
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(file.id);
@@ -62,23 +85,28 @@ describe('FilesRepo', () => {
 
 		it('should not return files which are not marked for deletion', async () => {
 			const file = userFileFactory.build({ deletedAt: undefined });
+
 			await em.persistAndFlush(file);
-			const thresholdDate = new Date();
 			em.clear();
 
-			const result = await repo.findFilesForCleanup(thresholdDate, 3, 0);
+			const thresholdDate = new Date();
+			const result = await repo.findForCleanup(thresholdDate, 3, 0);
+
 			expect(result.length).toEqual(0);
 		});
 
 		it('should not return files where deletedAt is after threshold', async () => {
 			const thresholdDate = new Date();
 			const file = userFileFactory.build({ deletedAt: new Date(thresholdDate.getTime() + 10) });
+
 			await em.persistAndFlush(file);
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			expect(file.deletedAt!.getTime()).toBeGreaterThan(thresholdDate.getTime());
 			em.clear();
 
-			const result = await repo.findFilesForCleanup(thresholdDate, 3, 0);
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			expect(file.deletedAt!.getTime()).toBeGreaterThan(thresholdDate.getTime());
+
+			const result = await repo.findForCleanup(thresholdDate, 3, 0);
+
 			expect(result.length).toEqual(0);
 		});
 	});
@@ -351,6 +379,70 @@ describe('FilesRepo', () => {
 		});
 	});
 
+	describe('findByPermissionRefId', () => {
+		it('should return proper files that given user has permission to access', async () => {
+			const {
+				mainUserSharedFile,
+				otherUserSharedFile,
+				mainUserFile,
+				expectedMainUserSharedFileProps,
+				expectedOtherUserSharedFileProps,
+				expectedMainUserFileProps,
+			} = await setup();
+
+			const results = await repo.findByPermissionRefId(mainUserId);
+
+			expect(results).toHaveLength(3);
+
+			// Verify explicit fields.
+			expect(results).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining(expectedMainUserSharedFileProps),
+					expect.objectContaining(expectedOtherUserSharedFileProps),
+					expect.objectContaining(expectedMainUserFileProps),
+				])
+			);
+
+			// Verify storage provider id.
+			expect(results.map((result) => result.storageProvider?.id)).toEqual(
+				expect.arrayContaining([
+					mainUserSharedFile.storageProvider?.id,
+					otherUserSharedFile.storageProvider?.id,
+					mainUserFile.storageProvider?.id,
+				])
+			);
+
+			// Verify implicit ownerId field.
+			expect(results.map((result) => result.ownerId)).toEqual(
+				expect.arrayContaining([mainUserSharedFile.ownerId, otherUserSharedFile.ownerId, mainUserFile.ownerId])
+			);
+
+			// Verify implicit creatorId field.
+			expect(results.map((result) => result.creatorId)).toEqual(
+				expect.arrayContaining([mainUserSharedFile.creatorId, otherUserSharedFile.creatorId, mainUserFile.creatorId])
+			);
+		});
+
+		describe('should return an empty array in case of', () => {
+			it('no files with given permissionRefId', async () => {
+				await em.persistAndFlush([new FileEntity(otherUserFilesProps[0]), new FileEntity(otherUserFilesProps[1])]);
+				em.clear();
+
+				const results = await repo.findByPermissionRefId(mainUserId);
+
+				expect(results).toHaveLength(0);
+			});
+
+			it('no files in the database at all', async () => {
+				const testPermissionRefId = new ObjectId().toHexString();
+
+				const results = await repo.findByPermissionRefId(testPermissionRefId);
+
+				expect(results).toHaveLength(0);
+			});
+		});
+	});
+
 	describe('save', () => {
 		it('should properly update given file permissions', async () => {
 			const initialFiles = await setup();
@@ -442,70 +534,6 @@ describe('FilesRepo', () => {
 			};
 
 			expect(mainUserFile).toEqual(expect.objectContaining(expectedMainUserFileProps));
-		});
-	});
-
-	describe('findByPermissionRefId', () => {
-		it('should return proper files that given user has permission to access', async () => {
-			const {
-				mainUserSharedFile,
-				otherUserSharedFile,
-				mainUserFile,
-				expectedMainUserSharedFileProps,
-				expectedOtherUserSharedFileProps,
-				expectedMainUserFileProps,
-			} = await setup();
-
-			const results = await repo.findByPermissionRefId(mainUserId);
-
-			expect(results).toHaveLength(3);
-
-			// Verify explicit fields.
-			expect(results).toEqual(
-				expect.arrayContaining([
-					expect.objectContaining(expectedMainUserSharedFileProps),
-					expect.objectContaining(expectedOtherUserSharedFileProps),
-					expect.objectContaining(expectedMainUserFileProps),
-				])
-			);
-
-			// Verify storage provider id.
-			expect(results.map((result) => result.storageProvider?.id)).toEqual(
-				expect.arrayContaining([
-					mainUserSharedFile.storageProvider?.id,
-					otherUserSharedFile.storageProvider?.id,
-					mainUserFile.storageProvider?.id,
-				])
-			);
-
-			// Verify implicit ownerId field.
-			expect(results.map((result) => result.ownerId)).toEqual(
-				expect.arrayContaining([mainUserSharedFile.ownerId, otherUserSharedFile.ownerId, mainUserFile.ownerId])
-			);
-
-			// Verify implicit creatorId field.
-			expect(results.map((result) => result.creatorId)).toEqual(
-				expect.arrayContaining([mainUserSharedFile.creatorId, otherUserSharedFile.creatorId, mainUserFile.creatorId])
-			);
-		});
-
-		describe('should return an empty array in case of', () => {
-			it('no files with given permissionRefId', async () => {
-				await em.persistAndFlush([new FileEntity(otherUserFilesProps[0]), new FileEntity(otherUserFilesProps[1])]);
-				em.clear();
-
-				const results = await repo.findByPermissionRefId(mainUserId);
-
-				expect(results).toHaveLength(0);
-			});
-
-			it('no files in the database at all', async () => {
-				const testPermissionRefId = new ObjectId().toHexString();
-
-				const results = await repo.findByPermissionRefId(testPermissionRefId);
-
-				expect(results).toHaveLength(0);
-			});
 		});
 	});
 });
