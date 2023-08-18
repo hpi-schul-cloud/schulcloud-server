@@ -146,22 +146,14 @@ describe('ExternalToolConfigurationUc', () => {
 			};
 
 			it('should call externalToolLogoService', async () => {
-				/* const externalTools: ExternalTool[] = [
-					externalToolFactory.buildWithId(undefined, 'usedToolId'),
-					externalToolFactory.buildWithId(undefined, 'unusedToolId'),
-				];
-
-				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue(
-					schoolExternalToolFactory.buildList(1, { toolId: 'usedToolId' })
-				);
-
-				externalToolService.findExternalTools.mockResolvedValue(new Page<ExternalTool>(externalTools, 2)); */
-
-				const {externalToolsPage} = setup()
+				const { externalToolsPage } = setup();
 
 				await uc.getAvailableToolsForSchool('userId', 'schoolId');
 
-				expect(logoService.buildLogoUrl).toHaveBeenCalledWith('/v3/tools/external-tools/{id}/logo', externalToolsPage.data[1]);
+				expect(logoService.buildLogoUrl).toHaveBeenCalledWith(
+					'/v3/tools/external-tools/{id}/logo',
+					externalToolsPage.data[1]
+				);
 			});
 
 			it('should call filterForAvailableTools with ids of used tools', async () => {
@@ -304,14 +296,11 @@ describe('ExternalToolConfigurationUc', () => {
 			});
 
 			it('should call externalToolLogoService', async () => {
-				const { toolWithoutSchoolTool } = setup();
+				const { usedTool } = setup();
 
-				await uc.getAvailableToolsForSchool('userId', 'schoolId');
+				await uc.getAvailableToolsForContext('userId', 'schoolId', 'contextId', ToolContextType.COURSE);
 
-				expect(logoService.buildLogoUrl).toHaveBeenCalledWith(
-					'/v3/tools/external-tools/{id}/logo',
-					toolWithoutSchoolTool
-				);
+				expect(logoService.buildLogoUrl).toHaveBeenCalledWith('/v3/tools/external-tools/{id}/logo', usedTool);
 			});
 
 			it('should call filterForAvailableSchoolExternalTools', async () => {

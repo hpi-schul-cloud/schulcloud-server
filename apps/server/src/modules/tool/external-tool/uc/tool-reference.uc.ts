@@ -1,4 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
 import { AuthorizationContext, AuthorizationContextBuilder } from '@src/modules/authorization';

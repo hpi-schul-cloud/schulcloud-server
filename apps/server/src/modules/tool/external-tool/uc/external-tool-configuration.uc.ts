@@ -8,7 +8,6 @@ import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ExternalToolLogoService, ExternalToolService, ExternalToolConfigurationService } from '../service';
 import { ContextExternalToolTemplateInfo } from './dto';
@@ -22,8 +21,7 @@ export class ExternalToolConfigurationUc {
 		private readonly contextExternalToolService: ContextExternalToolService,
 		@Inject(forwardRef(() => ToolPermissionHelper))
 		private readonly toolPermissionHelper: ToolPermissionHelper,
-		private readonly externalToolConfigurationService: ExternalToolConfigurationService
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
+		private readonly externalToolConfigurationService: ExternalToolConfigurationService,
 		private readonly externalToolLogoService: ExternalToolLogoService
 	) {}
 
