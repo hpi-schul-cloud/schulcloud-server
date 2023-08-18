@@ -12,7 +12,7 @@ import { ContextExternalToolService } from '../../context-external-tool/service'
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ExternalTool, ToolReference } from '../domain';
-import { ExternalToolService } from '../service';
+import { ExternalToolLogoService, ExternalToolService } from '../service';
 import { ToolReferenceUc } from './tool-reference.uc';
 
 describe('ToolReferenceUc', () => {
@@ -23,6 +23,7 @@ describe('ToolReferenceUc', () => {
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let commonToolService: DeepMocked<CommonToolService>;
+	let logoService: DeepMocked<ExternalToolLogoService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -44,6 +45,10 @@ describe('ToolReferenceUc', () => {
 					provide: CommonToolService,
 					useValue: createMock<CommonToolService>(),
 				},
+				{
+					provide: ExternalToolLogoService,
+					useValue: createMock<ExternalToolLogoService>(),
+				},
 			],
 		}).compile();
 
@@ -53,6 +58,7 @@ describe('ToolReferenceUc', () => {
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		contextExternalToolService = module.get(ContextExternalToolService);
 		commonToolService = module.get(CommonToolService);
+		logoService = module.get(ExternalToolLogoService);
 	});
 
 	afterAll(async () => {
@@ -142,6 +148,14 @@ describe('ToolReferenceUc', () => {
 					schoolExternalTool,
 					contextExternalTool
 				);
+			});
+
+			it('should call externalToolLogoService.buildLogoUrl', async () => {
+				const { userId, contextType, contextId, externalTool } = setup();
+
+				await uc.getToolReferences(userId, contextType, contextId, '/v3/tools/external-tools/{id}/logo');
+
+				expect(logoService.buildLogoUrl).toHaveBeenCalledWith('/v3/tools/external-tools/{id}/logo', externalTool);
 			});
 
 			it('should return a list of tool references', async () => {

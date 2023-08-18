@@ -19,7 +19,7 @@ import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
-import { ExternalToolService } from '../service';
+import { ExternalToolLogoService, ExternalToolService } from '../service';
 import { ContextExternalToolTemplateInfo } from './dto';
 import { ExternalToolConfigurationUc } from './external-tool-configuration.uc';
 
@@ -32,6 +32,7 @@ describe('ExternalToolConfigurationUc', () => {
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let toolFeatures: IToolFeatures;
+	let logoService: DeepMocked<ExternalToolLogoService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -61,6 +62,10 @@ describe('ExternalToolConfigurationUc', () => {
 						contextConfigurationEnabled: false,
 					},
 				},
+				{
+					provide: ExternalToolLogoService,
+					useValue: createMock<ExternalToolLogoService>(),
+				},
 			],
 		}).compile();
 
@@ -70,6 +75,7 @@ describe('ExternalToolConfigurationUc', () => {
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		contextExternalToolService = module.get(ContextExternalToolService);
 		toolFeatures = module.get(ToolFeatures);
+		logoService = module.get(ExternalToolLogoService);
 	});
 
 	afterEach(() => {
@@ -125,6 +131,23 @@ describe('ExternalToolConfigurationUc', () => {
 		});
 
 		describe('when getting the list of external tools that can be added to a school', () => {
+			it('should call externalToolLogoService', async () => {
+				const externalTools: ExternalTool[] = [
+					externalToolFactory.buildWithId(undefined, 'usedToolId'),
+					externalToolFactory.buildWithId(undefined, 'unusedToolId'),
+				];
+
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue(
+					schoolExternalToolFactory.buildList(1, { toolId: 'usedToolId' })
+				);
+
+				externalToolService.findExternalTools.mockResolvedValue(new Page<ExternalTool>(externalTools, 2));
+
+				await uc.getAvailableToolsForSchool('userId', 'schoolId');
+
+				expect(logoService.buildLogoUrl).toHaveBeenCalledWith('/v3/tools/external-tools/{id}/logo', externalTools[1]);
+			});
+
 			it('should filter tools that are already in use', async () => {
 				const externalTools: ExternalTool[] = [
 					externalToolFactory.buildWithId(undefined, 'usedToolId'),
@@ -273,6 +296,17 @@ describe('ExternalToolConfigurationUc', () => {
 						action: Action.read,
 						requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 					}
+				);
+			});
+
+			it('should call externalToolLogoService', async () => {
+				const { toolWithoutSchoolTool } = setup();
+
+				await uc.getAvailableToolsForSchool('userId', 'schoolId');
+
+				expect(logoService.buildLogoUrl).toHaveBeenCalledWith(
+					'/v3/tools/external-tools/{id}/logo',
+					toolWithoutSchoolTool
 				);
 			});
 
