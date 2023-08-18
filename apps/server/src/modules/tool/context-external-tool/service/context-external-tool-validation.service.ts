@@ -46,7 +46,9 @@ export class ContextExternalToolValidationService {
 		);
 
 		if (duplicate.length > 0) {
-			throw new UnprocessableEntityException('Tool is already assigned.');
+			throw new UnprocessableEntityException(
+				'A tool with the same name is already assigned to this course. Tool names must be unique within a course.'
+			);
 		}
 	}
 }
