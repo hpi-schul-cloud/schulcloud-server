@@ -6,7 +6,7 @@ import { FileOwnerModel, FilePermissionReferenceModel } from '@src/modules/files
 import { FileEntity } from './file.entity';
 import { FilePermissionEntity } from './file-permission.entity';
 
-describe('File entity', () => {
+describe(FileEntity.name, () => {
 	const storageProvider = storageProviderFactory.buildWithId();
 	const mainUserId = new ObjectId().toHexString();
 	const anotherUserId = new ObjectId().toHexString();
