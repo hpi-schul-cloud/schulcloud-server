@@ -19,13 +19,13 @@ export class ApiValidationError extends BusinessError {
 		this.validationErrors = validationErrors.map((e) => {
 			const metadatas = this.metadataStorage.getTargetValidationMetadatas(e.target!.constructor, '', true, true);
 
-			const objuscateValue = metadatas.some(
+			const obfuscateValue = metadatas.some(
 				(validationMetadata) =>
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 					validationMetadata.propertyName === e.property && validationMetadata.context?.privacyProtect
 			);
 
-			if (objuscateValue) {
+			if (obfuscateValue) {
 				e.value = '####';
 			}
 
