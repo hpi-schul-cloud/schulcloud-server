@@ -59,9 +59,10 @@ export class ContentElementFactory {
 	}
 
 	private buildSubmissionContainer() {
+		const tomorrow = new Date(Date.now() + 86400000);
 		const element = new SubmissionContainerElement({
 			id: new ObjectId().toHexString(),
-			dueDate: new Date(),
+			dueDate: tomorrow,
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),

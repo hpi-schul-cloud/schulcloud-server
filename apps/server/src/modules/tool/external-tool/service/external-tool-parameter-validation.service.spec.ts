@@ -49,7 +49,7 @@ describe('ExternalToolParameterValidationService', () => {
 		jest.clearAllMocks();
 	});
 
-	describe('validateCommon is called', () => {
+	describe('validateCommon', () => {
 		describe('when tool is valid', () => {
 			it('should return without exception', async () => {
 				const externalTool: ExternalTool = externalToolFactory
