@@ -7,7 +7,6 @@ export * from './context-external-tool-entity.factory';
 export * from './course.factory';
 export * from './coursegroup.factory';
 export * from './external-tool-entity.factory';
-export * from './file.factory';
 export * from './filerecord.factory';
 export * from './import-user.factory';
 export * from './lesson.factory';
