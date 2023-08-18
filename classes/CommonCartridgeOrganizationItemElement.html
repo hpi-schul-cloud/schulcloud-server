@@ -212,9 +212,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;bson&#x27;;
-import { ICommonCartridgeElement } from &#x27;./common-cartridge-element.interface&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ICommonCartridgeElement } from &#x27;./common-cartridge-element.interface&#x27;;
 import { ICommonCartridgeResourceProps } from &#x27;./common-cartridge-resource-item-element&#x27;;
+import { createIdentifier } from &#x27;./utils&#x27;;
 
 export type ICommonCartridgeOrganizationProps &#x3D; {
 	identifier: string;
@@ -233,10 +233,9 @@ export class CommonCartridgeOrganizationItemElement implements ICommonCartridgeE
 			},
 			title: this.props.title,
 			item: this.props.resources.map((content) &#x3D;&gt; {
-				const newId &#x3D; new ObjectId();
 				return {
 					$: {
-						identifier: &#x60;i${newId.toString()}&#x60;,
+						identifier: createIdentifier(),
 						identifierref: content.identifier,
 					},
 					title: content.title,

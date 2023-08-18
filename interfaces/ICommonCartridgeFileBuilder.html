@@ -208,8 +208,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="29"
-                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:29</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="30"
+                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:30</a></div>
                 </td>
             </tr>
 
@@ -277,8 +277,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="30"
-                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:30</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="32"
+                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:32</a></div>
                 </td>
             </tr>
 
@@ -328,14 +328,15 @@ export interface ICommonCartridgeOrganizationBuilder {
 
 export interface ICommonCartridgeFileBuilder {
 	addOrganization(props: ICommonCartridgeOrganizationProps): ICommonCartridgeOrganizationBuilder;
+
 	addResourceToFile(props: ICommonCartridgeResourceProps): ICommonCartridgeFileBuilder;
+
 	build(): Promise&lt;Buffer&gt;;
 }
 
 class CommonCartridgeOrganizationBuilder implements ICommonCartridgeOrganizationBuilder {
 	constructor(
 		private readonly props: ICommonCartridgeOrganizationProps,
-		private readonly fileBuilder: ICommonCartridgeFileBuilder,
 		private readonly xmlBuilder: Builder,
 		private readonly zipBuilder: AdmZip
 	) {}
@@ -372,7 +373,7 @@ export class CommonCartridgeFileBuilder implements ICommonCartridgeFileBuilder {
 	constructor(private readonly options: ICommonCartridgeFileBuilderOptions) {}
 
 	addOrganization(props: ICommonCartridgeOrganizationProps): ICommonCartridgeOrganizationBuilder {
-		const organizationBuilder &#x3D; new CommonCartridgeOrganizationBuilder(props, this, this.xmlBuilder, this.zipBuilder);
+		const organizationBuilder &#x3D; new CommonCartridgeOrganizationBuilder(props, this.xmlBuilder, this.zipBuilder);
 		this.organizations.push(organizationBuilder);
 		return organizationBuilder;
 	}

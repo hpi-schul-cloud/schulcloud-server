@@ -128,7 +128,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-web-content-resource.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-web-content-resource.ts:19</a></div>
                             </td>
                         </tr>
 
@@ -192,8 +192,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="17"
-                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-web-content-resource.ts:17</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="22"
+                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-web-content-resource.ts:22</a></div>
                 </td>
             </tr>
 
@@ -229,8 +229,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="21"
-                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-web-content-resource.ts:21</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="26"
+                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-web-content-resource.ts:26</a></div>
                 </td>
             </tr>
 
@@ -266,8 +266,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="25"
-                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-web-content-resource.ts:25</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="30"
+                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-web-content-resource.ts:30</a></div>
                 </td>
             </tr>
 
@@ -295,7 +295,11 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ICommonCartridgeElement } from &#x27;./common-cartridge-element.interface&#x27;;
 import { ICommonCartridgeFile } from &#x27;./common-cartridge-file.interface&#x27;;
-import { CommonCartridgeResourceType, CommonCartridgeVersion } from &#x27;./common-cartridge-enums&#x27;;
+import {
+	CommonCartridgeIntendedUseType,
+	CommonCartridgeResourceType,
+	CommonCartridgeVersion,
+} from &#x27;./common-cartridge-enums&#x27;;
 
 export type ICommonCartridgeWebContentResourceProps &#x3D; {
 	type: CommonCartridgeResourceType.WEB_CONTENT;
@@ -304,6 +308,7 @@ export type ICommonCartridgeWebContentResourceProps &#x3D; {
 	href: string;
 	title: string;
 	html: string;
+	intendedUse?: CommonCartridgeIntendedUseType;
 };
 
 export class CommonCartridgeWebContentResource implements ICommonCartridgeElement, ICommonCartridgeFile {
@@ -322,6 +327,7 @@ export class CommonCartridgeWebContentResource implements ICommonCartridgeElemen
 			$: {
 				identifier: this.props.identifier,
 				type: this.props.type,
+				intendeduse: this.props.intendedUse ?? CommonCartridgeIntendedUseType.UNSPECIFIED,
 			},
 			file: {
 				$: {

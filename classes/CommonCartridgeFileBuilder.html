@@ -159,7 +159,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="68" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:68</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="69" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:69</a></div>
                             </td>
                         </tr>
 
@@ -222,7 +222,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="66" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:66</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="67" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:67</a></div>
                         </td>
                     </tr>
 
@@ -249,7 +249,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="68" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:68</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="69" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -276,7 +276,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="62" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:62</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="63" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:63</a></div>
                         </td>
                     </tr>
 
@@ -303,7 +303,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="64" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:64</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="65" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:65</a></div>
                         </td>
                     </tr>
 
@@ -337,8 +337,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="72"
-                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:72</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="73"
+                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:73</a></div>
                 </td>
             </tr>
 
@@ -406,8 +406,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="78"
-                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:78</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="79"
+                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:79</a></div>
                 </td>
             </tr>
 
@@ -477,8 +477,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="87"
-                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:87</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="88"
+                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:88</a></div>
                 </td>
             </tr>
 
@@ -532,14 +532,15 @@ export interface ICommonCartridgeOrganizationBuilder {
 
 export interface ICommonCartridgeFileBuilder {
 	addOrganization(props: ICommonCartridgeOrganizationProps): ICommonCartridgeOrganizationBuilder;
+
 	addResourceToFile(props: ICommonCartridgeResourceProps): ICommonCartridgeFileBuilder;
+
 	build(): Promise&lt;Buffer&gt;;
 }
 
 class CommonCartridgeOrganizationBuilder implements ICommonCartridgeOrganizationBuilder {
 	constructor(
 		private readonly props: ICommonCartridgeOrganizationProps,
-		private readonly fileBuilder: ICommonCartridgeFileBuilder,
 		private readonly xmlBuilder: Builder,
 		private readonly zipBuilder: AdmZip
 	) {}
@@ -576,7 +577,7 @@ export class CommonCartridgeFileBuilder implements ICommonCartridgeFileBuilder {
 	constructor(private readonly options: ICommonCartridgeFileBuilderOptions) {}
 
 	addOrganization(props: ICommonCartridgeOrganizationProps): ICommonCartridgeOrganizationBuilder {
-		const organizationBuilder &#x3D; new CommonCartridgeOrganizationBuilder(props, this, this.xmlBuilder, this.zipBuilder);
+		const organizationBuilder &#x3D; new CommonCartridgeOrganizationBuilder(props, this.xmlBuilder, this.zipBuilder);
 		this.organizations.push(organizationBuilder);
 		return organizationBuilder;
 	}

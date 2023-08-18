@@ -85,6 +85,16 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#addLessons" >addLessons</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#addTasks" >addTasks</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#exportCourse" >exportCourse</a>
                             </li>
@@ -98,7 +108,7 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#mapLessonToOrganization" >mapLessonToOrganization</a>
+                                <a href="#mapTaskToWebContentResource" >mapTaskToWebContentResource</a>
                             </li>
                         </ul>
                     </td>
@@ -118,12 +128,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, lessonService: <a href="../injectables/LessonService.html" target="_self">LessonService</a>)</code>
+<code>constructor(courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, lessonService: <a href="../injectables/LessonService.html" target="_self">LessonService</a>, taskService: <a href="../injectables/TaskService.html" target="_self">TaskService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:18</a></div>
                             </td>
                         </tr>
 
@@ -164,6 +174,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>taskService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/TaskService.html" target="_self" >TaskService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -178,6 +200,210 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addLessons"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>addLessons</b></span>
+                        <a href="#addLessons"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>addLessons(builder: <a href="../classes/CommonCartridgeFileBuilder.html" target="_self">CommonCartridgeFileBuilder</a>, version: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>, courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="41"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:41</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>builder</td>
+                                    <td>
+                                                <code><a href="../classes/CommonCartridgeFileBuilder.html" target="_self" >CommonCartridgeFileBuilder</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>version</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/enumerations.html#CommonCartridgeVersion" target="_self" >CommonCartridgeVersion</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>courseId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addTasks"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>addTasks</b></span>
+                        <a href="#addTasks"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>addTasks(builder: <a href="../classes/CommonCartridgeFileBuilder.html" target="_self">CommonCartridgeFileBuilder</a>, version: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>, courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="65"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:65</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>builder</td>
+                                    <td>
+                                                <code><a href="../classes/CommonCartridgeFileBuilder.html" target="_self" >CommonCartridgeFileBuilder</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>version</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/enumerations.html#CommonCartridgeVersion" target="_self" >CommonCartridgeVersion</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>courseId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -200,8 +426,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="18"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:18</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="25"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:25</a></div>
                 </td>
             </tr>
 
@@ -295,8 +521,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="60"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:60</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="85"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:85</a></div>
                 </td>
             </tr>
 
@@ -390,8 +616,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="104"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:104</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="130"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:130</a></div>
                 </td>
             </tr>
 
@@ -446,26 +672,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapLessonToOrganization"></a>
+                    <a name="mapTaskToWebContentResource"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
-                        <span ><b>mapLessonToOrganization</b></span>
-                        <a href="#mapLessonToOrganization"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>mapTaskToWebContentResource</b></span>
+                        <a href="#mapTaskToWebContentResource"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapLessonToOrganization(lesson: <a href="../entitys/Lesson.html" target="_self">Lesson</a>, version: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>)</code>
+                    <code>mapTaskToWebContentResource(task: <a href="../classes/Task.html" target="_self">Task</a>, version: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="51"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:51</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="138"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:138</a></div>
                 </td>
             </tr>
 
@@ -486,9 +712,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>lesson</td>
+                                    <td>task</td>
                                     <td>
-                                                <code><a href="../entitys/Lesson.html" target="_self" >Lesson</a></code>
+                                                <code><a href="../classes/Task.html" target="_self" >Task</a></code>
                                     </td>
 
                                     <td>
@@ -515,7 +741,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#ICommonCartridgeOrganizationProps" target="_self" >ICommonCartridgeOrganizationProps</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#ICommonCartridgeWebContentResourceProps" target="_self" >ICommonCartridgeWebContentResourceProps</a></code>
 
                     </div>
                     <div class="io-description">
@@ -532,34 +758,60 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Course, EntityId, IComponentProperties, Lesson } from &#x27;@shared/domain&#x27;;
+import { Course, EntityId, IComponentProperties, Task } from &#x27;@shared/domain&#x27;;
 import { LessonService } from &#x27;@src/modules/lesson/service&#x27;;
 import { ComponentType } from &#x27;@src/shared/domain/entity/lesson.entity&#x27;;
+import { TaskService } from &#x27;@src/modules/task/service&#x27;;
 import {
 	CommonCartridgeFileBuilder,
+	CommonCartridgeIntendedUseType,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
-	ICommonCartridgeOrganizationProps,
 	ICommonCartridgeResourceProps,
+	ICommonCartridgeWebContentResourceProps,
 } from &#x27;../common-cartridge&#x27;;
 import { CourseService } from &#x27;./course.service&#x27;;
+import { createIdentifier } from &#x27;../common-cartridge/utils&#x27;;
 
 @Injectable()
 export class CommonCartridgeExportService {
-	constructor(private readonly courseService: CourseService, private readonly lessonService: LessonService) {}
+	constructor(
+		private readonly courseService: CourseService,
+		private readonly lessonService: LessonService,
+		private readonly taskService: TaskService
+	) {}
 
 	async exportCourse(courseId: EntityId, userId: EntityId, version: CommonCartridgeVersion): Promise&lt;Buffer&gt; {
 		const course &#x3D; await this.courseService.findById(courseId);
-		const [lessons] &#x3D; await this.lessonService.findByCourseIds([courseId]);
 		const builder &#x3D; new CommonCartridgeFileBuilder({
-			identifier: &#x60;i${course.id}&#x60;,
+			identifier: createIdentifier(courseId),
 			title: course.name,
 			version,
 			copyrightOwners: this.mapCourseTeachersToCopyrightOwners(course),
 			creationYear: course.createdAt.getFullYear().toString(),
 		});
+
+		await this.addLessons(builder, version, courseId);
+		await this.addTasks(builder, version, courseId, userId);
+
+		return builder.build();
+	}
+
+	private async addLessons(
+		builder: CommonCartridgeFileBuilder,
+		version: CommonCartridgeVersion,
+		courseId: EntityId
+	): Promise&lt;void&gt; {
+		const [lessons] &#x3D; await this.lessonService.findByCourseIds([courseId]);
+
 		lessons.forEach((lesson) &#x3D;&gt; {
-			const organizationBuilder &#x3D; builder.addOrganization(this.mapLessonToOrganization(lesson, version));
+			const organizationBuilder &#x3D; builder.addOrganization({
+				version,
+				identifier: createIdentifier(lesson.id),
+				title: lesson.name,
+				resources: [],
+			});
+
 			lesson.contents.forEach((content) &#x3D;&gt; {
 				const resourceProps &#x3D; this.mapContentToResource(lesson.id, content, version);
 				if (resourceProps) {
@@ -567,27 +819,26 @@ export class CommonCartridgeExportService {
 				}
 			});
 		});
-
-		// TODO: add tasks as assignments, will be done in EW-526: https://ticketsystem.dbildungscloud.de/browse/EW-526
-		// const [tasks] &#x3D; await this.taskService.findBySingleParent(userId, courseId);
-		// const builder &#x3D; new CommonCartridgeFileBuilder({
-		// 	identifier: &#x60;i${course.id}&#x60;,
-		// 	title: course.name,
-		// })
-		// 	.addOrganizationItems(this.mapLessonsToOrganizationItems(lessons))
-		// 	.addAssignments(this.mapTasksToAssignments(tasks));
-		// return builder.build();
-
-		return builder.build();
 	}
 
-	private mapLessonToOrganization(lesson: Lesson, version: CommonCartridgeVersion): ICommonCartridgeOrganizationProps {
-		return {
-			identifier: &#x60;i${lesson.id}&#x60;,
+	private async addTasks(
+		builder: CommonCartridgeFileBuilder,
+		version: CommonCartridgeVersion,
+		courseId: EntityId,
+		userId: EntityId
+	): Promise&lt;void&gt; {
+		const [tasks] &#x3D; await this.taskService.findBySingleParent(userId, courseId);
+		const organizationBuilder &#x3D; builder.addOrganization({
 			version,
-			title: lesson.name,
+			identifier: createIdentifier(),
+			// FIXME: change the title for tasks organization
+			title: &#x27;&#x27;,
 			resources: [],
-		};
+		});
+
+		tasks.forEach((task) &#x3D;&gt; {
+			organizationBuilder.addResourceToOrganization(this.mapTaskToWebContentResource(task, version));
+		});
 	}
 
 	private mapContentToResource(
@@ -597,18 +848,19 @@ export class CommonCartridgeExportService {
 	): ICommonCartridgeResourceProps | undefined {
 		const commonProps &#x3D; {
 			version,
-			identifier: &#x60;i${content._id as string}&#x60;,
-			href: &#x60;i${lessonId}/i${content._id as string}.xml&#x60;,
+			identifier: createIdentifier(content._id),
+			href: &#x60;${createIdentifier(lessonId)}/${createIdentifier(content._id)}.html&#x60;,
 			title: content.title,
 		};
 
 		if (content.component &#x3D;&#x3D;&#x3D; ComponentType.TEXT) {
 			return {
 				version,
-				identifier: &#x60;i${content._id as string}&#x60;,
-				href: &#x60;i${lessonId}/i${content._id as string}.html&#x60;,
+				identifier: createIdentifier(content._id),
+				href: &#x60;${createIdentifier(lessonId)}/${createIdentifier(content._id)}.html&#x60;,
 				title: content.title,
 				type: CommonCartridgeResourceType.WEB_CONTENT,
+				intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 				html: &#x60;&lt;h1&gt;${content.title}&lt;/h1&gt;&lt;p&gt;${content.content.text}&lt;/p&gt;&#x60;,
 			};
 		}
@@ -640,6 +892,25 @@ export class CommonCartridgeExportService {
 			.map((teacher) &#x3D;&gt; &#x60;${teacher.firstName} ${teacher.lastName}&#x60;)
 			.reduce((previousTeachers, currentTeacher) &#x3D;&gt; &#x60;${previousTeachers}, ${currentTeacher}&#x60;);
 		return result;
+	}
+
+	private mapTaskToWebContentResource(
+		task: Task,
+		version: CommonCartridgeVersion
+	): ICommonCartridgeWebContentResourceProps {
+		const taskIdentifier &#x3D; createIdentifier(task.id);
+		return {
+			version,
+			identifier: taskIdentifier,
+			href: &#x60;${taskIdentifier}/${taskIdentifier}.html&#x60;,
+			title: task.name,
+			type: CommonCartridgeResourceType.WEB_CONTENT,
+			html: &#x60;&lt;h1&gt;${task.name}&lt;/h1&gt;&lt;p&gt;${task.description}&lt;/p&gt;&#x60;,
+			intendedUse:
+				version &#x3D;&#x3D;&#x3D; CommonCartridgeVersion.V_1_1_0
+					? CommonCartridgeIntendedUseType.UNSPECIFIED
+					: CommonCartridgeIntendedUseType.ASSIGNMENT,
+		};
 	}
 }
 </code></pre>
