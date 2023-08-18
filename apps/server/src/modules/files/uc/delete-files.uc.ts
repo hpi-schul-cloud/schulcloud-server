@@ -2,11 +2,12 @@
 import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 
-import { FileEntity, StorageProviderEntity } from '@shared/domain';
+import { StorageProviderEntity } from '@shared/domain';
 import { StorageProviderRepo } from '@shared/repo/storageprovider/storageprovider.repo';
 import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 
 import { FilesRepo } from '../repo';
+import { FileEntity } from '../entity';
 
 @Injectable()
 export class DeleteFilesUc {

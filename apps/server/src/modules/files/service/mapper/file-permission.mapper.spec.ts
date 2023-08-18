@@ -1,9 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 
-import { FilePermissionEntity } from '@shared/domain';
-
 import { FilePermissionMapper } from './file-permission.mapper';
 import { FilePermission, FilePermissionReferenceModel } from '../../domain';
+import { FilePermissionEntity } from '../../entity';
 
 describe(FilePermissionMapper.name, () => {
 	describe('mapToDOs', () => {

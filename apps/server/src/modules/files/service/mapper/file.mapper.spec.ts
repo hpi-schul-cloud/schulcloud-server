@@ -1,6 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 
-import { FileEntity, StorageProviderEntity, FileSecurityCheckEntity, FilePermissionEntity } from '@shared/domain';
+import { StorageProviderEntity } from '@shared/domain';
+import { FileEntity, FileSecurityCheckEntity, FilePermissionEntity } from '../../entity';
 
 import { File, FileOwnerModel, FilePermissionReferenceModel, FileSecurityCheckStatus } from '../../domain';
 import { FileMapper } from './file.mapper';

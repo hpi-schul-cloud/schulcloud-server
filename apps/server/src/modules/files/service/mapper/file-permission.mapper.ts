@@ -1,6 +1,5 @@
-import { FilePermissionEntity } from '@shared/domain';
-
 import { FilePermission } from '../../domain';
+import { FilePermissionEntity } from '../../entity';
 
 export class FilePermissionMapper {
 	private static mapToDO(entity: FilePermissionEntity): FilePermission {

@@ -2,12 +2,13 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { FileEntity, FileEntityProps, FilePermissionEntity } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { BaseFactory, storageProviderFactory } from '@shared/testing';
-import { FileOwnerModel, FilePermissionReferenceModel } from '../domain';
 
+import { FileOwnerModel, FilePermissionReferenceModel } from '../domain';
+import { FileEntity, FileEntityProps, FilePermissionEntity } from '../entity';
 import { FilesRepo } from './files.repo';
+import { StorageProviderEntity } from '@shared/domain';
 
 const userFileFactory = BaseFactory.define<FileEntity, FileEntityProps>(FileEntity, ({ sequence }) => {
 	const userId = new ObjectId().toHexString();
@@ -38,7 +39,11 @@ describe(FilesRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [FileEntity, StorageProviderEntity],
+				}),
+			],
 			providers: [FilesRepo],
 		}).compile();
 

@@ -1,6 +1,5 @@
-import { FileSecurityCheckEntity } from '@shared/domain';
-
 import { FileSecurityCheck } from '../../domain';
+import { FileSecurityCheckEntity } from '../../entity';
 
 export class FileSecurityCheckMapper {
 	static mapToDO(entity: FileSecurityCheckEntity): FileSecurityCheck {

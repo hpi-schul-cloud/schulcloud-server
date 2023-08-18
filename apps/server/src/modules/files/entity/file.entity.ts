@@ -4,7 +4,7 @@ import { v4 as uuid } from 'uuid';
 
 import { EntityId, StorageProviderEntity } from '@shared/domain';
 import { FileOwnerModel, FilePermissionReferenceModel, FileSecurityCheckStatus } from '@src/modules/files/domain';
-import { BaseEntityWithTimestamps } from './base.entity';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 
 export interface FileSecurityCheckEntityProps {
 	status?: FileSecurityCheckStatus;

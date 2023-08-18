@@ -10,7 +10,7 @@ import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq/rabbitmq.module';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
 import { S3ClientAdapter } from './client/s3-client.adapter';
-import { FileRecord, FileSecurityCheck } from './entity';
+import { FileRecord, FileRecordSecurityCheck } from './entity';
 import { config, s3Config } from './files-storage.config';
 import { S3Config } from './interface/config';
 import { FileRecordRepo } from './repo';
@@ -70,7 +70,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: [...ALL_ENTITIES, FileRecord, FileSecurityCheck],
+			entities: [...ALL_ENTITIES, FileRecord, FileRecordSecurityCheck],
 
 			// debug: true, // use it for locally debugging of querys
 		}),

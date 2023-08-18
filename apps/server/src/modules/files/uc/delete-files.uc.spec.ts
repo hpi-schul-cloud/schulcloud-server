@@ -4,7 +4,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from 'bson';
 
-import { FileEntity, FilePermissionEntity, StorageProviderEntity } from '@shared/domain/entity';
+import { StorageProviderEntity } from '@shared/domain/entity';
 import { StorageProviderRepo } from '@shared/repo/storageprovider/storageprovider.repo';
 import { storageProviderFactory } from '@shared/testing';
 
@@ -12,6 +12,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { DeleteFilesUc } from './delete-files.uc';
 import { FileOwnerModel, FilePermissionReferenceModel } from '../domain';
 import { FilesRepo } from '../repo';
+import { FileEntity, FilePermissionEntity } from '../entity';
 
 describe('DeleteFileUC', () => {
 	let service: DeleteFilesUc;

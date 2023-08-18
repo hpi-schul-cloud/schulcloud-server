@@ -1,6 +1,7 @@
-import { EntityId, FileEntity } from '@shared/domain';
+import { EntityId } from '@shared/domain';
 
 import { File } from '../../domain';
+import { FileEntity } from '../../entity';
 import { FileSecurityCheckMapper } from './file-security-check.mapper';
 import { FilePermissionMapper } from './file-permission.mapper';
 

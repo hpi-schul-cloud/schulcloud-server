@@ -1,7 +1,6 @@
-import { FileSecurityCheckEntity } from '@shared/domain';
-
 import { FileSecurityCheckMapper } from './file-security-check.mapper';
 import { FileSecurityCheck, FileSecurityCheckStatus } from '../../domain';
+import { FileSecurityCheckEntity } from '../../entity';
 
 describe(FileSecurityCheckMapper.name, () => {
 	describe('mapToDO', () => {
