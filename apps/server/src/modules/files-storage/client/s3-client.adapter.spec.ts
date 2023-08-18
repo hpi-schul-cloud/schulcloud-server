@@ -5,10 +5,10 @@ import { InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'node:stream';
+import { ErrorUtils } from '@src/core/error/utils';
 import { FileDto } from '../dto';
 import { S3Config } from '../interface/config';
 import { S3ClientAdapter } from './s3-client.adapter';
-import { ErrorUtils } from '@src/core/error/utils';
 
 const createParameter = () => {
 	const bucket = 'test-bucket';
