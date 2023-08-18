@@ -7,6 +7,7 @@ import { AxiosResponse } from 'axios';
 import crypto, { Hash } from 'crypto';
 import { of } from 'rxjs';
 import { URLSearchParams } from 'url';
+import { ErrorUtils } from '@src/core/error/utils';
 import { BbbSettings, IBbbSettings } from './bbb-settings.interface';
 import { BBBService } from './bbb.service';
 import { BBBBaseMeetingConfig, BBBCreateConfig, BBBJoinConfig, BBBRole, GuestPolicy } from './request';
@@ -147,23 +148,58 @@ describe('BBB Service', () => {
 	});
 
 	describe('create', () => {
-		let bbbCreateResponse: AxiosResponse<BBBResponse<BBBResponseType>>;
-		beforeEach(() => {
-			bbbCreateResponse = createAxiosResponse(createBBBCreateResponse());
+		describe('when valid parameter passed and the BBB response well', () => {
+			const setup = () => {
+				const bbbCreateResponse: AxiosResponse<BBBResponse<BBBResponseType>> = createAxiosResponse(
+					createBBBCreateResponse()
+				);
+
+				const param = createBBBCreateConfig();
+
+				httpService.post.mockReturnValue(of(bbbCreateResponse));
+				converterUtil.xml2object.mockReturnValue(bbbCreateResponse.data);
+
+				return { param, bbbCreateResponse };
+			};
+
+			it('should return a response with returncode success', async () => {
+				const { bbbCreateResponse, param } = setup();
+
+				const result = await service.create(param);
+
+				expect(result).toBeDefined();
+				expect(httpService.post).toHaveBeenCalledTimes(1);
+				expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbCreateResponse.data);
+			});
 		});
 
-		it('should return a response with returncode success', async () => {
-			// Arrange
-			httpService.post.mockReturnValue(of(bbbCreateResponse));
-			converterUtil.xml2object.mockReturnValue(bbbCreateResponse.data);
+		describe('when valid parameter passed and the BBB response with error', () => {
+			const setup = () => {
+				const bbbCreateResponse: AxiosResponse<BBBResponse<BBBResponseType>> = createAxiosResponse(
+					createBBBCreateResponse()
+				);
+				bbbCreateResponse.data.response.returncode = BBBStatus.ERROR;
 
-			// Act
-			const result = await service.create(createBBBCreateConfig());
+				const param = createBBBCreateConfig();
 
-			// Assert
-			expect(result).toBeDefined();
-			expect(httpService.post).toHaveBeenCalledTimes(1);
-			expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbCreateResponse.data);
+				httpService.post.mockReturnValue(of(bbbCreateResponse));
+				converterUtil.xml2object.mockReturnValue(bbbCreateResponse.data);
+
+				const error = new InternalServerErrorException(
+					`${bbbCreateResponse.data.response.messageKey}, ${bbbCreateResponse.data.response.message}`
+				);
+				const expectedError = new InternalServerErrorException(
+					ErrorUtils.convertUnknownError(error, 'BBBService:create')
+				);
+
+				return { param, expectedError };
+			};
+
+			it('should throw an error', async () => {
+				const { expectedError, param } = setup();
+
+				await expect(service.create(param)).rejects.toThrowError(expectedError);
+			});
 		});
 
 		it('should return a xml configuration with provided presentation url', () => {
@@ -178,126 +214,164 @@ describe('BBB Service', () => {
 				"<?xml version='1.0' encoding='UTF-8'?><modules><module name='presentation'><document url='https://s3.hidrive.strato.com/cloud-instances/bbb/presentation.pdf' /></module></modules>"
 			);
 		});
-
-		it('should throw an error if there is a different return code then success', async () => {
-			// Arrange
-			bbbCreateResponse.data.response.returncode = BBBStatus.ERROR;
-			httpService.get.mockReturnValue(of(bbbCreateResponse));
-			converterUtil.xml2object.mockReturnValue(bbbCreateResponse.data);
-			const expectedError = new InternalServerErrorException(
-				`${bbbCreateResponse.data.response.messageKey}, ${bbbCreateResponse.data.response.message}`
-			);
-
-			// Act && Assert
-			await expect(service.create(createBBBCreateConfig())).rejects.toThrowError(expectedError);
-		});
 	});
 
 	describe('end', () => {
-		let bbbBaseResponse: AxiosResponse<BBBResponse<BBBBaseResponse>>;
-		let bbbBaseMeetingConfig: BBBBaseMeetingConfig;
-		beforeEach(() => {
-			bbbBaseResponse = createAxiosResponse(createBBBBaseResponse());
-			bbbBaseMeetingConfig = { meetingID: 'meetingId' };
+		describe('when valid parameter passed and the BBB response well', () => {
+			const setup = () => {
+				const bbbBaseResponse: AxiosResponse<BBBResponse<BBBBaseResponse>> = createAxiosResponse(
+					createBBBBaseResponse()
+				);
+				const bbbBaseMeetingConfig: BBBBaseMeetingConfig = { meetingID: 'meetingId' };
+
+				httpService.get.mockReturnValue(of(bbbBaseResponse));
+				converterUtil.xml2object.mockReturnValue(bbbBaseResponse.data);
+
+				return { bbbBaseResponse, bbbBaseMeetingConfig };
+			};
+
+			it('should return a response with returncode success', async () => {
+				const { bbbBaseResponse, bbbBaseMeetingConfig } = setup();
+
+				const result = await service.end(bbbBaseMeetingConfig);
+
+				expect(result).toBeDefined();
+				expect(httpService.get).toBeCalled();
+				expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbBaseResponse.data);
+			});
 		});
 
-		it('should return a response with returncode success', async () => {
-			// Arrange
-			httpService.get.mockReturnValue(of(bbbBaseResponse));
-			converterUtil.xml2object.mockReturnValue(bbbBaseResponse.data);
+		describe('when valid parameter passed and the BBB response with error', () => {
+			const setup = () => {
+				const bbbBaseResponse: AxiosResponse<BBBResponse<BBBBaseResponse>> = createAxiosResponse(
+					createBBBBaseResponse()
+				);
+				bbbBaseResponse.data.response.returncode = BBBStatus.ERROR;
+				const param: BBBBaseMeetingConfig = { meetingID: 'meetingId' };
 
-			// Act
-			const result = await service.end(bbbBaseMeetingConfig);
+				httpService.get.mockReturnValue(of(bbbBaseResponse));
+				converterUtil.xml2object.mockReturnValue(bbbBaseResponse.data);
 
-			// Assert
-			expect(result).toBeDefined();
-			expect(httpService.get).toBeCalled();
-			expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbBaseResponse.data);
-		});
+				const error = new InternalServerErrorException(
+					`${bbbBaseResponse.data.response.messageKey}, ${bbbBaseResponse.data.response.message}`
+				);
+				const expectedError = new InternalServerErrorException(ErrorUtils.convertUnknownError(error, 'BBBService:end'));
 
-		it('should throw an error if there is a different return code then success', async () => {
-			// Arrange
-			bbbBaseResponse.data.response.returncode = BBBStatus.ERROR;
-			httpService.get.mockReturnValue(of(bbbBaseResponse));
-			converterUtil.xml2object.mockReturnValue(bbbBaseResponse.data);
-			const expectedError = new InternalServerErrorException(
-				`${bbbBaseResponse.data.response.messageKey}, ${bbbBaseResponse.data.response.message}`
-			);
+				return { expectedError, param };
+			};
 
-			// Act && Assert
-			await expect(service.end(bbbBaseMeetingConfig)).rejects.toThrowError(expectedError);
+			it('should throw an error if there is a different return code then success', async () => {
+				const { param, expectedError } = setup();
+
+				await expect(service.end(param)).rejects.toThrowError(expectedError);
+			});
 		});
 	});
 
 	describe('getMeetingInfo', () => {
-		let bbbMeetingInfoResponse: AxiosResponse<BBBResponse<BBBResponseType>>;
-		let bbbBaseMeetingConfig: BBBBaseMeetingConfig;
-		beforeEach(() => {
-			bbbMeetingInfoResponse = createAxiosResponse(createBBBMeetingInfoResponse());
-			bbbBaseMeetingConfig = { meetingID: 'meetingId' };
+		describe('when valid parameter passed and the BBB response well', () => {
+			const setup = () => {
+				const bbbMeetingInfoResponse: AxiosResponse<BBBResponse<BBBResponseType>> = createAxiosResponse(
+					createBBBMeetingInfoResponse()
+				);
+				const param: BBBBaseMeetingConfig = { meetingID: 'meetingId' };
+
+				httpService.get.mockReturnValue(of(bbbMeetingInfoResponse));
+				converterUtil.xml2object.mockReturnValue(bbbMeetingInfoResponse.data);
+
+				return { bbbMeetingInfoResponse, param };
+			};
+
+			it('should return a response with returncode success', async () => {
+				const { bbbMeetingInfoResponse, param } = setup();
+				const result = await service.getMeetingInfo(param);
+
+				expect(result).toBeDefined();
+				expect(httpService.get).toBeCalled();
+				expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbMeetingInfoResponse.data);
+			});
 		});
 
-		it('should return a response with returncode success', async () => {
-			// Arrange
-			httpService.get.mockReturnValue(of(bbbMeetingInfoResponse));
-			converterUtil.xml2object.mockReturnValue(bbbMeetingInfoResponse.data);
+		describe('when valid parameter passed and the BBB response with error', () => {
+			const setup = () => {
+				const bbbMeetingInfoResponse: AxiosResponse<BBBResponse<BBBResponseType>> = createAxiosResponse(
+					createBBBMeetingInfoResponse()
+				);
+				bbbMeetingInfoResponse.data.response.returncode = BBBStatus.ERROR;
+				const param: BBBBaseMeetingConfig = { meetingID: 'meetingId' };
 
-			// Act
-			const result = await service.getMeetingInfo(bbbBaseMeetingConfig);
+				httpService.get.mockReturnValue(of(bbbMeetingInfoResponse));
+				converterUtil.xml2object.mockReturnValue(bbbMeetingInfoResponse.data);
 
-			// Assert
-			expect(result).toBeDefined();
-			expect(httpService.get).toBeCalled();
-			expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbMeetingInfoResponse.data);
-		});
+				const error = new InternalServerErrorException(
+					`${bbbMeetingInfoResponse.data.response.messageKey}: ${bbbMeetingInfoResponse.data.response.message}`
+				);
+				const expectedError = new InternalServerErrorException(
+					ErrorUtils.convertUnknownError(error, 'BBBService:getMeetingInfo')
+				);
 
-		it('should throw an error if there is a different return code then success', async () => {
-			// Arrange
-			bbbMeetingInfoResponse.data.response.returncode = BBBStatus.ERROR;
-			httpService.get.mockReturnValue(of(bbbMeetingInfoResponse));
-			converterUtil.xml2object.mockReturnValue(bbbMeetingInfoResponse.data);
-			const expectedError = new InternalServerErrorException(
-				`${bbbMeetingInfoResponse.data.response.messageKey}: ${bbbMeetingInfoResponse.data.response.message}`
-			);
+				return { expectedError, param };
+			};
 
-			// Act && Assert
-			await expect(service.getMeetingInfo(bbbBaseMeetingConfig)).rejects.toThrowError(expectedError);
+			it('should throw an error if there is a different return code then success', async () => {
+				const { expectedError, param } = setup();
+
+				await expect(service.getMeetingInfo(param)).rejects.toThrowError(expectedError);
+			});
 		});
 	});
 
 	describe('join', () => {
-		let bbbMeetingInfoResponse: AxiosResponse<BBBResponse<BBBResponseType>>;
-		let bbbJoinConfig: BBBJoinConfig;
-		beforeEach(() => {
-			bbbMeetingInfoResponse = createAxiosResponse(createBBBMeetingInfoResponse());
-			bbbJoinConfig = createBBBJoinConfig();
+		describe('when valid parameter passed and the BBB response well', () => {
+			const setup = () => {
+				const bbbMeetingInfoResponse: AxiosResponse<BBBResponse<BBBResponseType>> = createAxiosResponse(
+					createBBBMeetingInfoResponse()
+				);
+				const param: BBBJoinConfig = createBBBJoinConfig();
+
+				httpService.get.mockReturnValue(of(bbbMeetingInfoResponse));
+				converterUtil.xml2object.mockReturnValue(bbbMeetingInfoResponse.data);
+
+				return { param, bbbMeetingInfoResponse };
+			};
+
+			it('should create a join link to a bbb meeting', async () => {
+				const { param, bbbMeetingInfoResponse } = setup();
+
+				const url = await service.join(param);
+
+				expect(url).toBeDefined();
+				expect(httpService.get).toBeCalled();
+				expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbMeetingInfoResponse.data);
+			});
 		});
 
-		it('should create a join link to a bbb meeting', async () => {
-			// Arrange
-			httpService.get.mockReturnValue(of(bbbMeetingInfoResponse));
-			converterUtil.xml2object.mockReturnValue(bbbMeetingInfoResponse.data);
+		describe('when valid parameter passed and the BBB response with error', () => {
+			const setup = () => {
+				const bbbMeetingInfoResponse: AxiosResponse<BBBResponse<BBBResponseType>> = createAxiosResponse(
+					createBBBMeetingInfoResponse()
+				);
+				bbbMeetingInfoResponse.data.response.returncode = BBBStatus.ERROR;
+				const param: BBBJoinConfig = createBBBJoinConfig();
 
-			// Act
-			const url = await service.join(bbbJoinConfig);
+				httpService.get.mockReturnValue(of(bbbMeetingInfoResponse));
+				converterUtil.xml2object.mockReturnValue(bbbMeetingInfoResponse.data);
 
-			// Assert
-			expect(url).toBeDefined();
-			expect(httpService.get).toBeCalled();
-			expect(converterUtil.xml2object).toHaveBeenCalledWith(bbbMeetingInfoResponse.data);
-		});
+				const error = new InternalServerErrorException(
+					`${bbbMeetingInfoResponse.data.response.messageKey}: ${bbbMeetingInfoResponse.data.response.message}`
+				);
+				const expectedError = new InternalServerErrorException(
+					ErrorUtils.convertUnknownError(error, 'BBBService:getMeetingInfo')
+				);
 
-		it('should throw an error if there is a different return code then success', async () => {
-			// Arrange
-			bbbMeetingInfoResponse.data.response.returncode = BBBStatus.ERROR;
-			httpService.get.mockReturnValue(of(bbbMeetingInfoResponse));
-			converterUtil.xml2object.mockReturnValue(bbbMeetingInfoResponse.data);
-			const expectedError = new InternalServerErrorException(
-				`${bbbMeetingInfoResponse.data.response.messageKey}: ${bbbMeetingInfoResponse.data.response.message}`
-			);
+				return { param, expectedError };
+			};
 
-			// Act && Assert
-			await expect(service.join(bbbJoinConfig)).rejects.toThrowError(expectedError);
+			it('should throw an error if there is a different return code then success', async () => {
+				const { param, expectedError } = setup();
+
+				await expect(service.join(param)).rejects.toThrowError(expectedError);
+			});
 		});
 
 		it('toParams: should return params based on bbb configs', () => {

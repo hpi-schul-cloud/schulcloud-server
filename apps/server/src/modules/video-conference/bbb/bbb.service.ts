@@ -41,6 +41,7 @@ export class BBBService {
 		const conf = { headers: { 'Content-Type': 'application/xml' } };
 		const data = this.getBbbRequestConfig(this.presentationUrl);
 		const observable: Observable<AxiosResponse<string>> = this.httpService.post(url, data, conf);
+
 		return firstValueFrom(observable)
 			.then((resp: AxiosResponse<string>) => {
 				const bbbResp = this.converterUtil.xml2object<BBBResponse<BBBCreateResponse> | BBBResponse<BBBBaseResponse>>(
@@ -56,6 +57,7 @@ export class BBBService {
 			});
 	}
 
+	// it should be a private method
 	getBbbRequestConfig(presentationUrl: string): string {
 		if (presentationUrl === '') return '';
 		return `<?xml version='1.0' encoding='UTF-8'?><modules><module name='presentation'><document url='${presentationUrl}' /></module></modules>`;
@@ -121,6 +123,7 @@ export class BBBService {
 			});
 	}
 
+	// should be private
 	/**
 	 * Returns a SHA1 encoded checksum for the input parameters.
 	 * @param {string} callName
@@ -135,6 +138,7 @@ export class BBBService {
 		return checksum;
 	}
 
+	// should be private
 	/**
 	 * Extracts fields from a javascript object and builds a URLSearchParams object from it.
 	 * @param {object} object
@@ -150,6 +154,7 @@ export class BBBService {
 		return params;
 	}
 
+	// should be private
 	/**
 	 * Builds the url for BBB.
 	 * @param callName Name of the BBB api function.
