@@ -637,7 +637,7 @@ describe('ExternalToolService', () => {
 		});
 
 		describe('externalToolVersionService', () => {
-			describe('when service is called', () => {
+			describe('when service', () => {
 				const setup = () => {
 					const tool1: ExternalTool = externalToolFactory.buildWithId();
 					const tool2: ExternalTool = externalToolFactory.buildWithId();

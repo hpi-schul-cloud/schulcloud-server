@@ -1,6 +1,6 @@
-import { ObjectId } from 'bson';
 import { ICommonCartridgeElement } from './common-cartridge-element.interface';
 import { ICommonCartridgeResourceProps } from './common-cartridge-resource-item-element';
+import { createIdentifier } from './utils';
 
 export type ICommonCartridgeOrganizationProps = {
 	identifier: string;
@@ -19,10 +19,9 @@ export class CommonCartridgeOrganizationItemElement implements ICommonCartridgeE
 			},
 			title: this.props.title,
 			item: this.props.resources.map((content) => {
-				const newId = new ObjectId();
 				return {
 					$: {
-						identifier: `i${newId.toString()}`,
+						identifier: createIdentifier(),
 						identifierref: content.identifier,
 					},
 					title: content.title,
