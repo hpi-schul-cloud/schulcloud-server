@@ -138,7 +138,7 @@ jobs:
     needs:
       - build_and_push
       - branch_meta
-    uses: hpi-schul-cloud/dof_app_deploy/.github/workflows/deploy.yml@main
+    uses: hpi-schul-cloud/dof_app_deploy/.github/workflows/deploy.yml@BC-4256-Integration-tldraw
     with:
       branch: ${{ needs.branch_meta.outputs.branch }}
     secrets:
