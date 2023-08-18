@@ -130,7 +130,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>mapToDto(account: <a href="../undefineds/IAccount.html" target="_self">IAccount</a>)</code>
+<code>mapToDto(account: <a href="../undefineds/IdmAccount.html" target="_self">IdmAccount</a>)</code>
                 </td>
             </tr>
 
@@ -167,7 +167,7 @@
                                 <tr>
                                     <td>account</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#IAccount" target="_self" >IAccount</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#IdmAccount" target="_self" >IdmAccount</a></code>
                                     </td>
 
                                     <td>
@@ -202,18 +202,18 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IAccount } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IdmAccount } from &#x27;@shared/domain&#x27;;
 import { AccountDto } from &#x27;../services/dto/account.dto&#x27;;
 import { AccountIdmToDtoMapper } from &#x27;./account-idm-to-dto.mapper.abstract&#x27;;
 
 export class AccountIdmToDtoMapperIdm extends AccountIdmToDtoMapper {
-	mapToDto(account: IAccount): AccountDto {
+	mapToDto(account: IdmAccount): AccountDto {
 		const createdDate &#x3D; account.createdDate ? account.createdDate : new Date();
 		return new AccountDto({
 			id: account.id,
 			idmReferenceId: undefined,
-			userId: account.attRefFunctionalIntId,
-			systemId: account.attRefFunctionalExtId,
+			userId: account.attDbcUserId,
+			systemId: account.attDbcSystemId,
 			username: account.username ?? &#x27;&#x27;,
 			createdAt: createdDate,
 			updatedAt: createdDate,

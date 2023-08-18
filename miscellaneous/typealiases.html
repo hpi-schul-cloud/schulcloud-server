@@ -181,15 +181,6 @@
                             <a href="#GridPositionWithGroupIndex" title="apps/server/src/shared/domain/entity/dashboard.entity.ts" ><b>GridPositionWithGroupIndex</b>&nbsp;&nbsp;&nbsp;(apps/.../dashboard.entity.ts)</a>
                         </li>
                         <li>
-                            <a href="#IAccount" title="apps/server/src/shared/domain/interface/account.ts" ><b>IAccount</b>&nbsp;&nbsp;&nbsp;(apps/.../account.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#IAccountProperties" title="apps/server/src/shared/domain/entity/account.entity.ts" ><b>IAccountProperties</b>&nbsp;&nbsp;&nbsp;(apps/.../account.entity.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#IAccountUpdate" title="apps/server/src/shared/domain/interface/account.ts" ><b>IAccountUpdate</b>&nbsp;&nbsp;&nbsp;(apps/.../account.ts)</a>
-                        </li>
-                        <li>
                             <a href="#IColumnBoardProperties" title="apps/server/src/shared/testing/factory/domainobject/board/column-board.do.factory.ts" ><b>IColumnBoardProperties</b>&nbsp;&nbsp;&nbsp;(apps/.../column-board.do.factory.ts)</a>
                         </li>
                         <li>
@@ -224,6 +215,15 @@
                         </li>
                         <li>
                             <a href="#IComponentProperties" title="apps/server/src/shared/domain/entity/lesson.entity.ts" ><b>IComponentProperties</b>&nbsp;&nbsp;&nbsp;(apps/.../lesson.entity.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IdmAccount" title="apps/server/src/shared/domain/interface/account.ts" ><b>IdmAccount</b>&nbsp;&nbsp;&nbsp;(apps/.../account.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IdmAccountProperties" title="apps/server/src/shared/domain/entity/account.entity.ts" ><b>IdmAccountProperties</b>&nbsp;&nbsp;&nbsp;(apps/.../account.entity.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IdmAccountUpdate" title="apps/server/src/shared/domain/interface/account.ts" ><b>IdmAccountUpdate</b>&nbsp;&nbsp;&nbsp;(apps/.../account.ts)</a>
                         </li>
                         <li>
                             <a href="#IExternalToolProperties" title="apps/server/src/modules/tool/external-tool/entity/external-tool.entity.ts" ><b>IExternalToolProperties</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool.entity.ts)</a>
@@ -1369,58 +1369,6 @@
             </tr>
         </tbody>
     </table>
-</section>    <h3>apps/server/src/shared/domain/interface/account.ts</h3>
-    <section data-compodoc="block-typealias">
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="IAccount"></a>
-                    <span class="name "><b>IAccount</b><a href="#IAccount"><span class="icon ion-ios-link"></span></a></span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <code>    <code>literal type</code>
-</code>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="IAccountUpdate"></a>
-                    <span class="name "><b>IAccountUpdate</b><a href="#IAccountUpdate"><span class="icon ion-ios-link"></span></a></span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <code>        <code><a href="../classes/Account.html" target="_self" >Omit&lt;IAccount | id&gt;</a></code>
-</code>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</section>    <h3>apps/server/src/shared/domain/entity/account.entity.ts</h3>
-    <section data-compodoc="block-typealias">
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="IAccountProperties"></a>
-                    <span class="name "><b>IAccountProperties</b><a href="#IAccountProperties"><span class="icon ion-ios-link"></span></a></span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <code>        <code><a href="../entitys/Account.html" target="_self" >Readonly&lt;Omit&lt;Account, BaseEntityWithTimestamps&gt;&gt;</a></code>
-</code>
-                </td>
-            </tr>
-        </tbody>
-    </table>
 </section>    <h3>apps/server/src/shared/testing/factory/domainobject/board/column-board.do.factory.ts</h3>
     <section data-compodoc="block-typealias">
     <table class="table table-sm table-bordered">
@@ -1638,6 +1586,58 @@
             <tr>
                 <td class="col-md-4">
                     <code>    <code></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/interface/account.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IdmAccount"></a>
+                    <span class="name "><b>IdmAccount</b><a href="#IdmAccount"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IdmAccountUpdate"></a>
+                    <span class="name "><b>IdmAccountUpdate</b><a href="#IdmAccountUpdate"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../classes/Account.html" target="_self" >Omit&lt;IdmAccount | id&gt;</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/entity/account.entity.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IdmAccountProperties"></a>
+                    <span class="name "><b>IdmAccountProperties</b><a href="#IdmAccountProperties"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../entitys/Account.html" target="_self" >Readonly&lt;Omit&lt;Account, BaseEntityWithTimestamps&gt;&gt;</a></code>
 </code>
                 </td>
             </tr>

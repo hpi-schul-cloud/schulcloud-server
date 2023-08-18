@@ -378,7 +378,7 @@ export class AccountLookupService {
 		}
 		if (this.configService.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED&#x27;) &#x3D;&#x3D;&#x3D; true) {
 			const account &#x3D; await this.idmService.findAccountById(id);
-			return new ObjectId(account.attRefTechnicalId);
+			return new ObjectId(account.attDbcAccountId);
 		}
 		return null;
 	}
@@ -394,7 +394,7 @@ export class AccountLookupService {
 			return id;
 		}
 		if (this.configService.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED&#x27;) &#x3D;&#x3D;&#x3D; true) {
-			const account &#x3D; await this.idmService.findAccountByTecRefId(id.toString());
+			const account &#x3D; await this.idmService.findAccountByDbcAccountId(id.toString());
 			return account.id;
 		}
 		return null;

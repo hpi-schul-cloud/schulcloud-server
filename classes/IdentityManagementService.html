@@ -99,15 +99,15 @@
                             </li>
                             <li>
                                     <span class="modifier">Abstract</span>
-                                <a href="#findAccountByFctIntId" >findAccountByFctIntId</a>
+                                <a href="#findAccountByDbcAccountId" >findAccountByDbcAccountId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Abstract</span>
+                                <a href="#findAccountByDbcUserId" >findAccountByDbcUserId</a>
                             </li>
                             <li>
                                     <span class="modifier">Abstract</span>
                                 <a href="#findAccountById" >findAccountById</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Abstract</span>
-                                <a href="#findAccountByTecRefId" >findAccountByTecRefId</a>
                             </li>
                             <li>
                                     <span class="modifier">Abstract</span>
@@ -167,7 +167,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createAccount(account: <a href="../undefineds/IAccountUpdate.html" target="_self">IAccountUpdate</a>, password?: string | undefined)</code>
+                    <code>createAccount(account: <a href="../undefineds/IdmAccountUpdate.html" target="_self">IdmAccountUpdate</a>, password?: string | undefined)</code>
                 </td>
             </tr>
 
@@ -201,7 +201,7 @@
                                 <tr>
                                     <td>account</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#IAccountUpdate" target="_self" >IAccountUpdate</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#IdmAccountUpdate" target="_self" >IdmAccountUpdate</a></code>
                                     </td>
 
                                     <td>
@@ -330,18 +330,97 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="findAccountByFctIntId"></a>
+                    <a name="findAccountByDbcAccountId"></a>
                     <span class="name">
                         <span class="modifier">Abstract</span>
-                        <span ><b>findAccountByFctIntId</b></span>
-                        <a href="#findAccountByFctIntId"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>findAccountByDbcAccountId</b></span>
+                        <a href="#findAccountByDbcAccountId"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findAccountByFctIntId(accountFctIntId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>findAccountByDbcAccountId(accountDbcAccountId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="51"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/identity-management.service.ts:51</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Load a specific account by its dbc account id.</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>accountDbcAccountId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>the account to be loaded.</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;IdmAccount&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>the account if exists</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findAccountByDbcUserId"></a>
+                    <span class="name">
+                        <span class="modifier">Abstract</span>
+                        <span ><b>findAccountByDbcUserId</b></span>
+                        <a href="#findAccountByDbcUserId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findAccountByDbcUserId(accountDbcUserId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -356,7 +435,7 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-description"><p>Load a specific account by its functional internal reference id.</p>
+                    <div class="io-description"><p>Load a specific account by its dbc user id.</p>
 </div>
 
                     <div class="io-description">
@@ -368,11 +447,12 @@
                                     <td>Name</td>
                                     <td>Type</td>
                                     <td>Optional</td>
+                                    <td>Description</td>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>accountFctIntId</td>
+                                    <td>accountDbcUserId</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                     </td>
@@ -382,6 +462,10 @@
                                     </td>
 
 
+                                    <td>
+                                        <p>the account to be loaded.</p>
+
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -389,7 +473,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;IAccount&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;IdmAccount&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -468,86 +552,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;IAccount&gt;</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        <p>the account if exists</p>
-
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="findAccountByTecRefId"></a>
-                    <span class="name">
-                        <span class="modifier">Abstract</span>
-                        <span ><b>findAccountByTecRefId</b></span>
-                        <a href="#findAccountByTecRefId"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findAccountByTecRefId(accountTecRefId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="51"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/identity-management.service.ts:51</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-description"><p>Load a specific account by its technical reference id.</p>
-</div>
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                    <td>Description</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>accountTecRefId</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                    <td>
-                                        <p>the account to be loaded.</p>
-
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;IAccount&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;IdmAccount&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -642,7 +647,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;Counted&lt;IAccount[]&gt;&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;Counted&lt;IdmAccount[]&gt;&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -689,7 +694,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;IAccount[]&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;IdmAccount[]&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -936,7 +941,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateAccount(accountId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, account: <a href="../undefineds/IAccountUpdate.html" target="_self">IAccountUpdate</a>)</code>
+                    <code>updateAccount(accountId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, account: <a href="../undefineds/IdmAccountUpdate.html" target="_self">IdmAccountUpdate</a>)</code>
                 </td>
             </tr>
 
@@ -986,7 +991,7 @@
                                 <tr>
                                     <td>account</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#IAccountUpdate" target="_self" >IAccountUpdate</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#IdmAccountUpdate" target="_self" >IdmAccountUpdate</a></code>
                                     </td>
 
                                     <td>
@@ -1121,7 +1126,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Counted, IAccount, IAccountUpdate } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Counted, IdmAccount, IdmAccountUpdate } from &#x27;@shared/domain&#x27;;
 
 export type SearchOptions &#x3D; {
 	exact?: boolean;
@@ -1137,7 +1142,7 @@ export abstract class IdentityManagementService {
 	 * @param [password] the account&#x27;s password (optional)
 	 * @returns the account id if created successfully
 	 */
-	abstract createAccount(account: IAccountUpdate, password?: string | undefined): Promise&lt;string&gt;;
+	abstract createAccount(account: IdmAccountUpdate, password?: string | undefined): Promise&lt;string&gt;;
 
 	/**
 	 * Update an existing account&#x27;s details.
@@ -1146,7 +1151,7 @@ export abstract class IdentityManagementService {
 	 * @param account the account data to be applied.
 	 * @returns the account id if updated successfully
 	 */
-	abstract updateAccount(accountId: string, account: IAccountUpdate): Promise&lt;string&gt;;
+	abstract updateAccount(accountId: string, account: IdmAccountUpdate): Promise&lt;string&gt;;
 
 	/**
 	 * Update an existing account&#x27;s password.
@@ -1163,23 +1168,23 @@ export abstract class IdentityManagementService {
 	 * @param accountId the account to be loaded.
 	 * @returns the account if exists
 	 */
-	abstract findAccountById(accountId: string): Promise&lt;IAccount&gt;;
+	abstract findAccountById(accountId: string): Promise&lt;IdmAccount&gt;;
 
 	/**
-	 * Load a specific account by its technical reference id.
+	 * Load a specific account by its dbc account id.
 	 *
-	 * @param accountTecRefId the account to be loaded.
+	 * @param accountDbcAccountId the account to be loaded.
 	 * @returns the account if exists
 	 */
-	abstract findAccountByTecRefId(accountTecRefId: string): Promise&lt;IAccount&gt;;
+	abstract findAccountByDbcAccountId(accountDbcAccountId: string): Promise&lt;IdmAccount&gt;;
 
 	/**
-	 * Load a specific account by its functional internal reference id.
+	 * Load a specific account by its dbc user id.
 	 *
-	 * @param accountTecRefId the account to be loaded.
+	 * @param accountDbcUserId the account to be loaded.
 	 * @returns the account if exists
 	 */
-	abstract findAccountByFctIntId(accountFctIntId: string): Promise&lt;IAccount&gt;;
+	abstract findAccountByDbcUserId(accountDbcUserId: string): Promise&lt;IdmAccount&gt;;
 
 	/**
 	 * Loads the account with the specific username.
@@ -1187,14 +1192,14 @@ export abstract class IdentityManagementService {
 	 * @param options the search options to be applied.
 	 * @returns the found accounts (might be empty).
 	 */
-	abstract findAccountsByUsername(username: string, options?: SearchOptions): Promise&lt;Counted&lt;IAccount[]&gt;&gt;;
+	abstract findAccountsByUsername(username: string, options?: SearchOptions): Promise&lt;Counted&lt;IdmAccount[]&gt;&gt;;
 
 	/**
 	 * Load all accounts.
 	 *
 	 * @returns an array of all accounts (might be empty)
 	 */
-	abstract getAllAccounts(): Promise&lt;IAccount[]&gt;;
+	abstract getAllAccounts(): Promise&lt;IdmAccount[]&gt;;
 
 	/**
 	 * Deletes an account from the identity management.

@@ -1387,15 +1387,15 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Account, EntityId, IAccountProperties, User } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Account, EntityId, IdmAccountProperties, User } from &#x27;@shared/domain&#x27;;
 
 import { ObjectId } from &#x27;bson&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
 import { BaseFactory } from &#x27;./base.factory&#x27;;
 
-class AccountFactory extends BaseFactory&lt;Account, IAccountProperties&gt; {
+class AccountFactory extends BaseFactory&lt;Account, IdmAccountProperties&gt; {
 	withSystemId(id: EntityId | ObjectId): this {
-		const params: DeepPartial&lt;IAccountProperties&gt; &#x3D; { systemId: id };
+		const params: DeepPartial&lt;IdmAccountProperties&gt; &#x3D; { systemId: id };
 
 		return this.params(params);
 	}
@@ -1405,7 +1405,7 @@ class AccountFactory extends BaseFactory&lt;Account, IAccountProperties&gt; {
 			throw new Error(&#x27;User does not have an id.&#x27;);
 		}
 
-		const params: DeepPartial&lt;IAccountProperties&gt; &#x3D; { userId: user.id };
+		const params: DeepPartial&lt;IdmAccountProperties&gt; &#x3D; { userId: user.id };
 
 		return this.params(params);
 	}

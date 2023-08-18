@@ -485,7 +485,7 @@
 import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
 
-export type IAccountProperties &#x3D; Readonly&lt;Omit&lt;Account, keyof BaseEntityWithTimestamps&gt;&gt;;
+export type IdmAccountProperties &#x3D; Readonly&lt;Omit&lt;Account, keyof BaseEntityWithTimestamps&gt;&gt;;
 
 @Entity({ tableName: &#x27;accounts&#x27; })
 @Index({ properties: [&#x27;userId&#x27;, &#x27;systemId&#x27;] })
@@ -518,7 +518,7 @@ export class Account extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	activated?: boolean;
 
-	constructor(props: IAccountProperties) {
+	constructor(props: IdmAccountProperties) {
 		super();
 		this.username &#x3D; props.username;
 		this.password &#x3D; props.password;

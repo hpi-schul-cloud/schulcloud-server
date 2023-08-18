@@ -295,7 +295,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createAccount(idmAccount: <a href="../undefineds/IAccountUpdate.html" target="_self">IAccountUpdate</a>, password?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>createAccount(idmAccount: <a href="../undefineds/IdmAccountUpdate.html" target="_self">IdmAccountUpdate</a>, password?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -326,7 +326,7 @@
                                 <tr>
                                     <td>idmAccount</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#IAccountUpdate" target="_self" >IAccountUpdate</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#IdmAccountUpdate" target="_self" >IdmAccountUpdate</a></code>
                                     </td>
 
                                     <td>
@@ -1346,7 +1346,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateAccount(idmAccountId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, idmAccount: <a href="../undefineds/IAccountUpdate.html" target="_self">IAccountUpdate</a>, password?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>updateAccount(idmAccountId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, idmAccount: <a href="../undefineds/IdmAccountUpdate.html" target="_self">IdmAccountUpdate</a>, password?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -1389,7 +1389,7 @@
                                 <tr>
                                     <td>idmAccount</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#IAccountUpdate" target="_self" >IAccountUpdate</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#IdmAccountUpdate" target="_self" >IdmAccountUpdate</a></code>
                                     </td>
 
                                     <td>
@@ -1791,7 +1791,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable, NotImplementedException } from &#x27;@nestjs/common&#x27;;
 import { EntityNotFoundError } from &#x27;@shared/common&#x27;;
-import { Counted, EntityId, IAccount, IAccountUpdate } from &#x27;@shared/domain&#x27;;
+import { Counted, EntityId, IdmAccount, IdmAccountUpdate } from &#x27;@shared/domain&#x27;;
 import { IdentityManagementService, IdentityManagementOauthService } from &#x27;@shared/infra/identity-management&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { AccountIdmToDtoMapper } from &#x27;../mapper&#x27;;
@@ -1818,11 +1818,11 @@ export class AccountServiceIdm extends AbstractAccountService {
 	}
 
 	async findMultipleByUserId(userIds: EntityId[]): Promise&lt;AccountDto[]&gt; {
-		const results &#x3D; new Array&lt;IAccount&gt;();
+		const results &#x3D; new Array&lt;IdmAccount&gt;();
 		for (const userId of userIds) {
 			try {
 				// eslint-disable-next-line no-await-in-loop
-				results.push(await this.identityManager.findAccountByFctIntId(userId));
+				results.push(await this.identityManager.findAccountByDbcUserId(userId));
 			} catch {
 				// ignore entry
 			}
@@ -1833,7 +1833,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 
 	async findByUserId(userId: EntityId): Promise&lt;AccountDto | null&gt; {
 		try {
-			const result &#x3D; await this.identityManager.findAccountByFctIntId(userId);
+			const result &#x3D; await this.identityManager.findAccountByDbcUserId(userId);
 			return this.accountIdmToDtoMapper.mapToDto(result);
 		} catch {
 			return null;
@@ -1842,7 +1842,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 
 	async findByUserIdOrFail(userId: EntityId): Promise&lt;AccountDto&gt; {
 		try {
-			const result &#x3D; await this.identityManager.findAccountByFctIntId(userId);
+			const result &#x3D; await this.identityManager.findAccountByDbcUserId(userId);
 			return this.accountIdmToDtoMapper.mapToDto(result);
 		} catch {
 			throw new EntityNotFoundError(&#x60;Account with userId ${userId} not found&#x60;);
@@ -1877,11 +1877,11 @@ export class AccountServiceIdm extends AbstractAccountService {
 
 	async save(accountDto: AccountSaveDto): Promise&lt;AccountDto&gt; {
 		let accountId: string;
-		const idmAccount: IAccountUpdate &#x3D; {
+		const idmAccount: IdmAccountUpdate &#x3D; {
 			username: accountDto.username,
-			attRefTechnicalId: accountDto.idmReferenceId,
-			attRefFunctionalIntId: accountDto.userId,
-			attRefFunctionalExtId: accountDto.systemId,
+			attDbcAccountId: accountDto.idmReferenceId,
+			attDbcUserId: accountDto.userId,
+			attDbcSystemId: accountDto.systemId,
 		};
 		if (accountDto.id) {
 			let idmId: string | undefined;
@@ -1904,7 +1904,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
-	private async updateAccount(idmAccountId: string, idmAccount: IAccountUpdate, password?: string): Promise&lt;string&gt; {
+	private async updateAccount(idmAccountId: string, idmAccount: IdmAccountUpdate, password?: string): Promise&lt;string&gt; {
 		const updatedAccountId &#x3D; await this.identityManager.updateAccount(idmAccountId, idmAccount);
 		if (password) {
 			await this.identityManager.updateAccountPassword(idmAccountId, password);
@@ -1912,7 +1912,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		return updatedAccountId;
 	}
 
-	private async createAccount(idmAccount: IAccountUpdate, password?: string): Promise&lt;string&gt; {
+	private async createAccount(idmAccount: IdmAccountUpdate, password?: string): Promise&lt;string&gt; {
 		const accountId &#x3D; await this.identityManager.createAccount(idmAccount, password);
 		return accountId;
 	}
@@ -1942,7 +1942,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 	}
 
 	async deleteByUserId(userId: EntityId): Promise&lt;void&gt; {
-		const idmAccount &#x3D; await this.identityManager.findAccountByFctIntId(userId);
+		const idmAccount &#x3D; await this.identityManager.findAccountByDbcUserId(userId);
 		await this.identityManager.deleteAccountById(idmAccount.id);
 	}
 
