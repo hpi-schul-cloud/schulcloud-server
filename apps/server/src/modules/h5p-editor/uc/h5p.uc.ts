@@ -21,6 +21,7 @@ import { ICurrentUser } from '@src/modules/authentication';
 import { Request } from 'express';
 import { Readable } from 'stream';
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams } from '../controller/dto';
+import { LibraryStorage } from '../service';
 
 @Injectable()
 export class H5PEditorUc {
@@ -28,6 +29,7 @@ export class H5PEditorUc {
 		private h5pEditor: H5PEditor,
 		private h5pPlayer: H5PPlayer,
 		private h5pAjaxEndpoint: H5PAjaxEndpoint,
+		private libraryService: LibraryStorage,
 		private readonly userService: UserService
 	) {}
 
@@ -173,12 +175,12 @@ export class H5PEditorUc {
 
 	public async getLibraryFile(ubername: string, file: string) {
 		try {
-			const { mimetype, stats, stream } = await this.h5pAjaxEndpoint.getLibraryFile(ubername, file);
+			const { mimetype, size, stream } = await this.libraryService.getLibraryFile(ubername, file);
 
 			return {
 				data: stream,
 				contentType: mimetype,
-				contentLength: stats.size,
+				contentLength: size,
 			};
 		} catch (err) {
 			throw new NotFoundException();
@@ -311,7 +313,7 @@ export class H5PEditorUc {
 	private changeUserType(currentUser: ICurrentUser): IUser {
 		// TODO: declare IUser (e.g. add roles, schoolId, etc.)
 		const user: IUser = {
-			canCreateRestricted: true,
+			canCreateRestricted: false,
 			canInstallRecommended: true,
 			canUpdateAndInstallLibraries: true,
 			email: '',

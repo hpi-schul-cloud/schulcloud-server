@@ -202,13 +202,15 @@ describe('H5P Files', () => {
 	});
 
 	describe('when getting library file', () => {
-		const setup = (ubername: string, filename: string, content: string) => {
-			const fileDate = new Date();
-
+		const setup = (ubername: string, filename: string, mimetype: string, content: string) => {
 			const readableContent = Readable.from(content);
 			const contentLength = content.length;
-			libraryStorage.getFileStats.mockResolvedValueOnce({ birthtime: fileDate, size: contentLength });
-			libraryStorage.getFileStream.mockResolvedValueOnce(readableContent);
+
+			libraryStorage.getLibraryFile.mockResolvedValueOnce({
+				size: contentLength,
+				mimetype,
+				stream: readableContent,
+			});
 
 			return { ubername, filename, contentLength, readableContent };
 		};
@@ -217,6 +219,7 @@ describe('H5P Files', () => {
 			const { ubername, filename, contentLength, readableContent } = setup(
 				'H5P.Example-1.0',
 				'dummy-file.jpg',
+				'image/jpeg',
 				'File Content'
 			);
 
@@ -228,14 +231,7 @@ describe('H5P Files', () => {
 				contentLength,
 			});
 
-			expect(libraryStorage.getFileStats).toHaveBeenCalledWith(
-				{ machineName: 'H5P.Example', majorVersion: 1, minorVersion: 0 },
-				'dummy-file.jpg'
-			);
-			expect(libraryStorage.getFileStream).toHaveBeenCalledWith(
-				{ machineName: 'H5P.Example', majorVersion: 1, minorVersion: 0 },
-				'dummy-file.jpg'
-			);
+			expect(libraryStorage.getLibraryFile).toHaveBeenCalledWith('H5P.Example-1.0', 'dummy-file.jpg');
 		});
 	});
 
