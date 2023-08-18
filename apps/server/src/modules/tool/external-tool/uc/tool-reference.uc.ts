@@ -1,16 +1,17 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
-import { Action } from '@src/modules/authorization';
+import { AuthorizationContext, AuthorizationContextBuilder } from '@src/modules/authorization';
+import { ExternalTool, ToolReference } from '../domain';
 import { ToolConfigurationStatus, ToolContextType } from '../../common/enum';
 import { CommonToolService } from '../../common/service';
 import { ContextExternalTool, ContextRef } from '../../context-external-tool/domain';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
-import { ExternalTool, ToolReference } from '../domain';
 import { ToolReferenceMapper } from '../mapper/tool-reference.mapper';
 import { ExternalToolService } from '../service';
+import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 
 @Injectable()
 export class ToolReferenceUc {
@@ -18,6 +19,7 @@ export class ToolReferenceUc {
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
+		private readonly toolPermissionHelper: ToolPermissionHelper,
 		private readonly commonToolService: CommonToolService
 	) {}
 
@@ -91,13 +93,12 @@ export class ToolReferenceUc {
 	}
 
 	private async ensureToolPermissions(userId: EntityId, contextExternalTool: ContextExternalTool): Promise<void> {
-		const promise: Promise<void> = this.contextExternalToolService.ensureContextPermissions(
+		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);
+
+		const promise: Promise<void> = this.toolPermissionHelper.ensureContextPermissions(
 			userId,
 			contextExternalTool,
-			{
-				requiredPermissions: [Permission.CONTEXT_TOOL_USER],
-				action: Action.read,
-			}
+			context
 		);
 
 		return promise;
