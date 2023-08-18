@@ -8,6 +8,7 @@ import { Readable } from 'node:stream';
 import { FileDto } from '../dto';
 import { S3Config } from '../interface/config';
 import { S3ClientAdapter } from './s3-client.adapter';
+import { ErrorUtils } from '@src/core/error/utils';
 
 const createParameter = () => {
 	const bucket = 'test-bucket';
@@ -444,7 +445,10 @@ describe('S3ClientAdapter', () => {
 				// @ts-ignore
 				client.send.mockRejectedValueOnce(error);
 
-				const expectedError = new InternalServerErrorException(error, 'S3ClientAdapter:deleteDirectory');
+				const expectedError = new InternalServerErrorException(
+					'S3ClientAdapter:deleteDirectory',
+					ErrorUtils.convertUnknownError(error)
+				);
 
 				return { pathToFile, filePath, expectedError };
 			};
@@ -468,7 +472,10 @@ describe('S3ClientAdapter', () => {
 				// @ts-ignore
 				client.send.mockRejectedValueOnce(error);
 
-				const expectedError = new InternalServerErrorException(error, 'S3ClientAdapter:deleteDirectory');
+				const expectedError = new InternalServerErrorException(
+					'S3ClientAdapter:deleteDirectory',
+					ErrorUtils.convertUnknownError(error)
+				);
 
 				return { pathToFile, filePath, expectedError };
 			};

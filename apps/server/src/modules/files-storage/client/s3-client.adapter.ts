@@ -212,7 +212,7 @@ export class S3ClientAdapter implements IStorageClient {
 				await this.delete(filteredPathObjects);
 			}
 		} catch (err) {
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:deleteDirectory');
+			throw new InternalServerErrorException('S3ClientAdapter:deleteDirectory', ErrorUtils.convertUnknownError(err));
 		}
 	}
 
