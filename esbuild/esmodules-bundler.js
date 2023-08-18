@@ -9,6 +9,11 @@ const options = [
 		entryPoint: ['esbuild/content/keycloak-admin-client-cjs-index.ts'],
 		outdir: 'node_modules/@keycloak/keycloak-admin-client-cjs',
 	},
+	{
+		name: 'stream-mime-type-lib',
+		entryPoint: ['esbuild/content/stream-mime-type-cjs-index.ts'],
+		outdir: 'node_modules/stream-mime-type-cjs',
+	},
 ];
 
 const globalOptions = {

@@ -10,8 +10,8 @@ export class FileDtoBuilder {
 		return file;
 	}
 
-	public static buildFromRequest(fileInfo: FileInfo, data: Readable): FileDto {
-		const file = FileDtoBuilder.build(fileInfo.filename, data, fileInfo.mimeType);
+	public static buildFromRequest(fileInfo: FileInfo, data: Readable, mimeType: string): FileDto {
+		const file = FileDtoBuilder.build(fileInfo.filename, data, mimeType);
 
 		return file;
 	}
