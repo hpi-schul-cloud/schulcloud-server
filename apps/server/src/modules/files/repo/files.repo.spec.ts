@@ -3,12 +3,12 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { StorageProviderEntity } from '@shared/domain';
 import { BaseFactory, storageProviderFactory } from '@shared/testing';
 
 import { FileOwnerModel, FilePermissionReferenceModel } from '../domain';
 import { FileEntity, FileEntityProps, FilePermissionEntity } from '../entity';
 import { FilesRepo } from './files.repo';
-import { StorageProviderEntity } from '@shared/domain';
 
 const userFileFactory = BaseFactory.define<FileEntity, FileEntityProps>(FileEntity, ({ sequence }) => {
 	const userId = new ObjectId().toHexString();
