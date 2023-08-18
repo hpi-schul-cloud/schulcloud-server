@@ -57,7 +57,7 @@ export class ExternalToolLogoService {
 		}
 	}
 
-	async fetchBase64Logo(logoUrl: string): Promise<string> {
+	private async fetchBase64Logo(logoUrl: string): Promise<string> {
 		const response: AxiosResponse<ArrayBuffer> = await lastValueFrom(
 			this.httpService.get(logoUrl, { responseType: 'arraybuffer' })
 		);

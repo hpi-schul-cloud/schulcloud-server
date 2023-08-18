@@ -169,105 +169,31 @@ describe('ExternalToolLogoService', () => {
 		});
 	});
 
-	describe('fetchBase64Logo', () => {
-		describe('when logoUrl is given', () => {
-			const setup = () => {
-				const logoUrl = 'https://example.com/logo.png';
-				const logoBuffer: Buffer = Buffer.from('logo content', 'utf-8');
-				const logoBase64: string = logoBuffer.toString('base64');
-
-				httpService.get.mockReturnValue(
-					of({
-						data: logoBuffer,
-						status: HttpStatus.OK,
-						statusText: 'OK',
-						headers: {},
-						config: {},
-					} as AxiosResponse<ArrayBuffer>)
-				);
-
-				return {
-					logoUrl,
-					logoBase64,
-				};
-			};
-
-			it('should fetch logo', async () => {
-				const { logoUrl } = setup();
-
-				await service.fetchBase64Logo(logoUrl);
-
-				expect(httpService.get).toHaveBeenCalledWith(logoUrl, { responseType: 'arraybuffer' });
-			});
-
-			it('should log the fetched url', async () => {
-				const { logoUrl } = setup();
-
-				await service.fetchBase64Logo(logoUrl);
-
-				expect(logger.info).toHaveBeenCalledWith(new ExternalToolLogoFetchedLoggable(logoUrl));
-			});
-
-			it('should convert to base64', async () => {
-				const { logoUrl, logoBase64 } = setup();
-
-				const result: string | null = await service.fetchBase64Logo(logoUrl);
-
-				expect(result).toBe(logoBase64);
-			});
-		});
-
-		describe('when error occurs on fetching logo', () => {
-			const setup = () => {
-				const logoUrl = 'https://example.com/logo.png';
-
-				httpService.get.mockReturnValue(
-					throwError(() => new HttpException('Failed to fetch logo', HttpStatus.NOT_FOUND))
-				);
-
-				return {
-					logoUrl,
-				};
-			};
-
-			it('should throw error', async () => {
-				const { logoUrl } = setup();
-
-				const func = () => service.fetchBase64Logo(logoUrl);
-
-				await expect(func()).rejects.toThrow(HttpException);
-			});
-		});
-	});
-
 	describe('fetchLogo', () => {
 		describe('when tool has no logo url', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.buildWithId({ logoUrl: undefined });
-				const fetchBase64LogoSpy = jest.spyOn(service, 'fetchBase64Logo');
 
 				return {
 					externalTool,
-					fetchBase64LogoSpy,
 				};
 			};
 
 			it('should not fetch the logo', async () => {
-				const { externalTool, fetchBase64LogoSpy } = setup();
+				const { externalTool } = setup();
 
-				await service.fetchLogo(externalTool);
+				const logo = await service.fetchLogo(externalTool);
 
-				expect(fetchBase64LogoSpy).not.toHaveBeenCalled();
+				expect(logo).toBeUndefined();
 			});
 		});
 
 		describe('when tool has a logo url', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
-				const fetchBase64LogoSpy = jest.spyOn(service, 'fetchBase64Logo');
 				const logoBuffer: Buffer = Buffer.from('logo content', 'utf-8');
-
 				const base64Logo = logoBuffer.toString('base64');
+
 				httpService.get.mockReturnValue(
 					of({
 						data: logoBuffer,
@@ -278,27 +204,59 @@ describe('ExternalToolLogoService', () => {
 					} as AxiosResponse<ArrayBuffer>)
 				);
 
+				const logoUrl = 'https://logo.com/';
+
 				return {
 					externalTool,
-					fetchBase64LogoSpy,
 					base64Logo,
+					logoUrl,
 				};
 			};
 
-			it('should call fetchBase64Logo the logo', async () => {
-				const { externalTool, fetchBase64LogoSpy } = setup();
+			it('should fetch logo', async () => {
+				const { externalTool, logoUrl } = setup();
 
 				await service.fetchLogo(externalTool);
 
-				expect(fetchBase64LogoSpy).toHaveBeenCalledWith(externalTool.logoUrl);
+				expect(httpService.get).toHaveBeenCalledWith(logoUrl, { responseType: 'arraybuffer' });
+			});
+
+			it('should log the fetched url', async () => {
+				const { externalTool, logoUrl } = setup();
+
+				await service.fetchLogo(externalTool);
+
+				expect(logger.info).toHaveBeenCalledWith(new ExternalToolLogoFetchedLoggable(logoUrl));
 			});
 
 			it('should return base64 encoded logo', async () => {
 				const { externalTool, base64Logo } = setup();
 
-				const result = await service.fetchLogo(externalTool);
+				const logo: string | undefined = await service.fetchLogo(externalTool);
 
-				expect(result).toEqual(base64Logo);
+				expect(logo).toBe(base64Logo);
+			});
+		});
+
+		describe('when error occurs on fetching logo', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+
+				httpService.get.mockReturnValue(
+					throwError(() => new HttpException('Failed to fetch logo', HttpStatus.NOT_FOUND))
+				);
+
+				return {
+					externalTool,
+				};
+			};
+
+			it('should throw error', async () => {
+				const { externalTool } = setup();
+
+				const func = () => service.fetchLogo(externalTool);
+
+				await expect(func()).rejects.toThrow(HttpException);
 			});
 		});
 	});

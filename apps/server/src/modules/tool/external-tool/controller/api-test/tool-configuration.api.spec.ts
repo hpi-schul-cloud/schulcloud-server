@@ -18,6 +18,7 @@ import {
 import { ServerTestModule } from '@src/modules/server';
 import { CustomParameterTypeParams } from '@src/modules/tool/common/enum';
 import { Response } from 'supertest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { CustomParameterLocationParams, CustomParameterScopeTypeParams } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
@@ -131,6 +132,10 @@ describe('ToolConfigurationController (API)', () => {
 					school,
 					tool: externalTool,
 				});
+
+				const baseUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
+				externalTool.logoBase64 = 'logo';
+				externalTool.logoUrl = `${baseUrl}/v3/tools/external-tools/${externalTool.id}/logo`;
 
 				await em.persistAndFlush([school, course, teacherUser, teacherAccount, externalTool, schoolExternalTool]);
 				em.clear();
@@ -264,6 +269,10 @@ describe('ToolConfigurationController (API)', () => {
 				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 					parameters: [globalParameter, schoolParameter, contextParameter],
 				});
+
+				const baseUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
+				externalTool.logoBase64 = 'logo';
+				externalTool.logoUrl = `${baseUrl}/v3/tools/external-tools/${externalTool.id}/logo`;
 
 				await em.persistAndFlush([adminUser, school, adminAccount, externalTool]);
 				em.clear();
