@@ -21,7 +21,7 @@ import {
 	SingleFileParams,
 } from '../controller/dto';
 import { FileDto } from '../dto';
-import { FileRecord } from '../entity';
+import { FileRecord, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
 import { IFileStorageConfig } from '../files-storage.config';
 import {
@@ -121,7 +121,7 @@ export class FilesStorageService {
 			this.throwErrorIfFileIsTooBig(fileRecord.size);
 			await this.fileRecordRepo.save(fileRecord);
 
-			this.antivirusService.send(fileRecord.getSecurityToken());
+			await this.sendToAntivirus(fileRecord);
 		} catch (error) {
 			await this.storageClient.delete([filePath]);
 			await this.fileRecordRepo.delete(fileRecord);
@@ -141,6 +141,15 @@ export class FilesStorageService {
 		});
 
 		return promise;
+	}
+
+	private async sendToAntivirus(fileRecord: FileRecord): Promise<void> {
+		if (fileRecord.size > 25000000) {
+			fileRecord.updateSecurityCheckStatus(ScanStatus.WONT_CHECK, 'File is too big');
+			await this.fileRecordRepo.save(fileRecord);
+		} else {
+			this.antivirusService.send(fileRecord.getSecurityToken());
+		}
 	}
 
 	private throwErrorIfFileIsTooBig(fileSize: number): void {
