@@ -12,8 +12,8 @@ describe(File.name, () => {
 			deletedAt: new Date(2023, 9, 1),
 			deleted: true,
 
-			// This value should be false of course (as it's just some plain text file),
-			// but to verify returning proper value from the getter it's set to true.
+			// This value should be 'false' as it's just some plain text file, it's
+			// set to 'true' just to verify returning proper value from the getter.
 			isDirectory: true,
 
 			name: 'test-file-1.txt',
