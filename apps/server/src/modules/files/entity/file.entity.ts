@@ -1,99 +1,13 @@
-import { Embeddable, Embedded, Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
+import { Embedded, Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { v4 as uuid } from 'uuid';
 
 import { EntityId, StorageProviderEntity } from '@shared/domain';
-import { FileOwnerModel, FilePermissionReferenceModel, FileSecurityCheckStatus } from '@src/modules/files/domain';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 
-export interface FileSecurityCheckEntityProps {
-	status?: FileSecurityCheckStatus;
-	reason?: string;
-	requestToken?: string;
-}
-
-@Embeddable()
-export class FileSecurityCheckEntity {
-	@Enum()
-	status: FileSecurityCheckStatus = FileSecurityCheckStatus.PENDING;
-
-	@Property()
-	reason = 'not yet scanned';
-
-	@Property()
-	requestToken?: string = uuid();
-
-	@Property()
-	createdAt = new Date();
-
-	@Property()
-	updatedAt = new Date();
-
-	constructor(props: FileSecurityCheckEntityProps) {
-		if (props.status !== undefined) {
-			this.status = props.status;
-		}
-
-		if (props.reason !== undefined) {
-			this.reason = props.reason;
-		}
-
-		if (props.requestToken !== undefined) {
-			this.requestToken = props.requestToken;
-		}
-	}
-}
-
-export interface FilePermissionEntityProps {
-	refId: EntityId;
-	refPermModel: FilePermissionReferenceModel;
-	write?: boolean;
-	read?: boolean;
-	create?: boolean;
-	delete?: boolean;
-}
-
-@Embeddable()
-export class FilePermissionEntity {
-	@Property({ nullable: false })
-	refId: ObjectId;
-
-	@Enum({ nullable: false })
-	refPermModel: FilePermissionReferenceModel;
-
-	@Property()
-	write = true;
-
-	@Property()
-	read = true;
-
-	@Property()
-	create = true;
-
-	@Property()
-	delete = true;
-
-	constructor(props: FilePermissionEntityProps) {
-		this.refId = new ObjectId(props.refId);
-		this.refPermModel = props.refPermModel;
-
-		if (props.write !== undefined) {
-			this.write = props.write;
-		}
-
-		if (props.read !== undefined) {
-			this.read = props.read;
-		}
-
-		if (props.create !== undefined) {
-			this.create = props.create;
-		}
-
-		if (props.delete !== undefined) {
-			this.delete = props.delete;
-		}
-	}
-}
+import { FileOwnerModel } from '../domain';
+import { FileSecurityCheckEntity } from './file-security-check.entity';
+import { FilePermissionEntity } from './file-permission.entity';
 
 export interface FileEntityProps {
 	createdAt?: Date;
