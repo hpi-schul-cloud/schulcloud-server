@@ -1,9 +1,10 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import { EntityDictionary } from '@mikro-orm/core';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 
 import { EntityId } from '@shared/domain';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { EntityDictionary } from '@mikro-orm/core';
+
 import { FileOwnerModel } from '../domain';
 import { FileEntity } from '../entity';
 
