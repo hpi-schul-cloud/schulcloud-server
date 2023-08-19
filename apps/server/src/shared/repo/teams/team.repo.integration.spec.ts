@@ -1,7 +1,7 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, Team } from '@shared/domain';
+import { EntityId, TeamEntity, TeamUserEntity } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { TeamsRepo } from '@shared/repo';
 import { cleanupCollections, roleFactory } from '@shared/testing';
@@ -37,7 +37,7 @@ describe('team repo', () => {
 	});
 
 	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(Team);
+		expect(repo.entityName).toBe(TeamEntity);
 	});
 
 	describe('findById', () => {
@@ -64,7 +64,7 @@ describe('team repo', () => {
 			const role = roleFactory.build({ roles: roles2 });
 			await em.persistAndFlush(role);
 
-			const team: Team = teamFactory.withRoleAndUserId(role, userId).buildWithId();
+			const team: TeamEntity = teamFactory.withRoleAndUserId(role, userId).buildWithId();
 			await em.persistAndFlush(team);
 			em.clear();
 
@@ -118,8 +118,8 @@ describe('team repo', () => {
 		it('should return teams which contains a specific userId', async () => {
 			// Arrange
 			const teamUser = teamUserFactory.buildWithId();
-			const team1 = teamFactory.withTeamUser(teamUser).build();
-			const team2 = teamFactory.withTeamUser(teamUser).build();
+			const team1 = teamFactory.withTeamUser([teamUser]).build();
+			const team2 = teamFactory.withTeamUser([teamUser]).build();
 			const team3 = teamFactory.buildWithId();
 			await em.persistAndFlush([team1, team2, team3]);
 			em.clear();
@@ -129,11 +129,45 @@ describe('team repo', () => {
 
 			// Assert
 			expect(result.length).toEqual([team1, team2].length);
-			result.forEach((team: Team) => {
+			result.forEach((team: TeamEntity) => {
 				expect(team.teamUsers.flatMap((user) => user.userId.id).includes(teamUser.userId.id)).toBeTruthy();
 			});
-			expect(result.some((team: Team) => team.id === team3.id)).toBeFalsy();
+			expect(result.some((team: TeamEntity) => team.id === team3.id)).toBeFalsy();
 			expect(Object.keys(result[0]).sort()).toEqual(['name', 'userIds', 'updatedAt', '_id', 'createdAt'].sort());
+		});
+	});
+
+	describe('updateTeams', () => {
+		it('should update teams without deleted user', async () => {
+			// Arrange
+			const teamUser1: TeamUserEntity = teamUserFactory.buildWithId();
+			const teamUser2: TeamUserEntity = teamUserFactory.buildWithId();
+			const teamUser3: TeamUserEntity = teamUserFactory.buildWithId();
+			const team1 = teamFactory.withTeamUser([teamUser1, teamUser2]).buildWithId();
+			const team2 = teamFactory.withTeamUser([teamUser1, teamUser2, teamUser3]).buildWithId();
+			const team3 = teamFactory.withTeamUser([teamUser1]).buildWithId();
+			const team4 = teamFactory.withTeamUser([teamUser3]).buildWithId();
+
+			await em.persistAndFlush([team1, team2, team3, team4]);
+			em.clear();
+
+			// Arrange Team Array after teamUser1 deletion
+			team1.teamUsers = [teamUser2];
+			team2.teamUsers = [teamUser2, teamUser3];
+			team3.userIds = [];
+			const updatedArray: TeamEntity[] = [team1, team2, team3];
+
+			// Act
+			await repo.save(updatedArray);
+
+			const result1 = await repo.findByUserId(teamUser1.user.id);
+			expect(result1).toHaveLength(0);
+
+			const result2 = await repo.findByUserId(teamUser2.user.id);
+			expect(result2).toHaveLength(2);
+
+			const result3 = await repo.findByUserId(teamUser3.user.id);
+			expect(result3).toHaveLength(2);
 		});
 	});
 });
