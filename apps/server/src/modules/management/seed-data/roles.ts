@@ -210,8 +210,6 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 			Permission.USERGROUP_EDIT,
 			Permission.USER_CREATE,
 			Permission.TASK_DASHBOARD_TEACHER_VIEW_V3,
-			Permission.TASK_CARD_VIEW,
-			Permission.TASK_CARD_EDIT,
 			Permission.TEAM_CREATE,
 			Permission.TEAM_EDIT,
 			Permission.START_MEETING,
@@ -229,7 +227,6 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 		permissions: [
 			Permission.TASK_DASHBOARD_VIEW_V3,
 			Permission.JOIN_MEETING,
-			Permission.TASK_CARD_VIEW,
 			Permission.TEAM_CREATE,
 			Permission.TEAM_EDIT,
 			Permission.TOOL_CREATE_ETHERPAD,

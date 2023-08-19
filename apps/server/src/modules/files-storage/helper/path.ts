@@ -13,6 +13,19 @@ export function createPath(schoolId: EntityId, fileRecordId: EntityId): string {
 	return path;
 }
 
+export function createPreviewDirectoryPath(schoolId: EntityId, sourceFileRecordId: EntityId): string {
+	const path = ['previews', schoolId, sourceFileRecordId].join('/');
+
+	return path;
+}
+
+export function createPreviewFilePath(schoolId: EntityId, hash: string, sourceFileRecordId: EntityId): string {
+	const folderPath = createPreviewDirectoryPath(schoolId, sourceFileRecordId);
+	const filePath = [folderPath, hash].join('/');
+
+	return filePath;
+}
+
 export function getPaths(fileRecords: FileRecord[]): string[] {
 	const paths = fileRecords.map((fileRecord) => createPath(fileRecord.getSchoolId(), fileRecord.id));
 
