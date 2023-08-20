@@ -13,7 +13,18 @@ export class TeamMapper {
 		});
 	}
 
+	private static mapToEntity(object: Team): TeamEntity {
+		return new TeamEntity({
+			name: object.name,
+			teamUsers: TeamUserMapper.mapToEntities(object.userIds),
+		});
+	}
+
 	static mapToDOs(entities: TeamEntity[]): Team[] {
 		return entities.map((entity) => this.mapToDO(entity));
+	}
+
+	static mapToEntities(objects: Team[]): TeamEntity[] {
+		return objects.map((object) => this.mapToEntity(object));
 	}
 }

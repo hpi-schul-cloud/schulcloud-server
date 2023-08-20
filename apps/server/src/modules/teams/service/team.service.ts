@@ -19,23 +19,25 @@ export class TeamService {
 		return teams;
 	}
 
-	// public async deleteUserDataFromTeams(userId: EntityId): Promise<number> {
-	// 	if (!userId) {
-	// 		throw new InternalServerErrorException('User id is missing');
-	// 	}
+	public async deleteUserDataFromTeams(userId: EntityId): Promise<number> {
+		if (!userId) {
+			throw new InternalServerErrorException('User id is missing');
+		}
 
-	// 	const teams = this.findByUserId(userId);
+		const teams = await this.findByUserId(userId);
 
-	// 	const updatedTeams: TeamEntity[] = teams.map((team: TeamEntity) => {
-	// 		return {
-	// 			...team,
-	// 			userIds: team.userIds.filter((u) => u.userId.id !== userId),
-	// 			teamUsers: team.userIds.filter((u) => u.userId.id !== userId),
-	// 		};
-	// 	});
+		const teamsEntity = TeamMapper.mapToEntities(teams);
 
-	// 	await this.teamsRepo.save(updatedTeams);
+		const updatedTeams: TeamEntity[] = teamsEntity.map((team: TeamEntity) => {
+			return {
+				...team,
+				userIds: team.userIds.filter((u) => u.userId.id !== userId),
+				teamUsers: team.userIds.filter((u) => u.userId.id !== userId),
+			};
+		});
 
-	// 	return updatedTeams.length;
-	// }
+		await this.teamsRepo.save(updatedTeams);
+
+		return updatedTeams.length;
+	}
 }

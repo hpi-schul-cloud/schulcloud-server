@@ -2,7 +2,7 @@ import { DeepPartial } from 'fishery';
 import { Team, TeamProps, TeamUser } from '@src/modules/teams/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DoBaseFactory } from './domainobject';
-import { teamUserDoFactory } from './teamUser.do.factory';
+import { teamUserDoFactory } from './teamuser.do.factory';
 
 class TeamDoFactory extends DoBaseFactory<Team, TeamProps> {
 	withTeamUser(teamUser: TeamUser[]): this {
