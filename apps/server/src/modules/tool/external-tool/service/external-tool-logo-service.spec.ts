@@ -17,6 +17,7 @@ import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalToolService } from './external-tool.service';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
 import { ExternalToolLogoFetchFailedLoggableException } from '../loggable/external-tool-logo-fetch-failed-loggable-exception';
+import { ExternalToolLogoWrongFileTypeLoggableException } from '../loggable/external-tool-logo-wrong-file-type-loggable-exception';
 
 describe('ExternalToolLogoService', () => {
 	let module: TestingModule;
@@ -328,6 +329,26 @@ describe('ExternalToolLogoService', () => {
 						logo: Buffer.from(base64logo, 'base64'),
 					})
 				);
+			});
+		});
+
+		describe('when logo has the wrong file type', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({ logo: 'notAValidBase64File' });
+
+				externalToolService.findExternalToolById.mockResolvedValue(externalTool);
+
+				return {
+					externalToolId: externalTool.id as string,
+				};
+			};
+
+			it('should throw an ExternalToolLogoWrongFileTypeLoggableException', async () => {
+				const { externalToolId } = setup();
+
+				const result: Promise<ExternalToolLogo> = service.getExternalToolBinaryLogo(externalToolId);
+
+				await expect(result).rejects.toThrow(ExternalToolLogoWrongFileTypeLoggableException);
 			});
 		});
 

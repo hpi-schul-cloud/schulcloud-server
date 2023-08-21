@@ -14,6 +14,7 @@ import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
 import { ExternalToolService } from './external-tool.service';
 import { ExternalToolLogoFetchFailedLoggableException } from '../loggable/external-tool-logo-fetch-failed-loggable-exception';
+import { ExternalToolLogoWrongFileTypeLoggableException } from '../loggable/external-tool-logo-wrong-file-type-loggable-exception';
 
 const contentTypeDetector: Record<string, string> = {
 	ffd8ffe0: 'image/jpeg',
@@ -109,7 +110,12 @@ export class ExternalToolLogoService {
 	private detectContentType(imageBuffer: Buffer): string {
 		const imageSignature: string = imageBuffer.toString('hex', 0, 4);
 
-		const contentType: string = contentTypeDetector[imageSignature] || 'application/octet-stream';
+		const contentType: string | ExternalToolLogoWrongFileTypeLoggableException =
+			contentTypeDetector[imageSignature] || new ExternalToolLogoWrongFileTypeLoggableException();
+
+		if (contentType instanceof ExternalToolLogoWrongFileTypeLoggableException) {
+			throw new ExternalToolLogoWrongFileTypeLoggableException();
+		}
 
 		return contentType;
 	}
