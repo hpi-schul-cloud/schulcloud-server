@@ -35,6 +35,20 @@ describe(FilesService.name, () => {
 		await module.close();
 	});
 
+	describe('removeUserPermissionsToAnyFiles', () => {
+		it('should not modify any files if there are none that user has permission to access', async () => {
+			const userId = new ObjectId().toHexString();
+			repo.findByPermissionRefId.mockResolvedValueOnce([]);
+
+			const result = await service.removeUserPermissionsToAnyFiles(userId);
+
+			expect(result).toEqual(0);
+
+			expect(repo.findByPermissionRefId).toBeCalledWith(userId);
+			expect(repo.save).not.toBeCalled();
+		});
+	});
+
 	describe('markFilesOwnedByUserForDeletion', () => {
 		const verifyEntityChanges = (entity: FileEntity) => {
 			expect(entity.deleted).toEqual(true);
@@ -57,7 +71,7 @@ describe(FilesService.name, () => {
 			expect(repo.save).not.toBeCalled();
 		});
 
-		describe('should properly mark files owned by the user for deletion', () => {
+		describe('should properly mark files for deletion', () => {
 			it('in case of just a single file owned by the user', async () => {
 				const entity = userFileFactory.buildWithId();
 				const userId = entity.ownerId;

@@ -8,6 +8,20 @@ import { FilesRepo } from '../repo';
 export class FilesService {
 	constructor(private readonly filesRepo: FilesRepo) {}
 
+	async removeUserPermissionsToAnyFiles(userId: EntityId): Promise<number> {
+		const entities = await this.filesRepo.findByPermissionRefId(userId);
+
+		if (entities.length === 0) {
+			return 0;
+		}
+
+		entities.forEach((entity) => entity.removePermissionsByRefId(userId));
+
+		await this.filesRepo.save(entities);
+
+		return entities.length;
+	}
+
 	async markFilesOwnedByUserForDeletion(userId: EntityId): Promise<number> {
 		const entities = await this.filesRepo.findByOwnerUserId(userId);
 
