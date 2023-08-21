@@ -83,7 +83,9 @@ export class ExternalToolLogoService {
 		} catch (error) {
 			if (error instanceof HttpException) {
 				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl, error.getStatus());
-			} else throw new ExternalToolLogoFetchFailedLoggableException(logoUrl);
+			} else {
+				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl);
+			}
 		}
 	}
 

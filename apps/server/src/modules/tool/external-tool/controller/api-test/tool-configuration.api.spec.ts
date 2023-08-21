@@ -264,13 +264,12 @@ describe('ToolConfigurationController (API)', () => {
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
 
+				const baseUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
 				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					logoBase64: 'logo',
 					parameters: [globalParameter, schoolParameter, contextParameter],
 				});
-
-				const baseUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
-				externalTool.logoBase64 = 'logo';
 				externalTool.logoUrl = `${baseUrl}/v3/tools/external-tools/${externalTool.id}/logo`;
 
 				await em.persistAndFlush([adminUser, school, adminAccount, externalTool]);
