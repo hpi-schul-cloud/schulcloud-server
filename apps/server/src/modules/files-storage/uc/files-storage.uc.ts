@@ -7,8 +7,7 @@ import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import busboy from 'busboy';
 import { Request } from 'express';
 import { firstValueFrom } from 'rxjs';
-import internal, { Readable } from 'stream';
-import StreamMimeType from 'stream-mime-type-cjs/stream-mime-type-cjs-index';
+import internal from 'stream';
 import {
 	CopyFileParams,
 	CopyFileResponse,
@@ -66,9 +65,7 @@ export class FilesStorageUC {
 
 			// eslint-disable-next-line @typescript-eslint/no-misused-promises
 			bb.on('file', async (_name, file, info) => {
-				const { stream, mime } = await StreamMimeType.getMimeType(file);
-				const readable = new Readable().wrap(stream);
-				const fileDto = FileDtoBuilder.buildFromRequest(info, readable, mime);
+				const fileDto = FileDtoBuilder.buildFromRequest(info, file);
 
 				try {
 					const record = await this.filesStorageService.uploadFile(userId, params, fileDto);
