@@ -1,13 +1,13 @@
-export type IAccount = {
+export type IdmAccount = {
 	id: string;
 	username?: string;
 	email?: string;
 	firstName?: string;
 	lastName?: string;
 	createdDate?: Date;
-	attRefTechnicalId?: string;
-	attRefFunctionalIntId?: string;
-	attRefFunctionalExtId?: string;
+	attDbcAccountId?: string;
+	attDbcUserId?: string;
+	attDbcSystemId?: string;
 };
 
-export type IAccountUpdate = Omit<IAccount, 'id'>;
+export type IdmAccountUpdate = Omit<IdmAccount, 'id'>;
