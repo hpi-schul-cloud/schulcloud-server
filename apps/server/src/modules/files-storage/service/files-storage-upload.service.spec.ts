@@ -159,7 +159,7 @@ describe('FilesStorageService upload methods', () => {
 
 				await service.uploadFile(userId, params, file);
 
-				expect(getMimeTypeSpy).toHaveBeenCalledWith(file.data);
+				expect(getMimeTypeSpy).toHaveBeenCalledWith(file.data, { strict: true });
 			});
 
 			it('should call getFileRecordsOfParent with correct params', async () => {
