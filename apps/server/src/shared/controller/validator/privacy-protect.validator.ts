@@ -8,5 +8,5 @@ import { Allow, ValidationOptions } from 'class-validator';
 export function PrivacyProtect(validationOptions?: ValidationOptions): PropertyDecorator {
 	// We can extend the @Allow decorator safely because properties that have validations are allowed anyway.
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	return Allow({ ...validationOptions, context: { ...validationOptions?.context, privacyProtect: true } });
+	return Allow({ ...validationOptions, context: { ...validationOptions?.context, privacyProtected: true } });
 }
