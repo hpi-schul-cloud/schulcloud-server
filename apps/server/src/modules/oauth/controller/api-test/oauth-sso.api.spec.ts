@@ -90,10 +90,8 @@ describe('OAuth SSO Controller (API)', () => {
 		await cleanupCollections(em);
 	});
 
-	const setupSessionState = async (systemId: EntityId, migration: boolean) => {
-		const query: SSOLoginQuery = {
-			migration,
-		};
+	const setupSessionState = async (systemId: EntityId) => {
+		const query: SSOLoginQuery = {};
 
 		const response: Response = await request(app.getHttpServer())
 			.get(`/sso/login/${systemId}`)
@@ -179,7 +177,7 @@ describe('OAuth SSO Controller (API)', () => {
 		describe('when the session and the request have a different state', () => {
 			it('should return 401 Unauthorized', async () => {
 				const { system } = await setup();
-				const { cookies } = await setupSessionState(system.id, false);
+				const { cookies } = await setupSessionState(system.id);
 				const query: AuthorizationParams = new AuthorizationParams();
 				query.code = 'code';
 				query.state = 'wrongState';
@@ -191,7 +189,7 @@ describe('OAuth SSO Controller (API)', () => {
 		describe('when code and state are valid', () => {
 			it('should set a jwt and redirect', async () => {
 				const { system, externalUserId, query } = await setup();
-				const { state, cookies } = await setupSessionState(system.id, false);
+				const { state, cookies } = await setupSessionState(system.id);
 				const baseUrl: string = Configuration.get('HOST') as string;
 				query.code = 'code';
 				query.state = state;
@@ -225,7 +223,7 @@ describe('OAuth SSO Controller (API)', () => {
 		describe('when an error occurs during the login process', () => {
 			it('should redirect to the login page', async () => {
 				const { system, query } = await setup();
-				const { state, cookies } = await setupSessionState(system.id, false);
+				const { state, cookies } = await setupSessionState(system.id);
 				const clientUrl: string = Configuration.get('HOST') as string;
 				query.error = SSOAuthenticationError.ACCESS_DENIED;
 				query.state = state;
@@ -245,7 +243,7 @@ describe('OAuth SSO Controller (API)', () => {
 		describe('when a faulty query is passed', () => {
 			it('should redirect to the login page with an error', async () => {
 				const { system, query } = await setup();
-				const { state, cookies } = await setupSessionState(system.id, false);
+				const { state, cookies } = await setupSessionState(system.id);
 				const clientUrl: string = Configuration.get('HOST') as string;
 				query.state = state;
 				query.code = undefined;
@@ -350,7 +348,7 @@ describe('OAuth SSO Controller (API)', () => {
 
 				await em.persistAndFlush([sourceSystem, targetSystem, sourceUser, sourceUserAccount, userLoginMigration]);
 
-				const { state, cookies } = await setupSessionState(targetSystem.id, true);
+				const { state, cookies } = await setupSessionState(targetSystem.id);
 				query.code = 'code';
 				query.state = state;
 
@@ -422,7 +420,7 @@ describe('OAuth SSO Controller (API)', () => {
 
 				await em.persistAndFlush([targetSystem, sourceUser, userLoginMigration]);
 
-				const { state, cookies } = await setupSessionState(targetSystem.id, true);
+				const { state, cookies } = await setupSessionState(targetSystem.id);
 				query.code = 'code';
 				query.state = state;
 
@@ -470,7 +468,7 @@ describe('OAuth SSO Controller (API)', () => {
 
 				await em.persistAndFlush([sourceSystem, targetSystem, sourceSchool, sourceUser, userLoginMigration]);
 
-				const { state, cookies } = await setupSessionState(targetSystem.id, true);
+				const { state, cookies } = await setupSessionState(targetSystem.id);
 				query.code = 'code';
 				query.state = state;
 
@@ -484,7 +482,7 @@ describe('OAuth SSO Controller (API)', () => {
 			};
 
 			it('should redirect to the general migration error page', async () => {
-				const { targetSystem, sourceUser, sourceSystem, query, cookies } = await setupMigration();
+				const { sourceUser, sourceSystem, query, cookies } = await setupMigration();
 				currentUser = mapUserToCurrentUser(sourceUser, undefined, sourceSystem.id);
 				const baseUrl: string = Configuration.get('HOST') as string;
 				query.error = SSOAuthenticationError.INVALID_REQUEST;
@@ -494,10 +492,7 @@ describe('OAuth SSO Controller (API)', () => {
 					.set('Cookie', cookies)
 					.query(query)
 					.expect(302)
-					.expect(
-						'Location',
-						`${baseUrl}/migration/error?sourceSystem=${sourceSystem.id}&targetSystem=${targetSystem.id}`
-					);
+					.expect('Location', `${baseUrl}/migration/error`);
 			});
 		});
 
@@ -540,7 +535,7 @@ describe('OAuth SSO Controller (API)', () => {
 
 				await em.persistAndFlush([sourceSystem, targetSystem, sourceUser, targetUser, userLoginMigration]);
 
-				const { state, cookies } = await setupSessionState(targetSystem.id, true);
+				const { state, cookies } = await setupSessionState(targetSystem.id);
 				query.code = 'code';
 				query.state = state;
 
@@ -575,10 +570,7 @@ describe('OAuth SSO Controller (API)', () => {
 					.set('Cookie', cookies)
 					.query(query)
 					.expect(302)
-					.expect(
-						'Location',
-						`${baseUrl}/migration/error?sourceSystem=${sourceSystem.id}&targetSystem=${targetSystem.id}&sourceSchoolNumber=11111&targetSchoolNumber=22222`
-					);
+					.expect('Location', `${baseUrl}/migration/error?sourceSchoolNumber=11111&targetSchoolNumber=22222`);
 			});
 		});
 

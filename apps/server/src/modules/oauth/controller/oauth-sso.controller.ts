@@ -63,13 +63,7 @@ export class OauthSSOController {
 		res.redirect(errorRedirect.toString());
 	}
 
-	private migrationErrorHandler(
-		error: unknown,
-		session: ISession,
-		res: Response,
-		sourceSystemId: string,
-		targetSystemId: string
-	) {
+	private migrationErrorHandler(error: unknown, session: ISession, res: Response) {
 		const migrationError: OAuthMigrationError =
 			error instanceof OAuthMigrationError ? error : new OAuthMigrationError();
 
@@ -78,9 +72,6 @@ export class OauthSSOController {
 		});
 
 		const errorRedirect: URL = new URL('/migration/error', this.clientUrl);
-
-		errorRedirect.searchParams.append('sourceSystem', sourceSystemId);
-		errorRedirect.searchParams.append('targetSystem', targetSystemId);
 
 		if (migrationError.officialSchoolNumberFromSource && migrationError.officialSchoolNumberFromTarget) {
 			errorRedirect.searchParams.append('sourceSchoolNumber', migrationError.officialSchoolNumberFromSource);
@@ -112,12 +103,7 @@ export class OauthSSOController {
 		@Query() query: SSOLoginQuery
 	): Promise<void> {
 		try {
-			const redirect: string = await this.oauthUc.startOauthLogin(
-				session,
-				params.systemId,
-				query.migration || false,
-				query.postLoginRedirect
-			);
+			const redirect: string = await this.oauthUc.startOauthLogin(session, params.systemId, query.postLoginRedirect);
 
 			res.redirect(redirect);
 		} catch (error) {
@@ -208,7 +194,7 @@ export class OauthSSOController {
 			const response: UserMigrationResponse = UserMigrationMapper.mapDtoToResponse(migration);
 			res.redirect(response.redirect);
 		} catch (error) {
-			this.migrationErrorHandler(error, session, res, currentUser.systemId, oauthLoginState.systemId);
+			this.migrationErrorHandler(error, session, res);
 		}
 	}
 }

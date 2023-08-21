@@ -160,7 +160,7 @@ describe('UserLoginMigrationService', () => {
 		});
 	});
 
-	describe('setMigration is called', () => {
+	describe('setMigration', () => {
 		describe('when first starting the migration', () => {
 			describe('when the school has no systems', () => {
 				const setup = () => {
@@ -547,7 +547,7 @@ describe('UserLoginMigrationService', () => {
 		});
 	});
 
-	describe('startMigration is called', () => {
+	describe('startMigration', () => {
 		describe('when schoolId is given', () => {
 			const setup = () => {
 				const schoolId: EntityId = new ObjectId().toHexString();
@@ -739,7 +739,7 @@ describe('UserLoginMigrationService', () => {
 		});
 	});
 
-	describe('findMigrationBySchool is called', () => {
+	describe('findMigrationBySchool', () => {
 		describe('when a UserLoginMigration exists for the school', () => {
 			const setup = () => {
 				const schoolId = new ObjectId().toHexString();
@@ -792,7 +792,7 @@ describe('UserLoginMigrationService', () => {
 		});
 	});
 
-	describe('restartMigration is called', () => {
+	describe('restartMigration', () => {
 		describe('when migration restart was successfully', () => {
 			const setup = () => {
 				const schoolId: EntityId = new ObjectId().toHexString();
@@ -882,7 +882,7 @@ describe('UserLoginMigrationService', () => {
 		});
 	});
 
-	describe('restartMigration is called', () => {
+	describe('restartMigration', () => {
 		describe('when migration restart was successfully', () => {
 			const setup = () => {
 				const schoolId: EntityId = new ObjectId().toHexString();
@@ -954,7 +954,7 @@ describe('UserLoginMigrationService', () => {
 		});
 	});
 
-	describe('setMigrationMandatory is called', () => {
+	describe('setMigrationMandatory', () => {
 		describe('when migration is set to mandatory', () => {
 			const setup = () => {
 				const schoolId: EntityId = new ObjectId().toHexString();
@@ -1109,6 +1109,52 @@ describe('UserLoginMigrationService', () => {
 				const func = () => service.closeMigration(schoolId);
 
 				await expect(func).rejects.toThrow(UserLoginMigrationNotFoundLoggableException);
+			});
+		});
+	});
+
+	describe('findMigrationBySourceSystem', () => {
+		describe('when a UserLoginMigration exists for the system', () => {
+			const setup = () => {
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					targetSystemId: 'targetSystemId',
+				});
+				userLoginMigrationRepo.findBySourceSystemId.mockResolvedValue(userLoginMigration);
+
+				return {
+					userLoginMigration,
+					targetSystemId: userLoginMigration.targetSystemId,
+				};
+			};
+
+			it('should call the user login migration repo', async () => {
+				const { targetSystemId } = setup();
+
+				await service.findMigrationBySourceSystem(targetSystemId);
+
+				expect(userLoginMigrationRepo.findBySourceSystemId).toHaveBeenCalledWith(targetSystemId);
+			});
+
+			it('should return the user login migration', async () => {
+				const { userLoginMigration, targetSystemId } = setup();
+
+				const result: UserLoginMigrationDO | null = await service.findMigrationBySourceSystem(targetSystemId);
+
+				expect(result).toEqual(userLoginMigration);
+			});
+		});
+
+		describe('when no UserLoginMigration exists for the system', () => {
+			const setup = () => {
+				userLoginMigrationRepo.findBySourceSystemId.mockResolvedValue(null);
+			};
+
+			it('should return null', async () => {
+				setup();
+
+				const result: UserLoginMigrationDO | null = await service.findMigrationBySourceSystem('systemId');
+
+				expect(result).toBeNull();
 			});
 		});
 	});

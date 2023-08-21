@@ -18,6 +18,14 @@ export class UserLoginMigrationService {
 		private readonly schoolMigrationService: SchoolMigrationService
 	) {}
 
+	/**
+	 * @deprecated Use the other functions in this class instead.
+	 *
+	 * @param schoolId
+	 * @param oauthMigrationPossible
+	 * @param oauthMigrationMandatory
+	 * @param oauthMigrationFinished
+	 */
 	async setMigration(
 		schoolId: EntityId,
 		oauthMigrationPossible?: boolean,
@@ -199,5 +207,13 @@ export class UserLoginMigrationService {
 
 	async deleteUserLoginMigration(userLoginMigration: UserLoginMigrationDO): Promise<void> {
 		await this.userLoginMigrationRepo.delete(userLoginMigration);
+	}
+
+	async findMigrationBySourceSystem(systemId: string): Promise<UserLoginMigrationDO | null> {
+		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySourceSystemId(
+			systemId
+		);
+
+		return userLoginMigration;
 	}
 }

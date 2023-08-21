@@ -1,11 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { UserLoginMigrationDO } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { ISession } from '@shared/domain/types/session';
-import { schoolDOFactory, setupEntities } from '@shared/testing';
+import { schoolDOFactory, setupEntities, userLoginMigrationDOFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
@@ -17,7 +18,7 @@ import { SchoolService } from '@src/modules/school';
 import { SystemService } from '@src/modules/system';
 import { OauthConfigDto, SystemDto } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
-import { UserMigrationService } from '@src/modules/user-login-migration';
+import { UserLoginMigrationService, UserMigrationService } from '@src/modules/user-login-migration';
 import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
 import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
 import { MigrationDto } from '@src/modules/user-login-migration/service/dto';
@@ -45,6 +46,7 @@ describe('OAuthUc', () => {
 	let userMigrationService: DeepMocked<UserMigrationService>;
 	let userService: DeepMocked<UserService>;
 	let schoolMigrationService: DeepMocked<SchoolMigrationService>;
+	let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -92,6 +94,10 @@ describe('OAuthUc', () => {
 					provide: AuthenticationService,
 					useValue: createMock<AuthenticationService>(),
 				},
+				{
+					provide: UserLoginMigrationService,
+					useValue: createMock<UserLoginMigrationService>(),
+				},
 			],
 		}).compile();
 
@@ -104,6 +110,7 @@ describe('OAuthUc', () => {
 		userMigrationService = module.get(UserMigrationService);
 		schoolMigrationService = module.get(SchoolMigrationService);
 		authenticationService = module.get(AuthenticationService);
+		userLoginMigrationService = module.get(UserLoginMigrationService);
 	});
 
 	afterAll(async () => {
@@ -114,74 +121,111 @@ describe('OAuthUc', () => {
 		resetAllMocks();
 	});
 
-	describe('startOauthLogin is called', () => {
-		const setup = () => {
-			const systemId = 'systemId';
-			const oauthConfig: OauthConfigDto = new OauthConfigDto({
-				clientId: '12345',
-				clientSecret: 'mocksecret',
-				tokenEndpoint: 'https://mock.de/mock/auth/public/mockToken',
-				grantType: 'authorization_code',
-				scope: 'openid uuid',
-				responseType: 'code',
-				authEndpoint: 'mock_authEndpoint',
-				provider: 'mock_provider',
-				logoutEndpoint: 'mock_logoutEndpoint',
-				issuer: 'mock_issuer',
-				jwksEndpoint: 'mock_jwksEndpoint',
-				redirectUri: 'mock_codeRedirectUri',
-			});
-			const system: SystemDto = new SystemDto({
-				id: systemId,
-				type: 'oauth',
-				oauthConfig,
-			});
+	const createOAuthTestData = () => {
+		const oauthConfig: OauthConfigDto = new OauthConfigDto({
+			clientId: '12345',
+			clientSecret: 'mocksecret',
+			tokenEndpoint: 'https://mock.de/mock/auth/public/mockToken',
+			grantType: 'authorization_code',
+			scope: 'openid uuid',
+			responseType: 'code',
+			authEndpoint: 'mock_authEndpoint',
+			provider: 'mock_provider',
+			logoutEndpoint: 'mock_logoutEndpoint',
+			issuer: 'mock_issuer',
+			jwksEndpoint: 'mock_jwksEndpoint',
+			redirectUri: 'mock_codeRedirectUri',
+		});
+		const system: SystemDto = new SystemDto({
+			id: 'systemId',
+			type: 'oauth',
+			oauthConfig,
+		});
 
-			return {
-				systemId,
-				system,
-				oauthConfig,
-			};
+		return {
+			system,
+			systemId: system.id as string,
+			oauthConfig,
 		};
+	};
 
-		describe('when starting an oauth login', () => {
-			it('should return the authentication url for the system', async () => {
-				const { systemId, system } = setup();
+	describe('startOauthLogin', () => {
+		describe('when starting an oauth login without migration', () => {
+			const setup = () => {
+				const { system, systemId } = createOAuthTestData();
+
 				const session: DeepMocked<ISession> = createMock<ISession>();
 				const authenticationUrl = 'authenticationUrl';
 
 				systemService.findById.mockResolvedValue(system);
 				oauthService.getAuthenticationUrl.mockReturnValue(authenticationUrl);
 
-				const result: string = await uc.startOauthLogin(session, systemId, false);
+				return {
+					systemId,
+					session,
+					authenticationUrl,
+				};
+			};
+
+			it('should return the authentication url for the system', async () => {
+				const { systemId, session, authenticationUrl } = setup();
+
+				const result: string = await uc.startOauthLogin(session, systemId);
 
 				expect(result).toEqual(authenticationUrl);
 			});
+		});
 
-			it('should save data to the session', async () => {
-				const { systemId, system } = setup();
+		describe('when starting an oauth login during a migration', () => {
+			const setup = () => {
+				const { system, systemId } = createOAuthTestData();
+
 				const session: DeepMocked<ISession> = createMock<ISession>();
 				const authenticationUrl = 'authenticationUrl';
 				const postLoginRedirect = 'postLoginRedirect';
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					sourceSystemId: systemId,
+				});
 
 				systemService.findById.mockResolvedValue(system);
 				oauthService.getAuthenticationUrl.mockReturnValue(authenticationUrl);
+				userLoginMigrationService.findMigrationBySourceSystem.mockResolvedValue(userLoginMigration);
 
-				await uc.startOauthLogin(session, systemId, false, postLoginRedirect);
+				return {
+					system,
+					systemId,
+					postLoginRedirect,
+					session,
+					userLoginMigration,
+				};
+			};
+
+			it('should save data to the session', async () => {
+				const { systemId, system, session, postLoginRedirect, userLoginMigration } = setup();
+
+				await uc.startOauthLogin(session, systemId, postLoginRedirect);
 
 				expect(session.oauthLoginState).toEqual<OauthLoginStateDto>({
 					systemId,
 					state: 'mockNanoId',
 					postLoginRedirect,
 					provider: system.oauthConfig?.provider as string,
-					userLoginMigration: false,
+					userLoginMigrationId: userLoginMigration.id,
 				});
+			});
+
+			it('should call the userLoginMigration service', async () => {
+				const { systemId, session } = setup();
+
+				await uc.startOauthLogin(session, systemId);
+
+				expect(userLoginMigrationService.findMigrationBySourceSystem).toHaveBeenCalledWith(systemId);
 			});
 		});
 
 		describe('when the system cannot be found', () => {
-			it('should throw UnprocessableEntityException', async () => {
-				const { systemId, system } = setup();
+			const setup = () => {
+				const { systemId, system } = createOAuthTestData();
 				system.oauthConfig = undefined;
 				const session: DeepMocked<ISession> = createMock<ISession>();
 				const authenticationUrl = 'authenticationUrl';
@@ -189,14 +233,24 @@ describe('OAuthUc', () => {
 				systemService.findById.mockResolvedValue(system);
 				oauthService.getAuthenticationUrl.mockReturnValue(authenticationUrl);
 
-				const func = async () => uc.startOauthLogin(session, systemId, false);
+				return {
+					systemId,
+					session,
+					authenticationUrl,
+				};
+			};
+
+			it('should throw UnprocessableEntityException', async () => {
+				const { systemId, session } = setup();
+
+				const func = async () => uc.startOauthLogin(session, systemId);
 
 				await expect(func).rejects.toThrow(UnprocessableEntityException);
 			});
 		});
 	});
 
-	describe('processOAuth is called', () => {
+	describe('processOAuth', () => {
 		const setup = () => {
 			const postLoginRedirect = 'postLoginRedirect';
 			const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
@@ -204,7 +258,7 @@ describe('OAuthUc', () => {
 				systemId: 'systemId',
 				postLoginRedirect,
 				provider: 'mock_provider',
-				userLoginMigration: false,
+				userLoginMigrationId: 'migrationId',
 			});
 			const code = 'code';
 			const error = 'error';
@@ -235,6 +289,7 @@ describe('OAuthUc', () => {
 
 			return { cachedState, code, error, jwt, redirect, user, currentUser, testSystem, tokenDto };
 		};
+
 		describe('when a user is returned', () => {
 			it('should return a response with a valid jwt', async () => {
 				const { cachedState, code, error, jwt, redirect, user, currentUser, tokenDto } = setup();
@@ -300,19 +355,12 @@ describe('OAuthUc', () => {
 	});
 
 	describe('migration', () => {
-		describe('migrate is called', () => {
+		describe('migrate', () => {
 			describe('when authorize user and migration was successful', () => {
 				const setupMigration = () => {
 					const code = '43534543jnj543342jn2';
 
 					const query: AuthorizationParams = { code, state: 'state' };
-
-					const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
-						state: 'state',
-						systemId: 'systemId',
-						provider: 'mock_provider',
-						userLoginMigration: true,
-					});
 
 					const oauthConfig: OauthConfigDto = new OauthConfigDto({
 						clientId: '12345',
@@ -328,10 +376,22 @@ describe('OAuthUc', () => {
 						jwksEndpoint: 'mock_jwksEndpoint',
 						redirectUri: 'mock_codeRedirectUri',
 					});
+
 					const system: SystemDto = new SystemDto({
 						id: 'systemId',
 						type: 'oauth',
 						oauthConfig,
+					});
+
+					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+						sourceSystemId: system.id,
+					});
+
+					const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
+						state: 'state',
+						systemId: 'systemId',
+						provider: 'mock_provider',
+						userLoginMigrationId: userLoginMigration.id,
 					});
 
 					const externalUserId = 'externalUserId';
@@ -356,6 +416,7 @@ describe('OAuthUc', () => {
 						accessToken: 'accessToken',
 					});
 
+					userLoginMigrationService.findMigrationBySourceSystem.mockResolvedValue(userLoginMigration);
 					oauthService.requestToken.mockResolvedValue(tokenDto);
 					provisioningService.getData.mockResolvedValue(oauthData);
 					systemService.findById.mockResolvedValue(system);
@@ -391,13 +452,6 @@ describe('OAuthUc', () => {
 
 					const query: AuthorizationParams = { code, state: 'state' };
 
-					const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
-						state: 'state',
-						systemId: 'systemId',
-						provider: 'mock_provider',
-						userLoginMigration: true,
-					});
-
 					const oauthConfig: OauthConfigDto = new OauthConfigDto({
 						clientId: '12345',
 						clientSecret: 'mocksecret',
@@ -412,10 +466,22 @@ describe('OAuthUc', () => {
 						jwksEndpoint: 'mock_jwksEndpoint',
 						redirectUri: 'mock_codeRedirectUri',
 					});
+
 					const system: SystemDto = new SystemDto({
 						id: 'systemId',
 						type: 'oauth',
 						oauthConfig,
+					});
+
+					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+						sourceSystemId: system.id,
+					});
+
+					const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
+						state: 'state',
+						systemId: 'systemId',
+						provider: 'mock_provider',
+						userLoginMigrationId: userLoginMigration.id,
 					});
 
 					const externalUserId = 'externalUserId';
@@ -439,6 +505,8 @@ describe('OAuthUc', () => {
 						refreshToken: 'refreshToken',
 						accessToken: 'accessToken',
 					});
+
+					userLoginMigrationService.findMigrationBySourceSystem.mockResolvedValue(userLoginMigration);
 
 					oauthService.requestToken.mockResolvedValue(tokenDto);
 					provisioningService.getData.mockResolvedValue(oauthData);
@@ -471,11 +539,15 @@ describe('OAuthUc', () => {
 
 					const query: AuthorizationParams = { code, state: 'state' };
 
+					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+						sourceSystemId: 'systemId',
+					});
+
 					const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
 						state: 'state',
 						systemId: 'systemId',
 						provider: 'mock_provider',
-						userLoginMigration: true,
+						userLoginMigrationId: userLoginMigration.id,
 					});
 
 					const externalUserId = 'externalUserId';
@@ -500,6 +572,7 @@ describe('OAuthUc', () => {
 						accessToken: 'accessToken',
 					});
 
+					userLoginMigrationService.findMigrationBySourceSystem.mockResolvedValue(userLoginMigration);
 					oauthService.requestToken.mockResolvedValue(tokenDto);
 					provisioningService.getData.mockResolvedValue(oauthData);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationFailedDto);
@@ -526,11 +599,15 @@ describe('OAuthUc', () => {
 
 					const query: AuthorizationParams = { code, state: 'state' };
 
+					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+						sourceSystemId: 'systemId',
+					});
+
 					const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
 						state: 'state',
 						systemId: 'systemId',
 						provider: 'mock_provider',
-						userLoginMigration: true,
+						userLoginMigrationId: userLoginMigration.id,
 					});
 
 					const externalUserId = 'externalUserId';
@@ -556,9 +633,11 @@ describe('OAuthUc', () => {
 						accessToken: 'accessToken',
 					});
 
+					userLoginMigrationService.findMigrationBySourceSystem.mockResolvedValue(userLoginMigration);
 					oauthService.requestToken.mockResolvedValue(tokenDto);
 					provisioningService.getData.mockResolvedValue(oauthData);
 					oauthService.authenticateUser.mockResolvedValue(tokenDto);
+
 					return {
 						query,
 						cachedState,
@@ -585,11 +664,15 @@ describe('OAuthUc', () => {
 
 					const query: AuthorizationParams = { code, state: 'state' };
 
+					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+						sourceSystemId: 'systemId',
+					});
+
 					const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
 						state: 'state',
 						systemId: 'systemId',
 						provider: 'mock_provider',
-						userLoginMigration: true,
+						userLoginMigrationId: userLoginMigration.id,
 					});
 
 					const externalUserId = 'externalUserId';
@@ -619,6 +702,7 @@ describe('OAuthUc', () => {
 						accessToken: 'accessToken',
 					});
 
+					userLoginMigrationService.findMigrationBySourceSystem.mockResolvedValue(userLoginMigration);
 					oauthService.requestToken.mockResolvedValue(tokenDto);
 					provisioningService.getData.mockResolvedValue(oauthData);
 					const schoolToMigrate: SchoolDO | void = schoolDOFactory.build({ name: 'mockName' });
@@ -653,11 +737,15 @@ describe('OAuthUc', () => {
 
 					const query: AuthorizationParams = { code, state: 'state' };
 
+					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+						sourceSystemId: 'systemId',
+					});
+
 					const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
 						state: 'state',
 						systemId: 'systemId',
 						provider: 'mock_provider',
-						userLoginMigration: true,
+						userLoginMigrationId: userLoginMigration.id,
 					});
 
 					const externalUserId = 'externalUserId';
@@ -687,6 +775,7 @@ describe('OAuthUc', () => {
 						accessToken: 'accessToken',
 					});
 
+					userLoginMigrationService.findMigrationBySourceSystem.mockResolvedValue(userLoginMigration);
 					oauthService.requestToken.mockResolvedValue(tokenDto);
 					provisioningService.getData.mockResolvedValue(oauthData);
 					oauthService.authenticateUser.mockResolvedValue(tokenDto);
@@ -714,11 +803,15 @@ describe('OAuthUc', () => {
 
 					const query: AuthorizationParams = { code, state: 'state' };
 
+					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+						sourceSystemId: 'systemId',
+					});
+
 					const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
 						state: 'state',
 						systemId: 'systemId',
 						provider: 'mock_provider',
-						userLoginMigration: true,
+						userLoginMigrationId: userLoginMigration.id,
 					});
 
 					const externalUserId = 'externalUserId';
@@ -743,6 +836,7 @@ describe('OAuthUc', () => {
 						accessToken: 'accessToken',
 					});
 
+					userLoginMigrationService.findMigrationBySourceSystem.mockResolvedValue(userLoginMigration);
 					oauthService.authenticateUser.mockResolvedValue(tokenDto);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 					oauthService.requestToken.mockResolvedValue(tokenDto);
@@ -769,11 +863,15 @@ describe('OAuthUc', () => {
 
 					const query: AuthorizationParams = { code, state: 'state' };
 
+					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+						sourceSystemId: 'systemId',
+					});
+
 					const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
 						state: 'state',
 						systemId: 'systemId',
 						provider: 'mock_provider',
-						userLoginMigration: true,
+						userLoginMigrationId: userLoginMigration.id,
 					});
 
 					const externalUserId = 'externalUserId';
@@ -807,6 +905,7 @@ describe('OAuthUc', () => {
 						'ext_official_school_number_missing'
 					);
 
+					userLoginMigrationService.findMigrationBySourceSystem.mockResolvedValue(userLoginMigration);
 					oauthService.requestToken.mockResolvedValue(tokenDto);
 					provisioningService.getData.mockResolvedValue(oauthData);
 					oauthService.authenticateUser.mockResolvedValue(tokenDto);
@@ -832,11 +931,15 @@ describe('OAuthUc', () => {
 
 		describe('when state is mismatched', () => {
 			const setupMigration = () => {
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					sourceSystemId: 'systemId',
+				});
+
 				const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
 					state: 'state',
 					systemId: 'systemId',
 					provider: 'mock_provider',
-					userLoginMigration: true,
+					userLoginMigrationId: userLoginMigration.id,
 				});
 
 				const query: AuthorizationParams = { state: 'failedState' };
@@ -867,6 +970,7 @@ describe('OAuthUc', () => {
 				userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 				oauthService.requestToken.mockResolvedValue(tokenDto);
 				provisioningService.getData.mockResolvedValue(oauthData);
+				userLoginMigrationService.findMigrationBySourceSystem.mockResolvedValue(userLoginMigration);
 
 				return {
 					cachedState,
