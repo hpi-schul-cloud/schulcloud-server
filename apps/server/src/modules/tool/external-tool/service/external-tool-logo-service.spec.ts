@@ -282,6 +282,26 @@ describe('ExternalToolLogoService', () => {
 				);
 			});
 		});
+
+		describe('when error occurs on fetching logo because of another error', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+
+				httpService.get.mockReturnValue(throwError(() => new Error('Failed to fetch logo')));
+
+				return {
+					externalTool,
+				};
+			};
+
+			it('should throw error', async () => {
+				const { externalTool } = setup();
+
+				const func = () => service.fetchLogo(externalTool);
+
+				await expect(func()).rejects.toThrow(ExternalToolLogoFetchFailedLoggableException);
+			});
+		});
 	});
 
 	describe('getExternalToolBinaryLogo', () => {
