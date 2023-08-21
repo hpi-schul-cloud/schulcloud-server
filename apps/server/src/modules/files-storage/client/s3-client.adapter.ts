@@ -39,7 +39,7 @@ export class S3ClientAdapter implements IStorageClient {
 			if (err instanceof Error) {
 				this.logger.error(`${err.message} "${this.config.bucket}"`);
 			}
-			throw new InternalServerErrorException('S3ClientAdapter:createBucket', ErrorUtils.convertUnknownError(err));
+			throw new InternalServerErrorException('S3ClientAdapter:createBucket', ErrorUtils.createHttpExceptionOptions(err));
 		}
 	}
 
@@ -71,7 +71,7 @@ export class S3ClientAdapter implements IStorageClient {
 				this.logger.log(`could not find one of the files for deletion with id ${path}`);
 				throw new NotFoundException('NoSuchKey');
 			} else {
-				throw new InternalServerErrorException('S3ClientAdapter:get', ErrorUtils.convertUnknownError(err));
+				throw new InternalServerErrorException('S3ClientAdapter:get', ErrorUtils.createHttpExceptionOptions(err));
 			}
 		}
 	}
@@ -101,7 +101,7 @@ export class S3ClientAdapter implements IStorageClient {
 				return await this.create(path, file);
 			}
 
-			throw new InternalServerErrorException('S3ClientAdapter:create', ErrorUtils.convertUnknownError(err));
+			throw new InternalServerErrorException('S3ClientAdapter:create', ErrorUtils.createHttpExceptionOptions(err));
 		}
 	}
 
@@ -124,7 +124,7 @@ export class S3ClientAdapter implements IStorageClient {
 				this.logger.log(`could not find one of the files for deletion with ids ${paths.join(',')}`);
 				return [];
 			}
-			throw new InternalServerErrorException('S3ClientAdapter:delete', ErrorUtils.convertUnknownError(err));
+			throw new InternalServerErrorException('S3ClientAdapter:delete', ErrorUtils.createHttpExceptionOptions(err));
 		}
 	}
 
@@ -145,7 +145,7 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return result;
 		} catch (err) {
-			throw new InternalServerErrorException('S3ClientAdapter:restore', ErrorUtils.convertUnknownError(err));
+			throw new InternalServerErrorException('S3ClientAdapter:restore', ErrorUtils.createHttpExceptionOptions(err));
 		}
 	}
 
@@ -169,7 +169,7 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return result;
 		} catch (err) {
-			throw new InternalServerErrorException('S3ClientAdapter:copy', ErrorUtils.convertUnknownError(err));
+			throw new InternalServerErrorException('S3ClientAdapter:copy', ErrorUtils.createHttpExceptionOptions(err));
 		}
 	}
 
@@ -189,7 +189,7 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return result;
 		} catch (err) {
-			throw new InternalServerErrorException('S3ClientAdapter:delete', ErrorUtils.convertUnknownError(err));
+			throw new InternalServerErrorException('S3ClientAdapter:delete', ErrorUtils.createHttpExceptionOptions(err));
 		}
 	}
 
@@ -212,7 +212,7 @@ export class S3ClientAdapter implements IStorageClient {
 				await this.delete(filteredPathObjects);
 			}
 		} catch (err) {
-			throw new InternalServerErrorException('S3ClientAdapter:deleteDirectory', ErrorUtils.convertUnknownError(err));
+			throw new InternalServerErrorException('S3ClientAdapter:deleteDirectory', ErrorUtils.createHttpExceptionOptions(err));
 		}
 	}
 

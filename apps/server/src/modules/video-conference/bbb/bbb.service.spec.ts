@@ -189,7 +189,7 @@ describe('BBB Service', () => {
 					`${bbbCreateResponse.data.response.messageKey}, ${bbbCreateResponse.data.response.message}`
 				);
 				const expectedError = new InternalServerErrorException(
-					ErrorUtils.convertUnknownError(error, 'BBBService:create')
+					ErrorUtils.createHttpExceptionOptions(error, 'BBBService:create')
 				);
 
 				return { param, expectedError };
@@ -255,7 +255,7 @@ describe('BBB Service', () => {
 				const error = new InternalServerErrorException(
 					`${bbbBaseResponse.data.response.messageKey}, ${bbbBaseResponse.data.response.message}`
 				);
-				const expectedError = new InternalServerErrorException(ErrorUtils.convertUnknownError(error, 'BBBService:end'));
+				const expectedError = new InternalServerErrorException(ErrorUtils.createHttpExceptionOptions(error, 'BBBService:end'));
 
 				return { expectedError, param };
 			};
@@ -307,7 +307,7 @@ describe('BBB Service', () => {
 					`${bbbMeetingInfoResponse.data.response.messageKey}: ${bbbMeetingInfoResponse.data.response.message}`
 				);
 				const expectedError = new InternalServerErrorException(
-					ErrorUtils.convertUnknownError(error, 'BBBService:getMeetingInfo')
+					ErrorUtils.createHttpExceptionOptions(error, 'BBBService:getMeetingInfo')
 				);
 
 				return { expectedError, param };
@@ -361,7 +361,7 @@ describe('BBB Service', () => {
 					`${bbbMeetingInfoResponse.data.response.messageKey}: ${bbbMeetingInfoResponse.data.response.message}`
 				);
 				const expectedError = new InternalServerErrorException(
-					ErrorUtils.convertUnknownError(error, 'BBBService:getMeetingInfo')
+					ErrorUtils.createHttpExceptionOptions(error, 'BBBService:getMeetingInfo')
 				);
 
 				return { param, expectedError };

@@ -64,7 +64,7 @@ export class AuthorizationService {
 			return hasPermission;
 		} catch (error) {
 			throw new ForbiddenException(
-				ErrorUtils.convertUnknownError(error, 'AuthorizationService:hasPermissionByReferences')
+				ErrorUtils.createHttpExceptionOptions(error, 'AuthorizationService:hasPermissionByReferences')
 			);
 		}
 	}

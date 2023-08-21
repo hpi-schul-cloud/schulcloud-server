@@ -447,7 +447,7 @@ describe('S3ClientAdapter', () => {
 
 				const expectedError = new InternalServerErrorException(
 					'S3ClientAdapter:deleteDirectory',
-					ErrorUtils.convertUnknownError(error)
+					ErrorUtils.createHttpExceptionOptions(error)
 				);
 
 				return { pathToFile, filePath, expectedError };
@@ -474,7 +474,7 @@ describe('S3ClientAdapter', () => {
 
 				const expectedError = new InternalServerErrorException(
 					'S3ClientAdapter:deleteDirectory',
-					ErrorUtils.convertUnknownError(error)
+					ErrorUtils.createHttpExceptionOptions(error)
 				);
 
 				return { pathToFile, filePath, expectedError };

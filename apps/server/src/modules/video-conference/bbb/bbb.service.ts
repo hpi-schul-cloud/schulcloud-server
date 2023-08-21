@@ -53,7 +53,7 @@ export class BBBService {
 				return bbbResp as BBBResponse<BBBCreateResponse>;
 			})
 			.catch((error) => {
-				throw new InternalServerErrorException(ErrorUtils.convertUnknownError(error, 'BBBService:create'));
+				throw new InternalServerErrorException(ErrorUtils.createHttpExceptionOptions(error, 'BBBService:create'));
 			});
 	}
 
@@ -94,7 +94,7 @@ export class BBBService {
 				return bbbResp;
 			})
 			.catch((error) => {
-				throw new InternalServerErrorException(ErrorUtils.convertUnknownError(error, 'BBBService:end'));
+				throw new InternalServerErrorException(ErrorUtils.createHttpExceptionOptions(error, 'BBBService:end'));
 			});
 	}
 
@@ -119,7 +119,7 @@ export class BBBService {
 				return bbbResp as BBBResponse<BBBMeetingInfoResponse>;
 			})
 			.catch((error) => {
-				throw new InternalServerErrorException(ErrorUtils.convertUnknownError(error, 'BBBService:getMeetingInfo'));
+				throw new InternalServerErrorException(ErrorUtils.createHttpExceptionOptions(error, 'BBBService:getMeetingInfo'));
 			});
 	}
 

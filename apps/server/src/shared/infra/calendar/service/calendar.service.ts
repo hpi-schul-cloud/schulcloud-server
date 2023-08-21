@@ -36,7 +36,7 @@ export class CalendarService {
 		)
 			.then((resp: AxiosResponse<ICalendarEvent>) => this.calendarMapper.mapToDto(resp.data))
 			.catch((error) => {
-				throw new InternalServerErrorException(ErrorUtils.convertUnknownError(error, 'CalendarService:findEvent'));
+				throw new InternalServerErrorException(ErrorUtils.createHttpExceptionOptions(error, 'CalendarService:findEvent'));
 			});
 	}
 

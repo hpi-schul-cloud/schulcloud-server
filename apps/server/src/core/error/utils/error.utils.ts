@@ -21,7 +21,7 @@ export class ErrorUtils {
 		return error instanceof HttpException;
 	}
 
-	static convertUnknownError(error: unknown, description?: string): HttpExceptionOptions {
+	static createHttpExceptionOptions(error: unknown, description?: string): HttpExceptionOptions {
 		let causeError: Error | undefined;
 
 		if (error instanceof Error) {

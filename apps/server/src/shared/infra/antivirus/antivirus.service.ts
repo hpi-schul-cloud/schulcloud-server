@@ -31,7 +31,7 @@ export class AntivirusService {
 				);
 			}
 		} catch (err) {
-			throw new InternalServerErrorException(ErrorUtils.convertUnknownError(err, 'AntivirusService:send'));
+			throw new InternalServerErrorException(ErrorUtils.createHttpExceptionOptions(err, 'AntivirusService:send'));
 		}
 	}
 

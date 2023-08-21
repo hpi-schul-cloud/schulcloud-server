@@ -71,11 +71,11 @@ describe('ErrorUtils', () => {
 		});
 	});
 
-	describe('convertUnknownError', () => {
+	describe('createHttpExceptionOptions', () => {
 		it('should return HttpExceptionOptions if error is instance of Error', () => {
 			const error = new BadRequestException();
 
-			const result = ErrorUtils.convertUnknownError(error);
+			const result = ErrorUtils.createHttpExceptionOptions(error);
 
 			const expectedResult = { cause: error };
 
@@ -85,7 +85,7 @@ describe('ErrorUtils', () => {
 		it('should return HttpExceptionOptions if error is a string', () => {
 			const error = 'test string';
 
-			const result = ErrorUtils.convertUnknownError(error);
+			const result = ErrorUtils.createHttpExceptionOptions(error);
 
 			const expectedResult = { cause: new Error(JSON.stringify(error)) };
 
@@ -95,7 +95,7 @@ describe('ErrorUtils', () => {
 		it('should return HttpExceptionOptions if error is a number', () => {
 			const error = 1;
 
-			const result = ErrorUtils.convertUnknownError(error);
+			const result = ErrorUtils.createHttpExceptionOptions(error);
 
 			const expectedResult = { cause: new Error(JSON.stringify(error)) };
 
@@ -105,7 +105,7 @@ describe('ErrorUtils', () => {
 		it('should return HttpExceptionOptions if error is a object', () => {
 			const error = { a: 1 };
 
-			const result = ErrorUtils.convertUnknownError(error);
+			const result = ErrorUtils.createHttpExceptionOptions(error);
 
 			const expectedResult = { cause: new Error(JSON.stringify(error)) };
 

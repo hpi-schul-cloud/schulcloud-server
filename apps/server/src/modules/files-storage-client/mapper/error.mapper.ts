@@ -16,7 +16,7 @@ export class ErrorMapper {
 		} else if (errorObj.status === 500) {
 			error = new InternalServerErrorException(errorObj.message);
 		} else {
-			error = new InternalServerErrorException(ErrorUtils.convertUnknownError(errorObj));
+			error = new InternalServerErrorException(ErrorUtils.createHttpExceptionOptions(errorObj));
 		}
 
 		return error;

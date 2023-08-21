@@ -41,7 +41,7 @@ export class LdapService {
 						reject(
 							new UnauthorizedException(
 								'User could not authenticate',
-								ErrorUtils.convertUnknownError(err, 'LdapService:connect')
+								ErrorUtils.createHttpExceptionOptions(err, 'LdapService:connect')
 							)
 						);
 					} else {
