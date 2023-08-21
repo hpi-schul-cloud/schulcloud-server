@@ -20,7 +20,7 @@ describe('ExternalToolLogoFetchFailedLoggableException', () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const logoUrl = 'logoUrl';
-			const loggable = new ExternalToolLogoFetchFailedLoggableException(logoUrl, 404, '123');
+			const loggable = new ExternalToolLogoFetchFailedLoggableException(logoUrl, 404);
 
 			return { loggable, logoUrl };
 		};
@@ -36,7 +36,6 @@ describe('ExternalToolLogoFetchFailedLoggableException', () => {
 				stack: loggable.stack,
 				data: {
 					logoUrl,
-					externalToolId: '123',
 					httpStatus: 404,
 				},
 			});

@@ -3,11 +3,7 @@ import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from
 import { BusinessError } from '@shared/common';
 
 export class ExternalToolLogoFetchFailedLoggableException extends BusinessError implements Loggable {
-	constructor(
-		private readonly logoUrl: string,
-		private readonly httpStatus?: HttpStatus,
-		private readonly externalToolId?: string
-	) {
+	constructor(private readonly logoUrl: string, private readonly httpStatus?: HttpStatus) {
 		super(
 			{
 				type: 'EXTERNAL_TOOL_LOGO_FETCH_FAILED',
@@ -25,7 +21,6 @@ export class ExternalToolLogoFetchFailedLoggableException extends BusinessError 
 			stack: this.stack,
 			data: {
 				logoUrl: this.logoUrl,
-				externalToolId: this.externalToolId,
 				httpStatus: this.httpStatus,
 			},
 		};
