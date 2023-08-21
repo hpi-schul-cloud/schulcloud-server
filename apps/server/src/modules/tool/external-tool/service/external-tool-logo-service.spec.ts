@@ -151,10 +151,9 @@ describe('ExternalToolLogoService', () => {
 			});
 		});
 
-		describe('when external tool has a given base64 logo', () => {
+		describe('when external tool has no given logo', () => {
 			const setup = () => {
-				const externalTool: ExternalTool = externalToolFactory.withBase64Logo().build();
-				toolFeatures.maxExternalToolLogoSizeInBytes = 30000;
+				const externalTool: ExternalTool = externalToolFactory.build();
 
 				return { externalTool };
 			};
