@@ -103,7 +103,7 @@ export class FilesStorageService {
 	}
 
 	private async detectMimeType(file: FileDto): Promise<{ mimeType: string; stream: Readable }> {
-		const { stream, mime: detectedMimeType } = await StreamMimeType.getMimeType(file.data);
+		const { stream, mime: detectedMimeType } = await StreamMimeType.getMimeType(file.data, { strict: true });
 		const mimeType = detectedMimeType ?? file.mimeType;
 		const readable = new Readable().wrap(stream);
 
