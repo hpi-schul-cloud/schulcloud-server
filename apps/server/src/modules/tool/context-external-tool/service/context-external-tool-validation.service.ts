@@ -48,7 +48,7 @@ export class ContextExternalToolValidationService {
 
 		if (duplicate.length > 0) {
 			throw new ValidationError(
-				`tool_param_name_duplicate: A tool with the same name is already assigned to this course. Tool names must be unique within a course.`
+				`tool_with_name_exists: A tool with the same name is already assigned to this course. Tool names must be unique within a course.`
 			);
 		}
 	}

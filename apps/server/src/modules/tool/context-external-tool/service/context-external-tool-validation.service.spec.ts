@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { contextExternalToolFactory, externalToolFactory } from '@shared/testing';
+import { ValidationError } from '@mikro-orm/core';
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
@@ -130,12 +131,16 @@ describe('ContextExternalToolValidationService', () => {
 					};
 				};
 
-				it('should throw UnprocessableEntityException', async () => {
+				it('should throw ValidationError', async () => {
 					const { contextExternalTool1 } = setup();
 
 					const func = () => service.validate(contextExternalTool1);
 
-					await expect(func()).rejects.toThrowError(new UnprocessableEntityException('Tool is already assigned.'));
+					await expect(func()).rejects.toThrowError(
+						new ValidationError(
+							'tool_with_name_exists: A tool with the same name is already assigned to this course. Tool names must be unique within a course.'
+						)
+					);
 				});
 			});
 
@@ -151,12 +156,16 @@ describe('ContextExternalToolValidationService', () => {
 					};
 				};
 
-				it('should throw UnprocessableEntityException', async () => {
+				it('should throw ValidationError', async () => {
 					const { contextExternalTool1 } = setup();
 
 					const func = () => service.validate(contextExternalTool1);
 
-					await expect(func()).rejects.toThrowError(new UnprocessableEntityException('Tool is already assigned.'));
+					await expect(func()).rejects.toThrowError(
+						new ValidationError(
+							'tool_with_name_exists: A tool with the same name is already assigned to this course. Tool names must be unique within a course.'
+						)
+					);
 				});
 			});
 		});
