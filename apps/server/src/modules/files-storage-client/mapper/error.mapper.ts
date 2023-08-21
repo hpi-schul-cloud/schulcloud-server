@@ -2,8 +2,6 @@ import { BadRequestException, ForbiddenException, InternalServerErrorException }
 import { ErrorUtils } from '@src/core/error/utils';
 import { IError } from '@shared/infra/rabbitmq';
 
-// type MapperError = BadRequestException | ForbiddenException | InternalServerErrorException;
-
 export class ErrorMapper {
 	static mapRpcErrorResponseToDomainError(
 		errorObj: IError
