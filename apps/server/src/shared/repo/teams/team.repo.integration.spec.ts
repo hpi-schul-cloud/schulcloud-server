@@ -154,7 +154,7 @@ describe('team repo', () => {
 			// Arrange Team Array after teamUser1 deletion
 			team1.teamUsers = [teamUser2];
 			team2.teamUsers = [teamUser2, teamUser3];
-			team3.userIds = [];
+			team3.teamUsers = [];
 			const updatedArray: TeamEntity[] = [team1, team2, team3];
 
 			// Act

@@ -88,14 +88,7 @@ export const ALL_ENTITIES = [
 	System,
 	Task,
 	TaskBoardElement,
-<<<<<<< HEAD
-	TaskCard,
-	CardElement,
-	RichTextCardElement,
 	TeamEntity,
-=======
-	Team,
->>>>>>> main
 	TeamNews,
 	TeamUserEntity,
 	User,
