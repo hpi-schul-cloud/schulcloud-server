@@ -8,9 +8,9 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
+	ApiOperation,
 } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, Param, Post, Query, Put } from '@nestjs/common';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/tool';
+import { Body, Controller, Delete, Get, Param, Post, Query, Put, HttpCode, HttpStatus } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { LegacyLogger } from '@src/core/logger';
@@ -24,12 +24,13 @@ import {
 	SchoolExternalToolSearchListResponse,
 	SchoolExternalToolSearchParams,
 } from './dto';
-import { SchoolExternalTool } from '../uc/dto/school-external-tool.types';
+import { SchoolExternalToolDto } from '../uc/dto/school-external-tool.types';
 import { SchoolExternalToolUc } from '../uc';
+import { SchoolExternalTool } from '../domain';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
-@Controller('tools/school')
+@Controller('tools/school-external-tools')
 export class ToolSchoolController {
 	constructor(
 		private readonly schoolExternalToolUc: SchoolExternalToolUc,
@@ -42,11 +43,12 @@ export class ToolSchoolController {
 	@ApiFoundResponse({ description: 'SchoolExternalTools has been found.', type: ExternalToolSearchListResponse })
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
+	@ApiOperation({ summary: 'Returns a list of SchoolExternalTools for a given school' })
 	async getSchoolExternalTools(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() schoolExternalToolParams: SchoolExternalToolSearchParams
 	): Promise<SchoolExternalToolSearchListResponse> {
-		const found: SchoolExternalToolDO[] = await this.schoolExternalToolUc.findSchoolExternalTools(currentUser.userId, {
+		const found: SchoolExternalTool[] = await this.schoolExternalToolUc.findSchoolExternalTools(currentUser.userId, {
 			schoolId: schoolExternalToolParams.schoolId,
 		});
 		const response: SchoolExternalToolSearchListResponse = this.responseMapper.mapToSearchListResponse(found);
@@ -56,16 +58,16 @@ export class ToolSchoolController {
 	@Get(':schoolExternalToolId')
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
+	@ApiOperation({ summary: 'Returns a SchoolExternalTool for the given id' })
 	async getSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams
 	): Promise<SchoolExternalToolResponse> {
-		const schoolExternalToolDO: SchoolExternalToolDO = await this.schoolExternalToolUc.getSchoolExternalTool(
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolUc.getSchoolExternalTool(
 			currentUser.userId,
 			params.schoolExternalToolId
 		);
-		const mapped: SchoolExternalToolResponse =
-			this.responseMapper.mapToSchoolExternalToolResponse(schoolExternalToolDO);
+		const mapped: SchoolExternalToolResponse = this.responseMapper.mapToSchoolExternalToolResponse(schoolExternalTool);
 		return mapped;
 	}
 
@@ -74,16 +76,17 @@ export class ToolSchoolController {
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
 	@ApiBadRequestResponse({ type: ValidationError, description: 'Request data has invalid format.' })
+	@ApiOperation({ summary: 'Updates a SchoolExternalTool' })
 	async updateSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams,
 		@Body() body: SchoolExternalToolPostParams
 	): Promise<SchoolExternalToolResponse> {
-		const schoolExternalTool: SchoolExternalTool = this.requestMapper.mapSchoolExternalToolRequest(body);
-		const updated: SchoolExternalToolDO = await this.schoolExternalToolUc.updateSchoolExternalTool(
+		const schoolExternalToolDto: SchoolExternalToolDto = this.requestMapper.mapSchoolExternalToolRequest(body);
+		const updated: SchoolExternalTool = await this.schoolExternalToolUc.updateSchoolExternalTool(
 			currentUser.userId,
 			params.schoolExternalToolId,
-			schoolExternalTool
+			schoolExternalToolDto
 		);
 
 		const mapped: SchoolExternalToolResponse = this.responseMapper.mapToSchoolExternalToolResponse(updated);
@@ -94,6 +97,8 @@ export class ToolSchoolController {
 	@Delete(':schoolExternalToolId')
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
+	@ApiOperation({ summary: 'Deletes a SchoolExternalTool' })
+	@HttpCode(HttpStatus.NO_CONTENT)
 	async deleteSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams
@@ -113,15 +118,16 @@ export class ToolSchoolController {
 	@ApiUnprocessableEntityResponse()
 	@ApiUnauthorizedResponse()
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
+	@ApiOperation({ summary: 'Creates a SchoolExternalTool' })
 	async createSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: SchoolExternalToolPostParams
 	): Promise<SchoolExternalToolResponse> {
-		const schoolExternalTool: SchoolExternalTool = this.requestMapper.mapSchoolExternalToolRequest(body);
+		const schoolExternalToolDto: SchoolExternalToolDto = this.requestMapper.mapSchoolExternalToolRequest(body);
 
-		const createdSchoolExternalToolDO: SchoolExternalToolDO = await this.schoolExternalToolUc.createSchoolExternalTool(
+		const createdSchoolExternalToolDO: SchoolExternalTool = await this.schoolExternalToolUc.createSchoolExternalTool(
 			currentUser.userId,
-			schoolExternalTool
+			schoolExternalToolDto
 		);
 
 		const response: SchoolExternalToolResponse =

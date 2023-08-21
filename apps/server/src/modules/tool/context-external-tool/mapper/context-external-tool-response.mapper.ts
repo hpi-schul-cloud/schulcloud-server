@@ -1,6 +1,6 @@
-import { ContextExternalToolResponse } from '../controller/dto';
 import { CustomParameterEntryParam, CustomParameterEntryResponse } from '../../school-external-tool/controller/dto';
-import { ContextExternalTool } from '../uc/dto/context-external-tool.types';
+import { ContextExternalToolResponse } from '../controller/dto';
+import { ContextExternalTool } from '../domain';
 
 export class ContextExternalToolResponseMapper {
 	static mapContextExternalToolResponse(contextExternalTool: ContextExternalTool): ContextExternalToolResponse {

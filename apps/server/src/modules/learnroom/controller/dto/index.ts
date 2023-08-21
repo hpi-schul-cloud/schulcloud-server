@@ -1,4 +1,3 @@
-export * from './course.response';
 export * from './course.url.params';
 export * from './course-metadata.response';
 export * from './dashboard.response';
