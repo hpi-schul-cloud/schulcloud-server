@@ -11,6 +11,10 @@ export class FilesService {
 	async markFilesOwnedByUserForDeletion(userId: EntityId): Promise<number> {
 		const entities = await this.filesRepo.findByOwnerUserId(userId);
 
+		if (entities.length === 0) {
+			return 0;
+		}
+
 		entities.filter((entity) => entity.markForDeletion());
 
 		await this.filesRepo.save(entities);
