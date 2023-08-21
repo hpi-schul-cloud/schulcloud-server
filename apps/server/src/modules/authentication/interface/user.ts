@@ -6,6 +6,7 @@ export interface IRole {
 	id: string;
 }
 
+// TODO: should be removed
 export interface IResolvedUser {
 	firstName: string;
 

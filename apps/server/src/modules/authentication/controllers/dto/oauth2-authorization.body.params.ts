@@ -12,6 +12,8 @@ export class Oauth2AuthorizationBodyParams {
 	@ApiProperty()
 	code!: string;
 
+	// TODO: Error
+
 	@IsMongoId()
 	@ApiProperty()
 	systemId!: string;

@@ -1,3 +1,4 @@
+// TODO: move that into nest
 import externalAuthConfig = require('../../../../../src/services/authentication/configuration');
 
 const { authConfig } = externalAuthConfig;

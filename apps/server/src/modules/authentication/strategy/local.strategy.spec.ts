@@ -26,6 +26,7 @@ describe('LocalStrategy', () => {
 
 	beforeAll(async () => {
 		await setupEntities();
+		// TODO: move into setup functions
 		authenticationServiceMock = createMock<AuthenticationService>();
 		idmOauthServiceMock = createMock<IdentityManagementOauthService>();
 		configServiceMock = createMock<ConfigService<IServerConfig, true>>();
@@ -38,6 +39,7 @@ describe('LocalStrategy', () => {
 	});
 
 	beforeEach(() => {
+		// TODO: move into setup functions
 		authenticationServiceMock.loadAccount.mockResolvedValue(mockAccount);
 		authenticationServiceMock.normalizeUsername.mockImplementation((username: string) => username);
 		authenticationServiceMock.normalizePassword.mockImplementation((password: string) => password);

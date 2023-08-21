@@ -57,6 +57,7 @@ describe('LdapService', () => {
 	});
 
 	describe('checkLdapCredentials', () => {
+		// TODO: extract setup functions
 		describe('when credentials are correct', () => {
 			it('should login successfully', async () => {
 				const system: System = systemFactory.withLdapConfig().buildWithId();

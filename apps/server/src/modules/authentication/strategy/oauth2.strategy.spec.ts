@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId, RoleName } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { userDoFactory } from '@shared/testing';
+// TODO: check imports
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { OAuthTokenDto } from '@src/modules/oauth';
@@ -53,6 +54,7 @@ describe('Oauth2Strategy', () => {
 			const setup = () => {
 				const systemId: EntityId = 'systemId';
 				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId();
+				// TODO: use factory
 				const account: AccountDto = new AccountDto({
 					id: 'accountId',
 					createdAt: new Date(),

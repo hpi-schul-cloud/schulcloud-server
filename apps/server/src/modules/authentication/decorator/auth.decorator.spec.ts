@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Controller, ExecutionContext, ForbiddenException, Get, INestApplication } from '@nestjs/common';
-import request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@src/modules/authentication'; // TODO: should be relative import (same module)
 import { ServerTestModule } from '@src/modules/server/server.module';
+import request from 'supertest';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 import { Authenticate, CurrentUser, JWT } from './auth.decorator';
 
@@ -30,13 +30,14 @@ describe('auth.decorator', () => {
 	let currentUser: ICurrentUser;
 	let module: TestingModule;
 
+	// TODO: test structure
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [ServerTestModule],
 			controllers: [
 				TestDecoratorCurrentUserController,
 				TestDecoratorJWTController,
-				// TestDecoratorAuthenticateController,
+				// TestDecoratorAuthenticateController, // TODO: remove
 			],
 		})
 			.overrideGuard(JwtAuthGuard)
@@ -88,9 +89,11 @@ describe('auth.decorator', () => {
 	});
 
 	describe('Authenticate', () => {
+		// TODO: description is wrong (different error)
 		it('should throw with UnauthorizedException if no jwt user data can be extracted from request context', () => {
 			// @ts-expect-error Testcase
 			const exec = () => Authenticate('bla');
+			// TODO: forbidden is probably the wrong error here. NotImplemented? InternalServerError?
 			expect(exec).toThrowError(new ForbiddenException('jwt strategy required'));
 		});
 	});

@@ -16,6 +16,8 @@ describe('jwt strategy', () => {
 	let validationAdapter: DeepMocked<JwtValidationAdapter>;
 	let strategy: JwtStrategy;
 	let module: TestingModule;
+
+	// TODO: move into setup function, use a factory
 	const jwtPayload: JwtPayload = {
 		accountId: new ObjectId().toHexString(),
 		userId: new ObjectId().toHexString(),

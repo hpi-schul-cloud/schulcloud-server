@@ -8,6 +8,7 @@ import {
 } from '@src/imports-from-feathers';
 import { Cache } from 'cache-manager';
 
+// TODO: this looks more like a helper than a strategy
 @Injectable()
 export class JwtValidationAdapter {
 	constructor(
@@ -22,6 +23,7 @@ export class JwtValidationAdapter {
 	 * @param jti jwt id (here required to make jwt identifiers identical in redis)
 	 */
 	async isWhitelisted(accountId: string, jti: string): Promise<void> {
+		// TODO: remove typescript exceptions
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 		await ensureTokenIsWhitelisted({ accountId, jti, privateDevice: false });
 	}

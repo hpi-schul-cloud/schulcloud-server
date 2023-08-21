@@ -6,11 +6,11 @@ import {
 	UnauthorizedException,
 	UseGuards,
 } from '@nestjs/common';
-import { Request } from 'express';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { Request } from 'express';
 import { ExtractJwt } from 'passport-jwt';
-import { ICurrentUser } from '../interface/user';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
+import { ICurrentUser } from '../interface/user';
 import { JwtExtractor } from '../strategy/jwt-extractor';
 
 const STRATEGIES = ['jwt'] as const;
@@ -21,6 +21,7 @@ type Strategies = typeof STRATEGIES;
  * @param strategies accepted strategies
  * @returns
  */
+// TODO: are these typescript exceptions still needed?
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const Authenticate = (...strategies: Strategies) => {
 	if (strategies.includes('jwt')) {
@@ -39,13 +40,18 @@ export const Authenticate = (...strategies: Strategies) => {
  * Returns the current authenticated user.
  * @requires Authenticated
  */
+// TODO: check if any is needed here.
+// TODO: mark data as not needed (_, ctx: ExecutionContext)
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const CurrentUser = createParamDecorator<any, any, ICurrentUser>((data: unknown, ctx: ExecutionContext) => {
+	// TODO: make clearer what is going on here. whats the input? where is this user coming from? what format does it have? how is it mapped?
+	// TODO: use better names, better function names, input types... and maybe a mapping function
 	const { user }: Request = ctx.switchToHttp().getRequest();
 	if (!user)
 		throw new UnauthorizedException(
 			'CurrentUser missing in request context. This route requires jwt authentication guard enabled.'
 		);
+	// TODO: use typeguard, get rid of "as"
 	return user as ICurrentUser;
 });
 
@@ -53,6 +59,8 @@ export const CurrentUser = createParamDecorator<any, any, ICurrentUser>((data: u
  * Returns the current JWT.
  * @requires Authenticated
  */
+// TODO: check if any is needed here.
+// TODO: mark data as not needed (_, ctx: ExecutionContext)
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const JWT = createParamDecorator<any, any, string>((data: unknown, ctx: ExecutionContext) => {
 	const getJWT = ExtractJwt.fromExtractors([ExtractJwt.fromAuthHeaderAsBearerToken(), JwtExtractor.fromCookie('jwt')]);

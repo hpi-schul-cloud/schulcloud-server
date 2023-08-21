@@ -71,6 +71,7 @@ describe('Login Controller (api)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 
+	// TODO: these are part of the factory as well, and should not be needed here
 	const defaultPassword = 'DummyPasswd!1';
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
 
@@ -93,6 +94,7 @@ describe('Login Controller (api)', () => {
 		let account: Account;
 		let user: User;
 
+		// TODO: test structure (use setup function)
 		beforeAll(async () => {
 			const school = schoolFactory.buildWithId();
 			const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
@@ -129,6 +131,10 @@ describe('Login Controller (api)', () => {
 				expect(decodedToken).toHaveProperty('accountId');
 				expect(decodedToken).toHaveProperty('schoolId');
 				expect(decodedToken).toHaveProperty('roles');
+
+				// TODO: maybe seperate into two tests, one for response, one for token
+				// TODO: test for response object instead of multiple Properties
+				// TODO: test token signature
 			});
 		});
 
@@ -140,6 +146,10 @@ describe('Login Controller (api)', () => {
 				};
 				await request(app.getHttpServer()).post(`${basePath}/local`).send(params).expect(401);
 			});
+
+			// TODO: test malformed params
+			// TODO: test wrong user (there should not be a difference in the response between wrong user and wrong pw)
+			// TODO: test error response body
 		});
 	});
 
@@ -149,6 +159,7 @@ describe('Login Controller (api)', () => {
 		let school: School;
 		let system: System;
 
+		// TODO: test structure
 		beforeAll(async () => {
 			const schoolExternalId = 'mockSchoolExternalId';
 			system = systemFactory.withLdapConfig().buildWithId({});
@@ -193,6 +204,8 @@ describe('Login Controller (api)', () => {
 				expect(decodedToken).toHaveProperty('accountId');
 				expect(decodedToken).toHaveProperty('schoolId');
 				expect(decodedToken).toHaveProperty('roles');
+
+				// TODO: seperate into multiple tests
 			});
 		});
 
@@ -206,6 +219,10 @@ describe('Login Controller (api)', () => {
 				};
 				await request(app.getHttpServer()).post(`${basePath}/ldap`).send(params).expect(401);
 			});
+
+			// TODO: test malformed params
+			// TODO: test wrong user (there should not be a difference in the response between wrong user and wrong pw)
+			// TODO: test error response body
 		});
 	});
 

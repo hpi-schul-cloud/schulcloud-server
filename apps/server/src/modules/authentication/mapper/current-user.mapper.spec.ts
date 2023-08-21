@@ -15,12 +15,15 @@ describe('CurrentUserMapper', () => {
 
 	describe('userToICurrentUser', () => {
 		describe('when mapping from a user entity to the current user object', () => {
+			// TODO: extract setup methods
 			it('should map with roles', () => {
 				const teacherRole = roleFactory.buildWithId({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] });
 				const user = userFactory.buildWithId({
 					roles: [teacherRole],
 				});
+
 				const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(accountId, user);
+
 				expect(currentUser).toMatchObject({
 					accountId,
 					systemId: undefined,
@@ -57,6 +60,7 @@ describe('CurrentUserMapper', () => {
 	});
 
 	describe('userDoToICurrentUser', () => {
+		// TODO: extract setup methods
 		const userId = 'mockUserId';
 		describe('when userDO has no ID', () => {
 			it('should throw error', () => {
@@ -131,8 +135,10 @@ describe('CurrentUserMapper', () => {
 	});
 
 	describe('jwtToICurrentUser', () => {
+		// TODO: extract setup methods
 		describe('when JWT is provided with all claims', () => {
 			it('should return current user', () => {
+				// TODO: put into a factory
 				const jwtPayload: JwtPayload = {
 					accountId: 'dummyAccountId',
 					systemId: 'dummySystemId',

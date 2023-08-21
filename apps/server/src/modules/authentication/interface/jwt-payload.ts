@@ -10,9 +10,8 @@ export interface CreateJwtPayload {
 export interface JwtPayload extends CreateJwtPayload {
 	/** audience */
 	aud: string;
-	/** expiration in // TODO
-	 *
-	 */
+	// TODO: check todo
+	/** expiration in // TODO */
 	exp: number;
 	iat: number;
 	/** issuer */

@@ -49,6 +49,7 @@ describe('jwt strategy', () => {
 	});
 
 	describe('when authenticate a user with jwt', () => {
+		// TODO: setup functions
 		it('should fail without whitelisted jwt', async () => {
 			const accountId = new ObjectId().toHexString();
 			const jti = new ObjectId().toHexString();

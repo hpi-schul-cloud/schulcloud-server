@@ -3,6 +3,7 @@ import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
+// TODO: check imports
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { ICurrentUser } from '@src/modules/authentication';
@@ -63,6 +64,7 @@ describe('AuthenticationService', () => {
 
 	describe('loadAccount', () => {
 		describe('when resolving an account without system id', () => {
+			// TODO: extract setup functions
 			it('should find an account', async () => {
 				accountService.searchByUsernameExactMatch.mockResolvedValueOnce([
 					[{ ...mockAccount, systemId: 'mockSystemId' }, mockAccount],
@@ -94,6 +96,7 @@ describe('AuthenticationService', () => {
 	describe('generateJwt', () => {
 		describe('when generating new jwt', () => {
 			it('should pass the correct parameters', async () => {
+				// TODO: could use a factory here
 				const mockCurrentUser: ICurrentUser = {
 					accountId: 'mockAccountId',
 					roles: ['student'],

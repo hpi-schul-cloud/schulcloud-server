@@ -5,11 +5,13 @@ import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { ErrorLoggable } from '@src/core/error/loggable/error.loggable';
 import { Logger } from '@src/core/logger';
+// TODO: check imports
 import { AccountDto } from '@src/modules/account/services/dto';
 import { Strategy } from 'passport-custom';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
 import { ICurrentUser } from '../interface';
 import { CurrentUserMapper } from '../mapper';
+// TODO: use index file for services?
 import { AuthenticationService } from '../services/authentication.service';
 import { LdapService } from '../services/ldap.service';
 
@@ -27,10 +29,10 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 	}
 
 	async validate(request: { body: LdapAuthorizationBodyParams }): Promise<ICurrentUser> {
+		// TODO: can this be better structured? these are a bit too many empty lines
 		const { username, password, systemId, schoolId } = this.extractParamsFromRequest(request);
 
 		const system: System = await this.systemRepo.findById(systemId);
-
 		const school: SchoolDO = await this.schoolRepo.findById(schoolId);
 
 		if (!school.systems || !school.systems.includes(systemId)) {
@@ -89,7 +91,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 
 		let account: AccountDto;
 
-		// TODO having to check for two values in order to find an account is not optimal and should be changed.
+		// TODO: having to check for two values in order to find an account is not optimal and should be changed.
 		// The way the name field of Accounts is used for LDAP should be reconsidered, since
 		// mixing the login name with a technical id from a foreign system is not a good pattern.
 		// Binding the login name to an identifier from a foreign system or an identifier of a school can lead to
