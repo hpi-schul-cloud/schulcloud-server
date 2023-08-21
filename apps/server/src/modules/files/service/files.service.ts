@@ -15,7 +15,7 @@ export class FilesService {
 			return 0;
 		}
 
-		entities.filter((entity) => entity.markForDeletion());
+		entities.forEach((entity) => entity.markForDeletion());
 
 		await this.filesRepo.save(entities);
 
