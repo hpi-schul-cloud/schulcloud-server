@@ -1,6 +1,5 @@
 import { ValidationError, ValidationPipe } from '@nestjs/common';
 import { ApiValidationError } from '@shared/common';
-import { getMetadataStorage } from 'class-validator';
 
 /** *********************************************
  * Global Pipe setup
