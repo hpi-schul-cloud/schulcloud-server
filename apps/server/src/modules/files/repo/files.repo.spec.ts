@@ -4,33 +4,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { StorageProviderEntity } from '@shared/domain';
-import { BaseFactory, storageProviderFactory } from '@shared/testing';
+import { storageProviderFactory } from '@shared/testing';
 
 import { FileOwnerModel, FilePermissionReferenceModel } from '../domain';
-import { FileEntity, FileEntityProps, FilePermissionEntity } from '../entity';
+import { FileEntity, FilePermissionEntity } from '../entity';
+import { userFileFactory } from '../entity/testing';
 import { FilesRepo } from './files.repo';
-
-const userFileFactory = BaseFactory.define<FileEntity, FileEntityProps>(FileEntity, ({ sequence }) => {
-	const userId = new ObjectId().toHexString();
-
-	return {
-		name: `test-file-${sequence}.txt`,
-		size: Math.floor(Math.random() * 4200) + 1,
-		storageFileName: `00${sequence}-test-file-${sequence}.txt`,
-		bucket: `bucket-00${sequence}`,
-		storageProvider: storageProviderFactory.buildWithId(),
-		thumbnail: 'https://example.com/thumbnail.png',
-		ownerId: userId,
-		refOwnerModel: FileOwnerModel.USER,
-		creatorId: userId,
-		permissions: [
-			new FilePermissionEntity({
-				refId: userId,
-				refPermModel: FilePermissionReferenceModel.USER,
-			}),
-		],
-	};
-});
 
 describe(FilesRepo.name, () => {
 	let repo: FilesRepo;
