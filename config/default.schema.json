@@ -327,25 +327,25 @@
 					"default": "eu-central-2",
 					"description": "Region name of bucket"
 				},
-				"S3_ACCESS_KEY_ID_RW": {
+				"S3_ACCESS_KEY_ID_RW": { 
 					"type": "string",
 					"default": "",
-					"description": "Access Key to S3 with R/W permissions"
+					"description": "Access Key to S3_BUCKET_CONTENT with R/W permissions"
 				},
 				"S3_SECRET_ACCESS_KEY_RW": {
 					"type": "string",
 					"default": "",
-					"description": "Secret key to S3 with R/W permissions"
+					"description": "Secret key to S3_BUCKET_CONTENT with R/W permissions"
 				},
 				"S3_ACCESS_KEY_ID_R": {
 					"type": "string",
 					"default": "",
-					"description": "Access Key to S3 with R permissions"
+					"description": "Access Key to S3_BUCKET_LIBRARIES with R permissions"
 				},
 				"S3_SECRET_ACCESS_KEY_R": {
 					"type": "string",
 					"default": "",
-					"description": "Secret key to S3 with R permissions"
+					"description": "Secret key to S3_BUCKET_LIBRARIES with R permissions"
 				},
 				"S3_BUCKET_CONTENT": {
 					"type": "string",
@@ -602,12 +602,12 @@
 		},
 		"SC_TITLE": {
 			"type": "string",
-			"default": "HPI Schul-Cloud",
+			"default": "dBildungscloud",
 			"description": "The used title."
 		},
 		"SC_SHORT_TITLE": {
 			"type": "string",
-			"default": "HPI Schul-Cloud",
+			"default": "dBildungscloud",
 			"description": "Look to SC_TITLE, it is a possible short form of it."
 		},
 		"SC_DOMAIN": {

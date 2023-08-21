@@ -7,15 +7,17 @@ import {
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope, CustomParameterType } from '../../common/enum';
-import { ExternalToolService } from './index';
-import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
+import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../domain';
+import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
+import { ExternalToolService } from './index';
 
 describe('ExternalToolParameterValidationService', () => {
 	let module: TestingModule;
 	let service: ExternalToolParameterValidationService;
 
 	let externalToolService: DeepMocked<ExternalToolService>;
+	let commonToolValidationService: DeepMocked<CommonToolValidationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -25,11 +27,18 @@ describe('ExternalToolParameterValidationService', () => {
 					provide: ExternalToolService,
 					useValue: createMock<ExternalToolService>(),
 				},
+				{
+					provide: CommonToolValidationService,
+					useValue: createMock<CommonToolValidationService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(ExternalToolParameterValidationService);
 		externalToolService = module.get(ExternalToolService);
+		commonToolValidationService = module.get(CommonToolValidationService);
+
+		commonToolValidationService.isValueValidForType.mockReturnValue(true);
 	});
 
 	afterAll(async () => {
@@ -40,7 +49,7 @@ describe('ExternalToolParameterValidationService', () => {
 		jest.clearAllMocks();
 	});
 
-	describe('validateCommon is called', () => {
+	describe('validateCommon', () => {
 		describe('when tool is valid', () => {
 			it('should return without exception', async () => {
 				const externalTool: ExternalTool = externalToolFactory
@@ -70,10 +79,6 @@ describe('ExternalToolParameterValidationService', () => {
 			it('should return when tool name is undefined', async () => {
 				const externalTool: ExternalTool = externalToolFactory.build({
 					name: undefined,
-					parameters: [
-						customParameterFactory.build({ name: 'sameKey', scope: CustomParameterScope.SCHOOL }),
-						customParameterFactory.build({ name: 'notSameKey', scope: CustomParameterScope.SCHOOL }),
-					],
 				});
 
 				const func = () => service.validateCommon(externalTool);
@@ -92,9 +97,7 @@ describe('ExternalToolParameterValidationService', () => {
 				const func = () => service.validateCommon(externalTool);
 
 				await expect(func()).rejects.toThrow(
-					new ValidationError(
-						`tool_param_name: The tool ${externalTool.name} is missing at least one custom parameter name.`
-					)
+					new ValidationError(`tool_param_name: A custom parameter is missing a name.`)
 				);
 			});
 		});
@@ -139,14 +142,18 @@ describe('ExternalToolParameterValidationService', () => {
 
 		describe('when regex is invalid', () => {
 			it('throw when external tools has a faulty regular expression', async () => {
-				const externalTool: ExternalTool = externalToolFactory.withCustomParameters(1, { regex: '[' }).build();
+				const externalTool: ExternalTool = externalToolFactory
+					.withCustomParameters(1, { regex: '[', regexComment: 'not a regex' })
+					.build();
 				externalToolService.findExternalToolByName.mockResolvedValue(null);
 
 				const func = () => service.validateCommon(externalTool);
 
 				await expect(func()).rejects.toThrow(
 					new ValidationError(
-						`tool_param_regex_invalid: A custom Parameter of the tool ${externalTool.name} has wrong regex attribute.`
+						`tool_param_regex_invalid: The custom Parameter "${
+							externalTool.parameters?.[0].name ?? ''
+						}" has an invalid regex.`
 					)
 				);
 			});
@@ -176,8 +183,8 @@ describe('ExternalToolParameterValidationService', () => {
 
 				await expect(result).rejects.toThrow(
 					new ValidationError(
-						`tool_param_regexComment: The "${
-							(externalTool.parameters as CustomParameter[])[0].name
+						`tool_param_regexComment: The custom parameter "${
+							externalTool.parameters?.[0].name ?? ''
 						}" parameter is missing a regex comment.`
 					)
 				);
@@ -210,7 +217,7 @@ describe('ExternalToolParameterValidationService', () => {
 				});
 			});
 
-			describe('when defaultValue is empty', () => {
+			describe('when defaultValue is undefined', () => {
 				const setup = () => {
 					const externalTool: ExternalTool = externalToolFactory
 						.withCustomParameters(1, {
@@ -233,15 +240,15 @@ describe('ExternalToolParameterValidationService', () => {
 
 					await expect(result).rejects.toThrow(
 						new ValidationError(
-							`tool_param_default_required: The "${
-								(externalTool.parameters as CustomParameter[])[0].name
+							`tool_param_default_required: The custom parameter "${
+								externalTool.parameters?.[0].name ?? ''
 							}" is a global parameter and requires a default value.`
 						)
 					);
 				});
 			});
 
-			describe('when the defaultValue is undefined', () => {
+			describe('when the defaultValue is empty', () => {
 				const setup = () => {
 					const externalTool: ExternalTool = externalToolFactory
 						.withCustomParameters(1, {
@@ -264,115 +271,11 @@ describe('ExternalToolParameterValidationService', () => {
 
 					await expect(result).rejects.toThrow(
 						new ValidationError(
-							`tool_param_default_required: The "${
-								(externalTool.parameters as CustomParameter[])[0].name
+							`tool_param_default_required: The custom parameter "${
+								externalTool.parameters?.[0].name ?? ''
 							}" is a global parameter and requires a default value.`
 						)
 					);
-				});
-			});
-
-			describe('when the type is boolean', () => {
-				describe('when default value is not matching the criteria', () => {
-					const setup = () => {
-						const externalTool: ExternalTool = externalToolFactory
-							.withCustomParameters(1, {
-								scope: CustomParameterScope.GLOBAL,
-								type: CustomParameterType.BOOLEAN,
-								default: 'ttt',
-							})
-							.build();
-
-						externalToolService.findExternalToolByName.mockResolvedValue(null);
-
-						return {
-							externalTool,
-						};
-					};
-
-					it('should throw an exception', async () => {
-						const { externalTool } = setup();
-
-						const result: Promise<void> = service.validateCommon(externalTool);
-
-						await expect(result).rejects.toThrow(
-							new ValidationError(
-								`tool_param_boolean_invalid: The tool ${externalTool.name || ''} does not contain a valid boolean.`
-							)
-						);
-					});
-				});
-
-				describe('when tool has no custom parameters', () => {
-					const setup = () => {
-						const externalTool: ExternalTool = externalToolFactory.build({ parameters: [] });
-
-						externalToolService.findExternalToolByName.mockResolvedValue(null);
-
-						return {
-							externalTool,
-						};
-					};
-
-					it('should pass', async () => {
-						const { externalTool } = setup();
-
-						const result: Promise<void> = service.validateCommon(externalTool);
-
-						await expect(result).resolves.not.toThrow();
-					});
-				});
-
-				describe('when default value is matching the criteria', () => {
-					const setup = () => {
-						const externalTool: ExternalTool = externalToolFactory
-							.withCustomParameters(1, {
-								scope: CustomParameterScope.GLOBAL,
-								type: CustomParameterType.BOOLEAN,
-								default: 'true',
-							})
-							.build();
-
-						externalToolService.findExternalToolByName.mockResolvedValue(null);
-
-						return {
-							externalTool,
-						};
-					};
-
-					it('should pass', async () => {
-						const { externalTool } = setup();
-
-						const result: Promise<void> = service.validateCommon(externalTool);
-
-						await expect(result).resolves.not.toThrow();
-					});
-				});
-
-				describe('when default value is not defined', () => {
-					const setup = () => {
-						const externalTool: ExternalTool = externalToolFactory
-							.withCustomParameters(1, {
-								scope: CustomParameterScope.SCHOOL,
-								type: CustomParameterType.BOOLEAN,
-								default: undefined,
-							})
-							.build();
-
-						externalToolService.findExternalToolByName.mockResolvedValue(null);
-
-						return {
-							externalTool,
-						};
-					};
-
-					it('should pass', async () => {
-						const { externalTool } = setup();
-
-						const result: Promise<void> = service.validateCommon(externalTool);
-
-						await expect(result).resolves.not.toThrow();
-					});
 				});
 			});
 
@@ -427,7 +330,34 @@ describe('ExternalToolParameterValidationService', () => {
 
 				await expect(result).rejects.toThrow(
 					new ValidationError(
-						`tool_param_auto_requires_global: The "${parameter.name}" with type "${parameter.type}" must have the scope "global", since it is automatically filled.`
+						`tool_param_auto_requires_global: The custom parameter "${parameter.name}" with type "${parameter.type}" must have the scope "global", since it is automatically filled.`
+					)
+				);
+			});
+		});
+
+		describe('when parameter has wrong type as default', () => {
+			const setup = () => {
+				const parameter = customParameterFactory.buildWithId({ default: 'test', type: CustomParameterType.NUMBER });
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({ parameters: [parameter] });
+
+				externalToolService.findExternalToolByName.mockResolvedValue(externalTool);
+				commonToolValidationService.isValueValidForType.mockReturnValue(false);
+
+				return {
+					externalTool,
+					parameter,
+				};
+			};
+
+			it('should throw exception', async () => {
+				const { externalTool, parameter } = setup();
+
+				const result: Promise<void> = service.validateCommon(externalTool);
+
+				await expect(result).rejects.toThrow(
+					new ValidationError(
+						`tool_param_type_mismatch: The default value of the custom parameter "${parameter.name}" should be of type "${parameter.type}".`
 					)
 				);
 			});

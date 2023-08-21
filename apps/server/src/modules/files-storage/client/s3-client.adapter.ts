@@ -7,6 +7,7 @@ import {
 	HeadObjectCommand,
 	ListObjectsV2Command,
 	ListObjectsV2CommandOutput,
+	ListObjectsCommand,
 	S3Client,
 	ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
@@ -15,7 +16,7 @@ import { Inject, Injectable, InternalServerErrorException, NotFoundException } f
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
 import { FileDto } from '../dto';
-import { ICopyFiles, IGetFileResponse, IStorageClient, S3Config } from '../interface';
+import { ICopyFiles, IGetFile, IStorageClient, S3Config } from '../interface';
 
 @Injectable()
 export class S3ClientAdapter implements IStorageClient {
@@ -44,7 +45,7 @@ export class S3ClientAdapter implements IStorageClient {
 		}
 	}
 
-	public async get(path: string, bytesRange?: string): Promise<IGetFileResponse> {
+	public async get(path: string, bytesRange?: string): Promise<IGetFile> {
 		try {
 			this.logger.log({ action: 'get', params: { path, bucket: this.config.bucket } });
 
@@ -58,6 +59,7 @@ export class S3ClientAdapter implements IStorageClient {
 			const stream = data.Body as Readable;
 
 			this.checkStreamResponsive(stream, path);
+
 			return {
 				data: stream,
 				contentType: data.ContentType,
@@ -67,11 +69,12 @@ export class S3ClientAdapter implements IStorageClient {
 			};
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (err.message && err.message === 'NoSuchKey') {
+			if (err.Code && err.Code === 'NoSuchKey') {
 				this.logger.log(`could not find one of the files for deletion with id ${path}`);
 				throw new NotFoundException('NoSuchKey');
+			} else {
+				throw new InternalServerErrorException(err, 'S3ClientAdapter:get');
 			}
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:get');
 		}
 	}
 
@@ -238,6 +241,29 @@ export class S3ClientAdapter implements IStorageClient {
 				throw new NotFoundException('NoSuchKey');
 			}
 			throw new InternalServerErrorException(err, 'S3ClientAdapter:head');
+		}
+	}
+
+	public async deleteDirectory(path: string) {
+		try {
+			this.logger.log({ action: 'deleteDirectory', params: { path, bucket: this.config.bucket } });
+
+			const req = new ListObjectsCommand({
+				Bucket: this.config.bucket,
+				Prefix: path,
+			});
+
+			const data = await this.client.send(req);
+
+			if (data.Contents?.length && data.Contents?.length > 0) {
+				const pathObjects = data.Contents.map((p) => p.Key);
+
+				const filteredPathObjects = pathObjects.filter((p): p is string => !!p);
+
+				await this.delete(filteredPathObjects);
+			}
+		} catch (err) {
+			throw new InternalServerErrorException(err, 'S3ClientAdapter:deleteDirectory');
 		}
 	}
 
