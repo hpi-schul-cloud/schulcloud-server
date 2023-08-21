@@ -103,7 +103,12 @@ export class ExternalToolConfigurationUc {
 			);
 		});
 
-		this.addLogoUrlsToTools('/v3/tools/external-tools/{id}/logo', availableToolsForContext);
+		availableToolsForContext.forEach((toolTemplateInfo) => {
+			toolTemplateInfo.externalTool.logoUrl = this.externalToolLogoService.buildLogoUrl(
+				'/v3/tools/external-tools/{id}/logo',
+				toolTemplateInfo.externalTool
+			);
+		});
 
 		return availableToolsForContext;
 	}
@@ -181,16 +186,5 @@ export class ExternalToolConfigurationUc {
 				this.toolPermissionHelper.ensureContextPermissions(userId, tool, context)
 			)
 		);
-	}
-
-	private addLogoUrlsToTools(
-		logoUrlTemplate: string,
-		tools: ContextExternalToolTemplateInfo[]
-	): ContextExternalToolTemplateInfo[] {
-		const toolsWithLogoUrl = tools.map((tool): ContextExternalToolTemplateInfo => {
-			tool.externalTool.logoUrl = this.externalToolLogoService.buildLogoUrl(logoUrlTemplate, tool.externalTool);
-			return tool;
-		});
-		return toolsWithLogoUrl;
 	}
 }

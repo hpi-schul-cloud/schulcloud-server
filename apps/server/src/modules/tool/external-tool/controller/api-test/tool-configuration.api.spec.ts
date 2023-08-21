@@ -123,19 +123,18 @@ describe('ToolConfigurationController (API)', () => {
 
 				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser], school });
 
+				const baseUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
 				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					logoBase64: 'logo',
 					parameters: [globalParameter, schoolParameter, contextParameter],
 				});
+				externalTool.logoUrl = `${baseUrl}/v3/tools/external-tools/${externalTool.id}/logo`;
 
 				const schoolExternalTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
 					tool: externalTool,
 				});
-
-				const baseUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
-				externalTool.logoBase64 = 'logo';
-				externalTool.logoUrl = `${baseUrl}/v3/tools/external-tools/${externalTool.id}/logo`;
 
 				await em.persistAndFlush([school, course, teacherUser, teacherAccount, externalTool, schoolExternalTool]);
 				em.clear();

@@ -1,4 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Inject } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import { lastValueFrom } from 'rxjs';
@@ -14,6 +13,7 @@ import {
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
 import { ExternalToolService } from './external-tool.service';
+import { ExternalToolLogoFetchFailedLoggableException } from '../loggable/external-tool-logo-fetch-failed-loggable-exception';
 
 const contentTypeDetector: Record<string, string> = {
 	ffd8ffe0: 'image/jpeg',
@@ -32,7 +32,7 @@ export class ExternalToolLogoService {
 
 	buildLogoUrl(template: string, externalTool: ExternalTool): string | undefined {
 		const { logo, id } = externalTool;
-		const backendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
+		const backendUrl = this.toolFeatures.backEndUrl;
 
 		if (logo) {
 			const filledTemplate = template.replace(/\{id\}/g, id || '');
@@ -57,18 +57,6 @@ export class ExternalToolLogoService {
 		}
 	}
 
-	private async fetchBase64Logo(logoUrl: string): Promise<string> {
-		const response: AxiosResponse<ArrayBuffer> = await lastValueFrom(
-			this.httpService.get(logoUrl, { responseType: 'arraybuffer' })
-		);
-		this.logger.info(new ExternalToolLogoFetchedLoggable(logoUrl));
-
-		const buffer: Buffer = Buffer.from(response.data);
-		const logoBase64: string = buffer.toString('base64');
-
-		return logoBase64;
-	}
-
 	async fetchLogo(externalTool: Partial<ExternalTool>): Promise<string | undefined> {
 		if (externalTool.logoUrl) {
 			const base64Logo: string = await this.fetchBase64Logo(externalTool.logoUrl);
@@ -79,6 +67,22 @@ export class ExternalToolLogoService {
 		}
 
 		return undefined;
+	}
+
+	private async fetchBase64Logo(logoUrl: string): Promise<string> {
+		try {
+			const response: AxiosResponse<ArrayBuffer> = await lastValueFrom(
+				this.httpService.get(logoUrl, { responseType: 'arraybuffer' })
+			);
+			this.logger.info(new ExternalToolLogoFetchedLoggable(logoUrl));
+
+			const buffer: Buffer = Buffer.from(response.data);
+			const logoBase64: string = buffer.toString('base64');
+
+			return logoBase64;
+		} catch (error) {
+			throw new ExternalToolLogoFetchFailedLoggableException(logoUrl);
+		}
 	}
 
 	async getExternalToolBinaryLogo(toolId: EntityId): Promise<ExternalToolLogo> {

@@ -6,7 +6,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { Logger } from '@src/core/logger';
 import { externalToolFactory } from '@shared/testing';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import {
 	ExternalToolLogoFetchedLoggable,
 	ExternalToolLogoNotFoundLoggableException,
@@ -17,6 +16,7 @@ import { ExternalTool } from '../domain';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalToolService } from './external-tool.service';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
+import { ExternalToolLogoFetchFailedLoggableException } from '../loggable/external-tool-logo-fetch-failed-loggable-exception';
 
 describe('ExternalToolLogoService', () => {
 	let module: TestingModule;
@@ -93,7 +93,7 @@ describe('ExternalToolLogoService', () => {
 				const externalTool: ExternalTool = externalToolFactory.withBase64Logo().buildWithId();
 				const logoUrlTemplate = '/v3/tools/external-tools/{id}/logo';
 
-				const baseUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
+				const baseUrl = toolFeatures.backEndUrl;
 				const id = externalTool.id as string;
 				const expected = `${baseUrl}/v3/tools/external-tools/${id}/logo`;
 
@@ -255,7 +255,7 @@ describe('ExternalToolLogoService', () => {
 
 				const func = () => service.fetchLogo(externalTool);
 
-				await expect(func()).rejects.toThrow(HttpException);
+				await expect(func()).rejects.toThrow(ExternalToolLogoFetchFailedLoggableException);
 			});
 		});
 	});
@@ -301,9 +301,9 @@ describe('ExternalToolLogoService', () => {
 			it('should throw ExternalToolLogoNotFoundLoggableException', async () => {
 				const { externalToolId } = setup();
 
-				await expect(service.getExternalToolBinaryLogo(externalToolId)).rejects.toThrow(
-					ExternalToolLogoNotFoundLoggableException
-				);
+				const func = async () => service.getExternalToolBinaryLogo(externalToolId);
+
+				await expect(func).rejects.toThrow(ExternalToolLogoNotFoundLoggableException);
 			});
 		});
 	});
