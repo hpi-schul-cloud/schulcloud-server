@@ -7,7 +7,7 @@ import { setupEntities } from '@shared/testing';
 import { FilesService } from './files.service';
 import { FilesRepo } from '../repo';
 import { userFileFactory } from '../entity/testing';
-import { FileEntity } from '@src/modules/files/entity';
+import { FileEntity } from '../entity';
 
 describe(FilesService.name, () => {
 	let module: TestingModule;
