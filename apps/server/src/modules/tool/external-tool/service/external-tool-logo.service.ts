@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { HttpException, Inject } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import { lastValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
@@ -81,7 +81,9 @@ export class ExternalToolLogoService {
 
 			return logoBase64;
 		} catch (error) {
-			throw new ExternalToolLogoFetchFailedLoggableException(logoUrl);
+			if (error instanceof HttpException) {
+				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl, error.getStatus());
+			} else throw new ExternalToolLogoFetchFailedLoggableException(logoUrl);
 		}
 	}
 

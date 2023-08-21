@@ -11,7 +11,7 @@ describe('ExternalToolLogoFetchFailedLoggableException', () => {
 		it('should create an instance of ExternalToolLogoNotFoundLoggableException', () => {
 			const { logoUrl } = setup();
 
-			const loggable = new ExternalToolLogoFetchFailedLoggableException(logoUrl);
+			const loggable = new ExternalToolLogoFetchFailedLoggableException(logoUrl, undefined);
 
 			expect(loggable).toBeInstanceOf(ExternalToolLogoFetchFailedLoggableException);
 		});
@@ -20,7 +20,7 @@ describe('ExternalToolLogoFetchFailedLoggableException', () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const logoUrl = 'logoUrl';
-			const loggable = new ExternalToolLogoFetchFailedLoggableException(logoUrl);
+			const loggable = new ExternalToolLogoFetchFailedLoggableException(logoUrl, 404, '123');
 
 			return { loggable, logoUrl };
 		};
@@ -32,10 +32,12 @@ describe('ExternalToolLogoFetchFailedLoggableException', () => {
 
 			expect(message).toEqual({
 				type: 'EXTERNAL_TOOL_LOGO_FETCH_FAILED',
-				message: 'External tool logo could not be fetched',
+				message: 'External tool logo could not been fetched',
 				stack: loggable.stack,
 				data: {
 					logoUrl,
+					externalToolId: '123',
+					httpStatus: 404,
 				},
 			});
 		});
