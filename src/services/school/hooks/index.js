@@ -130,6 +130,7 @@ const decorateYears = async (context) => {
 	const addYearsToSchool = (school) => {
 		const facade = new SchoolYearFacade(years, school);
 		school.years = facade.toJSON();
+		school.currentYear = school.years.activeYear;
 	};
 	try {
 		switch (context.method) {
