@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, UserLoginMigrationDO } from '@shared/domain';
+import { EntityId } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { ISession } from '@shared/domain/types/session';
@@ -11,7 +11,7 @@ import { OauthDataDto } from '@src/modules/provisioning/dto';
 import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { UserService } from '@src/modules/user';
-import { UserLoginMigrationService, UserMigrationService } from '@src/modules/user-login-migration';
+import { UserMigrationService } from '@src/modules/user-login-migration';
 import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
 import { MigrationDto } from '@src/modules/user-login-migration/service/dto';
 import { nanoid } from 'nanoid';
@@ -34,13 +34,17 @@ export class OauthUc {
 		private readonly userService: UserService,
 		private readonly userMigrationService: UserMigrationService,
 		private readonly schoolMigrationService: SchoolMigrationService,
-		private readonly logger: LegacyLogger,
-		private readonly userLoginMigrationService: UserLoginMigrationService
+		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(OauthUc.name);
 	}
 
-	async startOauthLogin(session: ISession, systemId: EntityId, postLoginRedirect?: string): Promise<string> {
+	async startOauthLogin(
+		session: ISession,
+		systemId: EntityId,
+		migration: boolean,
+		postLoginRedirect?: string
+	): Promise<string> {
 		const state = nanoid(16);
 
 		const system: SystemDto = await this.systemService.findById(systemId);
@@ -48,32 +52,25 @@ export class OauthUc {
 			throw new UnprocessableEntityException(`Requested system ${systemId} has no oauth configured`);
 		}
 
-		const userLoginMigration: UserLoginMigrationDO | null =
-			await this.userLoginMigrationService.findMigrationBySourceSystem(systemId);
-
-		const authenticationUrl: string = this.oauthService.getAuthenticationUrl(
-			system.oauthConfig,
-			state,
-			!!userLoginMigration
-		);
+		const authenticationUrl: string = this.oauthService.getAuthenticationUrl(system.oauthConfig, state, migration);
 
 		session.oauthLoginState = new OauthLoginStateDto({
 			state,
 			systemId,
 			provider: system.oauthConfig.provider,
 			postLoginRedirect,
-			userLoginMigrationId: userLoginMigration?.id,
+			userLoginMigration: migration,
 		});
 
 		return authenticationUrl;
 	}
 
 	async processOAuthLogin(cachedState: OauthLoginStateDto, code?: string, error?: string): Promise<OAuthProcessDto> {
-		const { state, systemId, postLoginRedirect, userLoginMigrationId } = cachedState;
+		const { state, systemId, postLoginRedirect, userLoginMigration } = cachedState;
 
 		this.logger.debug(`Oauth login process started. [state: ${state}, system: ${systemId}]`);
 
-		const redirectUri: string = this.oauthService.getRedirectUri(!!userLoginMigrationId);
+		const redirectUri: string = this.oauthService.getRedirectUri(userLoginMigration);
 
 		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(systemId, redirectUri, code, error);
 
@@ -105,13 +102,13 @@ export class OauthUc {
 		query: AuthorizationParams,
 		cachedState: OauthLoginStateDto
 	): Promise<MigrationDto> {
-		const { state, systemId, userLoginMigrationId } = cachedState;
+		const { state, systemId, userLoginMigration } = cachedState;
 
 		if (state !== query.state) {
 			throw new UnauthorizedException(`Invalid state. Got: ${query.state} Expected: ${state}`);
 		}
 
-		const redirectUri: string = this.oauthService.getRedirectUri(!!userLoginMigrationId);
+		const redirectUri: string = this.oauthService.getRedirectUri(userLoginMigration);
 
 		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(
 			systemId,

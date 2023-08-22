@@ -148,41 +148,4 @@ describe('UserLoginMigrationRepo', () => {
 			});
 		});
 	});
-
-	describe('findBySourceSystemId', () => {
-		describe('when searching for a UserLoginMigration by its source system id', () => {
-			const setup = async () => {
-				const sourceSystem: System = systemFactory.buildWithId();
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
-					sourceSystem,
-				});
-
-				await em.persistAndFlush([sourceSystem, userLoginMigration]);
-				em.clear();
-
-				const domainObject: UserLoginMigrationDO = repo.mapEntityToDO(userLoginMigration);
-
-				return {
-					sourceSystemId: sourceSystem.id,
-					domainObject,
-				};
-			};
-
-			it('should return the UserLoginMigration', async () => {
-				const { domainObject, sourceSystemId } = await setup();
-
-				const result: UserLoginMigrationDO | null = await repo.findBySourceSystemId(sourceSystemId);
-
-				expect(result).toEqual(domainObject);
-			});
-		});
-
-		describe('when searching for a UserLoginMigration by an unknown source system id', () => {
-			it('should return null', async () => {
-				const result: UserLoginMigrationDO | null = await repo.findBySourceSystemId('unknown');
-
-				expect(result).toBeNull();
-			});
-		});
-	});
 });

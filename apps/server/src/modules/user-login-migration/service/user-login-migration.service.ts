@@ -208,12 +208,4 @@ export class UserLoginMigrationService {
 	async deleteUserLoginMigration(userLoginMigration: UserLoginMigrationDO): Promise<void> {
 		await this.userLoginMigrationRepo.delete(userLoginMigration);
 	}
-
-	async findMigrationBySourceSystem(systemId: string): Promise<UserLoginMigrationDO | null> {
-		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySourceSystemId(
-			systemId
-		);
-
-		return userLoginMigration;
-	}
 }

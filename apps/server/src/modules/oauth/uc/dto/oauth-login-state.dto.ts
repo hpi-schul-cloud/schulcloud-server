@@ -9,13 +9,13 @@ export class OauthLoginStateDto {
 
 	postLoginRedirect?: string;
 
-	userLoginMigrationId?: string;
+	userLoginMigration: boolean;
 
 	constructor(props: OauthLoginStateDto) {
 		this.state = props.state;
 		this.systemId = props.systemId;
 		this.postLoginRedirect = props.postLoginRedirect;
 		this.provider = props.provider;
-		this.userLoginMigrationId = props.userLoginMigrationId;
+		this.userLoginMigration = props.userLoginMigration;
 	}
 }

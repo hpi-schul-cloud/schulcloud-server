@@ -105,6 +105,7 @@ export class OAuthService {
 
 		const user: UserDO = await this.findUserAfterProvisioningOrThrow(externalUserId, systemId, officialSchoolNumber);
 
+		// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
 		const redirect: string = await this.getPostLoginRedirectUrl(
 			idToken,
 			systemId,

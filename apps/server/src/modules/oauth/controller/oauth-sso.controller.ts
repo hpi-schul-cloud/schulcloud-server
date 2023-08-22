@@ -103,7 +103,12 @@ export class OauthSSOController {
 		@Query() query: SSOLoginQuery
 	): Promise<void> {
 		try {
-			const redirect: string = await this.oauthUc.startOauthLogin(session, params.systemId, query.postLoginRedirect);
+			const redirect: string = await this.oauthUc.startOauthLogin(
+				session,
+				params.systemId,
+				query.migration || false,
+				query.postLoginRedirect
+			);
 
 			res.redirect(redirect);
 		} catch (error) {

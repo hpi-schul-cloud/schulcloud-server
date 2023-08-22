@@ -26,20 +26,7 @@ export class UserLoginMigrationRepo extends BaseDORepo<UserLoginMigrationDO, Use
 		});
 
 		if (userLoginMigration) {
-			const userLoginMigrationDO: UserLoginMigrationDO = this.mapEntityToDO(userLoginMigration);
-			return userLoginMigrationDO;
-		}
-
-		return null;
-	}
-
-	async findBySourceSystemId(sourceSystemId: EntityId): Promise<UserLoginMigrationDO | null> {
-		const userLoginMigration: UserLoginMigration | null = await this._em.findOne(UserLoginMigration, {
-			sourceSystem: sourceSystemId,
-		});
-
-		if (userLoginMigration) {
-			const userLoginMigrationDO: UserLoginMigrationDO = this.mapEntityToDO(userLoginMigration);
+			const userLoginMigrationDO = this.mapEntityToDO(userLoginMigration);
 			return userLoginMigrationDO;
 		}
 
