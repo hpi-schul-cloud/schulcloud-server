@@ -706,13 +706,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/ExternalToolModule.html" data-type="entity-link" >ExternalToolModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-ExternalToolModule-31c543f218bd00e3663371cf172e93c7a36f6124f5785b49251f297f16f7c514f7c8eaa1bb8f694af8fc72db6c6d88377c47cf0845f3281137cda3eff44ced68"' : 'data-bs-target="#xs-injectables-links-module-ExternalToolModule-31c543f218bd00e3663371cf172e93c7a36f6124f5785b49251f297f16f7c514f7c8eaa1bb8f694af8fc72db6c6d88377c47cf0845f3281137cda3eff44ced68"' }>
+                                        'data-bs-target="#injectables-links-module-ExternalToolModule-d500b574cfbc3071cc3e3137311cddf2db8f5cdcfa20ac671985c52b7d9b091f25570157ef9e8420f116ddc543752237d652b80761d0fe710cbbcb7ab2cd4b38"' : 'data-bs-target="#xs-injectables-links-module-ExternalToolModule-d500b574cfbc3071cc3e3137311cddf2db8f5cdcfa20ac671985c52b7d9b091f25570157ef9e8420f116ddc543752237d652b80761d0fe710cbbcb7ab2cd4b38"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ExternalToolModule-31c543f218bd00e3663371cf172e93c7a36f6124f5785b49251f297f16f7c514f7c8eaa1bb8f694af8fc72db6c6d88377c47cf0845f3281137cda3eff44ced68"' :
-                                        'id="xs-injectables-links-module-ExternalToolModule-31c543f218bd00e3663371cf172e93c7a36f6124f5785b49251f297f16f7c514f7c8eaa1bb8f694af8fc72db6c6d88377c47cf0845f3281137cda3eff44ced68"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ExternalToolModule-d500b574cfbc3071cc3e3137311cddf2db8f5cdcfa20ac671985c52b7d9b091f25570157ef9e8420f116ddc543752237d652b80761d0fe710cbbcb7ab2cd4b38"' :
+                                        'id="xs-injectables-links-module-ExternalToolModule-d500b574cfbc3071cc3e3137311cddf2db8f5cdcfa20ac671985c52b7d9b091f25570157ef9e8420f116ddc543752237d652b80761d0fe710cbbcb7ab2cd4b38"' }>
                                         <li class="link">
                                             <a href="injectables/ExternalToolConfigurationService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ExternalToolConfigurationService</a>
                                         </li>
@@ -3080,7 +3080,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ExternalToolLogoFetchedLoggable.html" data-type="entity-link" >ExternalToolLogoFetchedLoggable</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ExternalToolLogoFetchFailedLoggableException.html" data-type="entity-link" >ExternalToolLogoFetchFailedLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ExternalToolLogoNotFoundLoggableException.html" data-type="entity-link" >ExternalToolLogoNotFoundLoggableException</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ExternalToolLogoService.html" data-type="entity-link" >ExternalToolLogoService</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ExternalToolLogoSizeExceededLoggableException.html" data-type="entity-link" >ExternalToolLogoSizeExceededLoggableException</a>

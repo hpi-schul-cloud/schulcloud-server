@@ -136,12 +136,13 @@
 		ltiToolsTabEnabled: Configuration.get(&#x27;FEATURE_LTI_TOOLS_TAB_ENABLED&#x27;) as boolean,
 		contextConfigurationEnabled: Configuration.get(&#x27;FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED&#x27;) as boolean,
 		maxExternalToolLogoSizeInBytes: Configuration.get(&#x27;CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES&#x27;) as number,
+		backEndUrl: Configuration.get(&#x27;PUBLIC_BACKEND_URL&#x27;) as string,
 	}</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/tool/tool-config.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/tool/tool-config.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -169,6 +170,7 @@ export interface IToolFeatures {
 	ltiToolsTabEnabled: boolean;
 	contextConfigurationEnabled: boolean;
 	maxExternalToolLogoSizeInBytes: number;
+	backEndUrl: string;
 }
 
 export default class ToolConfiguration {
@@ -177,6 +179,7 @@ export default class ToolConfiguration {
 		ltiToolsTabEnabled: Configuration.get(&#x27;FEATURE_LTI_TOOLS_TAB_ENABLED&#x27;) as boolean,
 		contextConfigurationEnabled: Configuration.get(&#x27;FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED&#x27;) as boolean,
 		maxExternalToolLogoSizeInBytes: Configuration.get(&#x27;CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES&#x27;) as number,
+		backEndUrl: Configuration.get(&#x27;PUBLIC_BACKEND_URL&#x27;) as string,
 	};
 }
 </code></pre>

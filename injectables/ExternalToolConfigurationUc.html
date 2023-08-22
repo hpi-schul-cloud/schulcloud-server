@@ -132,7 +132,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, toolPermissionHelper: <a href="../injectables/ToolPermissionHelper.html" target="_self">ToolPermissionHelper</a>, externalToolConfigurationService: <a href="../injectables/ExternalToolConfigurationService.html" target="_self">ExternalToolConfigurationService</a>)</code>
+<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, toolPermissionHelper: <a href="../injectables/ToolPermissionHelper.html" target="_self">ToolPermissionHelper</a>, externalToolConfigurationService: <a href="../injectables/ExternalToolConfigurationService.html" target="_self">ExternalToolConfigurationService</a>, externalToolLogoService: <a href="../classes/ExternalToolLogoService.html" target="_self">ExternalToolLogoService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -214,6 +214,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>externalToolLogoService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/ExternalToolLogoService.html" target="_self" >ExternalToolLogoService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -251,8 +263,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="164"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:164</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="179"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:179</a></div>
                 </td>
             </tr>
 
@@ -347,8 +359,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="152"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:152</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="167"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:167</a></div>
                 </td>
             </tr>
 
@@ -443,8 +455,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="56"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:56</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="64"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:64</a></div>
                 </td>
             </tr>
 
@@ -551,8 +563,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="27"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:27</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="28"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:28</a></div>
                 </td>
             </tr>
 
@@ -635,8 +647,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="123"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:123</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="138"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:138</a></div>
                 </td>
             </tr>
 
@@ -719,8 +731,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="101"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:101</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="116"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool-configuration.uc.ts:116</a></div>
                 </td>
             </tr>
 
@@ -797,7 +809,7 @@ import { ContextExternalToolService } from &#x27;../../context-external-tool/ser
 import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
 import { SchoolExternalToolService } from &#x27;../../school-external-tool/service&#x27;;
 import { ExternalTool } from &#x27;../domain&#x27;;
-import { ExternalToolService, ExternalToolConfigurationService } from &#x27;../service&#x27;;
+import { ExternalToolLogoService, ExternalToolService, ExternalToolConfigurationService } from &#x27;../service&#x27;;
 import { ContextExternalToolTemplateInfo } from &#x27;./dto&#x27;;
 import { ToolPermissionHelper } from &#x27;../../common/uc/tool-permission-helper&#x27;;
 
@@ -809,7 +821,8 @@ export class ExternalToolConfigurationUc {
 		private readonly contextExternalToolService: ContextExternalToolService,
 		@Inject(forwardRef(() &#x3D;&gt; ToolPermissionHelper))
 		private readonly toolPermissionHelper: ToolPermissionHelper,
-		private readonly externalToolConfigurationService: ExternalToolConfigurationService
+		private readonly externalToolConfigurationService: ExternalToolConfigurationService,
+		private readonly externalToolLogoService: ExternalToolLogoService
 	) {}
 
 	public async getAvailableToolsForSchool(userId: EntityId, schoolId: EntityId): Promise&lt;ExternalTool[]&gt; {
@@ -836,6 +849,13 @@ export class ExternalToolConfigurationUc {
 
 		availableTools.forEach((externalTool) &#x3D;&gt; {
 			this.externalToolConfigurationService.filterParametersForScope(externalTool, CustomParameterScope.SCHOOL);
+		});
+
+		availableTools.forEach((externalTool) &#x3D;&gt; {
+			externalTool.logoUrl &#x3D; this.externalToolLogoService.buildLogoUrl(
+				&#x27;/v3/tools/external-tools/{id}/logo&#x27;,
+				externalTool
+			);
 		});
 
 		return availableTools;
@@ -880,6 +900,13 @@ export class ExternalToolConfigurationUc {
 			this.externalToolConfigurationService.filterParametersForScope(
 				toolTemplateInfo.externalTool,
 				CustomParameterScope.CONTEXT
+			);
+		});
+
+		availableToolsForContext.forEach((toolTemplateInfo) &#x3D;&gt; {
+			toolTemplateInfo.externalTool.logoUrl &#x3D; this.externalToolLogoService.buildLogoUrl(
+				&#x27;/v3/tools/external-tools/{id}/logo&#x27;,
+				toolTemplateInfo.externalTool
 			);
 		});
 

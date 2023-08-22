@@ -204,8 +204,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="56"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:56</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="58"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:58</a></div>
                 </td>
             </tr>
 
@@ -299,8 +299,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="145"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:145</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="147"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:147</a></div>
                 </td>
             </tr>
 
@@ -394,8 +394,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="76"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:76</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="78"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:78</a></div>
                 </td>
             </tr>
 
@@ -510,8 +510,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="104"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:104</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="106"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:106</a></div>
                 </td>
             </tr>
 
@@ -604,8 +604,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="189"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:189</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="191"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:191</a></div>
                 </td>
             </tr>
 
@@ -699,8 +699,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="165"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:165</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="167"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:167</a></div>
                 </td>
             </tr>
 
@@ -795,8 +795,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="123"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:123</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="125"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:125</a></div>
                 </td>
             </tr>
 
@@ -908,6 +908,7 @@ import {
 	ToolReferenceListResponse,
 	ToolReferenceResponse,
 } from &#x27;./dto&#x27;;
+import { ExternalToolLogoService } from &#x27;../service&#x27;;
 
 @ApiTags(&#x27;Tool&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
@@ -917,7 +918,8 @@ export class ToolController {
 		private readonly externalToolUc: ExternalToolUc,
 		private readonly externalToolDOMapper: ExternalToolRequestMapper,
 		private readonly toolReferenceUc: ToolReferenceUc,
-		private readonly logger: LegacyLogger
+		private readonly logger: LegacyLogger,
+		private readonly externalToolLogoService: ExternalToolLogoService
 	) {}
 
 	@Post()
@@ -1061,7 +1063,7 @@ export class ToolController {
 	})
 	@ApiUnauthorizedResponse({ description: &#x27;User is not logged in.&#x27; })
 	async getExternalToolLogo(@Param() params: ExternalToolIdParams, @Res() res: Response): Promise&lt;void&gt; {
-		const externalToolLogo: ExternalToolLogo &#x3D; await this.externalToolUc.getExternalToolBinaryLogo(
+		const externalToolLogo: ExternalToolLogo &#x3D; await this.externalToolLogoService.getExternalToolBinaryLogo(
 			params.externalToolId
 		);
 		res.setHeader(&#x27;Content-Type&#x27;, externalToolLogo.contentType);
