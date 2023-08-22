@@ -7,7 +7,8 @@ import { setupEntities } from '@shared/testing';
 import { FilesService } from './files.service';
 import { FilesRepo } from '../repo';
 import { userFileFactory } from '../entity/testing';
-import { FileEntity } from '../entity';
+import { FileEntity, FilePermissionEntity } from '../entity';
+import { FilePermissionReferenceModel } from '../domain';
 
 describe(FilesService.name, () => {
 	let module: TestingModule;
@@ -31,6 +32,12 @@ describe(FilesService.name, () => {
 		await setupEntities();
 	});
 
+	afterEach(() => {
+		repo.findByPermissionRefId.mockClear();
+		repo.findByOwnerUserId.mockClear();
+		repo.save.mockClear();
+	});
+
 	afterAll(async () => {
 		await module.close();
 	});
@@ -46,6 +53,75 @@ describe(FilesService.name, () => {
 
 			expect(repo.findByPermissionRefId).toBeCalledWith(userId);
 			expect(repo.save).not.toBeCalled();
+		});
+
+		describe('should properly remove user permissions', () => {
+			it('in case of just a single file accessible by given user', async () => {
+				const userId = new ObjectId().toHexString();
+				const userPermission = new FilePermissionEntity({
+					refId: userId,
+					refPermModel: FilePermissionReferenceModel.USER,
+				});
+				const entity = userFileFactory.buildWithId({ permissions: [userPermission] });
+
+				repo.findByPermissionRefId.mockResolvedValueOnce([entity]);
+
+				const result = await service.removeUserPermissionsToAnyFiles(userId);
+
+				expect(result).toEqual(1);
+				expect(entity.permissions).not.toContain(userPermission);
+
+				expect(repo.findByPermissionRefId).toBeCalledWith(userId);
+				expect(repo.save).toBeCalledWith([entity]);
+			});
+
+			it('in case of many files accessible by given user', async () => {
+				const userId = new ObjectId().toHexString();
+				const userPermission = new FilePermissionEntity({
+					refId: userId,
+					refPermModel: FilePermissionReferenceModel.USER,
+				});
+				const anotherUserPermission = new FilePermissionEntity({
+					refId: new ObjectId().toHexString(),
+					refPermModel: FilePermissionReferenceModel.USER,
+				});
+				const yetAnotherUserPermission = new FilePermissionEntity({
+					refId: new ObjectId().toHexString(),
+					refPermModel: FilePermissionReferenceModel.USER,
+				});
+				const entities = [
+					userFileFactory.buildWithId({
+						permissions: [userPermission, anotherUserPermission, yetAnotherUserPermission],
+					}),
+					userFileFactory.buildWithId({
+						permissions: [yetAnotherUserPermission, userPermission, anotherUserPermission],
+					}),
+					userFileFactory.buildWithId({
+						permissions: [anotherUserPermission, yetAnotherUserPermission, userPermission],
+					}),
+					userFileFactory.buildWithId({
+						permissions: [userPermission, yetAnotherUserPermission, anotherUserPermission],
+					}),
+					userFileFactory.buildWithId({
+						permissions: [yetAnotherUserPermission, anotherUserPermission, userPermission],
+					}),
+				];
+
+				repo.findByPermissionRefId.mockResolvedValueOnce(entities);
+
+				const result = await service.removeUserPermissionsToAnyFiles(userId);
+
+				expect(result).toEqual(5);
+
+				entities.forEach((entity) => {
+					expect(entity.permissions).not.toContain(userPermission);
+					expect(entity.permissions).toContain(anotherUserPermission);
+					expect(entity.permissions).toContain(yetAnotherUserPermission);
+				});
+
+				expect(repo.findByPermissionRefId).toBeCalledWith(userId);
+				expect(repo.save).toBeCalledWith(entities);
+			});
 		});
 	});
 
@@ -72,7 +148,7 @@ describe(FilesService.name, () => {
 		});
 
 		describe('should properly mark files for deletion', () => {
-			it('in case of just a single file owned by the user', async () => {
+			it('in case of just a single file owned by given user', async () => {
 				const entity = userFileFactory.buildWithId();
 				const userId = entity.ownerId;
 				repo.findByOwnerUserId.mockResolvedValueOnce([entity]);
