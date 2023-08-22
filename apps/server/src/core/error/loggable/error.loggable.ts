@@ -49,13 +49,10 @@ export class ErrorLoggable implements Loggable {
 	private getPropertyValue(e: ValidationError): unknown {
 		// we can only log a value if we can decide if it is privacy protected
 		// that has to be done using the target metadata of class-validator (see @PrivacyProtect decorator)
-		if (e.target) {
-			if (this.isPropertyPrivacyProtected(e.target, e.property)) {
-				return '######';
-			}
+		if (e.target && !this.isPropertyPrivacyProtected(e.target, e.property)) {
 			return e.value;
 		}
-		return undefined;
+		return '######';
 	}
 
 	private isPropertyPrivacyProtected(target: Record<string, unknown>, property: string): boolean {
