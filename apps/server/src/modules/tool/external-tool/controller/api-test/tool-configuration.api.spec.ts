@@ -18,7 +18,6 @@ import {
 import { ServerTestModule } from '@src/modules/server';
 import { CustomParameterTypeParams } from '@src/modules/tool/common/enum';
 import { Response } from 'supertest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { CustomParameterLocationParams, CustomParameterScopeTypeParams } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
@@ -123,13 +122,12 @@ describe('ToolConfigurationController (API)', () => {
 
 				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser], school });
 
-				const baseUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
 				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
-				const externalTool: ExternalToolEntity = externalToolEntityFactory.build({
+				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 					logoBase64: 'logo',
 					parameters: [globalParameter, schoolParameter, contextParameter],
 				});
-				externalTool.logoUrl = `${baseUrl}/v3/tools/external-tools/${externalTool.id}/logo`;
+				externalTool.logoUrl = `http://localhost:3030/api/v3/tools/external-tools/${externalTool.id}/logo`;
 
 				const schoolExternalTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
@@ -264,13 +262,12 @@ describe('ToolConfigurationController (API)', () => {
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
 
-				const baseUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
 				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 					logoBase64: 'logo',
 					parameters: [globalParameter, schoolParameter, contextParameter],
 				});
-				externalTool.logoUrl = `${baseUrl}/v3/tools/external-tools/${externalTool.id}/logo`;
+				externalTool.logoUrl = `http://localhost:3030/api/v3/tools/external-tools/${externalTool.id}/logo`;
 
 				await em.persistAndFlush([adminUser, school, adminAccount, externalTool]);
 				em.clear();
