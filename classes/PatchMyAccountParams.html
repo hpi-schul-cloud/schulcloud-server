@@ -114,6 +114,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#passwordNew" >passwordNew</a>
                             </li>
@@ -173,7 +174,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">apps/server/src/modules/account/controller/dto/patch-my-account.params.ts:31</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">apps/server/src/modules/account/controller/dto/patch-my-account.params.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -212,7 +213,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">apps/server/src/modules/account/controller/dto/patch-my-account.params.ts:40</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">apps/server/src/modules/account/controller/dto/patch-my-account.params.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -251,7 +252,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="49" class="link-to-prism">apps/server/src/modules/account/controller/dto/patch-my-account.params.ts:49</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="51" class="link-to-prism">apps/server/src/modules/account/controller/dto/patch-my-account.params.ts:51</a></div>
                         </td>
                     </tr>
 
@@ -264,6 +265,7 @@
                 <td class="col-md-4">
                     <a name="passwordNew"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
@@ -285,13 +287,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsString()<br />@IsOptional()<br />@Matches(passwordPattern)<br />@ApiProperty({description: &#x27;The new password for the current user.&#x27;, required: false, nullable: true})<br />
+                            @PrivacyProtect()<br />@IsString()<br />@IsOptional()<br />@Matches(passwordPattern)<br />@ApiProperty({description: &#x27;The new password for the current user.&#x27;, required: false, nullable: true})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/account/controller/dto/patch-my-account.params.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/account/controller/dto/patch-my-account.params.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -328,7 +330,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/account/controller/dto/patch-my-account.params.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/account/controller/dto/patch-my-account.params.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -348,6 +350,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
+import { PrivacyProtect } from &#x27;@shared/controller&#x27;;
 import { IsEmail, IsOptional, IsString, Matches } from &#x27;class-validator&#x27;;
 import { passwordPattern } from &#x27;./password-pattern&#x27;;
 
@@ -360,6 +363,7 @@ export class PatchMyAccountParams {
 	})
 	passwordOld!: string;
 
+	@PrivacyProtect()
 	@IsString()
 	@IsOptional()
 	@Matches(passwordPattern)

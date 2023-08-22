@@ -148,6 +148,9 @@
                             <a href="#markForDelete" title="apps/server/src/modules/files-storage/helper/file-record.ts" ><b>markForDelete</b>&nbsp;&nbsp;&nbsp;(apps/.../file-record.ts)</a>
                         </li>
                         <li>
+                            <a href="#PrivacyProtect" title="apps/server/src/shared/controller/validator/privacy-protect.validator.ts" ><b>PrivacyProtect</b>&nbsp;&nbsp;&nbsp;(apps/.../privacy-protect.validator.ts)</a>
+                        </li>
+                        <li>
                             <a href="#RequestTimeout" title="apps/server/src/shared/common/decorators/timeout.decorator.ts" ><b>RequestTimeout</b>&nbsp;&nbsp;&nbsp;(apps/.../timeout.decorator.ts)</a>
                         </li>
                         <li>
@@ -1901,6 +1904,75 @@ with all characters encoded again.</p>
                     </div>
                     <div class="io-description">
                         <b>Returns : </b>        <code><a href="../classes/Task.html" target="_self" >Task</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/controller/validator/privacy-protect.validator.ts</h3>
+    <section data-compodoc="block-methods">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="PrivacyProtect"></a>
+                    <span class="name">
+                        <span ><b>PrivacyProtect</b></span>
+                        <a href="#PrivacyProtect"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>PrivacyProtect(validationOptions?: <a href="../interfaces/Options.html" target="_self">ValidationOptions</a>)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Set privacy protect context attribute in validation options.
+This can be used to detect if a property value should be obfuscated in error logs or responses.
+see e.g. ApiValidationError</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>validationOptions</td>
+                                    <td>
+                                                <code><a href="../interfaces/Options.html" target="_self" >ValidationOptions</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>PropertyDecorator</code>
 
                     </div>
                     <div class="io-description">

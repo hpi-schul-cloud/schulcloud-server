@@ -86,6 +86,22 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#classValidatorMetadataStorage" >classValidatorMetadataStorage</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -101,6 +117,14 @@
                             </li>
                             <li>
                                 <a href="#getLogMessage" >getLogMessage</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getPropertyValue" >getPropertyValue</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#isPropertyPrivacyProtected" >isPropertyPrivacyProtected</a>
                             </li>
                         </ul>
                     </td>
@@ -125,7 +149,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/core/error/loggable/error.loggable.ts:6</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/core/error/loggable/error.loggable.ts:8</a></div>
                             </td>
                         </tr>
 
@@ -163,6 +187,39 @@
         </table>
 </section>
 
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="classValidatorMetadataStorage"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>classValidatorMetadataStorage</b></span>
+                        <a href="#classValidatorMetadataStorage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>getMetadataStorage()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/core/error/loggable/error.loggable.ts:11</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
 
             <section data-compodoc="block-methods">
     
@@ -191,8 +248,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="31"
-                            class="link-to-prism">apps/server/src/core/error/loggable/error.loggable.ts:31</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="35"
+                            class="link-to-prism">apps/server/src/core/error/loggable/error.loggable.ts:35</a></div>
                 </td>
             </tr>
 
@@ -260,8 +317,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="9"
-                            class="link-to-prism">apps/server/src/core/error/loggable/error.loggable.ts:9</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="13"
+                            class="link-to-prism">apps/server/src/core/error/loggable/error.loggable.ts:13</a></div>
                 </td>
             </tr>
 
@@ -272,6 +329,153 @@
                     <div class="io-description">
                         <b>Returns : </b>        <code><a href="../classes/ValidationError.html" target="_self" >ErrorLogMessage | ValidationErrorLogMessage</a></code>
 
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getPropertyValue"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>getPropertyValue</b></span>
+                        <a href="#getPropertyValue"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getPropertyValue(e: <a href="../classes/ValidationError.html" target="_self">ValidationError</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="49"
+                            class="link-to-prism">apps/server/src/core/error/loggable/error.loggable.ts:49</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>e</td>
+                                    <td>
+                                                <code><a href="../classes/ValidationError.html" target="_self" >ValidationError</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isPropertyPrivacyProtected"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>isPropertyPrivacyProtected</b></span>
+                        <a href="#isPropertyPrivacyProtected"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isPropertyPrivacyProtected(target: Record<string | >, property: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="58"
+                            class="link-to-prism">apps/server/src/core/error/loggable/error.loggable.ts:58</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>target</td>
+                                    <td>
+                                            <code>Record&lt;string | &gt;</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>property</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
                     </div>
                 </td>
             </tr>
@@ -288,12 +492,16 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiValidationError } from &#x27;@shared/common&#x27;;
+import { getMetadataStorage } from &#x27;class-validator&#x27;;
+import { ValidationError } from &#x27;@nestjs/common&#x27;;
 import { Loggable } from &#x27;../../logger/interfaces&#x27;;
 import { ErrorLogMessage, ValidationErrorLogMessage } from &#x27;../../logger/types&#x27;;
 import { ErrorUtils } from &#x27;../utils/error.utils&#x27;;
 
 export class ErrorLoggable implements Loggable {
 	constructor(private readonly error: Error) {}
+
+	private readonly classValidatorMetadataStorage &#x3D; getMetadataStorage();
 
 	getLogMessage(): ErrorLogMessage | ValidationErrorLogMessage {
 		let logMessage: ErrorLogMessage | ValidationErrorLogMessage &#x3D; {
@@ -318,15 +526,43 @@ export class ErrorLoggable implements Loggable {
 	}
 
 	private createLogMessageForValidationErrors(error: ApiValidationError) {
-		const errorMessages &#x3D; error.validationErrors.map(
+		const errorMessages &#x3D; error.validationErrors.map((e) &#x3D;&gt; {
+			const value &#x3D; this.getPropertyValue(e);
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-			(e) &#x3D;&gt; &#x60;Wrong property ${e.property} got ${e.value} : ${JSON.stringify(e.constraints)}&#x60;
-		);
+			const message &#x3D; &#x60;Wrong property value for &#x27;${e.property}&#x27; got &#x27;${value}&#x27; : ${JSON.stringify(e.constraints)}&#x60;;
+			return message;
+		});
 		return {
 			validationErrors: errorMessages,
 			stack: error.stack,
 			type: &#x27;API Validation Error&#x27;,
 		};
+	}
+
+	private getPropertyValue(e: ValidationError): unknown {
+		// we can only log a value if we can decide if it is privacy protected
+		// that has to be done using the target metadata of class-validator (see @PrivacyProtect decorator)
+		if (e.target &amp;&amp; !this.isPropertyPrivacyProtected(e.target, e.property)) {
+			return e.value;
+		}
+		return &#x27;######&#x27;;
+	}
+
+	private isPropertyPrivacyProtected(target: Record&lt;string, unknown&gt;, property: string): boolean {
+		const metadatas &#x3D; this.classValidatorMetadataStorage.getTargetValidationMetadatas(
+			target.constructor,
+			&#x27;&#x27;,
+			true,
+			true
+		);
+
+		const privacyProtected &#x3D; metadatas.some(
+			(validationMetadata) &#x3D;&gt;
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				validationMetadata.propertyName &#x3D;&#x3D;&#x3D; property &amp;&amp; validationMetadata.context?.privacyProtected
+		);
+
+		return privacyProtected;
 	}
 }
 </code></pre>
