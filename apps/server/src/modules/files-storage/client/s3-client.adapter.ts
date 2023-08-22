@@ -39,7 +39,10 @@ export class S3ClientAdapter implements IStorageClient {
 			if (err instanceof Error) {
 				this.logger.error(`${err.message} "${this.config.bucket}"`);
 			}
-			throw new InternalServerErrorException('S3ClientAdapter:createBucket', ErrorUtils.createHttpExceptionOptions(err));
+			throw new InternalServerErrorException(
+				'S3ClientAdapter:createBucket',
+				ErrorUtils.createHttpExceptionOptions(err)
+			);
 		}
 	}
 
@@ -212,7 +215,10 @@ export class S3ClientAdapter implements IStorageClient {
 				await this.delete(filteredPathObjects);
 			}
 		} catch (err) {
-			throw new InternalServerErrorException('S3ClientAdapter:deleteDirectory', ErrorUtils.createHttpExceptionOptions(err));
+			throw new InternalServerErrorException(
+				'S3ClientAdapter:deleteDirectory',
+				ErrorUtils.createHttpExceptionOptions(err)
+			);
 		}
 	}
 
