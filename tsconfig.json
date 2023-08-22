@@ -21,6 +21,5 @@
 			"@shared/*": ["apps/server/src/shared/*"],
 			"@src/*": ["apps/server/src/*"]
 		},
-		"skipLibCheck": true
 	}
 }
