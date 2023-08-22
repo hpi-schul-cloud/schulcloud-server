@@ -234,8 +234,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="65"
-                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:65</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="71"
+                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:71</a></div>
                 </td>
             </tr>
 
@@ -334,7 +334,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createSubmissionItem(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contentElementId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>createSubmissionItem(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contentElementId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, completed: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
                 </td>
             </tr>
 
@@ -378,6 +378,18 @@
                                     <td>contentElementId</td>
                                     <td>
                                                 <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>completed</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
                                     </td>
 
                                     <td>
@@ -537,7 +549,11 @@ export class ElementUc {
 		await this.elementService.update(element, content);
 	}
 
-	async createSubmissionItem(userId: EntityId, contentElementId: EntityId): Promise&lt;SubmissionItem&gt; {
+	async createSubmissionItem(
+		userId: EntityId,
+		contentElementId: EntityId,
+		completed: boolean
+	): Promise&lt;SubmissionItem&gt; {
 		const submissionContainer &#x3D; (await this.elementService.findById(contentElementId)) as SubmissionContainerElement;
 
 		if (!(submissionContainer instanceof SubmissionContainerElement))
@@ -552,8 +568,10 @@ export class ElementUc {
 				HttpStatus.UNPROCESSABLE_ENTITY
 			);
 
-		const userExists &#x3D; submissionContainer.children.find((item) &#x3D;&gt; (item as SubmissionItem).userId &#x3D;&#x3D;&#x3D; userId);
-		if (userExists) {
+		const userSubmissionExists &#x3D; submissionContainer.children.find(
+			(item) &#x3D;&gt; (item as SubmissionItem).userId &#x3D;&#x3D;&#x3D; userId
+		);
+		if (userSubmissionExists) {
 			throw new HttpException(
 				&#x27;User is not allowed to have multiple submission-items per submission-container-element&#x27;,
 				HttpStatus.NOT_ACCEPTABLE
@@ -562,9 +580,9 @@ export class ElementUc {
 
 		await this.checkPermission(userId, submissionContainer, Action.read, UserRoleEnum.STUDENT);
 
-		const subElement &#x3D; await this.submissionItemService.create(userId, submissionContainer, { completed: false });
+		const submissionItem &#x3D; await this.submissionItemService.create(userId, submissionContainer, { completed });
 
-		return subElement;
+		return submissionItem;
 	}
 
 	private async checkPermission(
