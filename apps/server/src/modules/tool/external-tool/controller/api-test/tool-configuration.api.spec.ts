@@ -125,7 +125,7 @@ describe('ToolConfigurationController (API)', () => {
 
 				const baseUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
 				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
-				const externalTool: ExternalToolEntity = externalToolEntityFactory.build({
+				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 					logoBase64: 'logo',
 					parameters: [globalParameter, schoolParameter, contextParameter],
 				});
