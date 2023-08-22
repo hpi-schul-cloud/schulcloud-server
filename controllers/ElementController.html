@@ -685,7 +685,7 @@ export class ElementController {
 	): Promise&lt;SubmissionItemResponse&gt; {
 		const submission &#x3D; await this.elementUc.createSubmissionItem(currentUser.userId, urlParams.contentElementId);
 		submission.userId &#x3D; currentUser.userId;
-		submission.completed &#x3D; false;
+		submission.completed &#x3D; bodyParams.completed;
 		const mapper &#x3D; SubmissionItemResponseMapper.getInstance();
 		const response &#x3D; mapper.mapToResponse(submission);
 

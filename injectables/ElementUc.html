@@ -227,7 +227,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkPermission(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, boardDo: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>, action: <a href="../undefineds/Action.html" target="_self">Action</a>)</code>
+                    <code>checkPermission(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, boardDo: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>, action: <a href="../undefineds/Action.html" target="_self">Action</a>, requiredUserRole?: <a href="../undefineds/UserRoleEnum.html" target="_self">UserRoleEnum</a>)</code>
                 </td>
             </tr>
 
@@ -287,6 +287,18 @@
 
                                     <td>
                                         No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>requiredUserRole</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/enumerations.html#UserRoleEnum" target="_self" >UserRoleEnum</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
                                     </td>
 
 
@@ -492,7 +504,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
-import { AnyBoardDo, EntityId, SubmissionContainerElement, SubmissionItem } from &#x27;@shared/domain&#x27;;
+import { AnyBoardDo, EntityId, SubmissionContainerElement, SubmissionItem, UserRoleEnum } from &#x27;@shared/domain&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
 import { Action } from &#x27;@src/modules/authorization/types/action.enum&#x27;;
@@ -548,16 +560,22 @@ export class ElementUc {
 			);
 		}
 
-		await this.checkPermission(userId, submissionContainer, Action.write);
+		await this.checkPermission(userId, submissionContainer, Action.read, UserRoleEnum.STUDENT);
 
 		const subElement &#x3D; await this.submissionItemService.create(userId, submissionContainer, { completed: false });
 
 		return subElement;
 	}
 
-	private async checkPermission(userId: EntityId, boardDo: AnyBoardDo, action: Action): Promise&lt;void&gt; {
+	private async checkPermission(
+		userId: EntityId,
+		boardDo: AnyBoardDo,
+		action: Action,
+		requiredUserRole?: UserRoleEnum
+	): Promise&lt;void&gt; {
 		const user &#x3D; await this.authorizationService.getUserWithPermissions(userId);
 		const boardDoAuthorizable &#x3D; await this.boardDoAuthorizableService.getBoardAuthorizable(boardDo);
+		if (requiredUserRole) boardDoAuthorizable.requiredUserRole &#x3D; requiredUserRole;
 		const context &#x3D; { action, requiredPermissions: [] };
 
 		return this.authorizationService.checkPermission(user, boardDoAuthorizable, context);

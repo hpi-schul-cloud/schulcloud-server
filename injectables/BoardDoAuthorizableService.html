@@ -119,7 +119,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:18</a></div>
                             </td>
                         </tr>
 
@@ -196,8 +196,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="23"
-                            class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:23</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="24"
+                            class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:24</a></div>
                 </td>
             </tr>
 
@@ -267,8 +267,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="31"
-                            class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:31</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="32"
+                            class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:32</a></div>
                 </td>
             </tr>
 
@@ -338,8 +338,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="49"
-                            class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:49</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="50"
+                            class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:50</a></div>
                 </td>
             </tr>
 
@@ -403,6 +403,7 @@ import {
 	Course,
 	EntityId,
 	UserBoardRoles,
+	UserRoleEnum,
 } from &#x27;@shared/domain&#x27;;
 import { CourseRepo } from &#x27;@shared/repo&#x27;;
 import { AuthorizationLoaderService } from &#x27;@src/modules/authorization&#x27;;
@@ -444,13 +445,13 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 	private mapCourseUsersToUsergroup(course: Course): UserBoardRoles[] {
 		const users &#x3D; [
 			...course.getTeacherIds().map((userId) &#x3D;&gt; {
-				return { userId, roles: [BoardRoles.EDITOR] };
+				return { userId, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER };
 			}),
 			...course.getSubstitutionTeacherIds().map((userId) &#x3D;&gt; {
-				return { userId, roles: [BoardRoles.EDITOR] };
+				return { userId, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.SUBSTITUTION_TEACHER };
 			}),
 			...course.getStudentIds().map((userId) &#x3D;&gt; {
-				return { userId, roles: [BoardRoles.READER] };
+				return { userId, roles: [BoardRoles.READER], userRoleEnum: UserRoleEnum.STUDENT };
 			}),
 		];
 		return users;

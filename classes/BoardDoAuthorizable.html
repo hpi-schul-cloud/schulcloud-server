@@ -133,6 +133,9 @@
                                 <li>
                                     <a href="#users" >users</a>
                                 </li>
+                                <li>
+                                    <a href="#requiredUserRole" >requiredUserRole</a>
+                                </li>
                             </ul>
                         </td>
                     </tr>
@@ -258,10 +261,79 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts:20</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts:30</a></div>
                                 </td>
                             </tr>
 
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="requiredUserRole"></a>
+                        <span class="name"><b>requiredUserRole</b><a href="#requiredUserRole"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>requiredUserRole()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts:34</a></div>
+                                </td>
+                            </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>set</b><code>requiredUserRole(userRoleEnum: <a href="../interfaces/User.html" target="_self">UserRoleEnum | undefined</a>)</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts:38</a></div>
+                                </td>
+                            </tr>
+                    <tr>
+                        <td class="col-md-4">
+
+                                <div class="io-description">
+                                        <b>Parameters :</b>
+                                        <table class="params">
+                                            <thead>
+                                                <tr>
+                                                    <td>Name</td>
+                                                        <td>Type</td>
+                                                    <td>Optional</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    <tr>
+                                                            <td>userRoleEnum</td>
+                                                    
+                                                            <td>
+                                                                            <code><a href="../interfaces/User.html" target="_self" >UserRoleEnum | undefined</a></code>
+                                                            </td>
+                                                    
+                                                        <td>
+                                                                No
+                                                        </td>
+                                                        
+                                                    </tr>
+                                            </tbody>
+                                        </table>
+                                </div>
+                                <div>
+                                </div>
+                                <div class="io-description">
+                                    <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                                </div>
+                        </td>
+                    </tr>
             </tbody>
         </table>
 </section>
@@ -276,20 +348,38 @@ export enum BoardRoles {
 	EDITOR &#x3D; &#x27;editor&#x27;,
 	READER &#x3D; &#x27;reader&#x27;,
 }
+/**
+	deprecated: This is a temporary solution. This will be replaced with a more proper permission system.
+*/
+export enum UserRoleEnum {
+	TEACHER &#x3D; &#x27;teacher&#x27;,
+	STUDENT &#x3D; &#x27;student&#x27;,
+	SUBSTITUTION_TEACHER &#x3D; &#x27;subsitution teacher&#x27;,
+}
 
 export interface UserBoardRoles {
 	roles: BoardRoles[];
 	userId: EntityId;
+	userRoleEnum: UserRoleEnum;
 }
 
 export interface BoardDoAuthorizableProps extends AuthorizableObject {
 	id: EntityId;
 	users: UserBoardRoles[];
+	requiredUserRole?: UserRoleEnum;
 }
 
 export class BoardDoAuthorizable extends DomainObject&lt;BoardDoAuthorizableProps&gt; {
 	get users(): UserBoardRoles[] {
 		return this.props.users;
+	}
+
+	get requiredUserRole(): UserRoleEnum | undefined {
+		return this.props.requiredUserRole;
+	}
+
+	set requiredUserRole(userRoleEnum: UserRoleEnum | undefined) {
+		this.props.requiredUserRole &#x3D; userRoleEnum;
 	}
 }
 </code></pre>

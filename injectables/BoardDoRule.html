@@ -364,18 +364,22 @@ export class BoardDoRule implements Rule {
 			return false;
 		}
 
-		const result &#x3D; boardDoAuthorizable.users.find(({ userId }) &#x3D;&gt; userId &#x3D;&#x3D;&#x3D; user.id);
-		if (!result) {
+		const userBoardRole &#x3D; boardDoAuthorizable.users.find(({ userId }) &#x3D;&gt; userId &#x3D;&#x3D;&#x3D; user.id);
+		if (!userBoardRole) {
 			return false;
 		}
 
-		if (context.action &#x3D;&#x3D;&#x3D; Action.write &amp;&amp; result.roles.includes(BoardRoles.EDITOR)) {
+		if (boardDoAuthorizable.requiredUserRole &amp;&amp; boardDoAuthorizable.requiredUserRole !&#x3D;&#x3D; userBoardRole.userRoleEnum) {
+			return false;
+		}
+
+		if (context.action &#x3D;&#x3D;&#x3D; Action.write &amp;&amp; userBoardRole.roles.includes(BoardRoles.EDITOR)) {
 			return true;
 		}
 
 		if (
 			context.action &#x3D;&#x3D;&#x3D; Action.read &amp;&amp;
-			(result.roles.includes(BoardRoles.EDITOR) || result.roles.includes(BoardRoles.READER))
+			(userBoardRole.roles.includes(BoardRoles.EDITOR) || userBoardRole.roles.includes(BoardRoles.READER))
 		) {
 			return true;
 		}
