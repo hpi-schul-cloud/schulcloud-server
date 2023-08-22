@@ -124,8 +124,10 @@ describe('ToolConfigurationController (API)', () => {
 
 				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					logoBase64: 'logo',
 					parameters: [globalParameter, schoolParameter, contextParameter],
 				});
+				externalTool.logoUrl = `http://localhost:3030/api/v3/tools/external-tools/${externalTool.id}/logo`;
 
 				const schoolExternalTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
@@ -262,8 +264,10 @@ describe('ToolConfigurationController (API)', () => {
 
 				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					logoBase64: 'logo',
 					parameters: [globalParameter, schoolParameter, contextParameter],
 				});
+				externalTool.logoUrl = `http://localhost:3030/api/v3/tools/external-tools/${externalTool.id}/logo`;
 
 				await em.persistAndFlush([adminUser, school, adminAccount, externalTool]);
 				em.clear();
