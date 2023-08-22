@@ -78,14 +78,22 @@ export class ExternalToolLogoService {
 			this.logger.info(new ExternalToolLogoFetchedLoggable(logoUrl));
 
 			const buffer: Buffer = Buffer.from(response.data);
+			this.detectContentType(buffer);
+
 			const logoBase64: string = buffer.toString('base64');
 
 			return logoBase64;
 		} catch (error) {
-			if (error instanceof HttpException) {
-				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl, error.getStatus());
-			} else {
-				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl);
+			switch (error) {
+				case error instanceof HttpException: {
+					throw new ExternalToolLogoFetchFailedLoggableException(logoUrl, (error as HttpException).getStatus());
+				}
+				case error instanceof ExternalToolLogoWrongFileTypeLoggableException: {
+					throw new ExternalToolLogoWrongFileTypeLoggableException();
+				}
+				default: {
+					throw new ExternalToolLogoFetchFailedLoggableException(logoUrl);
+				}
 			}
 		}
 	}
