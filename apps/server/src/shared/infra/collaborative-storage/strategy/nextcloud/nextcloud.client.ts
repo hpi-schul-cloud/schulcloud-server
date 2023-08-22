@@ -176,7 +176,10 @@ export class NextcloudClient {
 				throw new NotImplementedException();
 			},
 			(error) => {
-				throw new NotImplementedException(ErrorUtils.createHttpExceptionOptions(error, 'NextcloudClient:setGroupPermission'));
+				throw new NotImplementedException(
+					null,
+					ErrorUtils.createHttpExceptionOptions(error, 'NextcloudClient:setGroupPermission')
+				);
 			}
 		);
 	}
