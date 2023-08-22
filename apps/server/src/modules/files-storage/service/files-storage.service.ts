@@ -144,7 +144,9 @@ export class FilesStorageService {
 	}
 
 	private async sendToAntivirus(fileRecord: FileRecord): Promise<void> {
-		if (fileRecord.size > 25000000) {
+		const maxSecurityCheckFileSize = this.configService.get<number>('MAX_SECURITY_CHECK_FILE_SIZE');
+
+		if (fileRecord.size > maxSecurityCheckFileSize) {
 			fileRecord.updateSecurityCheckStatus(ScanStatus.WONT_CHECK, 'File is too big');
 			await this.fileRecordRepo.save(fileRecord);
 		} else {

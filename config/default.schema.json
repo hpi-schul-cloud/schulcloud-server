@@ -327,7 +327,7 @@
 					"default": "eu-central-2",
 					"description": "Region name of bucket"
 				},
-				"S3_ACCESS_KEY_ID_RW": { 
+				"S3_ACCESS_KEY_ID_RW": {
 					"type": "string",
 					"default": "",
 					"description": "Access Key to S3_BUCKET_CONTENT with R/W permissions"
@@ -544,6 +544,11 @@
 			"type": "boolean",
 			"description": "enables antivirus check for files",
 			"default": false
+		},
+		"FILE_SECURITY_CHECK_MAX_FILE_SIZE": {
+			"type": "integer",
+			"description": "Maximum file size for antivirus check in Byte.",
+			"default": 25000000
 		},
 		"FILE_SECURITY_CHECK_SERVICE_URI": {
 			"type": "string",
