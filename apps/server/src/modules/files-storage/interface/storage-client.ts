@@ -18,6 +18,13 @@ export interface ICopyFiles {
 	targetPath: string;
 }
 
+export interface IListFiles {
+	path: string;
+	maxKeys?: number;
+	nextMarker?: string;
+	files?: string[];
+}
+
 export interface IStorageClient {
 	create(path: string, file: FileDto): unknown;
 

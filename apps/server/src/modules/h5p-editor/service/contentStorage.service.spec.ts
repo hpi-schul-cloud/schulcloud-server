@@ -8,9 +8,9 @@ import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.ada
 import { IGetFileResponse } from '@src/modules/files-storage/interface';
 import { ObjectID } from 'bson';
 import { Readable } from 'stream';
-import { ContentStorage } from './contentStorage.service';
 import { H5PContent } from '../entity';
 import { H5PContentRepo } from '../repo';
+import { ContentStorage } from './contentStorage.service';
 
 const helpers = {
 	buildMetadata(
@@ -321,6 +321,8 @@ describe('ContentStorage', () => {
 			const files = ['file1.txt', 'file2.txt', 'file3.txt', 'file4.txt'];
 
 			const user = helpers.createUser();
+			// @ts-expect-error test case
+			s3ClientAdapter.list.mockResolvedValueOnce({ files });
 
 			return {
 				content,
@@ -341,7 +343,6 @@ describe('ContentStorage', () => {
 
 			it('should call S3ClientAdapter.deleteFile for every file', async () => {
 				const { content, user, files } = setup();
-				s3ClientAdapter.list.mockResolvedValueOnce(files);
 
 				await service.deleteContent(content.id, user);
 
@@ -761,7 +762,8 @@ describe('ContentStorage', () => {
 			it('should return list of filenames', async () => {
 				const { filenames, content, user } = setup();
 				contentRepo.findById.mockResolvedValueOnce(content);
-				s3ClientAdapter.list.mockResolvedValueOnce(filenames);
+				// @ts-expect-error test case
+				s3ClientAdapter.list.mockResolvedValueOnce({ files: filenames });
 
 				const files = await service.listFiles(content.id, user);
 

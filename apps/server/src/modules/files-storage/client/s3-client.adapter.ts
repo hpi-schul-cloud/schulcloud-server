@@ -5,8 +5,6 @@ import {
 	DeleteObjectsCommand,
 	GetObjectCommand,
 	HeadObjectCommand,
-	ListObjectsV2Command,
-	ListObjectsV2CommandOutput,
 	ListObjectsCommand,
 	S3Client,
 	ServiceOutputTypes,
@@ -16,7 +14,7 @@ import { Inject, Injectable, InternalServerErrorException, NotFoundException } f
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
 import { FileDto } from '../dto';
-import { ICopyFiles, IGetFile, IStorageClient, S3Config } from '../interface';
+import { ICopyFiles, IGetFile, IListFiles, IStorageClient, S3Config } from '../interface';
 
 @Injectable()
 export class S3ClientAdapter implements IStorageClient {
@@ -41,7 +39,7 @@ export class S3ClientAdapter implements IStorageClient {
 			if (err instanceof Error) {
 				this.logger.error(`${err.message} "${this.config.bucket}"`);
 			}
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:createBucket');
+			throw new InternalServerErrorException('S3ClientAdapter:createBucket');
 		}
 	}
 
@@ -189,36 +187,36 @@ export class S3ClientAdapter implements IStorageClient {
 		return this.client.send(req);
 	}
 
-	public async list(prefix: string, maxKeys?: number) {
-		this.logger.log({ action: 'list', params: { prefix, bucket: this.config.bucket } });
+	public async list(params: IListFiles) {
+		const { path, maxKeys, nextMarker } = params;
+		const files: string[] = params.files ? params.files : [];
 
 		try {
-			let files: string[] = [];
-			let ret: ListObjectsV2CommandOutput | undefined;
+			this.logger.log({ action: 'list', params: { path, bucket: this.config.bucket } });
 
-			do {
-				const req = new ListObjectsV2Command({
-					Bucket: this.config.bucket,
-					Prefix: prefix,
-					ContinuationToken: ret?.NextContinuationToken,
-					MaxKeys: maxKeys && maxKeys - files.length,
-				});
+			const req = new ListObjectsCommand({
+				Bucket: this.config.bucket,
+				Prefix: path,
+				Marker: nextMarker,
+				MaxKeys: maxKeys,
+			});
 
-				// Iterations are dependent on each other
-				// eslint-disable-next-line no-await-in-loop
-				ret = await this.client.send(req);
+			const data = await this.client.send(req);
 
-				const returnedFiles =
-					ret?.Contents?.filter((o) => o.Key)
-						.map((o) => o.Key as string) // Can not be undefined because of filter above
-						.map((key) => key.substring(prefix.length)) ?? [];
+			const returnedFiles =
+				data?.Contents?.filter((o) => o.Key)
+					.map((o) => o.Key as string) // Can not be undefined because of filter above
+					.map((key) => key.substring(path.length)) ?? [];
 
-				files = files.concat(returnedFiles);
-			} while (ret?.IsTruncated && (!maxKeys || files.length < maxKeys));
+			let res = { path, maxKeys, nextMarker: data?.NextMarker, files: files.concat(returnedFiles) };
 
-			return files;
+			if (data?.IsTruncated && (!maxKeys || files.length < maxKeys)) {
+				res = await this.list(res);
+			}
+
+			return res;
 		} catch (err) {
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:list');
+			throw new InternalServerErrorException('S3ClientAdapter:listDirectory');
 		}
 	}
 
