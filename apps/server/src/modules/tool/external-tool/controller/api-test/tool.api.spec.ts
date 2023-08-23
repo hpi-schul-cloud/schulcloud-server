@@ -7,6 +7,7 @@ import {
 	contextExternalToolEntityFactory,
 	courseFactory,
 	externalToolEntityFactory,
+	externalToolFactory,
 	schoolExternalToolEntityFactory,
 	schoolFactory,
 	TestApiClient,
@@ -100,7 +101,9 @@ describe('ToolController (API)', () => {
 				await em.persistAndFlush([adminAccount, adminUser]);
 				em.clear();
 
-				axiosMock.onGet(params.logoUrl).reply(HttpStatus.OK, 'image');
+				const base64Logo: string = externalToolFactory.withBase64Logo().build().logo as string;
+				const logoBuffer: Buffer = Buffer.from(base64Logo, 'base64');
+				axiosMock.onGet(params.logoUrl).reply(HttpStatus.OK, logoBuffer);
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
@@ -387,7 +390,13 @@ describe('ToolController (API)', () => {
 			const setup = async () => {
 				const toolId: string = new ObjectId().toHexString();
 				const params = { ...postParams, id: toolId };
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({ version: 1 }, toolId);
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory
+					.withBase64Logo()
+					.buildWithId({ version: 1 }, toolId);
+
+				const base64Logo: string = externalToolEntity.logoBase64 as string;
+				const logoBuffer: Buffer = Buffer.from(base64Logo, 'base64');
+				axiosMock.onGet(params.logoUrl).reply(HttpStatus.OK, logoBuffer);
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
 				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
