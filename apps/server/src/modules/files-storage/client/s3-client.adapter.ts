@@ -188,36 +188,42 @@ export class S3ClientAdapter implements IStorageClient {
 	}
 
 	public async list(params: IListFiles) {
-		const { path, maxKeys, nextMarker } = params;
-		const files: string[] = params.files ? params.files : [];
-
 		try {
-			this.logger.log({ action: 'list', params: { path, bucket: this.config.bucket } });
+			this.logger.log({ action: 'list', params });
 
-			const req = new ListObjectsV2Command({
-				Bucket: this.config.bucket,
-				Prefix: path,
-				ContinuationToken: nextMarker,
-				MaxKeys: maxKeys,
-			});
+			const result = await this.listObjectKeysRecursive(params);
 
-			const data = await this.client.send(req);
-
-			const returnedFiles =
-				data?.Contents?.filter((o) => o.Key)
-					.map((o) => o.Key as string) // Can not be undefined because of filter above
-					.map((key) => key.substring(path.length)) ?? [];
-
-			let res = { path, maxKeys, nextMarker: data?.ContinuationToken, files: files.concat(returnedFiles) };
-
-			if (data?.IsTruncated && (!maxKeys || files.length < maxKeys)) {
-				res = await this.list(res);
-			}
-
-			return res;
+			return result;
 		} catch (err) {
 			throw new InternalServerErrorException('S3ClientAdapter:listDirectory');
 		}
+	}
+
+	private async listObjectKeysRecursive(params: IListFiles) {
+		const { path, maxKeys, nextMarker } = params;
+		const files: string[] = params.files ? params.files : [];
+
+		const req = new ListObjectsV2Command({
+			Bucket: this.config.bucket,
+			Prefix: path,
+			ContinuationToken: nextMarker,
+			MaxKeys: maxKeys,
+		});
+
+		const data = await this.client.send(req);
+
+		const returnedFiles =
+			data?.Contents?.filter((o) => o.Key)
+				.map((o) => o.Key as string) // Can not be undefined because of filter above
+				.map((key) => key.substring(path.length)) ?? [];
+
+		let res = { path, maxKeys, nextMarker: data?.ContinuationToken, files: files.concat(returnedFiles) };
+
+		if (data?.IsTruncated && (!maxKeys || files.length < maxKeys)) {
+			res = await this.listObjectKeysRecursive(res);
+		}
+
+		return res;
 	}
 
 	public async head(path: string) {
