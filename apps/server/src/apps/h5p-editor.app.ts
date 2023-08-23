@@ -7,8 +7,6 @@ import express from 'express';
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
 
-import path from 'node:path';
-
 // application imports
 import { LegacyLogger } from '@src/core/logger';
 import { H5PEditorModule } from '@src/modules/h5p-editor';
@@ -21,13 +19,6 @@ async function bootstrap() {
 	const nestExpress = express();
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
-
-	const oneHourInMs = 1000 * 60 * 60;
-
-	nestExpressAdapter.useStaticAssets(path.join(__dirname, '../static-assets/h5p'), {
-		prefix: '/h5p-editor',
-		maxAge: oneHourInMs,
-	});
 
 	const nestApp = await NestFactory.create(H5PEditorModule, nestExpressAdapter);
 	// WinstonLogger
