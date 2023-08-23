@@ -16,10 +16,11 @@ export class ExternalToolUc {
 	) {}
 
 	async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
+		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+
 		const externalTool = new ExternalTool({ ...externalToolCreate });
 		externalTool.logo = await this.externalToolLogoService.fetchLogo(externalTool);
 
-		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 		await this.toolValidationService.validateCreate(externalTool);
 
 		const tool: ExternalTool = await this.externalToolService.createExternalTool(externalTool);
