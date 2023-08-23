@@ -9,11 +9,12 @@ import {
 	ExternalToolLogoFetchedLoggable,
 	ExternalToolLogoNotFoundLoggableException,
 	ExternalToolLogoSizeExceededLoggableException,
+	ExternalToolLogoWrongFileTypeLoggableException,
+	ExternalToolLogoFetchFailedLoggableException,
 } from '../loggable';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
 import { ExternalToolService } from './external-tool.service';
-import { ExternalToolLogoFetchFailedLoggableException } from '../loggable/external-tool-logo-fetch-failed-loggable-exception';
 
 const contentTypeDetector: Record<string, string> = {
 	ffd8ffe0: 'image/jpeg',
@@ -77,11 +78,15 @@ export class ExternalToolLogoService {
 			this.logger.info(new ExternalToolLogoFetchedLoggable(logoUrl));
 
 			const buffer: Buffer = Buffer.from(response.data);
+			this.detectContentTypeOrThrow(buffer);
+
 			const logoBase64: string = buffer.toString('base64');
 
 			return logoBase64;
 		} catch (error) {
-			if (error instanceof HttpException) {
+			if (error instanceof ExternalToolLogoWrongFileTypeLoggableException) {
+				throw new ExternalToolLogoWrongFileTypeLoggableException();
+			} else if (error instanceof HttpException) {
 				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl, error.getStatus());
 			} else {
 				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl);
@@ -99,17 +104,22 @@ export class ExternalToolLogoService {
 		const logoBinaryData: Buffer = Buffer.from(tool.logo, 'base64');
 
 		const externalToolLogo: ExternalToolLogo = new ExternalToolLogo({
-			contentType: this.detectContentType(logoBinaryData),
+			contentType: this.detectContentTypeOrThrow(logoBinaryData),
 			logo: logoBinaryData,
 		});
 
 		return externalToolLogo;
 	}
 
-	private detectContentType(imageBuffer: Buffer): string {
+	private detectContentTypeOrThrow(imageBuffer: Buffer): string {
 		const imageSignature: string = imageBuffer.toString('hex', 0, 4);
 
-		const contentType: string = contentTypeDetector[imageSignature] || 'application/octet-stream';
+		const contentType: string | ExternalToolLogoWrongFileTypeLoggableException =
+			contentTypeDetector[imageSignature] || new ExternalToolLogoWrongFileTypeLoggableException();
+
+		if (contentType instanceof ExternalToolLogoWrongFileTypeLoggableException) {
+			throw new ExternalToolLogoWrongFileTypeLoggableException();
+		}
 
 		return contentType;
 	}
