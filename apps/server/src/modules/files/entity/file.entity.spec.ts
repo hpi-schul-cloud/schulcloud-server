@@ -6,6 +6,7 @@ import { FileOwnerModel, FilePermissionReferenceModel } from '@src/modules/files
 import { userFileFactory } from './testing';
 import { FileEntity } from './file.entity';
 import { FilePermissionEntity } from './file-permission.entity';
+import { FileSecurityCheckEntity } from './file-security-check.entity';
 
 describe(FileEntity.name, () => {
 	const storageProvider = storageProviderFactory.buildWithId();
@@ -182,6 +183,74 @@ describe(FileEntity.name, () => {
 	});
 
 	describe('constructor', () => {
+		describe('when creating a directory', () => {
+			it('should set proper fields values from the provided complete props object', () => {
+				const userId = new ObjectId().toHexString();
+				const props = {
+					createdAt: new Date(2023, 8, 1),
+					updatedAt: new Date(2023, 9, 1),
+					deletedAt: new Date(2023, 10, 1),
+					deleted: true,
+					isDirectory: true,
+					name: 'test-files',
+					size: 1,
+					type: 'dir',
+					storageFileName: '000-test-files',
+					bucket: '000-bucket',
+					storageProvider: storageProviderFactory.buildWithId(),
+					thumbnail: 'https://example.com/directory-thumbnail.png',
+					thumbnailRequestToken: '9d96ca2e-bc14-4fde-9a8b-948cca0bd723',
+					securityCheck: new FileSecurityCheckEntity({}),
+					shareTokens: [
+						'1c2ef176-cc1e-4e2e-bc64-0c84ad12ecb8',
+						'27ede1ff-90c1-4423-8884-a1910dc383e0',
+						'8786d3a3-7b66-431e-a19e-84a2a2f29f26',
+					],
+					parentId: new ObjectId().toHexString(),
+					ownerId: userId,
+					refOwnerModel: FileOwnerModel.USER,
+					creatorId: userId,
+					permissions: [
+						new FilePermissionEntity({
+							refId: userId,
+							refPermModel: FilePermissionReferenceModel.USER,
+						}),
+					],
+					lockId: new ObjectId().toHexString(),
+					versionKey: 0,
+				};
+
+				const entity = new FileEntity(props);
+
+				const entityProps = {
+					createdAt: entity.createdAt,
+					updatedAt: entity.updatedAt,
+					deletedAt: entity.deletedAt,
+					deleted: entity.deleted,
+					isDirectory: entity.isDirectory,
+					name: entity.name,
+					size: entity.size,
+					type: entity.type,
+					storageFileName: entity.storageFileName,
+					bucket: entity.bucket,
+					storageProvider: entity.storageProvider,
+					thumbnail: entity.thumbnail,
+					thumbnailRequestToken: entity.thumbnailRequestToken,
+					securityCheck: entity.securityCheck,
+					shareTokens: entity.shareTokens,
+					parentId: entity.parentId,
+					ownerId: entity.ownerId,
+					refOwnerModel: entity.refOwnerModel,
+					creatorId: entity.creatorId,
+					permissions: entity.permissions,
+					lockId: entity.lockId,
+					versionKey: entity.versionKey,
+				};
+
+				expect(entityProps).toEqual(props);
+			});
+		});
+
 		describe('when creating a file (non-directory)', () => {
 			const userId = new ObjectId().toHexString();
 
