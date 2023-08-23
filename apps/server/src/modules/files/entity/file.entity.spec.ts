@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { setupEntities, storageProviderFactory } from '@shared/testing';
 import { FileOwnerModel, FilePermissionReferenceModel } from '@src/modules/files/domain';
 
+import { userFileFactory } from './testing';
 import { FileEntity } from './file.entity';
 import { FilePermissionEntity } from './file-permission.entity';
 
@@ -41,37 +42,7 @@ describe(FileEntity.name, () => {
 
 	describe('removePermissionsByRefId', () => {
 		it('should remove proper permission with given refId', () => {
-			const file = new FileEntity({
-				name: 'test-file-1.txt',
-				size: 42,
-				type: 'text/plain',
-				storageFileName: '001-test-file-1.txt',
-				bucket: 'bucket-001',
-				storageProvider,
-				thumbnail: 'https://example.com/thumbnail.png',
-				ownerId: mainUserId,
-				refOwnerModel: FileOwnerModel.USER,
-				creatorId: mainUserId,
-				permissions: [
-					new FilePermissionEntity({
-						refId: mainUserId,
-						refPermModel: FilePermissionReferenceModel.USER,
-					}),
-					new FilePermissionEntity({
-						refId: anotherUserId,
-						refPermModel: FilePermissionReferenceModel.USER,
-					}),
-					new FilePermissionEntity({
-						refId: yetAnotherUserId,
-						refPermModel: FilePermissionReferenceModel.USER,
-					}),
-				],
-				versionKey: 0,
-			});
-
-			const expectedFile = copyFile(file);
-
-			expectedFile.permissions = [
+			const anotherUsersPermissions = [
 				new FilePermissionEntity({
 					refId: anotherUserId,
 					refPermModel: FilePermissionReferenceModel.USER,
@@ -81,6 +52,20 @@ describe(FileEntity.name, () => {
 					refPermModel: FilePermissionReferenceModel.USER,
 				}),
 			];
+			const file = userFileFactory.build({
+				ownerId: mainUserId,
+				creatorId: mainUserId,
+				permissions: [
+					new FilePermissionEntity({
+						refId: mainUserId,
+						refPermModel: FilePermissionReferenceModel.USER,
+					}),
+					...anotherUsersPermissions,
+				],
+			});
+
+			const expectedFile = copyFile(file);
+			expectedFile.permissions = anotherUsersPermissions;
 
 			file.removePermissionsByRefId(mainUserId);
 
@@ -89,20 +74,7 @@ describe(FileEntity.name, () => {
 
 		describe('should not remove any permissions', () => {
 			it('if there are none at all', () => {
-				const file = new FileEntity({
-					name: 'test-file-1.txt',
-					size: 42,
-					type: 'text/plain',
-					storageFileName: '001-test-file-1.txt',
-					bucket: 'bucket-001',
-					storageProvider,
-					thumbnail: 'https://example.com/thumbnail.png',
-					ownerId: mainUserId,
-					refOwnerModel: FileOwnerModel.USER,
-					creatorId: mainUserId,
-					permissions: [],
-					versionKey: 0,
-				});
+				const file = userFileFactory.build({ permissions: [] });
 
 				const originalFile = copyFile(file);
 
@@ -112,16 +84,8 @@ describe(FileEntity.name, () => {
 			});
 
 			it('if none of them contains given refId', () => {
-				const file = new FileEntity({
-					name: 'test-file-1.txt',
-					size: 42,
-					type: 'text/plain',
-					storageFileName: '001-test-file-1.txt',
-					bucket: 'bucket-001',
-					storageProvider,
-					thumbnail: 'https://example.com/thumbnail.png',
+				const file = userFileFactory.build({
 					ownerId: mainUserId,
-					refOwnerModel: FileOwnerModel.USER,
 					creatorId: mainUserId,
 					permissions: [
 						new FilePermissionEntity({
@@ -133,7 +97,6 @@ describe(FileEntity.name, () => {
 							refPermModel: FilePermissionReferenceModel.USER,
 						}),
 					],
-					versionKey: 0,
 				});
 
 				const originalFile = copyFile(file);
@@ -148,19 +111,10 @@ describe(FileEntity.name, () => {
 	});
 
 	const setup = () => {
-		const file = new FileEntity({
-			name: 'test-file-1.txt',
-			size: 42,
-			type: 'text/plain',
-			storageFileName: '001-test-file-1.txt',
-			bucket: 'bucket-001',
-			storageProvider,
-			thumbnail: 'https://example.com/thumbnail.png',
+		const file = userFileFactory.build({
 			ownerId: mainUserId,
-			refOwnerModel: FileOwnerModel.USER,
 			creatorId: mainUserId,
 			permissions: [],
-			versionKey: 0,
 		});
 
 		return { file };
@@ -232,19 +186,11 @@ describe(FileEntity.name, () => {
 			const userId = new ObjectId().toHexString();
 
 			it('should create file', () => {
-				const file = new FileEntity({
-					name: 'name',
-					size: 42,
-					storageFileName: 'name',
-					bucket: 'bucket',
-					storageProvider,
-					ownerId: userId,
-					refOwnerModel: FileOwnerModel.USER,
-					creatorId: userId,
-					permissions: [new FilePermissionEntity({ refId: userId, refPermModel: FilePermissionReferenceModel.USER })],
-				});
+				const file = userFileFactory.build();
+
 				expect(file).toBeInstanceOf(FileEntity);
 			});
+
 			it('should throw without bucket', () => {
 				const call = () =>
 					new FileEntity({

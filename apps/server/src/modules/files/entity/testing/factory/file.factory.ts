@@ -10,6 +10,7 @@ export const userFileFactory = BaseFactory.define<FileEntity, FileEntityProps>(F
 	return {
 		name: `test-file-${sequence}.txt`,
 		size: Math.floor(Math.random() * 4200) + 1,
+		type: 'plain/text',
 		storageFileName: `00${sequence}-test-file-${sequence}.txt`,
 		bucket: `bucket-00${sequence}`,
 		storageProvider: storageProviderFactory.buildWithId(),
@@ -23,5 +24,6 @@ export const userFileFactory = BaseFactory.define<FileEntity, FileEntityProps>(F
 				refPermModel: FilePermissionReferenceModel.USER,
 			}),
 		],
+		versionKey: 0,
 	};
 });
