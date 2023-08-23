@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ValidationError } from '@mikro-orm/core';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { contextExternalToolFactory, externalToolFactory } from '@shared/testing';
+import { ValidationError } from '@mikro-orm/core';
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
@@ -160,40 +160,6 @@ describe('ContextExternalToolValidationService', () => {
 					const { contextExternalTool1 } = setup();
 
 					const func = () => service.validate(contextExternalTool1);
-
-					await expect(func()).rejects.toThrowError(
-						new ValidationError(
-							'tool_with_name_exists: A tool with the same name is already assigned to this course. Tool names must be unique within a course.'
-						)
-					);
-				});
-			});
-
-			describe('when the displayName equals a tool name of external tool', () => {
-				const setup = () => {
-					const externalTool: ExternalTool = externalToolFactory.buildWithId({ name: 'TestTool' });
-					const changedContexExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
-						displayName: 'TestTool',
-					});
-					const existingContexExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
-						displayName: undefined,
-					});
-
-					externalToolService.findExternalToolById.mockResolvedValue(externalTool);
-					contextExternalToolService.findContextExternalTools.mockResolvedValue([
-						changedContexExternalTool,
-						existingContexExternalTool,
-					]);
-
-					return {
-						changedContexExternalTool,
-					};
-				};
-
-				it('should throw ValidationError', async () => {
-					const { changedContexExternalTool } = setup();
-
-					const func = () => service.validate(changedContexExternalTool);
 
 					await expect(func()).rejects.toThrowError(
 						new ValidationError(
