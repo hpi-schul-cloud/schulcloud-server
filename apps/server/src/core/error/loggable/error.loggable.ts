@@ -9,7 +9,6 @@ export class ErrorLoggable implements Loggable {
 	getLogMessage(): ErrorLogMessage | ValidationErrorLogMessage {
 		let logMessage: ErrorLogMessage | ValidationErrorLogMessage = {
 			error: this.error,
-			stack: this.error.stack,
 			type: '',
 		};
 
