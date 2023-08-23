@@ -84,10 +84,10 @@ export class ExternalToolLogoService {
 
 			return logoBase64;
 		} catch (error) {
-			if (error instanceof HttpException) {
-				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl, error.getStatus());
-			} else if (error instanceof ExternalToolLogoWrongFileTypeLoggableException) {
+			if (error instanceof ExternalToolLogoWrongFileTypeLoggableException) {
 				throw new ExternalToolLogoWrongFileTypeLoggableException();
+			} else if (error instanceof HttpException) {
+				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl, error.getStatus());
 			} else {
 				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl);
 			}

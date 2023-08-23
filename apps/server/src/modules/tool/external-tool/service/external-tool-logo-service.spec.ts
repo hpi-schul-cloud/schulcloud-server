@@ -10,14 +10,14 @@ import {
 	ExternalToolLogoFetchedLoggable,
 	ExternalToolLogoNotFoundLoggableException,
 	ExternalToolLogoSizeExceededLoggableException,
+	ExternalToolLogoFetchFailedLoggableException,
+	ExternalToolLogoWrongFileTypeLoggableException,
 } from '../loggable';
 import { ExternalToolLogoService } from './external-tool-logo.service';
 import { ExternalTool } from '../domain';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalToolService } from './external-tool.service';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
-import { ExternalToolLogoFetchFailedLoggableException } from '../loggable/external-tool-logo-fetch-failed-loggable-exception';
-import { ExternalToolLogoWrongFileTypeLoggableException } from '../loggable/external-tool-logo-wrong-file-type-loggable-exception';
 
 describe('ExternalToolLogoService', () => {
 	let module: TestingModule;
@@ -190,9 +190,9 @@ describe('ExternalToolLogoService', () => {
 
 		describe('when tool has a logo url', () => {
 			const setup = () => {
-				const externalTool: ExternalTool = externalToolFactory.buildWithId();
-				const logoBuffer: Buffer = Buffer.from('logo content', 'utf-8');
-				const base64Logo = logoBuffer.toString('base64');
+				const externalTool: ExternalTool = externalToolFactory.withBase64Logo().buildWithId();
+				const base64Logo = externalTool.logo as string;
+				const logoBuffer: Buffer = Buffer.from(base64Logo, 'base64');
 
 				httpService.get.mockReturnValue(
 					of({
@@ -259,6 +259,26 @@ describe('ExternalToolLogoService', () => {
 				await expect(func()).rejects.toEqual(
 					new ExternalToolLogoFetchFailedLoggableException(externalTool.logoUrl as string, HttpStatus.NOT_FOUND)
 				);
+			});
+		});
+
+		describe('when error occurs on fetching logo because of an wrong file type', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+
+				httpService.get.mockReturnValue(throwError(() => new ExternalToolLogoWrongFileTypeLoggableException()));
+
+				return {
+					externalTool,
+				};
+			};
+
+			it('should throw error', async () => {
+				const { externalTool } = setup();
+
+				const func = () => service.fetchLogo(externalTool);
+
+				await expect(func()).rejects.toEqual(new ExternalToolLogoWrongFileTypeLoggableException());
 			});
 		});
 
