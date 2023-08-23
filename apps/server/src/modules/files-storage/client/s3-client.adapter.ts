@@ -5,7 +5,7 @@ import {
 	DeleteObjectsCommand,
 	GetObjectCommand,
 	HeadObjectCommand,
-	ListObjectsCommand,
+	ListObjectsV2Command,
 	S3Client,
 	ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
@@ -194,10 +194,10 @@ export class S3ClientAdapter implements IStorageClient {
 		try {
 			this.logger.log({ action: 'list', params: { path, bucket: this.config.bucket } });
 
-			const req = new ListObjectsCommand({
+			const req = new ListObjectsV2Command({
 				Bucket: this.config.bucket,
 				Prefix: path,
-				Marker: nextMarker,
+				ContinuationToken: nextMarker,
 				MaxKeys: maxKeys,
 			});
 
@@ -208,7 +208,7 @@ export class S3ClientAdapter implements IStorageClient {
 					.map((o) => o.Key as string) // Can not be undefined because of filter above
 					.map((key) => key.substring(path.length)) ?? [];
 
-			let res = { path, maxKeys, nextMarker: data?.NextMarker, files: files.concat(returnedFiles) };
+			let res = { path, maxKeys, nextMarker: data?.ContinuationToken, files: files.concat(returnedFiles) };
 
 			if (data?.IsTruncated && (!maxKeys || files.length < maxKeys)) {
 				res = await this.list(res);
@@ -246,7 +246,7 @@ export class S3ClientAdapter implements IStorageClient {
 		try {
 			this.logger.log({ action: 'deleteDirectory', params: { path, bucket: this.config.bucket } });
 
-			const req = new ListObjectsCommand({
+			const req = new ListObjectsV2Command({
 				Bucket: this.config.bucket,
 				Prefix: path,
 			});

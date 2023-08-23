@@ -644,13 +644,13 @@ describe('S3ClientAdapter', () => {
 					// @ts-expect-error ignore parameter type of mock function
 					.mockResolvedValueOnce({
 						IsTruncated: true,
-						NextMarker: '1',
+						ContinuationToken: '1',
 						Contents: responseContents.slice(0, 1000),
 					})
 					// @ts-expect-error ignore parameter type of mock function
 					.mockResolvedValueOnce({
 						IsTruncated: true,
-						NextMarker: '2',
+						ContinuationToken: '2',
 						Contents: responseContents.slice(1000, 2000),
 					})
 					// @ts-expect-error ignore parameter type of mock function
@@ -668,7 +668,7 @@ describe('S3ClientAdapter', () => {
 						input: {
 							Bucket: 'test-bucket',
 							Prefix: path,
-							Marker: undefined,
+							ContinuationToken: undefined,
 						},
 					})
 				);
@@ -679,7 +679,7 @@ describe('S3ClientAdapter', () => {
 						input: {
 							Bucket: 'test-bucket',
 							Prefix: path,
-							Marker: '1',
+							ContinuationToken: '1',
 						},
 					})
 				);
@@ -690,7 +690,7 @@ describe('S3ClientAdapter', () => {
 						input: {
 							Bucket: 'test-bucket',
 							Prefix: path,
-							Marker: '2',
+							ContinuationToken: '2',
 						},
 					})
 				);
