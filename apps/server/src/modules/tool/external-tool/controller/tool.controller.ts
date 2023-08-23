@@ -34,6 +34,7 @@ import {
 	ToolReferenceListResponse,
 	ToolReferenceResponse,
 } from './dto';
+import { ExternalToolLogoService } from '../service';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -43,7 +44,8 @@ export class ToolController {
 		private readonly externalToolUc: ExternalToolUc,
 		private readonly externalToolDOMapper: ExternalToolRequestMapper,
 		private readonly toolReferenceUc: ToolReferenceUc,
-		private readonly logger: LegacyLogger
+		private readonly logger: LegacyLogger,
+		private readonly externalToolLogoService: ExternalToolLogoService
 	) {}
 
 	@Post()
@@ -187,7 +189,7 @@ export class ToolController {
 	})
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
 	async getExternalToolLogo(@Param() params: ExternalToolIdParams, @Res() res: Response): Promise<void> {
-		const externalToolLogo: ExternalToolLogo = await this.externalToolUc.getExternalToolBinaryLogo(
+		const externalToolLogo: ExternalToolLogo = await this.externalToolLogoService.getExternalToolBinaryLogo(
 			params.externalToolId
 		);
 		res.setHeader('Content-Type', externalToolLogo.contentType);

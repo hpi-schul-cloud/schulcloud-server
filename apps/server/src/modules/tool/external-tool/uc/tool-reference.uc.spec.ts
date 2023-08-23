@@ -13,7 +13,7 @@ import { ContextExternalToolService } from '../../context-external-tool/service'
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ExternalTool, ToolReference } from '../domain';
-import { ExternalToolService } from '../service';
+import { ExternalToolLogoService, ExternalToolService } from '../service';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 
 describe('ToolReferenceUc', () => {
@@ -25,6 +25,7 @@ describe('ToolReferenceUc', () => {
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let toolPermissionHelper: DeepMocked<ToolPermissionHelper>;
 	let commonToolService: DeepMocked<CommonToolService>;
+	let logoService: DeepMocked<ExternalToolLogoService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -47,6 +48,10 @@ describe('ToolReferenceUc', () => {
 					useValue: createMock<CommonToolService>(),
 				},
 				{
+					provide: ExternalToolLogoService,
+					useValue: createMock<ExternalToolLogoService>(),
+				},
+				{
 					provide: ToolPermissionHelper,
 					useValue: createMock<ToolPermissionHelper>(),
 				},
@@ -60,6 +65,7 @@ describe('ToolReferenceUc', () => {
 		contextExternalToolService = module.get(ContextExternalToolService);
 		toolPermissionHelper = module.get(ToolPermissionHelper);
 		commonToolService = module.get(CommonToolService);
+		logoService = module.get(ExternalToolLogoService);
 	});
 
 	afterAll(async () => {
@@ -150,6 +156,14 @@ describe('ToolReferenceUc', () => {
 					schoolExternalTool,
 					contextExternalTool
 				);
+			});
+
+			it('should call externalToolLogoService.buildLogoUrl', async () => {
+				const { userId, contextType, contextId, externalTool } = setup();
+
+				await uc.getToolReferences(userId, contextType, contextId, '/v3/tools/external-tools/{id}/logo');
+
+				expect(logoService.buildLogoUrl).toHaveBeenCalledWith('/v3/tools/external-tools/{id}/logo', externalTool);
 			});
 
 			it('should return a list of tool references', async () => {
