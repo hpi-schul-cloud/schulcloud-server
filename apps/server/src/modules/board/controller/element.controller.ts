@@ -99,9 +99,11 @@ export class ElementController {
 		@Body() bodyParams: CreateSubmissionItemBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<SubmissionItemResponse> {
-		const submission = await this.elementUc.createSubmissionItem(currentUser.userId, urlParams.contentElementId);
-		submission.userId = currentUser.userId;
-		submission.completed = bodyParams.completed;
+		const submission = await this.elementUc.createSubmissionItem(
+			currentUser.userId,
+			urlParams.contentElementId,
+			bodyParams.completed
+		);
 		const mapper = SubmissionItemResponseMapper.getInstance();
 		const response = mapper.mapToResponse(submission);
 

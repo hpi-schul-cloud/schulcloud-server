@@ -13,8 +13,8 @@ import {
 	ColumnBoardService,
 	ColumnService,
 	ContentElementService,
+	SubmissionItemService,
 } from './service';
-import { SubmissionItemService } from './service/submission-item.service';
 
 @Module({
 	imports: [ConsoleWriterModule, FilesStorageClientModule, LoggerModule],

@@ -32,7 +32,11 @@ export class ElementUc {
 		await this.elementService.update(element, content);
 	}
 
-	async createSubmissionItem(userId: EntityId, contentElementId: EntityId): Promise<SubmissionItem> {
+	async createSubmissionItem(
+		userId: EntityId,
+		contentElementId: EntityId,
+		completed: boolean
+	): Promise<SubmissionItem> {
 		const submissionContainer = (await this.elementService.findById(contentElementId)) as SubmissionContainerElement;
 
 		if (!(submissionContainer instanceof SubmissionContainerElement))
@@ -47,8 +51,10 @@ export class ElementUc {
 				HttpStatus.UNPROCESSABLE_ENTITY
 			);
 
-		const userExists = submissionContainer.children.find((item) => (item as SubmissionItem).userId === userId);
-		if (userExists) {
+		const userSubmissionExists = submissionContainer.children.find(
+			(item) => (item as SubmissionItem).userId === userId
+		);
+		if (userSubmissionExists) {
 			throw new HttpException(
 				'User is not allowed to have multiple submission-items per submission-container-element',
 				HttpStatus.NOT_ACCEPTABLE
@@ -57,9 +63,9 @@ export class ElementUc {
 
 		await this.checkPermission(userId, submissionContainer, Action.read, UserRoleEnum.STUDENT);
 
-		const subElement = await this.submissionItemService.create(userId, submissionContainer, { completed: false });
+		const submissionItem = await this.submissionItemService.create(userId, submissionContainer, { completed });
 
-		return subElement;
+		return submissionItem;
 	}
 
 	private async checkPermission(
