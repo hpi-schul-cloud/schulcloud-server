@@ -94,7 +94,7 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#detectContentType" >detectContentType</a>
+                                <a href="#detectContentTypeOrThrow" >detectContentTypeOrThrow</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -135,7 +135,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:25</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:26</a></div>
                             </td>
                         </tr>
 
@@ -235,8 +235,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="33"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:33</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="34"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:34</a></div>
                 </td>
             </tr>
 
@@ -300,26 +300,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="detectContentType"></a>
+                    <a name="detectContentTypeOrThrow"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
-                        <span ><b>detectContentType</b></span>
-                        <a href="#detectContentType"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>detectContentTypeOrThrow</b></span>
+                        <a href="#detectContentTypeOrThrow"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>detectContentType(imageBuffer: Buffer)</code>
+                    <code>detectContentTypeOrThrow(imageBuffer: Buffer)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="109"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:109</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="114"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:114</a></div>
                 </td>
             </tr>
 
@@ -390,8 +390,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="72"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:72</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="73"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:73</a></div>
                 </td>
             </tr>
 
@@ -461,8 +461,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="60"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:60</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="61"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:61</a></div>
                 </td>
             </tr>
 
@@ -532,8 +532,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="92"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:92</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="97"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:97</a></div>
                 </td>
             </tr>
 
@@ -601,8 +601,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="45"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:45</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="46"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts:46</a></div>
                 </td>
             </tr>
 
@@ -671,11 +671,12 @@ import {
 	ExternalToolLogoFetchedLoggable,
 	ExternalToolLogoNotFoundLoggableException,
 	ExternalToolLogoSizeExceededLoggableException,
+	ExternalToolLogoWrongFileTypeLoggableException,
+	ExternalToolLogoFetchFailedLoggableException,
 } from &#x27;../loggable&#x27;;
 import { IToolFeatures, ToolFeatures } from &#x27;../../tool-config&#x27;;
 import { ExternalToolLogo } from &#x27;../domain/external-tool-logo&#x27;;
 import { ExternalToolService } from &#x27;./external-tool.service&#x27;;
-import { ExternalToolLogoFetchFailedLoggableException } from &#x27;../loggable/external-tool-logo-fetch-failed-loggable-exception&#x27;;
 
 const contentTypeDetector: Record&lt;string, string&gt; &#x3D; {
 	ffd8ffe0: &#x27;image/jpeg&#x27;,
@@ -739,11 +740,15 @@ export class ExternalToolLogoService {
 			this.logger.info(new ExternalToolLogoFetchedLoggable(logoUrl));
 
 			const buffer: Buffer &#x3D; Buffer.from(response.data);
+			this.detectContentTypeOrThrow(buffer);
+
 			const logoBase64: string &#x3D; buffer.toString(&#x27;base64&#x27;);
 
 			return logoBase64;
 		} catch (error) {
-			if (error instanceof HttpException) {
+			if (error instanceof ExternalToolLogoWrongFileTypeLoggableException) {
+				throw new ExternalToolLogoWrongFileTypeLoggableException();
+			} else if (error instanceof HttpException) {
 				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl, error.getStatus());
 			} else {
 				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl);
@@ -761,17 +766,22 @@ export class ExternalToolLogoService {
 		const logoBinaryData: Buffer &#x3D; Buffer.from(tool.logo, &#x27;base64&#x27;);
 
 		const externalToolLogo: ExternalToolLogo &#x3D; new ExternalToolLogo({
-			contentType: this.detectContentType(logoBinaryData),
+			contentType: this.detectContentTypeOrThrow(logoBinaryData),
 			logo: logoBinaryData,
 		});
 
 		return externalToolLogo;
 	}
 
-	private detectContentType(imageBuffer: Buffer): string {
+	private detectContentTypeOrThrow(imageBuffer: Buffer): string {
 		const imageSignature: string &#x3D; imageBuffer.toString(&#x27;hex&#x27;, 0, 4);
 
-		const contentType: string &#x3D; contentTypeDetector[imageSignature] || &#x27;application/octet-stream&#x27;;
+		const contentType: string | ExternalToolLogoWrongFileTypeLoggableException &#x3D;
+			contentTypeDetector[imageSignature] || new ExternalToolLogoWrongFileTypeLoggableException();
+
+		if (contentType instanceof ExternalToolLogoWrongFileTypeLoggableException) {
+			throw new ExternalToolLogoWrongFileTypeLoggableException();
+		}
 
 		return contentType;
 	}

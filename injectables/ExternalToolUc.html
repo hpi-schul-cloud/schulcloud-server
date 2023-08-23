@@ -316,8 +316,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="69"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:69</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="70"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:70</a></div>
                 </td>
             </tr>
 
@@ -400,8 +400,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="76"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:76</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="77"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:77</a></div>
                 </td>
             </tr>
 
@@ -483,8 +483,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="51"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:51</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="52"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:52</a></div>
                 </td>
             </tr>
 
@@ -578,8 +578,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="62"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:62</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="63"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:63</a></div>
                 </td>
             </tr>
 
@@ -661,8 +661,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="30"
-                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:30</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="31"
+                            class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:31</a></div>
                 </td>
             </tr>
 
@@ -758,10 +758,11 @@ export class ExternalToolUc {
 	) {}
 
 	async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise&lt;ExternalTool&gt; {
+		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+
 		const externalTool &#x3D; new ExternalTool({ ...externalToolCreate });
 		externalTool.logo &#x3D; await this.externalToolLogoService.fetchLogo(externalTool);
 
-		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 		await this.toolValidationService.validateCreate(externalTool);
 
 		const tool: ExternalTool &#x3D; await this.externalToolService.createExternalTool(externalTool);

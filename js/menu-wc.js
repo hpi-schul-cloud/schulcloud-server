@@ -3092,6 +3092,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ExternalToolLogoSizeExceededLoggableException.html" data-type="entity-link" >ExternalToolLogoSizeExceededLoggableException</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ExternalToolLogoWrongFileTypeLoggableException.html" data-type="entity-link" >ExternalToolLogoWrongFileTypeLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ExternalToolPseudonymEntity.html" data-type="entity-link" >ExternalToolPseudonymEntity</a>
                             </li>
                             <li class="link">

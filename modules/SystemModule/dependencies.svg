@@ -24,95 +24,95 @@
 <title>cluster_SystemModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 706,-268 706,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_SystemModule_exports</title>
-<polygon fill="none" stroke="black" points="194,-208 194,-260 460,-260 460,-208 194,-208"/>
+<g id="clust6" class="cluster">
+<title>cluster_SystemModule_providers</title>
+<polygon fill="none" stroke="black" points="216,-78 216,-130 698,-130 698,-78 216,-78"/>
 </g>
 <g id="clust3" class="cluster">
 <title>cluster_SystemModule_imports</title>
-<polygon fill="none" stroke="black" points="506,-78 506,-130 698,-130 698,-78 506,-78"/>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 208,-130 208,-78 16,-78"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_SystemModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 498,-130 498,-78 16,-78"/>
+<g id="clust4" class="cluster">
+<title>cluster_SystemModule_exports</title>
+<polygon fill="none" stroke="black" points="239,-208 239,-260 505,-260 505,-208 239,-208"/>
 </g>
 <!-- IdentityManagementModule -->
 <g id="node1" class="node">
 <title>IdentityManagementModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="690.18,-122 687.18,-126 666.18,-126 663.18,-122 513.82,-122 513.82,-86 690.18,-86 690.18,-122"/>
-<text text-anchor="middle" x="602" y="-99.8" font-family="Times,serif" font-size="14.00">IdentityManagementModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="200.18,-122 197.18,-126 176.18,-126 173.18,-122 23.82,-122 23.82,-86 200.18,-86 200.18,-122"/>
+<text text-anchor="middle" x="112" y="-99.8" font-family="Times,serif" font-size="14.00">IdentityManagementModule</text>
 </g>
 <!-- SystemModule -->
 <g id="node2" class="node">
 <title>SystemModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="370.27,-187 367.27,-191 346.27,-191 343.27,-187 269.73,-187 269.73,-151 370.27,-151 370.27,-187"/>
-<text text-anchor="middle" x="320" y="-164.8" font-family="Times,serif" font-size="14.00">SystemModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="415.27,-187 412.27,-191 391.27,-191 388.27,-187 314.73,-187 314.73,-151 415.27,-151 415.27,-187"/>
+<text text-anchor="middle" x="365" y="-164.8" font-family="Times,serif" font-size="14.00">SystemModule</text>
 </g>
 <!-- IdentityManagementModule&#45;&gt;SystemModule -->
 <g id="edge1" class="edge">
 <title>IdentityManagementModule&#45;&gt;SystemModule</title>
-<path fill="none" stroke="black" d="M602,-122.11C602,-141.34 602,-169 602,-169 602,-169 380.42,-169 380.42,-169"/>
-<polygon fill="black" stroke="black" points="380.42,-165.5 370.42,-169 380.42,-172.5 380.42,-165.5"/>
+<path fill="none" stroke="black" d="M112,-122.11C112,-141.34 112,-169 112,-169 112,-169 304.71,-169 304.71,-169"/>
+<polygon fill="black" stroke="black" points="304.71,-172.5 314.71,-169 304.71,-165.5 304.71,-172.5"/>
 </g>
 <!-- SystemOidcService  -->
 <g id="node3" class="node">
 <title>SystemOidcService </title>
-<polygon fill="#fb8072" stroke="black" points="451.91,-252 322.09,-252 322.09,-216 451.91,-216 451.91,-252"/>
-<text text-anchor="middle" x="387" y="-229.8" font-family="Times,serif" font-size="14.00">SystemOidcService </text>
+<polygon fill="#fb8072" stroke="black" points="496.91,-252 367.09,-252 367.09,-216 496.91,-216 496.91,-252"/>
+<text text-anchor="middle" x="432" y="-229.8" font-family="Times,serif" font-size="14.00">SystemOidcService </text>
 </g>
 <!-- SystemModule&#45;&gt;SystemOidcService  -->
 <g id="edge2" class="edge">
 <title>SystemModule&#45;&gt;SystemOidcService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M346.22,-187.11C346.22,-187.11 346.22,-205.99 346.22,-205.99"/>
-<polygon fill="black" stroke="black" points="342.72,-205.99 346.22,-215.99 349.72,-205.99 342.72,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M391.22,-187.11C391.22,-187.11 391.22,-205.99 391.22,-205.99"/>
+<polygon fill="black" stroke="black" points="387.72,-205.99 391.22,-215.99 394.72,-205.99 387.72,-205.99"/>
 </g>
 <!-- SystemService  -->
 <g id="node4" class="node">
 <title>SystemService </title>
-<polygon fill="#fb8072" stroke="black" points="304.2,-252 201.8,-252 201.8,-216 304.2,-216 304.2,-252"/>
-<text text-anchor="middle" x="253" y="-229.8" font-family="Times,serif" font-size="14.00">SystemService </text>
+<polygon fill="#fb8072" stroke="black" points="349.2,-252 246.8,-252 246.8,-216 349.2,-216 349.2,-252"/>
+<text text-anchor="middle" x="298" y="-229.8" font-family="Times,serif" font-size="14.00">SystemService </text>
 </g>
 <!-- SystemModule&#45;&gt;SystemService  -->
 <g id="edge3" class="edge">
 <title>SystemModule&#45;&gt;SystemService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M286.98,-187.11C286.98,-187.11 286.98,-205.99 286.98,-205.99"/>
-<polygon fill="black" stroke="black" points="283.48,-205.99 286.98,-215.99 290.48,-205.99 283.48,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M331.98,-187.11C331.98,-187.11 331.98,-205.99 331.98,-205.99"/>
+<polygon fill="black" stroke="black" points="328.48,-205.99 331.98,-215.99 335.48,-205.99 328.48,-205.99"/>
 </g>
 <!-- SystemOidcService -->
 <g id="node5" class="node">
 <title>SystemOidcService</title>
-<ellipse fill="#fdb462" stroke="black" cx="403" cy="-104" rx="87.39" ry="18"/>
-<text text-anchor="middle" x="403" y="-99.8" font-family="Times,serif" font-size="14.00">SystemOidcService</text>
+<ellipse fill="#fdb462" stroke="black" cx="603" cy="-104" rx="87.39" ry="18"/>
+<text text-anchor="middle" x="603" y="-99.8" font-family="Times,serif" font-size="14.00">SystemOidcService</text>
 </g>
 <!-- SystemOidcService&#45;&gt;SystemModule -->
 <g id="edge4" class="edge">
 <title>SystemOidcService&#45;&gt;SystemModule</title>
-<path fill="none" stroke="black" d="M343.09,-117.15C343.09,-117.15 343.09,-140.69 343.09,-140.69"/>
-<polygon fill="black" stroke="black" points="339.59,-140.69 343.09,-150.69 346.59,-140.69 339.59,-140.69"/>
+<path fill="none" stroke="black" d="M603,-122.11C603,-141.34 603,-169 603,-169 603,-169 425.47,-169 425.47,-169"/>
+<polygon fill="black" stroke="black" points="425.47,-165.5 415.47,-169 425.47,-172.5 425.47,-165.5"/>
 </g>
 <!-- SystemRepo -->
 <g id="node6" class="node">
 <title>SystemRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="238" cy="-104" rx="59.71" ry="18"/>
-<text text-anchor="middle" x="238" y="-99.8" font-family="Times,serif" font-size="14.00">SystemRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="438" cy="-104" rx="59.71" ry="18"/>
+<text text-anchor="middle" x="438" y="-99.8" font-family="Times,serif" font-size="14.00">SystemRepo</text>
 </g>
 <!-- SystemRepo&#45;&gt;SystemModule -->
 <g id="edge5" class="edge">
 <title>SystemRepo&#45;&gt;SystemModule</title>
-<path fill="none" stroke="black" d="M283.73,-115.62C283.73,-115.62 283.73,-140.85 283.73,-140.85"/>
-<polygon fill="black" stroke="black" points="280.23,-140.85 283.73,-150.85 287.23,-140.85 280.23,-140.85"/>
+<path fill="none" stroke="black" d="M396.77,-117.15C396.77,-117.15 396.77,-140.69 396.77,-140.69"/>
+<polygon fill="black" stroke="black" points="393.27,-140.69 396.77,-150.69 400.27,-140.69 393.27,-140.69"/>
 </g>
 <!-- SystemService -->
 <g id="node7" class="node">
 <title>SystemService</title>
-<ellipse fill="#fdb462" stroke="black" cx="92" cy="-104" rx="68.35" ry="18"/>
-<text text-anchor="middle" x="92" y="-99.8" font-family="Times,serif" font-size="14.00">SystemService</text>
+<ellipse fill="#fdb462" stroke="black" cx="292" cy="-104" rx="68.35" ry="18"/>
+<text text-anchor="middle" x="292" y="-99.8" font-family="Times,serif" font-size="14.00">SystemService</text>
 </g>
 <!-- SystemService&#45;&gt;SystemModule -->
 <g id="edge6" class="edge">
 <title>SystemService&#45;&gt;SystemModule</title>
-<path fill="none" stroke="black" d="M92,-122.11C92,-141.34 92,-169 92,-169 92,-169 259.68,-169 259.68,-169"/>
-<polygon fill="black" stroke="black" points="259.68,-172.5 269.68,-169 259.68,-165.5 259.68,-172.5"/>
+<path fill="none" stroke="black" d="M337.52,-117.47C337.52,-117.47 337.52,-140.86 337.52,-140.86"/>
+<polygon fill="black" stroke="black" points="334.02,-140.86 337.52,-150.86 341.02,-140.86 334.02,-140.86"/>
 </g>
 </g>
 </svg>
