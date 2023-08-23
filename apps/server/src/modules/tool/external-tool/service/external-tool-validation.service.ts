@@ -2,16 +2,17 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
-import { ExternalToolLogoSizeExceededLoggableException } from '../loggable';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
 import { ExternalToolService } from './external-tool.service';
+import { ExternalToolLogoService } from './external-tool-logo.service';
 
 @Injectable()
 export class ExternalToolValidationService {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
 		private readonly externalToolParameterValidationService: ExternalToolParameterValidationService,
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
+		private readonly externalToolLogoService: ExternalToolLogoService
 	) {}
 
 	async validateCreate(externalTool: ExternalTool): Promise<void> {
@@ -21,7 +22,7 @@ export class ExternalToolValidationService {
 
 		this.validateLti11Config(externalTool);
 
-		this.validateLogoSize(externalTool);
+		this.externalToolLogoService.validateLogoSize(externalTool);
 	}
 
 	async validateUpdate(toolId: string, externalTool: Partial<ExternalTool>): Promise<void> {
@@ -53,22 +54,7 @@ export class ExternalToolValidationService {
 			);
 		}
 
-		this.validateLogoSize(externalTool);
-	}
-
-	private validateLogoSize(externalTool: Partial<ExternalTool>): void {
-		if (!externalTool.logo) {
-			return;
-		}
-
-		const buffer: Buffer = Buffer.from(externalTool.logo, 'base64');
-
-		if (buffer.length > this.toolFeatures.maxExternalToolLogoSizeInBytes) {
-			throw new ExternalToolLogoSizeExceededLoggableException(
-				externalTool.id,
-				this.toolFeatures.maxExternalToolLogoSizeInBytes
-			);
-		}
+		this.externalToolLogoService.validateLogoSize(externalTool);
 	}
 
 	private async validateOauth2Config(externalTool: ExternalTool): Promise<void> {

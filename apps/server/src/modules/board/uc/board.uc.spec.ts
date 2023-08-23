@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, BoardRoles, ContentElementType } from '@shared/domain/domainobject/board';
+import { BoardDoAuthorizable, BoardRoles, ContentElementType, UserRoleEnum } from '@shared/domain/domainobject/board';
 import { setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
@@ -85,7 +85,7 @@ describe(BoardUc.name, () => {
 		authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 		const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
-			users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+			users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
 			id: board.id,
 		});
 		const createCardBodyParams = {
