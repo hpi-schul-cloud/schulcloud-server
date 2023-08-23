@@ -211,7 +211,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkDuplicateInContext(contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
+                    <code>checkDuplicateInContext(contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>, externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>)</code>
                 </td>
             </tr>
 
@@ -243,6 +243,18 @@
                                     <td>contextExternalTool</td>
                                     <td>
                                                 <code><a href="../classes/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>externalTool</td>
+                                    <td>
+                                                <code><a href="../classes/ExternalTool.html" target="_self" >ExternalTool</a></code>
                                     </td>
 
                                     <td>
@@ -367,8 +379,6 @@ export class ContextExternalToolValidationService {
 	async validate(toValidate: ContextExternalToolDto): Promise&lt;void&gt; {
 		const contextExternalTool: ContextExternalTool &#x3D; new ContextExternalTool(toValidate);
 
-		await this.checkDuplicateInContext(contextExternalTool);
-
 		const loadedSchoolExternalTool: SchoolExternalTool &#x3D; await this.schoolExternalToolService.getSchoolExternalToolById(
 			contextExternalTool.schoolToolRef.schoolToolId
 		);
@@ -377,22 +387,24 @@ export class ContextExternalToolValidationService {
 			loadedSchoolExternalTool.toolId
 		);
 
+		await this.checkDuplicateInContext(contextExternalTool, loadedExternalTool);
+
 		this.commonToolValidationService.checkCustomParameterEntries(loadedExternalTool, contextExternalTool);
 	}
 
-	private async checkDuplicateInContext(contextExternalTool: ContextExternalTool) {
-		let duplicate: ContextExternalTool[] &#x3D; await this.contextExternalToolService.findContextExternalTools({
+	private async checkDuplicateInContext(contextExternalTool: ContextExternalTool, externalTool: ExternalTool) {
+		const duplicate: ContextExternalTool[] &#x3D; await this.contextExternalToolService.findContextExternalTools({
 			schoolToolRef: contextExternalTool.schoolToolRef,
 			context: contextExternalTool.contextRef,
 		});
 
 		// Only leave tools that are not the currently handled tool itself (for updates) or ones with the same name
-		duplicate &#x3D; duplicate.filter(
-			(duplicateTool) &#x3D;&gt;
+		const duplicateWithSameName: ContextExternalTool[] &#x3D; duplicate.filter(
+			(duplicateTool: ContextExternalTool) &#x3D;&gt;
 				duplicateTool.id !&#x3D;&#x3D; contextExternalTool.id &amp;&amp; duplicateTool.displayName &#x3D;&#x3D;&#x3D; contextExternalTool.displayName
 		);
 
-		if (duplicate.length &gt; 0) {
+		if (duplicateWithSameName.length &gt; 0 || contextExternalTool.displayName &#x3D;&#x3D;&#x3D; externalTool.name) {
 			throw new ValidationError(
 				&#x60;tool_with_name_exists: A tool with the same name is already assigned to this course. Tool names must be unique within a course.&#x60;
 			);
