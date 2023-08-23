@@ -40,7 +40,6 @@ export class ErrorLoggable implements Loggable {
 		});
 		return {
 			validationErrors: errorMessages,
-			stack: error.stack,
 			type: 'API Validation Error',
 		};
 	}
