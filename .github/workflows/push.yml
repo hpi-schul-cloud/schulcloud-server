@@ -189,7 +189,7 @@ jobs:
     needs:
       - branch_meta
       - deploy
-    uses: hpi-schul-cloud/e2e-system-tests/.github/workflows/remote-trigger.yml@BC-4569-secrets-from-1pass-instead-of-github
+    uses: hpi-schul-cloud/e2e-system-tests/.github/workflows/remote-trigger.yml@main
     with:
       ref: ${{ needs.branch_meta.outputs.branch }}
     secrets:
