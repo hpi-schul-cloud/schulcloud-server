@@ -61,7 +61,6 @@ describe('ErrorLoggable', () => {
 						'Wrong property value for \'password\' got \'######\' : {"password":"must contain at least one number"}',
 					],
 					type: 'API Validation Error',
-					stack: error.stack,
 				};
 
 				return { errorLoggable, expectedMessage };
@@ -83,7 +82,6 @@ describe('ErrorLoggable', () => {
 				const expectedMessage = {
 					error,
 					type: 'Feathers Error',
-					stack: error.stack,
 				};
 
 				return { errorLoggable, expectedMessage };
@@ -105,7 +103,6 @@ describe('ErrorLoggable', () => {
 				const expectedMessage = {
 					error,
 					type: 'Business Error',
-					stack: error.stack,
 				};
 
 				return { errorLoggable, expectedMessage };
@@ -127,7 +124,6 @@ describe('ErrorLoggable', () => {
 				const expectedMessage = {
 					error,
 					type: 'Technical Error',
-					stack: error.stack,
 				};
 
 				return { errorLoggable, expectedMessage };
@@ -149,7 +145,6 @@ describe('ErrorLoggable', () => {
 				const expectedMessage = {
 					error,
 					type: 'Unhandled or Unknown Error',
-					stack: error.stack,
 				};
 
 				return { errorLoggable, expectedMessage };

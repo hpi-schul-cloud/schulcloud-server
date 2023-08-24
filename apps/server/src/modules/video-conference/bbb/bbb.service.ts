@@ -1,13 +1,14 @@
-import crypto from 'crypto';
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { AxiosResponse } from 'axios';
 import { HttpService } from '@nestjs/axios';
-import { URL, URLSearchParams } from 'url';
-import { firstValueFrom, Observable } from 'rxjs';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConverterUtil } from '@shared/common/utils';
+import { ErrorUtils } from '@src/core/error/utils';
+import { AxiosResponse } from 'axios';
+import crypto from 'crypto';
+import { Observable, firstValueFrom } from 'rxjs';
+import { URL, URLSearchParams } from 'url';
 import { BbbSettings, IBbbSettings } from './bbb-settings.interface';
-import { BBBBaseResponse, BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse, BBBStatus } from './response';
 import { BBBBaseMeetingConfig, BBBCreateConfig, BBBJoinConfig } from './request';
+import { BBBBaseResponse, BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse, BBBStatus } from './response';
 
 @Injectable()
 export class BBBService {
@@ -40,21 +41,23 @@ export class BBBService {
 		const conf = { headers: { 'Content-Type': 'application/xml' } };
 		const data = this.getBbbRequestConfig(this.presentationUrl);
 		const observable: Observable<AxiosResponse<string>> = this.httpService.post(url, data, conf);
+
 		return firstValueFrom(observable)
 			.then((resp: AxiosResponse<string>) => {
 				const bbbResp = this.converterUtil.xml2object<BBBResponse<BBBCreateResponse> | BBBResponse<BBBBaseResponse>>(
 					resp.data
 				);
 				if (bbbResp.response.returncode !== BBBStatus.SUCCESS) {
-					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
+					throw new InternalServerErrorException(`${bbbResp.response.messageKey}: ${bbbResp.response.message}`);
 				}
 				return bbbResp as BBBResponse<BBBCreateResponse>;
 			})
 			.catch((error) => {
-				throw new InternalServerErrorException(error);
+				throw new InternalServerErrorException(null, ErrorUtils.createHttpExceptionOptions(error, 'BBBService:create'));
 			});
 	}
 
+	// it should be a private method
 	getBbbRequestConfig(presentationUrl: string): string {
 		if (presentationUrl === '') return '';
 		return `<?xml version='1.0' encoding='UTF-8'?><modules><module name='presentation'><document url='${presentationUrl}' /></module></modules>`;
@@ -86,12 +89,12 @@ export class BBBService {
 			.then((resp: AxiosResponse<string>) => {
 				const bbbResp = this.converterUtil.xml2object<BBBResponse<BBBBaseResponse>>(resp.data);
 				if (bbbResp.response.returncode !== BBBStatus.SUCCESS) {
-					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
+					throw new InternalServerErrorException(`${bbbResp.response.messageKey}: ${bbbResp.response.message}`);
 				}
 				return bbbResp;
 			})
 			.catch((error) => {
-				throw new InternalServerErrorException(error);
+				throw new InternalServerErrorException(null, ErrorUtils.createHttpExceptionOptions(error, 'BBBService:end'));
 			});
 	}
 
@@ -111,15 +114,19 @@ export class BBBService {
 					BBBResponse<BBBMeetingInfoResponse> | BBBResponse<BBBBaseResponse>
 				>(resp.data);
 				if (bbbResp.response.returncode !== BBBStatus.SUCCESS) {
-					throw new InternalServerErrorException(bbbResp.response.messageKey, bbbResp.response.message);
+					throw new InternalServerErrorException(`${bbbResp.response.messageKey}: ${bbbResp.response.message}`);
 				}
 				return bbbResp as BBBResponse<BBBMeetingInfoResponse>;
 			})
 			.catch((error) => {
-				throw new InternalServerErrorException(error);
+				throw new InternalServerErrorException(
+					null,
+					ErrorUtils.createHttpExceptionOptions(error, 'BBBService:getMeetingInfo')
+				);
 			});
 	}
 
+	// should be private
 	/**
 	 * Returns a SHA1 encoded checksum for the input parameters.
 	 * @param {string} callName
@@ -134,6 +141,7 @@ export class BBBService {
 		return checksum;
 	}
 
+	// should be private
 	/**
 	 * Extracts fields from a javascript object and builds a URLSearchParams object from it.
 	 * @param {object} object
@@ -149,6 +157,7 @@ export class BBBService {
 		return params;
 	}
 
+	// should be private
 	/**
 	 * Builds the url for BBB.
 	 * @param callName Name of the BBB api function.
