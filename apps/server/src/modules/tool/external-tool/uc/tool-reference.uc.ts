@@ -1,4 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
 import { AuthorizationContext, AuthorizationContextBuilder } from '@src/modules/authorization';
@@ -10,7 +9,7 @@ import { ContextExternalToolService } from '../../context-external-tool/service'
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ToolReferenceMapper } from '../mapper/tool-reference.mapper';
-import { ExternalToolService } from '../service';
+import { ExternalToolLogoService, ExternalToolService } from '../service';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 
 @Injectable()
@@ -20,7 +19,8 @@ export class ToolReferenceUc {
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly toolPermissionHelper: ToolPermissionHelper,
-		private readonly commonToolService: CommonToolService
+		private readonly commonToolService: CommonToolService,
+		private readonly externalToolLogoService: ExternalToolLogoService
 	) {}
 
 	async getToolReferences(
@@ -75,21 +75,9 @@ export class ToolReferenceUc {
 			contextExternalTool,
 			status
 		);
-		toolReference.logoUrl = this.buildLogoUrl(logoUrlTemplate, externalTool);
+		toolReference.logoUrl = this.externalToolLogoService.buildLogoUrl(logoUrlTemplate, externalTool);
 
 		return toolReference;
-	}
-
-	private buildLogoUrl(template: string, externalTool: ExternalTool): string | undefined {
-		const { logo, id } = externalTool;
-		const backendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
-
-		if (logo) {
-			const filledTemplate = template.replace(/\{id\}/g, id || '');
-			return `${backendUrl}${filledTemplate}`;
-		}
-
-		return undefined;
 	}
 
 	private async ensureToolPermissions(userId: EntityId, contextExternalTool: ContextExternalTool): Promise<void> {
