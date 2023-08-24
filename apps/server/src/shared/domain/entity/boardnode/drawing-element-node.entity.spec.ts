@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { richTextElementFactory } from '@shared/testing';
 import { DrawingElementNode } from '@shared/domain/entity/boardnode/drawing-element-node.entity';
+import { drawingElementFactory } from '@shared/testing/factory/domainobject/board/drawing-element.do.factory';
 import { BoardDoBuilder, BoardNodeType } from './types';
 
 describe(DrawingElementNode.name, () => {
@@ -25,9 +25,9 @@ describe(DrawingElementNode.name, () => {
 		const setup = () => {
 			const element = new DrawingElementNode({ drawingName: 'test' });
 			const builder: DeepMocked<BoardDoBuilder> = createMock<BoardDoBuilder>();
-			const elementDo = richTextElementFactory.build();
+			const elementDo = drawingElementFactory.build();
 
-			builder.buildRichTextElement.mockReturnValue(elementDo);
+			builder.buildDrawingElement.mockReturnValue(elementDo);
 
 			return { element, builder, elementDo };
 		};

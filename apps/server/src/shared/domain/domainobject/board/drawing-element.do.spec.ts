@@ -1,9 +1,9 @@
 import { createMock } from '@golevelup/ts-jest';
 import { drawingElementFactory } from '@shared/testing/factory/domainobject/board/drawing-element.do.factory';
-import { RichTextElement } from './rich-text-element.do';
+import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
-describe(RichTextElement.name, () => {
+describe(DrawingElement.name, () => {
 	describe('when trying to add a child to a drawing element', () => {
 		it('should throw an error ', () => {
 			const drawingElement = drawingElementFactory.build();

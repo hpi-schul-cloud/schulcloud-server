@@ -3,5 +3,6 @@ export * from './column-board.do.factory';
 export * from './column.do.factory';
 export * from './file-element.do.factory';
 export * from './rich-text-element.do.factory';
+export * from './drawing-element.do.factory';
 export * from './submission-container-element.do.factory';
 export * from './submission-item.do.factory';
