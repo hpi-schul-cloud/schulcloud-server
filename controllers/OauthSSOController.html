@@ -284,8 +284,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="108"
-                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:108</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="99"
+                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:99</a></div>
                 </td>
             </tr>
 
@@ -400,8 +400,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="162"
-                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:162</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="153"
+                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:153</a></div>
                 </td>
             </tr>
 
@@ -494,8 +494,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="193"
-                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:193</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="184"
+                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:184</a></div>
                 </td>
             </tr>
 
@@ -606,7 +606,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>migrationErrorHandler(error, session: <a href="../undefineds/ISession.html" target="_self">ISession</a>, res: Response, sourceSystemId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, targetSystemId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>migrationErrorHandler(error, session: <a href="../undefineds/ISession.html" target="_self">ISession</a>, res: Response)</code>
                 </td>
             </tr>
 
@@ -669,30 +669,6 @@
 
 
                                 </tr>
-                                <tr>
-                                    <td>sourceSystemId</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>targetSystemId</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -740,8 +716,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="172"
-                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:172</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="163"
+                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:163</a></div>
                 </td>
             </tr>
 
@@ -835,8 +811,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="93"
-                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:93</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="84"
+                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:84</a></div>
                 </td>
             </tr>
 
@@ -926,8 +902,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="129"
-                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:129</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="120"
+                            class="link-to-prism">apps/server/src/modules/oauth/controller/oauth-sso.controller.ts:120</a></div>
                 </td>
             </tr>
 
@@ -1068,13 +1044,7 @@ export class OauthSSOController {
 		res.redirect(errorRedirect.toString());
 	}
 
-	private migrationErrorHandler(
-		error: unknown,
-		session: ISession,
-		res: Response,
-		sourceSystemId: string,
-		targetSystemId: string
-	) {
+	private migrationErrorHandler(error: unknown, session: ISession, res: Response) {
 		const migrationError: OAuthMigrationError &#x3D;
 			error instanceof OAuthMigrationError ? error : new OAuthMigrationError();
 
@@ -1083,9 +1053,6 @@ export class OauthSSOController {
 		});
 
 		const errorRedirect: URL &#x3D; new URL(&#x27;/migration/error&#x27;, this.clientUrl);
-
-		errorRedirect.searchParams.append(&#x27;sourceSystem&#x27;, sourceSystemId);
-		errorRedirect.searchParams.append(&#x27;targetSystem&#x27;, targetSystemId);
 
 		if (migrationError.officialSchoolNumberFromSource &amp;&amp; migrationError.officialSchoolNumberFromTarget) {
 			errorRedirect.searchParams.append(&#x27;sourceSchoolNumber&#x27;, migrationError.officialSchoolNumberFromSource);
@@ -1213,7 +1180,7 @@ export class OauthSSOController {
 			const response: UserMigrationResponse &#x3D; UserMigrationMapper.mapDtoToResponse(migration);
 			res.redirect(response.redirect);
 		} catch (error) {
-			this.migrationErrorHandler(error, session, res, currentUser.systemId, oauthLoginState.systemId);
+			this.migrationErrorHandler(error, session, res);
 		}
 	}
 }

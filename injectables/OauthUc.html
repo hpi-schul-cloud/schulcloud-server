@@ -127,12 +127,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(oauthService: <a href="../injectables/OAuthService.html" target="_self">OAuthService</a>, authenticationService: <a href="../injectables/AuthenticationService.html" target="_self">AuthenticationService</a>, systemService: <a href="../injectables/SystemService.html" target="_self">SystemService</a>, provisioningService: <a href="../injectables/ProvisioningService.html" target="_self">ProvisioningService</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, userMigrationService: <a href="../injectables/UserMigrationService.html" target="_self">UserMigrationService</a>, schoolMigrationService: <a href="../injectables/SchoolMigrationService.html" target="_self">SchoolMigrationService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
+<code>constructor(oauthService: <a href="../injectables/OAuthService.html" target="_self">OAuthService</a>, authenticationService: <a href="../injectables/AuthenticationService.html" target="_self">AuthenticationService</a>, systemService: <a href="../injectables/SystemService.html" target="_self">SystemService</a>, provisioningService: <a href="../injectables/ProvisioningService.html" target="_self">ProvisioningService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, userMigrationService: <a href="../injectables/UserMigrationService.html" target="_self">UserMigrationService</a>, schoolMigrationService: <a href="../injectables/SchoolMigrationService.html" target="_self">SchoolMigrationService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/modules/oauth/uc/oauth.uc.ts:29</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">apps/server/src/modules/oauth/uc/oauth.uc.ts:28</a></div>
                             </td>
                         </tr>
 
@@ -190,18 +190,6 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/ProvisioningService.html" target="_self" >ProvisioningService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>schoolService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/SchoolService.html" target="_self" >SchoolService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -294,8 +282,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="146"
-                            class="link-to-prism">apps/server/src/modules/oauth/uc/oauth.uc.ts:146</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="144"
+                            class="link-to-prism">apps/server/src/modules/oauth/uc/oauth.uc.ts:144</a></div>
                 </td>
             </tr>
 
@@ -365,8 +353,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="101"
-                            class="link-to-prism">apps/server/src/modules/oauth/uc/oauth.uc.ts:101</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="99"
+                            class="link-to-prism">apps/server/src/modules/oauth/uc/oauth.uc.ts:99</a></div>
                 </td>
             </tr>
 
@@ -472,8 +460,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="70"
-                            class="link-to-prism">apps/server/src/modules/oauth/uc/oauth.uc.ts:70</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="68"
+                            class="link-to-prism">apps/server/src/modules/oauth/uc/oauth.uc.ts:68</a></div>
                 </td>
             </tr>
 
@@ -567,8 +555,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="44"
-                            class="link-to-prism">apps/server/src/modules/oauth/uc/oauth.uc.ts:44</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="42"
+                            class="link-to-prism">apps/server/src/modules/oauth/uc/oauth.uc.ts:42</a></div>
                 </td>
             </tr>
 
@@ -668,7 +656,6 @@ import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { AuthenticationService } from &#x27;@src/modules/authentication/services/authentication.service&#x27;;
 import { ProvisioningService } from &#x27;@src/modules/provisioning&#x27;;
 import { OauthDataDto } from &#x27;@src/modules/provisioning/dto&#x27;;
-import { SchoolService } from &#x27;@src/modules/school&#x27;;
 import { SystemService } from &#x27;@src/modules/system&#x27;;
 import { SystemDto } from &#x27;@src/modules/system/service/dto/system.dto&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
@@ -692,7 +679,6 @@ export class OauthUc {
 		private readonly authenticationService: AuthenticationService,
 		private readonly systemService: SystemService,
 		private readonly provisioningService: ProvisioningService,
-		private readonly schoolService: SchoolService,
 		private readonly userService: UserService,
 		private readonly userMigrationService: UserMigrationService,
 		private readonly schoolMigrationService: SchoolMigrationService,
