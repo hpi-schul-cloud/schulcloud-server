@@ -634,6 +634,54 @@ describe('S3ClientAdapter', () => {
 					})
 				);
 			});
+
+			it('should truncate result by S3 limits', async () => {
+				const { path, keys, responseContents } = setup();
+
+				// @ts-expect-error ignore parameter type of mock function
+				client.send.mockResolvedValueOnce({
+					IsTruncated: true,
+					Contents: responseContents.slice(0, 1000),
+					ContinuationToken: 'KEY-1000',
+				});
+
+				// @ts-expect-error ignore parameter type of mock function
+				client.send.mockResolvedValueOnce({
+					IsTruncated: true,
+					Contents: responseContents.slice(1000, 1200),
+					ContinuationToken: 'KEY-1200',
+				});
+
+				const resultKeys = await service.list({ path, maxKeys: 1200 });
+
+				expect(resultKeys.files).toEqual(keys.slice(0, 1200));
+
+				expect(client.send).toHaveBeenNthCalledWith(
+					1,
+					expect.objectContaining({
+						input: {
+							Bucket: 'test-bucket',
+							Prefix: path,
+							ContinuationToken: undefined,
+							MaxKeys: 1200,
+						},
+					})
+				);
+
+				expect(client.send).toHaveBeenNthCalledWith(
+					2,
+					expect.objectContaining({
+						input: {
+							Bucket: 'test-bucket',
+							Prefix: path,
+							ContinuationToken: 'KEY-1000',
+							MaxKeys: 200,
+						},
+					})
+				);
+
+				expect(client.send).toHaveBeenCalledTimes(2);
+			});
 		});
 
 		describe('when maxKeys is not given', () => {

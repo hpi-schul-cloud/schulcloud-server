@@ -201,13 +201,14 @@ export class S3ClientAdapter implements IStorageClient {
 
 	private async listObjectKeysRecursive(params: IListFiles) {
 		const { path, maxKeys, nextMarker } = params;
-		const files: string[] = params.files ? params.files : [];
+		let files: string[] = params.files ? params.files : [];
+		const MaxKeys = maxKeys && maxKeys - files.length;
 
 		const req = new ListObjectsV2Command({
 			Bucket: this.config.bucket,
 			Prefix: path,
 			ContinuationToken: nextMarker,
-			MaxKeys: maxKeys,
+			MaxKeys,
 		});
 
 		const data = await this.client.send(req);
@@ -217,9 +218,11 @@ export class S3ClientAdapter implements IStorageClient {
 				.map((o) => o.Key as string) // Can not be undefined because of filter above
 				.map((key) => key.substring(path.length)) ?? [];
 
-		let res = { path, maxKeys, nextMarker: data?.ContinuationToken, files: files.concat(returnedFiles) };
+		files = files.concat(returnedFiles);
 
-		if (data?.IsTruncated && (!maxKeys || files.length < maxKeys)) {
+		let res = { path, maxKeys, nextMarker: data?.ContinuationToken, files };
+
+		if (data?.IsTruncated && (!maxKeys || res.files.length < maxKeys)) {
 			res = await this.listObjectKeysRecursive(res);
 		}
 
