@@ -5,6 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType, UserDO } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import { UserService } from '@src/modules';
+import { LibraryStorage } from '../service';
 import { H5PEditorUc } from './h5p.uc';
 
 describe('H5P Ajax', () => {
@@ -24,6 +25,10 @@ describe('H5P Ajax', () => {
 				{
 					provide: H5PPlayer,
 					useValue: createMock<H5PPlayer>(),
+				},
+				{
+					provide: LibraryStorage,
+					useValue: createMock<LibraryStorage>(),
 				},
 				{
 					provide: H5PAjaxEndpoint,
