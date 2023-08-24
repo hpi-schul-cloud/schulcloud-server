@@ -1,6 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const { dtsPlugin } = require('esbuild-plugin-d.ts');
 const { build } = require('esbuild');
+const { exec } = require('child_process');
 
 // add files to be transformed from CommonJs to EsModules in the following list
 const options = [
@@ -13,6 +14,7 @@ const options = [
 		name: 'stream-mime-type-lib',
 		entryPoint: ['esbuild/content/stream-mime-type-cjs-index.ts'],
 		outdir: 'node_modules/stream-mime-type-cjs',
+		resolutionModeFile: 'node_modules/stream-mime-type/dist/index.d.ts',
 	},
 ];
 
@@ -25,7 +27,7 @@ const globalOptions = {
 };
 
 for (const option of options) {
-	const { entryPoint, outdir } = option;
+	const { entryPoint, outdir, resolutionModeFile } = option;
 	try {
 		build({
 			entryPoints: entryPoint,
@@ -37,6 +39,9 @@ for (const option of options) {
 			loader: globalOptions.loader,
 			plugins: [dtsPlugin()],
 		});
+		if (resolutionModeFile) {
+			exec(`sed -i -- 's/resolution-mode="require"//g' ${resolutionModeFile} `);
+		}
 	} catch (e) {
 		process.exit(1);
 	}
