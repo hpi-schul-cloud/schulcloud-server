@@ -23,6 +23,7 @@ export enum SchoolFeatures {
 	LDAP_UNIVENTION_MIGRATION = 'ldapUniventionMigrationSchool',
 	OAUTH_PROVISIONING_ENABLED = 'oauthProvisioningEnabled',
 	SHOW_OUTDATED_USERS = 'showOutdatedUsers',
+	ENABLE_SYNC_DURING_MIGRATION = 'enableSyncDuringMigration',
 }
 
 export interface ISchoolProperties {
