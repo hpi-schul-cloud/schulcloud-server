@@ -136,7 +136,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/shared/infra/calendar/service/calendar.service.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/shared/infra/calendar/service/calendar.service.ts:17</a></div>
                             </td>
                         </tr>
 
@@ -213,8 +213,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="23"
-                            class="link-to-prism">apps/server/src/shared/infra/calendar/service/calendar.service.ts:23</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="24"
+                            class="link-to-prism">apps/server/src/shared/infra/calendar/service/calendar.service.ts:24</a></div>
                 </td>
             </tr>
 
@@ -296,8 +296,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="42"
-                            class="link-to-prism">apps/server/src/shared/infra/calendar/service/calendar.service.ts:42</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="46"
+                            class="link-to-prism">apps/server/src/shared/infra/calendar/service/calendar.service.ts:46</a></div>
                 </td>
             </tr>
 
@@ -396,7 +396,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/shared/infra/calendar/service/calendar.service.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/shared/infra/calendar/service/calendar.service.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -424,7 +424,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/shared/infra/calendar/service/calendar.service.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/shared/infra/calendar/service/calendar.service.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -437,15 +437,16 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpService } from &#x27;@nestjs/axios&#x27;;
-import { EntityId } from &#x27;@shared/domain&#x27;;
-import { firstValueFrom, Observable } from &#x27;rxjs&#x27;;
-import { AxiosRequestConfig, AxiosResponse } from &#x27;axios&#x27;;
-import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
-import { URL, URLSearchParams } from &#x27;url&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
+import { HttpService } from &#x27;@nestjs/axios&#x27;;
 import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
-import { CalendarMapper } from &#x27;@shared/infra/calendar/mapper/calendar.mapper&#x27;;
+import { EntityId } from &#x27;@shared/domain&#x27;;
 import { CalendarEventDto } from &#x27;@shared/infra/calendar/dto/calendar-event.dto&#x27;;
+import { CalendarMapper } from &#x27;@shared/infra/calendar/mapper/calendar.mapper&#x27;;
+import { ErrorUtils } from &#x27;@src/core/error/utils&#x27;;
+import { AxiosRequestConfig, AxiosResponse } from &#x27;axios&#x27;;
+import { Observable, firstValueFrom } from &#x27;rxjs&#x27;;
+import { URL, URLSearchParams } from &#x27;url&#x27;;
 import { ICalendarEvent } from &#x27;../interface/calendar-event.interface&#x27;;
 
 @Injectable()
@@ -474,7 +475,10 @@ export class CalendarService {
 		)
 			.then((resp: AxiosResponse&lt;ICalendarEvent&gt;) &#x3D;&gt; this.calendarMapper.mapToDto(resp.data))
 			.catch((error) &#x3D;&gt; {
-				throw new InternalServerErrorException(error);
+				throw new InternalServerErrorException(
+					null,
+					ErrorUtils.createHttpExceptionOptions(error, &#x27;CalendarService:findEvent&#x27;)
+				);
 			});
 	}
 

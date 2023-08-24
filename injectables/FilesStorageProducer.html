@@ -232,8 +232,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="67"
-                            class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:67</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="69"
+                            class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:69</a></div>
                 </td>
             </tr>
 
@@ -374,8 +374,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="75"
-                            class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:75</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="77"
+                            class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:77</a></div>
                 </td>
             </tr>
 
@@ -688,10 +688,12 @@ export class FilesStorageProducer {
 		return response.message || [];
 	}
 
+	// need to be fixed with https://ticketsystem.dbildungscloud.de/browse/BC-2984
+	// mapRpcErrorResponseToDomainError should also removed with this ticket
 	private checkError(response: RpcMessage&lt;unknown&gt;) {
 		const { error } &#x3D; response;
 		if (error) {
-			const domainError &#x3D; ErrorMapper.mapErrorToDomainError(error);
+			const domainError &#x3D; ErrorMapper.mapRpcErrorResponseToDomainError(error);
 			throw domainError;
 		}
 	}

@@ -248,8 +248,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="35"
-                            class="link-to-prism">apps/server/src/core/error/loggable/error.loggable.ts:35</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="34"
+                            class="link-to-prism">apps/server/src/core/error/loggable/error.loggable.ts:34</a></div>
                 </td>
             </tr>
 
@@ -287,7 +287,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>{ validationErrors: any; stack: any; type: string; }</code>
+                        <b>Returns : </b>    <code>{ validationErrors: any; type: string; }</code>
 
                     </div>
                     <div class="io-description">
@@ -356,8 +356,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="49"
-                            class="link-to-prism">apps/server/src/core/error/loggable/error.loggable.ts:49</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="47"
+                            class="link-to-prism">apps/server/src/core/error/loggable/error.loggable.ts:47</a></div>
                 </td>
             </tr>
 
@@ -420,8 +420,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="58"
-                            class="link-to-prism">apps/server/src/core/error/loggable/error.loggable.ts:58</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="56"
+                            class="link-to-prism">apps/server/src/core/error/loggable/error.loggable.ts:56</a></div>
                 </td>
             </tr>
 
@@ -506,7 +506,6 @@ export class ErrorLoggable implements Loggable {
 	getLogMessage(): ErrorLogMessage | ValidationErrorLogMessage {
 		let logMessage: ErrorLogMessage | ValidationErrorLogMessage &#x3D; {
 			error: this.error,
-			stack: this.error.stack,
 			type: &#x27;&#x27;,
 		};
 
@@ -534,7 +533,6 @@ export class ErrorLoggable implements Loggable {
 		});
 		return {
 			validationErrors: errorMessages,
-			stack: error.stack,
 			type: &#x27;API Validation Error&#x27;,
 		};
 	}

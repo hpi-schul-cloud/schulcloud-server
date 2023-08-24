@@ -146,7 +146,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -235,8 +235,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="69"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:69</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="73"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:73</a></div>
                 </td>
             </tr>
 
@@ -318,8 +318,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="80"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:80</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="84"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:84</a></div>
                 </td>
             </tr>
 
@@ -401,8 +401,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="18"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:18</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="19"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:19</a></div>
                 </td>
             </tr>
 
@@ -502,8 +502,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="34"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:34</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="35"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:35</a></div>
                 </td>
             </tr>
 
@@ -610,8 +610,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="91"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:91</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="95"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:95</a></div>
                 </td>
             </tr>
 
@@ -681,8 +681,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="76"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:76</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="80"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:80</a></div>
                 </td>
             </tr>
 
@@ -764,8 +764,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="87"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:87</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="91"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:91</a></div>
                 </td>
             </tr>
 
@@ -847,8 +847,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="24"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:24</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="25"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:25</a></div>
                 </td>
             </tr>
 
@@ -948,8 +948,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="48"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:48</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="49"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:49</a></div>
                 </td>
             </tr>
 
@@ -1042,6 +1042,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ForbiddenException, Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
 import { BaseDO, EntityId, User } from &#x27;@shared/domain&#x27;;
 import { AuthorizableObject } from &#x27;@shared/domain/domain-object&#x27;;
+import { ErrorUtils } from &#x27;@src/core/error/utils&#x27;;
 import { AuthorizationHelper } from &#x27;./authorization.helper&#x27;;
 import { ForbiddenLoggableException } from &#x27;./errors/forbidden.loggable-exception&#x27;;
 import { ReferenceLoader } from &#x27;./reference.loader&#x27;;
@@ -1102,8 +1103,11 @@ export class AuthorizationService {
 			const hasPermission &#x3D; rule.hasPermission(user, object, context);
 
 			return hasPermission;
-		} catch (err) {
-			throw new ForbiddenException(err);
+		} catch (error) {
+			throw new ForbiddenException(
+				null,
+				ErrorUtils.createHttpExceptionOptions(error, &#x27;AuthorizationService:hasPermissionByReferences&#x27;)
+			);
 		}
 	}
 

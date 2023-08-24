@@ -636,7 +636,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createErrorResponseForUnknownError(error?)</code>
+                    <code>createErrorResponseForUnknownError()</code>
                 </td>
             </tr>
 
@@ -653,36 +653,8 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>error</td>
-
-                                    <td>
-                                        Yes
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
                         <b>Returns : </b>        <code><a href="../classes/ErrorResponse.html" target="_self" >ErrorResponse</a></code>
 
-                    </div>
-                    <div class="io-description">
-                        
                     </div>
                 </td>
             </tr>
@@ -880,9 +852,9 @@ export class GlobalErrorFilter&lt;T extends IError | undefined&gt; implements Ex
 		return new ErrorResponse(type, title, msg, code);
 	}
 
-	private createErrorResponseForUnknownError(error?: unknown): ErrorResponse {
-		const unknownError &#x3D; new InternalServerErrorException(error);
-		const response &#x3D; this.createErrorResponseForNestHttpException(unknownError);
+	private createErrorResponseForUnknownError(): ErrorResponse {
+		const error &#x3D; new InternalServerErrorException();
+		const response &#x3D; this.createErrorResponseForNestHttpException(error);
 
 		return response;
 	}

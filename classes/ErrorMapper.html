@@ -91,7 +91,7 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Static</span>
-                                <a href="#mapErrorToDomainError" >mapErrorToDomainError</a>
+                                <a href="#mapRpcErrorResponseToDomainError" >mapRpcErrorResponseToDomainError</a>
                             </li>
                         </ul>
                     </td>
@@ -116,26 +116,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapErrorToDomainError"></a>
+                    <a name="mapRpcErrorResponseToDomainError"></a>
                     <span class="name">
                         <span class="modifier">Static</span>
-                        <span ><b>mapErrorToDomainError</b></span>
-                        <a href="#mapErrorToDomainError"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>mapRpcErrorResponseToDomainError</b></span>
+                        <a href="#mapRpcErrorResponseToDomainError"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapErrorToDomainError(errorObj: <a href="../interfaces/IFileStorageErrors.html" target="_self">IFileStorageErrors</a>)</code>
+                    <code>mapRpcErrorResponseToDomainError(errorObj: <a href="../interfaces/IError.html" target="_self">IError</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="11"
-                            class="link-to-prism">apps/server/src/modules/files-storage-client/mapper/error.mapper.ts:11</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="6"
+                            class="link-to-prism">apps/server/src/modules/files-storage-client/mapper/error.mapper.ts:6</a></div>
                 </td>
             </tr>
 
@@ -158,7 +158,7 @@
                                 <tr>
                                     <td>errorObj</td>
                                     <td>
-                                                <code><a href="../interfaces/IFileStorageErrors.html" target="_self" >IFileStorageErrors</a></code>
+                                                <code><a href="../interfaces/IError.html" target="_self" >IError</a></code>
                                     </td>
 
                                     <td>
@@ -173,7 +173,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#FileStorageErrors" target="_self" >FileStorageErrors</a></code>
+                        <b>Returns : </b>    <code>BadRequestException | ForbiddenException | InternalServerErrorException</code>
 
                     </div>
                     <div class="io-description">
@@ -194,25 +194,22 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, ForbiddenException, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
-import { ApiValidationError } from &#x27;@shared/common&#x27;;
-import { FileStorageErrors, IFileStorageErrors } from &#x27;../interfaces&#x27;;
+import { ErrorUtils } from &#x27;@src/core/error/utils&#x27;;
+import { IError } from &#x27;@shared/infra/rabbitmq&#x27;;
 
-export const isValidationError &#x3D; (error: IFileStorageErrors): boolean &#x3D;&gt; {
-	const checked &#x3D; !!(error.validationErrors &amp;&amp; error.validationErrors.length &gt; 0);
-
-	return checked;
-};
 export class ErrorMapper {
-	static mapErrorToDomainError(errorObj: IFileStorageErrors): FileStorageErrors {
-		let error: FileStorageErrors;
-		if (errorObj.status &#x3D;&#x3D;&#x3D; 400 &amp;&amp; isValidationError(errorObj)) {
-			error &#x3D; new ApiValidationError(errorObj.validationErrors);
-		} else if (errorObj.status &#x3D;&#x3D;&#x3D; 400 &amp;&amp; !isValidationError(errorObj)) {
+	static mapRpcErrorResponseToDomainError(
+		errorObj: IError
+	): BadRequestException | ForbiddenException | InternalServerErrorException {
+		let error: BadRequestException | ForbiddenException | InternalServerErrorException;
+		if (errorObj.status &#x3D;&#x3D;&#x3D; 400) {
 			error &#x3D; new BadRequestException(errorObj.message);
 		} else if (errorObj.status &#x3D;&#x3D;&#x3D; 403) {
 			error &#x3D; new ForbiddenException(errorObj.message);
+		} else if (errorObj.status &#x3D;&#x3D;&#x3D; 500) {
+			error &#x3D; new InternalServerErrorException(errorObj.message);
 		} else {
-			error &#x3D; new InternalServerErrorException(errorObj);
+			error &#x3D; new InternalServerErrorException(null, ErrorUtils.createHttpExceptionOptions(errorObj));
 		}
 
 		return error;

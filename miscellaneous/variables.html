@@ -379,9 +379,6 @@
                             <a href="#isAtLeastPartialSuccessfull" title="apps/server/src/modules/copy-helper/service/copy-helper.service.ts" ><b>isAtLeastPartialSuccessfull</b>&nbsp;&nbsp;&nbsp;(apps/.../copy-helper.service.ts)</a>
                         </li>
                         <li>
-                            <a href="#isValidationError" title="apps/server/src/modules/files-storage-client/mapper/error.mapper.ts" ><b>isValidationError</b>&nbsp;&nbsp;&nbsp;(apps/.../error.mapper.ts)</a>
-                        </li>
-                        <li>
                             <a href="#JWT" title="apps/server/src/modules/authentication/decorator/auth.decorator.ts" ><b>JWT</b>&nbsp;&nbsp;&nbsp;(apps/.../auth.decorator.ts)</a>
                         </li>
                         <li>
@@ -5636,33 +5633,6 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>(status) &#x3D;&gt; status &#x3D;&#x3D;&#x3D; CopyStatusEnum.PARTIAL || status &#x3D;&#x3D;&#x3D; CopyStatusEnum.SUCCESS</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
-    <h3>apps/server/src/modules/files-storage-client/mapper/error.mapper.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="isValidationError"></a>
-                    <span class="name">
-                        <span ><b>isValidationError</b></span>
-                        <a href="#isValidationError"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>(error: IFileStorageErrors): boolean &#x3D;&gt; {
-	const checked &#x3D; !!(error.validationErrors &amp;&amp; error.validationErrors.length &gt; 0);
-
-	return checked;
-}</code>
                     </td>
                 </tr>
 

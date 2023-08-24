@@ -5053,9 +5053,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/IFileStorageConfig.html" data-type="entity-link" >IFileStorageConfig</a>
                             </li>
                             <li class="link">
-                                <a href="interfaces/IFileStorageErrors.html" data-type="entity-link" >IFileStorageErrors</a>
-                            </li>
-                            <li class="link">
                                 <a href="interfaces/IFindOptions.html" data-type="entity-link" >IFindOptions</a>
                             </li>
                             <li class="link">
