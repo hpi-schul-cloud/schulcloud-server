@@ -28,13 +28,13 @@
 <title>cluster_CommonToolModule_providers</title>
 <polygon fill="none" stroke="black" points="256,-78 256,-130 1443,-130 1443,-78 256,-78"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_CommonToolModule_exports</title>
-<polygon fill="none" stroke="black" points="152,-208 152,-260 1055,-260 1055,-208 152,-208"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_CommonToolModule_imports</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 248,-130 248,-78 16,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_CommonToolModule_exports</title>
+<polygon fill="none" stroke="black" points="152,-208 152,-260 1055,-260 1055,-208 152,-208"/>
 </g>
 <!-- LoggerModule -->
 <g id="node1" class="node">
