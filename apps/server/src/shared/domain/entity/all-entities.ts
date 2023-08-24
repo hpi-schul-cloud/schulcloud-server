@@ -28,7 +28,7 @@ import {
 	LessonBoardElement,
 	TaskBoardElement,
 } from './legacy-board';
-import { Lesson } from './lesson.entity';
+import { LessonEntity } from './lesson.entity';
 import { LtiTool } from './ltitool.entity';
 import { Material } from './materials.entity';
 import { CourseNews, News, SchoolNews, TeamNews } from './news.entity';
@@ -68,7 +68,7 @@ export const ALL_ENTITIES = [
 	FederalState,
 	File,
 	ImportUser,
-	Lesson,
+	LessonEntity,
 	LessonBoardElement,
 	LtiTool,
 	Material,

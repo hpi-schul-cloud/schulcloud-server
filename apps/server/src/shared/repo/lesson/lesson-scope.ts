@@ -1,7 +1,7 @@
-import { EntityId, Lesson } from '@shared/domain';
+import { EntityId, LessonEntity } from '@shared/domain';
 import { Scope } from '../scope';
 
-export class LessonScope extends Scope<Lesson> {
+export class LessonScope extends Scope<LessonEntity> {
 	byCourseIds(courseIds: EntityId[]): LessonScope {
 		this.addQuery({ course: { $in: courseIds } });
 		return this;
@@ -11,4 +11,9 @@ export class LessonScope extends Scope<Lesson> {
 		this.addQuery({ hidden: { $eq: isHidden } });
 		return this;
 	}
+
+	// byUserId(userId: EntityId): LessonScope {
+	// 	this.addQuery({ 'content.user': new ObjectId(userId) });
+	// 	return this;
+	// }
 }

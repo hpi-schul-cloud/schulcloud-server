@@ -1,25 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { Counted, EntityId, Lesson, SortOrder } from '@shared/domain';
+import { Counted, EntityId, LessonEntity, SortOrder } from '@shared/domain';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { EntityDictionary } from '@mikro-orm/core';
 import { BaseRepo } from '../base.repo';
 import { LessonScope } from './lesson-scope';
 
 @Injectable()
-export class LessonRepo extends BaseRepo<Lesson> {
+export class LessonRepo extends BaseRepo<LessonEntity> {
 	get entityName() {
-		return Lesson;
+		return LessonEntity;
 	}
 
-	async createLesson(lesson: Lesson): Promise<void> {
+	async createLesson(lesson: LessonEntity): Promise<void> {
 		return this.save(this.create(lesson));
 	}
 
-	async findById(id: EntityId): Promise<Lesson> {
+	async findById(id: EntityId): Promise<LessonEntity> {
 		const lesson = await super.findById(id);
 		await this._em.populate(lesson, ['course', 'tasks', 'materials', 'courseGroup.course']);
 		return lesson;
 	}
 
-	async findAllByCourseIds(courseIds: EntityId[], filters?: { hidden?: boolean }): Promise<Counted<Lesson[]>> {
+	async findAllByCourseIds(courseIds: EntityId[], filters?: { hidden?: boolean }): Promise<Counted<LessonEntity[]>> {
 		const scope = new LessonScope();
 
 		scope.byCourseIds(courseIds);
@@ -30,10 +32,32 @@ export class LessonRepo extends BaseRepo<Lesson> {
 
 		const order = { position: SortOrder.asc };
 
-		const [lessons, count] = await this._em.findAndCount(Lesson, scope.query, { orderBy: order });
+		const [lessons, count] = await this._em.findAndCount(LessonEntity, scope.query, { orderBy: order });
 
 		await this._em.populate(lessons, ['course', 'tasks', 'materials']);
 
 		return [lessons, count];
+	}
+
+	async findByUserId(userId: EntityId): Promise<LessonEntity[]> {
+		const pipeline = [
+			{
+				$match: {
+					contents: {
+						$elemMatch: {
+							user: new ObjectId(userId),
+						},
+					},
+				},
+			},
+		];
+
+		const rawLessonsDocuments = await this._em.aggregate(LessonEntity, pipeline);
+
+		const lessons = rawLessonsDocuments.map((rawLessonDocument) =>
+			this._em.map(LessonEntity, rawLessonDocument as EntityDictionary<LessonEntity>)
+		);
+
+		return lessons;
 	}
 }
