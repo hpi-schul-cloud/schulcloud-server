@@ -42,7 +42,7 @@ describe('ExternalToolVersionService', () => {
 	const expectIncreasement = (newTool: ExternalTool) => expect(newTool.version).toEqual(2);
 	const expectNoIncreasement = (newTool: ExternalTool) => expect(newTool.version).toEqual(1);
 
-	describe('increaseVersionOfNewToolIfNecessary is called', () => {
+	describe('increaseVersionOfNewToolIfNecessary', () => {
 		describe('when customParameters on old tool is not defined', () => {
 			it('should not increase version', () => {
 				const { oldTool, newTool } = setup();
@@ -65,7 +65,7 @@ describe('ExternalToolVersionService', () => {
 			});
 		});
 
-		describe('compareParameters is called', () => {
+		describe('compareParameters', () => {
 			describe('when customParameters are the same', () => {
 				it('should not increase version', () => {
 					const { oldTool, newTool } = setup();
@@ -88,7 +88,7 @@ describe('ExternalToolVersionService', () => {
 			});
 		});
 
-		describe('hasNewRequiredParameter is called', () => {
+		describe('hasNewRequiredParameter', () => {
 			describe('when new required parameter exists', () => {
 				it('should increase version', () => {
 					const { oldTool, newTool } = setup();
@@ -101,7 +101,7 @@ describe('ExternalToolVersionService', () => {
 			});
 		});
 
-		describe('hasChangedParameterNames is called', () => {
+		describe('hasChangedParameterNames', () => {
 			describe('when the name of some customParameter has changed', () => {
 				it('should increase version', () => {
 					const { oldTool, newTool, param1 } = setup();
@@ -126,7 +126,7 @@ describe('ExternalToolVersionService', () => {
 			});
 		});
 
-		describe('hasChangedRequiredParameters is called', () => {
+		describe('hasChangedRequiredParameters', () => {
 			describe('when one customParameter change from optional to required', () => {
 				it('should increase version', () => {
 					const { oldTool, newTool, param1 } = setup();
@@ -139,7 +139,7 @@ describe('ExternalToolVersionService', () => {
 			});
 		});
 
-		describe('hasChangedParameterRegex is called', () => {
+		describe('hasChangedParameterRegex', () => {
 			describe('when one customParameter has a changed regex', () => {
 				it('should increase version', () => {
 					const { oldTool, newTool, param1 } = setup();
@@ -152,7 +152,7 @@ describe('ExternalToolVersionService', () => {
 			});
 		});
 
-		describe('hasChangedParameterTypes is called', () => {
+		describe('hasChangedParameterTypes', () => {
 			describe('when one customParameter has a changed type', () => {
 				it('should increase version', () => {
 					const { oldTool, newTool, param1 } = setup();
@@ -165,7 +165,7 @@ describe('ExternalToolVersionService', () => {
 			});
 		});
 
-		describe('hasChangedParameterScope is called', () => {
+		describe('hasChangedParameterScope', () => {
 			describe('when one customParameter has a changed scope', () => {
 				it('should increase version', () => {
 					const { oldTool, newTool, param1 } = setup();
