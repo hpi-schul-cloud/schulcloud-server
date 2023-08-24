@@ -1,6 +1,7 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { H5PEditor, H5PPlayer } from '@lumieducation/h5p-server';
 import { Test, TestingModule } from '@nestjs/testing';
+import { LanguageType } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { setupEntities } from '@shared/testing';
 import { UserService } from '@src/modules';
@@ -18,7 +19,7 @@ const setup = () => {
 		accountId: '',
 	};
 
-	const language = 'de';
+	const language: LanguageType = LanguageType.DE;
 
 	const playerModel = {
 		contentId,
