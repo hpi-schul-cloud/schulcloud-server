@@ -63,13 +63,7 @@ export class OauthSSOController {
 		res.redirect(errorRedirect.toString());
 	}
 
-	private migrationErrorHandler(
-		error: unknown,
-		session: ISession,
-		res: Response,
-		sourceSystemId: string,
-		targetSystemId: string
-	) {
+	private migrationErrorHandler(error: unknown, session: ISession, res: Response) {
 		const migrationError: OAuthMigrationError =
 			error instanceof OAuthMigrationError ? error : new OAuthMigrationError();
 
@@ -78,9 +72,6 @@ export class OauthSSOController {
 		});
 
 		const errorRedirect: URL = new URL('/migration/error', this.clientUrl);
-
-		errorRedirect.searchParams.append('sourceSystem', sourceSystemId);
-		errorRedirect.searchParams.append('targetSystem', targetSystemId);
 
 		if (migrationError.officialSchoolNumberFromSource && migrationError.officialSchoolNumberFromTarget) {
 			errorRedirect.searchParams.append('sourceSchoolNumber', migrationError.officialSchoolNumberFromSource);
@@ -208,7 +199,7 @@ export class OauthSSOController {
 			const response: UserMigrationResponse = UserMigrationMapper.mapDtoToResponse(migration);
 			res.redirect(response.redirect);
 		} catch (error) {
-			this.migrationErrorHandler(error, session, res, currentUser.systemId, oauthLoginState.systemId);
+			this.migrationErrorHandler(error, session, res);
 		}
 	}
 }
