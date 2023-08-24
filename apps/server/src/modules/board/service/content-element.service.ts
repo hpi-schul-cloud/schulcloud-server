@@ -31,7 +31,7 @@ export class ContentElementService {
 	}
 
 	async create(parent: Card, type: ContentElementType): Promise<AnyContentElementDo> {
-		const element = this.contentElementFactory.build(type);
+		const element = this.contentElementFactory.build(type, parent.id);
 		parent.addChild(element);
 		await this.boardDoRepo.save(parent.children, parent);
 		return element;

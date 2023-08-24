@@ -38,6 +38,12 @@ export class RichTextContentBody {
 	inputFormat!: InputFormat;
 }
 
+export class DrawingContentBody {
+	@IsString()
+	@ApiProperty()
+	drawingName!: string;
+}
+
 export class RichTextElementContentBody extends ElementContentBody {
 	@ApiProperty({ type: ContentElementType.RICH_TEXT })
 	type!: ContentElementType.RICH_TEXT;

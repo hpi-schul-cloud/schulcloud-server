@@ -13,6 +13,7 @@ import {
 	SubmissionItem,
 } from '@shared/domain';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 
 @Injectable()
 export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
@@ -46,6 +47,11 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 	async visitRichTextElementAsync(richTextElement: RichTextElement): Promise<void> {
 		this.deleteNode(richTextElement);
 		await this.visitChildrenAsync(richTextElement);
+	}
+
+	async visitDrawingElementAsync(drawingElement: DrawingElement): Promise<void> {
+		this.deleteNode(drawingElement);
+		await this.visitChildrenAsync(drawingElement);
 	}
 
 	async visitSubmissionContainerElementAsync(submissionContainerElement: SubmissionContainerElement): Promise<void> {

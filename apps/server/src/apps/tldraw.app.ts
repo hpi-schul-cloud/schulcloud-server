@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
 import { install as sourceMapInstall } from 'source-map-support';
-import { TldrawModule } from '@src/modules/tldraw';
+import { TldrawWsModule } from '@src/modules/tldraw';
 import { Logger } from '@src/core/logger';
 import * as WebSocket from 'ws';
 import { WsAdapter } from '@nestjs/platform-ws';
@@ -12,7 +12,7 @@ import { AppStartLoggable } from '@src/apps/helpers/app-start-loggable';
 async function bootstrap() {
 	sourceMapInstall();
 
-	const nestApp = await NestFactory.create(TldrawModule);
+	const nestApp = await NestFactory.create(TldrawWsModule);
 	const wss = new WebSocket.Server({ noServer: true });
 	nestApp.useWebSocketAdapter(new WsAdapter(wss));
 	nestApp.enableCors();

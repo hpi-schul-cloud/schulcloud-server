@@ -11,6 +11,7 @@ import {
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { Action } from '@src/modules/authorization/types/action.enum';
+import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 import { BoardDoAuthorizableService, CardService, ContentElementService } from '../service';
 
 @Injectable()
@@ -41,7 +42,7 @@ export class CardUc {
 		cardId: EntityId,
 		type: ContentElementType,
 		toPosition?: number
-	): Promise<FileElement | RichTextElement | SubmissionContainerElement> {
+	): Promise<FileElement | RichTextElement | DrawingElement | SubmissionContainerElement> {
 		this.logger.debug({ action: 'createElement', userId, cardId, type });
 
 		const card = await this.cardService.findById(cardId);

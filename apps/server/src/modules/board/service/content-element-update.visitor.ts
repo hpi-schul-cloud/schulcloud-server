@@ -10,9 +10,15 @@ import {
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain';
-import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from '../controller/dto';
+import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
+import {
+	DrawingContentBody,
+	FileContentBody,
+	RichTextContentBody,
+	SubmissionContainerContentBody,
+} from '../controller/dto';
 
-type ContentType = FileContentBody | RichTextContentBody | SubmissionContainerContentBody;
+type ContentType = FileContentBody | RichTextContentBody | DrawingContentBody | SubmissionContainerContentBody;
 
 export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 	private readonly content: ContentType;
@@ -47,6 +53,14 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 			richTextElement.inputFormat = this.content.inputFormat;
 		} else {
 			this.throwNotHandled(richTextElement);
+		}
+	}
+
+	visitDrawingElement(drawingElement: DrawingElement): void {
+		if (this.content instanceof DrawingContentBody) {
+			drawingElement.drawingName = this.content.drawingName;
+		} else {
+			this.throwNotHandled(drawingElement);
 		}
 	}
 

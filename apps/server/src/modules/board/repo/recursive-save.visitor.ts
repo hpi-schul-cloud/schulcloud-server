@@ -20,6 +20,8 @@ import {
 	SubmissionItem,
 	SubmissionItemNode,
 } from '@shared/domain';
+import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
+import { DrawingElementNode } from '@shared/domain/entity/boardnode/drawing-element-node.entity';
 import { BoardNodeRepo } from './board-node.repo';
 
 type ParentData = {
@@ -117,6 +119,20 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 
 		this.createOrUpdateBoardNode(boardNode);
 		this.visitChildren(richTextElement, boardNode);
+	}
+
+	visitDrawingElement(drawingElement: DrawingElement): void {
+		const parentData = this.parentsMap.get(drawingElement.id);
+
+		const boardNode = new DrawingElementNode({
+			id: drawingElement.id,
+			drawingName: drawingElement.drawingName,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+		});
+
+		this.createOrUpdateBoardNode(boardNode);
+		this.visitChildren(drawingElement, boardNode);
 	}
 
 	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void {

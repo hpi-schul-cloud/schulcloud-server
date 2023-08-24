@@ -6,10 +6,8 @@ import { Logger } from '@src/core/logger';
 import { TldrawGateway } from '@src/modules/tldraw/gateway';
 import { config } from './config';
 
-const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
-
 @Module({
-	imports,
+	imports: [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))],
 	providers: [Logger, TldrawGateway],
 })
-export class TldrawModule {}
+export class TldrawWsModule {}

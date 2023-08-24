@@ -7,10 +7,10 @@ import { LoggerModule } from '@src/core/logger';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { AuthenticationApiModule } from '../authentication/authentication-api.module';
-import { TldrawModule } from './tldraw.module';
+import { TldrawWsModule } from './tldraw.ws.module';
 
 const imports = [
-	TldrawModule,
+	TldrawWsModule,
 	MongoMemoryDatabaseModule.forRoot({ entities: [User, Course] }),
 	AuthenticationApiModule,
 	AuthorizationModule,

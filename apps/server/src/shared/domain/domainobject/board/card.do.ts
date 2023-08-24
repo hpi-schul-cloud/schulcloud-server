@@ -1,3 +1,4 @@
+import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import { FileElement } from './file-element.do';
 import { RichTextElement } from './rich-text-element.do';
@@ -25,6 +26,7 @@ export class Card extends BoardComposite<CardProps> {
 		const allowed =
 			domainObject instanceof FileElement ||
 			domainObject instanceof RichTextElement ||
+			domainObject instanceof DrawingElement ||
 			domainObject instanceof SubmissionContainerElement;
 		return allowed;
 	}

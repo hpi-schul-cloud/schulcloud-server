@@ -21,6 +21,8 @@ import {
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain';
+import { DrawingElementNode } from '@shared/domain/entity/boardnode/drawing-element-node.entity';
+import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
 	private childrenMap: Record<string, BoardNode[]> = {};
@@ -72,6 +74,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 		this.ensureBoardNodeType(this.getChildren(boardNode), [
 			BoardNodeType.FILE_ELEMENT,
 			BoardNodeType.RICH_TEXT_ELEMENT,
+			BoardNodeType.DRAWING_ELEMENT,
 			BoardNodeType.SUBMISSION_CONTAINER_ELEMENT,
 		]);
 
@@ -108,6 +111,19 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			id: boardNode.id,
 			text: boardNode.text,
 			inputFormat: boardNode.inputFormat,
+			children: [],
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+		});
+		return element;
+	}
+
+	public buildDrawingElement(boardNode: DrawingElementNode): DrawingElement {
+		this.ensureLeafNode(boardNode);
+
+		const element = new DrawingElement({
+			id: boardNode.id,
+			drawingName: boardNode.drawingName,
 			children: [],
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,

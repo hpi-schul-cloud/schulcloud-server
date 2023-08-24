@@ -3,6 +3,7 @@ import { ExternalToolPseudonymEntity, PseudonymEntity } from '@src/modules/pseud
 import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
 import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity';
 import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
+import { DrawingElementNode } from '@shared/domain/entity/boardnode/drawing-element-node.entity';
 import { Account } from './account.entity';
 import {
 	CardNode,
@@ -56,6 +57,7 @@ export const ALL_ENTITIES = [
 	ColumnNode,
 	FileElementNode,
 	RichTextElementNode,
+	DrawingElementNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
 	Course,

@@ -1,3 +1,4 @@
+import { DrawingElementResponse } from '@src/modules/board/controller/dto/element/drawing-element.response';
 import { FileElementResponse } from './file-element.response';
 import { RichTextElementResponse } from './rich-text-element.response';
 import { SubmissionContainerElementResponse } from './submission-container-element.response';
@@ -5,4 +6,5 @@ import { SubmissionContainerElementResponse } from './submission-container-eleme
 export type AnyContentElementResponse =
 	| FileElementResponse
 	| RichTextElementResponse
+	| DrawingElementResponse
 	| SubmissionContainerElementResponse;
