@@ -20,7 +20,7 @@ const SCHOOL_FEATURES = {
 	LDAP_UNIVENTION_MIGRATION: 'ldapUniventionMigrationSchool',
 	OAUTH_PROVISIONING_ENABLED: 'oauthProvisioningEnabled',
 	SHOW_OUTDATED_USERS: 'showOutdatedUsers',
-	ENABLE_LDAP_SYNC_DURING_MIGRATION: 'enableSyncDuringMigration',
+	ENABLE_LDAP_SYNC_DURING_MIGRATION: 'enableLdapSyncDuringMigration',
 };
 
 const SCHOOL_OF_DELETED_USERS = { name: 'graveyard school (tombstone users only)', purpose: 'tombstone' };
