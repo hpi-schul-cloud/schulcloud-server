@@ -99,34 +99,7 @@ export class LibraryStorage implements ILibraryStorage {
 			throw new Error("Can't add library because it already exists");
 		}
 
-		const library = new InstalledLibrary(
-			libMeta.machineName,
-			libMeta.majorVersion,
-			libMeta.minorVersion,
-			libMeta.patchVersion,
-			restricted,
-			libMeta.runnable,
-			libMeta.title,
-			undefined,
-			libMeta.addTo,
-			libMeta.author,
-			libMeta.coreApi,
-			libMeta.description,
-			libMeta.dropLibraryCss,
-			libMeta.dynamicDependencies,
-			libMeta.editorDependencies,
-			libMeta.embedTypes,
-			libMeta.fullscreen,
-			libMeta.h,
-			libMeta.license,
-			libMeta.metadataSettings,
-			libMeta.preloadedCss,
-			libMeta.preloadedDependencies,
-			libMeta.preloadedJs,
-			libMeta.w,
-			libMeta.requiredExtensions,
-			libMeta.state
-		);
+		const library = new InstalledLibrary(libMeta, restricted, undefined);
 
 		await this.libraryRepo.createLibrary(library);
 
