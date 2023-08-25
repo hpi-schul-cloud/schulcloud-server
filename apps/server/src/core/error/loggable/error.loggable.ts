@@ -13,7 +13,6 @@ export class ErrorLoggable implements Loggable {
 	getLogMessage(): ErrorLogMessage | ValidationErrorLogMessage {
 		let logMessage: ErrorLogMessage | ValidationErrorLogMessage = {
 			error: this.error,
-			stack: this.error.stack,
 			type: '',
 		};
 
@@ -41,7 +40,6 @@ export class ErrorLoggable implements Loggable {
 		});
 		return {
 			validationErrors: errorMessages,
-			stack: error.stack,
 			type: 'API Validation Error',
 		};
 	}
