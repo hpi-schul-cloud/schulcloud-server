@@ -4,6 +4,7 @@ import {
 	ApiInternalServerErrorResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
+	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
@@ -49,6 +50,10 @@ export class UserLoginMigrationController {
 
 	@Get()
 	@ApiForbiddenResponse()
+	@ApiOperation({
+		summary: 'Get UserLoginMigrations',
+		description: 'Currently there can only be one migration for a user. Therefore only one migration is returned.',
+	})
 	@ApiOkResponse({ description: 'UserLoginMigrations has been found.', type: UserLoginMigrationSearchListResponse })
 	@ApiInternalServerErrorResponse({ description: 'Cannot find target system information.' })
 	async getMigrations(
@@ -79,7 +84,7 @@ export class UserLoginMigrationController {
 
 	@Get('schools/:schoolId')
 	@ApiForbiddenResponse()
-	@ApiOkResponse({ description: 'UserLoginMigrations has been found', type: UserLoginMigrationSearchListResponse })
+	@ApiOkResponse({ description: 'UserLoginMigrations has been found', type: UserLoginMigrationResponse })
 	@ApiNotFoundResponse({ description: 'Cannot find UserLoginMigration' })
 	async findUserLoginMigrationBySchool(
 		@CurrentUser() user: ICurrentUser,

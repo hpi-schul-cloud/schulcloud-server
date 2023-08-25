@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { UserService } from '@src/modules';
 import { ICurrentUser } from '@src/modules/authentication';
-import { H5PAjaxEndpointService } from '../service';
+import { H5PAjaxEndpointService, LibraryStorage } from '../service';
 import { H5PEditorUc } from './h5p.uc';
 
 const setup = () => {
@@ -38,6 +38,10 @@ describe('get H5P player', () => {
 				{
 					provide: H5PPlayer,
 					useValue: createMock<H5PPlayer>(),
+				},
+				{
+					provide: LibraryStorage,
+					useValue: createMock<LibraryStorage>(),
 				},
 				{
 					provide: UserService,

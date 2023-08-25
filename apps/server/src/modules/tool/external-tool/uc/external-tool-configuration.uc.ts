@@ -9,7 +9,7 @@ import { ContextExternalToolService } from '../../context-external-tool/service'
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ExternalTool } from '../domain';
-import { ExternalToolService, ExternalToolConfigurationService } from '../service';
+import { ExternalToolLogoService, ExternalToolService, ExternalToolConfigurationService } from '../service';
 import { ContextExternalToolTemplateInfo } from './dto';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 
@@ -21,7 +21,8 @@ export class ExternalToolConfigurationUc {
 		private readonly contextExternalToolService: ContextExternalToolService,
 		@Inject(forwardRef(() => ToolPermissionHelper))
 		private readonly toolPermissionHelper: ToolPermissionHelper,
-		private readonly externalToolConfigurationService: ExternalToolConfigurationService
+		private readonly externalToolConfigurationService: ExternalToolConfigurationService,
+		private readonly externalToolLogoService: ExternalToolLogoService
 	) {}
 
 	public async getAvailableToolsForSchool(userId: EntityId, schoolId: EntityId): Promise<ExternalTool[]> {
@@ -48,6 +49,13 @@ export class ExternalToolConfigurationUc {
 
 		availableTools.forEach((externalTool) => {
 			this.externalToolConfigurationService.filterParametersForScope(externalTool, CustomParameterScope.SCHOOL);
+		});
+
+		availableTools.forEach((externalTool) => {
+			externalTool.logoUrl = this.externalToolLogoService.buildLogoUrl(
+				'/v3/tools/external-tools/{id}/logo',
+				externalTool
+			);
 		});
 
 		return availableTools;
@@ -92,6 +100,13 @@ export class ExternalToolConfigurationUc {
 			this.externalToolConfigurationService.filterParametersForScope(
 				toolTemplateInfo.externalTool,
 				CustomParameterScope.CONTEXT
+			);
+		});
+
+		availableToolsForContext.forEach((toolTemplateInfo) => {
+			toolTemplateInfo.externalTool.logoUrl = this.externalToolLogoService.buildLogoUrl(
+				'/v3/tools/external-tools/{id}/logo',
+				toolTemplateInfo.externalTool
 			);
 		});
 

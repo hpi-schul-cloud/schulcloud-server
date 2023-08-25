@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { PrivacyProtect } from '@shared/controller';
 import { IsEmail, IsOptional, IsString, Matches } from 'class-validator';
 import { passwordPattern } from './password-pattern';
 
@@ -11,6 +12,7 @@ export class PatchMyAccountParams {
 	})
 	passwordOld!: string;
 
+	@PrivacyProtect()
 	@IsString()
 	@IsOptional()
 	@Matches(passwordPattern)

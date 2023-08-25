@@ -17,7 +17,7 @@ import { ContextExternalToolService } from '../../context-external-tool/service'
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ExternalTool } from '../domain';
-import { ExternalToolService, ExternalToolConfigurationService } from '../service';
+import { ExternalToolLogoService, ExternalToolService, ExternalToolConfigurationService } from '../service';
 import { ExternalToolConfigurationUc } from './external-tool-configuration.uc';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 
@@ -30,6 +30,7 @@ describe('ExternalToolConfigurationUc', () => {
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let toolPermissionHelper: DeepMocked<ToolPermissionHelper>;
+	let logoService: DeepMocked<ExternalToolLogoService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -57,6 +58,10 @@ describe('ExternalToolConfigurationUc', () => {
 					provide: ExternalToolConfigurationService,
 					useValue: createMock<ExternalToolConfigurationService>(),
 				},
+				{
+					provide: ExternalToolLogoService,
+					useValue: createMock<ExternalToolLogoService>(),
+				},
 			],
 		}).compile();
 
@@ -66,6 +71,7 @@ describe('ExternalToolConfigurationUc', () => {
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		contextExternalToolService = module.get(ContextExternalToolService);
 		toolPermissionHelper = module.get(ToolPermissionHelper);
+		logoService = module.get(ExternalToolLogoService);
 	});
 
 	afterEach(() => {
@@ -138,6 +144,17 @@ describe('ExternalToolConfigurationUc', () => {
 
 				return { externalToolsPage };
 			};
+
+			it('should call externalToolLogoService', async () => {
+				const { externalToolsPage } = setup();
+
+				await uc.getAvailableToolsForSchool('userId', 'schoolId');
+
+				expect(logoService.buildLogoUrl).toHaveBeenCalledWith(
+					'/v3/tools/external-tools/{id}/logo',
+					externalToolsPage.data[1]
+				);
+			});
 
 			it('should call filterForAvailableTools with ids of used tools', async () => {
 				const { externalToolsPage } = setup();
@@ -276,6 +293,14 @@ describe('ExternalToolConfigurationUc', () => {
 					usedContextExternalTool,
 					AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN])
 				);
+			});
+
+			it('should call externalToolLogoService', async () => {
+				const { usedTool } = setup();
+
+				await uc.getAvailableToolsForContext('userId', 'schoolId', 'contextId', ToolContextType.COURSE);
+
+				expect(logoService.buildLogoUrl).toHaveBeenCalledWith('/v3/tools/external-tools/{id}/logo', usedTool);
 			});
 
 			it('should call filterForAvailableSchoolExternalTools', async () => {

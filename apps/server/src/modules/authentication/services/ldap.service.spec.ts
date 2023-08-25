@@ -79,7 +79,7 @@ describe('LdapService', () => {
 			it('should throw unauthorized error', async () => {
 				const system: System = systemFactory.withLdapConfig().buildWithId();
 				await expect(ldapService.checkLdapCredentials(system, 'mockUsername', 'mockPassword')).rejects.toThrow(
-					new UnauthorizedException('an error', 'User could not authenticate')
+					new UnauthorizedException('User could not authenticate')
 				);
 			});
 		});

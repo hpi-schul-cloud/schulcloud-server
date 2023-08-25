@@ -1,11 +1,12 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { H5PEditor, H5PPlayer } from '@lumieducation/h5p-server';
 import { Test, TestingModule } from '@nestjs/testing';
+import { LanguageType } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { setupEntities } from '@shared/testing';
 import { UserService } from '@src/modules';
 import { ICurrentUser } from '@src/modules/authentication';
-import { H5PAjaxEndpointService } from '../service';
+import { H5PAjaxEndpointService, LibraryStorage } from '../service';
 import { H5PEditorUc } from './h5p.uc';
 
 const setup = () => {
@@ -18,7 +19,7 @@ const setup = () => {
 		accountId: '',
 	};
 
-	const language = 'de';
+	const language: LanguageType = LanguageType.DE;
 
 	const playerModel = {
 		contentId,
@@ -63,6 +64,10 @@ describe('get H5P editor', () => {
 				{
 					provide: UserRepo,
 					useValue: createMock<UserRepo>(),
+				},
+				{
+					provide: LibraryStorage,
+					useValue: createMock<LibraryStorage>(),
 				},
 				{
 					provide: UserService,

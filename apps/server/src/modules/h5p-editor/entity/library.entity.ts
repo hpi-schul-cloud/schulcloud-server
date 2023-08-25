@@ -1,7 +1,7 @@
-import { Entity, Property } from '@mikro-orm/core';
 import { IInstalledLibrary, ILibraryName } from '@lumieducation/h5p-server';
+import { IFileStats, ILibraryMetadata, IPath } from '@lumieducation/h5p-server/build/src/types';
+import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntity } from '@shared/domain';
-import { IFileStats, IPath } from '@lumieducation/h5p-server/build/src/types';
 
 export class Path implements IPath {
 	@Property()
@@ -226,63 +226,33 @@ export class InstalledLibrary extends BaseEntity implements IInstalledLibrary {
 		return this.simple_compare(this.patchVersion, otherLibrary.patchVersion);
 	}
 
-	constructor(
-		machineName: string,
-		majorVersion: number,
-		minorVersion: number,
-		patchVersion: number,
-		restricted = false,
-		runnable: boolean | 0 | 1 = false,
-		title = '',
-		files: FileMetadata[] = [],
-		addTo?: {
-			content?: { types?: { text?: { regex?: string } }[] };
-			editor?: { machineNames: string[]; player?: { machineNames: string[] } };
-		},
-		author?: string,
-		coreApi?: { majorVersion: number; minorVersion: number },
-		description?: string,
-		dropLibraryCss?: { machineName: string }[],
-		dynamicDependencies?: LibraryName[],
-		editorDependencies?: LibraryName[],
-		embedTypes?: ('iframe' | 'div')[],
-		fullscreen?: 0 | 1,
-		h?: number,
-		license?: string,
-		metadataSettings?: { disable: 0 | 1; disableExtraTitleField: 0 | 1 },
-		preloadedCss?: Path[],
-		preloadedDependencies?: LibraryName[],
-		preloadedJs?: Path[],
-		w?: number,
-		requiredExtensions?: { sharedState: number },
-		state?: { snapshotSchema: boolean; opSchema: boolean; snapshotLogicChecks: boolean; opLogicChecks: boolean }
-	) {
+	constructor(libraryMetadata: ILibraryMetadata, restricted = false, files: FileMetadata[] = []) {
 		super();
-		this.machineName = machineName;
-		this.majorVersion = majorVersion;
-		this.minorVersion = minorVersion;
-		this.patchVersion = patchVersion;
+		this.machineName = libraryMetadata.machineName;
+		this.majorVersion = libraryMetadata.majorVersion;
+		this.minorVersion = libraryMetadata.minorVersion;
+		this.patchVersion = libraryMetadata.patchVersion;
+		this.runnable = libraryMetadata.runnable;
+		this.title = libraryMetadata.title;
+		this.addTo = libraryMetadata.addTo;
+		this.author = libraryMetadata.author;
+		this.coreApi = libraryMetadata.coreApi;
+		this.description = libraryMetadata.description;
+		this.dropLibraryCss = libraryMetadata.dropLibraryCss;
+		this.dynamicDependencies = libraryMetadata.dynamicDependencies;
+		this.editorDependencies = libraryMetadata.editorDependencies;
+		this.embedTypes = libraryMetadata.embedTypes;
+		this.fullscreen = libraryMetadata.fullscreen;
+		this.h = libraryMetadata.h;
+		this.license = libraryMetadata.license;
+		this.metadataSettings = libraryMetadata.metadataSettings;
+		this.preloadedCss = libraryMetadata.preloadedCss;
+		this.preloadedDependencies = libraryMetadata.preloadedDependencies;
+		this.preloadedJs = libraryMetadata.preloadedJs;
+		this.w = libraryMetadata.w;
+		this.requiredExtensions = libraryMetadata.requiredExtensions;
+		this.state = libraryMetadata.state;
 		this.restricted = restricted;
-		this.runnable = runnable;
-		this.title = title;
 		this.files = files;
-		this.addTo = addTo;
-		this.author = author;
-		this.coreApi = coreApi;
-		this.description = description;
-		this.dropLibraryCss = dropLibraryCss;
-		this.dynamicDependencies = dynamicDependencies;
-		this.editorDependencies = editorDependencies;
-		this.embedTypes = embedTypes;
-		this.fullscreen = fullscreen;
-		this.h = h;
-		this.license = license;
-		this.metadataSettings = metadataSettings;
-		this.preloadedCss = preloadedCss;
-		this.preloadedDependencies = preloadedDependencies;
-		this.preloadedJs = preloadedJs;
-		this.w = w;
-		this.requiredExtensions = requiredExtensions;
-		this.state = state;
 	}
 }
