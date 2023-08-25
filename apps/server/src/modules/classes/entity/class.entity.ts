@@ -1,4 +1,4 @@
-import { Embedded, Entity, Property, Unique } from '@mikro-orm/core';
+import { Embedded, Entity, Property} from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain';
@@ -20,7 +20,6 @@ export interface IClassEntityProps {
 }
 
 @Entity({ tableName: 'classes' })
-@Unique({ properties: ['name'] })
 export class ClassEntity extends BaseEntityWithTimestamps {
 	@Property()
 	name: string;
