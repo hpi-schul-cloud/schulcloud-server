@@ -1,4 +1,4 @@
-import { Embedded, Entity, Property} from '@mikro-orm/core';
+import { Embedded, Entity, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain';
@@ -20,17 +20,21 @@ export interface IClassEntityProps {
 }
 
 @Entity({ tableName: 'classes' })
+@Index({ properties: ['year', 'ldapDN'] })
 export class ClassEntity extends BaseEntityWithTimestamps {
 	@Property()
 	name: string;
 
 	@Property()
+	@Index()
 	schoolId: ObjectId;
 
 	@Property({ nullable: true })
+	@Index()
 	userIds?: ObjectId[];
 
 	@Property()
+	@Index()
 	teacherIds: ObjectId[];
 
 	@Property({ nullable: true })
@@ -49,6 +53,7 @@ export class ClassEntity extends BaseEntityWithTimestamps {
 	successor?: ObjectId;
 
 	@Property({ nullable: true })
+	@Index()
 	source?: string;
 
 	@Embedded(() => ClassSourceOptionsEntity, { object: true, nullable: true })
