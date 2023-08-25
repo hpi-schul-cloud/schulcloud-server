@@ -10,7 +10,7 @@ export class UserLoginMigrationDO extends BaseDO {
 
 	mandatorySince?: Date;
 
-	startedAt: Date;
+	startedAt?: Date;
 
 	closedAt?: Date;
 

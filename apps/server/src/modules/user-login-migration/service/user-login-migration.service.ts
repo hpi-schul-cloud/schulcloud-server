@@ -195,8 +195,10 @@ export class UserLoginMigrationService {
 			return null;
 		}
 
-		const hasUserMigrated: boolean =
-			!!userDO.lastLoginSystemChange && userDO.lastLoginSystemChange > userLoginMigration.startedAt;
+		let hasUserMigrated = false;
+		if (userLoginMigration.startedAt) {
+			hasUserMigrated = !!userDO.lastLoginSystemChange && userDO.lastLoginSystemChange > userLoginMigration.startedAt;
+		}
 
 		if (hasUserMigrated) {
 			return null;
