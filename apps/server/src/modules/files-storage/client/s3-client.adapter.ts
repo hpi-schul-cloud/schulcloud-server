@@ -13,6 +13,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ErrorUtils } from '@src/core/error/utils';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
 import { FileDto } from '../dto';
@@ -41,7 +42,10 @@ export class S3ClientAdapter implements IStorageClient {
 			if (err instanceof Error) {
 				this.logger.error(`${err.message} "${this.config.bucket}"`);
 			}
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:createBucket');
+			throw new InternalServerErrorException(
+				'S3ClientAdapter:createBucket',
+				ErrorUtils.createHttpExceptionOptions(err)
+			);
 		}
 	}
 
@@ -69,11 +73,11 @@ export class S3ClientAdapter implements IStorageClient {
 			};
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (err.Code && err.Code === 'NoSuchKey') {
+			if (err?.Code === 'NoSuchKey') {
 				this.logger.log(`could not find one of the files for deletion with id ${path}`);
 				throw new NotFoundException('NoSuchKey');
 			} else {
-				throw new InternalServerErrorException(err, 'S3ClientAdapter:get');
+				throw new InternalServerErrorException('S3ClientAdapter:get', ErrorUtils.createHttpExceptionOptions(err));
 			}
 		}
 	}
@@ -97,13 +101,13 @@ export class S3ClientAdapter implements IStorageClient {
 			return commandOutput;
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (err.Code && err.Code === 'NoSuchBucket') {
+			if (err?.Code === 'NoSuchBucket') {
 				await this.createBucket();
 
 				return await this.create(path, file);
 			}
 
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:create');
+			throw new InternalServerErrorException('S3ClientAdapter:create', ErrorUtils.createHttpExceptionOptions(err));
 		}
 	}
 
@@ -122,11 +126,11 @@ export class S3ClientAdapter implements IStorageClient {
 			return result;
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (err.response && err.response.Code && err.response.Code === 'NoSuchKey') {
+			if (err?.cause?.name === 'NoSuchKey') {
 				this.logger.log(`could not find one of the files for deletion with ids ${paths.join(',')}`);
 				return [];
 			}
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:delete');
+			throw new InternalServerErrorException('S3ClientAdapter:delete', ErrorUtils.createHttpExceptionOptions(err));
 		}
 	}
 
@@ -147,7 +151,7 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return result;
 		} catch (err) {
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:restore');
+			throw new InternalServerErrorException('S3ClientAdapter:restore', ErrorUtils.createHttpExceptionOptions(err));
 		}
 	}
 
@@ -171,22 +175,28 @@ export class S3ClientAdapter implements IStorageClient {
 
 			return result;
 		} catch (err) {
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:copy');
+			throw new InternalServerErrorException('S3ClientAdapter:copy', ErrorUtils.createHttpExceptionOptions(err));
 		}
 	}
 
 	public async delete(paths: string[]) {
-		this.logger.log({ action: 'delete', params: { paths, bucket: this.config.bucket } });
+		try {
+			this.logger.log({ action: 'delete', params: { paths, bucket: this.config.bucket } });
 
-		const pathObjects = paths.map((p) => {
-			return { Key: p };
-		});
-		const req = new DeleteObjectsCommand({
-			Bucket: this.config.bucket,
-			Delete: { Objects: pathObjects },
-		});
+			const pathObjects = paths.map((p) => {
+				return { Key: p };
+			});
+			const req = new DeleteObjectsCommand({
+				Bucket: this.config.bucket,
+				Delete: { Objects: pathObjects },
+			});
 
-		return this.client.send(req);
+			const result = await this.client.send(req);
+
+			return result;
+		} catch (err) {
+			throw new InternalServerErrorException('S3ClientAdapter:delete', ErrorUtils.createHttpExceptionOptions(err));
+		}
 	}
 
 	public async list(prefix: string, maxKeys?: number) {
@@ -263,7 +273,10 @@ export class S3ClientAdapter implements IStorageClient {
 				await this.delete(filteredPathObjects);
 			}
 		} catch (err) {
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:deleteDirectory');
+			throw new InternalServerErrorException(
+				'S3ClientAdapter:deleteDirectory',
+				ErrorUtils.createHttpExceptionOptions(err)
+			);
 		}
 	}
 

@@ -1,10 +1,11 @@
-import { S3Client } from '@aws-sdk/client-s3';
+import { S3Client, S3ServiceException } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'node:stream';
+import { ErrorUtils } from '@src/core/error/utils';
 import { FileDto } from '../dto';
 import { S3Config } from '../interface/config';
 import { S3ClientAdapter } from './s3-client.adapter';
@@ -267,7 +268,7 @@ describe('S3ClientAdapter', () => {
 			const setup = () => {
 				const { file } = createFile();
 				const { pathToFile } = createParameter();
-				const error = new InternalServerErrorException('testError', 'S3ClientAdapter:create');
+				const error = new InternalServerErrorException('S3ClientAdapter:create');
 
 				const uploadDoneMock = jest.spyOn(Upload.prototype, 'done').mockRejectedValueOnce(error);
 
@@ -323,7 +324,7 @@ describe('S3ClientAdapter', () => {
 			const { pathToFile } = setup();
 
 			// @ts-expect-error should run into error
-			client.send.mockRejectedValue({ Code: 'NoSuchKey' });
+			client.send.mockRejectedValue(new S3ServiceException({ name: 'NoSuchKey' }));
 
 			const res = await service.moveToTrash([pathToFile]);
 
@@ -444,7 +445,10 @@ describe('S3ClientAdapter', () => {
 				// @ts-ignore
 				client.send.mockRejectedValueOnce(error);
 
-				const expectedError = new InternalServerErrorException(error, 'S3ClientAdapter:deleteDirectory');
+				const expectedError = new InternalServerErrorException(
+					'S3ClientAdapter:deleteDirectory',
+					ErrorUtils.createHttpExceptionOptions(error)
+				);
 
 				return { pathToFile, filePath, expectedError };
 			};
@@ -468,7 +472,10 @@ describe('S3ClientAdapter', () => {
 				// @ts-ignore
 				client.send.mockRejectedValueOnce(error);
 
-				const expectedError = new InternalServerErrorException(error, 'S3ClientAdapter:deleteDirectory');
+				const expectedError = new InternalServerErrorException(
+					'S3ClientAdapter:deleteDirectory',
+					ErrorUtils.createHttpExceptionOptions(error)
+				);
 
 				return { pathToFile, filePath, expectedError };
 			};
