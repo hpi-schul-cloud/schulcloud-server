@@ -226,63 +226,33 @@ export class InstalledLibrary extends BaseEntity implements IInstalledLibrary {
 		return this.simple_compare(this.patchVersion, otherLibrary.patchVersion);
 	}
 
-	constructor(
-		machineName: string,
-		majorVersion: number,
-		minorVersion: number,
-		patchVersion: number,
-		restricted = false,
-		runnable: boolean | 0 | 1 = false,
-		title = '',
-		files: FileMetadata[] = [],
-		addTo?: {
-			content?: { types?: { text?: { regex?: string } }[] };
-			editor?: { machineNames: string[]; player?: { machineNames: string[] } };
-		},
-		author?: string,
-		coreApi?: { majorVersion: number; minorVersion: number },
-		description?: string,
-		dropLibraryCss?: { machineName: string }[],
-		dynamicDependencies?: LibraryName[],
-		editorDependencies?: LibraryName[],
-		embedTypes?: ('iframe' | 'div')[],
-		fullscreen?: 0 | 1,
-		h?: number,
-		license?: string,
-		metadataSettings?: { disable: 0 | 1; disableExtraTitleField: 0 | 1 },
-		preloadedCss?: Path[],
-		preloadedDependencies?: LibraryName[],
-		preloadedJs?: Path[],
-		w?: number,
-		requiredExtensions?: { sharedState: number },
-		state?: { snapshotSchema: boolean; opSchema: boolean; snapshotLogicChecks: boolean; opLogicChecks: boolean }
-	) {
+	constructor(library: IInstalledLibrary, files: FileMetadata[] = []) {
 		super();
-		this.machineName = machineName;
-		this.majorVersion = majorVersion;
-		this.minorVersion = minorVersion;
-		this.patchVersion = patchVersion;
-		this.restricted = restricted;
-		this.runnable = runnable;
-		this.title = title;
+		this.machineName = library.machineName;
+		this.majorVersion = library.majorVersion;
+		this.minorVersion = library.minorVersion;
+		this.patchVersion = library.patchVersion;
+		this.restricted = library.restricted;
+		this.runnable = library.runnable;
+		this.title = library.title;
+		this.addTo = library.addTo;
+		this.author = library.author;
+		this.coreApi = library.coreApi;
+		this.description = library.description;
+		this.dropLibraryCss = library.dropLibraryCss;
+		this.dynamicDependencies = library.dynamicDependencies;
+		this.editorDependencies = library.editorDependencies;
+		this.embedTypes = library.embedTypes;
+		this.fullscreen = library.fullscreen;
+		this.h = library.h;
+		this.license = library.license;
+		this.metadataSettings = library.metadataSettings;
+		this.preloadedCss = library.preloadedCss;
+		this.preloadedDependencies = library.preloadedDependencies;
+		this.preloadedJs = library.preloadedJs;
+		this.w = library.w;
+		this.requiredExtensions = library.requiredExtensions;
+		this.state = library.state;
 		this.files = files;
-		this.addTo = addTo;
-		this.author = author;
-		this.coreApi = coreApi;
-		this.description = description;
-		this.dropLibraryCss = dropLibraryCss;
-		this.dynamicDependencies = dynamicDependencies;
-		this.editorDependencies = editorDependencies;
-		this.embedTypes = embedTypes;
-		this.fullscreen = fullscreen;
-		this.h = h;
-		this.license = license;
-		this.metadataSettings = metadataSettings;
-		this.preloadedCss = preloadedCss;
-		this.preloadedDependencies = preloadedDependencies;
-		this.preloadedJs = preloadedJs;
-		this.w = w;
-		this.requiredExtensions = requiredExtensions;
-		this.state = state;
 	}
 }
