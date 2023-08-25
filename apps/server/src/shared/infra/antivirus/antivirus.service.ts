@@ -1,5 +1,6 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ErrorUtils } from '@src/core/error/utils';
 import { API_VERSION_PATH, FilesStorageInternalActions } from '@src/modules/files-storage/files-storage.const';
 
 interface AntivirusServiceOptions {
@@ -30,7 +31,7 @@ export class AntivirusService {
 				);
 			}
 		} catch (err) {
-			throw new InternalServerErrorException(err, AntivirusService.name);
+			throw new InternalServerErrorException(null, ErrorUtils.createHttpExceptionOptions(err, 'AntivirusService:send'));
 		}
 	}
 
