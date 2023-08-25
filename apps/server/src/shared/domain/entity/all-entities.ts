@@ -40,7 +40,7 @@ import { StorageProvider } from './storageprovider.entity';
 import { Submission } from './submission.entity';
 import { System } from './system.entity';
 import { Task } from './task.entity';
-import { Team, TeamUser } from './team.entity';
+import { TeamEntity, TeamUserEntity } from './team.entity';
 import { UserLoginMigration } from './user-login-migration.entity';
 import { User } from './user.entity';
 import { VideoConference } from './video-conference.entity';
@@ -90,9 +90,9 @@ export const ALL_ENTITIES = [
 	System,
 	Task,
 	TaskBoardElement,
-	Team,
+	TeamEntity,
 	TeamNews,
-	TeamUser,
+	TeamUserEntity,
 	User,
 	UserLoginMigration,
 	VideoConference,
