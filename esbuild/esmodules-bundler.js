@@ -14,7 +14,8 @@ const options = [
 		name: 'stream-mime-type-lib',
 		entryPoint: ['esbuild/content/stream-mime-type-cjs-index.ts'],
 		outdir: 'node_modules/stream-mime-type-cjs',
-		resolutionModeFile: 'node_modules/stream-mime-type/dist/index.d.ts',
+		// Path to file containing the resolution-mode="require" declaration.
+		pathToResolutionModeError: 'node_modules/stream-mime-type/dist/index.d.ts',
 	},
 ];
 
@@ -27,7 +28,7 @@ const globalOptions = {
 };
 
 for (const option of options) {
-	const { entryPoint, outdir, resolutionModeFile } = option;
+	const { entryPoint, outdir, pathToResolutionModeError } = option;
 	try {
 		build({
 			entryPoints: entryPoint,
@@ -39,8 +40,10 @@ for (const option of options) {
 			loader: globalOptions.loader,
 			plugins: [dtsPlugin()],
 		});
-		if (resolutionModeFile) {
-			exec(`sed -i -- 's/resolution-mode="require"//g' ${resolutionModeFile} `);
+
+		// remove resolution-mode="require" from file because it provokes an error in the commonjs build
+		if (pathToResolutionModeError) {
+			exec(`sed -i -- 's/resolution-mode="require"//g' ${pathToResolutionModeError} `);
 		}
 	} catch (e) {
 		process.exit(1);
