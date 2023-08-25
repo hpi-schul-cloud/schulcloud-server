@@ -2,8 +2,12 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SubmissionItem } from '@shared/domain';
-import { setupEntities } from '@shared/testing';
-import { cardFactory, submissionItemFactory } from '@shared/testing/factory/domainobject';
+import { setupEntities, userFactory } from '@shared/testing';
+import {
+	cardFactory,
+	submissionContainerElementFactory,
+	submissionItemFactory,
+} from '@shared/testing/factory/domainobject';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { SubmissionItemService } from './submission-item.service';
@@ -36,6 +40,23 @@ describe(SubmissionItemService.name, () => {
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	describe('create', () => {
+		describe('when calling the create method', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const submissionContainer = submissionContainerElementFactory.build();
+
+				return { submissionContainer, user };
+			};
+
+			it('should return an instance of SubmissionItem', async () => {
+				const { submissionContainer, user } = setup();
+				const result = await service.create(user.id, submissionContainer, { completed: true });
+				expect(result).toBeInstanceOf(SubmissionItem);
+			});
+		});
 	});
 
 	describe('findById', () => {

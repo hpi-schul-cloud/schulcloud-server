@@ -6,7 +6,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const Syncer = require('./Syncer');
 const ClassImporter = require('./mixins/ClassImporter');
-const { SC_TITLE, SC_SHORT_TITLE } = require('../../../../config/globals');
+const { SC_TITLE } = require('../../../../config/globals');
 const { equal } = require('../../../helper/compare').ObjectId;
 
 const ATTRIBUTES = [
@@ -382,7 +382,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 							'bitte vervollständige deine Registrierung unter folgendem Link: ' +
 							`${user.shortLink}\n\n` +
 							'Viel Spaß und einen guten Start wünscht dir dein ' +
-							`${SC_SHORT_TITLE}-Team`,
+							`${SC_TITLE}-Team`,
 					},
 				});
 				this.stats.invitations.successful += 1;
