@@ -7,11 +7,10 @@ import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
-import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
-import { AuthorizationModule } from '@src/modules/authorization';
+
+import { LibraryStorage } from '../h5p-editor/service';
 
 import { UserModule } from '..';
-import { H5PLibraryManegementUc } from './uc/h5p-library-management.uc';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -20,8 +19,6 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 };
 
 const imports = [
-	AuthenticationModule,
-	AuthorizationModule,
 	CoreModule,
 	UserModule,
 	RabbitMQWrapperModule,
@@ -36,9 +33,9 @@ const imports = [
 	}),
 ];
 
-const controllers = [H5PLibraryManegementUc];
+const controllers = [];
 
-const providers = [Logger, H5PLibraryManegementUc];
+const providers = [Logger, LibraryStorage];
 
 @Module({
 	imports,
