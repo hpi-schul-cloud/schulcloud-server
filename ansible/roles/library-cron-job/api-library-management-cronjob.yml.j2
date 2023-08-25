@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api-library-management-cronjob
+  name: api-library-management-cronjob
+spec:
+  schedule: "{{ SERVER_LIBRARY_MANAGEMENT_CRONJOB|default("0 3 * * 3,6", true) }}"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: {{ SERVER_LIBRARY_MANAGEMENT_CRONJOB_TIMEOUT|default("39600", true) }}
+      template:
+        spec:
+          containers:
+          - name: api-library-management-cronjob
+            image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+            envFrom:
+            - configMapRef:
+                name: api-configmap
+            - secretRef:
+                name: api-secret
+            command: ['/schulcloud-server/scripts/ldapSync.sh']
+            resources:
+              limits:
+                cpu: {{ API_CPU_LIMITS|default("2000m", true) }}
+                memory: {{ API_MEMORY_LIMITS|default("2Gi", true) }}
+              requests:
+                cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
+                memory: {{ API_MEMORY_REQUESTS|default("150Mi", true) }}
+          restartPolicy: OnFailure
