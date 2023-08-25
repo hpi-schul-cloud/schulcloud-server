@@ -15,7 +15,6 @@ import {
 	SubmissionItemNode,
 } from './boardnode';
 import { BoardNode } from './boardnode/boardnode.entity';
-import { CardElement, RichTextCardElement } from './card-element.entity';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
@@ -40,7 +39,6 @@ import { SchoolYear } from './schoolyear.entity';
 import { StorageProvider } from './storageprovider.entity';
 import { Submission } from './submission.entity';
 import { System } from './system.entity';
-import { TaskCard } from './task-card.entity';
 import { Task } from './task.entity';
 import { Team, TeamUser } from './team.entity';
 import { UserLoginMigration } from './user-login-migration.entity';
@@ -92,9 +90,6 @@ export const ALL_ENTITIES = [
 	System,
 	Task,
 	TaskBoardElement,
-	TaskCard,
-	CardElement,
-	RichTextCardElement,
 	Team,
 	TeamNews,
 	TeamUser,

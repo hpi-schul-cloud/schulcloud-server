@@ -317,4 +317,140 @@ describe('PseudonymService', () => {
 			});
 		});
 	});
+
+	describe('findByUserId', () => {
+		describe('when user is missing', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.build({ id: undefined });
+
+				return {
+					user,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { user } = setup();
+
+				await expect(service.findByUserId(user.id as string)).rejects.toThrowError(InternalServerErrorException);
+			});
+		});
+
+		describe('when searching by userId', () => {
+			const setup = () => {
+				const user1: UserDO = userDoFactory.buildWithId();
+				const pseudonym1: Pseudonym = pseudonymFactory.buildWithId({ userId: user1.id });
+				const pseudonym2: Pseudonym = pseudonymFactory.buildWithId({ userId: user1.id });
+				const pseudonym3: Pseudonym = pseudonymFactory.buildWithId({ userId: user1.id });
+				const pseudonym4: Pseudonym = pseudonymFactory.buildWithId({ userId: user1.id });
+
+				pseudonymRepo.findByUserId.mockResolvedValue([pseudonym1, pseudonym2]);
+				externalToolPseudonymRepo.findByUserId.mockResolvedValue([pseudonym3, pseudonym4]);
+
+				return {
+					user1,
+					pseudonym1,
+					pseudonym2,
+					pseudonym3,
+					pseudonym4,
+				};
+			};
+
+			it('should call pseudonymRepo and externalToolPseudonymRepo', async () => {
+				const { user1 } = setup();
+
+				await service.findByUserId(user1.id as string);
+
+				expect(pseudonymRepo.findByUserId).toHaveBeenCalledWith(user1.id);
+				expect(externalToolPseudonymRepo.findByUserId).toHaveBeenCalledWith(user1.id);
+			});
+
+			it('should be return array with four pseudonyms', async () => {
+				const { user1, pseudonym1, pseudonym2, pseudonym3, pseudonym4 } = setup();
+
+				const result: Pseudonym[] = await service.findByUserId(user1.id as string);
+
+				expect(result).toHaveLength(4);
+				expect(result[0].id).toEqual(pseudonym1.id);
+				expect(result[0].userId).toEqual(pseudonym1.userId);
+				expect(result[0].pseudonym).toEqual(pseudonym1.pseudonym);
+				expect(result[0].toolId).toEqual(pseudonym1.toolId);
+				expect(result[0].createdAt).toEqual(pseudonym1.createdAt);
+				expect(result[0].updatedAt).toEqual(pseudonym1.updatedAt);
+				expect(result[1].id).toEqual(pseudonym2.id);
+				expect(result[1].userId).toEqual(pseudonym2.userId);
+				expect(result[1].pseudonym).toEqual(pseudonym2.pseudonym);
+				expect(result[1].toolId).toEqual(pseudonym2.toolId);
+				expect(result[1].createdAt).toEqual(pseudonym2.createdAt);
+				expect(result[1].updatedAt).toEqual(pseudonym2.updatedAt);
+				expect(result[2].id).toEqual(pseudonym3.id);
+				expect(result[2].userId).toEqual(pseudonym3.userId);
+				expect(result[2].pseudonym).toEqual(pseudonym3.pseudonym);
+				expect(result[2].toolId).toEqual(pseudonym3.toolId);
+				expect(result[2].createdAt).toEqual(pseudonym3.createdAt);
+				expect(result[2].updatedAt).toEqual(pseudonym3.updatedAt);
+				expect(result[3].id).toEqual(pseudonym4.id);
+				expect(result[3].userId).toEqual(pseudonym4.userId);
+				expect(result[3].pseudonym).toEqual(pseudonym4.pseudonym);
+				expect(result[3].toolId).toEqual(pseudonym4.toolId);
+				expect(result[3].createdAt).toEqual(pseudonym4.createdAt);
+				expect(result[3].updatedAt).toEqual(pseudonym4.updatedAt);
+			});
+		});
+
+		describe('should return empty array when there is no pseudonym', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.buildWithId();
+
+				return {
+					user,
+				};
+			};
+			it('should return empty array', async () => {
+				const { user } = setup();
+
+				const result: Pseudonym[] = await service.findByUserId(user.id as string);
+
+				expect(result).toHaveLength(0);
+			});
+		});
+	});
+
+	describe('deleteByUserId', () => {
+		describe('when user is missing', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.build({ id: undefined });
+
+				return {
+					user,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { user } = setup();
+
+				await expect(service.deleteByUserId(user.id as string)).rejects.toThrowError(InternalServerErrorException);
+			});
+		});
+
+		describe('when deleting by userId', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.buildWithId();
+
+				pseudonymRepo.deletePseudonymsByUserId.mockResolvedValue(2);
+				externalToolPseudonymRepo.deletePseudonymsByUserId.mockResolvedValue(3);
+
+				return {
+					user,
+				};
+			};
+
+			it('should delete pseudonyms by userId', async () => {
+				const { user } = setup();
+
+				const result5 = await service.deleteByUserId(user.id as string);
+
+				expect(result5).toEqual(5);
+			});
+		});
+	});
 });

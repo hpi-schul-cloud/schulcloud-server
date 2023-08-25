@@ -11,7 +11,8 @@ import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
 import { createPath } from '../helper';
-import { IGetFileResponse } from '../interface';
+import { IGetFile, IGetFileResponse } from '../interface';
+import { FileResponseBuilder } from '../mapper';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
 
@@ -100,9 +101,10 @@ describe('FilesStorageService download methods', () => {
 					fileName: fileRecord.name,
 				};
 
-				const expectedResponse = createMock<IGetFileResponse>();
+				const fileResponse = createMock<IGetFile>();
+				const expectedResponse = FileResponseBuilder.build(fileResponse, fileRecord.getName());
 
-				spy = jest.spyOn(service, 'downloadFile').mockResolvedValueOnce(expectedResponse);
+				spy = jest.spyOn(service, 'downloadFile').mockResolvedValueOnce(fileResponse);
 
 				return { fileRecord, params, expectedResponse };
 			};

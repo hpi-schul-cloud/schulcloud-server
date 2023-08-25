@@ -21,7 +21,7 @@ export class ExternalToolService {
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly contextExternalToolRepo: ContextExternalToolRepo,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: IEncryptionService,
-		private readonly logger: LegacyLogger,
+		private readonly legacyLogger: LegacyLogger,
 		private readonly externalToolVersionService: ExternalToolVersionService
 	) {}
 
@@ -60,7 +60,7 @@ export class ExternalToolService {
 					try {
 						await this.addExternalOauth2DataToConfig(tool.config);
 					} catch (e) {
-						this.logger.debug(
+						this.legacyLogger.debug(
 							`Could not resolve oauth2Config of tool with clientId ${tool.config.clientId}. It will be filtered out.`
 						);
 						return undefined;
@@ -81,7 +81,7 @@ export class ExternalToolService {
 			try {
 				await this.addExternalOauth2DataToConfig(tool.config);
 			} catch (e) {
-				this.logger.debug(
+				this.legacyLogger.debug(
 					`Could not resolve oauth2Config of tool with clientId ${tool.config.clientId}. It will be filtered out.`
 				);
 				throw new UnprocessableEntityException(`Could not resolve oauth2Config of tool ${tool.name}.`);

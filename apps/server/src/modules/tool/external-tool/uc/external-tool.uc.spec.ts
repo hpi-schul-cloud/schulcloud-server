@@ -8,14 +8,14 @@ import {
 	externalToolFactory,
 	oauth2ToolConfigFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { AuthorizationService } from '@src/modules/authorization';
 import { ICurrentUser } from '@src/modules/authentication';
+import { AuthorizationService } from '@src/modules/authorization';
 import { ExternalToolSearchQuery } from '../../common/interface';
-import { ExternalToolUc } from './external-tool.uc';
-import { ExternalToolService, ExternalToolValidationService } from '../service';
+import { ExternalTool, Oauth2ToolConfig } from '../domain';
+import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
 
 import { ExternalToolUpdate } from './dto';
-import { ExternalTool, Oauth2ToolConfig } from '../domain';
+import { ExternalToolUc } from './external-tool.uc';
 
 describe('ExternalToolUc', () => {
 	let module: TestingModule;
@@ -24,6 +24,7 @@ describe('ExternalToolUc', () => {
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let toolValidationService: DeepMocked<ExternalToolValidationService>;
+	let logoService: DeepMocked<ExternalToolLogoService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -43,6 +44,10 @@ describe('ExternalToolUc', () => {
 					provide: ExternalToolValidationService,
 					useValue: createMock<ExternalToolValidationService>(),
 				},
+				{
+					provide: ExternalToolLogoService,
+					useValue: createMock<ExternalToolLogoService>(),
+				},
 			],
 		}).compile();
 
@@ -50,6 +55,7 @@ describe('ExternalToolUc', () => {
 		externalToolService = module.get(ExternalToolService);
 		authorizationService = module.get(AuthorizationService);
 		toolValidationService = module.get(ExternalToolValidationService);
+		logoService = module.get(ExternalToolLogoService);
 	});
 
 	afterAll(async () => {
@@ -179,6 +185,30 @@ describe('ExternalToolUc', () => {
 			const result: ExternalTool = await uc.createExternalTool(currentUser.userId, externalTool);
 
 			expect(result).toEqual(externalTool);
+		});
+
+		describe('when fetching logo', () => {
+			const setupLogo = () => {
+				const user: User = userFactory.buildWithId();
+				const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
+
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+
+				return {
+					currentUser,
+					externalTool,
+				};
+			};
+
+			it('should call ExternalToolLogoService', async () => {
+				const { currentUser, externalTool } = setupLogo();
+
+				await uc.createExternalTool(currentUser.userId, externalTool);
+
+				expect(logoService.fetchLogo).toHaveBeenCalledWith(externalTool);
+			});
 		});
 	});
 
@@ -379,6 +409,30 @@ describe('ExternalToolUc', () => {
 			const result: ExternalTool = await uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate);
 
 			expect(result).toEqual(updatedExternalToolDO);
+		});
+
+		describe('when fetching logo', () => {
+			const setupLogo = () => {
+				const user: User = userFactory.buildWithId();
+				const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
+
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+
+				return {
+					currentUser,
+					externalTool,
+				};
+			};
+
+			it('should call ExternalToolLogoService', async () => {
+				const { currentUser, externalTool } = setupLogo();
+
+				await uc.createExternalTool(currentUser.userId, externalTool);
+
+				expect(logoService.fetchLogo).toHaveBeenCalledWith(externalTool);
+			});
 		});
 	});
 

@@ -383,8 +383,20 @@ const up = async () => {
 		return Promise.reject(new Error('No LtiTool Template found.'));
 	}
 
+	const ltiToolExternalToolIdTupelList = [];
+
 	// FIND EXTERNAL TOOLS
-	const externalTools = await Promise.all(ltiToolTemplates.map((toolTemplate) => createExternalTool(toolTemplate)));
+	const externalTools = await Promise.all(
+		ltiToolTemplates.map(async (toolTemplate) => {
+			const externalTool = await createExternalTool(toolTemplate);
+			ltiToolExternalToolIdTupelList.push({
+				templateId: toolTemplate._id,
+				externalToolId: externalTool._id,
+			});
+
+			return externalTool;
+		})
+	);
 
 	// FIND ALL LEGACY TOOLS
 	const ltiTools = await LtiTool.find({
@@ -409,7 +421,10 @@ const up = async () => {
 		}
 
 		// GET EXTERNALTOOL
-		const externalTool = externalTools.find((tool) => tool.name === ltiTool.name);
+		const ltiToolExternalToolIdTupel = ltiToolExternalToolIdTupelList.find(
+			(idTupel) => idTupel.templateId.toString() === ltiTool.originTool.toString()
+		);
+		const externalTool = externalTools.find((tool) => tool._id === ltiToolExternalToolIdTupel.externalToolId);
 
 		// GET SCHOOLEXTERNALTOOL
 		const schoolExternalTool = await createSchoolExternalTool(externalTool, course);

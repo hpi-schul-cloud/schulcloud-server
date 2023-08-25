@@ -160,7 +160,7 @@ describe('UserLoginMigrationService', () => {
 		});
 	});
 
-	describe('setMigration is called', () => {
+	describe('setMigration', () => {
 		describe('when first starting the migration', () => {
 			describe('when the school has no systems', () => {
 				const setup = () => {
@@ -547,7 +547,7 @@ describe('UserLoginMigrationService', () => {
 		});
 	});
 
-	describe('startMigration is called', () => {
+	describe('startMigration', () => {
 		describe('when schoolId is given', () => {
 			const setup = () => {
 				const schoolId: EntityId = new ObjectId().toHexString();
@@ -739,7 +739,7 @@ describe('UserLoginMigrationService', () => {
 		});
 	});
 
-	describe('findMigrationBySchool is called', () => {
+	describe('findMigrationBySchool', () => {
 		describe('when a UserLoginMigration exists for the school', () => {
 			const setup = () => {
 				const schoolId = new ObjectId().toHexString();
@@ -792,7 +792,7 @@ describe('UserLoginMigrationService', () => {
 		});
 	});
 
-	describe('restartMigration is called', () => {
+	describe('restartMigration', () => {
 		describe('when migration restart was successfully', () => {
 			const setup = () => {
 				const schoolId: EntityId = new ObjectId().toHexString();
@@ -882,7 +882,7 @@ describe('UserLoginMigrationService', () => {
 		});
 	});
 
-	describe('restartMigration is called', () => {
+	describe('restartMigration', () => {
 		describe('when migration restart was successfully', () => {
 			const setup = () => {
 				const schoolId: EntityId = new ObjectId().toHexString();
@@ -954,7 +954,7 @@ describe('UserLoginMigrationService', () => {
 		});
 	});
 
-	describe('setMigrationMandatory is called', () => {
+	describe('setMigrationMandatory', () => {
 		describe('when migration is set to mandatory', () => {
 			const setup = () => {
 				const schoolId: EntityId = new ObjectId().toHexString();
@@ -1049,6 +1049,64 @@ describe('UserLoginMigrationService', () => {
 				const { schoolId } = setup();
 
 				const func = async () => service.setMigrationMandatory(schoolId, true);
+
+				await expect(func).rejects.toThrow(UserLoginMigrationNotFoundLoggableException);
+			});
+		});
+	});
+
+	describe('closeMigration', () => {
+		describe('when a migration can be closed', () => {
+			const setup = () => {
+				const schoolId: EntityId = new ObjectId().toHexString();
+				const userLoginMigration = userLoginMigrationDOFactory.buildWithId();
+				const closedUserLoginMigration = new UserLoginMigrationDO({
+					...userLoginMigration,
+					closedAt: mockedDate,
+					finishedAt: finishDate,
+				});
+
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
+				userLoginMigrationRepo.save.mockResolvedValue(closedUserLoginMigration);
+
+				return {
+					schoolId,
+					closedUserLoginMigration,
+				};
+			};
+
+			it('should save the closed user login migration', async () => {
+				const { schoolId, closedUserLoginMigration } = setup();
+
+				await service.closeMigration(schoolId);
+
+				expect(userLoginMigrationRepo.save).toHaveBeenCalledWith(closedUserLoginMigration);
+			});
+
+			it('should return the closed user login migration', async () => {
+				const { schoolId, closedUserLoginMigration } = setup();
+
+				const result = await service.closeMigration(schoolId);
+
+				expect(result).toEqual(closedUserLoginMigration);
+			});
+		});
+
+		describe('when a migration can be closed', () => {
+			const setup = () => {
+				const schoolId: EntityId = new ObjectId().toHexString();
+
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
+
+				return {
+					schoolId,
+				};
+			};
+
+			it('should save the closed user login migration', async () => {
+				const { schoolId } = setup();
+
+				const func = () => service.closeMigration(schoolId);
 
 				await expect(func).rejects.toThrow(UserLoginMigrationNotFoundLoggableException);
 			});

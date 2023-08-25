@@ -1,26 +1,28 @@
-import { S3Client } from '@aws-sdk/client-s3';
+import { S3Client, S3ServiceException } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'node:stream';
+import { ErrorUtils } from '@src/core/error/utils';
 import { FileDto } from '../dto';
 import { S3Config } from '../interface/config';
 import { S3ClientAdapter } from './s3-client.adapter';
 
 const createParameter = () => {
+	const bucket = 'test-bucket';
 	const config = {
 		endpoint: '',
 		region: '',
-		bucket: 'test-bucket',
+		bucket,
 		accessKeyId: '',
 		secretAccessKey: '',
 	};
 	const pathToFile = 'test/text.txt';
 	const bytesRange = 'bytes=0-1';
 
-	return { config, pathToFile, bytesRange };
+	return { config, pathToFile, bytesRange, bucket };
 };
 
 describe('S3ClientAdapter', () => {
@@ -164,11 +166,10 @@ describe('S3ClientAdapter', () => {
 		describe('WHEN client throws error', () => {
 			const setup = (errorKey: string) => {
 				const { pathToFile } = createParameter();
-				const error = new Error(errorKey);
 				// @ts-expect-error Testcase
-				client.send.mockRejectedValueOnce(error);
+				client.send.mockRejectedValueOnce({ Code: errorKey });
 
-				return { error, pathToFile };
+				return { pathToFile };
 			};
 
 			it('should throw NotFoundException', async () => {
@@ -267,7 +268,7 @@ describe('S3ClientAdapter', () => {
 			const setup = () => {
 				const { file } = createFile();
 				const { pathToFile } = createParameter();
-				const error = new InternalServerErrorException('testError', 'S3ClientAdapter:create');
+				const error = new InternalServerErrorException('S3ClientAdapter:create');
 
 				const uploadDoneMock = jest.spyOn(Upload.prototype, 'done').mockRejectedValueOnce(error);
 
@@ -290,31 +291,31 @@ describe('S3ClientAdapter', () => {
 
 	describe('moveToTrash', () => {
 		const setup = () => {
-			const { pathToFile } = createParameter();
+			const { pathToFile, bucket } = createParameter();
 
-			return { pathToFile };
+			return { pathToFile, bucket };
 		};
 
 		it('should call send() of client with copy objects', async () => {
-			const { pathToFile } = setup();
+			const { pathToFile, bucket } = setup();
 
 			await service.moveToTrash([pathToFile]);
 
 			expect(client.send).toBeCalledWith(
 				expect.objectContaining({
-					input: { Bucket: 'test-bucket', CopySource: 'test-bucket/test/text.txt', Key: 'trash/test/text.txt' },
+					input: { Bucket: bucket, CopySource: `${bucket}/test/text.txt`, Key: 'trash/test/text.txt' },
 				})
 			);
 		});
 
 		it('should call send() of client with delete objects', async () => {
-			const { pathToFile } = setup();
+			const { pathToFile, bucket } = setup();
 
 			await service.moveToTrash([pathToFile]);
 
 			expect(client.send).toBeCalledWith(
 				expect.objectContaining({
-					input: { Bucket: 'test-bucket', Delete: { Objects: [{ Key: 'test/text.txt' }] } },
+					input: { Bucket: bucket, Delete: { Objects: [{ Key: 'test/text.txt' }] } },
 				})
 			);
 		});
@@ -323,7 +324,7 @@ describe('S3ClientAdapter', () => {
 			const { pathToFile } = setup();
 
 			// @ts-expect-error should run into error
-			client.send.mockRejectedValue({ Code: 'NoSuchKey' });
+			client.send.mockRejectedValue(new S3ServiceException({ name: 'NoSuchKey' }));
 
 			const res = await service.moveToTrash([pathToFile]);
 
@@ -338,41 +339,172 @@ describe('S3ClientAdapter', () => {
 
 	describe('delete', () => {
 		const setup = () => {
-			const { pathToFile } = createParameter();
+			const { pathToFile, bucket } = createParameter();
 
-			return { pathToFile };
+			return { pathToFile, bucket };
 		};
 
 		it('should call send() of client with delete objects', async () => {
-			const { pathToFile } = setup();
+			const { pathToFile, bucket } = setup();
 
 			await service.delete([pathToFile]);
 
 			expect(client.send).toBeCalledWith(
 				expect.objectContaining({
-					input: { Bucket: 'test-bucket', Delete: { Objects: [{ Key: 'test/text.txt' }] } },
+					input: { Bucket: bucket, Delete: { Objects: [{ Key: 'test/text.txt' }] } },
 				})
 			);
 		});
 	});
 
+	describe('deleteDirectory', () => {
+		describe('when client receives list objects successfully', () => {
+			describe('when contents contains key', () => {
+				const setup = () => {
+					const { pathToFile, bucket } = createParameter();
+					const filePath = 'directory/test.txt';
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					client.send.mockResolvedValueOnce({ Contents: [{ Key: filePath }] });
+
+					return { pathToFile, bucket, filePath };
+				};
+
+				it('should call send() of client with directory path', async () => {
+					const { pathToFile, bucket } = setup();
+
+					await service.deleteDirectory(pathToFile);
+
+					expect(client.send).toHaveBeenNthCalledWith(
+						1,
+						expect.objectContaining({
+							input: { Bucket: bucket, Prefix: 'test/text.txt' },
+						})
+					);
+				});
+
+				it('should call send() with objects to delete', async () => {
+					const { pathToFile, bucket, filePath } = setup();
+
+					await service.deleteDirectory(pathToFile);
+
+					expect(client.send).toHaveBeenNthCalledWith(
+						2,
+						expect.objectContaining({
+							input: { Bucket: bucket, Delete: { Objects: [{ Key: filePath }] } },
+						})
+					);
+				});
+			});
+
+			describe('when contents is undefined', () => {
+				const setup = () => {
+					const { pathToFile } = createParameter();
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					client.send.mockResolvedValueOnce({});
+
+					return { pathToFile };
+				};
+
+				it('should call send() once', async () => {
+					const { pathToFile } = setup();
+
+					await service.deleteDirectory(pathToFile);
+
+					expect(client.send).toHaveBeenCalledTimes(1);
+				});
+			});
+
+			describe('when contents is empty array', () => {
+				const setup = () => {
+					const { pathToFile } = createParameter();
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					client.send.mockResolvedValueOnce({ Contents: [] });
+
+					return { pathToFile };
+				};
+
+				it('should not call send() once', async () => {
+					const { pathToFile } = setup();
+
+					await service.deleteDirectory(pathToFile);
+
+					expect(client.send).toHaveBeenCalledTimes(1);
+				});
+			});
+		});
+
+		describe('when client throws error when trying to receive list objects ', () => {
+			const setup = () => {
+				const { pathToFile } = createParameter();
+				const filePath = 'directory/test.txt';
+				const error = new Error('testError');
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				client.send.mockRejectedValueOnce(error);
+
+				const expectedError = new InternalServerErrorException(
+					'S3ClientAdapter:deleteDirectory',
+					ErrorUtils.createHttpExceptionOptions(error)
+				);
+
+				return { pathToFile, filePath, expectedError };
+			};
+
+			it('should return InternalServerErrorException', async () => {
+				const { pathToFile, expectedError } = setup();
+
+				await expect(service.deleteDirectory(pathToFile)).rejects.toThrowError(expectedError);
+			});
+		});
+
+		describe('when client throws error when trying to delete files', () => {
+			const setup = () => {
+				const { pathToFile } = createParameter();
+				const filePath = 'directory/test.txt';
+				const error = new Error('testError');
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				client.send.mockResolvedValueOnce({ Contents: [{ Key: filePath }] });
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				client.send.mockRejectedValueOnce(error);
+
+				const expectedError = new InternalServerErrorException(
+					'S3ClientAdapter:deleteDirectory',
+					ErrorUtils.createHttpExceptionOptions(error)
+				);
+
+				return { pathToFile, filePath, expectedError };
+			};
+
+			it('should return InternalServerErrorException', async () => {
+				const { pathToFile, expectedError } = setup();
+
+				await expect(service.deleteDirectory(pathToFile)).rejects.toThrowError(expectedError);
+			});
+		});
+	});
+
 	describe('restore', () => {
 		const setup = () => {
-			const { pathToFile } = createParameter();
+			const { pathToFile, bucket } = createParameter();
 
-			return { pathToFile };
+			return { pathToFile, bucket };
 		};
 
 		it('should call send() of client with copy objects', async () => {
-			const { pathToFile } = setup();
+			const { pathToFile, bucket } = setup();
 
 			await service.restore([pathToFile]);
 
 			expect(client.send).toBeCalledWith(
 				expect.objectContaining({
 					input: {
-						Bucket: 'test-bucket',
-						CopySource: 'test-bucket/trash/test/text.txt',
+						Bucket: bucket,
+						CopySource: `${bucket}/trash/test/text.txt`,
 						Key: 'test/text.txt',
 					},
 				})
@@ -380,13 +512,13 @@ describe('S3ClientAdapter', () => {
 		});
 
 		it('should call send() of client with delete objects', async () => {
-			const { pathToFile } = setup();
+			const { pathToFile, bucket } = setup();
 
 			await service.restore([pathToFile]);
 
 			expect(client.send).toBeCalledWith(
 				expect.objectContaining({
-					input: { Bucket: 'test-bucket', Delete: { Objects: [{ Key: 'trash/test/text.txt' }] } },
+					input: { Bucket: bucket, Delete: { Objects: [{ Key: 'trash/test/text.txt' }] } },
 				})
 			);
 		});
@@ -399,6 +531,7 @@ describe('S3ClientAdapter', () => {
 
 	describe('copy', () => {
 		const setup = () => {
+			const { bucket } = createParameter();
 			const pathsToCopy = [
 				{
 					sourcePath: 'trash/test/text.txt',
@@ -406,19 +539,19 @@ describe('S3ClientAdapter', () => {
 				},
 			];
 
-			return { pathsToCopy };
+			return { pathsToCopy, bucket };
 		};
 
 		it('should call send() of client with copy objects', async () => {
-			const { pathsToCopy } = setup();
+			const { pathsToCopy, bucket } = setup();
 
 			await service.copy(pathsToCopy);
 
 			expect(client.send).toBeCalledWith(
 				expect.objectContaining({
 					input: {
-						Bucket: 'test-bucket',
-						CopySource: 'test-bucket/trash/test/text.txt',
+						Bucket: bucket,
+						CopySource: `${bucket}/trash/test/text.txt`,
 						Key: 'test/text.txt',
 					},
 				})
