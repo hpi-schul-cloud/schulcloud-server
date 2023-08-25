@@ -195,7 +195,9 @@ export class H5PEditorController {
 			currentUser,
 			body.params.params,
 			body.params.metadata,
-			body.library
+			body.library,
+			body.parentType,
+			body.parentId
 		);
 
 		const saveResponse = new H5PSaveResponse(response.id, response.metadata);
@@ -214,7 +216,9 @@ export class H5PEditorController {
 			currentUser,
 			body.params.params,
 			body.params.metadata,
-			body.library
+			body.library,
+			body.parentType,
+			body.parentId
 		);
 
 		const saveResponse = new H5PSaveResponse(response.id, response.metadata);

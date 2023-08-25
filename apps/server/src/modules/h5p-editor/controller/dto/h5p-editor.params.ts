@@ -1,8 +1,9 @@
 import { IContentMetadata } from '@lumieducation/h5p-server';
 import { ApiProperty } from '@nestjs/swagger';
 import { SanitizeHtml } from '@shared/controller';
-import { LanguageType } from '@shared/domain';
+import { EntityId, LanguageType } from '@shared/domain';
 import { IsEnum, IsMongoId, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
+import { H5PContentParentType } from '../../entity';
 
 export class GetH5PContentParams {
 	@ApiProperty({ enum: LanguageType, enumName: 'LanguageType' })
@@ -58,6 +59,14 @@ export class PostH5PContentParams {
 }
 
 export class PostH5PContentCreateParams {
+	@ApiProperty({ enum: H5PContentParentType, enumName: 'H5PContentParentType' })
+	@IsEnum(H5PContentParentType)
+	parentType!: H5PContentParentType;
+
+	@ApiProperty()
+	@IsMongoId()
+	parentId!: EntityId;
+
 	@ApiProperty()
 	@IsNotEmpty()
 	@IsObject()
