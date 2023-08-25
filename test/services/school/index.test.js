@@ -589,7 +589,6 @@ describe('years service', () => {
 	});
 
 	it('registered the years services', () => {
-		assert.ok(app.service('years'));
 		assert.ok(app.service('gradeLevels'));
 	});
 });

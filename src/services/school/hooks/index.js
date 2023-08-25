@@ -14,8 +14,6 @@ const getFileStorageStrategy = require('../../fileStorage/strategies').createStr
 const { yearModel: Year } = require('../model');
 const SchoolYearFacade = require('../logic/year');
 
-let years = null;
-
 /**
  * Safe function to retrieve result data from context
  * The function returns context.result.data if the result is paginated or context.result if not.
@@ -75,14 +73,6 @@ const setStudentsCanCreateTeams = async (context) => {
 	return context;
 };
 
-const expectYearsDefined = async () => {
-	if (!years) {
-		// default years will be cached after first call
-		years = await Year.find().lean().exec();
-	}
-	return years;
-};
-
 const getDefaultFileStorageType = () => {
 	if (!fileStorageTypes || !fileStorageTypes.length) {
 		return undefined;
@@ -98,7 +88,7 @@ const setDefaultFileStorageType = (hook) => {
 
 const setCurrentYearIfMissing = async (hook) => {
 	if (!hook.data.currentYear) {
-		await expectYearsDefined();
+		const years = await Year.find().lean().exec();
 		const facade = new SchoolYearFacade(years, hook.data);
 		hook.data.currentYear = facade.defaultYear;
 	}
@@ -126,11 +116,11 @@ const createDefaultStorageOptions = (hook) => {
 };
 
 const decorateYears = async (context) => {
-	await expectYearsDefined();
+	const years = await Year.find().lean().exec();
 	const addYearsToSchool = (school) => {
 		const facade = new SchoolYearFacade(years, school);
 		school.years = facade.toJSON();
-		school.currentYear = school.years.activeYear;
+		school.currentYear = school.years.defaultYear;
 	};
 	try {
 		switch (context.method) {

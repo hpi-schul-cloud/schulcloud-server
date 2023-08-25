@@ -68,8 +68,12 @@ describe('Ldap Syncer Consumer Integration', () => {
 	describe('school messages', () => {
 		it('should create school by the data', async () => {
 			const schoolName = 'test school';
-			const years = await app.service('years').find({ query: { name: '2023/24' } });
-			const currentYear = new SchoolYearFacade(years.data).defaultYear;
+			const currentYear = {
+				_id: '5ebd6dc14a431f75ec9a3e77',
+				name: '2023/24',
+				startDate: '2023-08-01T00:00:00.000Z',
+				endDate: '2024-07-31T00:00:00.000Z',
+			};
 			const states = await app.service('federalStates').find({ query: { abbreviation: 'NI' } });
 			const federalStateId = states.data[0]._id;
 			const contentData = {
@@ -95,7 +99,7 @@ describe('Ldap Syncer Consumer Integration', () => {
 			expect(foundSchool).to.be.not.null;
 			expect(foundSchool.name).to.be.equal(schoolName);
 			expect(foundSchool.federalState.toString()).to.be.equal(federalStateId.toString());
-			expect(foundSchool.currentYear.toString()).to.be.equal(currentYear._id.toString());
+			expect(foundSchool.currentYear._id.toString()).to.be.equal(currentYear._id);
 		});
 
 		it('should update existing school by the data', async () => {
