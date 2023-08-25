@@ -21,6 +21,8 @@ export class ContextExternalToolValidationService {
 	async validate(toValidate: ContextExternalToolDto): Promise<void> {
 		const contextExternalTool: ContextExternalTool = new ContextExternalTool(toValidate);
 
+		await this.checkDuplicateInContext(contextExternalTool);
+
 		const loadedSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.getSchoolExternalToolById(
 			contextExternalTool.schoolToolRef.schoolToolId
 		);
@@ -29,24 +31,22 @@ export class ContextExternalToolValidationService {
 			loadedSchoolExternalTool.toolId
 		);
 
-		await this.checkDuplicateInContext(contextExternalTool, loadedExternalTool);
-
 		this.commonToolValidationService.checkCustomParameterEntries(loadedExternalTool, contextExternalTool);
 	}
 
-	private async checkDuplicateInContext(contextExternalTool: ContextExternalTool, externalTool: ExternalTool) {
-		const duplicate: ContextExternalTool[] = await this.contextExternalToolService.findContextExternalTools({
+	private async checkDuplicateInContext(contextExternalTool: ContextExternalTool) {
+		let duplicate: ContextExternalTool[] = await this.contextExternalToolService.findContextExternalTools({
 			schoolToolRef: contextExternalTool.schoolToolRef,
 			context: contextExternalTool.contextRef,
 		});
 
 		// Only leave tools that are not the currently handled tool itself (for updates) or ones with the same name
-		const duplicateWithSameName: ContextExternalTool[] = duplicate.filter(
-			(duplicateTool: ContextExternalTool) =>
+		duplicate = duplicate.filter(
+			(duplicateTool) =>
 				duplicateTool.id !== contextExternalTool.id && duplicateTool.displayName === contextExternalTool.displayName
 		);
 
-		if (duplicateWithSameName.length > 0 || contextExternalTool.displayName === externalTool.name) {
+		if (duplicate.length > 0) {
 			throw new ValidationError(
 				`tool_with_name_exists: A tool with the same name is already assigned to this course. Tool names must be unique within a course.`
 			);
