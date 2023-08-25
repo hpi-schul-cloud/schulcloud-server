@@ -115,6 +115,9 @@
                                 <a href="#withRoleAndUserId" >withRoleAndUserId</a>
                             </li>
                             <li>
+                                <a href="#withUserId" >withUserId</a>
+                            </li>
+                            <li>
                                 <a href="#afterBuild" >afterBuild</a>
                             </li>
                             <li>
@@ -266,6 +269,68 @@
 
 
                                 </tr>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="withUserId"></a>
+                    <span class="name">
+                        <span ><b>withUserId</b></span>
+                        <a href="#withUserId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>withUserId(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="19"
+                            class="link-to-prism">apps/server/src/shared/testing/factory/teamuser.factory.ts:19</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
                                 <tr>
                                     <td>userId</td>
                                     <td>
@@ -1334,31 +1399,40 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Role, TeamUser } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Role, TeamUserEntity } from &#x27;@shared/domain&#x27;;
 import { BaseFactory } from &#x27;@shared/testing/factory/base.factory&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
 import { schoolFactory } from &#x27;@shared/testing/factory/school.factory&#x27;;
 import { userFactory } from &#x27;@shared/testing/factory/user.factory&#x27;;
 import { roleFactory } from &#x27;@shared/testing/factory/role.factory&#x27;;
 
-class TeamUserFactory extends BaseFactory&lt;TeamUser, TeamUser&gt; {
+class TeamUserFactory extends BaseFactory&lt;TeamUserEntity, TeamUserEntity&gt; {
 	withRoleAndUserId(role: Role, userId: string): this {
 		const school &#x3D; schoolFactory.build();
-		const params: DeepPartial&lt;TeamUser&gt; &#x3D; {
+		const params: DeepPartial&lt;TeamUserEntity&gt; &#x3D; {
 			user: userFactory.buildWithId({ school, roles: [roleFactory.build({ roles: [role] })] }, userId),
 			school,
 			role,
 		};
 		return this.params(params);
 	}
+
+	withUserId(userId: string): this {
+		const school &#x3D; schoolFactory.build();
+		const params: DeepPartial&lt;TeamUserEntity&gt; &#x3D; {
+			user: userFactory.buildWithId({ school }, userId),
+			school,
+		};
+		return this.params(params);
+	}
 }
 
-export const teamUserFactory &#x3D; TeamUserFactory.define(TeamUser, () &#x3D;&gt; {
+export const teamUserFactory &#x3D; TeamUserFactory.define(TeamUserEntity, () &#x3D;&gt; {
 	const role &#x3D; roleFactory.buildWithId();
 	const school &#x3D; schoolFactory.buildWithId();
 	const user &#x3D; userFactory.buildWithId({ roles: [role] });
 
-	return new TeamUser({
+	return new TeamUserEntity({
 		user,
 		school,
 		role,

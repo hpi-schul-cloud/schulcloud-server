@@ -277,7 +277,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;./entity-id&#x27;;
 import type { Course } from &#x27;../entity/course.entity&#x27;;
 import type { School } from &#x27;../entity/school.entity&#x27;;
-import type { Team } from &#x27;../entity/team.entity&#x27;;
+import type { TeamEntity } from &#x27;../entity/team.entity&#x27;;
 
 export enum NewsTargetModel {
 	&#x27;School&#x27; &#x3D; &#x27;schools&#x27;,
@@ -302,7 +302,7 @@ export interface INewsScope {
 	unpublished?: boolean;
 }
 
-export type NewsTarget &#x3D; School | Team | Course;
+export type NewsTarget &#x3D; School | TeamEntity | Course;
 </code></pre>
     </div>
 </div>

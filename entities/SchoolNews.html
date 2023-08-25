@@ -147,7 +147,7 @@
 import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
 import type { Course } from &#x27;./course.entity&#x27;;
 import type { School } from &#x27;./school.entity&#x27;;
-import type { Team } from &#x27;./team.entity&#x27;;
+import type { TeamEntity } from &#x27;./team.entity&#x27;;
 import type { User } from &#x27;./user.entity&#x27;;
 import { NewsTarget, NewsTargetModel } from &#x27;../types/news.types&#x27;;
 import { EntityId } from &#x27;../types&#x27;;
@@ -268,8 +268,8 @@ export class CourseNews extends News {
 
 @Entity({ discriminatorValue: NewsTargetModel.Team })
 export class TeamNews extends News {
-	@ManyToOne(&#x27;Team&#x27;)
-	target!: Team;
+	@ManyToOne(&#x27;TeamEntity&#x27;)
+	target!: TeamEntity;
 
 	constructor(props: INewsProperties) {
 		super(props);

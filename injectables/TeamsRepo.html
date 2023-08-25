@@ -244,7 +244,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/Team.html" target="_self" >Promise&lt;Team&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../entitys/TeamEntity.html" target="_self" >Promise&lt;TeamEntity&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -317,7 +317,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/Team.html" target="_self" >Promise&lt;Team[]&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../entitys/TeamEntity.html" target="_self" >Promise&lt;TeamEntity[]&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -351,8 +351,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="40"
-                            class="link-to-prism">apps/server/src/shared/repo/teams/teams.repo.ts:40</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="42"
+                            class="link-to-prism">apps/server/src/shared/repo/teams/teams.repo.ts:42</a></div>
                 </td>
             </tr>
 
@@ -700,24 +700,24 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId, Role, Team, TeamUser } from &#x27;@shared/domain&#x27;;
+import { EntityId, Role, TeamEntity, TeamUserEntity } from &#x27;@shared/domain&#x27;;
 import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { BaseRepo } from &#x27;../base.repo&#x27;;
 
 @Injectable()
-export class TeamsRepo extends BaseRepo&lt;Team&gt; {
+export class TeamsRepo extends BaseRepo&lt;TeamEntity&gt; {
 	get entityName() {
-		return Team;
+		return TeamEntity;
 	}
 
 	cacheExpiration &#x3D; 60000;
 
-	async findById(id: EntityId, populate &#x3D; false): Promise&lt;Team&gt; {
-		const team &#x3D; await this._em.findOneOrFail(Team, { id }, { cache: this.cacheExpiration });
+	async findById(id: EntityId, populate &#x3D; false): Promise&lt;TeamEntity&gt; {
+		const team &#x3D; await this._em.findOneOrFail(TeamEntity, { id }, { cache: this.cacheExpiration });
 
 		if (populate) {
 			await Promise.all&lt;void&gt;(
-				team.teamUsers.map(async (teamUser: TeamUser): Promise&lt;void&gt; &#x3D;&gt; {
+				team.teamUsers.map(async (teamUser: TeamUserEntity): Promise&lt;void&gt; &#x3D;&gt; {
 					await this._em.populate(teamUser, [&#x27;role&#x27;]);
 					await this.populateRoles([teamUser.role]);
 				})
@@ -733,8 +733,10 @@ export class TeamsRepo extends BaseRepo&lt;Team&gt; {
 	 * @param userId
 	 * @return Array of teams
 	 */
-	async findByUserId(userId: EntityId): Promise&lt;Team[]&gt; {
-		const teams: Team[] &#x3D; await this._em.find&lt;Team&gt;(Team, { userIds: { userId: new ObjectId(userId) } });
+	async findByUserId(userId: EntityId): Promise&lt;TeamEntity[]&gt; {
+		const teams: TeamEntity[] &#x3D; await this._em.find&lt;TeamEntity&gt;(TeamEntity, {
+			userIds: { userId: new ObjectId(userId) },
+		});
 		return teams;
 	}
 

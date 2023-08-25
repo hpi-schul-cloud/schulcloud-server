@@ -173,7 +173,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../entitys/Team.html" target="_self">Team</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../entitys/TeamEntity.html" target="_self">TeamEntity</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                 </td>
             </tr>
 
@@ -216,7 +216,7 @@
                                 <tr>
                                     <td>entity</td>
                                     <td>
-                                                <code><a href="../entitys/Team.html" target="_self" >Team</a></code>
+                                                <code><a href="../entitys/TeamEntity.html" target="_self" >TeamEntity</a></code>
                                     </td>
 
                                     <td>
@@ -268,7 +268,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../entitys/Team.html" target="_self">Team</a>)</code>
+                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../entitys/TeamEntity.html" target="_self">TeamEntity</a>)</code>
                 </td>
             </tr>
 
@@ -311,7 +311,7 @@
                                 <tr>
                                     <td>entity</td>
                                     <td>
-                                                <code><a href="../entitys/Team.html" target="_self" >Team</a></code>
+                                                <code><a href="../entitys/TeamEntity.html" target="_self" >TeamEntity</a></code>
                                     </td>
 
                                     <td>
@@ -343,7 +343,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Team, TeamUser, User } from &#x27;@shared/domain/entity&#x27;;
+import { TeamEntity, TeamUserEntity, User } from &#x27;@shared/domain/entity&#x27;;
 import { AuthorizationHelper } from &#x27;@src/modules/authorization/authorization.helper&#x27;;
 import { AuthorizationContext, Rule } from &#x27;@src/modules/authorization/types&#x27;;
 
@@ -351,13 +351,13 @@ import { AuthorizationContext, Rule } from &#x27;@src/modules/authorization/type
 export class TeamRule implements Rule {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
-	public isApplicable(user: User, entity: Team): boolean {
-		return entity instanceof Team;
+	public isApplicable(user: User, entity: TeamEntity): boolean {
+		return entity instanceof TeamEntity;
 	}
 
-	public hasPermission(user: User, entity: Team, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, entity: TeamEntity, context: AuthorizationContext): boolean {
 		let hasPermission &#x3D; false;
-		const isTeamUser &#x3D; entity.teamUsers.find((teamUser: TeamUser) &#x3D;&gt; teamUser.user.id &#x3D;&#x3D;&#x3D; user.id);
+		const isTeamUser &#x3D; entity.teamUsers.find((teamUser: TeamUserEntity) &#x3D;&gt; teamUser.user.id &#x3D;&#x3D;&#x3D; user.id);
 		if (isTeamUser) {
 			hasPermission &#x3D; this.authorizationHelper.hasAllPermissionsByRole(isTeamUser.role, context.requiredPermissions);
 		}

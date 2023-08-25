@@ -230,7 +230,7 @@ import { User } from &#x27;./user.entity&#x27;;
 
 export interface ITeamProperties {
 	name: string;
-	teamUsers?: TeamUser[];
+	teamUsers?: TeamUserEntity[];
 }
 
 export interface ITeamUserProperties {
@@ -240,7 +240,7 @@ export interface ITeamUserProperties {
 }
 
 @Embeddable()
-export class TeamUser {
+export class TeamUserEntity {
 	constructor(props: ITeamUserProperties) {
 		this.userId &#x3D; props.user;
 		this.role &#x3D; props.role;
@@ -275,25 +275,25 @@ export class TeamUser {
 }
 
 @Entity({ tableName: &#x27;teams&#x27; })
-export class Team extends BaseEntityWithTimestamps {
+export class TeamEntity extends BaseEntityWithTimestamps {
 	@Property()
 	name: string;
 
-	@Embedded(() &#x3D;&gt; TeamUser, { array: true })
-	userIds: TeamUser[];
+	@Embedded(() &#x3D;&gt; TeamUserEntity, { array: true })
+	userIds: TeamUserEntity[];
 
-	get teamUsers(): TeamUser[] {
+	get teamUsers(): TeamUserEntity[] {
 		return this.userIds;
 	}
 
-	set teamUsers(value: TeamUser[]) {
+	set teamUsers(value: TeamUserEntity[]) {
 		this.userIds &#x3D; value;
 	}
 
 	constructor(props: ITeamProperties) {
 		super();
 		this.name &#x3D; props.name;
-		this.userIds &#x3D; props.teamUsers ? props.teamUsers.map((teamUser) &#x3D;&gt; new TeamUser(teamUser)) : [];
+		this.userIds &#x3D; props.teamUsers ? props.teamUsers.map((teamUser) &#x3D;&gt; new TeamUserEntity(teamUser)) : [];
 	}
 }
 </code></pre>

@@ -1990,6 +1990,26 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                             </li>
                             <li class="link">
+                                <a href="modules/TeamsModule.html" data-type="entity-link" >TeamsModule</a>
+                                <li class="chapter inner">
+                                    <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
+                                        'data-bs-target="#injectables-links-module-TeamsModule-7f11b5891eddaa64f11e06bf3239c5cdd5454c40480a334c2e752bad5b94c0ca321e63379c59cb8ecfc299403063c777e76ffe851bc46609daad613a80b93e7b"' : 'data-bs-target="#xs-injectables-links-module-TeamsModule-7f11b5891eddaa64f11e06bf3239c5cdd5454c40480a334c2e752bad5b94c0ca321e63379c59cb8ecfc299403063c777e76ffe851bc46609daad613a80b93e7b"' }>
+                                        <span class="icon ion-md-arrow-round-down"></span>
+                                        <span>Injectables</span>
+                                        <span class="icon ion-ios-arrow-down"></span>
+                                    </div>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TeamsModule-7f11b5891eddaa64f11e06bf3239c5cdd5454c40480a334c2e752bad5b94c0ca321e63379c59cb8ecfc299403063c777e76ffe851bc46609daad613a80b93e7b"' :
+                                        'id="xs-injectables-links-module-TeamsModule-7f11b5891eddaa64f11e06bf3239c5cdd5454c40480a334c2e752bad5b94c0ca321e63379c59cb8ecfc299403063c777e76ffe851bc46609daad613a80b93e7b"' }>
+                                        <li class="link">
+                                            <a href="injectables/TeamService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TeamService</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/TeamsRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TeamsRepo</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </li>
+                            <li class="link">
                                 <a href="modules/ToolApiModule.html" data-type="entity-link" >ToolApiModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
@@ -2542,7 +2562,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="entities/TaskBoardElement.html" data-type="entity-link" >TaskBoardElement</a>
                                 </li>
                                 <li class="link">
-                                    <a href="entities/Team.html" data-type="entity-link" >Team</a>
+                                    <a href="entities/TeamEntity.html" data-type="entity-link" >TeamEntity</a>
                                 </li>
                                 <li class="link">
                                     <a href="entities/TeamNews.html" data-type="entity-link" >TeamNews</a>
@@ -3986,10 +4006,10 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/TeamUrlParams.html" data-type="entity-link" >TeamUrlParams</a>
                             </li>
                             <li class="link">
-                                <a href="classes/TeamUser.html" data-type="entity-link" >TeamUser</a>
+                                <a href="classes/TeamUserDto.html" data-type="entity-link" >TeamUserDto</a>
                             </li>
                             <li class="link">
-                                <a href="classes/TeamUserDto.html" data-type="entity-link" >TeamUserDto</a>
+                                <a href="classes/TeamUserEntity.html" data-type="entity-link" >TeamUserEntity</a>
                             </li>
                             <li class="link">
                                 <a href="classes/TeamUserFactory.html" data-type="entity-link" >TeamUserFactory</a>
@@ -4686,7 +4706,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/TeamRule.html" data-type="entity-link" >TeamRule</a>
                                 </li>
                                 <li class="link">
+                                    <a href="injectables/TeamService.html" data-type="entity-link" >TeamService</a>
+                                </li>
+                                <li class="link">
                                     <a href="injectables/TeamsRepo.html" data-type="entity-link" >TeamsRepo</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/TeamUC.html" data-type="entity-link" >TeamUC</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/TimeoutInterceptor.html" data-type="entity-link" >TimeoutInterceptor</a>

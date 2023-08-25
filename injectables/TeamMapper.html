@@ -121,7 +121,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapEntityToDto(teamEntity: <a href="../entitys/Team.html" target="_self">Team</a>)</code>
+                    <code>mapEntityToDto(teamEntity: <a href="../entitys/TeamEntity.html" target="_self">TeamEntity</a>)</code>
                 </td>
             </tr>
 
@@ -155,7 +155,7 @@
                                 <tr>
                                     <td>teamEntity</td>
                                     <td>
-                                                <code><a href="../entitys/Team.html" target="_self" >Team</a></code>
+                                                <code><a href="../entitys/TeamEntity.html" target="_self" >TeamEntity</a></code>
                                     </td>
 
                                     <td>
@@ -191,7 +191,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Team, TeamUser } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { TeamEntity, TeamUserEntity } from &#x27;@shared/domain&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { TeamDto, TeamUserDto } from &#x27;../services/dto/team.dto&#x27;;
 
@@ -202,9 +202,9 @@ export class TeamMapper {
 	 * @param teamEntity The Entity
 	 * @return The Dto
 	 */
-	public mapEntityToDto(teamEntity: Team): TeamDto {
+	public mapEntityToDto(teamEntity: TeamEntity): TeamDto {
 		const teamUsers: TeamUserDto[] &#x3D; teamEntity.teamUsers.map(
-			(teamUser: TeamUser) &#x3D;&gt;
+			(teamUser: TeamUserEntity) &#x3D;&gt;
 				new TeamUserDto({
 					userId: teamUser.user.id,
 					roleId: teamUser.role.id,

@@ -1414,8 +1414,8 @@ import {
 	RoleName,
 	RoleReference,
 	SchoolFeatures,
-	Team,
-	TeamUser,
+	TeamEntity,
+	TeamUserEntity,
 	UserDO,
 	VideoConferenceDO,
 	VideoConferenceOptionsDO,
@@ -1475,9 +1475,9 @@ export class VideoConferenceService {
 				return isExpert;
 			}
 			case VideoConferenceScope.EVENT: {
-				const team: Team &#x3D; await this.teamsRepo.findById(scopeId);
-				const teamUser: TeamUser | undefined &#x3D; team.teamUsers.find(
-					(userInTeam: TeamUser) &#x3D;&gt; userInTeam.user.id &#x3D;&#x3D;&#x3D; userId
+				const team: TeamEntity &#x3D; await this.teamsRepo.findById(scopeId);
+				const teamUser: TeamUserEntity | undefined &#x3D; team.teamUsers.find(
+					(userInTeam: TeamUserEntity) &#x3D;&gt; userInTeam.user.id &#x3D;&#x3D;&#x3D; userId
 				);
 
 				if (teamUser &#x3D;&#x3D;&#x3D; undefined) {

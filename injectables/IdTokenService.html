@@ -234,7 +234,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>buildGroupsClaim(teams: <a href="../entitys/Team.html" target="_self">Team[]</a>)</code>
+                    <code>buildGroupsClaim(teams: <a href="../entitys/TeamEntity.html" target="_self">TeamEntity[]</a>)</code>
                 </td>
             </tr>
 
@@ -265,7 +265,7 @@
                                 <tr>
                                     <td>teams</td>
                                     <td>
-                                                <code><a href="../entitys/Team.html" target="_self" >Team[]</a></code>
+                                                <code><a href="../entitys/TeamEntity.html" target="_self" >TeamEntity[]</a></code>
                                     </td>
 
                                     <td>
@@ -538,7 +538,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { LtiToolDO, Pseudonym, Team, UserDO } from &#x27;@shared/domain&#x27;;
+import { LtiToolDO, Pseudonym, TeamEntity, UserDO } from &#x27;@shared/domain&#x27;;
 import { TeamsRepo } from &#x27;@shared/repo&#x27;;
 import { PseudonymService } from &#x27;@src/modules/pseudonym&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
@@ -564,7 +564,7 @@ export class IdTokenService {
 	}
 
 	async createIdToken(userId: string, scopes: string[], clientId: string): Promise&lt;IdToken&gt; {
-		let teams: Team[] &#x3D; [];
+		let teams: TeamEntity[] &#x3D; [];
 		if (scopes.includes(OauthScope.GROUPS)) {
 			teams &#x3D; await this.teamsRepo.findByUserId(userId);
 		}
@@ -584,8 +584,8 @@ export class IdTokenService {
 		};
 	}
 
-	private buildGroupsClaim(teams: Team[]): GroupNameIdTuple[] {
-		return teams.map((team: Team): GroupNameIdTuple &#x3D;&gt; {
+	private buildGroupsClaim(teams: TeamEntity[]): GroupNameIdTuple[] {
+		return teams.map((team: TeamEntity): GroupNameIdTuple &#x3D;&gt; {
 			return {
 				gid: team.id,
 				displayName: team.name,

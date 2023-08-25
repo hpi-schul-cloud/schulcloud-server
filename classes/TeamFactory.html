@@ -303,7 +303,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>withTeamUser(teamUser: <a href="../classes/TeamUser.html" target="_self">TeamUser</a>)</code>
+<code>withTeamUser(teamUser: <a href="../interfaces/User.html" target="_self">TeamUserEntity[]</a>)</code>
                 </td>
             </tr>
 
@@ -334,7 +334,7 @@
                                 <tr>
                                     <td>teamUser</td>
                                     <td>
-                                                <code><a href="../classes/TeamUser.html" target="_self" >TeamUser</a></code>
+                                                <code><a href="../interfaces/User.html" target="_self" >TeamUserEntity[]</a></code>
                                     </td>
 
                                     <td>
@@ -1399,12 +1399,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ITeamProperties, Role, Team, TeamUser } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ITeamProperties, Role, TeamEntity, TeamUserEntity } from &#x27;@shared/domain&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
 import { teamUserFactory } from &#x27;@shared/testing/factory/teamuser.factory&#x27;;
 import { BaseFactory } from &#x27;@shared/testing/factory/base.factory&#x27;;
 
-class TeamFactory extends BaseFactory&lt;Team, ITeamProperties&gt; {
+class TeamFactory extends BaseFactory&lt;TeamEntity, ITeamProperties&gt; {
 	withRoleAndUserId(role: Role, userId: string): this {
 		const params: DeepPartial&lt;ITeamProperties&gt; &#x3D; {
 			teamUsers: [teamUserFactory.withRoleAndUserId(role, userId).buildWithId()],
@@ -1412,15 +1412,15 @@ class TeamFactory extends BaseFactory&lt;Team, ITeamProperties&gt; {
 		return this.params(params);
 	}
 
-	withTeamUser(teamUser: TeamUser): this {
+	withTeamUser(teamUser: TeamUserEntity[]): this {
 		const params: DeepPartial&lt;ITeamProperties&gt; &#x3D; {
-			teamUsers: [teamUser],
+			teamUsers: teamUser,
 		};
 		return this.params(params);
 	}
 }
 
-export const teamFactory &#x3D; TeamFactory.define(Team, ({ sequence }) &#x3D;&gt; {
+export const teamFactory &#x3D; TeamFactory.define(TeamEntity, ({ sequence }) &#x3D;&gt; {
 	return {
 		name: &#x60;team #${sequence}&#x60;,
 		teamUsers: [teamUserFactory.buildWithId()],

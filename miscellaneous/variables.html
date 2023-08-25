@@ -1372,9 +1372,9 @@
 	System,
 	Task,
 	TaskBoardElement,
-	Team,
+	TeamEntity,
 	TeamNews,
-	TeamUser,
+	TeamUserEntity,
 	User,
 	UserLoginMigration,
 	VideoConference,
@@ -8474,7 +8474,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>TeamFactory.define(Team, ({ sequence }) &#x3D;&gt; {
+                        <i>Default value : </i><code>TeamFactory.define(TeamEntity, ({ sequence }) &#x3D;&gt; {
 	return {
 		name: &#x60;team #${sequence}&#x60;,
 		teamUsers: [teamUserFactory.buildWithId()],
@@ -8502,12 +8502,12 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>TeamUserFactory.define(TeamUser, () &#x3D;&gt; {
+                        <i>Default value : </i><code>TeamUserFactory.define(TeamUserEntity, () &#x3D;&gt; {
 	const role &#x3D; roleFactory.buildWithId();
 	const school &#x3D; schoolFactory.buildWithId();
 	const user &#x3D; userFactory.buildWithId({ roles: [role] });
 
-	return new TeamUser({
+	return new TeamUserEntity({
 		user,
 		school,
 		role,
