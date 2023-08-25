@@ -80,6 +80,15 @@
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
+		},
+		"h5p-library-management": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/h5p-library-management.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+			        "tsConfigPath": "apps/server/tsconfig.app.json"
+			}
 		}
 	}
 }
