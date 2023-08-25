@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { StorageProviderRepo } from '@shared/repo/storageprovider/storageprovider.repo';
+import { StorageProviderRepo } from '@shared/repo/storageprovider';
 import { LoggerModule } from '@src/core/logger';
 
 import { DeleteFilesConsole } from './job';

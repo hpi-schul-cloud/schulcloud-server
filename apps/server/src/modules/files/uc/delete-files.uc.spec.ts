@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from 'bson';
 
 import { StorageProviderEntity } from '@shared/domain/entity';
-import { StorageProviderRepo } from '@shared/repo/storageprovider/storageprovider.repo';
+import { StorageProviderRepo } from '@shared/repo/storageprovider';
 import { storageProviderFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 
