@@ -33,8 +33,8 @@ export class LessonService {
 
 		const updatedLessons = lessons.map((lesson: LessonEntity) => {
 			lesson.contents.map((c: IComponentProperties) => {
-				if (c.user?.id === userId) {
-					c.user.id = '';
+				if (c.user === userId) {
+					c.user = '';
 				}
 				return c;
 			});

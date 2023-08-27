@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { Counted, EntityId, LessonEntity, SortOrder } from '@shared/domain';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityDictionary } from '@mikro-orm/core';
 import { BaseRepo } from '../base.repo';
 import { LessonScope } from './lesson-scope';
@@ -39,13 +38,13 @@ export class LessonRepo extends BaseRepo<LessonEntity> {
 		return [lessons, count];
 	}
 
-	async findByUserId(userId: EntityId): Promise<LessonEntity[]> {
+	public async findByUserId(userId: EntityId): Promise<LessonEntity[]> {
 		const pipeline = [
 			{
 				$match: {
 					contents: {
 						$elemMatch: {
-							user: new ObjectId(userId),
+							user: userId,
 						},
 					},
 				},

@@ -1,6 +1,6 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LessonEntity } from '@shared/domain';
+import { ComponentType, IComponentProperties, LessonEntity } from '@shared/domain';
 import { cleanupCollections, courseFactory, lessonFactory, materialFactory, taskFactory } from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -27,7 +27,7 @@ describe('LessonRepo', () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
-		// await em.nativeDelete(LessonEntity, {});
+		await em.nativeDelete(LessonEntity, {});
 	});
 
 	it('should implement entityName getter', () => {
@@ -35,108 +35,108 @@ describe('LessonRepo', () => {
 	});
 
 	describe('findById', () => {
-		// 	it('should find the lesson', async () => {
-		// 		const course = courseFactory.build();
-		// 		const lesson = lessonFactory.build({ course });
-		// 		await em.persistAndFlush([course, lesson]);
-		// 		em.clear();
-		// 		const resultLesson = await repo.findById(lesson.id);
-		// 		// TODO for some reason, comparing the whole object does not work
-		// 		// expect(resultLesson).toEqual(lesson);
-		// 		expect(resultLesson.id).toEqual(lesson.id);
-		// 		expect(resultLesson.name).toEqual(lesson.name);
-		// 	});
-		// 	it('should populate course', async () => {
-		// 		const course = courseFactory.build();
-		// 		const lesson = lessonFactory.build({ course });
-		// 		await em.persistAndFlush([course, lesson]);
-		// 		em.clear();
-		// 		const resultLesson = await repo.findById(lesson.id);
-		// 		expect(resultLesson.course.name).toEqual(course.name);
-		// 	});
+		it('should find the lesson', async () => {
+			const course = courseFactory.build();
+			const lesson = lessonFactory.build({ course });
+			await em.persistAndFlush([course, lesson]);
+			em.clear();
+			const resultLesson = await repo.findById(lesson.id);
+			// TODO for some reason, comparing the whole object does not work
+			// expect(resultLesson).toEqual(lesson);
+			expect(resultLesson.id).toEqual(lesson.id);
+			expect(resultLesson.name).toEqual(lesson.name);
+		});
+		it('should populate course', async () => {
+			const course = courseFactory.build();
+			const lesson = lessonFactory.build({ course });
+			await em.persistAndFlush([course, lesson]);
+			em.clear();
+			const resultLesson = await repo.findById(lesson.id);
+			expect(resultLesson.course.name).toEqual(course.name);
+		});
 
-		// 	it('should populate tasks', async () => {
-		// 		const course = courseFactory.build();
-		// 		const lesson = lessonFactory.build({ course });
-		// 		const tasks = [taskFactory.build({ course, lesson }), taskFactory.draft().build({ course, lesson })];
-		// 		await em.persistAndFlush([course, lesson, ...tasks]);
-		// 		em.clear();
+		it('should populate tasks', async () => {
+			const course = courseFactory.build();
+			const lesson = lessonFactory.build({ course });
+			const tasks = [taskFactory.build({ course, lesson }), taskFactory.draft().build({ course, lesson })];
+			await em.persistAndFlush([course, lesson, ...tasks]);
+			em.clear();
 
-		// 		const resultLesson = await repo.findById(lesson.id);
-		// 		expect(resultLesson.tasks.isInitialized()).toEqual(true);
-		// 		expect(resultLesson.tasks.length).toEqual(2);
-		// 	});
+			const resultLesson = await repo.findById(lesson.id);
+			expect(resultLesson.tasks.isInitialized()).toEqual(true);
+			expect(resultLesson.tasks.length).toEqual(2);
+		});
 
-		// 	it('should populate materials', async () => {
-		// 		const material = materialFactory.build();
-		// 		const lesson = lessonFactory.build({ materials: [material] });
-		// 		await em.persistAndFlush([lesson, material]);
-		// 		em.clear();
-		// 		const resultLesson = await repo.findById(lesson.id);
-		// 		expect(resultLesson.materials[0]).toEqual(material);
-		// 	});
-		// });
-		// describe('findAllByCourseIds', () => {
-		// 	it('should find lessons by course ids', async () => {
-		// 		const course1 = courseFactory.build();
-		// 		const course2 = courseFactory.build();
-		// 		const lesson1 = lessonFactory.build({ course: course1 });
-		// 		const lesson2 = lessonFactory.build({ course: course2 });
+		it('should populate materials', async () => {
+			const material = materialFactory.build();
+			const lesson = lessonFactory.build({ materials: [material] });
+			await em.persistAndFlush([lesson, material]);
+			em.clear();
+			const resultLesson = await repo.findById(lesson.id);
+			expect(resultLesson.materials[0]).toEqual(material);
+		});
+	});
+	describe('findAllByCourseIds', () => {
+		it('should find lessons by course ids', async () => {
+			const course1 = courseFactory.build();
+			const course2 = courseFactory.build();
+			const lesson1 = lessonFactory.build({ course: course1 });
+			const lesson2 = lessonFactory.build({ course: course2 });
 
-		// 		await em.persistAndFlush([lesson1, lesson2]);
-		// 		em.clear();
-		// 		const [result, total] = await repo.findAllByCourseIds([course2.id]);
-		// 		expect(total).toEqual(1);
-		// 		expect(result[0].name).toEqual(lesson2.name);
-		// 	});
+			await em.persistAndFlush([lesson1, lesson2]);
+			em.clear();
+			const [result, total] = await repo.findAllByCourseIds([course2.id]);
+			expect(total).toEqual(1);
+			expect(result[0].name).toEqual(lesson2.name);
+		});
 
-		// 	it('should not find lessons with no course assigned', async () => {
-		// 		const course = courseFactory.build();
-		// 		const lesson1 = lessonFactory.build({ course });
-		// 		const lesson2 = lessonFactory.build({});
+		it('should not find lessons with no course assigned', async () => {
+			const course = courseFactory.build();
+			const lesson1 = lessonFactory.build({ course });
+			const lesson2 = lessonFactory.build({});
 
-		// 		await em.persistAndFlush([lesson1, lesson2]);
-		// 		em.clear();
-		// 		const [result, total] = await repo.findAllByCourseIds([course.id]);
-		// 		expect(total).toEqual(1);
-		// 		expect(result[0].name).toEqual(lesson1.name);
-		// 	});
+			await em.persistAndFlush([lesson1, lesson2]);
+			em.clear();
+			const [result, total] = await repo.findAllByCourseIds([course.id]);
+			expect(total).toEqual(1);
+			expect(result[0].name).toEqual(lesson1.name);
+		});
 
-		// 	it('should not find hidden lessons', async () => {
-		// 		const course = courseFactory.build();
-		// 		const lesson = lessonFactory.build({ course, hidden: true });
+		it('should not find hidden lessons', async () => {
+			const course = courseFactory.build();
+			const lesson = lessonFactory.build({ course, hidden: true });
 
-		// 		await em.persistAndFlush([lesson]);
-		// 		em.clear();
-		// 		const [result, total] = await repo.findAllByCourseIds([course.id], { hidden: false });
-		// 		expect(total).toBe(0);
-		// 		expect(result).toHaveLength(0);
-		// 	});
+			await em.persistAndFlush([lesson]);
+			em.clear();
+			const [result, total] = await repo.findAllByCourseIds([course.id], { hidden: false });
+			expect(total).toBe(0);
+			expect(result).toHaveLength(0);
+		});
 
-		// 	it('should find hidden lessons', async () => {
-		// 		const course = courseFactory.build();
-		// 		const lesson = lessonFactory.build({ course, hidden: true });
+		it('should find hidden lessons', async () => {
+			const course = courseFactory.build();
+			const lesson = lessonFactory.build({ course, hidden: true });
 
-		// 		await em.persistAndFlush([lesson]);
-		// 		em.clear();
-		// 		const [result, total] = await repo.findAllByCourseIds([course.id]);
-		// 		expect(total).toBe(1);
-		// 		expect(result).toHaveLength(1);
-		// 	});
+			await em.persistAndFlush([lesson]);
+			em.clear();
+			const [result, total] = await repo.findAllByCourseIds([course.id]);
+			expect(total).toBe(1);
+			expect(result).toHaveLength(1);
+		});
 
-		// 	it('should order by position', async () => {
-		// 		const course = courseFactory.build();
-		// 		const lessons = [
-		// 			lessonFactory.build({ course, position: 2 }),
-		// 			lessonFactory.build({ course, position: 0 }),
-		// 			lessonFactory.build({ course, position: 1 }),
-		// 		];
-		// 		await em.persistAndFlush(lessons);
-		// 		em.clear();
-		// 		const expectedOrder = [lessons[1], lessons[2], lessons[0]].map((lesson) => lesson.id);
-		// 		const [results] = await repo.findAllByCourseIds([course.id]);
-		// 		expect(results.map((lesson) => lesson.id)).toEqual(expectedOrder);
-		// 	});
+		it('should order by position', async () => {
+			const course = courseFactory.build();
+			const lessons = [
+				lessonFactory.build({ course, position: 2 }),
+				lessonFactory.build({ course, position: 0 }),
+				lessonFactory.build({ course, position: 1 }),
+			];
+			await em.persistAndFlush(lessons);
+			em.clear();
+			const expectedOrder = [lessons[1], lessons[2], lessons[0]].map((lesson) => lesson.id);
+			const [results] = await repo.findAllByCourseIds([course.id]);
+			expect(results.map((lesson) => lesson.id)).toEqual(expectedOrder);
+		});
 
 		it('should populate tasks', async () => {
 			const course = courseFactory.build();
@@ -161,82 +161,60 @@ describe('LessonRepo', () => {
 		});
 	});
 
-	// describe('findByUserId', () => {
-	// 	it('should return lessons which contains a specific userId', async () => {
-	// 		// Arrange
-	// 		const user1 = userFactory.buildWithId();
-	// 		const contentExample: IComponentProperties = {
-	// 			title: 'title',
-	// 			hidden: false,
-	// 			user: user1,
-	// 			component: ComponentType.TEXT,
-	// 			content: { text: 'testetestet' },
-	// 		};
-	// 		const lesson = lessonFactory.build({ contents: [contentExample] });
-	// 		await em.persistAndFlush([lesson]);
-	// 		em.clear();
+	describe('findByUserId', () => {
+		it('should return lessons which contains a specific userId', async () => {
+			// Arrange
+			const userId = new ObjectId().toHexString();
+			const contentExample: IComponentProperties = {
+				title: 'title',
+				hidden: false,
+				user: userId,
+				component: ComponentType.TEXT,
+				content: { text: 'test of content' },
+			};
+			const lesson1 = lessonFactory.buildWithId({ contents: [contentExample] });
+			const lesson2 = lessonFactory.buildWithId({ contents: [contentExample] });
+			const lesson3 = lessonFactory.buildWithId();
+			await em.persistAndFlush([lesson1, lesson2, lesson3]);
+			em.clear();
 
-	// 		const course = courseFactory.build();
-	// 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	// 		const material = materialFactory.build();
-	// 		const user = userFactory.buildWithId();
-	// 		const content: IComponentProperties = {
-	// 			title: 'title',
-	// 			hidden: false,
-	// 			user,
-	// 			component: ComponentType.TEXT,
-	// 			content: { text: 'testetestet' },
-	// 		};
+			// Act
+			const result = await repo.findByUserId(userId);
 
-	// 		const lesson = lessonFactory.build({
-	// 			materials: [material],
-	// 			course,
-	// 			contents: [content],
-	// 		});
-	// 		await em.persistAndFlush([lesson, material]);
-	// 		em.clear();
+			// Assert
+			expect(result).toHaveLength(2);
+			expect(result.some((lesson: LessonEntity) => lesson.id === lesson3.id)).toBeFalsy();
+			// expect(result).toEqual(
+			// 	expect.arrayContaining([expect.objectContaining(expectedLesson1), expect.objectContaining(expectedLesson2)])
+			// );
+		});
+	});
 
-	// 		const resultLesson = await repo.findById(lesson.id);
-	// 		expect(resultLesson.materials[0]).toEqual(material);
+	//Add test with no lesson finded
 
-	// 		// Act
-	// 		const result = await repo.findByUserId(user1.id);
+	describe('updateLessons', () => {
+		it('should update Lessons without deleted user', async () => {
+			// Arrange
+			const userId = new ObjectId().toHexString();
+			const contentExample: IComponentProperties = {
+				title: 'title',
+				hidden: false,
+				user: userId,
+				component: ComponentType.TEXT,
+				content: { text: 'test of content' },
+			};
+			const lesson1 = lessonFactory.buildWithId({ contents: [contentExample] });
+			await em.persistAndFlush([lesson1]);
+			em.clear();
 
-	// 		// Assert
-	// 		expect(result.length).toEqual([lesson].length);
-	// 	});
-	// });
+			// Arrange expected Array after User deletion
+			lesson1.contents[0].user = '';
 
-	// describe('updateLessons', () => {
-	// 	it('should update Lessons without deleted user', async () => {
-	// 		// Arrange
-	// 		const user1 = userFactory.buildWithId();
-	// 		const contentExample: IComponentProperties = {
-	// 			title: 'title',
-	// 			hidden: false,
-	// 			user: user1,
-	// 			component: ComponentType.TEXT,
-	// 			content: { text: 'testetestet' },
-	// 		};
-	// 		const lesson1 = lessonFactory.build({ contents: [contentExample] });
-	// 		await em.persistAndFlush([lesson1]);
-	// 		em.clear();
+			// Act
+			await repo.save([lesson1]);
 
-	// 		// Arrange Team Array after teamUser1 deletion
-	// 		lesson1.contents.map((c: IComponentProperties) => {
-	// 			if (c.user?.id === user1.id) {
-	// 				c.user.id = '';
-	// 			}
-	// 			return c;
-	// 		});
-
-	// 		const updatedArray: LessonEntity[] = [lesson1];
-
-	// 		// Act
-	// 		await repo.save(updatedArray);
-
-	// 		// const result1 = await repo.findByUserId(user1.id);
-	// 		// expect(result1).toHaveLength(0);
-	// 	});
-	// });
+			const result1 = await repo.findByUserId(userId);
+			expect(result1).toHaveLength(0);
+		});
+	});
 });

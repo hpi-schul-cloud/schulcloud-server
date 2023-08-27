@@ -120,4 +120,47 @@ describe('course group repo', () => {
 			expect(count).toEqual(3);
 		});
 	});
+
+	describe('findByUserId', () => {
+		it('should return courseGroup with userId', async () => {
+			// Arrange
+			const course = courseFactory.build();
+			const courseGroup1 = courseGroupFactory.studentsWithId(3).build({ course });
+			const courseGroup2 = courseGroupFactory.build({ course });
+			const userId = courseGroup1.students[0].id;
+			await em.persistAndFlush([courseGroup1, courseGroup2]);
+			em.clear();
+
+			// Act
+			const [result, count] = await repo.findByUserId(userId);
+
+			expect(count).toEqual(1);
+			expect(result[0].students[0].id).toEqual(userId);
+
+			// expect(result).toHaveLength(1);
+			// expect(result[0].students[0].id).toEqual(userId);
+		});
+	});
+
+	describe('update courseGroup', () => {
+		it('should update courseGroup without userId', async () => {
+			// Arrange
+			const course = courseFactory.build();
+			const courseGroup1 = courseGroupFactory.studentsWithId(3).build({ course });
+			const courseGroup2 = courseGroupFactory.build({ course });
+			const userId = courseGroup1.students[0].id;
+			await em.persistAndFlush([courseGroup1, courseGroup2]);
+			em.clear();
+
+			// Arrange expected Array after User deletion
+			courseGroup1.students.remove((s) => s.id === userId);
+
+			// Act
+			await repo.save(courseGroup1);
+
+			const [result, count] = await repo.findByUserId(userId);
+
+			expect(count).toEqual(0);
+		});
+	});
 });

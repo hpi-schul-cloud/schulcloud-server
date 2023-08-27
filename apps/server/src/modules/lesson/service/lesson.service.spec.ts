@@ -1,8 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LessonRepo } from '@shared/repo';
-import { lessonFactory, setupEntities } from '@shared/testing';
+import { lessonFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { InternalServerErrorException } from '@nestjs/common';
+import { ComponentType, EntityId, IComponentProperties, UserDO } from '@shared/domain';
 import { LessonService } from './lesson.service';
 
 describe('LessonService', () => {
@@ -72,6 +75,56 @@ describe('LessonService', () => {
 			await expect(lessonService.findByCourseIds(courseIds)).resolves.not.toThrow();
 			expect(lessonRepo.findAllByCourseIds).toBeCalledTimes(1);
 			expect(lessonRepo.findAllByCourseIds).toBeCalledWith(courseIds);
+		});
+	});
+
+	describe('deleteUserDataFromTeams', () => {
+		describe('when user is missing', () => {
+			it('should throw an error when user is missing', async () => {
+				const user: UserDO = userDoFactory.build({ id: undefined });
+				const userId = user.id as EntityId;
+
+				await expect(lessonService.deleteUserDataFromLessons(userId)).rejects.toThrowError(
+					InternalServerErrorException
+				);
+			});
+		});
+
+		describe('when deleting by userId', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const contentExample: IComponentProperties = {
+					title: 'title',
+					hidden: false,
+					user: userId,
+					component: ComponentType.TEXT,
+					content: { text: 'test of content' },
+				};
+				const lesson1 = lessonFactory.buildWithId({ contents: [contentExample] });
+				const lesson2 = lessonFactory.buildWithId({ contents: [contentExample] });
+
+				lessonRepo.findByUserId.mockResolvedValue([lesson1, lesson2]);
+
+				return {
+					userId,
+				};
+			};
+
+			it('should call lessonRepo.findByUserId', async () => {
+				const { userId } = setup();
+
+				await lessonService.deleteUserDataFromLessons(userId);
+
+				expect(lessonRepo.findByUserId).toBeCalledWith(userId);
+			});
+
+			it('should update lessons without deleted user', async () => {
+				const { userId } = setup();
+
+				const result = await lessonService.deleteUserDataFromLessons(userId);
+
+				expect(result).toEqual(2);
+			});
 		});
 	});
 });
