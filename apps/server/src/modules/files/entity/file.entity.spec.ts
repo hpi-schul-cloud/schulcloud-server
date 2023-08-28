@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { setupEntities, storageProviderFactory } from '@shared/testing';
 import { FileOwnerModel, FilePermissionReferenceModel } from '@src/modules/files/domain';
-import { userFileFactory } from './testing';
+import { fileEntityFactory } from './testing';
 import { FileEntity } from './file.entity';
 import { FilePermissionEntity } from './file-permission.entity';
 import { FileSecurityCheckEntity } from './file-security-check.entity';
@@ -51,7 +51,7 @@ describe(FileEntity.name, () => {
 					refPermModel: FilePermissionReferenceModel.USER,
 				}),
 			];
-			const file = userFileFactory.build({
+			const file = fileEntityFactory.build({
 				ownerId: mainUserId,
 				creatorId: mainUserId,
 				permissions: [
@@ -73,7 +73,7 @@ describe(FileEntity.name, () => {
 
 		describe('should not remove any permissions', () => {
 			it('if there are none at all', () => {
-				const file = userFileFactory.build({ permissions: [] });
+				const file = fileEntityFactory.build({ permissions: [] });
 
 				const originalFile = copyFile(file);
 
@@ -83,7 +83,7 @@ describe(FileEntity.name, () => {
 			});
 
 			it('if none of them contains given refId', () => {
-				const file = userFileFactory.build({
+				const file = fileEntityFactory.build({
 					ownerId: mainUserId,
 					creatorId: mainUserId,
 					permissions: [
@@ -110,7 +110,7 @@ describe(FileEntity.name, () => {
 	});
 
 	const setup = () => {
-		const file = userFileFactory.build({
+		const file = fileEntityFactory.build({
 			ownerId: mainUserId,
 			creatorId: mainUserId,
 			permissions: [],
@@ -253,7 +253,7 @@ describe(FileEntity.name, () => {
 			const userId = new ObjectId().toHexString();
 
 			it('should create file', () => {
-				const file = userFileFactory.build();
+				const file = fileEntityFactory.build();
 
 				expect(file).toBeInstanceOf(FileEntity);
 			});

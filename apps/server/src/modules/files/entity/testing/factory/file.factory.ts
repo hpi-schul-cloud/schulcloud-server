@@ -3,7 +3,7 @@ import { BaseFactory, storageProviderFactory } from '@shared/testing';
 import { FileEntity, FileEntityProps, FilePermissionEntity } from '../..';
 import { FileOwnerModel, FilePermissionReferenceModel } from '../../../domain';
 
-export const userFileFactory = BaseFactory.define<FileEntity, FileEntityProps>(FileEntity, ({ sequence }) => {
+export const fileEntityFactory = BaseFactory.define<FileEntity, FileEntityProps>(FileEntity, ({ sequence }) => {
 	const userId = new ObjectId().toHexString();
 
 	return {

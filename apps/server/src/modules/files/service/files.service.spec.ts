@@ -4,7 +4,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
 import { FilesService } from './files.service';
 import { FilesRepo } from '../repo';
-import { userFileFactory } from '../entity/testing';
+import { fileEntityFactory } from '../entity/testing';
 import { FileEntity, FilePermissionEntity } from '../entity';
 import { FilePermissionReferenceModel } from '../domain';
 
@@ -60,7 +60,7 @@ describe(FilesService.name, () => {
 					refId: userId,
 					refPermModel: FilePermissionReferenceModel.USER,
 				});
-				const entity = userFileFactory.buildWithId({ permissions: [userPermission] });
+				const entity = fileEntityFactory.buildWithId({ permissions: [userPermission] });
 
 				repo.findByPermissionRefId.mockResolvedValueOnce([entity]);
 
@@ -88,19 +88,19 @@ describe(FilesService.name, () => {
 					refPermModel: FilePermissionReferenceModel.USER,
 				});
 				const entities = [
-					userFileFactory.buildWithId({
+					fileEntityFactory.buildWithId({
 						permissions: [userPermission, anotherUserPermission, yetAnotherUserPermission],
 					}),
-					userFileFactory.buildWithId({
+					fileEntityFactory.buildWithId({
 						permissions: [yetAnotherUserPermission, userPermission, anotherUserPermission],
 					}),
-					userFileFactory.buildWithId({
+					fileEntityFactory.buildWithId({
 						permissions: [anotherUserPermission, yetAnotherUserPermission, userPermission],
 					}),
-					userFileFactory.buildWithId({
+					fileEntityFactory.buildWithId({
 						permissions: [userPermission, yetAnotherUserPermission, anotherUserPermission],
 					}),
-					userFileFactory.buildWithId({
+					fileEntityFactory.buildWithId({
 						permissions: [yetAnotherUserPermission, anotherUserPermission, userPermission],
 					}),
 				];
@@ -147,7 +147,7 @@ describe(FilesService.name, () => {
 
 		describe('should properly mark files for deletion', () => {
 			it('in case of just a single file owned by given user', async () => {
-				const entity = userFileFactory.buildWithId();
+				const entity = fileEntityFactory.buildWithId();
 				const userId = entity.ownerId;
 				repo.findByOwnerUserId.mockResolvedValueOnce([entity]);
 
@@ -163,11 +163,11 @@ describe(FilesService.name, () => {
 			it('in case of many files owned by the user', async () => {
 				const userId = new ObjectId().toHexString();
 				const entities = [
-					userFileFactory.buildWithId({ ownerId: userId }),
-					userFileFactory.buildWithId({ ownerId: userId }),
-					userFileFactory.buildWithId({ ownerId: userId }),
-					userFileFactory.buildWithId({ ownerId: userId }),
-					userFileFactory.buildWithId({ ownerId: userId }),
+					fileEntityFactory.buildWithId({ ownerId: userId }),
+					fileEntityFactory.buildWithId({ ownerId: userId }),
+					fileEntityFactory.buildWithId({ ownerId: userId }),
+					fileEntityFactory.buildWithId({ ownerId: userId }),
+					fileEntityFactory.buildWithId({ ownerId: userId }),
 				];
 				repo.findByOwnerUserId.mockResolvedValueOnce(entities);
 

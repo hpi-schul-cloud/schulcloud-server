@@ -6,7 +6,7 @@ import { StorageProviderEntity } from '@shared/domain';
 import { storageProviderFactory } from '@shared/testing';
 import { FileOwnerModel, FilePermissionReferenceModel } from '../domain';
 import { FileEntity, FilePermissionEntity } from '../entity';
-import { userFileFactory } from '../entity/testing';
+import { fileEntityFactory } from '../entity/testing';
 import { FilesRepo } from './files.repo';
 
 describe(FilesRepo.name, () => {
@@ -267,7 +267,7 @@ describe(FilesRepo.name, () => {
 
 	describe('findForCleanup', () => {
 		it('should return files marked for deletion according to given params', async () => {
-			const file: FileEntity = userFileFactory.build({ deletedAt: new Date() });
+			const file: FileEntity = fileEntityFactory.build({ deletedAt: new Date() });
 
 			await em.persistAndFlush(file);
 			em.clear();
@@ -281,7 +281,7 @@ describe(FilesRepo.name, () => {
 		});
 
 		it('should not return files which are not marked for deletion', async () => {
-			const file = userFileFactory.build({ deletedAt: undefined });
+			const file = fileEntityFactory.build({ deletedAt: undefined });
 
 			await em.persistAndFlush(file);
 			em.clear();
@@ -294,7 +294,7 @@ describe(FilesRepo.name, () => {
 
 		it('should not return files where deletedAt is after threshold', async () => {
 			const thresholdDate = new Date();
-			const file = userFileFactory.build({ deletedAt: new Date(thresholdDate.getTime() + 10) });
+			const file = fileEntityFactory.build({ deletedAt: new Date(thresholdDate.getTime() + 10) });
 
 			await em.persistAndFlush(file);
 			em.clear();
