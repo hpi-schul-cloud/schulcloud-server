@@ -1,20 +1,20 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { DeleteFilesUc } from '../uc';
+import { DeleteFilesUC } from '../uc';
 import { DeleteFilesConsole } from './delete-files.console';
 
 describe('DeleteFilesConsole', () => {
 	let console: DeleteFilesConsole;
-	let deleteFilesUc: DeleteFilesUc;
+	let deleteFilesUc: DeleteFilesUC;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			controllers: [DeleteFilesConsole],
 			providers: [
 				{
-					provide: DeleteFilesUc,
-					useValue: createMock<DeleteFilesUc>(),
+					provide: DeleteFilesUC,
+					useValue: createMock<DeleteFilesUC>(),
 				},
 				{
 					provide: LegacyLogger,
@@ -24,7 +24,7 @@ describe('DeleteFilesConsole', () => {
 		}).compile();
 
 		console = module.get(DeleteFilesConsole);
-		deleteFilesUc = module.get(DeleteFilesUc);
+		deleteFilesUc = module.get(DeleteFilesUC);
 
 		// Set fake system time. Otherwise, dates constructed in the test and the
 		// console can differ because of the short time elapsing between the calls.

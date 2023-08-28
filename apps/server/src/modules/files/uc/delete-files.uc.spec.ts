@@ -6,12 +6,12 @@ import { ObjectId } from 'bson';
 import { StorageProviderRepo } from '@shared/repo/storageprovider';
 import { storageProviderFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { DeleteFilesUc } from './delete-files.uc';
+import { DeleteFilesUC } from './delete-files.uc';
 import { FilesRepo } from '../repo';
 import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
 
-describe('DeleteFileUC', () => {
-	let service: DeleteFilesUc;
+describe(DeleteFilesUC.name, () => {
+	let service: DeleteFilesUC;
 	let filesRepo: DeepMocked<FilesRepo>;
 	let storageProviderRepo: DeepMocked<StorageProviderRepo>;
 	let s3Mock: AwsClientStub<S3Client>;
@@ -19,13 +19,17 @@ describe('DeleteFileUC', () => {
 
 	const userId = new ObjectId().toHexString();
 
+	const storageProvider = storageProviderFactory.build();
+
 	const exampleFiles = [
 		fileEntityFactory.build({
+			storageProvider,
 			ownerId: userId,
 			creatorId: userId,
 			permissions: [filePermissionEntityFactory.build({ refId: userId })],
 		}),
 		fileEntityFactory.build({
+			storageProvider,
 			ownerId: userId,
 			creatorId: userId,
 			permissions: [filePermissionEntityFactory.build({ refId: userId })],
@@ -38,7 +42,7 @@ describe('DeleteFileUC', () => {
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
-				DeleteFilesUc,
+				DeleteFilesUC,
 				{
 					provide: FilesRepo,
 					useValue: createMock<FilesRepo>(),
@@ -54,7 +58,7 @@ describe('DeleteFileUC', () => {
 			],
 		}).compile();
 
-		service = module.get(DeleteFilesUc);
+		service = module.get(DeleteFilesUC);
 		filesRepo = module.get(FilesRepo);
 		storageProviderRepo = module.get(StorageProviderRepo);
 		logger = module.get(LegacyLogger);
@@ -117,7 +121,7 @@ describe('DeleteFileUC', () => {
 				const storageProvider = storageProviderFactory.build();
 				storageProviderRepo.findAll.mockResolvedValueOnce([storageProvider]);
 
-				const spy = jest.spyOn(DeleteFilesUc.prototype as any, 'deleteFileInStorage');
+				const spy = jest.spyOn(DeleteFilesUC.prototype as any, 'deleteFileInStorage');
 				spy.mockRejectedValueOnce(error);
 
 				return { thresholdDate, batchSize, error, spy };
