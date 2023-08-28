@@ -12,7 +12,7 @@ describe(DrawingElementNode.name, () => {
 			return { elementProps, builder };
 		};
 
-		it('should create a FileElementNode', () => {
+		it('should create a DrawingElementNode', () => {
 			const { elementProps } = setup();
 
 			const element = new DrawingElementNode(elementProps);
@@ -48,7 +48,7 @@ describe(DrawingElementNode.name, () => {
 			expect(builder.buildDrawingElement).toHaveBeenCalledWith(element);
 		});
 
-		it('should return RichTextElementDo', () => {
+		it('should return DrawingElementDo', () => {
 			const { element, builder, elementDo } = setup();
 
 			const result = element.useDoBuilder(builder);

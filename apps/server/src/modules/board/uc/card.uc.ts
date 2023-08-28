@@ -12,6 +12,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { Action } from '@src/modules/authorization/types/action.enum';
 import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
+import { TldrawService } from '@src/modules/tldraw/service/tldraw.service';
 import { BoardDoAuthorizableService, CardService, ContentElementService } from '../service';
 
 @Injectable()
@@ -21,6 +22,7 @@ export class CardUc {
 		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly cardService: CardService,
 		private readonly elementService: ContentElementService,
+		private readonly tldrawService: TldrawService,
 		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(CardUc.name);
@@ -61,8 +63,11 @@ export class CardUc {
 
 		const element = await this.elementService.findById(elementId);
 		await this.checkPermission(userId, element, Action.write);
-
 		await this.elementService.delete(element);
+		if (element instanceof DrawingElement) {
+			console.log('1');
+			await this.tldrawService.deleteByDrawingName(element.drawingName);
+		}
 	}
 
 	async moveElement(

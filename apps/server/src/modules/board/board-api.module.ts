@@ -1,13 +1,14 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '@src/modules/authorization';
+import { TldrawModule } from '@src/modules/tldraw';
 import { BoardModule } from './board.module';
 import { BoardController, CardController, ColumnController, ElementController } from './controller';
 import { BoardUc, CardUc } from './uc';
 import { ElementUc } from './uc/element.uc';
 
 @Module({
-	imports: [BoardModule, LoggerModule, forwardRef(() => AuthorizationModule)],
+	imports: [BoardModule, LoggerModule, forwardRef(() => AuthorizationModule), TldrawModule],
 	controllers: [BoardController, ColumnController, CardController, ElementController],
 	providers: [BoardUc, CardUc, ElementUc],
 })
