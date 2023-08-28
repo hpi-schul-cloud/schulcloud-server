@@ -39,7 +39,11 @@ export class SubmissionItemUc {
 		return submissionItems;
 	}
 
-	async updateSubmissionItem(userId: EntityId, submissionItemId: EntityId, completed: boolean) {
+	async updateSubmissionItem(
+		userId: EntityId,
+		submissionItemId: EntityId,
+		completed: boolean
+	): Promise<SubmissionItem> {
 		const submissionItem = await this.submissionItemService.findById(submissionItemId);
 
 		await this.checkPermission(userId, submissionItem, Action.read, UserRoleEnum.STUDENT);
@@ -48,6 +52,8 @@ export class SubmissionItemUc {
 		}
 
 		await this.submissionItemService.update(submissionItem, completed);
+
+		return submissionItem;
 	}
 
 	private async isAuthorizedStudent(userId: EntityId, boardDo: AnyBoardDo): Promise<boolean> {

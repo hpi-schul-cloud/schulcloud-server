@@ -1,3 +1,4 @@
+import { ObjectId } from 'bson';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardDoAuthorizable, BoardRoles, UserRoleEnum } from '@shared/domain';
@@ -10,8 +11,8 @@ import {
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
-import { ObjectId } from 'bson';
-import { BoardDoAuthorizableService, ContentElementService } from '../service';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 import { SubmissionItemUc } from './submission-item.uc';
 
 describe(SubmissionItemUc.name, () => {
@@ -20,6 +21,7 @@ describe(SubmissionItemUc.name, () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
 	let elementService: DeepMocked<ContentElementService>;
+	let submissionItemService: DeepMocked<SubmissionItemService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -41,6 +43,10 @@ describe(SubmissionItemUc.name, () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: SubmissionItemService,
+					useValue: createMock<SubmissionItemService>(),
+				},
 			],
 		}).compile();
 
@@ -52,11 +58,16 @@ describe(SubmissionItemUc.name, () => {
 			new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
 		);
 		elementService = module.get(ContentElementService);
+		submissionItemService = module.get(SubmissionItemService);
 		await setupEntities();
 	});
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	afterEach(() => {
+		jest.clearAllMocks();
 	});
 
 	describe('findSubmissionItems', () => {
@@ -84,7 +95,7 @@ describe(SubmissionItemUc.name, () => {
 					})
 				);
 
-				const elementSpy = elementService.findById.mockResolvedValue(submissionContainerEl);
+				const elementSpy = elementService.findById.mockResolvedValueOnce(submissionContainerEl);
 
 				return { submissionContainerEl, submissionItemEl1, user1, elementSpy };
 			};
@@ -171,6 +182,53 @@ describe(SubmissionItemUc.name, () => {
 					'Children of submission-container-element must be of type submission-item'
 				);
 			});
+		});
+	});
+
+	describe('updateSubmissionItem', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+
+			const submissionItem = submissionItemFactory.build({
+				userId: user.id,
+			});
+
+			submissionItemService.findById.mockResolvedValueOnce(submissionItem);
+
+			return { submissionItem, user, boardDoAuthorizableService };
+		};
+
+		it('should call service to find the submission item ', async () => {
+			const { submissionItem, user } = setup();
+			await uc.updateSubmissionItem(user.id, submissionItem.id, false);
+			expect(submissionItemService.findById).toHaveBeenCalledWith(submissionItem.id);
+		});
+
+		it('should authorize', async () => {
+			const { submissionItem, user } = setup();
+
+			boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
+				new BoardDoAuthorizable({
+					users: [{ userId: user.id, roles: [BoardRoles.READER], userRoleEnum: UserRoleEnum.STUDENT }],
+					id: submissionItem.id,
+				})
+			);
+			const boardDoAuthorizable = await boardDoAuthorizableService.getBoardAuthorizable(submissionItem);
+
+			await uc.updateSubmissionItem(user.id, submissionItem.id, false);
+			const context = { action: Action.read, requiredPermissions: [] };
+			expect(authorizationService.checkPermission).toBeCalledWith(user, boardDoAuthorizable, context);
+		});
+		it('should throw if user is not creator of submission', async () => {
+			const user2 = userFactory.buildWithId();
+			const { submissionItem } = setup();
+
+			await expect(uc.updateSubmissionItem(user2.id, submissionItem.id, false)).rejects.toThrow();
+		});
+		it('should call service to update element', async () => {
+			const { submissionItem, user } = setup();
+			await uc.updateSubmissionItem(user.id, submissionItem.id, false);
+			expect(submissionItemService.update).toHaveBeenCalledWith(submissionItem, false);
 		});
 	});
 });
