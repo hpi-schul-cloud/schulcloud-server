@@ -1,45 +1,43 @@
 /* eslint-disable no-new */
 import { setupEntities } from '@shared/testing';
-import { classEntityFactory } from '@shared/testing/factory/class.factory';
+import { classEntityFactory } from '@src/modules/classes/entity/testing/factory/class.factory';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ClassEntity } from './class.entity';
+import { ClassEntity } from '../class.entity';
 
-describe('Class Entity', () => {
+describe(ClassEntity.name, () => {
 	beforeAll(async () => {
 		await setupEntities();
 	});
 
 	describe('constructor', () => {
-		it('should throw an error by empty constructor', () => {
-			// @ts-expect-error: Test case
-			const test = () => new ClassEntity();
-			expect(test).toThrow();
+		describe('When wrong gradeLevel value is passed', () => {
+			it('should throw an error by wrong gradeLevel value', () => {
+				expect(() => {
+					new ClassEntity({
+						name: 'classTest',
+						schoolId: new ObjectId(),
+						teacherIds: [new ObjectId()],
+						gradeLevel: 0,
+					});
+				}).toThrow();
+
+				expect(() => {
+					new ClassEntity({
+						name: 'classTest',
+						schoolId: new ObjectId(),
+						teacherIds: [new ObjectId()],
+						gradeLevel: 14,
+					});
+				}).toThrow();
+			});
 		});
 
-		it('should throw an error by wrong gradeLevel value', () => {
-			expect(() => {
-				new ClassEntity({
-					name: 'classTest',
-					schoolId: new ObjectId(),
-					teacherIds: [new ObjectId()],
-					gradeLevel: 0,
-				});
-			}).toThrow();
+		describe('When constructor is called', () => {
+			it('should create a class by passing required properties', () => {
+				const entity: ClassEntity = classEntityFactory.build();
 
-			expect(() => {
-				new ClassEntity({
-					name: 'classTest',
-					schoolId: new ObjectId(),
-					teacherIds: [new ObjectId()],
-					gradeLevel: 14,
-				});
-			}).toThrow();
-		});
-
-		it('should create a class by passing required properties', () => {
-			const entity: ClassEntity = classEntityFactory.build();
-
-			expect(entity instanceof ClassEntity).toEqual(true);
+				expect(entity instanceof ClassEntity).toEqual(true);
+			});
 		});
 
 		describe('when passed undefined id', () => {

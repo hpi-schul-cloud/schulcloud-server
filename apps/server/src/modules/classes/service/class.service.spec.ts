@@ -2,13 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { EntityId } from '@shared/domain';
 import { InternalServerErrorException } from '@nestjs/common';
-import { classEntityFactory } from '@shared/testing/factory/class.factory';
+import { classEntityFactory } from '@src/modules/classes/entity/testing/factory/class.factory';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { setupEntities } from '@shared/testing';
 import { ClassService } from './class.service';
 import { ClassesRepo } from '../repo';
 
-describe('ClassService', () => {
+describe(ClassService.name, () => {
 	let module: TestingModule;
 	let service: ClassService;
 	let classesRepo: DeepMocked<ClassesRepo>;
@@ -62,7 +62,6 @@ describe('ClassService', () => {
 				const userId3 = new ObjectId();
 				const class1 = classEntityFactory.withUserIds([userId1, userId2]).build();
 				const class2 = classEntityFactory.withUserIds([userId1, userId3]).build();
-				// class3
 				classEntityFactory.withUserIds([userId2, userId3]).build();
 
 				classesRepo.findAllByUserId.mockResolvedValue([class1, class2]);

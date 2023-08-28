@@ -19,8 +19,7 @@ export class ClassService {
 
 		const updatedEntities: ClassEntity[] = entities.map((entity) => {
 			if (entity.userIds !== undefined) {
-				// eslint-disable-next-line @typescript-eslint/no-shadow
-				entity.userIds.filter((userId) => userId !== userIdAsObjectId);
+				entity.userIds.filter((userId1) => userId1 !== userIdAsObjectId);
 			}
 			return entity;
 		});

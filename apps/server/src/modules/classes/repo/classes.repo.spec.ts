@@ -3,11 +3,11 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
-import { classEntityFactory } from '@shared/testing/factory/class.factory';
+import { classEntityFactory } from '@src/modules/classes/entity/testing/factory/class.factory';
 import { ClassesRepo } from './classes.repo';
 import { ClassEntity } from '../entity';
 
-describe('ClassesRepo', () => {
+describe(ClassesRepo.name, () => {
 	let module: TestingModule;
 	let repo: ClassesRepo;
 	let em: EntityManager;
@@ -68,42 +68,44 @@ describe('ClassesRepo', () => {
 	});
 
 	describe('updateMany', () => {
-		const setup = async () => {
-			const testUser1 = new ObjectId();
-			const testUser2 = new ObjectId();
-			const testUser3 = new ObjectId();
-			const class1: ClassEntity = classEntityFactory.withUserIds([testUser1, testUser2]).buildWithId();
-			const class2: ClassEntity = classEntityFactory.withUserIds([testUser1, testUser3]).buildWithId();
-			const class3: ClassEntity = classEntityFactory.withUserIds([testUser2, testUser3]).buildWithId();
-			await em.persistAndFlush([class1, class2, class3]);
+		describe('When deleting user data from classes', () => {
+			const setup = async () => {
+				const testUser1 = new ObjectId();
+				const testUser2 = new ObjectId();
+				const testUser3 = new ObjectId();
+				const class1: ClassEntity = classEntityFactory.withUserIds([testUser1, testUser2]).buildWithId();
+				const class2: ClassEntity = classEntityFactory.withUserIds([testUser1, testUser3]).buildWithId();
+				const class3: ClassEntity = classEntityFactory.withUserIds([testUser2, testUser3]).buildWithId();
+				await em.persistAndFlush([class1, class2, class3]);
 
-			return {
-				class1,
-				class2,
-				testUser1,
-				testUser2,
-				testUser3,
+				return {
+					class1,
+					class2,
+					testUser1,
+					testUser2,
+					testUser3,
+				};
 			};
-		};
 
-		it('should update classes without deleted user', async () => {
-			const { class1, class2, testUser1, testUser2, testUser3 } = await setup();
+			it('should update classes without deleted user', async () => {
+				const { class1, class2, testUser1, testUser2, testUser3 } = await setup();
 
-			class1.userIds = [testUser2];
-			class2.userIds = [testUser3];
+				class1.userIds = [testUser2];
+				class2.userIds = [testUser3];
 
-			const updatedArray: ClassEntity[] = [class1, class2];
+				const updatedArray: ClassEntity[] = [class1, class2];
 
-			await repo.updateMany(updatedArray);
+				await repo.updateMany(updatedArray);
 
-			const result1 = await repo.findAllByUserId(testUser1.toHexString());
-			expect(result1).toHaveLength(0);
+				const result1 = await repo.findAllByUserId(testUser1.toHexString());
+				expect(result1).toHaveLength(0);
 
-			const result2 = await repo.findAllByUserId(testUser2.toHexString());
-			expect(result2).toHaveLength(2);
+				const result2 = await repo.findAllByUserId(testUser2.toHexString());
+				expect(result2).toHaveLength(2);
 
-			const result3 = await repo.findAllByUserId(testUser3.toHexString());
-			expect(result3).toHaveLength(2);
+				const result3 = await repo.findAllByUserId(testUser3.toHexString());
+				expect(result3).toHaveLength(2);
+			});
 		});
 	});
 });
