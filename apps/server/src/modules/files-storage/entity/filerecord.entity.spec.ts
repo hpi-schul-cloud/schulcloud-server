@@ -343,6 +343,44 @@ describe('FileRecord Entity', () => {
 		});
 	});
 
+	describe('hasScanStatusWontCheck is called', () => {
+		describe('WHEN file record security status is WONT_CHECK', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+
+				fileRecord.securityCheck.status = ScanStatus.WONT_CHECK;
+
+				return { fileRecord };
+			};
+
+			it('should return true', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.hasScanStatusWontCheck();
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('WHEN file record security status is not WONT_CHECK', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+
+				fileRecord.securityCheck.status = ScanStatus.VERIFIED;
+
+				return { fileRecord };
+			};
+
+			it('should return false', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.hasScanStatusWontCheck();
+
+				expect(result).toBe(false);
+			});
+		});
+	});
+
 	describe('isPending is called', () => {
 		describe('WHEN file record security status is PENDING', () => {
 			const setup = () => {
@@ -573,7 +611,7 @@ describe('FileRecord Entity', () => {
 	});
 
 	describe('getPreviewStatus is called', () => {
-		describe('WHEN file record preview status is PENDING', () => {
+		describe('WHEN file record securityCheck status is PENDING', () => {
 			const setup = () => {
 				const fileRecord = fileRecordFactory.build();
 
@@ -591,7 +629,7 @@ describe('FileRecord Entity', () => {
 			});
 		});
 
-		describe('WHEN file record preview status is VERIFIED', () => {
+		describe('WHEN file record securityCheck status is VERIFIED', () => {
 			describe('MIMETYPE is supported', () => {
 				const setup = () => {
 					const fileRecord = fileRecordFactory.build({ mimeType: PreviewInputMimeTypes.IMAGE_JPEG });
@@ -630,7 +668,7 @@ describe('FileRecord Entity', () => {
 			});
 		});
 
-		describe('WHEN file record preview status is ERROR', () => {
+		describe('WHEN file record securityCheck status is ERROR', () => {
 			const setup = () => {
 				const fileRecord = fileRecordFactory.build();
 
@@ -648,7 +686,7 @@ describe('FileRecord Entity', () => {
 			});
 		});
 
-		describe('WHEN file record preview status is BLOCKED', () => {
+		describe('WHEN file record securityCheck status is BLOCKED', () => {
 			const setup = () => {
 				const fileRecord = fileRecordFactory.build();
 
@@ -663,6 +701,24 @@ describe('FileRecord Entity', () => {
 				const result = fileRecord.getPreviewStatus();
 
 				expect(result).toEqual(PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED);
+			});
+		});
+
+		describe('WHEN file record securityCheck status is WONT_CHECK', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+
+				fileRecord.securityCheck.status = ScanStatus.WONT_CHECK;
+
+				return { fileRecord };
+			};
+
+			it('should return PREVIEW_NOT_POSSIBLE_SCAN_STATUS_WONT_CHECK', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.getPreviewStatus();
+
+				expect(result).toEqual(PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_WONT_CHECK);
 			});
 		});
 	});
