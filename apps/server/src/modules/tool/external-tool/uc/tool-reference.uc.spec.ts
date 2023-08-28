@@ -4,7 +4,8 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
 import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
-import { Action } from '@src/modules/authorization';
+import { AuthorizationContextBuilder } from '@src/modules/authorization';
+import { ToolReferenceUc } from './tool-reference.uc';
 import { ToolConfigurationStatus, ToolContextType } from '../../common/enum';
 import { CommonToolService } from '../../common/service';
 import { ContextExternalTool } from '../../context-external-tool/domain';
@@ -12,8 +13,8 @@ import { ContextExternalToolService } from '../../context-external-tool/service'
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ExternalTool, ToolReference } from '../domain';
-import { ExternalToolService } from '../service';
-import { ToolReferenceUc } from './tool-reference.uc';
+import { ExternalToolLogoService, ExternalToolService } from '../service';
+import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 
 describe('ToolReferenceUc', () => {
 	let module: TestingModule;
@@ -22,7 +23,9 @@ describe('ToolReferenceUc', () => {
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
+	let toolPermissionHelper: DeepMocked<ToolPermissionHelper>;
 	let commonToolService: DeepMocked<CommonToolService>;
+	let logoService: DeepMocked<ExternalToolLogoService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -44,6 +47,14 @@ describe('ToolReferenceUc', () => {
 					provide: CommonToolService,
 					useValue: createMock<CommonToolService>(),
 				},
+				{
+					provide: ExternalToolLogoService,
+					useValue: createMock<ExternalToolLogoService>(),
+				},
+				{
+					provide: ToolPermissionHelper,
+					useValue: createMock<ToolPermissionHelper>(),
+				},
 			],
 		}).compile();
 
@@ -52,7 +63,9 @@ describe('ToolReferenceUc', () => {
 		externalToolService = module.get(ExternalToolService);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		contextExternalToolService = module.get(ContextExternalToolService);
+		toolPermissionHelper = module.get(ToolPermissionHelper);
 		commonToolService = module.get(CommonToolService);
+		logoService = module.get(ExternalToolLogoService);
 	});
 
 	afterAll(async () => {
@@ -76,7 +89,7 @@ describe('ToolReferenceUc', () => {
 				const contextId = 'contextId';
 
 				contextExternalToolService.findAllByContext.mockResolvedValueOnce([contextExternalTool]);
-				contextExternalToolService.ensureContextPermissions.mockResolvedValueOnce();
+				toolPermissionHelper.ensureContextPermissions.mockResolvedValueOnce();
 				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(schoolExternalTool);
 				externalToolService.findExternalToolById.mockResolvedValueOnce(externalTool);
 				commonToolService.determineToolConfigurationStatus.mockReturnValueOnce(ToolConfigurationStatus.LATEST);
@@ -92,15 +105,16 @@ describe('ToolReferenceUc', () => {
 				};
 			};
 
-			it('should call contextExternalToolService.ensureContextPermissions', async () => {
+			it('should call toolPermissionHelper.ensureContextPermissions', async () => {
 				const { userId, contextType, contextId, contextExternalTool } = setup();
 
 				await uc.getToolReferences(userId, contextType, contextId, '/v3/tools/external-tools/{id}/logo');
 
-				expect(contextExternalToolService.ensureContextPermissions).toHaveBeenCalledWith(userId, contextExternalTool, {
-					requiredPermissions: [Permission.CONTEXT_TOOL_USER],
-					action: Action.read,
-				});
+				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
+					userId,
+					contextExternalTool,
+					AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER])
+				);
 			});
 
 			it('should call contextExternalToolService.findAllByContext', async () => {
@@ -144,6 +158,14 @@ describe('ToolReferenceUc', () => {
 				);
 			});
 
+			it('should call externalToolLogoService.buildLogoUrl', async () => {
+				const { userId, contextType, contextId, externalTool } = setup();
+
+				await uc.getToolReferences(userId, contextType, contextId, '/v3/tools/external-tools/{id}/logo');
+
+				expect(logoService.buildLogoUrl).toHaveBeenCalledWith('/v3/tools/external-tools/{id}/logo', externalTool);
+			});
+
 			it('should return a list of tool references', async () => {
 				const { userId, contextType, contextId, contextExternalTool, externalTool } = setup();
 
@@ -184,7 +206,7 @@ describe('ToolReferenceUc', () => {
 				const contextId = 'contextId';
 
 				contextExternalToolService.findAllByContext.mockResolvedValueOnce([contextExternalTool]);
-				contextExternalToolService.ensureContextPermissions.mockRejectedValueOnce(new ForbiddenException());
+				toolPermissionHelper.ensureContextPermissions.mockRejectedValueOnce(new ForbiddenException());
 				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(schoolExternalTool);
 				externalToolService.findExternalToolById.mockResolvedValueOnce(externalTool);
 

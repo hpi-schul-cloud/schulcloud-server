@@ -9,7 +9,7 @@ import {
 	Role,
 	RoleName,
 	RoleReference,
-	Team,
+	TeamEntity,
 	UserDO,
 	VideoConferenceDO,
 } from '@shared/domain';
@@ -83,7 +83,7 @@ describe('VideoConferenceUc', () => {
 	let defaultOptions: VideoConferenceOptions;
 	const userPermissions: Map<Permission, Promise<boolean>> = new Map<Permission, Promise<boolean>>();
 
-	let team: Team;
+	let team: TeamEntity;
 	let user: UserDO;
 
 	let defaultRole: Role;
