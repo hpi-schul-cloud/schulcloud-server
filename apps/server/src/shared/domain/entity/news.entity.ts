@@ -2,7 +2,7 @@ import { Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import type { School } from './school.entity';
-import type { Team } from './team.entity';
+import type { TeamEntity } from './team.entity';
 import type { User } from './user.entity';
 import { NewsTarget, NewsTargetModel } from '../types/news.types';
 import { EntityId } from '../types';
@@ -123,8 +123,8 @@ export class CourseNews extends News {
 
 @Entity({ discriminatorValue: NewsTargetModel.Team })
 export class TeamNews extends News {
-	@ManyToOne('Team')
-	target!: Team;
+	@ManyToOne('TeamEntity')
+	target!: TeamEntity;
 
 	constructor(props: INewsProperties) {
 		super(props);

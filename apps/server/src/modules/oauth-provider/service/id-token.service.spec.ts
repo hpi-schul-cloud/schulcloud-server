@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Pseudonym, Team, UserDO } from '@shared/domain';
+import { Pseudonym, TeamEntity, UserDO } from '@shared/domain';
 import { TeamsRepo } from '@shared/repo';
 import { externalToolFactory, setupEntities, userDoFactory, pseudonymFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
@@ -115,7 +115,7 @@ describe('IdTokenService', () => {
 
 		describe('when scopes contain groups', () => {
 			const setup = () => {
-				const team: Team = teamFactory.buildWithId();
+				const team: TeamEntity = teamFactory.buildWithId();
 
 				const user: UserDO = userDoFactory.buildWithId({ schoolId: 'schoolId' });
 
