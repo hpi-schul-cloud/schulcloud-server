@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { StorageProviderEntity } from '@shared/domain';
-import { storageProviderFactory } from '@shared/testing';
-import { FileOwnerModel, FilePermissionReferenceModel } from '../domain';
+import { FilePermissionReferenceModel } from '../domain';
 import { FileEntity, FilePermissionEntity } from '../entity';
 import { fileEntityFactory } from '../entity/testing';
 import { FilesRepo } from './files.repo';
@@ -14,7 +12,6 @@ describe(FilesRepo.name, () => {
 	let em: EntityManager;
 	let module: TestingModule;
 
-	const storageProvider = storageProviderFactory.buildWithId();
 	const mainUserId = new ObjectId().toHexString();
 	const otherUserId = new ObjectId().toHexString();
 
