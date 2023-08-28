@@ -2,7 +2,6 @@ import {
 	BadRequestException,
 	ConflictException,
 	Injectable,
-	InternalServerErrorException,
 	NotAcceptableException,
 	NotFoundException,
 } from '@nestjs/common';
@@ -235,7 +234,7 @@ export class FilesStorageService {
 			await this.deleteFilesInFilesStorageClient(fileRecords);
 		} catch (error) {
 			await this.fileRecordRepo.save(fileRecords);
-			throw new InternalServerErrorException(error, `${FilesStorageService.name}:delete`);
+			throw error;
 		}
 	}
 
@@ -271,7 +270,7 @@ export class FilesStorageService {
 		} catch (err) {
 			markForDelete(fileRecords);
 			await this.fileRecordRepo.save(fileRecords);
-			throw new InternalServerErrorException(err, `${FilesStorageService.name}:restore`);
+			throw err;
 		}
 	}
 
