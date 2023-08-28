@@ -301,6 +301,70 @@
 				}
 			}
 		},
+		"H5P_EDITOR": {
+			"type": "object",
+			"description": "Properties of the H5P server microservice",
+			"required": [
+				"S3_ENDPOINT",
+				"S3_REGION",
+				"S3_BUCKET_CONTENT",
+				"S3_BUCKET_LIBRARIES",
+				"S3_ACCESS_KEY_ID_RW",
+				"S3_SECRET_ACCESS_KEY_RW",
+				"S3_ACCESS_KEY_ID_R",
+				"S3_SECRET_ACCESS_KEY_R"
+			],
+			"default": {},
+			"properties": {
+				"S3_ENDPOINT": {
+					"type": "string",
+					"format": "uri",
+					"default": "http://localhost:4568",
+					"description": "The URI of the S3 provider"
+				},
+				"S3_REGION": {
+					"type": "string",
+					"default": "eu-central-2",
+					"description": "Region name of bucket"
+				},
+				"S3_ACCESS_KEY_ID_RW": { 
+					"type": "string",
+					"default": "",
+					"description": "Access Key to S3_BUCKET_CONTENT with R/W permissions"
+				},
+				"S3_SECRET_ACCESS_KEY_RW": {
+					"type": "string",
+					"default": "",
+					"description": "Secret key to S3_BUCKET_CONTENT with R/W permissions"
+				},
+				"S3_ACCESS_KEY_ID_R": {
+					"type": "string",
+					"default": "",
+					"description": "Access Key to S3_BUCKET_LIBRARIES with R permissions"
+				},
+				"S3_SECRET_ACCESS_KEY_R": {
+					"type": "string",
+					"default": "",
+					"description": "Secret key to S3_BUCKET_LIBRARIES with R permissions"
+				},
+				"S3_BUCKET_CONTENT": {
+					"type": "string",
+					"default": "",
+					"description": "Content Bucket name"
+				},
+				"S3_BUCKET_LIBRARIES": {
+					"type": "string",
+					"default": "",
+					"description": "Library Bucket name"
+				},
+				"INCOMING_REQUEST_TIMEOUT": {
+					"type": "integer",
+					"minimum": 0,
+					"default": 10000,
+					"description": "Timeout for incoming requests to the h5p editor in milliseconds."
+				}
+			}
+		},
 		"FEATURE_FWU_CONTENT_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -538,12 +602,12 @@
 		},
 		"SC_TITLE": {
 			"type": "string",
-			"default": "HPI Schul-Cloud",
+			"default": "dBildungscloud",
 			"description": "The used title."
 		},
 		"SC_SHORT_TITLE": {
 			"type": "string",
-			"default": "HPI Schul-Cloud",
+			"default": "dBildungscloud",
 			"description": "Look to SC_TITLE, it is a possible short form of it."
 		},
 		"SC_DOMAIN": {
@@ -1243,6 +1307,11 @@
 				"DB_FLUSH_SIZE": 400,
 				"DB_MULTIPLE_COLLECTIONS": false
 			}
+		},
+		"FEATURE_TLDRAW_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Tldraw feature enabled"
 		}
 	},
 	"required": [

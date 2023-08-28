@@ -19,6 +19,7 @@ import {
 } from '../error';
 import { UserLoginMigrationMapper } from '../mapper';
 import {
+	CloseUserLoginMigrationUc,
 	RestartUserLoginMigrationUc,
 	StartUserLoginMigrationUc,
 	ToggleUserLoginMigrationUc,
@@ -42,7 +43,8 @@ export class UserLoginMigrationController {
 		private readonly userLoginMigrationUc: UserLoginMigrationUc,
 		private readonly startUserLoginMigrationUc: StartUserLoginMigrationUc,
 		private readonly restartUserLoginMigrationUc: RestartUserLoginMigrationUc,
-		private readonly toggleUserLoginMigrationUc: ToggleUserLoginMigrationUc
+		private readonly toggleUserLoginMigrationUc: ToggleUserLoginMigrationUc,
+		private readonly closeUserLoginMigrationUc: CloseUserLoginMigrationUc
 	) {}
 
 	@Get()
@@ -169,6 +171,34 @@ export class UserLoginMigrationController {
 
 		const migrationResponse: UserLoginMigrationResponse =
 			UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(migrationDto);
+
+		return migrationResponse;
+	}
+
+	@Post('close')
+	@ApiUnprocessableEntityResponse({
+		description: 'User login migration is already closed and cannot be modified. Restart is possible.',
+		type: UserLoginMigrationAlreadyClosedLoggableException,
+	})
+	@ApiUnprocessableEntityResponse({
+		description: 'User login migration is already closed and cannot be modified. It cannot be restarted.',
+		type: UserLoginMigrationGracePeriodExpiredLoggableException,
+	})
+	@ApiNotFoundResponse({
+		description: 'User login migration does not exist',
+		type: UserLoginMigrationNotFoundLoggableException,
+	})
+	@ApiOkResponse({ description: 'User login migration closed', type: UserLoginMigrationResponse })
+	@ApiUnauthorizedResponse()
+	@ApiForbiddenResponse()
+	async closeMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse | void> {
+		const userLoginMigration: UserLoginMigrationDO = await this.closeUserLoginMigrationUc.closeMigration(
+			currentUser.userId,
+			currentUser.schoolId
+		);
+
+		const migrationResponse: UserLoginMigrationResponse =
+			UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(userLoginMigration);
 
 		return migrationResponse;
 	}

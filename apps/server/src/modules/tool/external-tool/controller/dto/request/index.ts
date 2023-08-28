@@ -1,5 +1,5 @@
 export * from './config';
-export * from './tool-id.params';
+export * from './external-tool-id.params';
 export * from './custom-parameter.params';
 export * from './external-tool-sort.params';
 export * from './external-tool-create.params';

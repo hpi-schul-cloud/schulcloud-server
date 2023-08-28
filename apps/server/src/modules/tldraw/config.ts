@@ -1,5 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { NodeEnvType } from '@src/modules/server';
+import { TLDRAW_DB_URL } from '@src/config';
 
 export interface TldrawConfig {
 	NEST_LOG_LEVEL: string;
@@ -9,6 +10,7 @@ export interface TldrawConfig {
 	TLDRAW_DB_FLUSH_SIZE: string;
 	TLDRAW_DB_MULTIPLE_COLLECTIONS: boolean;
 	CONNECTION_STRING: string;
+	FEATURE_TLDRAW_ENABLED: boolean;
 }
 
 const tldrawConfig = {
@@ -18,10 +20,9 @@ const tldrawConfig = {
 	TLDRAW_DB_COLLECTION_NAME: Configuration.get('TLDRAW__DB_COLLECTION_NAME') as string,
 	TLDRAW_DB_FLUSH_SIZE: Configuration.get('TLDRAW__DB_FLUSH_SIZE') as number,
 	TLDRAW_DB_MULTIPLE_COLLECTIONS: Configuration.get('TLDRAW__DB_MULTIPLE_COLLECTIONS') as boolean,
-	CONNECTION_STRING:
-		Configuration.get('NODE_ENV') === NodeEnvType.TEST
-			? 'mongodb://127.0.0.1:27017/tldraw-test'
-			: 'mongodb://127.0.0.1:27017/tldraw',
+	FEATURE_TLDRAW_ENABLED: Configuration.get('FEATURE_TLDRAW_ENABLED') as boolean,
+	CONNECTION_STRING: TLDRAW_DB_URL,
 };
 
+export const SOCKET_PORT = Configuration.get('NODE_ENV') === NodeEnvType.TEST ? 3346 : 3345;
 export const config = () => tldrawConfig;

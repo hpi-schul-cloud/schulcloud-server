@@ -3,14 +3,10 @@ import { Server, WebSocket } from 'ws';
 import { encodeStateVector, encodeStateAsUpdate, applyUpdate, Doc } from 'yjs';
 import { MongodbPersistence } from 'y-mongodb-provider';
 import { ConfigService } from '@nestjs/config';
-import { TldrawConfig } from '@src/modules/tldraw/config';
-import { NodeEnvType } from '@src/modules/server';
-import { Configuration } from '@hpi-schul-cloud/commons';
+import { TldrawConfig, SOCKET_PORT } from '@src/modules/tldraw/config';
 import { setupWSConnection, setPersistence } from '../utils';
 
-const socketPort: number = Configuration.get('NODE_ENV') === NodeEnvType.TEST ? 3346 : 3345;
-
-@WebSocketGateway(socketPort)
+@WebSocketGateway(SOCKET_PORT)
 export class TldrawGateway implements OnGatewayInit, OnGatewayConnection {
 	@WebSocketServer()
 	server!: Server;
@@ -22,12 +18,12 @@ export class TldrawGateway implements OnGatewayInit, OnGatewayConnection {
 	}
 
 	handleConnection(client: WebSocket, request: Request) {
-		const docName = request.url.slice(1).split('?')[0];
+		const docName = request.url.slice(1).split('?')[0].replace('tldraw-server/', '');
 
-		if (docName.length > 0) {
+		if (docName.length > 0 && this.configService.get<string>('FEATURE_TLDRAW_ENABLED')) {
 			setupWSConnection(client, docName);
 		} else {
-			client.close(4000, 'Document name is mandatory in url.');
+			client.close(4000, 'Document name is mandatory in url or Tldraw Tool is turned off.');
 		}
 	}
 
@@ -51,11 +47,6 @@ export class TldrawGateway implements OnGatewayInit, OnGatewayConnection {
 				}
 
 				applyUpdate(ydoc, encodeStateAsUpdate(persistedYdoc));
-
-				ydoc.on('update', (update) => {
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-					mdb.storeUpdate(docName, update);
-				});
 
 				persistedYdoc.destroy();
 			},
