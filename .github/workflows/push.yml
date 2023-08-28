@@ -138,7 +138,7 @@ jobs:
     needs:
       - build_and_push
       - branch_meta
-    uses: hpi-schul-cloud/dof_app_deploy/.github/workflows/deploy.yml@main
+    uses: hpi-schul-cloud/dof_app_deploy/.github/workflows/deploy.yml@BC-4710-new-tldraw-manage
     with:
       branch: ${{ needs.branch_meta.outputs.branch }}
     secrets:
@@ -182,7 +182,7 @@ jobs:
     needs:
       - build_and_push
       - branch_meta
-    uses: hpi-schul-cloud/end-to-end-tests/.github/workflows/e2e_call.yml@main
+    uses: hpi-schul-cloud/end-to-end-tests/.github/workflows/e2e_call.yml@BC-4710-new-tldraw-manage
     with:
       ref: ${{ needs.branch_meta.outputs.branch }}
 
