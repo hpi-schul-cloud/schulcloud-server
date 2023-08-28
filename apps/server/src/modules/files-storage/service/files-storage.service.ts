@@ -102,11 +102,37 @@ export class FilesStorageService {
 	}
 
 	private async detectMimeType(file: FileDto): Promise<{ mimeType: string; stream: Readable }> {
-		const { stream, mime: detectedMimeType } = await StreamMimeType.getMimeType(file.data, { strict: true });
-		const mimeType = detectedMimeType ?? file.mimeType;
+		if (this.isStreamMimeTypeDetectionPossible(file.mimeType)) {
+			const { stream, mime: detectedMimeType } = await this.detectMimeTypeByStream(file.data);
+
+			const mimeType = detectedMimeType ?? file.mimeType;
+
+			return { mimeType, stream };
+		}
+
+		return { mimeType: file.mimeType, stream: file.data };
+	}
+
+	private isStreamMimeTypeDetectionPossible(mimeType: string) {
+		const mimTypes = [
+			'image/svg+xml',
+			'application/msword',
+			'application/vnd.ms-powerpoint',
+			'application/vnd.ms-excel',
+		];
+
+		const result = !mimTypes.includes(mimeType);
+
+		return result;
+	}
+
+	private async detectMimeTypeByStream(file: Readable): Promise<{ mime?: string; stream: Readable }> {
+		const { stream, mime } = await StreamMimeType.getMimeType(file, {
+			strict: true,
+		});
 		const readable = new Readable().wrap(stream);
 
-		return { mimeType, stream: readable };
+		return { mime, stream: readable };
 	}
 
 	private async resolveFileName(file: FileDto, params: FileRecordParams): Promise<string> {
