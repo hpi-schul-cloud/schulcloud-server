@@ -99,7 +99,7 @@ describe('Ldap Syncer Consumer Integration', () => {
 			expect(foundSchool).to.be.not.null;
 			expect(foundSchool.name).to.be.equal(schoolName);
 			expect(foundSchool.federalState.toString()).to.be.equal(federalStateId.toString());
-			expect(foundSchool.currentYear._id.toString()).to.be.equal(currentYear._id);
+			expect(foundSchool.currentYear._id.toString()).to.be.equal(currentYear._id.toString());
 		});
 
 		it('should update existing school by the data', async () => {
