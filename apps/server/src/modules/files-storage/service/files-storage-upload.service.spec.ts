@@ -247,9 +247,7 @@ describe('FilesStorageService upload methods', () => {
 				const { params, file, userId } = createUploadFileParams();
 				const error = new Error('test');
 
-				antivirusService.send.mockImplementationOnce(() => {
-					throw error;
-				});
+				antivirusService.send.mockRejectedValueOnce(error);
 
 				return { params, file, userId, error };
 			};

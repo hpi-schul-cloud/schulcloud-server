@@ -57,10 +57,10 @@ describe('AntivirusService', () => {
 				return { requestToken, expectedParams };
 			};
 
-			it('should send given data to queue', () => {
+			it('should send given data to queue', async () => {
 				const { requestToken, expectedParams } = setup();
 
-				service.send(requestToken);
+				await service.send(requestToken);
 
 				expect(amqpConnection.publish).toHaveBeenCalledWith(...expectedParams);
 			});

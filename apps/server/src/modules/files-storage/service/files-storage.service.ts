@@ -120,7 +120,7 @@ export class FilesStorageService {
 			this.throwErrorIfFileIsTooBig(fileRecord.size);
 			await this.fileRecordRepo.save(fileRecord);
 
-			this.antivirusService.send(fileRecord.getSecurityToken());
+			await this.antivirusService.send(fileRecord.getSecurityToken());
 		} catch (error) {
 			await this.storageClient.delete([filePath]);
 			await this.fileRecordRepo.delete(fileRecord);
@@ -312,9 +312,9 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
-	private sendToAntiVirusService(fileRecord: FileRecord) {
+	private async sendToAntiVirusService(fileRecord: FileRecord) {
 		if (fileRecord.isPending()) {
-			this.antivirusService.send(fileRecord.getSecurityToken());
+			await this.antivirusService.send(fileRecord.getSecurityToken());
 		}
 	}
 
@@ -326,7 +326,7 @@ export class FilesStorageService {
 			const paths = createICopyFiles(sourceFile, targetFile);
 
 			await this.storageClient.copy([paths]);
-			this.sendToAntiVirusService(targetFile);
+			await this.sendToAntiVirusService(targetFile);
 			const copyFileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.getName());
 
 			return copyFileResponse;
