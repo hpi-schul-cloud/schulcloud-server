@@ -3,14 +3,12 @@ import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from 'bson';
-import { StorageProviderEntity } from '@shared/domain/entity';
 import { StorageProviderRepo } from '@shared/repo/storageprovider';
 import { storageProviderFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { DeleteFilesUc } from './delete-files.uc';
-import { FileOwnerModel, FilePermissionReferenceModel } from '../domain';
 import { FilesRepo } from '../repo';
-import { FileEntity, FilePermissionEntity } from '../entity';
+import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
 
 describe('DeleteFileUC', () => {
 	let service: DeleteFilesUc;
@@ -19,36 +17,18 @@ describe('DeleteFileUC', () => {
 	let s3Mock: AwsClientStub<S3Client>;
 	let logger: DeepMocked<LegacyLogger>;
 
-	const exampleStorageProvider = new StorageProviderEntity({
-		endpointUrl: 'endpointUrl',
-		accessKeyId: 'accessKey',
-		secretAccessKey: 'secret',
-	});
-
 	const userId = new ObjectId().toHexString();
 
 	const exampleFiles = [
-		new FileEntity({
-			name: 'filename1',
-			size: 42,
-			storageFileName: 'file1',
-			bucket: 'bucket',
-			storageProvider: exampleStorageProvider,
+		fileEntityFactory.build({
 			ownerId: userId,
-			refOwnerModel: FileOwnerModel.USER,
 			creatorId: userId,
-			permissions: [new FilePermissionEntity({ refId: userId, refPermModel: FilePermissionReferenceModel.USER })],
+			permissions: [filePermissionEntityFactory.build({ refId: userId })],
 		}),
-		new FileEntity({
-			name: 'filename2',
-			size: 42,
-			storageFileName: 'file2',
-			bucket: 'bucket',
-			storageProvider: exampleStorageProvider,
+		fileEntityFactory.build({
 			ownerId: userId,
-			refOwnerModel: FileOwnerModel.USER,
 			creatorId: userId,
-			permissions: [new FilePermissionEntity({ refId: userId, refPermModel: FilePermissionReferenceModel.USER })],
+			permissions: [filePermissionEntityFactory.build({ refId: userId })],
 		}),
 	];
 

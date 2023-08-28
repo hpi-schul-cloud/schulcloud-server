@@ -1,9 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { setupEntities, storageProviderFactory } from '@shared/testing';
-import { FileOwnerModel, FilePermissionReferenceModel } from '@src/modules/files/domain';
-import { fileEntityFactory } from './testing';
+import { FileOwnerModel } from '@src/modules/files/domain';
+import { fileEntityFactory, filePermissionEntityFactory } from './testing';
 import { FileEntity } from './file.entity';
-import { FilePermissionEntity } from './file-permission.entity';
 import { FileSecurityCheckEntity } from './file-security-check.entity';
 
 describe(FileEntity.name, () => {
@@ -42,25 +41,13 @@ describe(FileEntity.name, () => {
 	describe('removePermissionsByRefId', () => {
 		it('should remove proper permission with given refId', () => {
 			const anotherUsersPermissions = [
-				new FilePermissionEntity({
-					refId: anotherUserId,
-					refPermModel: FilePermissionReferenceModel.USER,
-				}),
-				new FilePermissionEntity({
-					refId: yetAnotherUserId,
-					refPermModel: FilePermissionReferenceModel.USER,
-				}),
+				filePermissionEntityFactory.build({ refId: anotherUserId }),
+				filePermissionEntityFactory.build({ refId: yetAnotherUserId }),
 			];
 			const file = fileEntityFactory.build({
 				ownerId: mainUserId,
 				creatorId: mainUserId,
-				permissions: [
-					new FilePermissionEntity({
-						refId: mainUserId,
-						refPermModel: FilePermissionReferenceModel.USER,
-					}),
-					...anotherUsersPermissions,
-				],
+				permissions: [filePermissionEntityFactory.build({ refId: mainUserId }), ...anotherUsersPermissions],
 			});
 
 			const expectedFile = copyFile(file);
@@ -87,14 +74,8 @@ describe(FileEntity.name, () => {
 					ownerId: mainUserId,
 					creatorId: mainUserId,
 					permissions: [
-						new FilePermissionEntity({
-							refId: mainUserId,
-							refPermModel: FilePermissionReferenceModel.USER,
-						}),
-						new FilePermissionEntity({
-							refId: anotherUserId,
-							refPermModel: FilePermissionReferenceModel.USER,
-						}),
+						filePermissionEntityFactory.build({ refId: mainUserId }),
+						filePermissionEntityFactory.build({ refId: anotherUserId }),
 					],
 				});
 
@@ -208,12 +189,7 @@ describe(FileEntity.name, () => {
 					ownerId: userId,
 					refOwnerModel: FileOwnerModel.USER,
 					creatorId: userId,
-					permissions: [
-						new FilePermissionEntity({
-							refId: userId,
-							refPermModel: FilePermissionReferenceModel.USER,
-						}),
-					],
+					permissions: [filePermissionEntityFactory.build({ refId: userId })],
 					lockId: new ObjectId().toHexString(),
 					versionKey: 0,
 				};
@@ -268,7 +244,7 @@ describe(FileEntity.name, () => {
 						ownerId: userId,
 						refOwnerModel: FileOwnerModel.USER,
 						creatorId: userId,
-						permissions: [new FilePermissionEntity({ refId: userId, refPermModel: FilePermissionReferenceModel.USER })],
+						permissions: [filePermissionEntityFactory.build({ refId: userId })],
 					});
 				expect(call).toThrow();
 			});
@@ -283,7 +259,7 @@ describe(FileEntity.name, () => {
 						ownerId: userId,
 						refOwnerModel: FileOwnerModel.USER,
 						creatorId: userId,
-						permissions: [new FilePermissionEntity({ refId: userId, refPermModel: FilePermissionReferenceModel.USER })],
+						permissions: [filePermissionEntityFactory.build({ refId: userId })],
 					});
 				expect(call).toThrow();
 			});
@@ -298,7 +274,7 @@ describe(FileEntity.name, () => {
 						ownerId: userId,
 						refOwnerModel: FileOwnerModel.USER,
 						creatorId: userId,
-						permissions: [new FilePermissionEntity({ refId: userId, refPermModel: FilePermissionReferenceModel.USER })],
+						permissions: [filePermissionEntityFactory.build({ refId: userId })],
 					});
 				expect(call).toThrow();
 			});

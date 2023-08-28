@@ -4,9 +4,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
 import { FilesService } from './files.service';
 import { FilesRepo } from '../repo';
-import { fileEntityFactory } from '../entity/testing';
-import { FileEntity, FilePermissionEntity } from '../entity';
-import { FilePermissionReferenceModel } from '../domain';
+import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
+import { FileEntity } from '../entity';
 
 describe(FilesService.name, () => {
 	let module: TestingModule;
@@ -56,10 +55,7 @@ describe(FilesService.name, () => {
 		describe('should properly remove user permissions', () => {
 			it('in case of just a single file accessible by given user', async () => {
 				const userId = new ObjectId().toHexString();
-				const userPermission = new FilePermissionEntity({
-					refId: userId,
-					refPermModel: FilePermissionReferenceModel.USER,
-				});
+				const userPermission = filePermissionEntityFactory.build({ refId: userId });
 				const entity = fileEntityFactory.buildWithId({ permissions: [userPermission] });
 
 				repo.findByPermissionRefId.mockResolvedValueOnce([entity]);
@@ -75,18 +71,9 @@ describe(FilesService.name, () => {
 
 			it('in case of many files accessible by given user', async () => {
 				const userId = new ObjectId().toHexString();
-				const userPermission = new FilePermissionEntity({
-					refId: userId,
-					refPermModel: FilePermissionReferenceModel.USER,
-				});
-				const anotherUserPermission = new FilePermissionEntity({
-					refId: new ObjectId().toHexString(),
-					refPermModel: FilePermissionReferenceModel.USER,
-				});
-				const yetAnotherUserPermission = new FilePermissionEntity({
-					refId: new ObjectId().toHexString(),
-					refPermModel: FilePermissionReferenceModel.USER,
-				});
+				const userPermission = filePermissionEntityFactory.build({ refId: userId });
+				const anotherUserPermission = filePermissionEntityFactory.build();
+				const yetAnotherUserPermission = filePermissionEntityFactory.build();
 				const entities = [
 					fileEntityFactory.buildWithId({
 						permissions: [userPermission, anotherUserPermission, yetAnotherUserPermission],

@@ -2,9 +2,8 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { StorageProviderEntity } from '@shared/domain';
-import { FilePermissionReferenceModel } from '../domain';
-import { FileEntity, FilePermissionEntity } from '../entity';
-import { fileEntityFactory } from '../entity/testing';
+import { FileEntity } from '../entity';
+import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
 import { FilesRepo } from './files.repo';
 
 describe(FilesRepo.name, () => {
@@ -20,23 +19,13 @@ describe(FilesRepo.name, () => {
 		{
 			ownerId: otherUserId,
 			creatorId: otherUserId,
-			permissions: [
-				new FilePermissionEntity({
-					refId: otherUserId,
-					refPermModel: FilePermissionReferenceModel.USER,
-				}),
-			],
+			permissions: [filePermissionEntityFactory.build({ refId: otherUserId })],
 		},
 		// A second file also created, owned and accessible only by the other user.
 		{
 			ownerId: otherUserId,
 			creatorId: otherUserId,
-			permissions: [
-				new FilePermissionEntity({
-					refId: otherUserId,
-					refPermModel: FilePermissionReferenceModel.USER,
-				}),
-			],
+			permissions: [filePermissionEntityFactory.build({ refId: otherUserId })],
 		},
 	];
 
@@ -50,12 +39,7 @@ describe(FilesRepo.name, () => {
 		const otherUserFile = fileEntityFactory.build({
 			ownerId: otherUserId,
 			creatorId: otherUserId,
-			permissions: [
-				new FilePermissionEntity({
-					refId: otherUserId,
-					refPermModel: FilePermissionReferenceModel.USER,
-				}),
-			],
+			permissions: [filePermissionEntityFactory.build({ refId: otherUserId })],
 		});
 
 		// Test file created and owned by the main user, but also accessible by the other user.
@@ -63,14 +47,8 @@ describe(FilesRepo.name, () => {
 			ownerId: mainUserId,
 			creatorId: mainUserId,
 			permissions: [
-				new FilePermissionEntity({
-					refId: mainUserId,
-					refPermModel: FilePermissionReferenceModel.USER,
-				}),
-				new FilePermissionEntity({
-					refId: otherUserId,
-					refPermModel: FilePermissionReferenceModel.USER,
-				}),
+				filePermissionEntityFactory.build({ refId: mainUserId }),
+				filePermissionEntityFactory.build({ refId: otherUserId }),
 			],
 		});
 
@@ -79,14 +57,8 @@ describe(FilesRepo.name, () => {
 			ownerId: otherUserId,
 			creatorId: otherUserId,
 			permissions: [
-				new FilePermissionEntity({
-					refId: otherUserId,
-					refPermModel: FilePermissionReferenceModel.USER,
-				}),
-				new FilePermissionEntity({
-					refId: mainUserId,
-					refPermModel: FilePermissionReferenceModel.USER,
-				}),
+				filePermissionEntityFactory.build({ refId: otherUserId }),
+				filePermissionEntityFactory.build({ refId: mainUserId }),
 			],
 		});
 
@@ -94,12 +66,7 @@ describe(FilesRepo.name, () => {
 		const mainUserFile = fileEntityFactory.build({
 			ownerId: mainUserId,
 			creatorId: mainUserId,
-			permissions: [
-				new FilePermissionEntity({
-					refId: mainUserId,
-					refPermModel: FilePermissionReferenceModel.USER,
-				}),
-			],
+			permissions: [filePermissionEntityFactory.build({ refId: mainUserId })],
 		});
 
 		await em.persistAndFlush([...otherUserFiles, otherUserFile, mainUserSharedFile, otherUserSharedFile, mainUserFile]);
@@ -385,12 +352,7 @@ describe(FilesRepo.name, () => {
 
 			// Pre-check to make sure the main user has access to the file right now.
 			expect(otherUserSharedFile.permissions).toEqual(
-				expect.arrayContaining([
-					new FilePermissionEntity({
-						refId: mainUserId,
-						refPermModel: FilePermissionReferenceModel.USER,
-					}),
-				])
+				expect.arrayContaining([filePermissionEntityFactory.build({ refId: mainUserId })])
 			);
 
 			otherUserSharedFile.removePermissionsByRefId(mainUserId);
@@ -401,12 +363,7 @@ describe(FilesRepo.name, () => {
 
 			// Verify if the main user has for sure lost the permission to given file.
 			expect(otherUserSharedFile.permissions).not.toEqual(
-				expect.arrayContaining([
-					new FilePermissionEntity({
-						refId: mainUserId,
-						refPermModel: FilePermissionReferenceModel.USER,
-					}),
-				])
+				expect.arrayContaining([filePermissionEntityFactory.build({ refId: mainUserId })])
 			);
 
 			expectedOtherUserSharedFileProps.permissions = expectedOtherUserSharedFileProps.permissions.filter(
