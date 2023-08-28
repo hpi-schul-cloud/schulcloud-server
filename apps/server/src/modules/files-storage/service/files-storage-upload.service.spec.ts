@@ -206,7 +206,7 @@ describe('FilesStorageService upload methods', () => {
 			const setup = () => {
 				const { params, file, userId } = createUploadFileParams();
 
-				configService.get.mockReturnValueOnce(1);
+				configService.get.mockReturnValueOnce(2);
 				const error = new BadRequestException(ErrorType.FILE_TOO_BIG);
 
 				return { params, file, userId, error };
@@ -240,6 +240,40 @@ describe('FilesStorageService upload methods', () => {
 			const fileRecord = await service.uploadFile(userId, params, file);
 
 			expect(antivirusService.send).toHaveBeenCalledWith(fileRecord.securityCheck.requestToken);
+		});
+
+		describe('WHEN file size is bigger than maxSecurityCheckFileSize', () => {
+			const setup = () => {
+				const { params, file, userId, expectedFileRecord } = createUploadFileParams();
+
+				// Mock for max file size
+				configService.get.mockReturnValueOnce(10);
+
+				// Mock for max security check file size
+				configService.get.mockReturnValueOnce(2);
+
+				return { params, file, userId, expectedFileRecord };
+			};
+
+			it('should call save with WONT_CHECK status', async () => {
+				const { params, file, userId } = setup();
+
+				await service.uploadFile(userId, params, file);
+
+				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(
+					1,
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					expect.objectContaining({ securityCheck: expect.objectContaining({ status: 'wont_check' }) })
+				);
+			});
+
+			it('should not call antivirus send', async () => {
+				const { params, file, userId } = setup();
+
+				await service.uploadFile(userId, params, file);
+
+				expect(antivirusService.send).not.toHaveBeenCalled();
+			});
 		});
 
 		describe('WHEN antivirusService throws error', () => {
