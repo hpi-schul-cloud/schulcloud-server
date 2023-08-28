@@ -1,7 +1,5 @@
 import { Command, Console } from 'nestjs-console';
-
 import { LegacyLogger } from '@src/core/logger';
-
 import { DeleteFilesUc } from '../uc';
 
 @Console({ command: 'files', description: 'file deletion console' })

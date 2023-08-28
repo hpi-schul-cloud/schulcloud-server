@@ -1,8 +1,6 @@
 import { Embeddable, Enum, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-
 import { EntityId } from '@shared/domain';
-
 import { FilePermissionReferenceModel } from '../domain';
 
 export interface FilePermissionEntityProps {

@@ -1,6 +1,5 @@
 import { Embeddable, Enum, Property } from '@mikro-orm/core';
 import { v4 as uuid } from 'uuid';
-
 import { FileSecurityCheckStatus } from '../domain';
 
 export interface FileSecurityCheckEntityProps {

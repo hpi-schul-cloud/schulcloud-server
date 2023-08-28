@@ -1,5 +1,4 @@
 import { validate as validateUUID } from 'uuid';
-
 import { FileSecurityCheckStatus } from '../domain';
 import { FileSecurityCheckEntity } from './file-security-check.entity';
 
