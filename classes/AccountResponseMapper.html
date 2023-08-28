@@ -138,8 +138,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="15"
-                            class="link-to-prism">apps/server/src/modules/account/mapper/account-response.mapper.ts:15</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="16"
+                            class="link-to-prism">apps/server/src/modules/account/mapper/account-response.mapper.ts:16</a></div>
                 </td>
             </tr>
 
@@ -279,6 +279,7 @@ export class AccountResponseMapper {
 			userId: account.userId?.toString(),
 			activated: account.activated,
 			username: account.username,
+			updatedAt: account.updatedAt,
 		});
 	}
 
@@ -288,6 +289,7 @@ export class AccountResponseMapper {
 			userId: account.userId,
 			activated: account.activated,
 			username: account.username,
+			updatedAt: account.updatedAt,
 		});
 	}
 }
