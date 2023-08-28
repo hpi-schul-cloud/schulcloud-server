@@ -7,7 +7,7 @@ import {
 	Permission,
 	RoleName,
 	SchoolFeatures,
-	TeamUser,
+	TeamUserEntity,
 	UserDO,
 	VideoConferenceDO,
 	VideoConferenceScope,
@@ -236,9 +236,9 @@ describe('VideoConferenceService', () => {
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
 
-				const teamUser: TeamUser = teamUserFactory.withRoleAndUserId(roleFactory.buildWithId(), userId).build();
+				const teamUser: TeamUserEntity = teamUserFactory.withRoleAndUserId(roleFactory.buildWithId(), userId).build();
 				const team = teamFactory
-					.withTeamUser(teamUser)
+					.withTeamUser([teamUser])
 					.withRoleAndUserId(roleFactory.buildWithId({ name: RoleName.TEAMEXPERT }), userId)
 					.build();
 				teamsRepo.findById.mockResolvedValue(team);

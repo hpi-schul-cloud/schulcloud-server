@@ -64,10 +64,12 @@ export class FilesStorageProducer {
 		return response.message || [];
 	}
 
+	// need to be fixed with https://ticketsystem.dbildungscloud.de/browse/BC-2984
+	// mapRpcErrorResponseToDomainError should also removed with this ticket
 	private checkError(response: RpcMessage<unknown>) {
 		const { error } = response;
 		if (error) {
-			const domainError = ErrorMapper.mapErrorToDomainError(error);
+			const domainError = ErrorMapper.mapRpcErrorResponseToDomainError(error);
 			throw domainError;
 		}
 	}
