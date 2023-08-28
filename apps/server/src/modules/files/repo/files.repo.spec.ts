@@ -21,15 +21,7 @@ describe(FilesRepo.name, () => {
 	const otherUserFilesProps = [
 		// Test file created, owned and accessible only by the other user.
 		{
-			name: 'test-file-1.txt',
-			size: 42,
-			type: 'text/plain',
-			storageFileName: '001-test-file-1.txt',
-			bucket: 'bucket-001',
-			storageProvider,
-			thumbnail: 'https://example.com/thumbnail.png',
 			ownerId: otherUserId,
-			refOwnerModel: FileOwnerModel.USER,
 			creatorId: otherUserId,
 			permissions: [
 				new FilePermissionEntity({
@@ -37,19 +29,10 @@ describe(FilesRepo.name, () => {
 					refPermModel: FilePermissionReferenceModel.USER,
 				}),
 			],
-			versionKey: 0,
 		},
 		// A second file also created, owned and accessible only by the other user.
 		{
-			name: 'test-file-2.txt',
-			size: 42,
-			type: 'text/plain',
-			storageFileName: '002-test-file-2.txt',
-			bucket: 'bucket-002',
-			storageProvider,
-			thumbnail: 'https://example.com/thumbnail.png',
 			ownerId: otherUserId,
-			refOwnerModel: FileOwnerModel.USER,
 			creatorId: otherUserId,
 			permissions: [
 				new FilePermissionEntity({
@@ -57,24 +40,18 @@ describe(FilesRepo.name, () => {
 					refPermModel: FilePermissionReferenceModel.USER,
 				}),
 			],
-			versionKey: 0,
 		},
 	];
 
 	const setup = async () => {
-		const otherUserFiles = [new FileEntity(otherUserFilesProps[0]), new FileEntity(otherUserFilesProps[1])];
+		const otherUserFiles = [
+			fileEntityFactory.build(otherUserFilesProps[0]),
+			fileEntityFactory.build(otherUserFilesProps[1]),
+		];
 
 		// Test files created, owned and accessible only by the other user.
-		const otherUserFile = new FileEntity({
-			name: 'test-file-1.txt',
-			size: 42,
-			type: 'text/plain',
-			storageFileName: '001-test-file-1.txt',
-			bucket: 'bucket-001',
-			storageProvider,
-			thumbnail: 'https://example.com/thumbnail.png',
+		const otherUserFile = fileEntityFactory.build({
 			ownerId: otherUserId,
-			refOwnerModel: FileOwnerModel.USER,
 			creatorId: otherUserId,
 			permissions: [
 				new FilePermissionEntity({
@@ -82,20 +59,11 @@ describe(FilesRepo.name, () => {
 					refPermModel: FilePermissionReferenceModel.USER,
 				}),
 			],
-			versionKey: 0,
 		});
 
 		// Test file created and owned by the main user, but also accessible by the other user.
-		const mainUserSharedFile = new FileEntity({
-			name: 'test-file-2.txt',
-			size: 42,
-			type: 'text/plain',
-			storageFileName: '002-test-file-2.txt',
-			bucket: 'bucket-002',
-			storageProvider,
-			thumbnail: 'https://example.com/thumbnail.png',
+		const mainUserSharedFile = fileEntityFactory.build({
 			ownerId: mainUserId,
-			refOwnerModel: FileOwnerModel.USER,
 			creatorId: mainUserId,
 			permissions: [
 				new FilePermissionEntity({
@@ -107,20 +75,11 @@ describe(FilesRepo.name, () => {
 					refPermModel: FilePermissionReferenceModel.USER,
 				}),
 			],
-			versionKey: 0,
 		});
 
 		// Test file created and owned by the other user, but also accessible by the main user.
-		const otherUserSharedFile = new FileEntity({
-			name: 'test-file-3.txt',
-			size: 42,
-			type: 'text/plain',
-			storageFileName: '003-test-file-3.txt',
-			bucket: 'bucket-003',
-			storageProvider,
-			thumbnail: 'https://example.com/thumbnail.png',
+		const otherUserSharedFile = fileEntityFactory.build({
 			ownerId: otherUserId,
-			refOwnerModel: FileOwnerModel.USER,
 			creatorId: otherUserId,
 			permissions: [
 				new FilePermissionEntity({
@@ -132,20 +91,11 @@ describe(FilesRepo.name, () => {
 					refPermModel: FilePermissionReferenceModel.USER,
 				}),
 			],
-			versionKey: 0,
 		});
 
 		// Test file created, owned and accessible only by the main user.
-		const mainUserFile = new FileEntity({
-			name: 'test-file-4.txt',
-			size: 42,
-			type: 'text/plain',
-			storageFileName: '004-test-file-4.txt',
-			bucket: 'bucket-004',
-			storageProvider,
-			thumbnail: 'https://example.com/thumbnail.png',
+		const mainUserFile = fileEntityFactory.build({
 			ownerId: mainUserId,
-			refOwnerModel: FileOwnerModel.USER,
 			creatorId: mainUserId,
 			permissions: [
 				new FilePermissionEntity({
@@ -153,7 +103,6 @@ describe(FilesRepo.name, () => {
 					refPermModel: FilePermissionReferenceModel.USER,
 				}),
 			],
-			versionKey: 0,
 		});
 
 		await em.persistAndFlush([...otherUserFiles, otherUserFile, mainUserSharedFile, otherUserSharedFile, mainUserFile]);
@@ -343,7 +292,10 @@ describe(FilesRepo.name, () => {
 
 		describe('should return an empty array in case of', () => {
 			it('no files owned by user with given userId', async () => {
-				await em.persistAndFlush([new FileEntity(otherUserFilesProps[0]), new FileEntity(otherUserFilesProps[1])]);
+				await em.persistAndFlush([
+					fileEntityFactory.build(otherUserFilesProps[0]),
+					fileEntityFactory.build(otherUserFilesProps[1]),
+				]);
 				em.clear();
 
 				const results = await repo.findByOwnerUserId(mainUserId);
@@ -407,7 +359,10 @@ describe(FilesRepo.name, () => {
 
 		describe('should return an empty array in case of', () => {
 			it('no files with given permissionRefId', async () => {
-				await em.persistAndFlush([new FileEntity(otherUserFilesProps[0]), new FileEntity(otherUserFilesProps[1])]);
+				await em.persistAndFlush([
+					fileEntityFactory.build(otherUserFilesProps[0]),
+					fileEntityFactory.build(otherUserFilesProps[1]),
+				]);
 				em.clear();
 
 				const results = await repo.findByPermissionRefId(mainUserId);
