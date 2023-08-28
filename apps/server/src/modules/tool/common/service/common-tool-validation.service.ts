@@ -42,7 +42,7 @@ export class CommonToolValidationService {
 		}
 	}
 
-	public checkCustomParameterEntries(loadedExternalTool: ExternalTool, validatableTool: ValidatableTool) {
+	public checkCustomParameterEntries(loadedExternalTool: ExternalTool, validatableTool: ValidatableTool): void {
 		if (loadedExternalTool.parameters) {
 			for (const param of loadedExternalTool.parameters) {
 				this.checkScopeAndValidateParameter(validatableTool, param);

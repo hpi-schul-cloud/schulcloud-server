@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CustomParameterEntryResponse } from './custom-parameter-entry.response';
 import { ToolConfigurationStatusResponse } from '../../../external-tool/controller/dto';
 
@@ -24,6 +24,9 @@ export class SchoolExternalToolResponse {
 	@ApiProperty({ enum: ToolConfigurationStatusResponse })
 	status: ToolConfigurationStatusResponse;
 
+	@ApiPropertyOptional()
+	logoUrl?: string;
+
 	constructor(response: SchoolExternalToolResponse) {
 		this.id = response.id;
 		this.name = response.name;
@@ -32,5 +35,6 @@ export class SchoolExternalToolResponse {
 		this.parameters = response.parameters;
 		this.toolVersion = response.toolVersion;
 		this.status = response.status;
+		this.logoUrl = response.logoUrl;
 	}
 }
