@@ -115,6 +115,7 @@ export class FilesStorageService {
 
 	private isStreamMimeTypeDetectionPossible(mimeType: string) {
 		const mimTypes = [
+			'text/csv',
 			'image/svg+xml',
 			'application/msword',
 			'application/vnd.ms-powerpoint',
