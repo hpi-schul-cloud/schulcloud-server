@@ -1277,19 +1277,19 @@
 		"TLDRAW": {
 			"type": "object",
 			"description": "Tldraw managing variables.",
-			"required": ["PING_TIMEOUT", "GC_ENABLED", "DB_COLLECTION_NAME", "DB_FLUSH_SIZE", "DB_MULTIPLE_COLLECTIONS"],
+			"required": ["PING_TIMEOUT", "DB_COLLECTION_NAME", "GC_ENABLED", "DB_FLUSH_SIZE", "DB_MULTIPLE_COLLECTIONS"],
 			"properties": {
 				"PING_TIMEOUT": {
 					"type": "number",
 					"description": "Max time for waiting between calls for tldraw"
 				},
-				"GC_ENABLED": {
-					"type": "boolean",
-					"description": "If tldraw garbage collector should be enabled"
-				},
 				"DB_COLLECTION_NAME": {
 					"type": "string",
 					"description": "Collection name in which tldraw drawing are stored"
+				},
+				"GC_ENABLED": {
+					"type": "boolean",
+					"description": "If tldraw garbage collector should be enabled"
 				},
 				"DB_FLUSH_SIZE": {
 					"type": "integer",
@@ -1302,8 +1302,8 @@
 			},
 			"default": {
 				"PING_TIMEOUT": 30000,
-				"GC_ENABLED": true,
 				"DB_COLLECTION_NAME": "drawing",
+				"GC_ENABLED": true,
 				"DB_FLUSH_SIZE": 400,
 				"DB_MULTIPLE_COLLECTIONS": false
 			}
