@@ -6,8 +6,6 @@ import {
 	GetObjectCommand,
 	HeadObjectCommand,
 	ListObjectsV2Command,
-	ListObjectsV2CommandOutput,
-	ListObjectsCommand,
 	S3Client,
 	ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
@@ -17,7 +15,7 @@ import { ErrorUtils } from '@src/core/error/utils';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
 import { FileDto } from '../dto';
-import { ICopyFiles, IGetFile, IStorageClient, S3Config } from '../interface';
+import { ICopyFiles, IGetFile, IListFiles, IStorageClient, S3Config } from '../interface';
 
 @Injectable()
 export class S3ClientAdapter implements IStorageClient {
@@ -199,37 +197,46 @@ export class S3ClientAdapter implements IStorageClient {
 		}
 	}
 
-	public async list(prefix: string, maxKeys?: number) {
-		this.logger.log({ action: 'list', params: { prefix, bucket: this.config.bucket } });
-
+	public async list(params: IListFiles) {
 		try {
-			let files: string[] = [];
-			let ret: ListObjectsV2CommandOutput | undefined;
+			this.logger.log({ action: 'list', params });
 
-			do {
-				const req = new ListObjectsV2Command({
-					Bucket: this.config.bucket,
-					Prefix: prefix,
-					ContinuationToken: ret?.NextContinuationToken,
-					MaxKeys: maxKeys && maxKeys - files.length,
-				});
+			const result = await this.listObjectKeysRecursive(params);
 
-				// Iterations are dependent on each other
-				// eslint-disable-next-line no-await-in-loop
-				ret = await this.client.send(req);
-
-				const returnedFiles =
-					ret?.Contents?.filter((o) => o.Key)
-						.map((o) => o.Key as string) // Can not be undefined because of filter above
-						.map((key) => key.substring(prefix.length)) ?? [];
-
-				files = files.concat(returnedFiles);
-			} while (ret?.IsTruncated && (!maxKeys || files.length < maxKeys));
-
-			return files;
+			return result;
 		} catch (err) {
-			throw new InternalServerErrorException(err, 'S3ClientAdapter:list');
+			throw new InternalServerErrorException('S3ClientAdapter:listDirectory');
 		}
+	}
+
+	private async listObjectKeysRecursive(params: IListFiles) {
+		const { path, maxKeys, nextMarker } = params;
+		let files: string[] = params.files ? params.files : [];
+		const MaxKeys = maxKeys && maxKeys - files.length;
+
+		const req = new ListObjectsV2Command({
+			Bucket: this.config.bucket,
+			Prefix: path,
+			ContinuationToken: nextMarker,
+			MaxKeys,
+		});
+
+		const data = await this.client.send(req);
+
+		const returnedFiles =
+			data?.Contents?.filter((o) => o.Key)
+				.map((o) => o.Key as string) // Can not be undefined because of filter above
+				.map((key) => key.substring(path.length)) ?? [];
+
+		files = files.concat(returnedFiles);
+
+		let res = { path, maxKeys, nextMarker: data?.ContinuationToken, files };
+
+		if (data?.IsTruncated && (!maxKeys || res.files.length < maxKeys)) {
+			res = await this.listObjectKeysRecursive(res);
+		}
+
+		return res;
 	}
 
 	public async head(path: string) {
@@ -258,7 +265,7 @@ export class S3ClientAdapter implements IStorageClient {
 		try {
 			this.logger.log({ action: 'deleteDirectory', params: { path, bucket: this.config.bucket } });
 
-			const req = new ListObjectsCommand({
+			const req = new ListObjectsV2Command({
 				Bucket: this.config.bucket,
 				Prefix: path,
 			});
