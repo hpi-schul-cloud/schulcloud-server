@@ -1,12 +1,12 @@
 const _ = require('lodash');
 
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const BaseConsumerAction = require('./BaseConsumerAction');
 // TODO: place from where it is importat must be fixed later
 const { LDAP_SYNC_ACTIONS } = require('../SyncMessageBuilder');
 const { SchoolRepo, UserRepo } = require('../../repo');
 const { NotFound } = require('../../../../errors');
 const { isNotEmptyString } = require('../../../../helper/stringHelper');
-const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const defaultOptions = {
 	allowedLogKeys: ['ldapId', 'systemId', 'roles', 'activated', 'schoolDn'],
@@ -22,7 +22,15 @@ class UserAction extends BaseConsumerAction {
 	async action(data = {}) {
 		const { user = {}, account = {} } = data;
 
-		const school = await SchoolRepo.findSchoolByLdapIdAndSystem(user.schoolDn, user.systemId);
+		let school;
+		school = await SchoolRepo.findSchoolByLdapIdAndSystem(user.schoolDn, user.systemId);
+		if (!school) {
+			if (Configuration.get('FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION')) {
+				school = await SchoolRepo.findSchoolByPreviousExternalIdAndSystem(user.schoolDn, user.systemId);
+			} else {
+				return;
+			}
+		}
 
 		if (!school) {
 			throw new NotFound(`School for schoolDn ${user.schoolDn} and systemId ${user.systemId} couldn't be found.`, {
@@ -35,8 +43,9 @@ class UserAction extends BaseConsumerAction {
 
 		if (!foundUser) {
 			const oauthMigratedUser = await UserRepo.findByPreviousExternalIdAndSchool(user.ldapId, school._id);
-			if (oauthMigratedUser) {
-				// skip creating or updating users when user has migrated
+			const userInOauthMigratedSchool = await UserRepo.findByLdapIdAndSchool(user.ldapId, school._id);
+			if (oauthMigratedUser || userInOauthMigratedSchool) {
+				// skip creating or updating users when user or school has migrated
 				return;
 			}
 		}
