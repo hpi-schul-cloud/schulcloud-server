@@ -71,18 +71,18 @@ describe(SubmissionItemUc.name, () => {
 	});
 
 	describe('findSubmissionItems', () => {
-		describe('when two students having submission items', () => {
+		describe('user is student', () => {
 			const setup = () => {
 				const user1 = userFactory.buildWithId();
 				const user2 = userFactory.buildWithId();
-				const submissionItemEl1 = submissionItemFactory.build({
+				const submissionItem1 = submissionItemFactory.build({
 					userId: user1.id,
 				});
-				const submissionItemEl2 = submissionItemFactory.build({
+				const submissionItem2 = submissionItemFactory.build({
 					userId: user2.id,
 				});
 				const submissionContainerEl = submissionContainerElementFactory.build({
-					children: [submissionItemEl1, submissionItemEl2],
+					children: [submissionItem1, submissionItem2],
 				});
 
 				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
@@ -97,37 +97,37 @@ describe(SubmissionItemUc.name, () => {
 
 				const elementSpy = elementService.findById.mockResolvedValueOnce(submissionContainerEl);
 
-				return { submissionContainerEl, submissionItemEl1, user1, elementSpy };
+				return { submissionContainerEl, submissionItem1, user1, elementSpy };
 			};
 
 			it('student1 should only get their own submission item', async () => {
-				const { user1, submissionContainerEl, submissionItemEl1 } = setup();
+				const { user1, submissionContainerEl, submissionItem1 } = setup();
 				const items = await uc.findSubmissionItems(user1.id, submissionContainerEl.id);
 				expect(items.length).toBe(1);
-				expect(items[0]).toStrictEqual(submissionItemEl1);
+				expect(items[0]).toStrictEqual(submissionItem1);
 			});
 		});
-		describe('when teacher of two students', () => {
+		describe('when user is a teacher', () => {
 			const setup = () => {
 				const teacher = userFactory.buildWithId();
-				const user1 = userFactory.buildWithId();
-				const user2 = userFactory.buildWithId();
-				const submissionItemEl1 = submissionItemFactory.build({
-					userId: user1.id,
+				const student1 = userFactory.buildWithId();
+				const student2 = userFactory.buildWithId();
+				const submissionItem1 = submissionItemFactory.build({
+					userId: student1.id,
 				});
-				const submissionItemEl2 = submissionItemFactory.build({
-					userId: user2.id,
+				const submissionItem2 = submissionItemFactory.build({
+					userId: student2.id,
 				});
 				const submissionContainerEl = submissionContainerElementFactory.build({
-					children: [submissionItemEl1, submissionItemEl2],
+					children: [submissionItem1, submissionItem2],
 				});
 
 				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
 					new BoardDoAuthorizable({
 						users: [
 							{ userId: teacher.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER },
-							{ userId: user1.id, roles: [BoardRoles.READER], userRoleEnum: UserRoleEnum.STUDENT },
-							{ userId: user2.id, roles: [BoardRoles.READER], userRoleEnum: UserRoleEnum.STUDENT },
+							{ userId: student1.id, roles: [BoardRoles.READER], userRoleEnum: UserRoleEnum.STUDENT },
+							{ userId: student2.id, roles: [BoardRoles.READER], userRoleEnum: UserRoleEnum.STUDENT },
 						],
 						id: submissionContainerEl.id,
 					})
@@ -135,15 +135,45 @@ describe(SubmissionItemUc.name, () => {
 
 				const elementSpy = elementService.findById.mockResolvedValue(submissionContainerEl);
 
-				return { submissionContainerEl, submissionItemEl1, submissionItemEl2, teacher, elementSpy };
+				return { submissionContainerEl, submissionItem1, submissionItem2, teacher, elementSpy };
 			};
 
 			it('teacher should get all submission items', async () => {
-				const { teacher, submissionContainerEl, submissionItemEl1, submissionItemEl2 } = setup();
+				const { teacher, submissionContainerEl, submissionItem1, submissionItem2 } = setup();
 				const items = await uc.findSubmissionItems(teacher.id, submissionContainerEl.id);
 				expect(items.length).toBe(2);
-				expect(items.map((item) => item.id)).toContain(submissionItemEl1.id);
-				expect(items.map((item) => item.id)).toContain(submissionItemEl2.id);
+				expect(items.map((item) => item.id)).toContain(submissionItem1.id);
+				expect(items.map((item) => item.id)).toContain(submissionItem2.id);
+			});
+		});
+		describe('when user has not an authorized role', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const submissionItem = submissionItemFactory.build({
+					userId: user.id,
+				});
+				const submissionContainerEl = submissionContainerElementFactory.build({
+					children: [submissionItem],
+				});
+
+				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
+					new BoardDoAuthorizable({
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
+						id: submissionContainerEl.id,
+					})
+				);
+				elementService.findById.mockResolvedValueOnce(submissionContainerEl);
+
+				return { user, submissionContainerElement: submissionContainerEl };
+			};
+			it('should throw forbidden exception', async () => {
+				const { user, submissionContainerElement } = setup();
+
+				await expect(uc.findSubmissionItems(user.id, submissionContainerElement.id)).rejects.toThrow(
+					'User not part of this board'
+				);
 			});
 		});
 		describe('when called with wrong board node', () => {
