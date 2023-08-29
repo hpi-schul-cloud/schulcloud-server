@@ -7,6 +7,7 @@ import { ExternalToolRepo } from '@shared/repo';
 import { ToolConfigModule } from '../tool-config.module';
 import {
 	ExternalToolConfigurationService,
+	ExternalToolLogoService,
 	ExternalToolParameterValidationService,
 	ExternalToolService,
 	ExternalToolServiceMapper,
@@ -24,6 +25,7 @@ import { CommonToolModule } from '../common';
 		ExternalToolValidationService,
 		ExternalToolVersionService,
 		ExternalToolConfigurationService,
+		ExternalToolLogoService,
 		ExternalToolRepo,
 	],
 	exports: [
@@ -31,6 +33,7 @@ import { CommonToolModule } from '../common';
 		ExternalToolValidationService,
 		ExternalToolVersionService,
 		ExternalToolConfigurationService,
+		ExternalToolLogoService,
 	],
 })
 export class ExternalToolModule {}

@@ -188,7 +188,7 @@ describe('TemporaryFileStorage', () => {
 					contentLength: undefined,
 					contentRange: undefined,
 					etag: undefined,
-					name: 'a',
+					name: '',
 				};
 				repo.findByUserAndFilename.mockResolvedValueOnce(file1);
 				s3clientAdapter.get.mockResolvedValueOnce(response);

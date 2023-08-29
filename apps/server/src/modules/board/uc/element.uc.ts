@@ -1,5 +1,5 @@
 import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { AnyBoardDo, EntityId, SubmissionContainerElement, SubmissionItem } from '@shared/domain';
+import { AnyBoardDo, EntityId, SubmissionContainerElement, SubmissionItem, UserRoleEnum } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Action } from '@src/modules/authorization/types/action.enum';
@@ -32,7 +32,11 @@ export class ElementUc {
 		await this.elementService.update(element, content);
 	}
 
-	async createSubmissionItem(userId: EntityId, contentElementId: EntityId): Promise<SubmissionItem> {
+	async createSubmissionItem(
+		userId: EntityId,
+		contentElementId: EntityId,
+		completed: boolean
+	): Promise<SubmissionItem> {
 		const submissionContainer = (await this.elementService.findById(contentElementId)) as SubmissionContainerElement;
 
 		if (!(submissionContainer instanceof SubmissionContainerElement))
@@ -47,24 +51,32 @@ export class ElementUc {
 				HttpStatus.UNPROCESSABLE_ENTITY
 			);
 
-		const userExists = submissionContainer.children.find((item) => (item as SubmissionItem).userId === userId);
-		if (userExists) {
+		const userSubmissionExists = submissionContainer.children.find(
+			(item) => (item as SubmissionItem).userId === userId
+		);
+		if (userSubmissionExists) {
 			throw new HttpException(
 				'User is not allowed to have multiple submission-items per submission-container-element',
 				HttpStatus.NOT_ACCEPTABLE
 			);
 		}
 
-		await this.checkPermission(userId, submissionContainer, Action.write);
+		await this.checkPermission(userId, submissionContainer, Action.read, UserRoleEnum.STUDENT);
 
-		const subElement = await this.submissionItemService.create(userId, submissionContainer, { completed: false });
+		const submissionItem = await this.submissionItemService.create(userId, submissionContainer, { completed });
 
-		return subElement;
+		return submissionItem;
 	}
 
-	private async checkPermission(userId: EntityId, boardDo: AnyBoardDo, action: Action): Promise<void> {
+	private async checkPermission(
+		userId: EntityId,
+		boardDo: AnyBoardDo,
+		action: Action,
+		requiredUserRole?: UserRoleEnum
+	): Promise<void> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(boardDo);
+		if (requiredUserRole) boardDoAuthorizable.requiredUserRole = requiredUserRole;
 		const context = { action, requiredPermissions: [] };
 
 		return this.authorizationService.checkPermission(user, boardDoAuthorizable, context);

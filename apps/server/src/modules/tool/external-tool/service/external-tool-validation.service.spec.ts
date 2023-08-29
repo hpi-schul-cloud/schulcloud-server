@@ -4,10 +4,10 @@ import { ValidationError } from '@shared/common';
 import { externalToolFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
-import { ExternalToolLogoSizeExceededLoggableException } from '../loggable';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
 import { ExternalToolValidationService } from './external-tool-validation.service';
 import { ExternalToolService } from './external-tool.service';
+import { ExternalToolLogoService } from './external-tool-logo.service';
 
 describe('ExternalToolValidationService', () => {
 	let module: TestingModule;
@@ -16,6 +16,7 @@ describe('ExternalToolValidationService', () => {
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let commonToolValidationService: DeepMocked<ExternalToolParameterValidationService>;
 	let toolFeatures: IToolFeatures;
+	let logoService: DeepMocked<ExternalToolLogoService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -35,6 +36,10 @@ describe('ExternalToolValidationService', () => {
 						maxExternalToolLogoSizeInBytes: 30000,
 					},
 				},
+				{
+					provide: ExternalToolLogoService,
+					useValue: createMock<ExternalToolLogoService>(),
+				},
 			],
 		}).compile();
 
@@ -42,6 +47,7 @@ describe('ExternalToolValidationService', () => {
 		externalToolService = module.get(ExternalToolService);
 		commonToolValidationService = module.get(ExternalToolParameterValidationService);
 		toolFeatures = module.get(ToolFeatures);
+		logoService = module.get(ExternalToolLogoService);
 	});
 
 	afterAll(async () => {
@@ -181,38 +187,19 @@ describe('ExternalToolValidationService', () => {
 		});
 
 		describe('when external tool has a given base64 logo', () => {
-			describe('when size is exceeded', () => {
-				const setup = () => {
-					const externalTool: ExternalTool = externalToolFactory.withBase64Logo().build();
-					toolFeatures.maxExternalToolLogoSizeInBytes = 1;
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.withBase64Logo().build();
+				toolFeatures.maxExternalToolLogoSizeInBytes = 30000;
 
-					return { externalTool };
-				};
+				return { externalTool };
+			};
 
-				it('should throw an error', async () => {
-					const { externalTool } = setup();
+			it('should call externalToolLogoService', async () => {
+				const { externalTool } = setup();
 
-					const func = () => service.validateCreate(externalTool);
+				await service.validateCreate(externalTool);
 
-					await expect(func).rejects.toThrow(ExternalToolLogoSizeExceededLoggableException);
-				});
-			});
-
-			describe('when size is not exceeded', () => {
-				const setup = () => {
-					const externalTool: ExternalTool = externalToolFactory.withBase64Logo().build();
-					toolFeatures.maxExternalToolLogoSizeInBytes = 30000;
-
-					return { externalTool };
-				};
-
-				it('should throw an error', async () => {
-					const { externalTool } = setup();
-
-					const func = () => service.validateCreate(externalTool);
-
-					await expect(func()).resolves.not.toThrow();
-				});
+				expect(logoService.validateLogoSize).toHaveBeenCalledWith(externalTool);
 			});
 		});
 	});
@@ -375,38 +362,19 @@ describe('ExternalToolValidationService', () => {
 		});
 
 		describe('when external tool has a given base64 logo', () => {
-			describe('when size is exceeded', () => {
-				const setup = () => {
-					const externalTool: ExternalTool = externalToolFactory.withBase64Logo().build();
-					toolFeatures.maxExternalToolLogoSizeInBytes = 1;
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.withBase64Logo().build();
+				toolFeatures.maxExternalToolLogoSizeInBytes = 30000;
 
-					return { externalTool };
-				};
+				return { externalTool };
+			};
 
-				it('should throw an error', async () => {
-					const { externalTool } = setup();
+			it('should call externalToolLogoService', async () => {
+				const { externalTool } = setup();
 
-					const func = () => service.validateCreate(externalTool);
+				await service.validateCreate(externalTool);
 
-					await expect(func).rejects.toThrow(ExternalToolLogoSizeExceededLoggableException);
-				});
-			});
-
-			describe('when size is not exceeded', () => {
-				const setup = () => {
-					const externalTool: ExternalTool = externalToolFactory.withBase64Logo().build();
-					toolFeatures.maxExternalToolLogoSizeInBytes = 30000;
-
-					return { externalTool };
-				};
-
-				it('should throw an error', async () => {
-					const { externalTool } = setup();
-
-					const func = () => service.validateCreate(externalTool);
-
-					await expect(func()).resolves.not.toThrow();
-				});
+				expect(logoService.validateLogoSize).toHaveBeenCalledWith(externalTool);
 			});
 		});
 	});
