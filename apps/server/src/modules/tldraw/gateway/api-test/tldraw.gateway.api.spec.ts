@@ -55,7 +55,6 @@ describe('WebSocketGateway (WsAdapter)', () => {
 		const byteArray = new TextEncoder().encode(testMessage);
 		const { buffer } = byteArray;
 		ws.send(buffer);
-		jest.advanceTimersByTime(1);
 
 		expect(handleConnectionSpy).toHaveBeenCalled();
 		expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
