@@ -287,7 +287,7 @@ export class LibraryStorage implements ILibraryStorage {
 	public async getLanguages(libraryName: ILibraryName): Promise<string[]> {
 		const prefix = this.getS3Key(libraryName, 'language');
 
-		const files = await this.s3Client.list(prefix);
+		const { files } = await this.s3Client.list({ path: prefix });
 
 		const jsonFiles = files.filter((file) => path.extname(file) === '.json');
 		const languages = jsonFiles.map((file) => path.basename(file, '.json'));
@@ -338,7 +338,9 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @returns an array of filenames
 	 */
 	public async listFiles(libraryName: ILibraryName, withMetadata = true): Promise<string[]> {
-		const files = await this.s3Client.list(this.getS3Key(libraryName, ''));
+		const prefix = this.getS3Key(libraryName, 'language');
+
+		const { files } = await this.s3Client.list({ path: prefix });
 
 		if (withMetadata) {
 			return files.concat('library.json');

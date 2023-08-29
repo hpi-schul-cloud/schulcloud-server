@@ -204,8 +204,9 @@ export class ContentStorage implements IContentStorage {
 			throw new NotFoundException('Content could not be found');
 		}
 
-		const prefix = this.getContentPath(contentId);
-		const files = await this.storageClient.list(prefix);
+		const path = this.getContentPath(contentId);
+		const { files } = await this.storageClient.list({ path });
+
 		return files;
 	}
 
