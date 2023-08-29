@@ -62,7 +62,6 @@ export class PostH5PContentCreateParams {
 	@IsNotEmpty()
 	@IsObject()
 	params!: {
-		// Todo
 		params: unknown;
 		metadata: IContentMetadata;
 	};

@@ -57,7 +57,7 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @returns true if successful
 	 */
 	public async addFile(libraryName: ILibraryName, filename: string, dataStream: Readable): Promise<boolean> {
-		this.checkFilename(filename); // TODO: do this everywhere?
+		this.checkFilename(filename);
 
 		const s3Key = this.getS3Key(libraryName, filename);
 

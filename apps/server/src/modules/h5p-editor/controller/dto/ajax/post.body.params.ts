@@ -19,7 +19,7 @@ class ContentBodyParams {
 	@ApiProperty()
 	@IsString()
 	@IsOptional()
-	field!: string; // Todo: Reason
+	field!: string;
 }
 
 class LibraryParametersBodyParams {
@@ -43,7 +43,7 @@ export class AjaxPostBodyParamsTransformPipe implements PipeTransform {
 			} else if ('libraryParameters' in value) {
 				transformed = plainToClass(LibraryParametersBodyParams, value);
 			} else {
-				return undefined; // Todo Check this
+				return undefined;
 			}
 
 			const validationResult = await validate(transformed);
