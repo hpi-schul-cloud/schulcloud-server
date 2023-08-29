@@ -100,14 +100,14 @@ describe('FilesStorageService upload methods', () => {
 	});
 
 	describe('uploadFile is called', () => {
-		const createUploadFileParams = () => {
+		const createUploadFileParams = (props: { mimeType: string } = { mimeType: 'dto-mime-type' }) => {
 			const { params, fileRecords, parentId: userId } = buildFileRecordsWithParams();
 
 			const file = createMock<FileDto>();
 			const readable = Readable.from('abc');
 			file.data = readable;
 			file.name = fileRecords[0].name;
-			file.mimeType = 'dto-mime-type';
+			file.mimeType = props.mimeType;
 
 			const fileSize = 3;
 
@@ -380,6 +380,43 @@ describe('FilesStorageService upload methods', () => {
 				const fileRecord = await service.uploadFile(userId, params, file);
 
 				expect(fileRecord.mimeType).toEqual(file.mimeType);
+			});
+		});
+
+		describe('WHEN mime type cant be detected from stream', () => {
+			const setup = () => {
+				const mimeType = 'image/svg+xml';
+				const { params, file, userId, fileRecord } = createUploadFileParams({ mimeType });
+
+				jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValue([[fileRecord], 1]);
+
+				const getMimeTypeSpy = jest.spyOn(StreamMimeType, 'getMimeType');
+
+				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
+				// eslint-disable-next-line @typescript-eslint/require-await
+				fileRecordRepo.save.mockImplementation(async (fr) => {
+					if (fr instanceof FileRecord && !fr._id) {
+						fr._id = new ObjectId();
+					}
+				});
+
+				return { params, file, userId, getMimeTypeSpy, mimeType };
+			};
+
+			it('should use dto mime type', async () => {
+				const { params, file, userId, mimeType } = setup();
+
+				await service.uploadFile(userId, params, file);
+
+				expect(fileRecordRepo.save).toHaveBeenCalledWith(expect.objectContaining({ mimeType }));
+			});
+
+			it('should not detect from stream', async () => {
+				const { params, file, userId, getMimeTypeSpy } = setup();
+
+				await service.uploadFile(userId, params, file);
+
+				expect(getMimeTypeSpy).not.toHaveBeenCalled();
 			});
 		});
 	});
