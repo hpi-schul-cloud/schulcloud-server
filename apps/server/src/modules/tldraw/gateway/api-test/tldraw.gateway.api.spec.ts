@@ -46,6 +46,7 @@ describe('WebSocketGateway (WsAdapter)', () => {
 	it(`should handle connection and data transfer`, async () => {
 		const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
 		const reduceMock = jest.spyOn(Uint8Array.prototype, 'reduce').mockReturnValue(1);
+		jest.useFakeTimers({ advanceTimers: 1 });
 		ws = new WebSocket(`${wsUrl}/TEST1`);
 		await new Promise((resolve) => {
 			ws.on('open', resolve);
@@ -54,6 +55,7 @@ describe('WebSocketGateway (WsAdapter)', () => {
 		const byteArray = new TextEncoder().encode(testMessage);
 		const { buffer } = byteArray;
 		ws.send(buffer);
+		jest.advanceTimersByTime(1);
 
 		expect(handleConnectionSpy).toHaveBeenCalled();
 		expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
@@ -62,6 +64,7 @@ describe('WebSocketGateway (WsAdapter)', () => {
 		ws.close();
 		handleConnectionSpy.mockReset();
 		reduceMock.mockReset();
+		jest.clearAllTimers();
 	});
 
 	it(`should refuse connection if there is no docName`, async () => {
