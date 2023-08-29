@@ -6,6 +6,8 @@ import { EncryptionModule } from '@shared/infra/encryption';
 import { ExternalToolRepo } from '@shared/repo';
 import { ToolConfigModule } from '../tool-config.module';
 import {
+	ExternalToolConfigurationService,
+	ExternalToolLogoService,
 	ExternalToolParameterValidationService,
 	ExternalToolService,
 	ExternalToolServiceMapper,
@@ -22,8 +24,16 @@ import { CommonToolModule } from '../common';
 		ExternalToolParameterValidationService,
 		ExternalToolValidationService,
 		ExternalToolVersionService,
+		ExternalToolConfigurationService,
+		ExternalToolLogoService,
 		ExternalToolRepo,
 	],
-	exports: [ExternalToolService, ExternalToolValidationService, ExternalToolVersionService],
+	exports: [
+		ExternalToolService,
+		ExternalToolValidationService,
+		ExternalToolVersionService,
+		ExternalToolConfigurationService,
+		ExternalToolLogoService,
+	],
 })
 export class ExternalToolModule {}

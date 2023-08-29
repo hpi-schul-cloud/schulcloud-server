@@ -1,24 +1,23 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, Permission, Role, RoleName, School, User } from '@shared/domain';
+import { Account, Course, Permission, School, User } from '@shared/domain';
 import {
+	accountFactory,
 	contextExternalToolEntityFactory,
 	courseFactory,
 	customParameterFactory,
 	externalToolEntityFactory,
-	mapUserToCurrentUser,
-	roleFactory,
 	schoolExternalToolEntityFactory,
 	schoolFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
-import { ICurrentUser, JwtAuthGuard } from '@src/modules/authentication';
 import { ServerTestModule } from '@src/modules/server';
 import { CustomParameterTypeParams } from '@src/modules/tool/common/enum';
-import { Request } from 'express';
-import request, { Response } from 'supertest';
+import { Response } from 'supertest';
 import { CustomParameterLocationParams, CustomParameterScopeTypeParams } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
@@ -30,31 +29,23 @@ import {
 	SchoolExternalToolConfigurationTemplateResponse,
 } from '../dto';
 
-describe('ToolSchoolController (API)', () => {
+describe('ToolConfigurationController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let orm: MikroORM;
 
-	let currentUser: ICurrentUser;
+	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
-			.compile();
+		}).compile();
 
 		app = moduleRef.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
 		orm = app.get(MikroORM);
+		testApiClient = new TestApiClient(app, 'tools');
 	});
 
 	afterAll(async () => {
@@ -70,42 +61,9 @@ describe('ToolSchoolController (API)', () => {
 			const setup = async () => {
 				const school: School = schoolFactory.buildWithId();
 
-				const user: User = userFactory.buildWithId({ school, roles: [] });
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
 
-				const course: Course = courseFactory.buildWithId({ teachers: [user], school });
-
-				await em.persistAndFlush([user, school, course]);
-				em.clear();
-
-				return {
-					user,
-					school,
-					course,
-				};
-			};
-
-			it('should return a forbidden status', async () => {
-				const { user, course } = await setup();
-				currentUser = mapUserToCurrentUser(user);
-
-				const response: Response = await request(app.getHttpServer()).get(`/tools/course/${course.id}/available-tools`);
-
-				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
-			});
-		});
-
-		describe('when tools are available for a course', () => {
-			const setup = async () => {
-				const adminRole: Role = roleFactory.buildWithId({
-					name: RoleName.TEACHER,
-					permissions: [Permission.CONTEXT_TOOL_ADMIN],
-				});
-
-				const school: School = schoolFactory.buildWithId();
-
-				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
-
-				const course: Course = courseFactory.buildWithId({ teachers: [user], school });
+				const course: Course = courseFactory.buildWithId({ teachers: [studentUser], school });
 
 				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({
@@ -117,24 +75,83 @@ describe('ToolSchoolController (API)', () => {
 					tool: externalTool,
 				});
 
-				await em.persistAndFlush([user, school, course, adminRole, externalTool, schoolExternalTool]);
+				const contextExternalTool: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
+					schoolTool: schoolExternalTool,
+					contextType: ContextExternalToolType.COURSE,
+					contextId: course.id,
+				});
+
+				await em.persistAndFlush([
+					school,
+					course,
+					studentUser,
+					studentAccount,
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+				]);
 				em.clear();
 
+				const loggedInClient: TestApiClient = await testApiClient.login(studentAccount);
+
 				return {
-					user,
-					school,
 					course,
 					externalTool,
 					schoolExternalTool,
 					contextParameter,
+					loggedInClient,
+				};
+			};
+
+			it('should return a forbidden status', async () => {
+				const { course, loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.get(`course/${course.id}/available-tools`);
+
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+			});
+		});
+
+		describe('when tools are available for a course', () => {
+			const setup = async () => {
+				const school: School = schoolFactory.buildWithId();
+
+				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
+					Permission.CONTEXT_TOOL_ADMIN,
+				]);
+
+				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser], school });
+
+				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
+				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					logoBase64: 'logo',
+					parameters: [globalParameter, schoolParameter, contextParameter],
+				});
+				externalTool.logoUrl = `http://localhost:3030/api/v3/tools/external-tools/${externalTool.id}/logo`;
+
+				const schoolExternalTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+					school,
+					tool: externalTool,
+				});
+
+				await em.persistAndFlush([school, course, teacherUser, teacherAccount, externalTool, schoolExternalTool]);
+				em.clear();
+
+				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
+				return {
+					course,
+					externalTool,
+					schoolExternalTool,
+					contextParameter,
+					loggedInClient,
 				};
 			};
 
 			it('should return an array of available tools with parameters of scope context', async () => {
-				const { user, course, externalTool, contextParameter, schoolExternalTool } = await setup();
-				currentUser = mapUserToCurrentUser(user);
+				const { course, externalTool, contextParameter, schoolExternalTool, loggedInClient } = await setup();
 
-				const response: Response = await request(app.getHttpServer()).get(`/tools/course/${course.id}/available-tools`);
+				const response: Response = await loggedInClient.get(`course/${course.id}/available-tools`);
 
 				expect(response.body).toEqual<ContextExternalToolConfigurationTemplateListResponse>({
 					data: [
@@ -166,35 +183,31 @@ describe('ToolSchoolController (API)', () => {
 
 		describe('when no tools are available for a course', () => {
 			const setup = async () => {
-				const adminRole: Role = roleFactory.buildWithId({
-					name: RoleName.TEACHER,
-					permissions: [Permission.CONTEXT_TOOL_ADMIN],
-				});
-
 				const school: School = schoolFactory.buildWithId();
 
-				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({}, [
+					Permission.CONTEXT_TOOL_ADMIN,
+				]);
 
-				const course: Course = courseFactory.buildWithId({ teachers: [user], school });
+				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser], school });
 
 				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId();
 
-				await em.persistAndFlush([user, school, course, adminRole, externalTool]);
+				await em.persistAndFlush([teacherUser, school, course, teacherAccount, externalTool]);
 				em.clear();
 
+				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
 				return {
-					user,
-					school,
+					loggedInClient,
 					course,
-					externalTool,
 				};
 			};
 
 			it('should return an empty array', async () => {
-				const { user, course } = await setup();
-				currentUser = mapUserToCurrentUser(user);
+				const { loggedInClient, course } = await setup();
 
-				const response: Response = await request(app.getHttpServer()).get(`/tools/course/${course.id}/available-tools`);
+				const response: Response = await loggedInClient.get(`course/${course.id}/available-tools`);
 
 				expect(response.body).toEqual<SchoolExternalToolConfigurationTemplateListResponse>({
 					data: [],
@@ -209,21 +222,35 @@ describe('ToolSchoolController (API)', () => {
 				const school: School = schoolFactory.buildWithId();
 
 				const user: User = userFactory.buildWithId({ school, roles: [] });
+				const account: Account = accountFactory.buildWithId({ userId: user.id });
 
-				await em.persistAndFlush([user, school]);
+				const course: Course = courseFactory.buildWithId({ teachers: [user], school });
+
+				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
+				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					parameters: [globalParameter, schoolParameter, contextParameter],
+				});
+
+				const schoolExternalTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+					school,
+					tool: externalTool,
+				});
+
+				await em.persistAndFlush([user, account, course, school, externalTool, schoolExternalTool]);
 				em.clear();
 
+				const loggedInClient: TestApiClient = await testApiClient.login(account);
+
 				return {
-					user,
+					loggedInClient,
 					school,
 				};
 			};
 
 			it('should return a forbidden status', async () => {
-				const { user, school } = await setup();
-				currentUser = mapUserToCurrentUser(user);
+				const { loggedInClient, school } = await setup();
 
-				const response: Response = await request(app.getHttpServer()).get(`/tools/school/${school.id}/available-tools`);
+				const response: Response = await loggedInClient.get(`school/${school.id}/available-tools`);
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 			});
@@ -231,25 +258,24 @@ describe('ToolSchoolController (API)', () => {
 
 		describe('when tools are available for a school', () => {
 			const setup = async () => {
-				const adminRole: Role = roleFactory.buildWithId({
-					name: RoleName.ADMINISTRATOR,
-					permissions: [Permission.SCHOOL_TOOL_ADMIN],
-				});
-
 				const school: School = schoolFactory.buildWithId();
 
-				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
 
 				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					logoBase64: 'logo',
 					parameters: [globalParameter, schoolParameter, contextParameter],
 				});
+				externalTool.logoUrl = `http://localhost:3030/api/v3/tools/external-tools/${externalTool.id}/logo`;
 
-				await em.persistAndFlush([user, school, adminRole, externalTool]);
+				await em.persistAndFlush([adminUser, school, adminAccount, externalTool]);
 				em.clear();
 
+				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
+
 				return {
-					user,
+					loggedInClient,
 					school,
 					externalTool,
 					schoolParameter,
@@ -257,10 +283,9 @@ describe('ToolSchoolController (API)', () => {
 			};
 
 			it('should return a list of available external tools with parameters of scope school', async () => {
-				const { user, school, externalTool, schoolParameter } = await setup();
-				currentUser = mapUserToCurrentUser(user);
+				const { loggedInClient, school, externalTool, schoolParameter } = await setup();
 
-				const response: Response = await request(app.getHttpServer()).get(`/tools/school/${school.id}/available-tools`);
+				const response: Response = await loggedInClient.get(`school/${school.id}/available-tools`);
 
 				expect(response.body).toEqual<SchoolExternalToolConfigurationTemplateListResponse>({
 					data: [
@@ -291,29 +316,25 @@ describe('ToolSchoolController (API)', () => {
 
 		describe('when no tools are available for a school', () => {
 			const setup = async () => {
-				const adminRole: Role = roleFactory.buildWithId({
-					name: RoleName.ADMINISTRATOR,
-					permissions: [Permission.SCHOOL_TOOL_ADMIN],
-				});
-
 				const school: School = schoolFactory.buildWithId();
 
-				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.SCHOOL_TOOL_ADMIN]);
 
-				await em.persistAndFlush([user, school, adminRole]);
+				await em.persistAndFlush([adminUser, school, adminAccount]);
 				em.clear();
 
+				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
+
 				return {
-					user,
+					loggedInClient,
 					school,
 				};
 			};
 
 			it('should return an empty array', async () => {
-				const { user, school } = await setup();
-				currentUser = mapUserToCurrentUser(user);
+				const { loggedInClient, school } = await setup();
 
-				const response: Response = await request(app.getHttpServer()).get(`/tools/school/${school.id}/available-tools`);
+				const response: Response = await loggedInClient.get(`school/${school.id}/available-tools`);
 
 				expect(response.body).toEqual<SchoolExternalToolConfigurationTemplateListResponse>({
 					data: [],
@@ -328,6 +349,7 @@ describe('ToolSchoolController (API)', () => {
 				const school: School = schoolFactory.buildWithId();
 
 				const user: User = userFactory.buildWithId({ school, roles: [] });
+				const account: Account = accountFactory.buildWithId({ userId: user.id });
 
 				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId();
 
@@ -336,21 +358,22 @@ describe('ToolSchoolController (API)', () => {
 					tool: externalTool,
 				});
 
-				await em.persistAndFlush([user, school, externalTool, schoolExternalTool]);
+				await em.persistAndFlush([user, account, school, externalTool, schoolExternalTool]);
 				em.clear();
 
+				const loggedInClient: TestApiClient = await testApiClient.login(account);
+
 				return {
-					user,
+					loggedInClient,
 					schoolExternalTool,
 				};
 			};
 
 			it('should return a forbidden status', async () => {
-				const { user, schoolExternalTool } = await setup();
-				currentUser = mapUserToCurrentUser(user);
+				const { loggedInClient, schoolExternalTool } = await setup();
 
-				const response: Response = await request(app.getHttpServer()).get(
-					`/tools/school-external-tools/${schoolExternalTool.id}/configuration-template`
+				const response: Response = await loggedInClient.get(
+					`school-external-tools/${schoolExternalTool.id}/configuration-template`
 				);
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
@@ -359,14 +382,11 @@ describe('ToolSchoolController (API)', () => {
 
 		describe('when tool is not hidden', () => {
 			const setup = async () => {
-				const adminRole: Role = roleFactory.buildWithId({
-					name: RoleName.ADMINISTRATOR,
-					permissions: [Permission.SCHOOL_TOOL_ADMIN],
-				});
-
 				const school: School = schoolFactory.buildWithId();
 
-				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.SCHOOL_TOOL_ADMIN,
+				]);
 
 				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({
@@ -378,11 +398,13 @@ describe('ToolSchoolController (API)', () => {
 					tool: externalTool,
 				});
 
-				await em.persistAndFlush([user, school, adminRole, externalTool, schoolExternalTool]);
+				await em.persistAndFlush([adminUser, school, adminAccount, externalTool, schoolExternalTool]);
 				em.clear();
 
+				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
+
 				return {
-					user,
+					loggedInClient,
 					school,
 					externalTool,
 					schoolParameter,
@@ -391,11 +413,10 @@ describe('ToolSchoolController (API)', () => {
 			};
 
 			it('should return a tool with parameter with scope school', async () => {
-				const { user, schoolExternalTool, externalTool, schoolParameter } = await setup();
-				currentUser = mapUserToCurrentUser(user);
+				const { loggedInClient, schoolExternalTool, externalTool, schoolParameter } = await setup();
 
-				const response: Response = await request(app.getHttpServer()).get(
-					`/tools/school-external-tools/${schoolExternalTool.id}/configuration-template`
+				const response: Response = await loggedInClient.get(
+					`school-external-tools/${schoolExternalTool.id}/configuration-template`
 				);
 
 				expect(response.body).toEqual<SchoolExternalToolConfigurationTemplateResponse>({
@@ -423,33 +444,29 @@ describe('ToolSchoolController (API)', () => {
 
 		describe('when tool is hidden', () => {
 			const setup = async () => {
-				const adminRole: Role = roleFactory.buildWithId({
-					name: RoleName.ADMINISTRATOR,
-					permissions: [Permission.SCHOOL_TOOL_ADMIN],
-				});
-
 				const school: School = schoolFactory.buildWithId();
 
-				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.SCHOOL_TOOL_ADMIN]);
 
 				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({ isHidden: true });
 
-				await em.persistAndFlush([user, school, adminRole, externalTool]);
+				await em.persistAndFlush([adminUser, school, adminAccount, externalTool]);
 				em.clear();
 
+				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
+
 				return {
-					user,
+					loggedInClient,
 					school,
 					externalTool,
 				};
 			};
 
 			it('should throw notFoundException', async () => {
-				const { user } = await setup();
-				currentUser = mapUserToCurrentUser(user);
+				const { loggedInClient } = await setup();
 
-				const response: Response = await request(app.getHttpServer()).get(
-					`/tools/school-external-tools/${new ObjectId().toHexString()}/configuration-template`
+				const response: Response = await loggedInClient.get(
+					`school-external-tools/${new ObjectId().toHexString()}/configuration-template`
 				);
 
 				expect(response.status).toEqual(HttpStatus.NOT_FOUND);
@@ -465,6 +482,7 @@ describe('ToolSchoolController (API)', () => {
 				const course: Course = courseFactory.buildWithId();
 
 				const user: User = userFactory.buildWithId({ school, roles: [] });
+				const account: Account = accountFactory.buildWithId({ userId: user.id });
 
 				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId();
 
@@ -477,21 +495,30 @@ describe('ToolSchoolController (API)', () => {
 					schoolTool: schoolExternalTool,
 				});
 
-				await em.persistAndFlush([user, school, externalTool, schoolExternalTool, contextExternalTool, course]);
+				await em.persistAndFlush([
+					user,
+					account,
+					school,
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+					course,
+				]);
 				em.clear();
 
+				const loggedInClient: TestApiClient = await testApiClient.login(account);
+
 				return {
-					user,
+					loggedInClient,
 					contextExternalTool,
 				};
 			};
 
 			it('should return a forbidden status', async () => {
-				const { user, contextExternalTool } = await setup();
-				currentUser = mapUserToCurrentUser(user);
+				const { loggedInClient, contextExternalTool } = await setup();
 
-				const response: Response = await request(app.getHttpServer()).get(
-					`/tools/context-external-tools/${contextExternalTool.id}/configuration-template`
+				const response: Response = await loggedInClient.get(
+					`context-external-tools/${contextExternalTool.id}/configuration-template`
 				);
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
@@ -500,16 +527,13 @@ describe('ToolSchoolController (API)', () => {
 
 		describe('when tool is not hidden', () => {
 			const setup = async () => {
-				const teacherRole: Role = roleFactory.buildWithId({
-					name: RoleName.TEACHER,
-					permissions: [Permission.CONTEXT_TOOL_ADMIN],
-				});
-
 				const school: School = schoolFactory.buildWithId();
 
-				const user: User = userFactory.buildWithId({ school, roles: [teacherRole] });
+				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
+					Permission.CONTEXT_TOOL_ADMIN,
+				]);
 
-				const course: Course = courseFactory.buildWithId({ school, teachers: [user] });
+				const course: Course = courseFactory.buildWithId({ school, teachers: [teacherUser] });
 
 				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({
@@ -527,13 +551,21 @@ describe('ToolSchoolController (API)', () => {
 					contextId: course.id,
 				});
 
-				await em.persistAndFlush([user, school, externalTool, schoolExternalTool, contextExternalTool, course]);
+				await em.persistAndFlush([
+					teacherUser,
+					teacherAccount,
+					school,
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+					course,
+				]);
 				em.clear();
 
+				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
 				return {
-					user,
-					school,
-					course,
+					loggedInClient,
 					externalTool,
 					contextParameter,
 					schoolExternalTool,
@@ -542,11 +574,11 @@ describe('ToolSchoolController (API)', () => {
 			};
 
 			it('should return a tool with parameter with scope context', async () => {
-				const { user, externalTool, schoolExternalTool, contextParameter, contextExternalTool } = await setup();
-				currentUser = mapUserToCurrentUser(user);
+				const { loggedInClient, externalTool, schoolExternalTool, contextParameter, contextExternalTool } =
+					await setup();
 
-				const response: Response = await request(app.getHttpServer()).get(
-					`/tools/context-external-tools/${contextExternalTool.id}/configuration-template`
+				const response: Response = await loggedInClient.get(
+					`context-external-tools/${contextExternalTool.id}/configuration-template`
 				);
 
 				expect(response.body).toEqual<ContextExternalToolConfigurationTemplateResponse>({
@@ -575,16 +607,13 @@ describe('ToolSchoolController (API)', () => {
 
 		describe('when tool is hidden', () => {
 			const setup = async () => {
-				const teacherRole: Role = roleFactory.buildWithId({
-					name: RoleName.TEACHER,
-					permissions: [Permission.CONTEXT_TOOL_ADMIN],
-				});
-
 				const school: School = schoolFactory.buildWithId();
 
-				const user: User = userFactory.buildWithId({ school, roles: [teacherRole] });
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
+					Permission.CONTEXT_TOOL_ADMIN,
+				]);
 
-				const course: Course = courseFactory.buildWithId({ school, teachers: [user] });
+				const course: Course = courseFactory.buildWithId({ school, teachers: [teacherUser] });
 
 				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({ isHidden: true });
 
@@ -600,9 +629,9 @@ describe('ToolSchoolController (API)', () => {
 				});
 
 				await em.persistAndFlush([
-					user,
+					teacherUser,
 					school,
-					teacherRole,
+					teacherAccount,
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
@@ -610,8 +639,10 @@ describe('ToolSchoolController (API)', () => {
 				]);
 				em.clear();
 
+				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
 				return {
-					user,
+					loggedInClient,
 					school,
 					externalTool,
 					contextExternalTool,
@@ -619,11 +650,10 @@ describe('ToolSchoolController (API)', () => {
 			};
 
 			it('should throw notFoundException', async () => {
-				const { user, contextExternalTool } = await setup();
-				currentUser = mapUserToCurrentUser(user);
+				const { loggedInClient, contextExternalTool } = await setup();
 
-				const response: Response = await request(app.getHttpServer()).get(
-					`/tools/context-external-tools/${contextExternalTool.id}/configuration-template`
+				const response: Response = await loggedInClient.get(
+					`context-external-tools/${contextExternalTool.id}/configuration-template`
 				);
 				expect(response.status).toEqual(HttpStatus.NOT_FOUND);
 			});

@@ -5,7 +5,7 @@ import {
 	News,
 	School,
 	SchoolNews,
-	Team,
+	TeamEntity,
 	TeamNews,
 	User,
 	NewsTargetModel,
@@ -144,7 +144,7 @@ describe('NewsMapper', () => {
 		});
 		it('should correctly map team news to dto', () => {
 			const school = schoolFactory.build();
-			const team = new Team({ name: 'team #1' });
+			const team = new TeamEntity({ name: 'team #1' });
 			const creator = userFactory.build();
 			const newsProps = { title: 'test title', content: 'test content' };
 			const teamNews = createNews(newsProps, TeamNews, school, creator, team);

@@ -4,7 +4,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const moment = require('moment');
 
 const { Forbidden, BadRequest, TooManyRequests } = require('../../../errors');
-const { NODE_ENV, ENVIRONMENTS, SC_TITLE, SC_SHORT_TITLE } = require('../../../../config/globals');
+const { NODE_ENV, ENVIRONMENTS, SC_TITLE } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../model').registrationPinModel;
 const { getRandomInt } = require('../../../utils/randomNumberGenerator');
@@ -38,7 +38,7 @@ Bitte geben Sie den folgenden Bestätigungscode im Registrierungsprozess ein, um
 PIN: ${pin}
 
 Mit Freundlichen Grüßen
-Ihr ${SC_SHORT_TITLE}-Team`;
+Ihr ${SC_TITLE}-Team`;
 	}
 	if (role === 'student' || role === 'employee' || role === 'expert') {
 		return `Vielen Dank, dass du die ${SC_TITLE} nutzen möchtest.
@@ -48,7 +48,7 @@ um deine Registrierung bei der ${SC_TITLE} abzuschließen:
 PIN: ${pin}
 
 Mit freundlichen Grüßen
-Dein ${SC_SHORT_TITLE}-Team`;
+Dein ${SC_TITLE}-Team`;
 	}
 	throw new BadRequest('Die angegebene Rolle ist ungültig.', { role });
 }
@@ -87,7 +87,7 @@ const checkAndVerifyPin = async (hook) => {
 const mailPin = (hook) => {
 	if (!(hook.data || {}).silent) {
 		globalHooks.sendEmail(hook, {
-			subject: `${SC_SHORT_TITLE}: Registrierung mit PIN verifizieren`,
+			subject: `${SC_TITLE}: Registrierung mit PIN verifizieren`,
 			emails: (hook.data || {}).email,
 			content: {
 				text: createinfoText(hook),
