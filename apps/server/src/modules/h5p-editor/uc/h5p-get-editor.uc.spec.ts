@@ -1,52 +1,47 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { H5PEditor, H5PPlayer } from '@lumieducation/h5p-server';
+import { H5PEditor, H5PPlayer, IEditorModel } from '@lumieducation/h5p-server';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
-import { setupEntities } from '@shared/testing';
-import { UserService } from '@src/modules';
+import { h5pContentFactory, setupEntities } from '@shared/testing';
+import { AuthorizationContextBuilder, AuthorizationService, UserService } from '@src/modules';
 import { ICurrentUser } from '@src/modules/authentication';
+import { H5PContentRepo } from '../repo';
 import { H5PAjaxEndpointService, LibraryStorage } from '../service';
 import { H5PEditorUc } from './h5p.uc';
 
-const setup = () => {
-	const contentId = '123456789';
-	const contentIdCreate = 'create';
-	const currentUser: ICurrentUser = {
-		userId: '123',
-		roles: [],
-		schoolId: '',
-		accountId: '',
+const createParams = () => {
+	const content = h5pContentFactory.build();
+
+	const mockCurrentUser: ICurrentUser = {
+		accountId: 'mockAccountId',
+		roles: ['student'],
+		schoolId: 'mockSchoolId',
+		userId: 'mockUserId',
 	};
 
-	const language: LanguageType = LanguageType.DE;
-
-	const playerModel = {
-		contentId,
-		dependencies: [{ machineName: 'ExampleLibrary', majorVersion: 1, minorVersion: 2 }],
-	};
-
-	const editorModel = {
-		scripts: ['example.js'],
-		styles: ['example.css'],
-	};
-
-	const exampleContent = {
-		h5p: {},
-		library: 'ExampleLib-1.0',
+	const editorResponseMock = { scripts: ['test.js'] } as IEditorModel;
+	const contentResponseMock: Awaited<ReturnType<H5PEditor['getContent']>> = {
+		h5p: content.metadata,
+		library: content.metadata.mainLibrary,
 		params: {
-			metadata: {},
-			params: { anything: true },
+			metadata: content.metadata,
+			params: content.content,
 		},
 	};
 
-	return { contentId, contentIdCreate, currentUser, playerModel, editorModel, exampleContent, language };
+	const language = LanguageType.DE;
+
+	return { content, mockCurrentUser, editorResponseMock, contentResponseMock, language };
 };
 
 describe('get H5P editor', () => {
 	let module: TestingModule;
 	let uc: H5PEditorUc;
 	let h5pEditor: DeepMocked<H5PEditor>;
+	let h5pContentRepo: DeepMocked<H5PContentRepo>;
+	let authorizationService: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -73,11 +68,21 @@ describe('get H5P editor', () => {
 					provide: UserService,
 					useValue: createMock<UserService>(),
 				},
+				{
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
+				},
+				{
+					provide: H5PContentRepo,
+					useValue: createMock<H5PContentRepo>(),
+				},
 			],
 		}).compile();
 
 		uc = module.get(H5PEditorUc);
 		h5pEditor = module.get(H5PEditor);
+		h5pContentRepo = module.get(H5PContentRepo);
+		authorizationService = module.get(AuthorizationService);
 		await setupEntities();
 	});
 
@@ -89,35 +94,182 @@ describe('get H5P editor', () => {
 		await module.close();
 	});
 
-	describe('when value of contentId is create', () => {
-		it('should render new h5p editor', async () => {
-			const { language, currentUser, editorModel } = setup();
-			h5pEditor.render.mockResolvedValueOnce(editorModel);
-			const result = await uc.getEmptyH5pEditor(currentUser, language);
+	describe('getEmptyH5pEditor is called', () => {
+		describe('WHEN service executes successfully', () => {
+			const setup = () => {
+				const { content, mockCurrentUser, editorResponseMock, language } = createParams();
 
-			expect(result).toEqual(editorModel);
+				h5pEditor.render.mockResolvedValueOnce(editorResponseMock);
+
+				return { content, mockCurrentUser, editorResponseMock, language };
+			};
+
+			it('should call service with correct params', async () => {
+				const { mockCurrentUser, language } = setup();
+
+				await uc.getEmptyH5pEditor(mockCurrentUser, language);
+
+				expect(h5pEditor.render).toHaveBeenCalledWith(
+					undefined,
+					language,
+					expect.objectContaining({
+						id: mockCurrentUser.userId,
+					})
+				);
+			});
+
+			it('should return results of service', async () => {
+				const { mockCurrentUser, language, editorResponseMock } = setup();
+
+				const result = await uc.getEmptyH5pEditor(mockCurrentUser, language);
+
+				expect(result).toEqual(editorResponseMock);
+			});
+		});
+
+		describe('WHEN service throws error', () => {
+			const setup = () => {
+				const { content, mockCurrentUser, editorResponseMock, language } = createParams();
+
+				const error = new Error('test');
+
+				h5pEditor.render.mockRejectedValueOnce(error);
+
+				return { error, content, mockCurrentUser, editorResponseMock, language };
+			};
+
+			it('should return error of service', async () => {
+				const { error, mockCurrentUser, language } = setup();
+
+				const getEmptyEditorPromise = uc.getEmptyH5pEditor(mockCurrentUser, language);
+
+				await expect(getEmptyEditorPromise).rejects.toThrow(error);
+			});
 		});
 	});
 
-	describe('when contentId is given', () => {
-		it('should render h5p editor', async () => {
-			const { contentId, language, currentUser, editorModel, exampleContent } = setup();
-			h5pEditor.render.mockResolvedValueOnce(editorModel);
-			// @ts-expect-error partial object
-			h5pEditor.getContent.mockResolvedValueOnce(exampleContent);
-			const result = await uc.getH5pEditor(currentUser, contentId, language);
+	describe('getH5pEditor is called', () => {
+		describe('WHEN user is authorized and service executes successfully', () => {
+			const setup = () => {
+				const { content, mockCurrentUser, editorResponseMock, contentResponseMock, language } = createParams();
 
-			expect(result).toEqual({ editorModel, content: exampleContent });
+				h5pContentRepo.findById.mockResolvedValueOnce(content);
+				h5pEditor.render.mockResolvedValueOnce(editorResponseMock);
+				h5pEditor.getContent.mockResolvedValueOnce(contentResponseMock);
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+
+				return { content, mockCurrentUser, editorResponseMock, contentResponseMock, language };
+			};
+
+			it('should call authorizationService.checkPermissionByReferences', async () => {
+				const { content, language, mockCurrentUser } = setup();
+
+				await uc.getH5pEditor(mockCurrentUser, content.id, language);
+
+				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
+					mockCurrentUser.userId,
+					content.parentType,
+					content.parentId,
+					AuthorizationContextBuilder.write([])
+				);
+			});
+
+			it('should call service with correct params', async () => {
+				const { content, language, mockCurrentUser } = setup();
+
+				await uc.getH5pEditor(mockCurrentUser, content.id, language);
+
+				expect(h5pEditor.render).toHaveBeenCalledWith(
+					content.id,
+					language,
+					expect.objectContaining({
+						id: mockCurrentUser.userId,
+					})
+				);
+				expect(h5pEditor.getContent).toHaveBeenCalledWith(
+					content.id,
+					expect.objectContaining({
+						id: mockCurrentUser.userId,
+					})
+				);
+			});
+
+			it('should return results of service', async () => {
+				const { content, language, mockCurrentUser, contentResponseMock, editorResponseMock } = setup();
+
+				const result = await uc.getH5pEditor(mockCurrentUser, content.id, language);
+
+				expect(result).toEqual({
+					content: contentResponseMock,
+					editorModel: editorResponseMock,
+				});
+			});
 		});
-	});
 
-	describe('when contentId does not exist', () => {
-		it('should throw an error ', async () => {
-			const { contentId, currentUser, language } = setup();
-			h5pEditor.render.mockRejectedValueOnce(new Error('Could not get H5P editor'));
-			const result = uc.getH5pEditor(currentUser, contentId, language);
+		describe('WHEN content does not exist', () => {
+			const setup = () => {
+				const { content, mockCurrentUser, editorResponseMock, language } = createParams();
 
-			await expect(result).rejects.toThrow();
+				h5pContentRepo.findById.mockRejectedValueOnce(new NotFoundException());
+
+				return { content, mockCurrentUser, editorResponseMock, language };
+			};
+
+			it('should throw NotFoundException', async () => {
+				const { content, mockCurrentUser, language } = setup();
+
+				const getEditorPromise = uc.getH5pEditor(mockCurrentUser, content.id, language);
+
+				await expect(getEditorPromise).rejects.toThrow(new NotFoundException());
+
+				expect(h5pEditor.render).toHaveBeenCalledTimes(0);
+				expect(h5pEditor.getContent).toHaveBeenCalledTimes(0);
+			});
+		});
+
+		describe('WHEN user is not authorized', () => {
+			const setup = () => {
+				const { content, mockCurrentUser, editorResponseMock, contentResponseMock, language } = createParams();
+
+				h5pContentRepo.findById.mockResolvedValueOnce(content);
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+
+				return { content, mockCurrentUser, editorResponseMock, contentResponseMock, language };
+			};
+
+			it('should throw forbidden error', async () => {
+				const { content, mockCurrentUser, language } = setup();
+
+				const getEditorPromise = uc.getH5pEditor(mockCurrentUser, content.id, language);
+
+				await expect(getEditorPromise).rejects.toThrow(new ForbiddenException());
+
+				expect(h5pEditor.render).toHaveBeenCalledTimes(0);
+				expect(h5pEditor.getContent).toHaveBeenCalledTimes(0);
+			});
+		});
+
+		describe('WHEN service throws error', () => {
+			const setup = () => {
+				const { content, mockCurrentUser, editorResponseMock, contentResponseMock, language } = createParams();
+
+				const error = new Error('test');
+
+				h5pContentRepo.findById.mockResolvedValueOnce(content);
+				h5pEditor.render.mockRejectedValueOnce(error);
+				h5pEditor.getContent.mockRejectedValueOnce(error);
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+
+				return { error, content, mockCurrentUser, editorResponseMock, contentResponseMock, language };
+			};
+
+			it('should return error of service', async () => {
+				const { content, mockCurrentUser, language, error } = setup();
+
+				const getEditorPromise = uc.getH5pEditor(mockCurrentUser, content.id, language);
+
+				await expect(getEditorPromise).rejects.toThrow(error);
+			});
 		});
 	});
 });
