@@ -1,51 +1,40 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { H5PEditor, H5PPlayer, IContentMetadata } from '@lumieducation/h5p-server';
+import { H5PEditor, H5PPlayer } from '@lumieducation/h5p-server';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing';
-import { UserService } from '@src/modules';
+import { h5pContentFactory, setupEntities } from '@shared/testing';
+import { AuthorizationContextBuilder, AuthorizationService, UserService } from '@src/modules';
 import { ICurrentUser } from '@src/modules/authentication';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { ForbiddenException } from '@nestjs/common';
 import { H5PAjaxEndpointService, LibraryStorage } from '../service';
 import { H5PEditorUc } from './h5p.uc';
+import { H5PContentParentType } from '../entity';
+import { H5PContentRepo } from '../repo';
+import { LumiUserWithContentData } from '../types/lumi-types';
 
-const setup = () => {
-	const contentId = '123456789';
-	const notExistingContentId = '999999999';
-	const id = '0000000';
-	const metadata: IContentMetadata = {
-		embedTypes: [],
-		language: 'de',
-		mainLibrary: 'mainLib',
-		preloadedDependencies: [],
-		defaultLanguage: '',
-		license: '',
-		title: '123',
-	};
-	const params = {};
-	const mainLibraryUbername = 'mainLib';
-	const currentUser: ICurrentUser = {
-		userId: '123',
-		roles: [],
-		schoolId: '',
-		accountId: '',
-	};
-	const error = new Error('Could not save H5P content');
+const createParams = () => {
+	const { content: parameters, metadata } = h5pContentFactory.build();
 
-	return {
-		contentId,
-		notExistingContentId,
-		currentUser,
-		params,
-		metadata,
-		mainLibraryUbername,
-		id,
-		error,
+	const mainLibraryUbername = metadata.mainLibrary;
+
+	const contentId = new ObjectId().toHexString();
+	const parentId = new ObjectId().toHexString();
+
+	const mockCurrentUser: ICurrentUser = {
+		accountId: 'mockAccountId',
+		roles: ['student'],
+		schoolId: 'mockSchoolId',
+		userId: 'mockUserId',
 	};
+
+	return { contentId, parameters, metadata, mainLibraryUbername, parentId, mockCurrentUser };
 };
 
 describe('save or create H5P content', () => {
 	let module: TestingModule;
 	let uc: H5PEditorUc;
 	let h5pEditor: DeepMocked<H5PEditor>;
+	let authorizationService: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -68,11 +57,20 @@ describe('save or create H5P content', () => {
 					provide: UserService,
 					useValue: createMock<UserService>(),
 				},
+				{
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
+				},
+				{
+					provide: H5PContentRepo,
+					useValue: createMock<H5PContentRepo>(),
+				},
 			],
 		}).compile();
 
 		uc = module.get(H5PEditorUc);
 		h5pEditor = module.get(H5PEditor);
+		authorizationService = module.get(AuthorizationService);
 		await setupEntities();
 	});
 
@@ -84,43 +82,256 @@ describe('save or create H5P content', () => {
 		await module.close();
 	});
 
-	describe('save H5P content', () => {
-		describe('when contentId is given', () => {
-			it('should render h5p editor', async () => {
-				const { contentId, metadata, mainLibraryUbername, params, currentUser, id } = setup();
-				const result1 = { id, metadata };
-				h5pEditor.saveOrUpdateContentReturnMetaData.mockResolvedValueOnce(result1);
-				const result = await uc.saveH5pContentGetMetadata(
+	describe('saveH5pContentGetMetadata is called', () => {
+		describe('WHEN user is authorized and service saves successfully', () => {
+			const setup = () => {
+				const { contentId, parameters, metadata, mainLibraryUbername, parentId, mockCurrentUser } = createParams();
+
+				h5pEditor.saveOrUpdateContentReturnMetaData.mockResolvedValueOnce({ id: contentId, metadata });
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+
+				return { contentId, parameters, metadata, mainLibraryUbername, mockCurrentUser, parentId };
+			};
+
+			it('should call authorizationService.checkPermissionByReferences', async () => {
+				const { contentId, parameters, metadata, mainLibraryUbername, mockCurrentUser, parentId } = setup();
+
+				await uc.saveH5pContentGetMetadata(
 					contentId,
-					currentUser,
-					params,
+					mockCurrentUser,
+					parameters,
 					metadata,
-					mainLibraryUbername
+					mainLibraryUbername,
+					H5PContentParentType.Lesson,
+					parentId
 				);
 
-				expect(result).toEqual(result1);
+				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
+					mockCurrentUser.userId,
+					H5PContentParentType.Lesson,
+					parentId,
+					AuthorizationContextBuilder.write([])
+				);
+			});
+
+			it('should call service with correct params', async () => {
+				const { contentId, parameters, metadata, mainLibraryUbername, mockCurrentUser, parentId } = setup();
+
+				await uc.saveH5pContentGetMetadata(
+					contentId,
+					mockCurrentUser,
+					parameters,
+					metadata,
+					mainLibraryUbername,
+					H5PContentParentType.Lesson,
+					parentId
+				);
+
+				expect(h5pEditor.saveOrUpdateContentReturnMetaData).toHaveBeenCalledWith(
+					contentId,
+					parameters,
+					metadata,
+					mainLibraryUbername,
+					expect.any(LumiUserWithContentData)
+				);
+			});
+
+			it('should return results of service', async () => {
+				const { contentId, parameters, metadata, mainLibraryUbername, mockCurrentUser, parentId } = setup();
+
+				const result = await uc.saveH5pContentGetMetadata(
+					contentId,
+					mockCurrentUser,
+					parameters,
+					metadata,
+					mainLibraryUbername,
+					H5PContentParentType.Lesson,
+					parentId
+				);
+
+				expect(result).toEqual({ id: contentId, metadata });
 			});
 		});
 
-		describe('when contentId does not exist', () => {
-			it('should throw an error ', async () => {
-				const { metadata, mainLibraryUbername, params, notExistingContentId, currentUser, error } = setup();
+		describe('WHEN user is not authorized', () => {
+			const setup = () => {
+				const { contentId, parameters, metadata, mainLibraryUbername, parentId, mockCurrentUser } = createParams();
+
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+
+				return { contentId, mockCurrentUser, parameters, metadata, mainLibraryUbername, parentId };
+			};
+
+			it('should throw forbidden error', async () => {
+				const { contentId, mockCurrentUser, parameters, metadata, mainLibraryUbername, parentId } = setup();
+
+				const saveContentPromise = uc.saveH5pContentGetMetadata(
+					contentId,
+					mockCurrentUser,
+					parameters,
+					metadata,
+					mainLibraryUbername,
+					H5PContentParentType.Lesson,
+					parentId
+				);
+
+				await expect(saveContentPromise).rejects.toThrow(new ForbiddenException());
+
+				expect(h5pEditor.saveOrUpdateContentReturnMetaData).toHaveBeenCalledTimes(0);
+			});
+		});
+
+		describe('WHEN service throws error', () => {
+			const setup = () => {
+				const { contentId, parameters, metadata, mainLibraryUbername, parentId, mockCurrentUser } = createParams();
+
+				const error = new Error('test');
+
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
 				h5pEditor.saveOrUpdateContentReturnMetaData.mockRejectedValueOnce(error);
-				await expect(
-					uc.saveH5pContentGetMetadata(notExistingContentId, currentUser, params, metadata, mainLibraryUbername)
-				).rejects.toThrowError(error);
+
+				return { error, contentId, mockCurrentUser, parameters, metadata, mainLibraryUbername, parentId };
+			};
+
+			it('should return error of service', async () => {
+				const { error, contentId, mockCurrentUser, parameters, metadata, mainLibraryUbername, parentId } = setup();
+
+				const saveContentPromise = uc.saveH5pContentGetMetadata(
+					contentId,
+					mockCurrentUser,
+					parameters,
+					metadata,
+					mainLibraryUbername,
+					H5PContentParentType.Lesson,
+					parentId
+				);
+
+				await expect(saveContentPromise).rejects.toThrow(error);
 			});
 		});
 	});
 
-	describe('create H5P content', () => {
-		it('should create new h5p content', async () => {
-			const { metadata, mainLibraryUbername, params, currentUser, id } = setup();
-			const result1 = { id, metadata };
-			h5pEditor.saveOrUpdateContentReturnMetaData.mockResolvedValueOnce(result1);
-			const result = await uc.createH5pContentGetMetadata(currentUser, params, metadata, mainLibraryUbername);
+	describe('createH5pContentGetMetadata is called', () => {
+		describe('WHEN user is authorized and service creates successfully', () => {
+			const setup = () => {
+				const { contentId, parameters, metadata, mainLibraryUbername, parentId, mockCurrentUser } = createParams();
 
-			expect(result).toEqual(result1);
+				h5pEditor.saveOrUpdateContentReturnMetaData.mockResolvedValueOnce({ id: contentId, metadata });
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+
+				return { contentId, parameters, metadata, mainLibraryUbername, mockCurrentUser, parentId };
+			};
+
+			it('should call authorizationService.checkPermissionByReferences', async () => {
+				const { parameters, metadata, mainLibraryUbername, mockCurrentUser, parentId } = setup();
+
+				await uc.createH5pContentGetMetadata(
+					mockCurrentUser,
+					parameters,
+					metadata,
+					mainLibraryUbername,
+					H5PContentParentType.Lesson,
+					parentId
+				);
+
+				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
+					mockCurrentUser.userId,
+					H5PContentParentType.Lesson,
+					parentId,
+					AuthorizationContextBuilder.write([])
+				);
+			});
+
+			it('should call service with correct params', async () => {
+				const { parameters, metadata, mainLibraryUbername, mockCurrentUser, parentId } = setup();
+
+				await uc.createH5pContentGetMetadata(
+					mockCurrentUser,
+					parameters,
+					metadata,
+					mainLibraryUbername,
+					H5PContentParentType.Lesson,
+					parentId
+				);
+
+				expect(h5pEditor.saveOrUpdateContentReturnMetaData).toHaveBeenCalledWith(
+					undefined,
+					parameters,
+					metadata,
+					mainLibraryUbername,
+					expect.any(LumiUserWithContentData)
+				);
+			});
+
+			it('should return results of service', async () => {
+				const { contentId, parameters, metadata, mainLibraryUbername, mockCurrentUser, parentId } = setup();
+
+				const result = await uc.createH5pContentGetMetadata(
+					mockCurrentUser,
+					parameters,
+					metadata,
+					mainLibraryUbername,
+					H5PContentParentType.Lesson,
+					parentId
+				);
+
+				expect(result).toEqual({ id: contentId, metadata });
+			});
+		});
+
+		describe('WHEN user is not authorized', () => {
+			const setup = () => {
+				const { contentId, parameters, metadata, mainLibraryUbername, parentId, mockCurrentUser } = createParams();
+
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+
+				return { contentId, mockCurrentUser, parameters, metadata, mainLibraryUbername, parentId };
+			};
+
+			it('should throw forbidden error', async () => {
+				const { mockCurrentUser, parameters, metadata, mainLibraryUbername, parentId } = setup();
+
+				const saveContentPromise = uc.createH5pContentGetMetadata(
+					mockCurrentUser,
+					parameters,
+					metadata,
+					mainLibraryUbername,
+					H5PContentParentType.Lesson,
+					parentId
+				);
+
+				await expect(saveContentPromise).rejects.toThrow(new ForbiddenException());
+
+				expect(h5pEditor.saveOrUpdateContentReturnMetaData).toHaveBeenCalledTimes(0);
+			});
+		});
+
+		describe('WHEN service throws error', () => {
+			const setup = () => {
+				const { contentId, parameters, metadata, mainLibraryUbername, parentId, mockCurrentUser } = createParams();
+
+				const error = new Error('test');
+
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				h5pEditor.saveOrUpdateContentReturnMetaData.mockRejectedValueOnce(error);
+
+				return { error, contentId, mockCurrentUser, parameters, metadata, mainLibraryUbername, parentId };
+			};
+
+			it('should return error of service', async () => {
+				const { error, mockCurrentUser, parameters, metadata, mainLibraryUbername, parentId } = setup();
+
+				const saveContentPromise = uc.createH5pContentGetMetadata(
+					mockCurrentUser,
+					parameters,
+					metadata,
+					mainLibraryUbername,
+					H5PContentParentType.Lesson,
+					parentId
+				);
+
+				await expect(saveContentPromise).rejects.toThrow(error);
+			});
 		});
 	});
 });
