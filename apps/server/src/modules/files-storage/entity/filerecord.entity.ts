@@ -265,6 +265,14 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	}
 
 	public getPreviewStatus(): PreviewStatus {
+		if (!Object.values<string>(PreviewInputMimeTypes).includes(this.mimeType)) {
+			return PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE;
+		}
+
+		if (this.isVerified()) {
+			return PreviewStatus.PREVIEW_POSSIBLE;
+		}
+
 		if (this.isPending()) {
 			return PreviewStatus.AWAITING_SCAN_STATUS;
 		}
@@ -273,18 +281,10 @@ export class FileRecord extends BaseEntityWithTimestamps {
 			return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_WONT_CHECK;
 		}
 
-		if (this.hasScanStatusError()) {
-			return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR;
-		}
-
 		if (this.isBlocked()) {
 			return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED;
 		}
 
-		if (!Object.values<string>(PreviewInputMimeTypes).includes(this.mimeType)) {
-			return PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE;
-		}
-
-		return PreviewStatus.PREVIEW_POSSIBLE;
+		return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR;
 	}
 }

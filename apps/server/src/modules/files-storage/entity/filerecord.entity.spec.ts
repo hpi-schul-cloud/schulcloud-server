@@ -613,7 +613,8 @@ describe('FileRecord Entity', () => {
 	describe('getPreviewStatus is called', () => {
 		describe('WHEN file record securityCheck status is PENDING', () => {
 			const setup = () => {
-				const fileRecord = fileRecordFactory.build();
+				const mimeType = PreviewInputMimeTypes.IMAGE_JPEG;
+				const fileRecord = fileRecordFactory.build({ mimeType });
 
 				fileRecord.securityCheck.status = ScanStatus.PENDING;
 
@@ -629,10 +630,30 @@ describe('FileRecord Entity', () => {
 			});
 		});
 
+		describe('WHEN file record securityCheck status is PENDING and mime type is not previewable', () => {
+			const setup = () => {
+				const mimeType = 'application/octet-stream';
+				const fileRecord = fileRecordFactory.build({ mimeType });
+
+				fileRecord.securityCheck.status = ScanStatus.PENDING;
+
+				return { fileRecord };
+			};
+
+			it('should return AWAITING_SCAN_STATUS', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.getPreviewStatus();
+
+				expect(result).toEqual(PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE);
+			});
+		});
+
 		describe('WHEN file record securityCheck status is VERIFIED', () => {
 			describe('MIMETYPE is supported', () => {
 				const setup = () => {
-					const fileRecord = fileRecordFactory.build({ mimeType: PreviewInputMimeTypes.IMAGE_JPEG });
+					const mimeType = PreviewInputMimeTypes.IMAGE_JPEG;
+					const fileRecord = fileRecordFactory.build({ mimeType });
 
 					fileRecord.securityCheck.status = ScanStatus.VERIFIED;
 
@@ -653,7 +674,6 @@ describe('FileRecord Entity', () => {
 					const fileRecord = fileRecordFactory.build();
 
 					fileRecord.securityCheck.status = ScanStatus.VERIFIED;
-					fileRecord.mimeType = 'application/octet-stream';
 
 					return { fileRecord };
 				};
@@ -670,7 +690,8 @@ describe('FileRecord Entity', () => {
 
 		describe('WHEN file record securityCheck status is ERROR', () => {
 			const setup = () => {
-				const fileRecord = fileRecordFactory.build();
+				const mimeType = PreviewInputMimeTypes.IMAGE_JPEG;
+				const fileRecord = fileRecordFactory.build({ mimeType });
 
 				fileRecord.securityCheck.status = ScanStatus.ERROR;
 
@@ -688,7 +709,8 @@ describe('FileRecord Entity', () => {
 
 		describe('WHEN file record securityCheck status is BLOCKED', () => {
 			const setup = () => {
-				const fileRecord = fileRecordFactory.build();
+				const mimeType = PreviewInputMimeTypes.IMAGE_JPEG;
+				const fileRecord = fileRecordFactory.build({ mimeType });
 
 				fileRecord.securityCheck.status = ScanStatus.BLOCKED;
 
@@ -706,7 +728,8 @@ describe('FileRecord Entity', () => {
 
 		describe('WHEN file record securityCheck status is WONT_CHECK', () => {
 			const setup = () => {
-				const fileRecord = fileRecordFactory.build();
+				const mimeType = PreviewInputMimeTypes.IMAGE_JPEG;
+				const fileRecord = fileRecordFactory.build({ mimeType });
 
 				fileRecord.securityCheck.status = ScanStatus.WONT_CHECK;
 
@@ -719,6 +742,25 @@ describe('FileRecord Entity', () => {
 				const result = fileRecord.getPreviewStatus();
 
 				expect(result).toEqual(PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_WONT_CHECK);
+			});
+		});
+
+		describe('WHEN file record securityCheck status is of other than ScanStatus Enum value', () => {
+			const setup = () => {
+				const mimeType = PreviewInputMimeTypes.IMAGE_JPEG;
+				const fileRecord = fileRecordFactory.build({ mimeType });
+
+				fileRecord.securityCheck.status = 'OTHER_STATUS' as ScanStatus;
+
+				return { fileRecord };
+			};
+
+			it('should return PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.getPreviewStatus();
+
+				expect(result).toEqual(PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR);
 			});
 		});
 	});
