@@ -201,6 +201,7 @@ describe('TldrawGateway', () => {
 		});
 
 		const sendSpy = jest.spyOn(Utils, 'send');
+		const applyAwarenessUpdateSpy = jest.spyOn(AwarenessProtocol, 'applyAwarenessUpdate');
 		const doc = new WSSharedDoc('TEST');
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, 1);
@@ -210,6 +211,32 @@ describe('TldrawGateway', () => {
 		Utils.messageHandler(ws, doc, newMessageByteArray);
 
 		expect(sendSpy).toHaveBeenCalledTimes(0);
+		expect(applyAwarenessUpdateSpy).toHaveBeenCalledTimes(1);
+
+		ws.close();
+		sendSpy.mockRestore();
+	});
+
+	it('should do nothing when received message unknown type', async () => {
+		await app.init();
+
+		ws = new WebSocket(wsUrl);
+		await new Promise((resolve) => {
+			ws.on('open', resolve);
+		});
+
+		const sendSpy = jest.spyOn(Utils, 'send');
+		const applyAwarenessUpdateSpy = jest.spyOn(AwarenessProtocol, 'applyAwarenessUpdate');
+		const doc = new WSSharedDoc('TEST');
+		const encoder = encoding.createEncoder();
+		encoding.writeVarUint(encoder, 2);
+		encoding.writeVarUint(encoder, 1);
+		encoding.writeVarUint(encoder, 0);
+		const newMessageByteArray = encoding.toUint8Array(encoder);
+		Utils.messageHandler(ws, doc, newMessageByteArray);
+
+		expect(sendSpy).toHaveBeenCalledTimes(0);
+		expect(applyAwarenessUpdateSpy).toHaveBeenCalledTimes(0);
 
 		ws.close();
 		sendSpy.mockRestore();

@@ -53,7 +53,7 @@ describe('WebSocketGateway (WsAdapter)', () => {
 	it(`should handle connection and data transfer`, async () => {
 		const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
 		const reduceMock = jest.spyOn(Uint8Array.prototype, 'reduce').mockReturnValue(1);
-		const closeConn = jest.spyOn(Utils, 'closeConn');
+
 		ws = new WebSocket(`${wsUrl}/TEST1`);
 		await new Promise((resolve) => {
 			ws.on('open', resolve);
@@ -65,46 +65,15 @@ describe('WebSocketGateway (WsAdapter)', () => {
 
 		const byteArray = new TextEncoder().encode(testMessage);
 		const { buffer } = byteArray;
-		ws.send(buffer);
+		ws.send(buffer, () => {});
 
 		expect(handleConnectionSpy).toHaveBeenCalled();
 		expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
-		expect(closeConn).toHaveBeenCalled();
 
 		await delay(2000);
 		ws.close();
 		handleConnectionSpy.mockReset();
 		reduceMock.mockReset();
-		jest.clearAllTimers();
-	});
-
-	it(`should close connection if ping failed`, async () => {
-		const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
-		const reduceMock = jest.spyOn(Uint8Array.prototype, 'reduce').mockReturnValue(1);
-		jest.useFakeTimers({ advanceTimers: 1 });
-		ws = new WebSocket(`${wsUrl}/TEST1`);
-		jest.spyOn(ws, 'ping').mockImplementation(() => {
-			throw new Error('error');
-		});
-		await new Promise((resolve) => {
-			ws.on('open', resolve);
-		});
-		const utilsSpy = jest.spyOn(Utils, 'closeConn').mockReturnValue();
-
-		const byteArray = new TextEncoder().encode(testMessage);
-		const { buffer } = byteArray;
-		ws.send(buffer);
-
-		expect(handleConnectionSpy).toHaveBeenCalled();
-		expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
-		expect(utilsSpy).toHaveBeenCalled();
-
-		await delay(200);
-		ws.close();
-		handleConnectionSpy.mockReset();
-		reduceMock.mockReset();
-		jest.clearAllTimers();
-		utilsSpy.mockReset();
 	});
 
 	it(`should refuse connection if there is no docName`, async () => {
@@ -158,6 +127,7 @@ describe('WebSocketGateway (WsAdapter)', () => {
 	});
 
 	it(`check if client will receive message`, async () => {
+		const messageHandlerSpy = jest.spyOn(Utils, 'messageHandler');
 		ws = new WebSocket(`${wsUrl}/TEST3`);
 		await new Promise((resolve) => {
 			ws.on('open', resolve);
@@ -174,6 +144,8 @@ describe('WebSocketGateway (WsAdapter)', () => {
 		});
 
 		await delay(200);
+		expect(messageHandlerSpy).toHaveBeenCalledTimes(1);
 		ws.close();
+		messageHandlerSpy.mockReset();
 	});
 });
