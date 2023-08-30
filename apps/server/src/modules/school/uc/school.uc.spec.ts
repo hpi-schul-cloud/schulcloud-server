@@ -6,7 +6,7 @@ import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { schoolDOFactory, userLoginMigrationDOFactory } from '@shared/testing/factory';
 import { AuthorizationService } from '@src/modules/authorization';
 import { LegacySchoolService } from '@src/modules/school/service';
-import { SchoolUc } from '@src/modules/school/uc/school.uc';
+import { LegacySchoolUc } from '@src/modules/school/uc/school.uc';
 import {
 	SchoolMigrationService,
 	UserLoginMigrationRevertService,
@@ -14,9 +14,9 @@ import {
 } from '@src/modules/user-login-migration';
 import { OauthMigrationDto } from './dto/oauth-migration.dto';
 
-describe('SchoolUc', () => {
+describe('LegacySchoolUc', () => {
 	let module: TestingModule;
-	let schoolUc: SchoolUc;
+	let schoolUc: LegacySchoolUc;
 
 	let schoolService: DeepMocked<LegacySchoolService>;
 	let authService: DeepMocked<AuthorizationService>;
@@ -27,7 +27,7 @@ describe('SchoolUc', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				SchoolUc,
+				LegacySchoolUc,
 				{
 					provide: LegacySchoolService,
 					useValue: createMock<LegacySchoolService>(),
@@ -53,7 +53,7 @@ describe('SchoolUc', () => {
 
 		schoolService = module.get(LegacySchoolService);
 		authService = module.get(AuthorizationService);
-		schoolUc = module.get(SchoolUc);
+		schoolUc = module.get(LegacySchoolUc);
 		schoolMigrationService = module.get(SchoolMigrationService);
 		userLoginMigrationService = module.get(UserLoginMigrationService);
 		userLoginMigrationRevertService = module.get(UserLoginMigrationRevertService);

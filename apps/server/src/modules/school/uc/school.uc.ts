@@ -10,7 +10,7 @@ import { LegacySchoolService } from '../service';
 import { OauthMigrationDto } from './dto/oauth-migration.dto';
 
 @Injectable()
-export class SchoolUc {
+export class LegacySchoolUc {
 	constructor(
 		private readonly schoolService: LegacySchoolService,
 		private readonly authService: AuthorizationService,
