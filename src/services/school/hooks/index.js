@@ -99,8 +99,8 @@ const setDefaultFileStorageType = (hook) => {
 };
 
 const setCurrentYearIfMissing = async (hook) => {
-	await cacheYearsIfNotSet();
 	if (!hook.data.currentYear) {
+		await cacheYearsIfNotSet();
 		const facade = new SchoolYearFacade(years, hook.data);
 		hook.data.currentYear = facade.defaultYear;
 	}
