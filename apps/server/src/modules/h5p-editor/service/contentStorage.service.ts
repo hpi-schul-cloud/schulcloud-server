@@ -15,6 +15,7 @@ import { Readable } from 'stream';
 import { S3ClientAdapter } from '../../files-storage/client/s3-client.adapter';
 import { H5PContent } from '../entity';
 import { H5PContentRepo } from '../repo';
+import { LumiUserWithContentData } from '../types/lumi-types';
 
 @Injectable()
 export class ContentStorage implements IContentStorage {
@@ -23,13 +24,23 @@ export class ContentStorage implements IContentStorage {
 		@Inject('S3ClientAdapter_Content') private readonly storageClient: S3ClientAdapter
 	) {}
 
+	private checkExtendedUserType(user: IUser) {
+		const isExtendedUserType = user instanceof LumiUserWithContentData;
+
+		if (!isExtendedUserType) {
+			throw new Error('Method expected LumiUserWithContentData instead of IUser');
+		}
+	}
+
 	public async addContent(
 		metadata: IContentMetadata,
 		content: unknown,
-		user: IUser,
+		user: LumiUserWithContentData,
 		contentId?: ContentId | undefined
 	): Promise<ContentId> {
 		try {
+			this.checkExtendedUserType(user);
+
 			let h5pContent: H5PContent;
 
 			if (contentId) {
@@ -37,7 +48,14 @@ export class ContentStorage implements IContentStorage {
 				h5pContent.metadata = metadata;
 				h5pContent.content = content;
 			} else {
-				h5pContent = new H5PContent({ metadata, content });
+				h5pContent = new H5PContent({
+					parentType: user.contentParentType,
+					parentId: user.contentParentId,
+					creatorId: user.id,
+					schoolId: user.schoolId,
+					metadata,
+					content,
+				});
 			}
 
 			await this.repo.save(h5pContent);

@@ -1,7 +1,8 @@
-import { Embeddable, Embedded, Entity, JsonType, Property } from '@mikro-orm/core';
 import { IContentMetadata, ILibraryName } from '@lumieducation/h5p-server';
-import { BaseEntity } from '@shared/domain';
 import { IContentAuthor, IContentChange } from '@lumieducation/h5p-server/build/src/types';
+import { Embeddable, Embedded, Entity, Enum, Index, JsonType, Property } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { BaseEntity, EntityId } from '@shared/domain';
 
 @Embeddable()
 export class ContentMetadata implements IContentMetadata {
@@ -102,16 +103,60 @@ export class ContentMetadata implements IContentMetadata {
 	}
 }
 
+export enum H5PContentParentType {
+	'Lesson' = 'lessons',
+}
+
+export interface IH5PContentProperties {
+	creatorId: EntityId;
+	parentType: H5PContentParentType;
+	parentId: EntityId;
+	schoolId: EntityId;
+	metadata: ContentMetadata;
+	content: unknown;
+}
+
 @Entity({ tableName: 'h5p-editor-content' })
 export class H5PContent extends BaseEntity {
+	@Property({ fieldName: 'creator' })
+	_creatorId: ObjectId;
+
+	get creatorId(): EntityId {
+		return this._creatorId.toHexString();
+	}
+
+	@Index()
+	@Enum()
+	parentType: H5PContentParentType;
+
+	@Index()
+	@Property({ fieldName: 'parent' })
+	_parentId: ObjectId;
+
+	get parentId(): EntityId {
+		return this._parentId.toHexString();
+	}
+
+	@Property({ fieldName: 'school' })
+	_schoolId: ObjectId;
+
+	get schoolId(): EntityId {
+		return this._schoolId.toHexString();
+	}
+
 	@Embedded(() => ContentMetadata)
 	metadata: ContentMetadata;
 
 	@Property({ type: JsonType })
 	content: unknown;
 
-	constructor({ metadata, content }: { metadata: ContentMetadata; content: unknown }) {
+	constructor({ parentType, parentId, creatorId, schoolId, metadata, content }: IH5PContentProperties) {
 		super();
+
+		this.parentType = parentType;
+		this._parentId = new ObjectId(parentId);
+		this._creatorId = new ObjectId(creatorId);
+		this._schoolId = new ObjectId(schoolId);
 
 		this.metadata = metadata;
 		this.content = content;
