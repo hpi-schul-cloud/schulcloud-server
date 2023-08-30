@@ -5,6 +5,9 @@ import { EntityId, ISchoolProperties, LegacySchoolDo, School, System, UserLoginM
 import { LegacyLogger } from '@src/core/logger';
 import { BaseDORepo } from '../base.do.repo';
 
+/**
+ * @deprecated because it uses the deprecated LegacySchoolDo.
+ */
 @Injectable()
 export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, School, ISchoolProperties> {
 	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {

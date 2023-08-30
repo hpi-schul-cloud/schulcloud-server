@@ -2,6 +2,9 @@ import { FederalState, SchoolFeatures, SchoolYear } from '@shared/domain/entity'
 import { EntityId } from '@shared/domain/types';
 import { BaseDO } from './base.do';
 
+/**
+ * @deprecated because it extends the deprecated BaseDO.
+ */
 export class LegacySchoolDo extends BaseDO {
 	externalId?: string;
 

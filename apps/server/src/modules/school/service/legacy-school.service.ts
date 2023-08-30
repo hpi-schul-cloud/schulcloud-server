@@ -3,6 +3,9 @@ import { EntityId, LegacySchoolDo, SchoolFeatures } from '@shared/domain';
 import { LegacySchoolRepo } from '@shared/repo';
 import { SchoolValidationService } from './validation';
 
+/**
+ * @deprecated because it uses the deprecated LegacySchoolDo.
+ */
 @Injectable()
 export class LegacySchoolService {
 	constructor(
