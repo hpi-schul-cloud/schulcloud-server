@@ -48,11 +48,6 @@ export class TldrawGateway implements OnGatewayInit, OnGatewayConnection {
 
 				applyUpdate(ydoc, encodeStateAsUpdate(persistedYdoc));
 
-				ydoc.on('update', (update) => {
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-					mdb.storeUpdate(docName, update);
-				});
-
 				persistedYdoc.destroy();
 			},
 			writeState: async (docName) => {

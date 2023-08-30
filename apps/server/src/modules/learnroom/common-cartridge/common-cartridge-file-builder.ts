@@ -26,14 +26,15 @@ export interface ICommonCartridgeOrganizationBuilder {
 
 export interface ICommonCartridgeFileBuilder {
 	addOrganization(props: ICommonCartridgeOrganizationProps): ICommonCartridgeOrganizationBuilder;
+
 	addResourceToFile(props: ICommonCartridgeResourceProps): ICommonCartridgeFileBuilder;
+
 	build(): Promise<Buffer>;
 }
 
 class CommonCartridgeOrganizationBuilder implements ICommonCartridgeOrganizationBuilder {
 	constructor(
 		private readonly props: ICommonCartridgeOrganizationProps,
-		private readonly fileBuilder: ICommonCartridgeFileBuilder,
 		private readonly xmlBuilder: Builder,
 		private readonly zipBuilder: AdmZip
 	) {}
@@ -70,7 +71,7 @@ export class CommonCartridgeFileBuilder implements ICommonCartridgeFileBuilder {
 	constructor(private readonly options: ICommonCartridgeFileBuilderOptions) {}
 
 	addOrganization(props: ICommonCartridgeOrganizationProps): ICommonCartridgeOrganizationBuilder {
-		const organizationBuilder = new CommonCartridgeOrganizationBuilder(props, this, this.xmlBuilder, this.zipBuilder);
+		const organizationBuilder = new CommonCartridgeOrganizationBuilder(props, this.xmlBuilder, this.zipBuilder);
 		this.organizations.push(organizationBuilder);
 		return organizationBuilder;
 	}

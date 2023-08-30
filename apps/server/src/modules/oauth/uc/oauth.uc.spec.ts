@@ -114,58 +114,82 @@ describe('OAuthUc', () => {
 		resetAllMocks();
 	});
 
-	describe('startOauthLogin is called', () => {
-		const setup = () => {
-			const systemId = 'systemId';
-			const oauthConfig: OauthConfigDto = new OauthConfigDto({
-				clientId: '12345',
-				clientSecret: 'mocksecret',
-				tokenEndpoint: 'https://mock.de/mock/auth/public/mockToken',
-				grantType: 'authorization_code',
-				scope: 'openid uuid',
-				responseType: 'code',
-				authEndpoint: 'mock_authEndpoint',
-				provider: 'mock_provider',
-				logoutEndpoint: 'mock_logoutEndpoint',
-				issuer: 'mock_issuer',
-				jwksEndpoint: 'mock_jwksEndpoint',
-				redirectUri: 'mock_codeRedirectUri',
-			});
-			const system: SystemDto = new SystemDto({
-				id: systemId,
-				type: 'oauth',
-				oauthConfig,
-			});
+	const createOAuthTestData = () => {
+		const oauthConfig: OauthConfigDto = new OauthConfigDto({
+			clientId: '12345',
+			clientSecret: 'mocksecret',
+			tokenEndpoint: 'https://mock.de/mock/auth/public/mockToken',
+			grantType: 'authorization_code',
+			scope: 'openid uuid',
+			responseType: 'code',
+			authEndpoint: 'mock_authEndpoint',
+			provider: 'mock_provider',
+			logoutEndpoint: 'mock_logoutEndpoint',
+			issuer: 'mock_issuer',
+			jwksEndpoint: 'mock_jwksEndpoint',
+			redirectUri: 'mock_codeRedirectUri',
+		});
+		const system: SystemDto = new SystemDto({
+			id: 'systemId',
+			type: 'oauth',
+			oauthConfig,
+		});
 
-			return {
-				systemId,
-				system,
-				oauthConfig,
-			};
+		return {
+			system,
+			systemId: system.id as string,
+			oauthConfig,
 		};
+	};
 
-		describe('when starting an oauth login', () => {
-			it('should return the authentication url for the system', async () => {
-				const { systemId, system } = setup();
+	describe('startOauthLogin', () => {
+		describe('when starting an oauth login without migration', () => {
+			const setup = () => {
+				const { system, systemId } = createOAuthTestData();
+
 				const session: DeepMocked<ISession> = createMock<ISession>();
 				const authenticationUrl = 'authenticationUrl';
 
 				systemService.findById.mockResolvedValue(system);
 				oauthService.getAuthenticationUrl.mockReturnValue(authenticationUrl);
 
+				return {
+					systemId,
+					session,
+					authenticationUrl,
+				};
+			};
+
+			it('should return the authentication url for the system', async () => {
+				const { systemId, session, authenticationUrl } = setup();
+
 				const result: string = await uc.startOauthLogin(session, systemId, false);
 
 				expect(result).toEqual(authenticationUrl);
 			});
+		});
 
-			it('should save data to the session', async () => {
-				const { systemId, system } = setup();
+		describe('when starting an oauth login during a migration', () => {
+			const setup = () => {
+				const { system, systemId } = createOAuthTestData();
+
 				const session: DeepMocked<ISession> = createMock<ISession>();
 				const authenticationUrl = 'authenticationUrl';
 				const postLoginRedirect = 'postLoginRedirect';
 
 				systemService.findById.mockResolvedValue(system);
 				oauthService.getAuthenticationUrl.mockReturnValue(authenticationUrl);
+
+				return {
+					system,
+					systemId,
+					postLoginRedirect,
+					session,
+				};
+			};
+
+			it('should save data to the session', async () => {
+				const { systemId, system, session, postLoginRedirect } = setup();
 
 				await uc.startOauthLogin(session, systemId, false, postLoginRedirect);
 
@@ -180,14 +204,24 @@ describe('OAuthUc', () => {
 		});
 
 		describe('when the system cannot be found', () => {
-			it('should throw UnprocessableEntityException', async () => {
-				const { systemId, system } = setup();
+			const setup = () => {
+				const { systemId, system } = createOAuthTestData();
 				system.oauthConfig = undefined;
 				const session: DeepMocked<ISession> = createMock<ISession>();
 				const authenticationUrl = 'authenticationUrl';
 
 				systemService.findById.mockResolvedValue(system);
 				oauthService.getAuthenticationUrl.mockReturnValue(authenticationUrl);
+
+				return {
+					systemId,
+					session,
+					authenticationUrl,
+				};
+			};
+
+			it('should throw UnprocessableEntityException', async () => {
+				const { systemId, session } = setup();
 
 				const func = async () => uc.startOauthLogin(session, systemId, false);
 
@@ -196,7 +230,7 @@ describe('OAuthUc', () => {
 		});
 	});
 
-	describe('processOAuth is called', () => {
+	describe('processOAuth', () => {
 		const setup = () => {
 			const postLoginRedirect = 'postLoginRedirect';
 			const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
@@ -235,6 +269,7 @@ describe('OAuthUc', () => {
 
 			return { cachedState, code, error, jwt, redirect, user, currentUser, testSystem, tokenDto };
 		};
+
 		describe('when a user is returned', () => {
 			it('should return a response with a valid jwt', async () => {
 				const { cachedState, code, error, jwt, redirect, user, currentUser, tokenDto } = setup();
@@ -300,7 +335,7 @@ describe('OAuthUc', () => {
 	});
 
 	describe('migration', () => {
-		describe('migrate is called', () => {
+		describe('migrate', () => {
 			describe('when authorize user and migration was successful', () => {
 				const setupMigration = () => {
 					const code = '43534543jnj543342jn2';
@@ -328,6 +363,7 @@ describe('OAuthUc', () => {
 						jwksEndpoint: 'mock_jwksEndpoint',
 						redirectUri: 'mock_codeRedirectUri',
 					});
+
 					const system: SystemDto = new SystemDto({
 						id: 'systemId',
 						type: 'oauth',
@@ -412,6 +448,7 @@ describe('OAuthUc', () => {
 						jwksEndpoint: 'mock_jwksEndpoint',
 						redirectUri: 'mock_codeRedirectUri',
 					});
+
 					const system: SystemDto = new SystemDto({
 						id: 'systemId',
 						type: 'oauth',
@@ -559,6 +596,7 @@ describe('OAuthUc', () => {
 					oauthService.requestToken.mockResolvedValue(tokenDto);
 					provisioningService.getData.mockResolvedValue(oauthData);
 					oauthService.authenticateUser.mockResolvedValue(tokenDto);
+
 					return {
 						query,
 						cachedState,

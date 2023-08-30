@@ -10,7 +10,7 @@ import * as Utils from '@src/modules/tldraw/utils/utils';
 import { WSSharedDoc } from '@src/modules/tldraw/utils/utils';
 import { TextEncoder } from 'util';
 import * as SyncProtocols from 'y-protocols/sync';
-import { Awareness } from 'y-protocols/awareness';
+import * as AwarenessProtocol from 'y-protocols/awareness';
 import { encoding } from 'lib0';
 import { TldrawGateway } from '.';
 
@@ -129,7 +129,7 @@ describe('TldrawGateway', () => {
 			on = jest.fn();
 		}
 		const doc = new WSSharedDoc('TEST');
-		doc.awareness = new MockAwareness() as unknown as Awareness;
+		doc.awareness = new MockAwareness() as unknown as AwarenessProtocol.Awareness;
 		const mockMeta = new Map<number, { clock: number; lastUpdated: number }>();
 		mockMeta.set(1, { clock: 11, lastUpdated: 21 });
 		mockMeta.set(2, { clock: 12, lastUpdated: 22 });
@@ -174,9 +174,59 @@ describe('TldrawGateway', () => {
 			ws.on('open', resolve);
 		});
 
-		jest.spyOn(SyncProtocols, 'readSyncMessage').mockReturnValueOnce(1);
-		// jest.spyOn(encoding, 'length').mockReturnValue(2);
 		const sendSpy = jest.spyOn(Utils, 'send');
+		jest.spyOn(SyncProtocols, 'readSyncMessage').mockImplementation((dec, enc) => {
+			enc.bufs = [new Uint8Array(2), new Uint8Array(2)];
+			return 1;
+		});
+		const doc = new WSSharedDoc('TEST');
+		const encoder = encoding.createEncoder();
+		encoding.writeVarUint(encoder, 0);
+		encoding.writeVarUint(encoder, 1);
+		const newMessageByteArray = encoding.toUint8Array(encoder);
+		Utils.messageHandler(ws, doc, newMessageByteArray);
+
+		expect(sendSpy).toHaveBeenCalledTimes(1);
+
+		ws.close();
+		sendSpy.mockRestore();
+	});
+
+	it('should not call send method when received message of type AWARENESS', async () => {
+		await app.init();
+
+		ws = new WebSocket(wsUrl);
+		await new Promise((resolve) => {
+			ws.on('open', resolve);
+		});
+
+		const sendSpy = jest.spyOn(Utils, 'send');
+		const doc = new WSSharedDoc('TEST');
+		const encoder = encoding.createEncoder();
+		encoding.writeVarUint(encoder, 1);
+		encoding.writeVarUint(encoder, 1);
+		encoding.writeVarUint(encoder, 0);
+		const newMessageByteArray = encoding.toUint8Array(encoder);
+		Utils.messageHandler(ws, doc, newMessageByteArray);
+
+		expect(sendSpy).toHaveBeenCalledTimes(0);
+
+		ws.close();
+		sendSpy.mockRestore();
+	});
+
+	it('should not call send method when error is thrown', async () => {
+		await app.init();
+
+		ws = new WebSocket(wsUrl);
+		await new Promise((resolve) => {
+			ws.on('open', resolve);
+		});
+
+		const sendSpy = jest.spyOn(Utils, 'send');
+		jest.spyOn(SyncProtocols, 'readSyncMessage').mockImplementation(() => {
+			throw new Error('error');
+		});
 		const doc = new WSSharedDoc('TEST');
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, 0);
