@@ -1103,9 +1103,7 @@ describe('CSVSyncer Integration', () => {
 		before(async function before() {
 			this.timeout(5000);
 
-			const school = await createSchool({
-				currentYear: await createYear(),
-			});
+			const school = await createSchool();
 
 			const user = await createUser({
 				roles: 'administrator',
@@ -1165,7 +1163,11 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should assign a created class to a school year if specified in the request', async () => {
-			const year = await createYear();
+			// The specified year must exist in the database. Thus we get it over the school service.
+			// It does not work to create a new year here because of the caching of years in the school hooks.
+			const decoratedSchool = await app.service('schools').get(scenario.school._id);
+			const year = decoratedSchool.years.nextYear;
+
 			const [stats] = await app.service('sync').create(scenario.data, {
 				...scenario.params,
 				query: {

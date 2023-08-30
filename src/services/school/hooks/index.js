@@ -14,6 +14,15 @@ const getFileStorageStrategy = require('../../fileStorage/strategies').createStr
 const { yearModel: Year } = require('../model');
 const SchoolYearFacade = require('../logic/year');
 
+// years are cached on first call, because they are expected to not change during runtime.
+let years = null;
+
+const cacheYears = async () => {
+	if (!years) {
+		years = await Year.find().lean().exec();
+	}
+};
+
 /**
  * Safe function to retrieve result data from context
  * The function returns context.result.data if the result is paginated or context.result if not.
@@ -87,8 +96,8 @@ const setDefaultFileStorageType = (hook) => {
 };
 
 const setCurrentYearIfMissing = async (hook) => {
+	await cacheYears();
 	if (!hook.data.currentYear) {
-		const years = await Year.find().lean().exec();
 		const facade = new SchoolYearFacade(years, hook.data);
 		hook.data.currentYear = facade.defaultYear;
 	}
@@ -116,7 +125,7 @@ const createDefaultStorageOptions = (hook) => {
 };
 
 const decorateYears = async (context) => {
-	const years = await Year.find().lean().exec();
+	await cacheYears();
 	const addYearsToSchool = (school) => {
 		const facade = new SchoolYearFacade(years, school);
 		school.years = facade.toJSON();
