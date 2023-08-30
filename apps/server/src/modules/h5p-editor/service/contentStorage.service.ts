@@ -28,7 +28,7 @@ export class ContentStorage implements IContentStorage {
 		const isExtendedUserType = user instanceof LumiUserWithContentData;
 
 		if (!isExtendedUserType) {
-			throw new Error();
+			throw new Error('Method expected LumiUserWithContentData instead of IUser');
 		}
 	}
 
@@ -38,9 +38,9 @@ export class ContentStorage implements IContentStorage {
 		user: LumiUserWithContentData,
 		contentId?: ContentId | undefined
 	): Promise<ContentId> {
-		this.checkExtendedUserType(user);
-
 		try {
+			this.checkExtendedUserType(user);
+
 			let h5pContent: H5PContent;
 
 			if (contentId) {
