@@ -20,6 +20,9 @@ let years = null;
 const cacheYears = async () => {
 	if (!years) {
 		years = await Year.find().lean().exec();
+		if (years.length === 0) {
+			throw new Error('At least one year has to exist in the database.');
+		}
 	}
 };
 
