@@ -4,7 +4,7 @@ import { SchoolFeatures } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolRepo } from '@shared/repo';
 import { schoolDOFactory, setupEntities } from '@shared/testing';
-import { LegacySchoolService } from './school.service';
+import { LegacySchoolService } from './legacy-school.service';
 import { SchoolValidationService } from './validation/school-validation.service';
 
 describe('LegacySchoolService', () => {
