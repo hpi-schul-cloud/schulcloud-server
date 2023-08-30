@@ -10,6 +10,14 @@ export class DrawingElement extends BoardComposite<DrawingElementProps> {
 		this.props.drawingName = value;
 	}
 
+	get description(): string {
+		return this.props.description;
+	}
+
+	set description(value: string) {
+		this.props.description = value;
+	}
+
 	isAllowedAsChild(): boolean {
 		return false;
 	}
@@ -25,4 +33,5 @@ export class DrawingElement extends BoardComposite<DrawingElementProps> {
 
 export interface DrawingElementProps extends BoardCompositeProps {
 	drawingName: string;
+	description: string;
 }

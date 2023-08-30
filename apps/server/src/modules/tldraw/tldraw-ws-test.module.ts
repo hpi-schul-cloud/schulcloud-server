@@ -7,7 +7,7 @@ import { LoggerModule } from '@src/core/logger';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { AuthenticationApiModule } from '../authentication/authentication-api.module';
-import { TldrawWsModule } from './tldraw.ws.module';
+import { TldrawWsModule } from './tldraw-ws.module';
 
 const imports = [
 	TldrawWsModule,
@@ -21,10 +21,10 @@ const imports = [
 @Module({
 	imports,
 })
-export class TldrawTestModule {
+export class TldrawWsTestModule {
 	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		return {
-			module: TldrawTestModule,
+			module: TldrawWsTestModule,
 			imports: [...imports, MongoMemoryDatabaseModule.forRoot({ ...options })],
 		};
 	}

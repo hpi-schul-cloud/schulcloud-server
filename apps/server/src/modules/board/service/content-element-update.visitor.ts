@@ -59,6 +59,7 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 	visitDrawingElement(drawingElement: DrawingElement): void {
 		if (this.content instanceof DrawingContentBody) {
 			drawingElement.drawingName = this.content.drawingName;
+			drawingElement.description = this.content.description;
 		} else {
 			this.throwNotHandled(drawingElement);
 		}

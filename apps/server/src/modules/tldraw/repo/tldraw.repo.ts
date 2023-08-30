@@ -2,11 +2,10 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { TldrawDrawing } from '@src/modules/tldraw/entities';
 import { BaseEntity } from '@shared/domain';
-import { InjectEntityManager } from '@mikro-orm/nestjs';
 
 @Injectable()
 export class TldrawRepo extends BaseEntity {
-	constructor(@InjectEntityManager('tldraw_db') private readonly _em: EntityManager) {
+	constructor(private readonly _em: EntityManager) {
 		super();
 	}
 

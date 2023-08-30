@@ -124,6 +124,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 		const element = new DrawingElement({
 			id: boardNode.id,
 			drawingName: boardNode.drawingName,
+			description: boardNode.description,
 			children: [],
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,

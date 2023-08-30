@@ -42,6 +42,10 @@ export class DrawingContentBody {
 	@IsString()
 	@ApiProperty()
 	drawingName!: string;
+
+	@IsString()
+	@ApiProperty()
+	description!: string;
 }
 
 export class RichTextElementContentBody extends ElementContentBody {

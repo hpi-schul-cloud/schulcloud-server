@@ -127,6 +127,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 		const boardNode = new DrawingElementNode({
 			id: drawingElement.id,
 			drawingName: drawingElement.drawingName,
+			description: drawingElement.description ?? '',
 			parent: parentData?.boardNode,
 			position: parentData?.position,
 		});

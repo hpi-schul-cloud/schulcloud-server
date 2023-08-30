@@ -66,6 +66,7 @@ export class ContentElementFactory {
 		const element = new DrawingElement({
 			id: new ObjectId().toHexString(),
 			drawingName: cardId ?? '',
+			description: '',
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),
