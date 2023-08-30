@@ -290,7 +290,7 @@ describe('FilesStorageService upload methods', () => {
 					}
 				});
 
-				configService.get.mockReturnValueOnce(1);
+				configService.get.mockReturnValueOnce(2);
 				const error = new BadRequestException(ErrorType.FILE_TOO_BIG);
 
 				return { params, file, userId, error };
@@ -302,6 +302,55 @@ describe('FilesStorageService upload methods', () => {
 				await expect(service.uploadFile(userId, params, file)).rejects.toThrow(error);
 				expect(storageClient.delete).toHaveBeenCalled();
 				expect(fileRecordRepo.delete).toHaveBeenCalled();
+			});
+		});
+
+		describe('WHEN file size is bigger than maxSecurityCheckFileSize', () => {
+			const setup = () => {
+				const { params, file, userId, expectedFileRecord, detectedMimeType, readable, fileRecord } =
+					createUploadFileParams();
+
+				jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValue([[fileRecord], 1]);
+
+				// Mock for max file size
+				configService.get.mockReturnValueOnce(10);
+
+				// Mock for max security check file size
+				configService.get.mockReturnValueOnce(2);
+
+				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
+				// eslint-disable-next-line @typescript-eslint/require-await
+				fileRecordRepo.save.mockImplementation(async (fr) => {
+					if (fr instanceof FileRecord && !fr._id) {
+						fr._id = new ObjectId();
+					}
+				});
+
+				jest
+					.spyOn(StreamMimeType, 'getMimeType')
+					.mockResolvedValueOnce({ mime: detectedMimeType, stream: readable as unknown as undefined });
+
+				return { params, file, userId, expectedFileRecord };
+			};
+
+			it('should call save with WONT_CHECK status', async () => {
+				const { params, file, userId } = setup();
+
+				await service.uploadFile(userId, params, file);
+
+				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(
+					1,
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					expect.objectContaining({ securityCheck: expect.objectContaining({ status: 'wont_check' }) })
+				);
+			});
+
+			it('should not call antivirus send', async () => {
+				const { params, file, userId } = setup();
+
+				await service.uploadFile(userId, params, file);
+
+				expect(antivirusService.send).not.toHaveBeenCalled();
 			});
 		});
 

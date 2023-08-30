@@ -203,7 +203,7 @@ describe(`${baseRouteName} (api)`, () => {
 					deletedSince: expect.any(String),
 					securityCheckStatus: 'pending',
 					size: expect.any(Number),
-					previewStatus: PreviewStatus.AWAITING_SCAN_STATUS,
+					previewStatus: PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE,
 				});
 			});
 
@@ -298,7 +298,7 @@ describe(`${baseRouteName} (api)`, () => {
 					deletedSince: expect.any(String),
 					securityCheckStatus: 'pending',
 					size: expect.any(Number),
-					previewStatus: PreviewStatus.AWAITING_SCAN_STATUS,
+					previewStatus: PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE,
 				});
 			});
 
