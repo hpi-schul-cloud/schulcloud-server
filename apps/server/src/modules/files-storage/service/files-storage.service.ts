@@ -9,6 +9,8 @@ import { ConfigService } from '@nestjs/config';
 import { Counted, EntityId } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { LegacyLogger } from '@src/core/logger';
+import { Readable } from 'stream';
+import StreamMimeType from 'stream-mime-type-cjs/stream-mime-type-cjs-index';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import {
 	CopyFileResponse,
@@ -75,7 +77,9 @@ export class FilesStorageService {
 
 	// upload
 	public async uploadFile(userId: EntityId, params: FileRecordParams, file: FileDto): Promise<FileRecord> {
-		const fileRecord = await this.createFileRecord(file, params, userId);
+		const { fileRecord, stream } = await this.createFileRecord(file, params, userId);
+		// MimeType Detection consumes part of the stream, so the restored stream is passed on
+		file.data = stream;
 		await this.fileRecordRepo.save(fileRecord);
 
 		await this.createFileInStorageAndRollbackOnError(fileRecord, params, file);
@@ -83,13 +87,53 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
-	private async createFileRecord(file: FileDto, params: FileRecordParams, userId: EntityId): Promise<FileRecord> {
+	private async createFileRecord(
+		file: FileDto,
+		params: FileRecordParams,
+		userId: EntityId
+	): Promise<{ fileRecord: FileRecord; stream: Readable }> {
 		const fileName = await this.resolveFileName(file, params);
+		const { mimeType, stream } = await this.detectMimeType(file);
 
 		// Create fileRecord with 0 as initial file size, because it is overwritten later anyway.
-		const fileRecord = createFileRecord(fileName, 0, file.mimeType, params, userId);
+		const fileRecord = createFileRecord(fileName, 0, mimeType, params, userId);
 
-		return fileRecord;
+		return { fileRecord, stream };
+	}
+
+	private async detectMimeType(file: FileDto): Promise<{ mimeType: string; stream: Readable }> {
+		if (this.isStreamMimeTypeDetectionPossible(file.mimeType)) {
+			const { stream, mime: detectedMimeType } = await this.detectMimeTypeByStream(file.data);
+
+			const mimeType = detectedMimeType ?? file.mimeType;
+
+			return { mimeType, stream };
+		}
+
+		return { mimeType: file.mimeType, stream: file.data };
+	}
+
+	private isStreamMimeTypeDetectionPossible(mimeType: string) {
+		const mimTypes = [
+			'text/csv',
+			'image/svg+xml',
+			'application/msword',
+			'application/vnd.ms-powerpoint',
+			'application/vnd.ms-excel',
+		];
+
+		const result = !mimTypes.includes(mimeType);
+
+		return result;
+	}
+
+	private async detectMimeTypeByStream(file: Readable): Promise<{ mime?: string; stream: Readable }> {
+		const { stream, mime } = await StreamMimeType.getMimeType(file, {
+			strict: true,
+		});
+		const readable = new Readable().wrap(stream);
+
+		return { mime, stream: readable };
 	}
 
 	private async resolveFileName(file: FileDto, params: FileRecordParams): Promise<string> {
