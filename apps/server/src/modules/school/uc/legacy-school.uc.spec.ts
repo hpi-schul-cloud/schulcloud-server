@@ -1,8 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserLoginMigrationDO } from '@shared/domain';
-import { LegacySchoolDo } from '@shared/domain/domainobject/school.do';
+import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain';
 import { schoolDOFactory, userLoginMigrationDOFactory } from '@shared/testing/factory';
 import { AuthorizationService } from '@src/modules/authorization';
 import { LegacySchoolService } from '@src/modules/school/service';

@@ -2,8 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnauthorizedException } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName, System, User } from '@shared/domain';
-import { LegacySchoolDo } from '@shared/domain/domainobject/school.do';
+import { LegacySchoolDo, RoleName, System, User } from '@shared/domain';
 import { LegacySchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import {
 	accountDtoFactory,

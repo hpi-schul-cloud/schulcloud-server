@@ -2,10 +2,12 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import {
 	ImportUser,
+	LegacySchoolDo,
 	MatchCreator,
 	MatchCreatorScope,
 	Permission,
@@ -14,15 +16,13 @@ import {
 	System,
 	User,
 } from '@shared/domain';
-import { LegacySchoolDo } from '@shared/domain/domainobject/school.do';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { federalStateFactory, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
+import { LoggerModule } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AuthorizationService } from '@src/modules/authorization';
-import { LoggerModule } from '@src/core/logger';
-import { ConfigModule } from '@nestjs/config';
 import { LegacySchoolService } from '../../school';
 import {
 	LdapAlreadyPersistedException,
