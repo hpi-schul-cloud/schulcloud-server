@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName, User } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { LegacySchoolDo } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
@@ -92,7 +92,7 @@ describe('IservProvisioningStrategy', () => {
 				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.STUDENT }]).buildWithId({
 					externalId: userUUID,
 				});
-				const school: SchoolDO = schoolDOFactory.buildWithId({ externalId: 'schoolExternalId' });
+				const school: LegacySchoolDo = schoolDOFactory.buildWithId({ externalId: 'schoolExternalId' });
 				const roleDto: RoleDto = new RoleDto({
 					name: RoleName.STUDENT,
 				});

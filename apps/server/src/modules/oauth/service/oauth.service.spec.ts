@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OauthConfig, SchoolFeatures, System } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { LegacySchoolDo } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
@@ -427,7 +427,9 @@ describe('OAuthService', () => {
 						officialSchoolNumber: 'officialSchoolNumber',
 					}),
 				});
-				const school: SchoolDO = schoolDOFactory.buildWithId({ features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED] });
+				const school: LegacySchoolDo = schoolDOFactory.buildWithId({
+					features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+				});
 
 				provisioningService.getData.mockResolvedValue(oauthData);
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
@@ -467,7 +469,7 @@ describe('OAuthService', () => {
 						officialSchoolNumber: 'officialSchoolNumber',
 					}),
 				});
-				const school: SchoolDO = schoolDOFactory.buildWithId({ features: [] });
+				const school: LegacySchoolDo = schoolDOFactory.buildWithId({ features: [] });
 
 				provisioningService.getData.mockResolvedValue(oauthData);
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
@@ -513,7 +515,7 @@ describe('OAuthService', () => {
 						officialSchoolNumber: 'officialSchoolNumber',
 					}),
 				});
-				const school: SchoolDO = schoolDOFactory.buildWithId({ features: [] });
+				const school: LegacySchoolDo = schoolDOFactory.buildWithId({ features: [] });
 
 				provisioningService.getData.mockResolvedValue(oauthData);
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);

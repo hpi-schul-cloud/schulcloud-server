@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, UserLoginMigrationDO } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { LegacySchoolDo } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { LegacySchoolService } from '@src/modules/school';
@@ -15,7 +15,7 @@ export class MigrationCheckService {
 	) {}
 
 	async shouldUserMigrate(externalUserId: string, systemId: EntityId, officialSchoolNumber: string): Promise<boolean> {
-		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
+		const school: LegacySchoolDo | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
 
 		if (school && school.id) {
 			const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(

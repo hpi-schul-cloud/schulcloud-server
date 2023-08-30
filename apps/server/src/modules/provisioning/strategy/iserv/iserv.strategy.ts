@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { RoleName, User } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { LegacySchoolDo } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
@@ -47,7 +47,7 @@ export class IservProvisioningStrategy extends ProvisioningStrategy {
 			);
 		}
 
-		const ldapSchool: SchoolDO = await this.schoolService.getSchoolById(ldapUser.schoolId);
+		const ldapSchool: LegacySchoolDo = await this.schoolService.getSchoolById(ldapUser.schoolId);
 		const roleNames: RoleName[] = ldapUser.roles.map((roleRef: RoleReference): RoleName => roleRef.name);
 
 		const externalUser: ExternalUserDto = IservMapper.mapToExternalUserDto(ldapUser, roleNames);

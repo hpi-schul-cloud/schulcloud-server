@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Permission, SchoolDO, UserLoginMigrationDO } from '@shared/domain';
+import { Permission, LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain';
 import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import {
 	SchoolMigrationService,
@@ -58,7 +58,7 @@ export class LegacySchoolUc {
 			await this.schoolMigrationService.unmarkOutdatedUsers(schoolId);
 		}
 
-		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
 
 		const migrationDto: OauthMigrationDto = new OauthMigrationDto({
 			oauthMigrationPossible: !updatedUserLoginMigration.closedAt ? updatedUserLoginMigration.startedAt : undefined,
@@ -81,7 +81,7 @@ export class LegacySchoolUc {
 			schoolId
 		);
 
-		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
 
 		const migrationDto: OauthMigrationDto = new OauthMigrationDto({
 			oauthMigrationPossible:

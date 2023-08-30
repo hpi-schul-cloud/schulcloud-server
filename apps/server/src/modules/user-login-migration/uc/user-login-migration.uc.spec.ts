@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Page, Permission, SchoolDO, System, User, UserLoginMigrationDO } from '@shared/domain';
+import { Page, Permission, LegacySchoolDo, System, User, UserLoginMigrationDO } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
 	schoolDOFactory,
@@ -304,7 +304,7 @@ describe('UserLoginMigrationUc', () => {
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
-				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+				const schoolDO: LegacySchoolDo = schoolDOFactory.buildWithId({
 					systems: [sourceSystem.id],
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'oldSchoolExternalId',
@@ -419,7 +419,7 @@ describe('UserLoginMigrationUc', () => {
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
-				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+				const schoolDO: LegacySchoolDo = schoolDOFactory.buildWithId({
 					systems: [sourceSystem.id],
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'oldSchoolExternalId',
@@ -483,7 +483,7 @@ describe('UserLoginMigrationUc', () => {
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
-				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+				const schoolDO: LegacySchoolDo = schoolDOFactory.buildWithId({
 					systems: [sourceSystem.id],
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'oldSchoolExternalId',
@@ -619,7 +619,7 @@ describe('UserLoginMigrationUc', () => {
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
-				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+				const schoolDO: LegacySchoolDo = schoolDOFactory.buildWithId({
 					systems: [sourceSystem.id],
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'oldSchoolExternalId',

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Course, EntityId, SchoolDO } from '@shared/domain';
+import { Course, EntityId, LegacySchoolDo } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
 import { LegacySchoolService } from '@src/modules/school';
 import { URLSearchParams } from 'url';
@@ -226,7 +226,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 				);
 			}
 			case CustomParameterType.AUTO_SCHOOLNUMBER: {
-				const school: SchoolDO = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
+				const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
 
 				return school.officialSchoolNumber;
 			}

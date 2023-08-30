@@ -7,7 +7,7 @@ import {
 	UnprocessableEntityException,
 } from '@nestjs/common';
 import { UserLoginMigrationDO } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { LegacySchoolDo } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
 import { LegacyLogger } from '@src/core/logger';
@@ -49,7 +49,7 @@ export class UserMigrationService {
 	}
 
 	async getMigrationConsentPageRedirect(officialSchoolNumber: string, originSystemId: string): Promise<string> {
-		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
+		const school: LegacySchoolDo | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
 
 		if (!school || !school.id) {
 			throw new NotFoundException(`School with offical school number ${officialSchoolNumber} does not exist.`);

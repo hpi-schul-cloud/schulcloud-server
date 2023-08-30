@@ -1,5 +1,5 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { EntityId, SchoolDO, User } from '@shared/domain';
+import { EntityId, LegacySchoolDo, User } from '@shared/domain';
 import { AuthorizableReferenceType, AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
 import { LegacySchoolService } from '@src/modules/school';
 import { ContextExternalTool } from '../../context-external-tool/domain';
@@ -42,7 +42,7 @@ export class ToolPermissionHelper {
 		context: AuthorizationContext
 	): Promise<void> {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const school: SchoolDO = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
 		this.authorizationService.checkPermission(user, school, context);
 	}
 }

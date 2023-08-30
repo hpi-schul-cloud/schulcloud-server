@@ -14,7 +14,7 @@ import {
 	System,
 	User,
 } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { LegacySchoolDo } from '@shared/domain/domainobject/school.do';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { federalStateFactory, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
@@ -114,7 +114,7 @@ describe('[ImportUserModule]', () => {
 			});
 		};
 
-		const createMockSchoolDo = (school?: School): SchoolDO => {
+		const createMockSchoolDo = (school?: School): LegacySchoolDo => {
 			const name = school ? school.name : 'testSchool';
 			const id = school ? school.id : 'someId';
 			const features = school ? school.features ?? [SchoolFeatures.LDAP_UNIVENTION_MIGRATION] : [];
@@ -126,7 +126,7 @@ describe('[ImportUserModule]', () => {
 				school && school.systems.isInitialized() ? school.systems.getItems().map((system: System) => system.id) : [];
 			const federalState = school ? school.federalState : federalStateFactory.build();
 
-			return new SchoolDO({
+			return new LegacySchoolDo({
 				id,
 				name,
 				features,
@@ -635,9 +635,11 @@ describe('[ImportUserModule]', () => {
 			});
 			it('Should save school params', async () => {
 				schoolServiceSaveSpy.mockRestore();
-				schoolServiceSaveSpy = schoolService.save.mockImplementation((schoolDo: SchoolDO) => Promise.resolve(schoolDo));
+				schoolServiceSaveSpy = schoolService.save.mockImplementation((schoolDo: LegacySchoolDo) =>
+					Promise.resolve(schoolDo)
+				);
 				await uc.startSchoolInUserMigration(currentUser.id);
-				const schoolParams: SchoolDO = { ...createMockSchoolDo(school) };
+				const schoolParams: LegacySchoolDo = { ...createMockSchoolDo(school) };
 				schoolParams.inUserMigration = true;
 				schoolParams.externalId = 'foo';
 				schoolParams.inMaintenanceSince = currentDate;

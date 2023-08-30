@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { LegacySchoolDo } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { ISession } from '@shared/domain/types/session';
 import { LegacyLogger } from '@src/core/logger';
@@ -122,7 +122,7 @@ export class OauthUc {
 		const data: OauthDataDto = await this.provisioningService.getData(systemId, tokenDto.idToken, tokenDto.accessToken);
 
 		if (data.externalSchool) {
-			const schoolToMigrate: SchoolDO | null = await this.schoolMigrationService.schoolToMigrate(
+			const schoolToMigrate: LegacySchoolDo | null = await this.schoolMigrationService.schoolToMigrate(
 				currentUserId,
 				data.externalSchool.externalId,
 				data.externalSchool.officialSchoolNumber

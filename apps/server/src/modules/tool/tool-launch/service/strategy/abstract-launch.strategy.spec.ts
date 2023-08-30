@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, EntityId, SchoolDO } from '@shared/domain';
+import { Course, EntityId, LegacySchoolDo } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
 import {
 	contextExternalToolFactory,
@@ -184,7 +184,7 @@ describe('AbstractLaunchStrategy', () => {
 				});
 
 				// Other
-				const school: SchoolDO = schoolDOFactory.buildWithId(
+				const school: LegacySchoolDo = schoolDOFactory.buildWithId(
 					{
 						officialSchoolNumber: '1234',
 					},
@@ -369,7 +369,7 @@ describe('AbstractLaunchStrategy', () => {
 					parameters: [],
 				});
 
-				const school: SchoolDO = schoolDOFactory.buildWithId({
+				const school: LegacySchoolDo = schoolDOFactory.buildWithId({
 					officialSchoolNumber: undefined,
 				});
 

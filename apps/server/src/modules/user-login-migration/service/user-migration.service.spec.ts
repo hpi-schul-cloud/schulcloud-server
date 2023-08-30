@@ -9,7 +9,7 @@ import {
 	UnprocessableEntityException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName, SchoolDO, UserDO, UserLoginMigrationDO } from '@shared/domain';
+import { RoleName, LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { schoolDOFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
@@ -101,7 +101,7 @@ describe('UserMigrationService', () => {
 		describe('when finding the migration systems', () => {
 			const setup = () => {
 				const officialSchoolNumber = '3';
-				const school: SchoolDO = schoolDOFactory.buildWithId({ name: 'schoolName', officialSchoolNumber });
+				const school: LegacySchoolDo = schoolDOFactory.buildWithId({ name: 'schoolName', officialSchoolNumber });
 
 				const iservSystem: SystemDto = new SystemDto({
 					id: 'iservId',

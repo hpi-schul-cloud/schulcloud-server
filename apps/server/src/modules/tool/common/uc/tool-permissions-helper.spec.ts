@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { contextExternalToolFactory, schoolDOFactory, schoolExternalToolFactory, setupEntities } from '@shared/testing';
-import { Permission, SchoolDO } from '@shared/domain';
+import { Permission, LegacySchoolDo } from '@shared/domain';
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { LegacySchoolService } from '@src/modules/school';
 import { ContextExternalTool } from '../../context-external-tool/domain';
@@ -79,7 +79,7 @@ describe('ToolPermissionHelper', () => {
 				const userId = 'userId';
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 				const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
-				const school: SchoolDO = schoolDOFactory.build({ id: schoolExternalTool.schoolId });
+				const school: LegacySchoolDo = schoolDOFactory.build({ id: schoolExternalTool.schoolId });
 
 				schoolService.getSchoolById.mockResolvedValue(school);
 

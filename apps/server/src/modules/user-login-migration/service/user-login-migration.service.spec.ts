@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, SchoolDO, SchoolFeatures, UserDO, UserLoginMigrationDO } from '@shared/domain';
+import { EntityId, LegacySchoolDo, SchoolFeatures, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { schoolDOFactory, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { LegacySchoolService } from '@src/modules/school';
@@ -165,7 +165,7 @@ describe('UserLoginMigrationService', () => {
 			describe('when the school has no systems', () => {
 				const setup = () => {
 					const schoolId: EntityId = new ObjectId().toHexString();
-					const school: SchoolDO = schoolDOFactory.buildWithId(undefined, schoolId);
+					const school: LegacySchoolDo = schoolDOFactory.buildWithId(undefined, schoolId);
 
 					const targetSystemId: EntityId = new ObjectId().toHexString();
 					const system: SystemDto = new SystemDto({
@@ -212,7 +212,7 @@ describe('UserLoginMigrationService', () => {
 					});
 
 					const schoolId: EntityId = new ObjectId().toHexString();
-					const school: SchoolDO = schoolDOFactory.buildWithId({ systems: [sourceSystemId] }, schoolId);
+					const school: LegacySchoolDo = schoolDOFactory.buildWithId({ systems: [sourceSystemId] }, schoolId);
 
 					schoolService.getSchoolById.mockResolvedValue(school);
 					systemService.findByType.mockResolvedValue([system]);
@@ -246,7 +246,7 @@ describe('UserLoginMigrationService', () => {
 			describe('when the school has a feature', () => {
 				const setup = () => {
 					const schoolId: EntityId = new ObjectId().toHexString();
-					const school: SchoolDO = schoolDOFactory.buildWithId(undefined, schoolId);
+					const school: LegacySchoolDo = schoolDOFactory.buildWithId(undefined, schoolId);
 
 					const targetSystemId: EntityId = new ObjectId().toHexString();
 					const system: SystemDto = new SystemDto({
@@ -274,7 +274,7 @@ describe('UserLoginMigrationService', () => {
 					await service.setMigration(schoolId, true, undefined, undefined);
 
 					expect(schoolService.save).toHaveBeenCalledWith(
-						expect.objectContaining<Partial<SchoolDO>>({
+						expect.objectContaining<Partial<LegacySchoolDo>>({
 							features: [existingFeature, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
 						})
 					);
@@ -284,7 +284,7 @@ describe('UserLoginMigrationService', () => {
 			describe('when the school has no features yet', () => {
 				const setup = () => {
 					const schoolId: EntityId = new ObjectId().toHexString();
-					const school: SchoolDO = schoolDOFactory.buildWithId({ features: undefined }, schoolId);
+					const school: LegacySchoolDo = schoolDOFactory.buildWithId({ features: undefined }, schoolId);
 
 					const targetSystemId: EntityId = new ObjectId().toHexString();
 					const system: SystemDto = new SystemDto({
@@ -310,7 +310,7 @@ describe('UserLoginMigrationService', () => {
 					await service.setMigration(schoolId, true, undefined, undefined);
 
 					expect(schoolService.save).toHaveBeenCalledWith(
-						expect.objectContaining<Partial<SchoolDO>>({
+						expect.objectContaining<Partial<LegacySchoolDo>>({
 							features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
 						})
 					);
@@ -320,7 +320,7 @@ describe('UserLoginMigrationService', () => {
 			describe('when modifying a migration that does not exist on the school', () => {
 				const setup = () => {
 					const schoolId: EntityId = new ObjectId().toHexString();
-					const school: SchoolDO = schoolDOFactory.buildWithId(undefined, schoolId);
+					const school: LegacySchoolDo = schoolDOFactory.buildWithId(undefined, schoolId);
 
 					schoolService.getSchoolById.mockResolvedValue(school);
 					userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
@@ -343,7 +343,7 @@ describe('UserLoginMigrationService', () => {
 			describe('when creating a new migration but the SANIS system does not exist', () => {
 				const setup = () => {
 					const schoolId: EntityId = new ObjectId().toHexString();
-					const school: SchoolDO = schoolDOFactory.buildWithId(undefined, schoolId);
+					const school: LegacySchoolDo = schoolDOFactory.buildWithId(undefined, schoolId);
 
 					schoolService.getSchoolById.mockResolvedValue(school);
 					systemService.findByType.mockResolvedValue([]);
@@ -368,7 +368,7 @@ describe('UserLoginMigrationService', () => {
 		describe('when restarting the migration', () => {
 			const setup = () => {
 				const schoolId: EntityId = new ObjectId().toHexString();
-				const school: SchoolDO = schoolDOFactory.buildWithId(undefined, schoolId);
+				const school: LegacySchoolDo = schoolDOFactory.buildWithId(undefined, schoolId);
 
 				const targetSystemId: EntityId = new ObjectId().toHexString();
 				const system: SystemDto = new SystemDto({
@@ -415,7 +415,7 @@ describe('UserLoginMigrationService', () => {
 		describe('when setting the migration to mandatory', () => {
 			const setup = () => {
 				const schoolId: EntityId = new ObjectId().toHexString();
-				const school: SchoolDO = schoolDOFactory.buildWithId(undefined, schoolId);
+				const school: LegacySchoolDo = schoolDOFactory.buildWithId(undefined, schoolId);
 
 				const targetSystemId: EntityId = new ObjectId().toHexString();
 				const system: SystemDto = new SystemDto({
@@ -459,7 +459,7 @@ describe('UserLoginMigrationService', () => {
 		describe('when setting the migration back to optional', () => {
 			const setup = () => {
 				const schoolId: EntityId = new ObjectId().toHexString();
-				const school: SchoolDO = schoolDOFactory.buildWithId(undefined, schoolId);
+				const school: LegacySchoolDo = schoolDOFactory.buildWithId(undefined, schoolId);
 
 				const targetSystemId: EntityId = new ObjectId().toHexString();
 				const system: SystemDto = new SystemDto({
@@ -504,7 +504,7 @@ describe('UserLoginMigrationService', () => {
 		describe('when closing the migration', () => {
 			const setup = () => {
 				const schoolId: EntityId = new ObjectId().toHexString();
-				const school: SchoolDO = schoolDOFactory.buildWithId(undefined, schoolId);
+				const school: LegacySchoolDo = schoolDOFactory.buildWithId(undefined, schoolId);
 
 				const targetSystemId: EntityId = new ObjectId().toHexString();
 				const system: SystemDto = new SystemDto({
@@ -551,7 +551,7 @@ describe('UserLoginMigrationService', () => {
 		describe('when schoolId is given', () => {
 			const setup = () => {
 				const schoolId: EntityId = new ObjectId().toHexString();
-				const school: SchoolDO = schoolDOFactory.buildWithId(undefined, schoolId);
+				const school: LegacySchoolDo = schoolDOFactory.buildWithId(undefined, schoolId);
 
 				const targetSystemId: EntityId = new ObjectId().toHexString();
 				const system: SystemDto = new SystemDto({
@@ -614,7 +614,7 @@ describe('UserLoginMigrationService', () => {
 				});
 
 				const schoolId: EntityId = new ObjectId().toHexString();
-				const school: SchoolDO = schoolDOFactory.buildWithId({ systems: [sourceSystemId] }, schoolId);
+				const school: LegacySchoolDo = schoolDOFactory.buildWithId({ systems: [sourceSystemId] }, schoolId);
 
 				schoolService.getSchoolById.mockResolvedValue(school);
 				systemService.findByType.mockResolvedValue([system]);
@@ -647,7 +647,7 @@ describe('UserLoginMigrationService', () => {
 		describe('when the school has schoolfeatures', () => {
 			const setup = () => {
 				const schoolId: EntityId = new ObjectId().toHexString();
-				const school: SchoolDO = schoolDOFactory.buildWithId(undefined, schoolId);
+				const school: LegacySchoolDo = schoolDOFactory.buildWithId(undefined, schoolId);
 
 				const targetSystemId: EntityId = new ObjectId().toHexString();
 				const system: SystemDto = new SystemDto({
@@ -674,7 +674,7 @@ describe('UserLoginMigrationService', () => {
 				await service.startMigration(schoolId);
 
 				expect(schoolService.save).toHaveBeenCalledWith(
-					expect.objectContaining<Partial<SchoolDO>>({
+					expect.objectContaining<Partial<LegacySchoolDo>>({
 						features: [existingFeature, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
 					})
 				);
@@ -684,7 +684,7 @@ describe('UserLoginMigrationService', () => {
 		describe('when the school has no features yet', () => {
 			const setup = () => {
 				const schoolId: EntityId = new ObjectId().toHexString();
-				const school: SchoolDO = schoolDOFactory.buildWithId({ features: undefined }, schoolId);
+				const school: LegacySchoolDo = schoolDOFactory.buildWithId({ features: undefined }, schoolId);
 
 				const targetSystemId: EntityId = new ObjectId().toHexString();
 				const system: SystemDto = new SystemDto({
@@ -708,7 +708,7 @@ describe('UserLoginMigrationService', () => {
 				await service.startMigration(schoolId);
 
 				expect(schoolService.save).toHaveBeenCalledWith(
-					expect.objectContaining<Partial<SchoolDO>>({
+					expect.objectContaining<Partial<LegacySchoolDo>>({
 						features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
 					})
 				);
@@ -718,7 +718,7 @@ describe('UserLoginMigrationService', () => {
 		describe('when creating a new migration but the SANIS system does not exist', () => {
 			const setup = () => {
 				const schoolId: EntityId = new ObjectId().toHexString();
-				const school: SchoolDO = schoolDOFactory.buildWithId(undefined, schoolId);
+				const school: LegacySchoolDo = schoolDOFactory.buildWithId(undefined, schoolId);
 
 				schoolService.getSchoolById.mockResolvedValue(school);
 				systemService.findByType.mockResolvedValue([]);

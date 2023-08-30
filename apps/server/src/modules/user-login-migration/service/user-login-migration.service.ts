@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, SchoolDO, SchoolFeatures, SystemTypeEnum, UserDO, UserLoginMigrationDO } from '@shared/domain';
+import { EntityId, LegacySchoolDo, SchoolFeatures, SystemTypeEnum, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { LegacySchoolService } from '@src/modules/school';
 import { SystemDto, SystemService } from '@src/modules/system';
@@ -24,7 +24,7 @@ export class UserLoginMigrationService {
 		oauthMigrationMandatory?: boolean,
 		oauthMigrationFinished?: boolean
 	): Promise<UserLoginMigrationDO> {
-		const schoolDo: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+		const schoolDo: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
 
 		const existingUserLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(
 			schoolId
@@ -67,7 +67,7 @@ export class UserLoginMigrationService {
 	}
 
 	async startMigration(schoolId: string): Promise<UserLoginMigrationDO> {
-		const schoolDo: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+		const schoolDo: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
 
 		const userLoginMigrationDO: UserLoginMigrationDO = await this.createNewMigration(schoolDo);
 
@@ -131,7 +131,7 @@ export class UserLoginMigrationService {
 		return userLoginMigration;
 	}
 
-	private async createNewMigration(school: SchoolDO): Promise<UserLoginMigrationDO> {
+	private async createNewMigration(school: LegacySchoolDo): Promise<UserLoginMigrationDO> {
 		const oauthSystems: SystemDto[] = await this.systemService.findByType(SystemTypeEnum.OAUTH);
 		const sanisSystem: SystemDto | undefined = oauthSystems.find((system: SystemDto) => system.alias === 'SANIS');
 
@@ -163,7 +163,7 @@ export class UserLoginMigrationService {
 		return userLoginMigration;
 	}
 
-	private enableOauthMigrationFeature(schoolDo: SchoolDO) {
+	private enableOauthMigrationFeature(schoolDo: LegacySchoolDo) {
 		if (schoolDo.features && !schoolDo.features.includes(SchoolFeatures.OAUTH_PROVISIONING_ENABLED)) {
 			schoolDo.features.push(SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
 		} else {

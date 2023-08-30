@@ -1,7 +1,7 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId, FederalState, SchoolFeatures, SchoolYear } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { LegacySchoolDo } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
@@ -24,12 +24,12 @@ export class OidcProvisioningService {
 		private readonly federalStateService: FederalStateService
 	) {}
 
-	async provisionExternalSchool(externalSchool: ExternalSchoolDto, systemId: EntityId): Promise<SchoolDO> {
-		const existingSchool: SchoolDO | null = await this.schoolService.getSchoolByExternalId(
+	async provisionExternalSchool(externalSchool: ExternalSchoolDto, systemId: EntityId): Promise<LegacySchoolDo> {
+		const existingSchool: LegacySchoolDo | null = await this.schoolService.getSchoolByExternalId(
 			externalSchool.externalId,
 			systemId
 		);
-		let school: SchoolDO;
+		let school: LegacySchoolDo;
 		if (existingSchool) {
 			school = existingSchool;
 			school.name = externalSchool.name;
@@ -45,7 +45,7 @@ export class OidcProvisioningService {
 				FederalStateNames.NIEDERSACHEN
 			);
 
-			school = new SchoolDO({
+			school = new LegacySchoolDo({
 				externalId: externalSchool.externalId,
 				name: externalSchool.name,
 				officialSchoolNumber: externalSchool.officialSchoolNumber,
@@ -57,7 +57,7 @@ export class OidcProvisioningService {
 			});
 		}
 
-		const savedSchool: SchoolDO = await this.schoolService.save(school, true);
+		const savedSchool: LegacySchoolDo = await this.schoolService.save(school, true);
 		return savedSchool;
 	}
 

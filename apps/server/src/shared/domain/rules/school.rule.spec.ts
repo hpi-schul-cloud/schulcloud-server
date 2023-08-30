@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { LegacySchoolDo } from '@shared/domain/domainobject/school.do';
 import { Role, School, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { roleFactory, schoolDOFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
@@ -11,7 +11,7 @@ describe('SchoolRule', () => {
 	let service: SchoolRule;
 	let authorizationHelper: AuthorizationHelper;
 	let user: User;
-	let entity: School | SchoolDO;
+	let entity: School | LegacySchoolDo;
 	let role: Role;
 	const permissionA = 'a' as Permission;
 	const permissionB = 'b' as Permission;

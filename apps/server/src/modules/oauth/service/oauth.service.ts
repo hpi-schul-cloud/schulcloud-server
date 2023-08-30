@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { EntityId, OauthConfig, SchoolFeatures } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { LegacySchoolDo } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { LegacyLogger } from '@src/core/logger';
@@ -132,7 +132,7 @@ export class OAuthService {
 	}
 
 	async isOauthProvisioningEnabledForSchool(officialSchoolNumber: string): Promise<boolean> {
-		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
+		const school: LegacySchoolDo | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
 
 		if (!school) {
 			return true;

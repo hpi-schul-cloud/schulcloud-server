@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { LegacySchoolDo } from '@shared/domain/domainobject/school.do';
 import { School, User } from '@shared/domain/entity';
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
 import { AuthorizationContext, Rule } from '@src/modules/authorization/types';
@@ -8,13 +8,13 @@ import { AuthorizationContext, Rule } from '@src/modules/authorization/types';
 export class SchoolRule implements Rule {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
-	public isApplicable(user: User, entity: School | SchoolDO): boolean {
-		const isMatched: boolean = entity instanceof School || entity instanceof SchoolDO;
+	public isApplicable(user: User, entity: School | LegacySchoolDo): boolean {
+		const isMatched: boolean = entity instanceof School || entity instanceof LegacySchoolDo;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: School | SchoolDO, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, entity: School | LegacySchoolDo, context: AuthorizationContext): boolean {
 		const hasPermission: boolean =
 			this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions) && user.school.id === entity.id;
 
