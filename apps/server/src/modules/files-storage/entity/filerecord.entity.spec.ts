@@ -726,6 +726,25 @@ describe('FileRecord Entity', () => {
 			});
 		});
 
+		describe('WHEN file record securityCheck status is BLOCKED and mime type is not previewable', () => {
+			const setup = () => {
+				const mimeType = 'application/octet-stream';
+				const fileRecord = fileRecordFactory.build({ mimeType });
+
+				fileRecord.securityCheck.status = ScanStatus.BLOCKED;
+
+				return { fileRecord };
+			};
+
+			it('should return PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.getPreviewStatus();
+
+				expect(result).toEqual(PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED);
+			});
+		});
+
 		describe('WHEN file record securityCheck status is WONT_CHECK', () => {
 			const setup = () => {
 				const mimeType = PreviewInputMimeTypes.IMAGE_JPEG;
