@@ -11,9 +11,8 @@ describe(FilesRepo.name, () => {
 	let em: EntityManager;
 	let module: TestingModule;
 
-	const mainUserId = new ObjectId().toHexString();
-
 	const setup = async () => {
+		const mainUserId = new ObjectId().toHexString();
 		const otherUserId = new ObjectId().toHexString();
 
 		// Test files created, owned and accessible only by the other user.
@@ -114,6 +113,7 @@ describe(FilesRepo.name, () => {
 		};
 
 		return {
+			mainUserId,
 			mainUserSharedFile,
 			otherUserSharedFile,
 			mainUserFile,
@@ -203,11 +203,89 @@ describe(FilesRepo.name, () => {
 	});
 
 	describe('findByOwnerUserId', () => {
-		it('should return proper files that are owned by the user with given userId', async () => {
-			const { mainUserSharedFile, mainUserFile, expectedMainUserSharedFileProps, expectedMainUserFileProps } =
-				await setup();
+		const findByOwnerUserIdSetup = async () => {
+			const mainUserId = new ObjectId().toHexString();
+			const otherUserId = new ObjectId().toHexString();
 
-			const results = await repo.findByOwnerUserId(mainUserId);
+			// Test file created, owned and accessible only by the main user.
+			const mainUserFile = fileEntityFactory.build({
+				ownerId: mainUserId,
+				creatorId: mainUserId,
+				permissions: [filePermissionEntityFactory.build({ refId: mainUserId })],
+			});
+
+			// Test file created and owned by the main user, but also accessible by the other user.
+			const mainUserSharedFile = fileEntityFactory.build({
+				ownerId: mainUserId,
+				creatorId: mainUserId,
+				permissions: [
+					filePermissionEntityFactory.build({ refId: mainUserId }),
+					filePermissionEntityFactory.build({ refId: otherUserId }),
+				],
+			});
+
+			await em.persistAndFlush([mainUserSharedFile, mainUserFile]);
+			em.clear();
+
+			const expectedMainUserFileProps = {
+				id: mainUserFile.id,
+				createdAt: mainUserFile.createdAt,
+				updatedAt: mainUserFile.updatedAt,
+				deleted: false,
+				isDirectory: false,
+				name: mainUserFile.name,
+				size: mainUserFile.size,
+				type: mainUserFile.type,
+				storageFileName: mainUserFile.storageFileName,
+				bucket: mainUserFile.bucket,
+				thumbnail: mainUserFile.thumbnail,
+				thumbnailRequestToken: mainUserFile.thumbnailRequestToken,
+				securityCheck: mainUserFile.securityCheck,
+				shareTokens: [],
+				refOwnerModel: mainUserFile.refOwnerModel,
+				permissions: mainUserFile.permissions,
+				versionKey: 0,
+			};
+
+			const expectedMainUserSharedFileProps = {
+				id: mainUserSharedFile.id,
+				createdAt: mainUserSharedFile.createdAt,
+				updatedAt: mainUserSharedFile.updatedAt,
+				deleted: false,
+				isDirectory: false,
+				name: mainUserSharedFile.name,
+				size: mainUserSharedFile.size,
+				type: mainUserSharedFile.type,
+				storageFileName: mainUserSharedFile.storageFileName,
+				bucket: mainUserSharedFile.bucket,
+				thumbnail: mainUserSharedFile.thumbnail,
+				thumbnailRequestToken: mainUserSharedFile.thumbnailRequestToken,
+				securityCheck: mainUserSharedFile.securityCheck,
+				shareTokens: [],
+				refOwnerModel: mainUserSharedFile.refOwnerModel,
+				permissions: mainUserSharedFile.permissions,
+				versionKey: 0,
+			};
+
+			return {
+				mainUserIdd: mainUserId,
+				mainUserFile,
+				mainUserSharedFile,
+				expectedMainUserFileProps,
+				expectedMainUserSharedFileProps,
+			};
+		};
+
+		it('should return proper files that are owned by the user with given userId', async () => {
+			const {
+				mainUserIdd,
+				mainUserSharedFile,
+				mainUserFile,
+				expectedMainUserSharedFileProps,
+				expectedMainUserFileProps,
+			} = await findByOwnerUserIdSetup();
+
+			const results = await repo.findByOwnerUserId(mainUserIdd);
 
 			expect(results).toHaveLength(2);
 
@@ -241,7 +319,7 @@ describe(FilesRepo.name, () => {
 
 				em.clear();
 
-				const results = await repo.findByOwnerUserId(mainUserId);
+				const results = await repo.findByOwnerUserId(new ObjectId().toHexString());
 
 				expect(results).toHaveLength(0);
 			});
@@ -259,6 +337,7 @@ describe(FilesRepo.name, () => {
 	describe('findByPermissionRefId', () => {
 		it('should return proper files that given user has permission to access', async () => {
 			const {
+				mainUserId,
 				mainUserSharedFile,
 				otherUserSharedFile,
 				mainUserFile,
@@ -305,7 +384,7 @@ describe(FilesRepo.name, () => {
 				await em.persistAndFlush([fileEntityFactory.build(), fileEntityFactory.build(), fileEntityFactory.build()]);
 				em.clear();
 
-				const results = await repo.findByPermissionRefId(mainUserId);
+				const results = await repo.findByPermissionRefId(new ObjectId().toHexString());
 
 				expect(results).toHaveLength(0);
 			});
@@ -324,7 +403,7 @@ describe(FilesRepo.name, () => {
 		it('should properly update given file permissions', async () => {
 			const initialFiles = await setup();
 			let { otherUserSharedFile } = initialFiles;
-			const { expectedOtherUserSharedFileProps } = initialFiles;
+			const { mainUserId, expectedOtherUserSharedFileProps } = initialFiles;
 
 			// Pre-check to make sure the main user has access to the file right now.
 			expect(otherUserSharedFile.permissions).toEqual(
