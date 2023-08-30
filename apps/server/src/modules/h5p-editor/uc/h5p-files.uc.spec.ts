@@ -5,6 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { h5pContentFactory, setupEntities } from '@shared/testing';
 import { AuthorizationContextBuilder, AuthorizationService, ICurrentUser, UserService } from '@src/modules';
 import { Request } from 'express';
+import { Readable } from 'stream';
 import { H5PContentRepo } from '../repo';
 import { ContentStorage, H5PEditorService, H5PPlayerService, LibraryStorage } from '../service';
 import { TemporaryFileStorage } from '../service/temporary-file-storage.service';
@@ -207,10 +208,16 @@ describe('H5P Files', () => {
 			const setup = () => {
 				const { content, mockCurrentUser, mockContentParameters } = createParams();
 
-				const requestMock = createMock<Request>();
 				const fileResponseMock = createMock<Awaited<ReturnType<H5PAjaxEndpoint['getContentFile']>>>();
+				const requestMock = createMock<Request>({
+					range: () => undefined,
+				});
+				// Mock partial implementation so that range callback gets called
+				ajaxEndpointService.getContentFile.mockImplementationOnce((contentId, filename, user, rangeCallback) => {
+					rangeCallback?.(100);
+					return Promise.resolve(fileResponseMock);
+				});
 
-				ajaxEndpointService.getContentFile.mockResolvedValueOnce(fileResponseMock);
 				h5pContentRepo.findById.mockResolvedValueOnce(content);
 				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
 
@@ -248,7 +255,7 @@ describe('H5P Files', () => {
 			});
 
 			it('should return results of service', async () => {
-				const { mockCurrentUser, fileResponseMock, filename, requestMock, content, mockContentParameters } = setup();
+				const { mockCurrentUser, fileResponseMock, filename, requestMock, content } = setup();
 
 				const result = await uc.getContentFile(content.id, filename, requestMock, mockCurrentUser);
 
@@ -258,6 +265,44 @@ describe('H5P Files', () => {
 					contentLength: fileResponseMock.stats.size,
 					contentRange: fileResponseMock.range,
 				});
+			});
+		});
+
+		describe('WHEN user is authorized and a range is requested', () => {
+			const setup = () => {
+				const { content, mockCurrentUser, mockContentParameters } = createParams();
+
+				const range = { start: 0, end: 100 };
+
+				const requestMock = createMock<Request>({
+					// @ts-expect-error partial types cause error
+					range: () => [range],
+				});
+
+				h5pContentRepo.findById.mockResolvedValueOnce(content);
+				ajaxEndpointService.getContentFile.mockImplementationOnce((contentId, filename, user, rangeCallback) => {
+					const parsedRange = rangeCallback?.(100);
+					if (!parsedRange) throw new Error('no range');
+					return Promise.resolve({
+						range: parsedRange,
+						mimetype: '',
+						stats: { birthtime: new Date(), size: 100 },
+						stream: createMock<Readable>(),
+					});
+				});
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+
+				const filename = 'test/file.txt';
+
+				return { range, content, filename, requestMock, mockCurrentUser, mockContentParameters };
+			};
+
+			it('should return parsed range', async () => {
+				const { mockCurrentUser, range, content, filename, requestMock } = setup();
+
+				const result = await uc.getContentFile(content.id, filename, requestMock, mockCurrentUser);
+
+				expect(result.contentRange).toEqual(range);
 			});
 		});
 
