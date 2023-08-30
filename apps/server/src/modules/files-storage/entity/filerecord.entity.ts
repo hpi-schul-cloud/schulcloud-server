@@ -10,6 +10,7 @@ export enum ScanStatus {
 	PENDING = 'pending',
 	VERIFIED = 'verified',
 	BLOCKED = 'blocked',
+	WONT_CHECK = 'wont_check',
 	ERROR = 'error',
 }
 
@@ -27,6 +28,7 @@ export enum PreviewStatus {
 	PREVIEW_POSSIBLE = 'preview_possible',
 	AWAITING_SCAN_STATUS = 'awaiting_scan_status',
 	PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR = 'preview_not_possible_scan_status_error',
+	PREVIEW_NOT_POSSIBLE_SCAN_STATUS_WONT_CHECK = 'preview_not_possible_scan_status_wont_check',
 	PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED = 'preview_not_possible_scan_status_blocked',
 	PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE = 'preview_not_possible_wrong_mime_type',
 }
@@ -234,6 +236,12 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return hasError;
 	}
 
+	public hasScanStatusWontCheck(): boolean {
+		const hasWontCheckStatus = this.securityCheck.status === ScanStatus.WONT_CHECK;
+
+		return hasWontCheckStatus;
+	}
+
 	public isPending(): boolean {
 		const isPending = this.securityCheck.status === ScanStatus.PENDING;
 
@@ -257,14 +265,6 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	}
 
 	public getPreviewStatus(): PreviewStatus {
-		if (this.isPending()) {
-			return PreviewStatus.AWAITING_SCAN_STATUS;
-		}
-
-		if (this.hasScanStatusError()) {
-			return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR;
-		}
-
 		if (this.isBlocked()) {
 			return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED;
 		}
@@ -273,6 +273,18 @@ export class FileRecord extends BaseEntityWithTimestamps {
 			return PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE;
 		}
 
-		return PreviewStatus.PREVIEW_POSSIBLE;
+		if (this.isVerified()) {
+			return PreviewStatus.PREVIEW_POSSIBLE;
+		}
+
+		if (this.isPending()) {
+			return PreviewStatus.AWAITING_SCAN_STATUS;
+		}
+
+		if (this.hasScanStatusWontCheck()) {
+			return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_WONT_CHECK;
+		}
+
+		return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR;
 	}
 }
