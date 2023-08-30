@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { LegacySchoolDo } from '@shared/domain/domainobject/school.do';
+import { LegacySchoolDo } from '@shared/domain';
 import { School, User } from '@shared/domain/entity';
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
 import { AuthorizationContext, Rule } from '@src/modules/authorization/types';

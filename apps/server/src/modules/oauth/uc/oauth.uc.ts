@@ -1,7 +1,5 @@
 import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
-import { LegacySchoolDo } from '@shared/domain/domainobject/school.do';
-import { UserDO } from '@shared/domain/domainobject/user.do';
+import { EntityId, LegacySchoolDo, UserDO } from '@shared/domain';
 import { ISession } from '@shared/domain/types/session';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';

@@ -1,8 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { RoleName, User } from '@shared/domain';
-import { RoleReference } from '@shared/domain/domainobject';
-import { LegacySchoolDo } from '@shared/domain/domainobject/school.do';
-import { UserDO } from '@shared/domain/domainobject/user.do';
+import { LegacySchoolDo, RoleName, RoleReference, User, UserDO } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import { LegacySchoolService } from '@src/modules/school';

@@ -1,4 +1,4 @@
-import { LegacySchoolDo } from '@shared/domain/domainobject/school.do';
+import { LegacySchoolDo } from '@shared/domain';
 import { federalStateFactory } from '../federal-state.factory';
 import { schoolYearFactory } from '../schoolyear.factory';
 import { DoBaseFactory } from './do-base.factory';

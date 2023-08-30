@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { LegacySchoolDo } from '@shared/domain/domainobject/school.do';
-import { UserDO } from '@shared/domain/domainobject/user.do';
+import { LegacySchoolDo, UserDO } from '@shared/domain';
 import { OauthDataDto, ProvisioningDto } from '../../dto';
 import { ProvisioningStrategy } from '../base.strategy';
 import { OidcProvisioningService } from './service/oidc-provisioning.service';

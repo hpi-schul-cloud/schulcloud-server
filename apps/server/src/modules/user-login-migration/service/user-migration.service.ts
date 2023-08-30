@@ -6,8 +6,7 @@ import {
 	NotFoundException,
 	UnprocessableEntityException,
 } from '@nestjs/common';
-import { UserLoginMigrationDO } from '@shared/domain';
-import { LegacySchoolDo } from '@shared/domain/domainobject/school.do';
+import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
 import { LegacyLogger } from '@src/core/logger';

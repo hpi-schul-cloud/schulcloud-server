@@ -1,8 +1,13 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, FederalState, SchoolFeatures, SchoolYear } from '@shared/domain';
-import { RoleReference } from '@shared/domain/domainobject';
-import { LegacySchoolDo } from '@shared/domain/domainobject/school.do';
-import { UserDO } from '@shared/domain/domainobject/user.do';
+import {
+	EntityId,
+	FederalState,
+	LegacySchoolDo,
+	RoleReference,
+	SchoolFeatures,
+	SchoolYear,
+	UserDO,
+} from '@shared/domain';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { RoleService } from '@src/modules/role';

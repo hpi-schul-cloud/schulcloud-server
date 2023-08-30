@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import {
@@ -6,8 +7,9 @@ import {
 	EntityId,
 	IFindOptions,
 	IImportUserScope,
-	INameMatch,
 	ImportUser,
+	INameMatch,
+	LegacySchoolDo,
 	MatchCreator,
 	MatchCreatorScope,
 	Permission,
@@ -15,9 +17,6 @@ import {
 	System,
 	User,
 } from '@shared/domain';
-
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { LegacySchoolDo } from '@shared/domain/domainobject/school.do';
 import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';

@@ -1,9 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { EntityId, OauthConfig, SchoolFeatures } from '@shared/domain';
-import { LegacySchoolDo } from '@shared/domain/domainobject/school.do';
-import { UserDO } from '@shared/domain/domainobject/user.do';
+import { EntityId, LegacySchoolDo, OauthConfig, SchoolFeatures, UserDO } from '@shared/domain';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { LegacyLogger } from '@src/core/logger';
 import { ProvisioningService } from '@src/modules/provisioning';
