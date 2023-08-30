@@ -6,7 +6,7 @@ import { BoardDoBuilder, BoardNodeType } from './types';
 describe(DrawingElementNode.name, () => {
 	describe('when trying to create a drawing element', () => {
 		const setup = () => {
-			const elementProps = { drawingName: 'test' };
+			const elementProps = { drawingName: 'test', description: '' };
 			const builder: DeepMocked<BoardDoBuilder> = createMock<BoardDoBuilder>();
 
 			return { elementProps, builder };
@@ -23,7 +23,7 @@ describe(DrawingElementNode.name, () => {
 
 	describe('useDoBuilder()', () => {
 		const setup = () => {
-			const element = new DrawingElementNode({ drawingName: 'test' });
+			const element = new DrawingElementNode({ description: '', drawingName: 'test' });
 			const builder: DeepMocked<BoardDoBuilder> = createMock<BoardDoBuilder>();
 			const elementDo = drawingElementFactory.build();
 
