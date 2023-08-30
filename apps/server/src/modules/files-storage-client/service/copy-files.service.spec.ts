@@ -1,9 +1,13 @@
-import { Factory } from 'fishery';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType, IComponentProperties } from '@shared/domain';
-import { courseFactory, lessonFactory, schoolFactory, setupEntities } from '@shared/testing';
+import {
+	courseFactory,
+	lessonFactory,
+	schoolFactory,
+	legacyFileEntityMockFactory,
+	setupEntities,
+} from '@shared/testing';
 import { CopyElementType, CopyHelperService } from '@src/modules/copy-helper';
 import { CopyFilesService } from './copy-files.service';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
@@ -12,13 +16,6 @@ const getImageHTML = (id: string, name: string) => {
 	const fileUrl = `"/api/v3/file/download/${id}/${name}"`;
 	return `<figure class="image"><img src=${fileUrl} alt /></figure>`;
 };
-
-const legacyFileMockFactory = Factory.define<{ id: string; name: string }>(({ sequence }) => {
-	return {
-		id: new ObjectId().toHexString(),
-		name: `file-${sequence}.jpg`,
-	};
-});
 
 describe('copy files service', () => {
 	let module: TestingModule;
@@ -61,8 +58,8 @@ describe('copy files service', () => {
 	describe('copy files of entity', () => {
 		const setup = () => {
 			const school = schoolFactory.build();
-			const file1 = legacyFileMockFactory.build();
-			const file2 = legacyFileMockFactory.build();
+			const file1 = legacyFileEntityMockFactory.build();
+			const file2 = legacyFileEntityMockFactory.build();
 			const imageHTML1 = getImageHTML(file1.id, file1.name);
 			const imageHTML2 = getImageHTML(file2.id, file2.name);
 			return { school, imageHTML1, imageHTML2 };
