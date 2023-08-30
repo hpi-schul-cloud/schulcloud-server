@@ -234,6 +234,7 @@ export enum ScanStatus {
 	PENDING &#x3D; &#x27;pending&#x27;,
 	VERIFIED &#x3D; &#x27;verified&#x27;,
 	BLOCKED &#x3D; &#x27;blocked&#x27;,
+	WONT_CHECK &#x3D; &#x27;wont_check&#x27;,
 	ERROR &#x3D; &#x27;error&#x27;,
 }
 
@@ -251,6 +252,7 @@ export enum PreviewStatus {
 	PREVIEW_POSSIBLE &#x3D; &#x27;preview_possible&#x27;,
 	AWAITING_SCAN_STATUS &#x3D; &#x27;awaiting_scan_status&#x27;,
 	PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR &#x3D; &#x27;preview_not_possible_scan_status_error&#x27;,
+	PREVIEW_NOT_POSSIBLE_SCAN_STATUS_WONT_CHECK &#x3D; &#x27;preview_not_possible_scan_status_wont_check&#x27;,
 	PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED &#x3D; &#x27;preview_not_possible_scan_status_blocked&#x27;,
 	PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE &#x3D; &#x27;preview_not_possible_wrong_mime_type&#x27;,
 }
@@ -458,6 +460,12 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return hasError;
 	}
 
+	public hasScanStatusWontCheck(): boolean {
+		const hasWontCheckStatus &#x3D; this.securityCheck.status &#x3D;&#x3D;&#x3D; ScanStatus.WONT_CHECK;
+
+		return hasWontCheckStatus;
+	}
+
 	public isPending(): boolean {
 		const isPending &#x3D; this.securityCheck.status &#x3D;&#x3D;&#x3D; ScanStatus.PENDING;
 
@@ -481,14 +489,6 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	}
 
 	public getPreviewStatus(): PreviewStatus {
-		if (this.isPending()) {
-			return PreviewStatus.AWAITING_SCAN_STATUS;
-		}
-
-		if (this.hasScanStatusError()) {
-			return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR;
-		}
-
 		if (this.isBlocked()) {
 			return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED;
 		}
@@ -497,7 +497,19 @@ export class FileRecord extends BaseEntityWithTimestamps {
 			return PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE;
 		}
 
-		return PreviewStatus.PREVIEW_POSSIBLE;
+		if (this.isVerified()) {
+			return PreviewStatus.PREVIEW_POSSIBLE;
+		}
+
+		if (this.isPending()) {
+			return PreviewStatus.AWAITING_SCAN_STATUS;
+		}
+
+		if (this.hasScanStatusWontCheck()) {
+			return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_WONT_CHECK;
+		}
+
+		return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR;
 	}
 }
 </code></pre>
