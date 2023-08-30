@@ -8,8 +8,8 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Counted, EntityId } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { S3ClientAdapter } from '@shared/infra/s3-file-storage';
 import { LegacyLogger } from '@src/core/logger';
-import { S3ClientAdapter } from '../client/s3-client.adapter';
 import {
 	CopyFileResponse,
 	CopyFilesOfParentParams,
@@ -32,7 +32,7 @@ import {
 	resolveFileNameDuplicates,
 	unmarkForDelete,
 } from '../helper';
-import { IGetFile, IGetFileResponse } from '../interface';
+import { GetFileResponse } from '../interface';
 import { CopyFileResponseBuilder, FileRecordMapper, FileResponseBuilder, FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
 
@@ -190,9 +190,10 @@ export class FilesStorageService {
 		}
 	}
 
-	public async downloadFile(schoolId: EntityId, fileRecordId: EntityId, bytesRange?: string): Promise<IGetFile> {
-		const pathToFile = createPath(schoolId, fileRecordId);
-		const response = await this.storageClient.get(pathToFile, bytesRange);
+	public async downloadFile(fileRecord: FileRecord, bytesRange?: string): Promise<GetFileResponse> {
+		const pathToFile = createPath(fileRecord.schoolId, fileRecord.id);
+		const file = await this.storageClient.get(pathToFile, bytesRange);
+		const response = FileResponseBuilder.build(file, fileRecord.getName());
 
 		return response;
 	}
@@ -201,12 +202,11 @@ export class FilesStorageService {
 		fileRecord: FileRecord,
 		params: DownloadFileParams,
 		bytesRange?: string
-	): Promise<IGetFileResponse> {
+	): Promise<GetFileResponse> {
 		this.checkFileName(fileRecord, params);
 		this.checkScanStatus(fileRecord);
 
-		const file = await this.downloadFile(fileRecord.getSchoolId(), fileRecord.id, bytesRange);
-		const response = FileResponseBuilder.build(file, fileRecord.getName());
+		const response = await this.downloadFile(fileRecord, bytesRange);
 
 		return response;
 	}

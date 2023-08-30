@@ -27,7 +27,7 @@ import { PaginationParams } from '@shared/controller';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request, Response } from 'express';
-import { IGetFileResponse } from '../interface';
+import { GetFileResponse } from '../interface';
 import { FilesStorageMapper } from '../mapper';
 import { FileRecordMapper } from '../mapper/file-record.mapper';
 import { FilesStorageUC } from '../uc';
@@ -149,7 +149,7 @@ export class FilesStorageController {
 
 	private streamFileToClient(
 		req: Request,
-		fileResponse: IGetFileResponse,
+		fileResponse: GetFileResponse,
 		httpResponse: Response,
 		bytesRange?: string
 	): StreamableFile {
