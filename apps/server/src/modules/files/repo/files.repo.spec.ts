@@ -12,28 +12,9 @@ describe(FilesRepo.name, () => {
 	let module: TestingModule;
 
 	const mainUserId = new ObjectId().toHexString();
-	const otherUserId = new ObjectId().toHexString();
-
-	const otherUserFilesProps = [
-		// Test file created, owned and accessible only by the other user.
-		{
-			ownerId: otherUserId,
-			creatorId: otherUserId,
-			permissions: [filePermissionEntityFactory.build({ refId: otherUserId })],
-		},
-		// A second file also created, owned and accessible only by the other user.
-		{
-			ownerId: otherUserId,
-			creatorId: otherUserId,
-			permissions: [filePermissionEntityFactory.build({ refId: otherUserId })],
-		},
-	];
 
 	const setup = async () => {
-		const otherUserFiles = [
-			fileEntityFactory.build(otherUserFilesProps[0]),
-			fileEntityFactory.build(otherUserFilesProps[1]),
-		];
+		const otherUserId = new ObjectId().toHexString();
 
 		// Test files created, owned and accessible only by the other user.
 		const otherUserFile = fileEntityFactory.build({
@@ -69,7 +50,7 @@ describe(FilesRepo.name, () => {
 			permissions: [filePermissionEntityFactory.build({ refId: mainUserId })],
 		});
 
-		await em.persistAndFlush([...otherUserFiles, otherUserFile, mainUserSharedFile, otherUserSharedFile, mainUserFile]);
+		await em.persistAndFlush([otherUserFile, mainUserSharedFile, otherUserSharedFile, mainUserFile]);
 		em.clear();
 
 		const expectedMainUserSharedFileProps = {
@@ -256,10 +237,8 @@ describe(FilesRepo.name, () => {
 
 		describe('should return an empty array in case of', () => {
 			it('no files owned by user with given userId', async () => {
-				await em.persistAndFlush([
-					fileEntityFactory.build(otherUserFilesProps[0]),
-					fileEntityFactory.build(otherUserFilesProps[1]),
-				]);
+				await em.persistAndFlush([fileEntityFactory.build(), fileEntityFactory.build(), fileEntityFactory.build()]);
+
 				em.clear();
 
 				const results = await repo.findByOwnerUserId(mainUserId);
@@ -323,10 +302,7 @@ describe(FilesRepo.name, () => {
 
 		describe('should return an empty array in case of', () => {
 			it('no files with given permissionRefId', async () => {
-				await em.persistAndFlush([
-					fileEntityFactory.build(otherUserFilesProps[0]),
-					fileEntityFactory.build(otherUserFilesProps[1]),
-				]);
+				await em.persistAndFlush([fileEntityFactory.build(), fileEntityFactory.build(), fileEntityFactory.build()]);
 				em.clear();
 
 				const results = await repo.findByPermissionRefId(mainUserId);
