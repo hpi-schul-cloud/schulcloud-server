@@ -13,16 +13,16 @@ import { Inject, Injectable, InternalServerErrorException, NotFoundException } f
 import { ErrorUtils } from '@src/core/error/utils';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
-import { FileDto } from '../dto';
-import { ICopyFiles, IGetFile, IStorageClient, S3Config } from '../interface';
+import { S3_CLIENT, S3_CONFIG } from './constants';
+import { CopyFiles, File, GetFile, S3Config } from './interface';
 
 @Injectable()
-export class S3ClientAdapter implements IStorageClient {
+export class S3ClientAdapter {
 	private deletedFolderName = 'trash';
 
 	constructor(
-		@Inject('S3_Client') readonly client: S3Client,
-		@Inject('S3_Config') readonly config: S3Config,
+		@Inject(S3_CLIENT) readonly client: S3Client,
+		@Inject(S3_CONFIG) readonly config: S3Config,
 		private logger: LegacyLogger
 	) {
 		this.logger.setContext(S3ClientAdapter.name);
@@ -46,7 +46,7 @@ export class S3ClientAdapter implements IStorageClient {
 		}
 	}
 
-	public async get(path: string, bytesRange?: string): Promise<IGetFile> {
+	public async get(path: string, bytesRange?: string): Promise<GetFile> {
 		try {
 			this.logger.log({ action: 'get', params: { path, bucket: this.config.bucket } });
 
@@ -79,7 +79,7 @@ export class S3ClientAdapter implements IStorageClient {
 		}
 	}
 
-	public async create(path: string, file: FileDto): Promise<ServiceOutputTypes> {
+	public async create(path: string, file: File): Promise<ServiceOutputTypes> {
 		try {
 			this.logger.log({ action: 'create', params: { path, bucket: this.config.bucket } });
 
@@ -152,7 +152,7 @@ export class S3ClientAdapter implements IStorageClient {
 		}
 	}
 
-	public async copy(paths: ICopyFiles[]) {
+	public async copy(paths: CopyFiles[]) {
 		try {
 			this.logger.log({ action: 'copy', params: { paths, bucket: this.config.bucket } });
 
