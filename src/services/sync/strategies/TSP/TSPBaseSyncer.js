@@ -1,6 +1,5 @@
 const Syncer = require('../Syncer');
 const { TspApi, config: TSP_CONFIG, ENTITY_SOURCE, findSchool } = require('./TSP');
-const SchoolYearFacade = require('../../../school/logic/year');
 
 const SCHOOL_SYNCER_TARGET = require('./TSPSchoolSyncer').SYNCER_TARGET;
 
