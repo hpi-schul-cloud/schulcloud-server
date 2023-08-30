@@ -68,5 +68,12 @@
 	},
 	"FEATURE_VIDEOCONFERENCE_ENABLED": true,
 	"VIDEOCONFERENCE_HOST": "https://bigbluebutton.schul-cloud.org/bigbluebutton",
-	"VIDEOCONFERENCE_SALT": "ThisIsNOTaRealSaltThisIsNOTaRealSaltThisIsNOTaRealSalt1234567890"
+	"VIDEOCONFERENCE_SALT": "ThisIsNOTaRealSaltThisIsNOTaRealSaltThisIsNOTaRealSalt1234567890",
+	"TLDRAW": {
+		"PING_TIMEOUT": 1,
+		"GC_ENABLED": true,
+		"DB_COLLECTION_NAME": "drawing",
+		"DB_FLUSH_SIZE": 400,
+		"DB_MULTIPLE_COLLECTIONS": false
+	}
 }

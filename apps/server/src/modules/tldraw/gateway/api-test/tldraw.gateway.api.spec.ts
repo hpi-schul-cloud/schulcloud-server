@@ -7,6 +7,7 @@ import { CoreModule } from '@src/core';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { config } from '@src/modules/tldraw/config';
+import * as process from 'process';
 import * as Utils from '../../utils/utils';
 import { TldrawGateway } from '../tldraw.gateway';
 
@@ -27,6 +28,8 @@ describe('WebSocketGateway (WsAdapter)', () => {
 			setTimeout(resolve, ms);
 		});
 
+	jest.setTimeout(7000);
+
 	beforeAll(async () => {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
 		const testingModule = await Test.createTestingModule({
@@ -43,13 +46,21 @@ describe('WebSocketGateway (WsAdapter)', () => {
 		await app.close();
 	});
 
+	beforeEach(() => {
+		jest.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval'] });
+	});
+
 	it(`should handle connection and data transfer`, async () => {
 		const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
 		const reduceMock = jest.spyOn(Uint8Array.prototype, 'reduce').mockReturnValue(1);
-		jest.useFakeTimers({ advanceTimers: 1 });
+		const closeConn = jest.spyOn(Utils, 'closeConn');
 		ws = new WebSocket(`${wsUrl}/TEST1`);
 		await new Promise((resolve) => {
 			ws.on('open', resolve);
+		});
+
+		await new Promise((resolve) => {
+			process.nextTick(resolve);
 		});
 
 		const byteArray = new TextEncoder().encode(testMessage);
@@ -58,12 +69,42 @@ describe('WebSocketGateway (WsAdapter)', () => {
 
 		expect(handleConnectionSpy).toHaveBeenCalled();
 		expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
+		expect(closeConn).toHaveBeenCalled();
+
+		await delay(2000);
+		ws.close();
+		handleConnectionSpy.mockReset();
+		reduceMock.mockReset();
+		jest.clearAllTimers();
+	});
+
+	it(`should close connection if ping failed`, async () => {
+		const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
+		const reduceMock = jest.spyOn(Uint8Array.prototype, 'reduce').mockReturnValue(1);
+		jest.useFakeTimers({ advanceTimers: 1 });
+		ws = new WebSocket(`${wsUrl}/TEST1`);
+		jest.spyOn(ws, 'ping').mockImplementation(() => {
+			throw new Error('error');
+		});
+		await new Promise((resolve) => {
+			ws.on('open', resolve);
+		});
+		const utilsSpy = jest.spyOn(Utils, 'closeConn').mockReturnValue();
+
+		const byteArray = new TextEncoder().encode(testMessage);
+		const { buffer } = byteArray;
+		ws.send(buffer);
+
+		expect(handleConnectionSpy).toHaveBeenCalled();
+		expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
+		expect(utilsSpy).toHaveBeenCalled();
 
 		await delay(200);
 		ws.close();
 		handleConnectionSpy.mockReset();
 		reduceMock.mockReset();
 		jest.clearAllTimers();
+		utilsSpy.mockReset();
 	});
 
 	it(`should refuse connection if there is no docName`, async () => {
