@@ -7,6 +7,7 @@ const { LDAP_SYNC_ACTIONS } = require('../SyncMessageBuilder');
 const { SchoolRepo, UserRepo } = require('../../repo');
 const { NotFound } = require('../../../../errors');
 const { isNotEmptyString } = require('../../../../helper/stringHelper');
+const { SCHOOL_FEATURES } = require('../../../school/model');
 
 const defaultOptions = {
 	allowedLogKeys: ['ldapId', 'systemId', 'roles', 'activated', 'schoolDn'],
@@ -23,13 +24,15 @@ class UserAction extends BaseConsumerAction {
 		const { user = {}, account = {} } = data;
 
 		let school;
+		let migratedSchool = false;
 		school = await SchoolRepo.findSchoolByLdapIdAndSystem(user.schoolDn, user.systemId);
 		if (!school) {
-			if (Configuration.get('FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION')) {
-				school = await SchoolRepo.findSchoolByPreviousExternalIdAndSystem(user.schoolDn, user.systemId);
-			} else {
+			school = await SchoolRepo.findSchoolByPreviousExternalIdAndSystem(user.schoolDn, user.systemId);
+			// school has been found as a migrated school, no need for an error but do not continue
+			if (school && !school.features.includes(SCHOOL_FEATURES.ENABLE_LDAP_SYNC_DURING_MIGRATION)) {
 				return;
 			}
+			migratedSchool = true;
 		}
 
 		if (!school) {
@@ -41,10 +44,14 @@ class UserAction extends BaseConsumerAction {
 
 		const foundUser = await UserRepo.findByLdapIdAndSchool(user.ldapId, school._id);
 
+		// user in migrated schools should not be updated
+		if (foundUser && migratedSchool) {
+			return;
+		}
+
 		if (!foundUser) {
 			const oauthMigratedUser = await UserRepo.findByPreviousExternalIdAndSchool(user.ldapId, school._id);
-			const userInOauthMigratedSchool = await UserRepo.findByLdapIdAndSchool(user.ldapId, school._id);
-			if (oauthMigratedUser || userInOauthMigratedSchool) {
+			if (oauthMigratedUser) {
 				// skip creating or updating users when user or school has migrated
 				return;
 			}
@@ -62,7 +69,7 @@ class UserAction extends BaseConsumerAction {
 		}
 
 		// default: update or create user
-		if (foundUser !== null) {
+		if (foundUser !== null && !migratedSchool) {
 			await this.updateUserAndAccount(foundUser, user, account);
 		} else {
 			await this.createUserAndAccount(user, account, school);
