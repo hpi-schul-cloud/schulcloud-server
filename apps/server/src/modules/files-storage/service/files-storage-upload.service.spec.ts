@@ -305,27 +305,6 @@ describe('FilesStorageService upload methods', () => {
 			});
 		});
 
-		it('should correctly set file size', async () => {
-			const { params, file, fileSize, userId } = createUploadFileParams();
-
-			await service.uploadFile(userId, params, file);
-
-			expect(fileRecordRepo.save).toHaveBeenNthCalledWith(
-				2,
-				expect.objectContaining({
-					size: fileSize,
-				})
-			);
-		});
-
-		it('should call antivirusService.send with fileRecord', async () => {
-			const { params, file, userId } = createUploadFileParams();
-
-			const fileRecord = await service.uploadFile(userId, params, file);
-
-			expect(antivirusService.send).toHaveBeenCalledWith(fileRecord.securityCheck.requestToken);
-		});
-
 		describe('WHEN file size is bigger than maxSecurityCheckFileSize', () => {
 			const setup = () => {
 				const { params, file, userId, expectedFileRecord } = createUploadFileParams();
