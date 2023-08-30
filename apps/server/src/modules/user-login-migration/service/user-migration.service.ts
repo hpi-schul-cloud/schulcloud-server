@@ -13,7 +13,7 @@ import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-log
 import { LegacyLogger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school';
 import { SystemDto, SystemService } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
 import { EntityId, SystemTypeEnum } from '@src/shared/domain/types';
@@ -37,7 +37,7 @@ export class UserMigrationService {
 	private readonly loginUrl: string = '/login';
 
 	constructor(
-		private readonly schoolService: SchoolService,
+		private readonly schoolService: LegacySchoolService,
 		private readonly systemService: SystemService,
 		private readonly userService: UserService,
 		private readonly logger: LegacyLogger,

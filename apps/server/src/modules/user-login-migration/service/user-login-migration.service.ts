@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId, SchoolDO, SchoolFeatures, SystemTypeEnum, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school';
 import { SystemDto, SystemService } from '@src/modules/system';
 import { UserService } from '@src/modules/user';
 import { UserLoginMigrationNotFoundLoggableException } from '../error';
@@ -13,7 +13,7 @@ export class UserLoginMigrationService {
 	constructor(
 		private readonly userService: UserService,
 		private readonly userLoginMigrationRepo: UserLoginMigrationRepo,
-		private readonly schoolService: SchoolService,
+		private readonly schoolService: LegacySchoolService,
 		private readonly systemService: SystemService,
 		private readonly schoolMigrationService: SchoolMigrationService
 	) {}

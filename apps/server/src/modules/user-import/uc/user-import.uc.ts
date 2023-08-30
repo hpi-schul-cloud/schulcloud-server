@@ -23,7 +23,7 @@ import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import { AuthorizationService } from '@src/modules/authorization';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school';
 import {
 	MigrationMayBeCompleted,
 	MigrationMayNotBeCompleted,
@@ -49,7 +49,7 @@ export class UserImportUc {
 		private readonly accountService: AccountService,
 		private readonly importUserRepo: ImportUserRepo,
 		private readonly authorizationService: AuthorizationService,
-		private readonly schoolService: SchoolService,
+		private readonly schoolService: LegacySchoolService,
 		private readonly systemRepo: SystemRepo,
 		private readonly userRepo: UserRepo,
 		private readonly logger: Logger

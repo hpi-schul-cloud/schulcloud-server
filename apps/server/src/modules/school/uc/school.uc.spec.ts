@@ -5,7 +5,7 @@ import { UserLoginMigrationDO } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { schoolDOFactory, userLoginMigrationDOFactory } from '@shared/testing/factory';
 import { AuthorizationService } from '@src/modules/authorization';
-import { SchoolService } from '@src/modules/school/service/school.service';
+import { LegacySchoolService } from '@src/modules/school/service/school.service';
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import {
 	SchoolMigrationService,
@@ -18,7 +18,7 @@ describe('SchoolUc', () => {
 	let module: TestingModule;
 	let schoolUc: SchoolUc;
 
-	let schoolService: DeepMocked<SchoolService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 	let authService: DeepMocked<AuthorizationService>;
 	let schoolMigrationService: DeepMocked<SchoolMigrationService>;
 	let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
@@ -29,8 +29,8 @@ describe('SchoolUc', () => {
 			providers: [
 				SchoolUc,
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 				{
 					provide: AuthorizationService,
@@ -51,7 +51,7 @@ describe('SchoolUc', () => {
 			],
 		}).compile();
 
-		schoolService = module.get(SchoolService);
+		schoolService = module.get(LegacySchoolService);
 		authService = module.get(AuthorizationService);
 		schoolUc = module.get(SchoolUc);
 		schoolMigrationService = module.get(SchoolMigrationService);

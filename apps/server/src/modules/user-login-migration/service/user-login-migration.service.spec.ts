@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId, SchoolDO, SchoolFeatures, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { schoolDOFactory, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school';
 import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
@@ -19,7 +19,7 @@ describe('UserLoginMigrationService', () => {
 	let service: UserLoginMigrationService;
 
 	let userService: DeepMocked<UserService>;
-	let schoolService: DeepMocked<SchoolService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 	let systemService: DeepMocked<SystemService>;
 	let userLoginMigrationRepo: DeepMocked<UserLoginMigrationRepo>;
 	let schoolMigrationService: DeepMocked<SchoolMigrationService>;
@@ -41,8 +41,8 @@ describe('UserLoginMigrationService', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 				{
 					provide: SystemService,
@@ -61,7 +61,7 @@ describe('UserLoginMigrationService', () => {
 
 		service = module.get(UserLoginMigrationService);
 		userService = module.get(UserService);
-		schoolService = module.get(SchoolService);
+		schoolService = module.get(LegacySchoolService);
 		systemService = module.get(SystemService);
 		userLoginMigrationRepo = module.get(UserLoginMigrationRepo);
 		schoolMigrationService = module.get(SchoolMigrationService);

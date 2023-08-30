@@ -23,7 +23,7 @@ import { AccountService } from '@src/modules/account/services/account.service';
 import { AuthorizationService } from '@src/modules/authorization';
 import { LoggerModule } from '@src/core/logger';
 import { ConfigModule } from '@nestjs/config';
-import { SchoolService } from '../../school';
+import { LegacySchoolService } from '../../school';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,
@@ -37,7 +37,7 @@ describe('[ImportUserModule]', () => {
 		let uc: UserImportUc;
 		let accountService: DeepMocked<AccountService>;
 		let importUserRepo: DeepMocked<ImportUserRepo>;
-		let schoolService: DeepMocked<SchoolService>;
+		let schoolService: DeepMocked<LegacySchoolService>;
 		let systemRepo: DeepMocked<SystemRepo>;
 		let userRepo: DeepMocked<UserRepo>;
 		let authorizationService: DeepMocked<AuthorizationService>;
@@ -61,8 +61,8 @@ describe('[ImportUserModule]', () => {
 						useValue: createMock<ImportUserRepo>(),
 					},
 					{
-						provide: SchoolService,
-						useValue: createMock<SchoolService>(),
+						provide: LegacySchoolService,
+						useValue: createMock<LegacySchoolService>(),
 					},
 					{
 						provide: SystemRepo,
@@ -81,7 +81,7 @@ describe('[ImportUserModule]', () => {
 			uc = module.get(UserImportUc); // TODO UserRepo not available in UserUc?!
 			accountService = module.get(AccountService);
 			importUserRepo = module.get(ImportUserRepo);
-			schoolService = module.get(SchoolService);
+			schoolService = module.get(LegacySchoolService);
 			systemRepo = module.get(SystemRepo);
 			userRepo = module.get(UserRepo);
 			authorizationService = module.get(AuthorizationService);

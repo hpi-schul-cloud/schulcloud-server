@@ -13,7 +13,7 @@ import {
 	schoolExternalToolFactory,
 	setupEntities,
 } from '@shared/testing';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school';
 import { MissingToolParameterValueLoggableException, ParameterTypeNotImplementedLoggableException } from '../../error';
 import {
 	LaunchRequestMethod,
@@ -73,7 +73,7 @@ describe('AbstractLaunchStrategy', () => {
 	let module: TestingModule;
 	let launchStrategy: TestLaunchStrategy;
 
-	let schoolService: DeepMocked<SchoolService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 	let courseRepo: DeepMocked<CourseRepo>;
 
 	beforeAll(async () => {
@@ -83,8 +83,8 @@ describe('AbstractLaunchStrategy', () => {
 			providers: [
 				TestLaunchStrategy,
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 				{
 					provide: CourseRepo,
@@ -94,7 +94,7 @@ describe('AbstractLaunchStrategy', () => {
 		}).compile();
 
 		launchStrategy = module.get(TestLaunchStrategy);
-		schoolService = module.get(SchoolService);
+		schoolService = module.get(LegacySchoolService);
 		courseRepo = module.get(CourseRepo);
 	});
 

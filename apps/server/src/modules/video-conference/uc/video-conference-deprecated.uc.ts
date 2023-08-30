@@ -24,7 +24,7 @@ import {
 	AuthorizationContextBuilder,
 	AuthorizationService,
 } from '@src/modules/authorization';
-import { SchoolService } from '@src/modules/school/service/school.service';
+import { LegacySchoolService } from '@src/modules/school/service/school.service';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { UserService } from '@src/modules/user';
 import { IScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from './dto';
@@ -68,7 +68,7 @@ export class VideoConferenceDeprecatedUc {
 		private readonly courseService: CourseService,
 		private readonly userService: UserService,
 		private readonly calendarService: CalendarService,
-		private readonly schoolService: SchoolService
+		private readonly schoolService: LegacySchoolService
 	) {
 		this.hostURL = Configuration.get('HOST') as string;
 	}

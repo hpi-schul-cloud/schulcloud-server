@@ -5,7 +5,7 @@ import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import {
@@ -20,7 +20,7 @@ import { IservMapper } from './iserv-do.mapper';
 
 @Injectable()
 export class IservProvisioningStrategy extends ProvisioningStrategy {
-	constructor(private readonly schoolService: SchoolService, private readonly userService: UserService) {
+	constructor(private readonly schoolService: LegacySchoolService, private readonly userService: UserService) {
 		super();
 	}
 

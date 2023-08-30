@@ -8,7 +8,7 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import jwt from 'jsonwebtoken';
 import { RoleDto } from '../../../role/service/dto/role.dto';
@@ -28,7 +28,7 @@ describe('IservProvisioningStrategy', () => {
 	let module: TestingModule;
 	let strategy: IservProvisioningStrategy;
 
-	let schoolService: DeepMocked<SchoolService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
@@ -41,14 +41,14 @@ describe('IservProvisioningStrategy', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 			],
 		}).compile();
 
 		strategy = module.get(IservProvisioningStrategy);
-		schoolService = module.get(SchoolService);
+		schoolService = module.get(LegacySchoolService);
 		userService = module.get(UserService);
 	});
 

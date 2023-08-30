@@ -8,7 +8,7 @@ import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encr
 import { LegacyLogger } from '@src/core/logger';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school';
 import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
@@ -31,7 +31,7 @@ export class OAuthService {
 		private readonly systemService: SystemService,
 		private readonly userMigrationService: UserMigrationService,
 		private readonly migrationCheckService: MigrationCheckService,
-		private readonly schoolService: SchoolService
+		private readonly schoolService: LegacySchoolService
 	) {
 		this.logger.setContext(OAuthService.name);
 	}

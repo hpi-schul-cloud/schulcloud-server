@@ -3,14 +3,14 @@ import { EntityId, UserLoginMigrationDO } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { UserLoginMigrationRepo } from '@shared/repo';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 
 @Injectable()
 export class MigrationCheckService {
 	constructor(
 		private readonly userService: UserService,
-		private readonly schoolService: SchoolService,
+		private readonly schoolService: LegacySchoolService,
 		private readonly userLoginMigrationRepo: UserLoginMigrationRepo
 	) {}
 

@@ -12,7 +12,7 @@ import { setupEntities, userDoFactory, userLoginMigrationDOFactory } from '@shar
 import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
 import { SchoolMigrationService } from './school-migration.service';
@@ -22,7 +22,7 @@ describe('SchoolMigrationService', () => {
 	let service: SchoolMigrationService;
 
 	let userService: DeepMocked<UserService>;
-	let schoolService: DeepMocked<SchoolService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 	let userLoginMigrationRepo: DeepMocked<UserLoginMigrationRepo>;
 
 	beforeAll(async () => {
@@ -32,8 +32,8 @@ describe('SchoolMigrationService', () => {
 			providers: [
 				SchoolMigrationService,
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 				{
 					provide: UserService,
@@ -51,7 +51,7 @@ describe('SchoolMigrationService', () => {
 		}).compile();
 
 		service = module.get(SchoolMigrationService);
-		schoolService = module.get(SchoolService);
+		schoolService = module.get(LegacySchoolService);
 		userService = module.get(UserService);
 		userLoginMigrationRepo = module.get(UserLoginMigrationRepo);
 

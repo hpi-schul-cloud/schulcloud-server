@@ -4,12 +4,12 @@ import { SchoolFeatures } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolRepo } from '@shared/repo';
 import { schoolDOFactory, setupEntities } from '@shared/testing';
-import { SchoolService } from './school.service';
+import { LegacySchoolService } from './school.service';
 import { SchoolValidationService } from './validation/school-validation.service';
 
-describe('SchoolService', () => {
+describe('LegacySchoolService', () => {
 	let module: TestingModule;
-	let schoolService: SchoolService;
+	let schoolService: LegacySchoolService;
 
 	let schoolRepo: DeepMocked<SchoolRepo>;
 	let schoolValidationService: DeepMocked<SchoolValidationService>;
@@ -17,7 +17,7 @@ describe('SchoolService', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				SchoolService,
+				LegacySchoolService,
 				{
 					provide: SchoolRepo,
 					useValue: createMock<SchoolRepo>(),
@@ -30,7 +30,7 @@ describe('SchoolService', () => {
 		}).compile();
 
 		schoolRepo = module.get(SchoolRepo);
-		schoolService = module.get(SchoolService);
+		schoolService = module.get(LegacySchoolService);
 		schoolValidationService = module.get(SchoolValidationService);
 
 		await setupEntities();

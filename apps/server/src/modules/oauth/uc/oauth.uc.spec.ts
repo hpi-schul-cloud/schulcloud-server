@@ -13,7 +13,7 @@ import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import { OauthUc } from '@src/modules/oauth/uc/oauth.uc';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school';
 import { SystemService } from '@src/modules/system';
 import { OauthConfigDto, SystemDto } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
@@ -77,8 +77,8 @@ describe('OAuthUc', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 				{
 					provide: UserMigrationService,

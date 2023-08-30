@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Permission, SchoolDO, User, UserLoginMigrationDO } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school';
 import {
 	UserLoginMigrationAlreadyClosedLoggableException,
 	UserLoginMigrationGracePeriodExpiredLoggableException,
@@ -16,7 +16,7 @@ export class ToggleUserLoginMigrationUc {
 	constructor(
 		private readonly userLoginMigrationService: UserLoginMigrationService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly schoolService: SchoolService,
+		private readonly schoolService: LegacySchoolService,
 		private readonly logger: Logger
 	) {}
 

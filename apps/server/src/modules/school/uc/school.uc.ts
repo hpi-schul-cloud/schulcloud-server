@@ -6,13 +6,13 @@ import {
 	UserLoginMigrationRevertService,
 	UserLoginMigrationService,
 } from '@src/modules/user-login-migration';
-import { SchoolService } from '../service';
+import { LegacySchoolService } from '../service';
 import { OauthMigrationDto } from './dto/oauth-migration.dto';
 
 @Injectable()
 export class SchoolUc {
 	constructor(
-		private readonly schoolService: SchoolService,
+		private readonly schoolService: LegacySchoolService,
 		private readonly authService: AuthorizationService,
 		private readonly schoolMigrationService: SchoolMigrationService,
 		private readonly userLoginMigrationService: UserLoginMigrationService,

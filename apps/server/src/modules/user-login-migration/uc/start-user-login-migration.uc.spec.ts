@@ -5,7 +5,7 @@ import { Permission, SchoolDO, User, UserLoginMigrationDO } from '@shared/domain
 import { schoolDOFactory, setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school';
 import { SchoolNumberMissingLoggableException, UserLoginMigrationAlreadyClosedLoggableException } from '../error';
 import { UserLoginMigrationService } from '../service';
 import { StartUserLoginMigrationUc } from './start-user-login-migration.uc';
@@ -16,7 +16,7 @@ describe('StartUserLoginMigrationUc', () => {
 
 	let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let schoolService: DeepMocked<SchoolService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -31,8 +31,8 @@ describe('StartUserLoginMigrationUc', () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 				{
 					provide: Logger,
@@ -44,7 +44,7 @@ describe('StartUserLoginMigrationUc', () => {
 		uc = module.get(StartUserLoginMigrationUc);
 		userLoginMigrationService = module.get(UserLoginMigrationService);
 		authorizationService = module.get(AuthorizationService);
-		schoolService = module.get(SchoolService);
+		schoolService = module.get(LegacySchoolService);
 
 		await setupEntities();
 	});

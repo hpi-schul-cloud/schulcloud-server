@@ -12,7 +12,7 @@ import { systemFactory } from '@shared/testing/factory/system.factory';
 import { LegacyLogger } from '@src/core/logger';
 import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
 import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school';
 import { OauthConfigDto } from '@src/modules/system/service';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemService } from '@src/modules/system/service/system.service';
@@ -51,7 +51,7 @@ describe('OAuthService', () => {
 	let userMigrationService: DeepMocked<UserMigrationService>;
 	let oauthAdapterService: DeepMocked<OauthAdapterService>;
 	let migrationCheckService: DeepMocked<MigrationCheckService>;
-	let schoolService: DeepMocked<SchoolService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 
 	let testSystem: System;
 	let testOauthConfig: OauthConfig;
@@ -69,8 +69,8 @@ describe('OAuthService', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 				{
 					provide: DefaultEncryptionService,
@@ -111,7 +111,7 @@ describe('OAuthService', () => {
 		userMigrationService = module.get(UserMigrationService);
 		oauthAdapterService = module.get(OauthAdapterService);
 		migrationCheckService = module.get(MigrationCheckService);
-		schoolService = module.get(SchoolService);
+		schoolService = module.get(LegacySchoolService);
 	});
 
 	afterAll(async () => {

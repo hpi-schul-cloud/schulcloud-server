@@ -5,7 +5,7 @@ import { SchoolRepo } from '@shared/repo';
 import { SchoolValidationService } from './validation';
 
 @Injectable()
-export class SchoolService {
+export class LegacySchoolService {
 	constructor(
 		private readonly schoolRepo: SchoolRepo,
 		private readonly schoolValidationService: SchoolValidationService

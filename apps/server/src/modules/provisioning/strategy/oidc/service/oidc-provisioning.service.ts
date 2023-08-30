@@ -7,7 +7,7 @@ import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { FederalStateService, SchoolService, SchoolYearService } from '@src/modules/school';
+import { FederalStateService, LegacySchoolService, SchoolYearService } from '@src/modules/school';
 import { FederalStateNames } from '@src/modules/school/types';
 import { UserService } from '@src/modules/user';
 import CryptoJS from 'crypto-js';
@@ -17,7 +17,7 @@ import { ExternalSchoolDto, ExternalUserDto } from '../../../dto';
 export class OidcProvisioningService {
 	constructor(
 		private readonly userService: UserService,
-		private readonly schoolService: SchoolService,
+		private readonly schoolService: LegacySchoolService,
 		private readonly roleService: RoleService,
 		private readonly accountService: AccountService,
 		private readonly schoolYearService: SchoolYearService,

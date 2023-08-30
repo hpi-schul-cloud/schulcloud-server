@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolDO, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { schoolDOFactory, userDoFactory } from '@shared/testing';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { MigrationCheckService } from './migration-check.service';
 
@@ -12,7 +12,7 @@ describe('MigrationCheckService', () => {
 	let service: MigrationCheckService;
 
 	let userService: DeepMocked<UserService>;
-	let schoolService: DeepMocked<SchoolService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 	let userLoginMigrationRepo: DeepMocked<UserLoginMigrationRepo>;
 
 	beforeAll(async () => {
@@ -24,8 +24,8 @@ describe('MigrationCheckService', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 				{
 					provide: UserLoginMigrationRepo,
@@ -36,7 +36,7 @@ describe('MigrationCheckService', () => {
 
 		service = module.get(MigrationCheckService);
 		userService = module.get(UserService);
-		schoolService = module.get(SchoolService);
+		schoolService = module.get(LegacySchoolService);
 		userLoginMigrationRepo = module.get(UserLoginMigrationRepo);
 	});
 

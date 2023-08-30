@@ -10,7 +10,7 @@ import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { FederalStateService, SchoolService, SchoolYearService } from '@src/modules/school';
+import { FederalStateService, LegacySchoolService, SchoolYearService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import CryptoJS from 'crypto-js';
 import { ExternalSchoolDto, ExternalUserDto } from '../../../dto';
@@ -23,7 +23,7 @@ describe('OidcProvisioningService', () => {
 	let service: OidcProvisioningService;
 
 	let userService: DeepMocked<UserService>;
-	let schoolService: DeepMocked<SchoolService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 	let roleService: DeepMocked<RoleService>;
 	let accountService: DeepMocked<AccountService>;
 	let schoolYearService: DeepMocked<SchoolYearService>;
@@ -38,8 +38,8 @@ describe('OidcProvisioningService', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 				{
 					provide: RoleService,
@@ -62,7 +62,7 @@ describe('OidcProvisioningService', () => {
 
 		service = module.get(OidcProvisioningService);
 		userService = module.get(UserService);
-		schoolService = module.get(SchoolService);
+		schoolService = module.get(LegacySchoolService);
 		roleService = module.get(RoleService);
 		accountService = module.get(AccountService);
 		schoolYearService = module.get(SchoolYearService);

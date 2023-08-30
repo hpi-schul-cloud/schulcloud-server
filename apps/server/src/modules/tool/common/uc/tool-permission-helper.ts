@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { EntityId, SchoolDO, User } from '@shared/domain';
 import { AuthorizableReferenceType, AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ContextTypeMapper } from '../mapper';
@@ -10,7 +10,7 @@ import { ContextTypeMapper } from '../mapper';
 export class ToolPermissionHelper {
 	constructor(
 		@Inject(forwardRef(() => AuthorizationService)) private authorizationService: AuthorizationService,
-		private readonly schoolService: SchoolService
+		private readonly schoolService: LegacySchoolService
 	) {}
 
 	// TODO build interface to get contextDO by contextType

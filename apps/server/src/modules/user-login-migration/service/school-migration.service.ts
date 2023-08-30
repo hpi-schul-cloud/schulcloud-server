@@ -3,7 +3,7 @@ import { ValidationError } from '@shared/common';
 import { Page, SchoolDO, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { performance } from 'perf_hooks';
 import { OAuthMigrationError } from '../error';
@@ -11,7 +11,7 @@ import { OAuthMigrationError } from '../error';
 @Injectable()
 export class SchoolMigrationService {
 	constructor(
-		private readonly schoolService: SchoolService,
+		private readonly schoolService: LegacySchoolService,
 		private readonly logger: LegacyLogger,
 		private readonly userService: UserService,
 		private readonly userLoginMigrationRepo: UserLoginMigrationRepo
