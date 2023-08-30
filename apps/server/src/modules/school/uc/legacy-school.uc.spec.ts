@@ -6,7 +6,7 @@ import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { schoolDOFactory, userLoginMigrationDOFactory } from '@shared/testing/factory';
 import { AuthorizationService } from '@src/modules/authorization';
 import { LegacySchoolService } from '@src/modules/school/service';
-import { LegacySchoolUc } from '@src/modules/school/uc/school.uc';
+import { LegacySchoolUc } from '@src/modules/school/uc';
 import {
 	SchoolMigrationService,
 	UserLoginMigrationRevertService,

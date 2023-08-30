@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { MigrationMapper } from '../mapper/migration.mapper';
 import { OauthMigrationDto } from '../uc/dto/oauth-migration.dto';
-import { LegacySchoolUc } from '../uc/school.uc';
+import { LegacySchoolUc } from '../uc';
 import { MigrationBody, MigrationResponse, SchoolParams } from './dto';
 import { SchoolController } from './school.controller';
 
