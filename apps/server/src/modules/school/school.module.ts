@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { FederalStateRepo, SchoolRepo } from '@shared/repo';
+import { FederalStateRepo, LegacySchoolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { SchoolYearRepo } from './repo';
 import { FederalStateService, LegacySchoolService, SchoolValidationService, SchoolYearService } from './service';
@@ -7,7 +7,7 @@ import { FederalStateService, LegacySchoolService, SchoolValidationService, Scho
 @Module({
 	imports: [LoggerModule],
 	providers: [
-		SchoolRepo,
+		LegacySchoolRepo,
 		LegacySchoolService,
 		SchoolYearService,
 		SchoolYearRepo,

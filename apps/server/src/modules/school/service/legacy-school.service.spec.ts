@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolFeatures } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { SchoolRepo } from '@shared/repo';
+import { LegacySchoolRepo } from '@shared/repo';
 import { schoolDOFactory, setupEntities } from '@shared/testing';
 import { LegacySchoolService } from './legacy-school.service';
 import { SchoolValidationService } from './validation/school-validation.service';
@@ -11,7 +11,7 @@ describe('LegacySchoolService', () => {
 	let module: TestingModule;
 	let schoolService: LegacySchoolService;
 
-	let schoolRepo: DeepMocked<SchoolRepo>;
+	let schoolRepo: DeepMocked<LegacySchoolRepo>;
 	let schoolValidationService: DeepMocked<SchoolValidationService>;
 
 	beforeAll(async () => {
@@ -19,8 +19,8 @@ describe('LegacySchoolService', () => {
 			providers: [
 				LegacySchoolService,
 				{
-					provide: SchoolRepo,
-					useValue: createMock<SchoolRepo>(),
+					provide: LegacySchoolRepo,
+					useValue: createMock<LegacySchoolRepo>(),
 				},
 				{
 					provide: SchoolValidationService,
@@ -29,7 +29,7 @@ describe('LegacySchoolService', () => {
 			],
 		}).compile();
 
-		schoolRepo = module.get(SchoolRepo);
+		schoolRepo = module.get(LegacySchoolRepo);
 		schoolService = module.get(LegacySchoolService);
 		schoolValidationService = module.get(SchoolValidationService);
 

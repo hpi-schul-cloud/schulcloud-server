@@ -19,25 +19,25 @@ import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.fac
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
 import { LegacyLogger } from '@src/core/logger';
 import { userLoginMigrationFactory } from '@shared/testing/factory/user-login-migration.factory';
-import { SchoolRepo } from '..';
+import { LegacySchoolRepo } from '..';
 
-describe('SchoolRepo', () => {
+describe('LegacySchoolRepo', () => {
 	let module: TestingModule;
-	let repo: SchoolRepo;
+	let repo: LegacySchoolRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [
-				SchoolRepo,
+				LegacySchoolRepo,
 				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
-		repo = module.get(SchoolRepo);
+		repo = module.get(LegacySchoolRepo);
 		em = module.get(EntityManager);
 	});
 

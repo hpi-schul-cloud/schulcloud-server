@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, SchoolFeatures } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { SchoolRepo } from '@shared/repo';
+import { LegacySchoolRepo } from '@shared/repo';
 import { SchoolValidationService } from './validation';
 
 @Injectable()
 export class LegacySchoolService {
 	constructor(
-		private readonly schoolRepo: SchoolRepo,
+		private readonly schoolRepo: LegacySchoolRepo,
 		private readonly schoolValidationService: SchoolValidationService
 	) {}
 

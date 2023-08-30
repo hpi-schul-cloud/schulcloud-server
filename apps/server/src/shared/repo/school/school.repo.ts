@@ -7,7 +7,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { BaseDORepo } from '../base.do.repo';
 
 @Injectable()
-export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> {
+export class LegacySchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> {
 	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
 	}

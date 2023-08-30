@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { SchoolDO } from '@shared/domain';
-import { SchoolRepo } from '@shared/repo';
+import { LegacySchoolRepo } from '@shared/repo';
 import { SchoolNumberDuplicateLoggableException } from '../../error';
 
 @Injectable()
 export class SchoolValidationService {
-	constructor(private readonly schoolRepo: SchoolRepo) {}
+	constructor(private readonly schoolRepo: LegacySchoolRepo) {}
 
 	public async validate(school: SchoolDO): Promise<void> {
 		if (!(await this.isSchoolNumberUnique(school))) {

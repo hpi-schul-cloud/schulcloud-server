@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { System, User } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
+import { LegacySchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { ErrorLoggable } from '@src/core/error/loggable/error.loggable';
 import { Logger } from '@src/core/logger';
 import { AccountDto } from '@src/modules/account/services/dto';
@@ -17,7 +17,7 @@ import { LdapService } from '../services/ldap.service';
 export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 	constructor(
 		private readonly systemRepo: SystemRepo,
-		private readonly schoolRepo: SchoolRepo,
+		private readonly schoolRepo: LegacySchoolRepo,
 		private readonly ldapService: LdapService,
 		private readonly authenticationService: AuthenticationService,
 		private readonly userRepo: UserRepo,
