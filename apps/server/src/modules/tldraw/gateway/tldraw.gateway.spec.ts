@@ -215,6 +215,7 @@ describe('TldrawGateway', () => {
 
 		ws.close();
 		sendSpy.mockRestore();
+		applyAwarenessUpdateSpy.mockRestore();
 	});
 
 	it('should do nothing when received message unknown type', async () => {
@@ -230,8 +231,6 @@ describe('TldrawGateway', () => {
 		const doc = new WSSharedDoc('TEST');
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, 2);
-		encoding.writeVarUint(encoder, 1);
-		encoding.writeVarUint(encoder, 0);
 		const newMessageByteArray = encoding.toUint8Array(encoder);
 		Utils.messageHandler(ws, doc, newMessageByteArray);
 
@@ -240,6 +239,7 @@ describe('TldrawGateway', () => {
 
 		ws.close();
 		sendSpy.mockRestore();
+		applyAwarenessUpdateSpy.mockRestore();
 	});
 
 	it('should not call send method when error is thrown', async () => {
