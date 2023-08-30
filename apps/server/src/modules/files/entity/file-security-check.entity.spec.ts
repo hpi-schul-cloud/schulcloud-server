@@ -4,22 +4,22 @@ import { FileSecurityCheckEntity } from './file-security-check.entity';
 
 describe(FileSecurityCheckEntity.name, () => {
 	describe('constructor', () => {
-		describe('should set proper fields values', () => {
-			const verifyTimestamps = (entity: FileSecurityCheckEntity) => {
-				const currentTime = new Date().getTime();
+		const verifyTimestamps = (entity: FileSecurityCheckEntity) => {
+			const currentTime = new Date().getTime();
 
-				const createdAtTime = entity.createdAt.getTime();
+			const createdAtTime = entity.createdAt.getTime();
 
-				expect(createdAtTime).toBeGreaterThan(0);
-				expect(createdAtTime).toBeLessThanOrEqual(currentTime);
+			expect(createdAtTime).toBeGreaterThan(0);
+			expect(createdAtTime).toBeLessThanOrEqual(currentTime);
 
-				const updatedAtTime = entity.updatedAt.getTime();
+			const updatedAtTime = entity.updatedAt.getTime();
 
-				expect(updatedAtTime).toBeGreaterThan(0);
-				expect(updatedAtTime).toBeLessThanOrEqual(currentTime);
-			};
+			expect(updatedAtTime).toBeGreaterThan(0);
+			expect(updatedAtTime).toBeLessThanOrEqual(currentTime);
+		};
 
-			it('for an empty props object', () => {
+		describe('when passed an empty props object', () => {
+			it(`should return a valid ${FileSecurityCheckEntity.name} object with proper default fields values`, () => {
 				const entity = new FileSecurityCheckEntity({});
 
 				verifyTimestamps(entity);
@@ -33,8 +33,10 @@ describe(FileSecurityCheckEntity.name, () => {
 				expect(entity.requestToken?.length).toBeGreaterThan(0);
 				expect(validateUUID(entity.requestToken as string)).toEqual(true);
 			});
+		});
 
-			it('from the provided complete props object', () => {
+		describe('when passed a complete (fully filled) props object', () => {
+			it(`should return a valid ${FileSecurityCheckEntity.name} object with fields values taken from the passed props object`, () => {
 				const status = FileSecurityCheckStatus.VERIFIED;
 				const reason = 'AV scanning done';
 				const requestToken = 'b9ebf8d9-6029-4d6c-bd93-4cace483df3c';
