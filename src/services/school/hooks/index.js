@@ -17,7 +17,7 @@ const SchoolYearFacade = require('../logic/year');
 // years are cached on first call, because they are expected to not change during runtime.
 let years = null;
 
-const cacheYears = async () => {
+const cacheYearsIfNotSet = async () => {
 	if (!years) {
 		years = await Year.find().lean().exec();
 		if (years.length === 0) {
@@ -99,7 +99,7 @@ const setDefaultFileStorageType = (hook) => {
 };
 
 const setCurrentYearIfMissing = async (hook) => {
-	await cacheYears();
+	await cacheYearsIfNotSet();
 	if (!hook.data.currentYear) {
 		const facade = new SchoolYearFacade(years, hook.data);
 		hook.data.currentYear = facade.defaultYear;
@@ -128,7 +128,7 @@ const createDefaultStorageOptions = (hook) => {
 };
 
 const decorateYears = async (context) => {
-	await cacheYears();
+	await cacheYearsIfNotSet();
 	const addYearsToSchool = (school) => {
 		const facade = new SchoolYearFacade(years, school);
 		school.years = facade.toJSON();
