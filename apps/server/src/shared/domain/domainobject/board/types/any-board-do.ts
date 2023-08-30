@@ -1,14 +1,7 @@
 import { Card } from '../card.do';
 import { ColumnBoard } from '../column-board.do';
 import { Column } from '../column.do';
-import { SubmissionContainerElement } from '../submission-container-element.do';
 import { SubmissionItem } from '../submission-item.do';
 import { AnyContentElementDo } from './any-content-element-do';
 
-export type AnyBoardDo =
-	| ColumnBoard
-	| Column
-	| Card
-	| AnyContentElementDo
-	| SubmissionContainerElement
-	| SubmissionItem;
+export type AnyBoardDo = ColumnBoard | Column | Card | AnyContentElementDo | SubmissionItem;

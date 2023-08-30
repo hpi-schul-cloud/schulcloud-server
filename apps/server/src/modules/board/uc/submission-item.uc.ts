@@ -31,8 +31,8 @@ export class SubmissionItemUc {
 			);
 		}
 
-		const isStudent = await this.isAuthorizedStudent(userId, submissionContainer);
-		if (isStudent) {
+		const isAuthorizedStudent = await this.isAuthorizedStudent(userId, submissionContainer);
+		if (isAuthorizedStudent) {
 			submissionItems = submissionItems.filter((item) => item.userId === userId);
 		}
 

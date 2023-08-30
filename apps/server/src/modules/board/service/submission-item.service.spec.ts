@@ -126,10 +126,10 @@ describe(SubmissionItemService.name, () => {
 
 		it('should save completion', async () => {
 			const { submissionItem, submissionContainer } = setup();
-			submissionItem.completed = false;
+
 			await service.update(submissionItem, false);
 
-			expect(boardDoRepo.save).toHaveBeenCalledWith(submissionItem, submissionContainer);
+			expect(boardDoRepo.save).toHaveBeenCalledWith(expect.objectContaining({ completed: false }), submissionContainer);
 		});
 
 		it('should throw if parent SubmissionContainer dueDate is in the past', async () => {

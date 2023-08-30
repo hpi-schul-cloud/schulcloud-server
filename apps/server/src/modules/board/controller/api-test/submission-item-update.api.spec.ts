@@ -17,7 +17,7 @@ import { ServerTestModule } from '@src/modules/server';
 import { SubmissionItemResponse } from '../dto';
 
 const baseRouteName = '/board-submissions';
-describe('submission create (api)', () => {
+describe('submission item update (api)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
@@ -73,11 +73,8 @@ describe('submission create (api)', () => {
 			const response = await loggedInClient.patch(`${submissionItemNode.id}`, { completed: false });
 
 			expect(response.status).toEqual(403);
-
-			const result = await em.findOneOrFail(SubmissionItemNode, submissionItemNode.id);
-			expect(result.completed).toEqual(submissionItemNode.completed);
 		});
-		it('should not update submission item', async () => {
+		it('should not actually update submission item entity', async () => {
 			const { loggedInClient, submissionItemNode } = await setup();
 
 			await loggedInClient.patch(`${submissionItemNode.id}`, { completed: false });
@@ -184,6 +181,14 @@ describe('submission create (api)', () => {
 
 			expect(response.status).toEqual(403);
 		});
+		it('should not actually update submission item entity', async () => {
+			const { loggedInClient, submissionItemNode } = await setup();
+
+			await loggedInClient.patch(`${submissionItemNode.id}`, { completed: false });
+
+			const result = await em.findOneOrFail(SubmissionItemNode, submissionItemNode.id);
+			expect(result.completed).toEqual(submissionItemNode.completed);
+		});
 	});
 
 	describe('when user is a student not in course', () => {
@@ -224,6 +229,15 @@ describe('submission create (api)', () => {
 			const response = await loggedInClient.patch(`${submissionItemNode.id}`, { completed: false });
 
 			expect(response.status).toEqual(403);
+		});
+
+		it('should not actually update submission item entity', async () => {
+			const { loggedInClient, submissionItemNode } = await setup();
+
+			await loggedInClient.patch(`${submissionItemNode.id}`, { completed: false });
+
+			const result = await em.findOneOrFail(SubmissionItemNode, submissionItemNode.id);
+			expect(result.completed).toEqual(submissionItemNode.completed);
 		});
 	});
 });

@@ -2,7 +2,7 @@ import { ObjectId } from 'bson';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { EntityId, SubmissionContainerElement, SubmissionItem } from '@shared/domain';
-import { ValidationError } from '@shared/common';
+import {BusinessError, ValidationError} from '@shared/common';
 
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
