@@ -8,7 +8,7 @@ import { FilesRepo } from '../repo';
 import { FileEntity } from '../entity';
 
 @Injectable()
-export class DeleteFilesUC {
+export class DeleteFilesUc {
 	private s3ClientMap: Map<string, S3Client> = new Map();
 
 	constructor(
@@ -16,7 +16,7 @@ export class DeleteFilesUC {
 		private readonly storageProviderRepo: StorageProviderRepo,
 		private readonly logger: LegacyLogger
 	) {
-		this.logger.setContext(DeleteFilesUC.name);
+		this.logger.setContext(DeleteFilesUc.name);
 	}
 
 	public async deleteMarkedFiles(thresholdDate: Date, batchSize: number): Promise<void> {
