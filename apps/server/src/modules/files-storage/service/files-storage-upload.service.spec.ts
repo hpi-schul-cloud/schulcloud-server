@@ -307,13 +307,28 @@ describe('FilesStorageService upload methods', () => {
 
 		describe('WHEN file size is bigger than maxSecurityCheckFileSize', () => {
 			const setup = () => {
-				const { params, file, userId, expectedFileRecord } = createUploadFileParams();
+				const { params, file, userId, expectedFileRecord, detectedMimeType, readable, fileRecord } =
+					createUploadFileParams();
+
+				jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValue([[fileRecord], 1]);
 
 				// Mock for max file size
 				configService.get.mockReturnValueOnce(10);
 
 				// Mock for max security check file size
 				configService.get.mockReturnValueOnce(2);
+
+				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
+				// eslint-disable-next-line @typescript-eslint/require-await
+				fileRecordRepo.save.mockImplementation(async (fr) => {
+					if (fr instanceof FileRecord && !fr._id) {
+						fr._id = new ObjectId();
+					}
+				});
+
+				jest
+					.spyOn(StreamMimeType, 'getMimeType')
+					.mockResolvedValueOnce({ mime: detectedMimeType, stream: readable as unknown as undefined });
 
 				return { params, file, userId, expectedFileRecord };
 			};
