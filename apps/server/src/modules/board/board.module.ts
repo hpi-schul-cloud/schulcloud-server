@@ -19,6 +19,7 @@ import {
 @Module({
 	imports: [ConsoleWriterModule, FilesStorageClientModule, LoggerModule],
 	providers: [
+		BoardDoAuthorizableService,
 		BoardDoRepo,
 		BoardDoService,
 		BoardNodeRepo,
@@ -26,18 +27,17 @@ import {
 		ColumnBoardService,
 		ColumnService,
 		ContentElementService,
-		SubmissionItemService,
-		RecursiveDeleteVisitor,
 		ContentElementFactory,
-		BoardDoAuthorizableService,
 		CourseRepo, // TODO: import learnroom module instead. This is currently not possible due to dependency cycle with authorisation service
+		RecursiveDeleteVisitor,
+		SubmissionItemService,
 	],
 	exports: [
+		BoardDoAuthorizableService,
+		CardService,
 		ColumnBoardService,
 		ColumnService,
-		CardService,
 		ContentElementService,
-		BoardDoAuthorizableService,
 		SubmissionItemService,
 	],
 })

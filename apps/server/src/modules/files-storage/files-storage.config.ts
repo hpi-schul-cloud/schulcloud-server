@@ -4,12 +4,14 @@ import { S3Config } from './interface';
 
 export interface IFileStorageConfig extends ICoreModuleConfig {
 	MAX_FILE_SIZE: number;
+	MAX_SECURITY_CHECK_FILE_SIZE: number;
 }
 
 const fileStorageConfig: IFileStorageConfig = {
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('FILES_STORAGE__INCOMING_REQUEST_TIMEOUT') as number,
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get('INCOMING_REQUEST_TIMEOUT_COPY_API') as number,
 	MAX_FILE_SIZE: Configuration.get('FILES_STORAGE__MAX_FILE_SIZE') as number,
+	MAX_SECURITY_CHECK_FILE_SIZE: Configuration.get('FILE_SECURITY_CHECK_MAX_FILE_SIZE') as number,
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
 };
 
