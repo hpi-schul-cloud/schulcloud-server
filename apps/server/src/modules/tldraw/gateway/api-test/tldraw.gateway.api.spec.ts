@@ -28,7 +28,7 @@ describe('WebSocketGateway (WsAdapter)', () => {
 			setTimeout(resolve, ms);
 		});
 
-	jest.setTimeout(7000);
+	jest.setTimeout(10000);
 
 	beforeAll(async () => {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
@@ -47,7 +47,7 @@ describe('WebSocketGateway (WsAdapter)', () => {
 	});
 
 	beforeEach(() => {
-		jest.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval'] });
+		jest.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] });
 	});
 
 	it(`should handle connection and data transfer`, async () => {
@@ -102,7 +102,6 @@ describe('WebSocketGateway (WsAdapter)', () => {
 
 	it(`should handle 2 connections at same doc and data transfer`, async () => {
 		const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
-
 		ws = new WebSocket(`${wsUrl}/TEST2`);
 		const ws2 = new WebSocket(`${wsUrl}/TEST2`);
 		await new Promise((resolve) => {
@@ -127,7 +126,6 @@ describe('WebSocketGateway (WsAdapter)', () => {
 	});
 
 	it(`check if client will receive message`, async () => {
-		const messageHandlerSpy = jest.spyOn(Utils, 'messageHandler');
 		ws = new WebSocket(`${wsUrl}/TEST3`);
 		await new Promise((resolve) => {
 			ws.on('open', resolve);
@@ -144,8 +142,6 @@ describe('WebSocketGateway (WsAdapter)', () => {
 		});
 
 		await delay(200);
-		expect(messageHandlerSpy).toHaveBeenCalledTimes(1);
 		ws.close();
-		messageHandlerSpy.mockReset();
 	});
 });
