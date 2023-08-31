@@ -1556,13 +1556,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/OauthProviderModule.html" data-type="entity-link" >OauthProviderModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-OauthProviderModule-4cb1b2fca818136f230c611fa0382d7bb353a80c4a6d5e8a759fe0be8a57d8ec5a53b8e3294562aefb95f1716c346dc77fef30f39a370cda6f61a2c693d14aa3"' : 'data-bs-target="#xs-injectables-links-module-OauthProviderModule-4cb1b2fca818136f230c611fa0382d7bb353a80c4a6d5e8a759fe0be8a57d8ec5a53b8e3294562aefb95f1716c346dc77fef30f39a370cda6f61a2c693d14aa3"' }>
+                                        'data-bs-target="#injectables-links-module-OauthProviderModule-a9d9ec0f2372794b087ced2e2fd903edb68a9189358f6f196c442967d68ce1bd737920d1e8a967aeaff4ea66c7025f9687ed9d7f6d0e141129648c129cf1fb7d"' : 'data-bs-target="#xs-injectables-links-module-OauthProviderModule-a9d9ec0f2372794b087ced2e2fd903edb68a9189358f6f196c442967d68ce1bd737920d1e8a967aeaff4ea66c7025f9687ed9d7f6d0e141129648c129cf1fb7d"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-OauthProviderModule-4cb1b2fca818136f230c611fa0382d7bb353a80c4a6d5e8a759fe0be8a57d8ec5a53b8e3294562aefb95f1716c346dc77fef30f39a370cda6f61a2c693d14aa3"' :
-                                        'id="xs-injectables-links-module-OauthProviderModule-4cb1b2fca818136f230c611fa0382d7bb353a80c4a6d5e8a759fe0be8a57d8ec5a53b8e3294562aefb95f1716c346dc77fef30f39a370cda6f61a2c693d14aa3"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-OauthProviderModule-a9d9ec0f2372794b087ced2e2fd903edb68a9189358f6f196c442967d68ce1bd737920d1e8a967aeaff4ea66c7025f9687ed9d7f6d0e141129648c129cf1fb7d"' :
+                                        'id="xs-injectables-links-module-OauthProviderModule-a9d9ec0f2372794b087ced2e2fd903edb68a9189358f6f196c442967d68ce1bd737920d1e8a967aeaff4ea66c7025f9687ed9d7f6d0e141129648c129cf1fb7d"' }>
                                         <li class="link">
                                             <a href="injectables/IdTokenService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >IdTokenService</a>
                                         </li>
@@ -1614,13 +1614,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/PseudonymModule.html" data-type="entity-link" >PseudonymModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-PseudonymModule-461fcbe43819b28cc83ca9b0515e89571eb603d8325223b042f7358675c6ce93c0618c35e787d314aed56f2d92e1b6dddded808f9f2e1de1db412fe7e68d77b9"' : 'data-bs-target="#xs-injectables-links-module-PseudonymModule-461fcbe43819b28cc83ca9b0515e89571eb603d8325223b042f7358675c6ce93c0618c35e787d314aed56f2d92e1b6dddded808f9f2e1de1db412fe7e68d77b9"' }>
+                                        'data-bs-target="#injectables-links-module-PseudonymModule-3242659e33c9fcff32c44549174c18420d9dde1eeac79ac9b0f6751854beba4eecd2c40223282acac34bde9cc19572c1fd93f5006a98541eea79fa668b7114b4"' : 'data-bs-target="#xs-injectables-links-module-PseudonymModule-3242659e33c9fcff32c44549174c18420d9dde1eeac79ac9b0f6751854beba4eecd2c40223282acac34bde9cc19572c1fd93f5006a98541eea79fa668b7114b4"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-PseudonymModule-461fcbe43819b28cc83ca9b0515e89571eb603d8325223b042f7358675c6ce93c0618c35e787d314aed56f2d92e1b6dddded808f9f2e1de1db412fe7e68d77b9"' :
-                                        'id="xs-injectables-links-module-PseudonymModule-461fcbe43819b28cc83ca9b0515e89571eb603d8325223b042f7358675c6ce93c0618c35e787d314aed56f2d92e1b6dddded808f9f2e1de1db412fe7e68d77b9"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-PseudonymModule-3242659e33c9fcff32c44549174c18420d9dde1eeac79ac9b0f6751854beba4eecd2c40223282acac34bde9cc19572c1fd93f5006a98541eea79fa668b7114b4"' :
+                                        'id="xs-injectables-links-module-PseudonymModule-3242659e33c9fcff32c44549174c18420d9dde1eeac79ac9b0f6751854beba4eecd2c40223282acac34bde9cc19572c1fd93f5006a98541eea79fa668b7114b4"' }>
                                         <li class="link">
                                             <a href="injectables/ExternalToolPseudonymRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ExternalToolPseudonymRepo</a>
                                         </li>
