@@ -86,7 +86,7 @@ export class ElementController {
 		await this.cardUc.deleteElement(currentUser.userId, urlParams.contentElementId);
 	}
 
-	@ApiOperation({ summary: 'Create a new submission item in a submission container element.' })
+	@ApiOperation({ summary: 'Create a new submission item having parent a submission container element.' })
 	@ApiExtraModels(SubmissionItemResponse)
 	@ApiResponse({ status: 201, type: SubmissionItemResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
@@ -94,18 +94,18 @@ export class ElementController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@ApiBody({ required: true, type: CreateSubmissionItemBodyParams })
 	@Post(':contentElementId/submissions')
-	async createSubmission(
+	async createSubmissionItem(
 		@Param() urlParams: ContentElementUrlParams,
 		@Body() bodyParams: CreateSubmissionItemBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<SubmissionItemResponse> {
-		const submission = await this.elementUc.createSubmissionItem(
+		const submissionItem = await this.elementUc.createSubmissionItem(
 			currentUser.userId,
 			urlParams.contentElementId,
 			bodyParams.completed
 		);
 		const mapper = SubmissionItemResponseMapper.getInstance();
-		const response = mapper.mapToResponse(submission);
+		const response = mapper.mapToResponse(submissionItem);
 
 		return response;
 	}

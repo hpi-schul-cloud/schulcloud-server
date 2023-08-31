@@ -545,6 +545,11 @@
 			"description": "enables antivirus check for files",
 			"default": false
 		},
+		"FILE_SECURITY_CHECK_MAX_FILE_SIZE": {
+			"type": "integer",
+			"description": "Maximum file size for antivirus check in Byte.",
+			"default": 25000000
+		},
 		"FILE_SECURITY_CHECK_SERVICE_URI": {
 			"type": "string",
 			"description": "Antivirus file endpoint, only used for legacy file implementation",
@@ -1025,6 +1030,11 @@
 			"default": false,
 			"description": "Toggle for activating the column board."
 		},
+		"FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable submissions in column board."
+		},
 		"COLUMN_BOARD_HELP_LINK": {
 			"type": "string",
 			"default": "https://docs.dbildungscloud.de/pages/viewpage.action?pageId=270827606",
@@ -1236,6 +1246,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "This feature flag controls whether the outdated user accounts are displayed or not. After a migration, all user accounts which were not migrated will be marked as outdated."
+		},
+		"FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION": {
+			"type": "boolean",
+			"default": false,
+			"description": "Displays the school-feature switch ENABLE_LDAP_SYNC_DURING_MIGRATION on the school-settings page."
 		},
 		"FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED": {
 			"type": "boolean",

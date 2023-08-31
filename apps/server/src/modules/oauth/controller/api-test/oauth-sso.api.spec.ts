@@ -484,7 +484,7 @@ describe('OAuth SSO Controller (API)', () => {
 			};
 
 			it('should redirect to the general migration error page', async () => {
-				const { targetSystem, sourceUser, sourceSystem, query, cookies } = await setupMigration();
+				const { sourceUser, sourceSystem, query, cookies } = await setupMigration();
 				currentUser = mapUserToCurrentUser(sourceUser, undefined, sourceSystem.id);
 				const baseUrl: string = Configuration.get('HOST') as string;
 				query.error = SSOAuthenticationError.INVALID_REQUEST;
@@ -494,10 +494,7 @@ describe('OAuth SSO Controller (API)', () => {
 					.set('Cookie', cookies)
 					.query(query)
 					.expect(302)
-					.expect(
-						'Location',
-						`${baseUrl}/migration/error?sourceSystem=${sourceSystem.id}&targetSystem=${targetSystem.id}`
-					);
+					.expect('Location', `${baseUrl}/migration/error`);
 			});
 		});
 
@@ -575,10 +572,7 @@ describe('OAuth SSO Controller (API)', () => {
 					.set('Cookie', cookies)
 					.query(query)
 					.expect(302)
-					.expect(
-						'Location',
-						`${baseUrl}/migration/error?sourceSystem=${sourceSystem.id}&targetSystem=${targetSystem.id}&sourceSchoolNumber=11111&targetSchoolNumber=22222`
-					);
+					.expect('Location', `${baseUrl}/migration/error?sourceSchoolNumber=11111&targetSchoolNumber=22222`);
 			});
 		});
 

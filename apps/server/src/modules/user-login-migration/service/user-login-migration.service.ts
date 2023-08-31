@@ -18,6 +18,14 @@ export class UserLoginMigrationService {
 		private readonly schoolMigrationService: SchoolMigrationService
 	) {}
 
+	/**
+	 * @deprecated Use the other functions in this class instead.
+	 *
+	 * @param schoolId
+	 * @param oauthMigrationPossible
+	 * @param oauthMigrationMandatory
+	 * @param oauthMigrationFinished
+	 */
 	async setMigration(
 		schoolId: EntityId,
 		oauthMigrationPossible?: boolean,
