@@ -1,26 +1,32 @@
+import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolService } from '@src/modules/lti-tool/service';
 import { ExternalTool } from '@src/modules/tool/external-tool/domain';
 import { ExternalToolService } from '@src/modules/tool/external-tool/service';
+import { IToolFeatures, ToolFeatures } from '@src/modules/tool/tool-config';
 
 @Injectable()
 export class OauthProviderLoginFlowService {
 	constructor(
 		private readonly ltiToolService: LtiToolService,
-		private readonly externalToolService: ExternalToolService
+		private readonly externalToolService: ExternalToolService,
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
 	) {}
 
 	public async findToolByClientId(clientId: string): Promise<ExternalTool | LtiToolDO> {
-		const externalTool: ExternalTool | null = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(
-			clientId
-		);
-		const ltiTool: LtiToolDO | null = await this.ltiToolService.findByClientIdAndIsLocal(clientId, true);
+		if (this.toolFeatures.ctlToolsTabEnabled) {
+			const externalTool: ExternalTool | null = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(
+				clientId
+			);
 
-		if (externalTool) {
-			return externalTool;
+			if (externalTool) {
+				return externalTool;
+			}
 		}
+
+		const ltiTool: LtiToolDO | null = await this.ltiToolService.findByClientIdAndIsLocal(clientId, true);
 
 		if (ltiTool) {
 			return ltiTool;

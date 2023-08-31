@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SubmissionItem } from '@shared/domain';
+import { ValidationError } from '@shared/common';
 import { setupEntities, userFactory } from '@shared/testing';
 import {
 	cardFactory,
@@ -40,6 +41,10 @@ describe(SubmissionItemService.name, () => {
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
 	});
 
 	describe('create', () => {
@@ -90,6 +95,51 @@ describe(SubmissionItemService.name, () => {
 
 				await expect(service.findById(cardElement.id)).rejects.toThrowError(NotFoundException);
 			});
+		});
+	});
+
+	describe('update', () => {
+		const setup = () => {
+			const submissionContainer = submissionContainerElementFactory.build();
+			const submissionItem = submissionItemFactory.build();
+
+			boardDoRepo.findParentOfId.mockResolvedValueOnce(submissionContainer);
+
+			return { submissionContainer, submissionItem };
+		};
+
+		it('should fetch the SubmissionContainer parent', async () => {
+			const { submissionItem } = setup();
+
+			await service.update(submissionItem, true);
+
+			expect(boardDoRepo.findParentOfId).toHaveBeenCalledWith(submissionItem.id);
+		});
+
+		it('should call bord repo to save submission item', async () => {
+			const { submissionItem, submissionContainer } = setup();
+
+			await service.update(submissionItem, true);
+
+			expect(boardDoRepo.save).toHaveBeenCalledWith(submissionItem, submissionContainer);
+		});
+
+		it('should save completion', async () => {
+			const { submissionItem, submissionContainer } = setup();
+
+			await service.update(submissionItem, false);
+
+			expect(boardDoRepo.save).toHaveBeenCalledWith(expect.objectContaining({ completed: false }), submissionContainer);
+		});
+
+		it('should throw if parent SubmissionContainer dueDate is in the past', async () => {
+			const { submissionItem, submissionContainer } = setup();
+
+			const yesterday = new Date(Date.now() - 86400000);
+			submissionContainer.dueDate = yesterday;
+			boardDoRepo.findParentOfId.mockResolvedValue(submissionContainer);
+
+			await expect(service.update(submissionItem, true)).rejects.toThrowError(ValidationError);
 		});
 	});
 });
