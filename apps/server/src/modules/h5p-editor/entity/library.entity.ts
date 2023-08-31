@@ -188,7 +188,7 @@ export class InstalledLibrary extends BaseEntityWithTimestamps implements IInsta
 	@Property()
 	files: FileMetadata[];
 
-	private simple_compare(a: number, b: number): number {
+	private static simple_compare(a: number, b: number): number {
 		if (a > b) {
 			return 1;
 		}
@@ -205,12 +205,12 @@ export class InstalledLibrary extends BaseEntityWithTimestamps implements IInsta
 		return this.machineName > otherLibrary.machineName ? 1 : -1;
 	}
 
-	compareVersions(otherLibrary: ILibraryName & { patchVersion?: number }): number {
-		let result = this.simple_compare(this.majorVersion, otherLibrary.majorVersion);
+	public compareVersions(otherLibrary: ILibraryName & { patchVersion?: number }): number {
+		let result = InstalledLibrary.simple_compare(this.majorVersion, otherLibrary.majorVersion);
 		if (result !== 0) {
 			return result;
 		}
-		result = this.simple_compare(this.minorVersion, otherLibrary.minorVersion);
+		result = InstalledLibrary.simple_compare(this.minorVersion, otherLibrary.minorVersion);
 		if (result !== 0) {
 			return result;
 		}
@@ -223,7 +223,7 @@ export class InstalledLibrary extends BaseEntityWithTimestamps implements IInsta
 		if (otherLibrary.patchVersion === undefined) {
 			return 1;
 		}
-		return this.simple_compare(this.patchVersion, otherLibrary.patchVersion);
+		return InstalledLibrary.simple_compare(this.patchVersion, otherLibrary.patchVersion);
 	}
 
 	constructor(libraryMetadata: ILibraryMetadata, restricted = false, files: FileMetadata[] = []) {
