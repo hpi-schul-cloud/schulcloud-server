@@ -79,7 +79,7 @@ export class H5PEditorController {
 		return content;
 	}
 
-	@Get('content/:id/:file(*)')
+	@Get('content/:id/:filename(*)')
 	async getContentFile(
 		@Param() params: ContentFileUrlParams,
 		@Req() req: Request,
@@ -88,23 +88,12 @@ export class H5PEditorController {
 	) {
 		const { data, contentType, contentLength, contentRange } = await this.h5pEditorUc.getContentFile(
 			params.id,
-			params.file,
+			params.filename,
 			req,
 			currentUser
 		);
 
-		if (contentRange) {
-			const contentRangeHeader = `bytes ${contentRange.start}-${contentRange.end}/${contentLength}`;
-
-			res.set({
-				'Accept-Ranges': 'bytes',
-				'Content-Range': contentRangeHeader,
-			});
-
-			res.status(HttpStatus.PARTIAL_CONTENT);
-		} else {
-			res.status(HttpStatus.OK);
-		}
+		H5PEditorController.setRangeResponseHeaders(res, contentLength, contentRange);
 
 		req.on('close', () => data.destroy());
 
@@ -124,18 +113,7 @@ export class H5PEditorController {
 			currentUser
 		);
 
-		if (contentRange) {
-			const contentRangeHeader = `bytes ${contentRange.start}-${contentRange.end}/${contentLength}`;
-
-			res.set({
-				'Accept-Ranges': 'bytes',
-				'Content-Range': contentRangeHeader,
-			});
-
-			res.status(HttpStatus.PARTIAL_CONTENT);
-		} else {
-			res.status(HttpStatus.OK);
-		}
+		H5PEditorController.setRangeResponseHeaders(res, contentLength, contentRange);
 
 		req.on('close', () => data.destroy());
 
@@ -223,5 +201,20 @@ export class H5PEditorController {
 
 		const saveResponse = new H5PSaveResponse(response.id, response.metadata);
 		return saveResponse;
+	}
+
+	private static setRangeResponseHeaders(res: Response, contentLength: number, range?: { start: number; end: number }) {
+		if (range) {
+			const contentRangeHeader = `bytes ${range.start}-${range.end}/${contentLength}`;
+
+			res.set({
+				'Accept-Ranges': 'bytes',
+				'Content-Range': contentRangeHeader,
+			});
+
+			res.status(HttpStatus.PARTIAL_CONTENT);
+		} else {
+			res.status(HttpStatus.OK);
+		}
 	}
 }

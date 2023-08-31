@@ -9,5 +9,5 @@ export class ContentFileUrlParams {
 	@ApiProperty()
 	@IsString()
 	@IsNotEmpty()
-	file!: string;
+	filename!: string;
 }
