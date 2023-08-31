@@ -4,7 +4,7 @@ import { roleFactory, schoolDOFactory, setupEntities, userFactory } from '@share
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
 import { Action } from '@src/modules/authorization/types';
 import { ObjectID } from 'bson';
-import { LegacySchoolRule } from './school.rule';
+import { LegacySchoolRule } from './legacy-school.rule';
 
 describe('LegacySchoolRule', () => {
 	let service: LegacySchoolRule;
