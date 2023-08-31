@@ -67,6 +67,8 @@ export class UserLoginMigrationService {
 			userLoginMigration.finishedAt = oauthMigrationFinished
 				? new Date(Date.now() + (Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number))
 				: undefined;
+
+			await this.schoolService.removeFeature(schoolId, SchoolFeatures.ENABLE_LDAP_SYNC_DURING_MIGRATION);
 		}
 
 		const savedMigration: UserLoginMigrationDO = await this.userLoginMigrationRepo.save(userLoginMigration);
@@ -127,6 +129,8 @@ export class UserLoginMigrationService {
 		if (!userLoginMigration) {
 			throw new UserLoginMigrationNotFoundLoggableException(schoolId);
 		}
+
+		await this.schoolService.removeFeature(schoolId, SchoolFeatures.ENABLE_LDAP_SYNC_DURING_MIGRATION);
 
 		const now: Date = new Date();
 		const gracePeriodDuration: number = Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number;
