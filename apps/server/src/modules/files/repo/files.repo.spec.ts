@@ -91,133 +91,139 @@ describe(FilesRepo.name, () => {
 	});
 
 	describe('findByOwnerUserId', () => {
-		const setup = async () => {
-			const mainUserId = new ObjectId().toHexString();
-			const otherUserId = new ObjectId().toHexString();
+		describe('when searching for a files owned by the user with given userId', () => {
+			const setup = async () => {
+				const mainUserId = new ObjectId().toHexString();
+				const otherUserId = new ObjectId().toHexString();
 
-			// Test file created, owned and accessible only by the main user.
-			const mainUserFile = fileEntityFactory.build({
-				ownerId: mainUserId,
-				creatorId: mainUserId,
-				permissions: [filePermissionEntityFactory.build({ refId: mainUserId })],
-			});
+				// Test file created, owned and accessible only by the main user.
+				const mainUserFile = fileEntityFactory.build({
+					ownerId: mainUserId,
+					creatorId: mainUserId,
+					permissions: [filePermissionEntityFactory.build({ refId: mainUserId })],
+				});
 
-			// Test file created and owned by the main user, but also accessible by the other user.
-			const mainUserSharedFile = fileEntityFactory.build({
-				ownerId: mainUserId,
-				creatorId: mainUserId,
-				permissions: [
-					filePermissionEntityFactory.build({ refId: mainUserId }),
-					filePermissionEntityFactory.build({ refId: otherUserId }),
-				],
-			});
+				// Test file created and owned by the main user, but also accessible by the other user.
+				const mainUserSharedFile = fileEntityFactory.build({
+					ownerId: mainUserId,
+					creatorId: mainUserId,
+					permissions: [
+						filePermissionEntityFactory.build({ refId: mainUserId }),
+						filePermissionEntityFactory.build({ refId: otherUserId }),
+					],
+				});
 
-			await em.persistAndFlush([mainUserSharedFile, mainUserFile]);
-			em.clear();
-
-			const expectedMainUserFileProps = {
-				id: mainUserFile.id,
-				createdAt: mainUserFile.createdAt,
-				updatedAt: mainUserFile.updatedAt,
-				deleted: false,
-				isDirectory: false,
-				name: mainUserFile.name,
-				size: mainUserFile.size,
-				type: mainUserFile.type,
-				storageFileName: mainUserFile.storageFileName,
-				bucket: mainUserFile.bucket,
-				thumbnail: mainUserFile.thumbnail,
-				thumbnailRequestToken: mainUserFile.thumbnailRequestToken,
-				securityCheck: mainUserFile.securityCheck,
-				shareTokens: [],
-				refOwnerModel: mainUserFile.refOwnerModel,
-				permissions: mainUserFile.permissions,
-				versionKey: 0,
-			};
-
-			const expectedMainUserSharedFileProps = {
-				id: mainUserSharedFile.id,
-				createdAt: mainUserSharedFile.createdAt,
-				updatedAt: mainUserSharedFile.updatedAt,
-				deleted: false,
-				isDirectory: false,
-				name: mainUserSharedFile.name,
-				size: mainUserSharedFile.size,
-				type: mainUserSharedFile.type,
-				storageFileName: mainUserSharedFile.storageFileName,
-				bucket: mainUserSharedFile.bucket,
-				thumbnail: mainUserSharedFile.thumbnail,
-				thumbnailRequestToken: mainUserSharedFile.thumbnailRequestToken,
-				securityCheck: mainUserSharedFile.securityCheck,
-				shareTokens: [],
-				refOwnerModel: mainUserSharedFile.refOwnerModel,
-				permissions: mainUserSharedFile.permissions,
-				versionKey: 0,
-			};
-
-			return {
-				mainUserIdd: mainUserId,
-				mainUserFile,
-				mainUserSharedFile,
-				expectedMainUserFileProps,
-				expectedMainUserSharedFileProps,
-			};
-		};
-
-		it('should return proper files that are owned by the user with given userId', async () => {
-			const {
-				mainUserIdd,
-				mainUserSharedFile,
-				mainUserFile,
-				expectedMainUserSharedFileProps,
-				expectedMainUserFileProps,
-			} = await setup();
-
-			const results = await repo.findByOwnerUserId(mainUserIdd);
-
-			expect(results).toHaveLength(2);
-
-			// Verify explicit fields.
-			expect(results).toEqual(
-				expect.arrayContaining([
-					expect.objectContaining(expectedMainUserSharedFileProps),
-					expect.objectContaining(expectedMainUserFileProps),
-				])
-			);
-
-			// Verify storage provider id.
-			expect(results.map((result) => result.storageProvider?.id)).toEqual(
-				expect.arrayContaining([mainUserSharedFile.storageProvider?.id, mainUserFile.storageProvider?.id])
-			);
-
-			// Verify implicit ownerId field.
-			expect(results.map((result) => result.ownerId)).toEqual(
-				expect.arrayContaining([mainUserSharedFile.ownerId, mainUserFile.ownerId])
-			);
-
-			// Verify implicit creatorId field.
-			expect(results.map((result) => result.creatorId)).toEqual(
-				expect.arrayContaining([mainUserSharedFile.creatorId, mainUserFile.creatorId])
-			);
-		});
-
-		describe('should return an empty array in case of', () => {
-			it('no files owned by user with given userId', async () => {
-				await em.persistAndFlush([fileEntityFactory.build(), fileEntityFactory.build(), fileEntityFactory.build()]);
-
+				await em.persistAndFlush([mainUserSharedFile, mainUserFile]);
 				em.clear();
 
-				const results = await repo.findByOwnerUserId(new ObjectId().toHexString());
+				const expectedMainUserFileProps = {
+					id: mainUserFile.id,
+					createdAt: mainUserFile.createdAt,
+					updatedAt: mainUserFile.updatedAt,
+					deleted: false,
+					isDirectory: false,
+					name: mainUserFile.name,
+					size: mainUserFile.size,
+					type: mainUserFile.type,
+					storageFileName: mainUserFile.storageFileName,
+					bucket: mainUserFile.bucket,
+					thumbnail: mainUserFile.thumbnail,
+					thumbnailRequestToken: mainUserFile.thumbnailRequestToken,
+					securityCheck: mainUserFile.securityCheck,
+					shareTokens: [],
+					refOwnerModel: mainUserFile.refOwnerModel,
+					permissions: mainUserFile.permissions,
+					versionKey: 0,
+				};
 
-				expect(results).toHaveLength(0);
+				const expectedMainUserSharedFileProps = {
+					id: mainUserSharedFile.id,
+					createdAt: mainUserSharedFile.createdAt,
+					updatedAt: mainUserSharedFile.updatedAt,
+					deleted: false,
+					isDirectory: false,
+					name: mainUserSharedFile.name,
+					size: mainUserSharedFile.size,
+					type: mainUserSharedFile.type,
+					storageFileName: mainUserSharedFile.storageFileName,
+					bucket: mainUserSharedFile.bucket,
+					thumbnail: mainUserSharedFile.thumbnail,
+					thumbnailRequestToken: mainUserSharedFile.thumbnailRequestToken,
+					securityCheck: mainUserSharedFile.securityCheck,
+					shareTokens: [],
+					refOwnerModel: mainUserSharedFile.refOwnerModel,
+					permissions: mainUserSharedFile.permissions,
+					versionKey: 0,
+				};
+
+				return {
+					mainUserIdd: mainUserId,
+					mainUserFile,
+					mainUserSharedFile,
+					expectedMainUserFileProps,
+					expectedMainUserSharedFileProps,
+				};
+			};
+
+			describe('when there are some files that match these criteria', () => {
+				it('should return proper file entities', async () => {
+					const {
+						mainUserIdd,
+						mainUserSharedFile,
+						mainUserFile,
+						expectedMainUserSharedFileProps,
+						expectedMainUserFileProps,
+					} = await setup();
+
+					const results = await repo.findByOwnerUserId(mainUserIdd);
+
+					expect(results).toHaveLength(2);
+
+					// Verify explicit fields.
+					expect(results).toEqual(
+						expect.arrayContaining([
+							expect.objectContaining(expectedMainUserSharedFileProps),
+							expect.objectContaining(expectedMainUserFileProps),
+						])
+					);
+
+					// Verify storage provider id.
+					expect(results.map((result) => result.storageProvider?.id)).toEqual(
+						expect.arrayContaining([mainUserSharedFile.storageProvider?.id, mainUserFile.storageProvider?.id])
+					);
+
+					// Verify implicit ownerId field.
+					expect(results.map((result) => result.ownerId)).toEqual(
+						expect.arrayContaining([mainUserSharedFile.ownerId, mainUserFile.ownerId])
+					);
+
+					// Verify implicit creatorId field.
+					expect(results.map((result) => result.creatorId)).toEqual(
+						expect.arrayContaining([mainUserSharedFile.creatorId, mainUserFile.creatorId])
+					);
+				});
 			});
 
-			it('no files in the database at all', async () => {
-				const testPermissionRefId = new ObjectId().toHexString();
+			describe('when there are no files that match these criteria', () => {
+				it('should return an empty array', async () => {
+					await em.persistAndFlush([fileEntityFactory.build(), fileEntityFactory.build(), fileEntityFactory.build()]);
 
-				const results = await repo.findByOwnerUserId(testPermissionRefId);
+					em.clear();
 
-				expect(results).toHaveLength(0);
+					const results = await repo.findByOwnerUserId(new ObjectId().toHexString());
+
+					expect(results).toHaveLength(0);
+				});
+			});
+
+			describe('when there are no files in the database at all', () => {
+				it('should return an empty array', async () => {
+					const testPermissionRefId = new ObjectId().toHexString();
+
+					const results = await repo.findByOwnerUserId(testPermissionRefId);
+
+					expect(results).toHaveLength(0);
+				});
 			});
 		});
 	});
