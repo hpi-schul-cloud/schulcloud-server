@@ -30,6 +30,10 @@ class LibraryParametersBodyParams {
 
 export type AjaxPostBodyParams = LibrariesBodyParams | ContentBodyParams | LibraryParametersBodyParams | undefined;
 
+/**
+ * This transform pipe allows nest to validate the incoming request.
+ * Since H5P does sent bodies with different shapes, this custom ValidationPipe makes sure the different cases are correctly validated.
+ */
 @Injectable()
 export class AjaxPostBodyParamsTransformPipe implements PipeTransform {
 	async transform(value: AjaxPostBodyParams) {
@@ -60,6 +64,11 @@ export class AjaxPostBodyParamsTransformPipe implements PipeTransform {
 	}
 }
 
+/**
+ * H5P may or may not send files with the ajax request.
+ * Since these files may be sent in two different fields, we cannot use Nest's default file interceptor (Only supports one field)
+ * This interceptor is a specialization of the AnyFilesInterceptor that only accepts files with the two known fieldnames
+ */
 export const AjaxPostBodyParamsFilesInterceptor = AnyFilesInterceptor({
 	limits: { files: 2 },
 	fileFilter(_req, file, callback) {
