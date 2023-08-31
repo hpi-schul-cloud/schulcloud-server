@@ -26,8 +26,8 @@ import { FileRecord, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
 import { IFileStorageConfig } from '../files-storage.config';
 import {
+	createCopyFiles,
 	createFileRecord,
-	createICopyFiles,
 	createPath,
 	getPaths,
 	markForDelete,
@@ -378,7 +378,7 @@ export class FilesStorageService {
 		targetFile: FileRecord
 	): Promise<CopyFileResponse> {
 		try {
-			const paths = createICopyFiles(sourceFile, targetFile);
+			const paths = createCopyFiles(sourceFile, targetFile);
 
 			await this.storageClient.copy([paths]);
 			this.sendToAntiVirusService(targetFile);

@@ -32,11 +32,11 @@ export function getPaths(fileRecords: FileRecord[]): string[] {
 	return paths;
 }
 
-export function createICopyFiles(sourceFile: FileRecord, targetFile: FileRecord): CopyFiles {
-	const iCopyFiles = {
+export function createCopyFiles(sourceFile: FileRecord, targetFile: FileRecord): CopyFiles {
+	const copyFiles = {
 		sourcePath: createPath(sourceFile.getSchoolId(), sourceFile.id),
 		targetPath: createPath(targetFile.getSchoolId(), targetFile.id),
 	};
 
-	return iCopyFiles;
+	return copyFiles;
 }

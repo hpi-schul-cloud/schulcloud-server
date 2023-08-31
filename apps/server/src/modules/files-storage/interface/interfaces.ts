@@ -4,10 +4,10 @@ import { FileRecord } from '../entity';
 
 export interface GetFileResponse {
 	data: Readable;
-	etag: string | undefined;
-	contentType: string | undefined;
-	contentLength: number | undefined;
-	contentRange: string | undefined;
+	etag?: string;
+	contentType?: string;
+	contentLength?: number;
+	contentRange?: string;
 	name: string;
 }
 

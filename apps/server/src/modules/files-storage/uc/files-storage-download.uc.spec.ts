@@ -230,7 +230,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.downloadBySecurityToken(token);
 
-				expect(filesStorageService.downloadFile).toHaveBeenCalledWith(fileRecord.schoolId, fileRecord.id);
+				expect(filesStorageService.downloadFile).toHaveBeenCalledWith(fileRecord);
 			});
 
 			it('should return correct response', async () => {

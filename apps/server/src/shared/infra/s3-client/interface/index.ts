@@ -10,10 +10,10 @@ export interface S3Config {
 
 export interface GetFile {
 	data: Readable;
-	etag: string | undefined;
-	contentType: string | undefined;
-	contentLength: number | undefined;
-	contentRange: string | undefined;
+	etag?: string;
+	contentType?: string;
+	contentLength?: number;
+	contentRange?: string;
 }
 
 export interface CopyFiles {
