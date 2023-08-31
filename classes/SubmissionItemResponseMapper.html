@@ -220,7 +220,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToResponse(submission: <a href="../classes/SubmissionItem.html" target="_self">SubmissionItem</a>)</code>
+                    <code>mapToResponse(submissionItem: <a href="../classes/SubmissionItem.html" target="_self">SubmissionItem</a>)</code>
                 </td>
             </tr>
 
@@ -249,7 +249,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>submission</td>
+                                    <td>submissionItem</td>
                                     <td>
                                                 <code><a href="../classes/SubmissionItem.html" target="_self" >SubmissionItem</a></code>
                                     </td>
@@ -300,12 +300,15 @@ export class SubmissionItemResponseMapper {
 		return SubmissionItemResponseMapper.instance;
 	}
 
-	public mapToResponse(submission: SubmissionItem): SubmissionItemResponse {
+	public mapToResponse(submissionItem: SubmissionItem): SubmissionItemResponse {
 		const result &#x3D; new SubmissionItemResponse({
-			id: submission.id,
-			timestamps: new TimestampsResponse({ lastUpdatedAt: submission.updatedAt, createdAt: submission.createdAt }),
-			completed: submission.completed,
-			userId: submission.userId,
+			id: submissionItem.id,
+			timestamps: new TimestampsResponse({
+				lastUpdatedAt: submissionItem.updatedAt,
+				createdAt: submissionItem.createdAt,
+			}),
+			completed: submissionItem.completed,
+			userId: submissionItem.userId,
 		});
 
 		return result;

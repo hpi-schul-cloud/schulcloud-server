@@ -98,6 +98,17 @@
                                     <span class="modifier">Async</span>
                                 <a href="#getSubmissionItems" >getSubmissionItems</a>
                             </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateSubmissionItem" >updateSubmissionItem</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -135,7 +146,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getSubmissionItems(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, urlParams: <a href="../classes/BoardSubmissionIdParams.html" target="_self">BoardSubmissionIdParams</a>)</code>
+                    <code>getSubmissionItems(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, urlParams: <a href="../classes/SubmissionContainerUrlParams.html" target="_self">SubmissionContainerUrlParams</a>)</code>
                 </td>
             </tr>
 
@@ -149,8 +160,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="27"
-                            class="link-to-prism">apps/server/src/modules/board/controller/board-submission.controller.ts:27</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="32"
+                            class="link-to-prism">apps/server/src/modules/board/controller/board-submission.controller.ts:32</a></div>
                 </td>
             </tr>
 
@@ -185,7 +196,7 @@
                                 <tr>
                                     <td>urlParams</td>
                                     <td>
-                                                <code><a href="../classes/BoardSubmissionIdParams.html" target="_self" >BoardSubmissionIdParams</a></code>
+                                                <code><a href="../classes/SubmissionContainerUrlParams.html" target="_self" >SubmissionContainerUrlParams</a></code>
                                     </td>
 
                                     <td>
@@ -210,11 +221,120 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateSubmissionItem"></a>
+                    <span class="name">
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier">Async</span>
+                        <span ><b>updateSubmissionItem</b></span>
+                        <a href="#updateSubmissionItem"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateSubmissionItem(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, urlParams: <a href="../classes/SubmissionItemUrlParams.html" target="_self">SubmissionItemUrlParams</a>, bodyParams: <a href="../classes/UpdateSubmissionItemBodyParams.html" target="_self">UpdateSubmissionItemBodyParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@ApiOperation({summary: &#x27;Update a single submission item.&#x27;})<br />@ApiResponse({status: 204})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@HttpCode(204)<br />@Patch(&#x27;:submissionItemId&#x27;)<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="48"
+                            class="link-to-prism">apps/server/src/modules/board/controller/board-submission.controller.ts:48</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>currentUser</td>
+                                    <td>
+                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>urlParams</td>
+                                    <td>
+                                                <code><a href="../classes/SubmissionItemUrlParams.html" target="_self" >SubmissionItemUrlParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>bodyParams</td>
+                                    <td>
+                                                <code><a href="../classes/UpdateSubmissionItemBodyParams.html" target="_self" >UpdateSubmissionItemBodyParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, ForbiddenException, Get, Param } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, ForbiddenException, Get, HttpCode, NotFoundException, Param, Patch } from &#x27;@nestjs/common&#x27;;
 import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { ApiValidationError } from &#x27;@shared/common&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
@@ -222,7 +342,12 @@ import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/deco
 import { CardUc } from &#x27;../uc&#x27;;
 import { ElementUc } from &#x27;../uc/element.uc&#x27;;
 import { SubmissionItemUc } from &#x27;../uc/submission-item.uc&#x27;;
-import { BoardSubmissionIdParams, SubmissionItemResponse } from &#x27;./dto&#x27;;
+import {
+	SubmissionContainerUrlParams,
+	SubmissionItemResponse,
+	SubmissionItemUrlParams,
+	UpdateSubmissionItemBodyParams,
+} from &#x27;./dto&#x27;;
 import { SubmissionItemResponseMapper } from &#x27;./mapper&#x27;;
 
 @ApiTags(&#x27;Board Submission&#x27;)
@@ -242,11 +367,30 @@ export class BoardSubmissionController {
 	@Get(&#x27;:submissionContainerId&#x27;)
 	async getSubmissionItems(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() urlParams: BoardSubmissionIdParams
+		@Param() urlParams: SubmissionContainerUrlParams
 	): Promise&lt;SubmissionItemResponse[]&gt; {
 		const items &#x3D; await this.submissionItemUc.findSubmissionItems(currentUser.userId, urlParams.submissionContainerId);
 		const mapper &#x3D; SubmissionItemResponseMapper.getInstance();
 		return items.map((item) &#x3D;&gt; mapper.mapToResponse(item));
+	}
+
+	@ApiOperation({ summary: &#x27;Update a single submission item.&#x27; })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Patch(&#x27;:submissionItemId&#x27;)
+	async updateSubmissionItem(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: SubmissionItemUrlParams,
+		@Body() bodyParams: UpdateSubmissionItemBodyParams
+	) {
+		await this.submissionItemUc.updateSubmissionItem(
+			currentUser.userId,
+			urlParams.submissionItemId,
+			bodyParams.completed
+		);
 	}
 }
 </code></pre>
