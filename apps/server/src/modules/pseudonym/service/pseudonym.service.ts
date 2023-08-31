@@ -1,15 +1,13 @@
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { LtiToolDO, Pseudonym, UserDO } from '@shared/domain';
-import { v4 as uuidv4 } from 'uuid';
-import { IToolFeatures, ToolFeatures } from '@src/modules/tool/tool-config';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { LtiToolDO, Pseudonym, UserDO } from '@shared/domain';
 import { ExternalTool } from '@src/modules/tool/external-tool/domain';
+import { v4 as uuidv4 } from 'uuid';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 
 @Injectable()
 export class PseudonymService {
 	constructor(
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
 		private readonly pseudonymRepo: PseudonymsRepo,
 		private readonly externalToolPseudonymRepo: ExternalToolPseudonymRepo
 	) {}
@@ -110,7 +108,7 @@ export class PseudonymService {
 	}
 
 	private getRepository(tool: ExternalTool | LtiToolDO): PseudonymsRepo | ExternalToolPseudonymRepo {
-		if (this.toolFeatures.ctlToolsTabEnabled && tool instanceof ExternalTool) {
+		if (tool instanceof ExternalTool) {
 			return this.externalToolPseudonymRepo;
 		}
 
