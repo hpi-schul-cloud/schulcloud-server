@@ -2,7 +2,7 @@ import { IContentMetadata, ILibraryName } from '@lumieducation/h5p-server';
 import { IContentAuthor, IContentChange } from '@lumieducation/h5p-server/build/src/types';
 import { Embeddable, Embedded, Entity, Enum, Index, JsonType, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseEntity, EntityId } from '@shared/domain';
+import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
 
 @Embeddable()
 export class ContentMetadata implements IContentMetadata {
@@ -117,7 +117,7 @@ export interface IH5PContentProperties {
 }
 
 @Entity({ tableName: 'h5p-editor-content' })
-export class H5PContent extends BaseEntity {
+export class H5PContent extends BaseEntityWithTimestamps {
 	@Property({ fieldName: 'creator' })
 	_creatorId: ObjectId;
 
