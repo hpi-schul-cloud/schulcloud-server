@@ -288,4 +288,26 @@ describe('TldrawGateway', () => {
 
 		ws.close();
 	});
+
+	it('should handle message', async () => {
+		await app.init();
+
+		ws = new WebSocket(wsUrl);
+		await new Promise((resolve) => {
+			ws.on('open', resolve);
+		});
+
+		const messageHandlerSpy = jest.spyOn(Utils, 'messageHandler').mockImplementation(() => {});
+		const doc = new WSSharedDoc('TEST');
+		const encoder = encoding.createEncoder();
+		encoding.writeVarUint(encoder, 0);
+		encoding.writeVarUint(encoder, 1);
+		const newMessageByteArray = encoding.toUint8Array(encoder);
+		Utils.messageHandler(ws, doc, newMessageByteArray);
+
+		expect(messageHandlerSpy).toHaveBeenCalledTimes(1);
+
+		ws.close();
+		messageHandlerSpy.mockRestore();
+	});
 });
