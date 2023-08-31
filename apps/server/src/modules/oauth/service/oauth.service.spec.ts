@@ -5,9 +5,7 @@ import { LegacySchoolDo, OauthConfig, SchoolFeatures, System } from '@shared/dom
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
-import { setupEntities, userDoFactory } from '@shared/testing';
-import { legacySchoolDoFactory } from '@shared/testing/factory/domainobject/school.factory';
-import { systemFactory } from '@shared/testing/factory/system.factory';
+import { legacySchoolDoFactory, setupEntities, systemFactory, userDoFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
 import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
