@@ -177,11 +177,12 @@ export class H5PEditorUc {
 		const user = this.changeUserType(currentUser);
 
 		try {
+			const rangeCallback = this.getRange(req);
 			const { mimetype, range, stats, stream } = await this.h5pAjaxEndpoint.getContentFile(
 				contentId,
 				file,
 				user,
-				this.getRange(req)
+				rangeCallback
 			);
 
 			return {
@@ -222,11 +223,12 @@ export class H5PEditorUc {
 		const user = this.changeUserType(currentUser);
 
 		try {
+			const rangeCallback = this.getRange(req);
 			const { mimetype, range, stats, stream } = await this.h5pAjaxEndpoint.getTemporaryFile(
 				file,
 				user,
 				// @ts-expect-error 2345: Callback can return undefined, typings from @lumieducation/h5p-server are wrong
-				this.getRange(req)
+				rangeCallback
 			);
 
 			return {
@@ -376,7 +378,7 @@ export class H5PEditorUc {
 	private async getUserLanguage(currentUser: ICurrentUser): Promise<string> {
 		const languageUser = await this.userService.findById(currentUser.userId);
 		let language = 'de';
-		if (languageUser && languageUser.language) {
+		if (languageUser?.language) {
 			language = languageUser.language.toString();
 		}
 		return language;
