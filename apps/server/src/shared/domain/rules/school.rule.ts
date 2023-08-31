@@ -1,20 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { LegacySchoolDo } from '@shared/domain';
-import { School, User } from '@shared/domain/entity';
+import { BaseDO, LegacySchoolDo } from '@shared/domain';
+import { User } from '@shared/domain/entity';
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
 import { AuthorizationContext, Rule } from '@src/modules/authorization/types';
+import { AuthorizableObject } from '../domain-object';
 
+/**
+ * @deprecated because it uses the deprecated LegacySchoolDo.
+ */
 @Injectable()
-export class SchoolRule implements Rule {
+export class LegacySchoolRule implements Rule {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
-	public isApplicable(user: User, entity: School | LegacySchoolDo): boolean {
-		const isMatched: boolean = entity instanceof School || entity instanceof LegacySchoolDo;
+	public isApplicable(user: User, entity: AuthorizableObject | BaseDO): boolean {
+		const isMatched: boolean = entity instanceof LegacySchoolDo;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: School | LegacySchoolDo, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, entity: LegacySchoolDo, context: AuthorizationContext): boolean {
 		const hasPermission: boolean =
 			this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions) && user.school.id === entity.id;
 
