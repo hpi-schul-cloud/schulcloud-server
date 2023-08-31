@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { EntityId, Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
-import { S3ClientAdapter } from '@shared/infra/s3-file-storage';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import {
 	cleanupCollections,
 	courseFactory,

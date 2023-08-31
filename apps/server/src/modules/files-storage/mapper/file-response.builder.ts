@@ -1,4 +1,4 @@
-import { GetFile } from '@shared/infra/s3-file-storage';
+import { GetFile } from '@shared/infra/s3-client';
 import { GetFileResponse } from '../interface';
 
 export class FileResponseBuilder {

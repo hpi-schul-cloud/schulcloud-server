@@ -8,7 +8,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Counted, EntityId } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
-import { S3ClientAdapter } from '@shared/infra/s3-file-storage';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
 import StreamMimeType from 'stream-mime-type-cjs/stream-mime-type-cjs-index';

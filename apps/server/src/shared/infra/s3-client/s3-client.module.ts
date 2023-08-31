@@ -9,7 +9,7 @@ import { S3ClientAdapter } from './s3-client.adapter';
 	imports: [LoggerModule],
 	providers: [S3ClientAdapter],
 })
-export class S3FileStorageModule {
+export class S3ClientModule {
 	static register(options: S3Config): DynamicModule {
 		const providers = [
 			{
@@ -36,7 +36,7 @@ export class S3FileStorageModule {
 		];
 
 		return {
-			module: S3FileStorageModule,
+			module: S3ClientModule,
 			providers,
 			exports: [S3ClientAdapter],
 		};

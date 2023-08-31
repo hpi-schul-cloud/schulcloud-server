@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { S3Config } from '@shared/infra/s3-file-storage';
+import { S3Config } from '@shared/infra/s3-client';
 import { ICoreModuleConfig } from '@src/core';
 
 export interface IFileStorageConfig extends ICoreModuleConfig {

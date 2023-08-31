@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { S3ClientAdapter } from '@shared/infra/s3-file-storage';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { LegacyLogger } from '@src/core/logger';
 
 @Injectable()

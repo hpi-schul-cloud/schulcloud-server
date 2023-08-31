@@ -6,7 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
 import { AntivirusModule } from '@shared/infra/antivirus/antivirus.module';
 import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq/rabbitmq.module';
-import { S3FileStorageModule } from '@shared/infra/s3-file-storage';
+import { S3ClientModule } from '@shared/infra/s3-client';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
 import { FileRecord, FileSecurityCheck } from './entity';
@@ -24,7 +24,7 @@ const imports = [
 		exchange: Configuration.get('ANTIVIRUS_EXCHANGE') as string,
 		routingKey: Configuration.get('ANTIVIRUS_ROUTING_KEY') as string,
 	}),
-	S3FileStorageModule.register(s3Config),
+	S3ClientModule.register(s3Config),
 ];
 const providers = [FilesStorageService, PreviewService, FileRecordRepo];
 

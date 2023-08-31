@@ -4,7 +4,7 @@ import { HttpModule } from '@nestjs/axios';
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Account, Role, School, SchoolYear, System, User } from '@shared/domain';
-import { S3FileStorageModule } from '@shared/infra/s3-file-storage';
+import { S3ClientModule } from '@shared/infra/s3-client';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
@@ -41,7 +41,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			// debug: true, // use it for locally debugging of querys
 		}),
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
-		S3FileStorageModule.register(s3Config),
+		S3ClientModule.register(s3Config),
 	],
 	controllers: [FwuLearningContentsController],
 	providers: [FwuLearningContentsUc],
