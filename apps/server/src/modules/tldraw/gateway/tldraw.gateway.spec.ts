@@ -330,11 +330,7 @@ describe('TldrawGateway', () => {
 		jest.spyOn(ws, 'ping').mockImplementation(() => {
 			throw new Error('error');
 		});
-		const encoder = encoding.createEncoder();
-		encoding.writeVarUint(encoder, 0);
-		encoding.writeVarUint(encoder, 1);
-		const newMessageByteArray = encoding.toUint8Array(encoder);
-		ws.emit('message', newMessageByteArray);
+		Utils.setupWSConnection(ws);
 
 		await delay(200);
 
