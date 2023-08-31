@@ -26,6 +26,11 @@ describe('TldrawGateway', () => {
 		'S0zZGEwYjMzNjQ3MjIiLCJjb2xvciI6IiNGMDRGODgiLCJwb2ludCI6WzAsMF0sInNlbGVjdGVkSWRzIjpbXSwiYWN' +
 		'0aXZlU2hhcGVzIjpbXSwic2Vzc2lvbiI6ZmFsc2V9fQ==';
 
+	const delay = (ms: number) =>
+		new Promise((resolve) => {
+			setTimeout(resolve, ms);
+		});
+
 	jest.useFakeTimers();
 
 	beforeEach(async () => {
@@ -38,6 +43,7 @@ describe('TldrawGateway', () => {
 		gateway = testingModule.get<TldrawGateway>(TldrawGateway);
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
+		jest.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] });
 	});
 
 	afterEach(async () => {
@@ -292,22 +298,83 @@ describe('TldrawGateway', () => {
 	it('should handle message', async () => {
 		await app.init();
 
-		ws = new WebSocket(wsUrl);
+		ws = new WebSocket(`${wsUrl}/TEST`);
 		await new Promise((resolve) => {
 			ws.on('open', resolve);
 		});
 
 		const messageHandlerSpy = jest.spyOn(Utils, 'messageHandler').mockImplementation(() => {});
-		const doc = new WSSharedDoc('TEST');
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, 0);
 		encoding.writeVarUint(encoder, 1);
 		const newMessageByteArray = encoding.toUint8Array(encoder);
-		Utils.messageHandler(ws, doc, newMessageByteArray);
+		Utils.setupWSConnection(ws);
+		ws.emit('message', newMessageByteArray);
 
 		expect(messageHandlerSpy).toHaveBeenCalledTimes(1);
 
 		ws.close();
 		messageHandlerSpy.mockRestore();
+	});
+
+	it('should close connection if ping failed', async () => {
+		await app.init();
+
+		ws = new WebSocket(`${wsUrl}/TEST`);
+		await new Promise((resolve) => {
+			ws.on('open', resolve);
+		});
+
+		const messageHandlerSpy = jest.spyOn(Utils, 'messageHandler').mockImplementation(() => {});
+		const closeConnSpy = jest.spyOn(Utils, 'closeConn');
+		jest.spyOn(ws, 'ping').mockImplementation(() => {
+			throw new Error('error');
+		});
+		const encoder = encoding.createEncoder();
+		encoding.writeVarUint(encoder, 0);
+		encoding.writeVarUint(encoder, 1);
+		const newMessageByteArray = encoding.toUint8Array(encoder);
+		ws.emit('message', newMessageByteArray);
+
+		await delay(200);
+
+		expect(closeConnSpy).toHaveBeenCalled();
+
+		ws.close();
+		messageHandlerSpy.mockRestore();
+		closeConnSpy.mockRestore();
+	});
+
+	it('should send if awareness states size greater then one', async () => {
+		await app.init();
+
+		ws = new WebSocket(`${wsUrl}/TEST`);
+		await new Promise((resolve) => {
+			ws.on('open', resolve);
+		});
+
+		const doc = new WSSharedDoc('TEST');
+		doc.awareness.states = new Map();
+		doc.awareness.states.set(1, ['test1']);
+		doc.awareness.states.set(2, ['test2']);
+
+		const messageHandlerSpy = jest.spyOn(Utils, 'messageHandler').mockImplementation(() => {});
+		const sendSpy = jest.spyOn(Utils, 'send');
+		const getYDocSpy = jest.spyOn(Utils, 'getYDoc').mockImplementation(() => doc);
+		const encoder = encoding.createEncoder();
+		encoding.writeVarUint(encoder, 0);
+		encoding.writeVarUint(encoder, 1);
+		const newMessageByteArray = encoding.toUint8Array(encoder);
+		jest.spyOn(AwarenessProtocol, 'encodeAwarenessUpdate').mockImplementation(() => newMessageByteArray);
+		Utils.setupWSConnection(ws);
+
+		await delay(200);
+
+		expect(sendSpy).toHaveBeenCalledTimes(2);
+
+		ws.close();
+		messageHandlerSpy.mockRestore();
+		sendSpy.mockRestore();
+		getYDocSpy.mockRestore();
 	});
 });
