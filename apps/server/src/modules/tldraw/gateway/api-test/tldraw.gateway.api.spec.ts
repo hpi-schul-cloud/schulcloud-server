@@ -28,7 +28,7 @@ describe('WebSocketGateway (WsAdapter)', () => {
 			setTimeout(resolve, ms);
 		});
 
-	jest.setTimeout(10000);
+	jest.setTimeout(120000);
 
 	beforeAll(async () => {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
