@@ -15,6 +15,7 @@ import {
 	UploadedFiles,
 	UseInterceptors,
 } from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
@@ -26,7 +27,6 @@ import { H5PEditorUc } from '../uc/h5p.uc';
 import {
 	AjaxGetQueryParams,
 	AjaxPostBodyParams,
-	AjaxPostBodyParamsFilesInterceptor,
 	AjaxPostBodyParamsTransformPipe,
 	AjaxPostQueryParams,
 	ContentFileUrlParams,
@@ -127,14 +127,23 @@ export class H5PEditorController {
 	}
 
 	@Post('ajax')
-	@UseInterceptors(AjaxPostBodyParamsFilesInterceptor)
+	@UseInterceptors(
+		FileFieldsInterceptor([
+			{ name: 'file', maxCount: 1 },
+			{ name: 'h5p', maxCount: 1 },
+		])
+	)
 	async postAjax(
 		@Body(AjaxPostBodyParamsTransformPipe) body: AjaxPostBodyParams,
 		@Query() query: AjaxPostQueryParams,
-		@UploadedFiles() files: Express.Multer.File[],
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
+		@UploadedFiles() files?: { file?: Express.Multer.File[]; h5p?: Express.Multer.File[] }
 	) {
-		const result = await this.h5pEditorUc.postAjax(currentUser, query, body, files);
+		const contentFile = files?.file?.[0];
+		const h5pFile = files?.h5p?.[0];
+
+		const result = await this.h5pEditorUc.postAjax(currentUser, query, body, contentFile, h5pFile);
+
 		return result;
 	}
 

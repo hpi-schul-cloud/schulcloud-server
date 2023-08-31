@@ -63,19 +63,3 @@ export class AjaxPostBodyParamsTransformPipe implements PipeTransform {
 		return undefined;
 	}
 }
-
-/**
- * H5P may or may not send files with the ajax request.
- * Since these files may be sent in two different fields, we cannot use Nest's default file interceptor (Only supports one field)
- * This interceptor is a specialization of the AnyFilesInterceptor that only accepts files with the two known fieldnames
- */
-export const AjaxPostBodyParamsFilesInterceptor = AnyFilesInterceptor({
-	limits: { files: 2 },
-	fileFilter(_req, file, callback) {
-		if (file.fieldname === 'file' || file.fieldname === 'h5p') {
-			callback(null, true);
-		} else {
-			callback(new BadRequestException('File not allowed'), false);
-		}
-	},
-});

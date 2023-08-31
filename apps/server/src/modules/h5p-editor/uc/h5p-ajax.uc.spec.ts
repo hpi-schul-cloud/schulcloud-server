@@ -162,22 +162,20 @@ describe('H5P Ajax', () => {
 				userMock,
 				{ action: 'libraries' },
 				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' },
-				[
-					{
-						fieldname: 'file',
-						buffer: Buffer.from(''),
-						originalname: 'OriginalFile.jpg',
-						size: 0,
-						mimetype: 'image/jpg',
-					} as Express.Multer.File,
-					{
-						fieldname: 'h5p',
-						buffer: Buffer.from(''),
-						originalname: 'OriginalFile.jpg',
-						size: 0,
-						mimetype: 'image/jpg',
-					} as Express.Multer.File,
-				]
+				{
+					fieldname: 'file',
+					buffer: Buffer.from(''),
+					originalname: 'OriginalFile.jpg',
+					size: 0,
+					mimetype: 'image/jpg',
+				} as Express.Multer.File,
+				{
+					fieldname: 'h5p',
+					buffer: Buffer.from(''),
+					originalname: 'OriginalFile.jpg',
+					size: 0,
+					mimetype: 'image/jpg',
+				} as Express.Multer.File
 			);
 
 			const bufferTest = {
