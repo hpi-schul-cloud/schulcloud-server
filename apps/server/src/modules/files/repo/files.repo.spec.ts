@@ -11,118 +11,6 @@ describe(FilesRepo.name, () => {
 	let em: EntityManager;
 	let module: TestingModule;
 
-	const setup = async () => {
-		const mainUserId = new ObjectId().toHexString();
-		const otherUserId = new ObjectId().toHexString();
-
-		// Test files created, owned and accessible only by the other user.
-		const otherUserFile = fileEntityFactory.build({
-			ownerId: otherUserId,
-			creatorId: otherUserId,
-			permissions: [filePermissionEntityFactory.build({ refId: otherUserId })],
-		});
-
-		// Test file created and owned by the main user, but also accessible by the other user.
-		const mainUserSharedFile = fileEntityFactory.build({
-			ownerId: mainUserId,
-			creatorId: mainUserId,
-			permissions: [
-				filePermissionEntityFactory.build({ refId: mainUserId }),
-				filePermissionEntityFactory.build({ refId: otherUserId }),
-			],
-		});
-
-		// Test file created and owned by the other user, but also accessible by the main user.
-		const otherUserSharedFile = fileEntityFactory.build({
-			ownerId: otherUserId,
-			creatorId: otherUserId,
-			permissions: [
-				filePermissionEntityFactory.build({ refId: otherUserId }),
-				filePermissionEntityFactory.build({ refId: mainUserId }),
-			],
-		});
-
-		// Test file created, owned and accessible only by the main user.
-		const mainUserFile = fileEntityFactory.build({
-			ownerId: mainUserId,
-			creatorId: mainUserId,
-			permissions: [filePermissionEntityFactory.build({ refId: mainUserId })],
-		});
-
-		await em.persistAndFlush([otherUserFile, mainUserSharedFile, otherUserSharedFile, mainUserFile]);
-		em.clear();
-
-		const expectedMainUserSharedFileProps = {
-			id: mainUserSharedFile.id,
-			createdAt: mainUserSharedFile.createdAt,
-			updatedAt: mainUserSharedFile.updatedAt,
-			deleted: false,
-			isDirectory: false,
-			name: mainUserSharedFile.name,
-			size: mainUserSharedFile.size,
-			type: mainUserSharedFile.type,
-			storageFileName: mainUserSharedFile.storageFileName,
-			bucket: mainUserSharedFile.bucket,
-			thumbnail: mainUserSharedFile.thumbnail,
-			thumbnailRequestToken: mainUserSharedFile.thumbnailRequestToken,
-			securityCheck: mainUserSharedFile.securityCheck,
-			shareTokens: [],
-			refOwnerModel: mainUserSharedFile.refOwnerModel,
-			permissions: mainUserSharedFile.permissions,
-			versionKey: 0,
-		};
-
-		const expectedOtherUserSharedFileProps = {
-			id: otherUserSharedFile.id,
-			createdAt: otherUserSharedFile.createdAt,
-			updatedAt: otherUserSharedFile.updatedAt,
-			deleted: false,
-			isDirectory: false,
-			name: otherUserSharedFile.name,
-			size: otherUserSharedFile.size,
-			type: otherUserSharedFile.type,
-			storageFileName: otherUserSharedFile.storageFileName,
-			bucket: otherUserSharedFile.bucket,
-			thumbnail: otherUserSharedFile.thumbnail,
-			thumbnailRequestToken: otherUserSharedFile.thumbnailRequestToken,
-			securityCheck: otherUserSharedFile.securityCheck,
-			shareTokens: [],
-			refOwnerModel: otherUserSharedFile.refOwnerModel,
-			permissions: otherUserSharedFile.permissions,
-			versionKey: 0,
-		};
-
-		const expectedMainUserFileProps = {
-			id: mainUserFile.id,
-			createdAt: mainUserFile.createdAt,
-			updatedAt: mainUserFile.updatedAt,
-			deleted: false,
-			isDirectory: false,
-			name: mainUserFile.name,
-			size: mainUserFile.size,
-			type: mainUserFile.type,
-			storageFileName: mainUserFile.storageFileName,
-			bucket: mainUserFile.bucket,
-			thumbnail: mainUserFile.thumbnail,
-			thumbnailRequestToken: mainUserFile.thumbnailRequestToken,
-			securityCheck: mainUserFile.securityCheck,
-			shareTokens: [],
-			refOwnerModel: mainUserFile.refOwnerModel,
-			permissions: mainUserFile.permissions,
-			versionKey: 0,
-		};
-
-		return {
-			mainUserId,
-			mainUserSharedFile,
-			otherUserSharedFile,
-			mainUserFile,
-			expectedMainUserSharedFileProps,
-			expectedOtherUserSharedFileProps,
-			expectedMainUserFileProps,
-		};
-	};
-
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
@@ -203,7 +91,7 @@ describe(FilesRepo.name, () => {
 	});
 
 	describe('findByOwnerUserId', () => {
-		const findByOwnerUserIdSetup = async () => {
+		const setup = async () => {
 			const mainUserId = new ObjectId().toHexString();
 			const otherUserId = new ObjectId().toHexString();
 
@@ -283,7 +171,7 @@ describe(FilesRepo.name, () => {
 				mainUserFile,
 				expectedMainUserSharedFileProps,
 				expectedMainUserFileProps,
-			} = await findByOwnerUserIdSetup();
+			} = await setup();
 
 			const results = await repo.findByOwnerUserId(mainUserIdd);
 
@@ -335,6 +223,118 @@ describe(FilesRepo.name, () => {
 	});
 
 	describe('findByPermissionRefId', () => {
+		const setup = async () => {
+			const mainUserId = new ObjectId().toHexString();
+			const otherUserId = new ObjectId().toHexString();
+
+			// Test files created, owned and accessible only by the other user.
+			const otherUserFile = fileEntityFactory.build({
+				ownerId: otherUserId,
+				creatorId: otherUserId,
+				permissions: [filePermissionEntityFactory.build({ refId: otherUserId })],
+			});
+
+			// Test file created and owned by the main user, but also accessible by the other user.
+			const mainUserSharedFile = fileEntityFactory.build({
+				ownerId: mainUserId,
+				creatorId: mainUserId,
+				permissions: [
+					filePermissionEntityFactory.build({ refId: mainUserId }),
+					filePermissionEntityFactory.build({ refId: otherUserId }),
+				],
+			});
+
+			// Test file created and owned by the other user, but also accessible by the main user.
+			const otherUserSharedFile = fileEntityFactory.build({
+				ownerId: otherUserId,
+				creatorId: otherUserId,
+				permissions: [
+					filePermissionEntityFactory.build({ refId: otherUserId }),
+					filePermissionEntityFactory.build({ refId: mainUserId }),
+				],
+			});
+
+			// Test file created, owned and accessible only by the main user.
+			const mainUserFile = fileEntityFactory.build({
+				ownerId: mainUserId,
+				creatorId: mainUserId,
+				permissions: [filePermissionEntityFactory.build({ refId: mainUserId })],
+			});
+
+			await em.persistAndFlush([otherUserFile, mainUserSharedFile, otherUserSharedFile, mainUserFile]);
+			em.clear();
+
+			const expectedMainUserSharedFileProps = {
+				id: mainUserSharedFile.id,
+				createdAt: mainUserSharedFile.createdAt,
+				updatedAt: mainUserSharedFile.updatedAt,
+				deleted: false,
+				isDirectory: false,
+				name: mainUserSharedFile.name,
+				size: mainUserSharedFile.size,
+				type: mainUserSharedFile.type,
+				storageFileName: mainUserSharedFile.storageFileName,
+				bucket: mainUserSharedFile.bucket,
+				thumbnail: mainUserSharedFile.thumbnail,
+				thumbnailRequestToken: mainUserSharedFile.thumbnailRequestToken,
+				securityCheck: mainUserSharedFile.securityCheck,
+				shareTokens: [],
+				refOwnerModel: mainUserSharedFile.refOwnerModel,
+				permissions: mainUserSharedFile.permissions,
+				versionKey: 0,
+			};
+
+			const expectedOtherUserSharedFileProps = {
+				id: otherUserSharedFile.id,
+				createdAt: otherUserSharedFile.createdAt,
+				updatedAt: otherUserSharedFile.updatedAt,
+				deleted: false,
+				isDirectory: false,
+				name: otherUserSharedFile.name,
+				size: otherUserSharedFile.size,
+				type: otherUserSharedFile.type,
+				storageFileName: otherUserSharedFile.storageFileName,
+				bucket: otherUserSharedFile.bucket,
+				thumbnail: otherUserSharedFile.thumbnail,
+				thumbnailRequestToken: otherUserSharedFile.thumbnailRequestToken,
+				securityCheck: otherUserSharedFile.securityCheck,
+				shareTokens: [],
+				refOwnerModel: otherUserSharedFile.refOwnerModel,
+				permissions: otherUserSharedFile.permissions,
+				versionKey: 0,
+			};
+
+			const expectedMainUserFileProps = {
+				id: mainUserFile.id,
+				createdAt: mainUserFile.createdAt,
+				updatedAt: mainUserFile.updatedAt,
+				deleted: false,
+				isDirectory: false,
+				name: mainUserFile.name,
+				size: mainUserFile.size,
+				type: mainUserFile.type,
+				storageFileName: mainUserFile.storageFileName,
+				bucket: mainUserFile.bucket,
+				thumbnail: mainUserFile.thumbnail,
+				thumbnailRequestToken: mainUserFile.thumbnailRequestToken,
+				securityCheck: mainUserFile.securityCheck,
+				shareTokens: [],
+				refOwnerModel: mainUserFile.refOwnerModel,
+				permissions: mainUserFile.permissions,
+				versionKey: 0,
+			};
+
+			return {
+				mainUserId,
+				mainUserSharedFile,
+				otherUserSharedFile,
+				mainUserFile,
+				expectedMainUserSharedFileProps,
+				expectedOtherUserSharedFileProps,
+				expectedMainUserFileProps,
+			};
+		};
+
 		it('should return proper files that given user has permission to access', async () => {
 			const {
 				mainUserId,
@@ -400,8 +400,52 @@ describe(FilesRepo.name, () => {
 	});
 
 	describe('save', () => {
+		const save = async () => {
+			const mainUserId = new ObjectId().toHexString();
+			const otherUserId = new ObjectId().toHexString();
+
+			// Test file created and owned by the other user, but also accessible by the main user.
+			const otherUserSharedFile = fileEntityFactory.build({
+				ownerId: otherUserId,
+				creatorId: otherUserId,
+				permissions: [
+					filePermissionEntityFactory.build({ refId: otherUserId }),
+					filePermissionEntityFactory.build({ refId: mainUserId }),
+				],
+			});
+
+			await em.persistAndFlush([otherUserSharedFile]);
+			em.clear();
+
+			const expectedOtherUserSharedFileProps = {
+				id: otherUserSharedFile.id,
+				createdAt: otherUserSharedFile.createdAt,
+				updatedAt: otherUserSharedFile.updatedAt,
+				deleted: false,
+				isDirectory: false,
+				name: otherUserSharedFile.name,
+				size: otherUserSharedFile.size,
+				type: otherUserSharedFile.type,
+				storageFileName: otherUserSharedFile.storageFileName,
+				bucket: otherUserSharedFile.bucket,
+				thumbnail: otherUserSharedFile.thumbnail,
+				thumbnailRequestToken: otherUserSharedFile.thumbnailRequestToken,
+				securityCheck: otherUserSharedFile.securityCheck,
+				shareTokens: [],
+				refOwnerModel: otherUserSharedFile.refOwnerModel,
+				permissions: otherUserSharedFile.permissions,
+				versionKey: 0,
+			};
+
+			return {
+				mainUserId,
+				otherUserSharedFile,
+				expectedOtherUserSharedFileProps,
+			};
+		};
+
 		it('should properly update given file permissions', async () => {
-			const initialFiles = await setup();
+			const initialFiles = await save();
 			let { otherUserSharedFile } = initialFiles;
 			const { mainUserId, expectedOtherUserSharedFileProps } = initialFiles;
 
@@ -437,49 +481,49 @@ describe(FilesRepo.name, () => {
 		});
 
 		it('should properly update the file marked for deletion', async () => {
-			const initialFiles = await setup();
-			let { mainUserFile } = initialFiles;
+			const initialFiles = await save();
+			let { otherUserSharedFile } = initialFiles;
 
-			const originalUpdatedAt = mainUserFile.updatedAt;
+			const originalUpdatedAt = otherUserSharedFile.updatedAt;
 
 			// Pre-check to make sure the file is not marked as deleted yet.
-			expect(mainUserFile.isMarkedForDeletion()).toEqual(false);
+			expect(otherUserSharedFile.isMarkedForDeletion()).toEqual(false);
 
-			mainUserFile.markForDeletion();
+			otherUserSharedFile.markForDeletion();
 
-			await repo.save(mainUserFile);
+			await repo.save(otherUserSharedFile);
 
-			mainUserFile = await repo.findById(mainUserFile.id);
+			otherUserSharedFile = await repo.findById(otherUserSharedFile.id);
 
 			// Verify if the file has for sure been marked as deleted.
-			expect(mainUserFile.isMarkedForDeletion()).toEqual(true);
+			expect(otherUserSharedFile.isMarkedForDeletion()).toEqual(true);
 
 			// Verify if other file fields are still untouched after the update,
 			//  except the updatedAt field which is expected to change.
 			expect(originalUpdatedAt.getTime()).toBeLessThanOrEqual(originalUpdatedAt.getTime());
 
-			const expectedMainUserFileProps = {
-				id: mainUserFile.id,
-				createdAt: mainUserFile.createdAt,
-				updatedAt: mainUserFile.updatedAt,
-				deletedAt: mainUserFile.deletedAt,
+			const expectedOtherUserSharedFileProps = {
+				id: otherUserSharedFile.id,
+				createdAt: otherUserSharedFile.createdAt,
+				updatedAt: otherUserSharedFile.updatedAt,
+				deletedAt: otherUserSharedFile.deletedAt,
 				deleted: true,
 				isDirectory: false,
-				name: mainUserFile.name,
-				size: mainUserFile.size,
-				type: mainUserFile.type,
-				storageFileName: mainUserFile.storageFileName,
-				bucket: mainUserFile.bucket,
-				thumbnail: mainUserFile.thumbnail,
-				thumbnailRequestToken: mainUserFile.thumbnailRequestToken,
-				securityCheck: mainUserFile.securityCheck,
+				name: otherUserSharedFile.name,
+				size: otherUserSharedFile.size,
+				type: otherUserSharedFile.type,
+				storageFileName: otherUserSharedFile.storageFileName,
+				bucket: otherUserSharedFile.bucket,
+				thumbnail: otherUserSharedFile.thumbnail,
+				thumbnailRequestToken: otherUserSharedFile.thumbnailRequestToken,
+				securityCheck: otherUserSharedFile.securityCheck,
 				shareTokens: [],
-				refOwnerModel: mainUserFile.refOwnerModel,
-				permissions: mainUserFile.permissions,
+				refOwnerModel: otherUserSharedFile.refOwnerModel,
+				permissions: otherUserSharedFile.permissions,
 				versionKey: 0,
 			};
 
-			expect(mainUserFile).toEqual(expect.objectContaining(expectedMainUserFileProps));
+			expect(otherUserSharedFile).toEqual(expect.objectContaining(expectedOtherUserSharedFileProps));
 		});
 	});
 });
