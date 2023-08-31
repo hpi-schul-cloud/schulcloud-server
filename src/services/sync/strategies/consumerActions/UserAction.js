@@ -24,7 +24,6 @@ class UserAction extends BaseConsumerAction {
 		const { user = {}, account = {} } = data;
 
 		let school;
-		let migratedSchool = false;
 		school = await SchoolRepo.findSchoolByLdapIdAndSystem(user.schoolDn, user.systemId);
 		if (!school) {
 			school = await SchoolRepo.findSchoolByPreviousExternalIdAndSystem(user.schoolDn, user.systemId);
@@ -32,7 +31,6 @@ class UserAction extends BaseConsumerAction {
 			if (school && !school.features.includes(SCHOOL_FEATURES.ENABLE_LDAP_SYNC_DURING_MIGRATION)) {
 				return;
 			}
-			migratedSchool = true;
 		}
 
 		if (!school) {
@@ -43,11 +41,6 @@ class UserAction extends BaseConsumerAction {
 		}
 
 		const foundUser = await UserRepo.findByLdapIdAndSchool(user.ldapId, school._id);
-
-		// user in migrated schools should not be updated
-		if (foundUser && migratedSchool) {
-			return;
-		}
 
 		if (!foundUser) {
 			const oauthMigratedUser = await UserRepo.findByPreviousExternalIdAndSchool(user.ldapId, school._id);
@@ -69,7 +62,7 @@ class UserAction extends BaseConsumerAction {
 		}
 
 		// default: update or create user
-		if (foundUser !== null && !migratedSchool) {
+		if (foundUser !== null) {
 			await this.updateUserAndAccount(foundUser, user, account);
 		} else {
 			await this.createUserAndAccount(user, account, school);
