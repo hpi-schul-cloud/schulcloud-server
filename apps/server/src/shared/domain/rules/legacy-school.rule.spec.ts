@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { roleFactory, schoolDOFactory, setupEntities, userFactory } from '@shared/testing';
+import { roleFactory, legacySchoolDoFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
 import { Action } from '@src/modules/authorization/types';
 import { ObjectID } from 'bson';
@@ -25,7 +25,7 @@ describe('LegacySchoolRule', () => {
 	});
 
 	const setupSchoolAndUser = () => {
-		const school = schoolDOFactory.build({ id: new ObjectID().toString() });
+		const school = legacySchoolDoFactory.build({ id: new ObjectID().toString() });
 		const role = roleFactory.build({ permissions: [permissionA, permissionB] });
 		const user = userFactory.build({
 			roles: [role],
@@ -62,7 +62,7 @@ describe('LegacySchoolRule', () => {
 
 	it('should return "false" if user has not same school', () => {
 		const { user } = setupSchoolAndUser();
-		const school = schoolDOFactory.build();
+		const school = legacySchoolDoFactory.build();
 
 		const res = service.hasPermission(user, school, { action: Action.read, requiredPermissions: [permissionA] });
 

@@ -3,9 +3,9 @@ import { federalStateFactory } from '../federal-state.factory';
 import { schoolYearFactory } from '../schoolyear.factory';
 import { DoBaseFactory } from './do-base.factory';
 
-class SchoolFactory extends DoBaseFactory<LegacySchoolDo, LegacySchoolDo> {}
+class LegacySchoolFactory extends DoBaseFactory<LegacySchoolDo, LegacySchoolDo> {}
 
-export const schoolDOFactory = SchoolFactory.define(LegacySchoolDo, ({ sequence }) => {
+export const legacySchoolDoFactory = LegacySchoolFactory.define(LegacySchoolDo, ({ sequence }) => {
 	return {
 		name: `schoolName-${sequence}`,
 		externalId: '123',

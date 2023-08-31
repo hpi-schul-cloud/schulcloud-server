@@ -6,7 +6,7 @@ import { ValidationError } from '@shared/common';
 import { LegacySchoolDo, Page, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
 import { setupEntities, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
-import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
+import { legacySchoolDoFactory } from '@shared/testing/factory/domainobject/school.factory';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { LegacySchoolService } from '@src/modules/school';
@@ -119,7 +119,7 @@ describe('SchoolMigrationService', () => {
 	describe('schoolToMigrate is called', () => {
 		describe('when school number is missing', () => {
 			const setup = () => {
-				const schoolDO: LegacySchoolDo = schoolDOFactory.buildWithId({
+				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
@@ -156,7 +156,7 @@ describe('SchoolMigrationService', () => {
 
 		describe('when school could not be found with official school number', () => {
 			const setup = () => {
-				const schoolDO: LegacySchoolDo = schoolDOFactory.buildWithId({
+				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
@@ -193,7 +193,7 @@ describe('SchoolMigrationService', () => {
 
 		describe('when current users school not match with school of to migrate user ', () => {
 			const setup = () => {
-				const schoolDO: LegacySchoolDo = schoolDOFactory.buildWithId({
+				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
@@ -233,7 +233,7 @@ describe('SchoolMigrationService', () => {
 
 		describe('when school was already migrated', () => {
 			const setup = () => {
-				const schoolDO: LegacySchoolDo = schoolDOFactory.buildWithId({
+				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
@@ -268,7 +268,7 @@ describe('SchoolMigrationService', () => {
 
 		describe('when school has to be migrated', () => {
 			const setup = () => {
-				const schoolDO: LegacySchoolDo = schoolDOFactory.buildWithId({
+				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
@@ -304,7 +304,7 @@ describe('SchoolMigrationService', () => {
 	describe('migrateSchool is called', () => {
 		describe('when school will be migrated', () => {
 			const setup = () => {
-				const schoolDO: LegacySchoolDo = schoolDOFactory.buildWithId({
+				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',

@@ -3,7 +3,7 @@ import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, RoleName, SchoolFeatures } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { federalStateFactory, schoolDOFactory, userDoFactory } from '@shared/testing';
+import { federalStateFactory, legacySchoolDoFactory, userDoFactory } from '@shared/testing';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
@@ -84,7 +84,7 @@ describe('OidcProvisioningService', () => {
 				name: 'name',
 				officialSchoolNumber: 'officialSchoolNumber',
 			});
-			const savedSchoolDO = schoolDOFactory.build({
+			const savedSchoolDO = legacySchoolDoFactory.build({
 				id: 'schoolId',
 				externalId: 'externalId',
 				name: 'name',
@@ -92,7 +92,7 @@ describe('OidcProvisioningService', () => {
 				systems: [systemId],
 				features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
 			});
-			const existingSchoolDO = schoolDOFactory.build({
+			const existingSchoolDO = legacySchoolDoFactory.build({
 				id: 'schoolId',
 				externalId: 'externalId',
 				name: 'existingName',

@@ -5,7 +5,7 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page, Permission, LegacySchoolDo, System, User, UserLoginMigrationDO } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
-	schoolDOFactory,
+	legacySchoolDoFactory,
 	setupEntities,
 	systemFactory,
 	userFactory,
@@ -304,7 +304,7 @@ describe('UserLoginMigrationUc', () => {
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
-				const schoolDO: LegacySchoolDo = schoolDOFactory.buildWithId({
+				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					systems: [sourceSystem.id],
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'oldSchoolExternalId',
@@ -419,7 +419,7 @@ describe('UserLoginMigrationUc', () => {
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
-				const schoolDO: LegacySchoolDo = schoolDOFactory.buildWithId({
+				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					systems: [sourceSystem.id],
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'oldSchoolExternalId',
@@ -483,7 +483,7 @@ describe('UserLoginMigrationUc', () => {
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
-				const schoolDO: LegacySchoolDo = schoolDOFactory.buildWithId({
+				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					systems: [sourceSystem.id],
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'oldSchoolExternalId',
@@ -619,7 +619,7 @@ describe('UserLoginMigrationUc', () => {
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
-				const schoolDO: LegacySchoolDo = schoolDOFactory.buildWithId({
+				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					systems: [sourceSystem.id],
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'oldSchoolExternalId',

@@ -15,7 +15,7 @@ import {
 } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
-	schoolDOFactory,
+	legacySchoolDoFactory,
 	schoolFactory,
 	schoolYearFactory,
 	systemFactory,
@@ -62,7 +62,7 @@ describe('LegacySchoolRepo', () => {
 	describe('save is called', () => {
 		describe('when saving only required fields', () => {
 			function setupDO() {
-				const domainObject: LegacySchoolDo = schoolDOFactory.build();
+				const domainObject: LegacySchoolDo = legacySchoolDoFactory.build();
 				return {
 					domainObject,
 				};
@@ -226,7 +226,7 @@ describe('LegacySchoolRepo', () => {
 
 			await em.persistAndFlush([userLoginMigration, system1, system2]);
 
-			const entityDO: LegacySchoolDo = schoolDOFactory.build({
+			const entityDO: LegacySchoolDo = legacySchoolDoFactory.build({
 				systems: [system1.id, system2.id],
 				userLoginMigrationId: userLoginMigration.id,
 			});
@@ -265,7 +265,7 @@ describe('LegacySchoolRepo', () => {
 
 		describe('when there are no systems', () => {
 			it('should not call the entity manager to get the system object', () => {
-				const entityDO: LegacySchoolDo = schoolDOFactory.build({ systems: undefined });
+				const entityDO: LegacySchoolDo = legacySchoolDoFactory.build({ systems: undefined });
 				const emGetReferenceSpy = jest.spyOn(em, 'getReference');
 
 				repo.mapDOToEntityProperties(entityDO);
@@ -276,7 +276,7 @@ describe('LegacySchoolRepo', () => {
 
 		describe('when there is no userLoginMigration', () => {
 			it('should not call the entity manager to get the user login migration reference', () => {
-				const entityDO: LegacySchoolDo = schoolDOFactory.build({ userLoginMigrationId: undefined });
+				const entityDO: LegacySchoolDo = legacySchoolDoFactory.build({ userLoginMigrationId: undefined });
 				const emGetReferenceSpy = jest.spyOn(em, 'getReference');
 
 				repo.mapDOToEntityProperties(entityDO);

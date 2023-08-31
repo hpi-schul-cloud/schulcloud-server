@@ -3,7 +3,7 @@ import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, RoleName, UserDO } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { schoolDOFactory, userDoFactory } from '@shared/testing';
+import { legacySchoolDoFactory, userDoFactory } from '@shared/testing';
 import {
 	ExternalSchoolDto,
 	ExternalUserDto,
@@ -76,7 +76,7 @@ describe('OidcStrategy', () => {
 				schoolId: 'schoolId',
 				externalId: externalUserId,
 			});
-			const school: LegacySchoolDo = schoolDOFactory.build({
+			const school: LegacySchoolDo = legacySchoolDoFactory.build({
 				id: schoolId,
 				name: 'schoolName',
 				externalId: externalSchoolId,

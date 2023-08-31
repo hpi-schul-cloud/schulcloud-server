@@ -6,7 +6,7 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { setupEntities, userDoFactory } from '@shared/testing';
-import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
+import { legacySchoolDoFactory } from '@shared/testing/factory/domainobject/school.factory';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { LegacyLogger } from '@src/core/logger';
 import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
@@ -426,7 +426,7 @@ describe('OAuthService', () => {
 						officialSchoolNumber: 'officialSchoolNumber',
 					}),
 				});
-				const school: LegacySchoolDo = schoolDOFactory.buildWithId({
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
 				});
 
@@ -468,7 +468,7 @@ describe('OAuthService', () => {
 						officialSchoolNumber: 'officialSchoolNumber',
 					}),
 				});
-				const school: LegacySchoolDo = schoolDOFactory.buildWithId({ features: [] });
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ features: [] });
 
 				provisioningService.getData.mockResolvedValue(oauthData);
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
@@ -514,7 +514,7 @@ describe('OAuthService', () => {
 						officialSchoolNumber: 'officialSchoolNumber',
 					}),
 				});
-				const school: LegacySchoolDo = schoolDOFactory.buildWithId({ features: [] });
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ features: [] });
 
 				provisioningService.getData.mockResolvedValue(oauthData);
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);

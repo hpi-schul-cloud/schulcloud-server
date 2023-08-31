@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, LegacySchoolDo, User, UserLoginMigrationDO } from '@shared/domain';
-import { schoolDOFactory, setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
+import { legacySchoolDoFactory, setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { LegacySchoolService } from '@src/modules/school';
@@ -70,7 +70,7 @@ describe('RestartUserLoginMigrationUc', () => {
 
 				const user: User = userFactory.buildWithId();
 
-				const school: LegacySchoolDo = schoolDOFactory.buildWithId();
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
@@ -115,7 +115,7 @@ describe('RestartUserLoginMigrationUc', () => {
 
 				const user: User = userFactory.buildWithId();
 
-				const school: LegacySchoolDo = schoolDOFactory.buildWithId();
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
@@ -157,7 +157,7 @@ describe('RestartUserLoginMigrationUc', () => {
 			const setup = () => {
 				const user: User = userFactory.buildWithId();
 
-				const school: LegacySchoolDo = schoolDOFactory.buildWithId();
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
@@ -179,7 +179,7 @@ describe('RestartUserLoginMigrationUc', () => {
 			const setup = () => {
 				const user: User = userFactory.buildWithId();
 
-				const school: LegacySchoolDo = schoolDOFactory.buildWithId();
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
@@ -207,7 +207,7 @@ describe('RestartUserLoginMigrationUc', () => {
 
 				const user: User = userFactory.buildWithId();
 
-				const school: LegacySchoolDo = schoolDOFactory.buildWithId();
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);

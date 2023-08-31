@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, SchoolFeatures } from '@shared/domain';
 import { LegacySchoolRepo } from '@shared/repo';
-import { schoolDOFactory, setupEntities } from '@shared/testing';
+import { legacySchoolDoFactory, setupEntities } from '@shared/testing';
 import { LegacySchoolService } from './legacy-school.service';
 import { SchoolValidationService } from './validation/school-validation.service';
 
@@ -41,7 +41,7 @@ describe('LegacySchoolService', () => {
 
 	const setupOld = () => {
 		const systems: string[] = ['systemId'];
-		const schoolSaved: LegacySchoolDo = schoolDOFactory.build({
+		const schoolSaved: LegacySchoolDo = legacySchoolDoFactory.build({
 			id: 'testId',
 			name: 'schoolName',
 			externalId: 'externalId',
@@ -49,7 +49,7 @@ describe('LegacySchoolService', () => {
 			systems,
 			features: [SchoolFeatures.VIDEOCONFERENCE],
 		});
-		const schoolUnsaved: LegacySchoolDo = schoolDOFactory.build({ name: 'school #2}', systems: [] });
+		const schoolUnsaved: LegacySchoolDo = legacySchoolDoFactory.build({ name: 'school #2}', systems: [] });
 		schoolRepo.findById.mockResolvedValue(schoolSaved);
 		schoolRepo.findByExternalId.mockResolvedValue(schoolSaved);
 		schoolRepo.findBySchoolNumber.mockResolvedValue(schoolSaved);
@@ -109,7 +109,7 @@ describe('LegacySchoolService', () => {
 	describe('removeFeature', () => {
 		describe('when given schoolFeature exists on school', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = schoolDOFactory.buildWithId({
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					features: [SchoolFeatures.VIDEOCONFERENCE, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
 				});
 
@@ -131,7 +131,7 @@ describe('LegacySchoolService', () => {
 
 		describe('when school has a feature which should be removed', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = schoolDOFactory.buildWithId({
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					features: [SchoolFeatures.VIDEOCONFERENCE, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
 				});
 
@@ -234,7 +234,7 @@ describe('LegacySchoolService', () => {
 	describe('save is called', () => {
 		describe('when validation is deactivated', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = schoolDOFactory.build();
+				const school: LegacySchoolDo = legacySchoolDoFactory.build();
 
 				schoolRepo.save.mockResolvedValue(school);
 
@@ -271,7 +271,7 @@ describe('LegacySchoolService', () => {
 		describe('when validation is active', () => {
 			describe('when the validation fails', () => {
 				const setup = () => {
-					const school: LegacySchoolDo = schoolDOFactory.build();
+					const school: LegacySchoolDo = legacySchoolDoFactory.build();
 
 					schoolRepo.save.mockResolvedValueOnce(school);
 					schoolValidationService.validate.mockRejectedValueOnce(new Error());
@@ -308,7 +308,7 @@ describe('LegacySchoolService', () => {
 
 			describe('when the validation succeeds', () => {
 				const setup = () => {
-					const school: LegacySchoolDo = schoolDOFactory.build();
+					const school: LegacySchoolDo = legacySchoolDoFactory.build();
 
 					schoolRepo.save.mockResolvedValueOnce(school);
 

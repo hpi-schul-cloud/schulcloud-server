@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { ISession } from '@shared/domain/types/session';
-import { schoolDOFactory, setupEntities } from '@shared/testing';
+import { legacySchoolDoFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
@@ -658,7 +658,7 @@ describe('OAuthUc', () => {
 
 					oauthService.requestToken.mockResolvedValue(tokenDto);
 					provisioningService.getData.mockResolvedValue(oauthData);
-					const schoolToMigrate: LegacySchoolDo | void = schoolDOFactory.build({ name: 'mockName' });
+					const schoolToMigrate: LegacySchoolDo | void = legacySchoolDoFactory.build({ name: 'mockName' });
 					oauthService.authenticateUser.mockResolvedValue(tokenDto);
 					schoolMigrationService.schoolToMigrate.mockResolvedValue(schoolToMigrate);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);

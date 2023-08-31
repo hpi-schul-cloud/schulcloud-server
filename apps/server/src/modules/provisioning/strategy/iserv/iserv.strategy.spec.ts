@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, RoleName, User, UserDO } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
+import { legacySchoolDoFactory } from '@shared/testing/factory/domainobject/school.factory';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import { LegacySchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
@@ -90,7 +90,7 @@ describe('IservProvisioningStrategy', () => {
 				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.STUDENT }]).buildWithId({
 					externalId: userUUID,
 				});
-				const school: LegacySchoolDo = schoolDOFactory.buildWithId({ externalId: 'schoolExternalId' });
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ externalId: 'schoolExternalId' });
 				const roleDto: RoleDto = new RoleDto({
 					name: RoleName.STUDENT,
 				});

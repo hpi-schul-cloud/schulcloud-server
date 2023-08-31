@@ -5,7 +5,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, RoleName, UserDO } from '@shared/domain';
-import { schoolDOFactory, setupEntities, userDoFactory } from '@shared/testing';
+import { legacySchoolDoFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto, AccountSaveDto } from '@src/modules/account/services/dto';
@@ -89,7 +89,7 @@ describe('UserMigrationService', () => {
 		describe('when finding the migration systems', () => {
 			const setup = () => {
 				const officialSchoolNumber = '3';
-				const school: LegacySchoolDo = schoolDOFactory.buildWithId({ name: 'schoolName', officialSchoolNumber });
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ name: 'schoolName', officialSchoolNumber });
 
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
 

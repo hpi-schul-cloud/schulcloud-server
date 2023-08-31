@@ -9,7 +9,7 @@ import {
 	courseFactory,
 	customParameterFactory,
 	externalToolFactory,
-	schoolDOFactory,
+	legacySchoolDoFactory,
 	schoolExternalToolFactory,
 	setupEntities,
 } from '@shared/testing';
@@ -184,7 +184,7 @@ describe('AbstractLaunchStrategy', () => {
 				});
 
 				// Other
-				const school: LegacySchoolDo = schoolDOFactory.buildWithId(
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(
 					{
 						officialSchoolNumber: '1234',
 					},
@@ -369,7 +369,7 @@ describe('AbstractLaunchStrategy', () => {
 					parameters: [],
 				});
 
-				const school: LegacySchoolDo = schoolDOFactory.buildWithId({
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					officialSchoolNumber: undefined,
 				});
 
