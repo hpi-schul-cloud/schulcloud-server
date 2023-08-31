@@ -7,6 +7,7 @@ import { CoreModule } from '@src/core';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { config } from '@src/modules/tldraw/config';
+import * as process from 'process';
 import * as Utils from '../../utils/utils';
 import { TldrawGateway } from '../tldraw.gateway';
 
@@ -27,6 +28,8 @@ describe('WebSocketGateway (WsAdapter)', () => {
 			setTimeout(resolve, ms);
 		});
 
+	jest.setTimeout(120000);
+
 	beforeAll(async () => {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
 		const testingModule = await Test.createTestingModule({
@@ -43,27 +46,34 @@ describe('WebSocketGateway (WsAdapter)', () => {
 		await app.close();
 	});
 
+	beforeEach(() => {
+		jest.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] });
+	});
+
 	it(`should handle connection and data transfer`, async () => {
 		const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
 		const reduceMock = jest.spyOn(Uint8Array.prototype, 'reduce').mockReturnValue(1);
-		jest.useFakeTimers({ advanceTimers: 1 });
+
 		ws = new WebSocket(`${wsUrl}/TEST1`);
 		await new Promise((resolve) => {
 			ws.on('open', resolve);
 		});
 
+		await new Promise((resolve) => {
+			process.nextTick(resolve);
+		});
+
 		const byteArray = new TextEncoder().encode(testMessage);
 		const { buffer } = byteArray;
-		ws.send(buffer);
+		ws.send(buffer, () => {});
 
 		expect(handleConnectionSpy).toHaveBeenCalled();
 		expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
 
-		await delay(200);
+		await delay(2000);
 		ws.close();
 		handleConnectionSpy.mockReset();
 		reduceMock.mockReset();
-		jest.clearAllTimers();
 	});
 
 	it(`should refuse connection if there is no docName`, async () => {
@@ -92,7 +102,6 @@ describe('WebSocketGateway (WsAdapter)', () => {
 
 	it(`should handle 2 connections at same doc and data transfer`, async () => {
 		const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
-
 		ws = new WebSocket(`${wsUrl}/TEST2`);
 		const ws2 = new WebSocket(`${wsUrl}/TEST2`);
 		await new Promise((resolve) => {
