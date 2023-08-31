@@ -3,6 +3,7 @@ import {
 	Controller,
 	Delete,
 	ForbiddenException,
+	Headers,
 	HttpCode,
 	NotFoundException,
 	Param,
@@ -81,9 +82,10 @@ export class ElementController {
 	@Delete(':contentElementId')
 	async deleteElement(
 		@Param() urlParams: ContentElementUrlParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
+		@Headers('authorization') authorization: string
 	): Promise<void> {
-		await this.cardUc.deleteElement(currentUser.userId, urlParams.contentElementId);
+		await this.cardUc.deleteElement(currentUser.userId, urlParams.contentElementId, authorization);
 	}
 
 	@ApiOperation({ summary: 'Create a new submission item in a submission container element.' })

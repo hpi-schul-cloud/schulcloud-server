@@ -1317,6 +1317,11 @@
 			"type": "boolean",
 			"default": true,
 			"description": "Tldraw feature enabled"
+		},
+		"TLDRAW_URI": {
+			"type": "string",
+			"default": "http://hydra.localhost:3349",
+			"description": "Address for tldraw management app"
 		}
 	},
 	"required": [

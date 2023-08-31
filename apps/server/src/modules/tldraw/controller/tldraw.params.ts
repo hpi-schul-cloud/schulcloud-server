@@ -1,8 +1,8 @@
-import { IsMongoId } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsString } from 'class-validator';
 
 export class TldrawDeleteParams {
-	@IsMongoId()
+	@IsString()
 	@ApiProperty({
 		description: 'The name of drawing that should be deleted.',
 		required: true,

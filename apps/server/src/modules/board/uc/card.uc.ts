@@ -12,6 +12,9 @@ import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { Action } from '@src/modules/authorization/types/action.enum';
 import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
+import { firstValueFrom } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { BoardDoAuthorizableService, CardService, ContentElementService } from '../service';
 
 @Injectable()
@@ -21,7 +24,8 @@ export class CardUc {
 		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly cardService: CardService,
 		private readonly elementService: ContentElementService,
-		private readonly logger: LegacyLogger
+		private readonly logger: LegacyLogger,
+		private readonly httpService: HttpService
 	) {
 		this.logger.setContext(CardUc.name);
 	}
@@ -56,14 +60,24 @@ export class CardUc {
 		return element;
 	}
 
-	async deleteElement(userId: EntityId, elementId: EntityId): Promise<void> {
+	async deleteElement(userId: EntityId, elementId: EntityId, req: string): Promise<void> {
 		this.logger.debug({ action: 'deleteElement', userId, elementId });
 
 		const element = await this.elementService.findById(elementId);
 		await this.checkPermission(userId, element, Action.write);
 		await this.elementService.delete(element);
 		if (element instanceof DrawingElement) {
-			// todo: call by https tldraw controller to delete drawing collections
+			await firstValueFrom(
+				this.httpService.get(
+					`${Configuration.get('TLDRAW_URI') as string}/api/v3/tldraw-document/${element.drawingName}`,
+					{
+						headers: {
+							Authorization: req,
+							Accept: 'Application/json',
+						},
+					}
+				)
+			);
 		}
 	}
 
