@@ -1,9 +1,9 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
-import { Page, SchoolDO, UserDO, UserLoginMigrationDO } from '@shared/domain';
+import { Page, LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { performance } from 'perf_hooks';
 import { OAuthMigrationError } from '../error';
@@ -11,7 +11,7 @@ import { OAuthMigrationError } from '../error';
 @Injectable()
 export class SchoolMigrationService {
 	constructor(
-		private readonly schoolService: SchoolService,
+		private readonly schoolService: LegacySchoolService,
 		private readonly logger: LegacyLogger,
 		private readonly userService: UserService,
 		private readonly userLoginMigrationRepo: UserLoginMigrationRepo
@@ -25,8 +25,8 @@ export class SchoolMigrationService {
 		}
 	}
 
-	async migrateSchool(externalId: string, existingSchool: SchoolDO, targetSystemId: string): Promise<void> {
-		const schoolDOCopy: SchoolDO = new SchoolDO({ ...existingSchool });
+	async migrateSchool(externalId: string, existingSchool: LegacySchoolDo, targetSystemId: string): Promise<void> {
+		const schoolDOCopy: LegacySchoolDo = new LegacySchoolDo({ ...existingSchool });
 
 		try {
 			await this.doMigration(externalId, existingSchool, targetSystemId);
@@ -44,7 +44,7 @@ export class SchoolMigrationService {
 		currentUserId: string,
 		externalId: string,
 		officialSchoolNumber: string | undefined
-	): Promise<SchoolDO | null> {
+	): Promise<LegacySchoolDo | null> {
 		if (!officialSchoolNumber) {
 			throw new OAuthMigrationError(
 				'Official school number from target migration system is missing',
@@ -54,11 +54,13 @@ export class SchoolMigrationService {
 
 		const userDO: UserDO | null = await this.userService.findById(currentUserId);
 		if (userDO) {
-			const schoolDO: SchoolDO = await this.schoolService.getSchoolById(userDO.schoolId);
+			const schoolDO: LegacySchoolDo = await this.schoolService.getSchoolById(userDO.schoolId);
 			this.checkOfficialSchoolNumbersMatch(schoolDO, officialSchoolNumber);
 		}
 
-		const existingSchool: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
+		const existingSchool: LegacySchoolDo | null = await this.schoolService.getSchoolBySchoolNumber(
+			officialSchoolNumber
+		);
 
 		if (!existingSchool) {
 			throw new OAuthMigrationError(
@@ -125,7 +127,7 @@ export class SchoolMigrationService {
 		this.logger.warn(`restartMigration for schoolId ${schoolId} took ${endTime - startTime} milliseconds`);
 	}
 
-	private async doMigration(externalId: string, schoolDO: SchoolDO, targetSystemId: string): Promise<void> {
+	private async doMigration(externalId: string, schoolDO: LegacySchoolDo, targetSystemId: string): Promise<void> {
 		if (schoolDO.systems) {
 			schoolDO.systems.push(targetSystemId);
 		} else {
@@ -136,13 +138,13 @@ export class SchoolMigrationService {
 		await this.schoolService.save(schoolDO);
 	}
 
-	private async rollbackMigration(originalSchoolDO: SchoolDO) {
+	private async rollbackMigration(originalSchoolDO: LegacySchoolDo) {
 		if (originalSchoolDO) {
 			await this.schoolService.save(originalSchoolDO);
 		}
 	}
 
-	private checkOfficialSchoolNumbersMatch(schoolDO: SchoolDO, officialExternalSchoolNumber: string): void {
+	private checkOfficialSchoolNumbersMatch(schoolDO: LegacySchoolDo, officialExternalSchoolNumber: string): void {
 		if (schoolDO.officialSchoolNumber !== officialExternalSchoolNumber) {
 			throw new OAuthMigrationError(
 				'Current users school is not the same as school found by official school number from target migration system',
