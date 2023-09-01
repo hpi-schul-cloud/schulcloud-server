@@ -7,7 +7,6 @@ import { CoreModule } from '@src/core';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { config } from '@src/modules/tldraw/config';
-import * as process from 'process';
 import * as Utils from '../../utils/utils';
 import { TldrawGateway } from '../tldraw.gateway';
 
@@ -23,12 +22,23 @@ describe('WebSocketGateway (WsAdapter)', () => {
 		'S0zZGEwYjMzNjQ3MjIiLCJjb2xvciI6IiNGMDRGODgiLCJwb2ludCI6WzAsMF0sInNlbGVjdGVkSWRzIjpbXSwiYWN' +
 		'0aXZlU2hhcGVzIjpbXSwic2Vzc2lvbiI6ZmFsc2V9fQ==';
 
+	const setupWs = async (docName?: string) => {
+		if (docName) {
+			ws = new WebSocket(`${wsUrl}/${docName}`);
+		} else {
+			ws = new WebSocket(`${wsUrl}`);
+		}
+		await new Promise((resolve) => {
+			ws.on('open', resolve);
+		});
+	};
+
 	const delay = (ms: number) =>
 		new Promise((resolve) => {
 			setTimeout(resolve, ms);
 		});
 
-	jest.setTimeout(120000);
+	const getMessage = () => new TextEncoder().encode(testMessage);
 
 	beforeAll(async () => {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
@@ -50,21 +60,17 @@ describe('WebSocketGateway (WsAdapter)', () => {
 		jest.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] });
 	});
 
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	it(`should handle connection and data transfer`, async () => {
 		const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
-		const reduceMock = jest.spyOn(Uint8Array.prototype, 'reduce').mockReturnValue(1);
+		jest.spyOn(Uint8Array.prototype, 'reduce').mockReturnValue(1);
 
-		ws = new WebSocket(`${wsUrl}/TEST1`);
-		await new Promise((resolve) => {
-			ws.on('open', resolve);
-		});
+		await setupWs('TEST1');
 
-		await new Promise((resolve) => {
-			process.nextTick(resolve);
-		});
-
-		const byteArray = new TextEncoder().encode(testMessage);
-		const { buffer } = byteArray;
+		const { buffer } = getMessage();
 		ws.send(buffer, () => {});
 
 		expect(handleConnectionSpy).toHaveBeenCalled();
@@ -72,21 +78,15 @@ describe('WebSocketGateway (WsAdapter)', () => {
 
 		await delay(2000);
 		ws.close();
-		handleConnectionSpy.mockReset();
-		reduceMock.mockReset();
 	});
 
 	it(`should refuse connection if there is no docName`, async () => {
 		const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
 		const utilsSpy = jest.spyOn(Utils, 'messageHandler').mockReturnValue();
 
-		ws = new WebSocket(wsUrl);
-		await new Promise((resolve) => {
-			ws.on('open', resolve);
-		});
+		await setupWs();
 
-		const byteArray = new TextEncoder().encode(testMessage);
-		const { buffer } = byteArray;
+		const { buffer } = getMessage();
 		ws.send(buffer);
 
 		expect(gateway.server).toBeDefined();
@@ -96,23 +96,17 @@ describe('WebSocketGateway (WsAdapter)', () => {
 
 		await delay(200);
 		ws.close();
-		handleConnectionSpy.mockReset();
-		utilsSpy.mockReset();
 	});
 
 	it(`should handle 2 connections at same doc and data transfer`, async () => {
 		const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
-		ws = new WebSocket(`${wsUrl}/TEST2`);
+		await setupWs('TEST2');
 		const ws2 = new WebSocket(`${wsUrl}/TEST2`);
-		await new Promise((resolve) => {
-			ws.on('open', resolve);
-		});
 		await new Promise((resolve) => {
 			ws2.on('open', resolve);
 		});
 
-		const byteArray = new TextEncoder().encode(testMessage);
-		const { buffer } = byteArray;
+		const { buffer } = getMessage();
 		ws.send(buffer);
 		ws2.send(buffer);
 
@@ -122,17 +116,12 @@ describe('WebSocketGateway (WsAdapter)', () => {
 		await delay(200);
 		ws.close();
 		ws2.close();
-		handleConnectionSpy.mockReset();
-	});
+	}, 120000);
 
 	it(`check if client will receive message`, async () => {
-		ws = new WebSocket(`${wsUrl}/TEST3`);
-		await new Promise((resolve) => {
-			ws.on('open', resolve);
-		});
+		await setupWs('TEST3');
 
-		const byteArray = new TextEncoder().encode(testMessage);
-		const { buffer } = byteArray;
+		const { buffer } = getMessage();
 		ws.send(buffer, () => {});
 
 		gateway.server.on('connection', (client) => {

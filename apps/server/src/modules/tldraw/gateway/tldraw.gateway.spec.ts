@@ -50,6 +50,30 @@ describe('TldrawGateway', () => {
 		await app.close();
 	});
 
+	const setupWs = async (docName?: string) => {
+		if (docName) {
+			ws = new WebSocket(`${wsUrl}/${docName}`);
+		} else {
+			ws = new WebSocket(`${wsUrl}`);
+		}
+		await new Promise((resolve) => {
+			ws.on('open', resolve);
+		});
+	};
+
+	const createMessage = (values: number[]) => {
+		const encoder = encoding.createEncoder();
+		values.forEach((val) => {
+			encoding.writeVarUint(encoder, val);
+		});
+		encoding.writeVarUint(encoder, 0);
+		encoding.writeVarUint(encoder, 1);
+		const msg = encoding.toUint8Array(encoder);
+		return {
+			msg,
+		};
+	};
+
 	it('should gateway properties be defined', async () => {
 		await app.init();
 
@@ -63,11 +87,7 @@ describe('TldrawGateway', () => {
 
 	it('should throw error for send message -> close connection (due to not connected client socket to WS) ', async () => {
 		await app.init();
-
-		ws = new WebSocket(wsUrl);
-		await new Promise((resolve) => {
-			ws.on('open', resolve);
-		});
+		await setupWs();
 
 		const closeConSpy = jest.spyOn(Utils, 'closeConn').mockImplementationOnce(() => {});
 		const sendSpy = jest.spyOn(Utils, 'send');
@@ -104,11 +124,7 @@ describe('TldrawGateway', () => {
 
 	it('update handler check if send was called', async () => {
 		await app.init();
-
-		ws = new WebSocket(wsUrl);
-		await new Promise((resolve) => {
-			ws.on('open', resolve);
-		});
+		await setupWs();
 
 		const sendSpy = jest.spyOn(Utils, 'send');
 		const doc: { conns: Map<WebSocket, Set<number>> } = { conns: new Map() };
@@ -125,11 +141,7 @@ describe('TldrawGateway', () => {
 
 	it('awareness change handler testing', async () => {
 		await app.init();
-
-		ws = new WebSocket(wsUrl);
-		await new Promise((resolve) => {
-			ws.on('open', resolve);
-		});
+		await setupWs();
 
 		class MockAwareness {
 			on = jest.fn();
@@ -174,11 +186,7 @@ describe('TldrawGateway', () => {
 
 	it('should call send method when received message of type SYNC', async () => {
 		await app.init();
-
-		ws = new WebSocket(wsUrl);
-		await new Promise((resolve) => {
-			ws.on('open', resolve);
-		});
+		await setupWs();
 
 		const sendSpy = jest.spyOn(Utils, 'send');
 		jest.spyOn(SyncProtocols, 'readSyncMessage').mockImplementation((dec, enc) => {
@@ -186,11 +194,8 @@ describe('TldrawGateway', () => {
 			return 1;
 		});
 		const doc = new WSSharedDoc('TEST');
-		const encoder = encoding.createEncoder();
-		encoding.writeVarUint(encoder, 0);
-		encoding.writeVarUint(encoder, 1);
-		const newMessageByteArray = encoding.toUint8Array(encoder);
-		Utils.messageHandler(ws, doc, newMessageByteArray);
+		const { msg } = createMessage([0, 1]);
+		Utils.messageHandler(ws, doc, msg);
 
 		expect(sendSpy).toHaveBeenCalledTimes(1);
 
@@ -200,21 +205,13 @@ describe('TldrawGateway', () => {
 
 	it('should not call send method when received message of type AWARENESS', async () => {
 		await app.init();
-
-		ws = new WebSocket(wsUrl);
-		await new Promise((resolve) => {
-			ws.on('open', resolve);
-		});
+		await setupWs();
 
 		const sendSpy = jest.spyOn(Utils, 'send');
 		const applyAwarenessUpdateSpy = jest.spyOn(AwarenessProtocol, 'applyAwarenessUpdate');
 		const doc = new WSSharedDoc('TEST');
-		const encoder = encoding.createEncoder();
-		encoding.writeVarUint(encoder, 1);
-		encoding.writeVarUint(encoder, 1);
-		encoding.writeVarUint(encoder, 0);
-		const newMessageByteArray = encoding.toUint8Array(encoder);
-		Utils.messageHandler(ws, doc, newMessageByteArray);
+		const { msg } = createMessage([1, 1, 0]);
+		Utils.messageHandler(ws, doc, msg);
 
 		expect(sendSpy).toHaveBeenCalledTimes(0);
 		expect(applyAwarenessUpdateSpy).toHaveBeenCalledTimes(1);
@@ -226,19 +223,13 @@ describe('TldrawGateway', () => {
 
 	it('should do nothing when received message unknown type', async () => {
 		await app.init();
-
-		ws = new WebSocket(wsUrl);
-		await new Promise((resolve) => {
-			ws.on('open', resolve);
-		});
+		await setupWs();
 
 		const sendSpy = jest.spyOn(Utils, 'send');
 		const applyAwarenessUpdateSpy = jest.spyOn(AwarenessProtocol, 'applyAwarenessUpdate');
 		const doc = new WSSharedDoc('TEST');
-		const encoder = encoding.createEncoder();
-		encoding.writeVarUint(encoder, 2);
-		const newMessageByteArray = encoding.toUint8Array(encoder);
-		Utils.messageHandler(ws, doc, newMessageByteArray);
+		const { msg } = createMessage([2]);
+		Utils.messageHandler(ws, doc, msg);
 
 		expect(sendSpy).toHaveBeenCalledTimes(0);
 		expect(applyAwarenessUpdateSpy).toHaveBeenCalledTimes(0);
@@ -250,22 +241,15 @@ describe('TldrawGateway', () => {
 
 	it('should not call send method when error is thrown', async () => {
 		await app.init();
-
-		ws = new WebSocket(wsUrl);
-		await new Promise((resolve) => {
-			ws.on('open', resolve);
-		});
+		await setupWs();
 
 		const sendSpy = jest.spyOn(Utils, 'send');
 		jest.spyOn(SyncProtocols, 'readSyncMessage').mockImplementation(() => {
 			throw new Error('error');
 		});
 		const doc = new WSSharedDoc('TEST');
-		const encoder = encoding.createEncoder();
-		encoding.writeVarUint(encoder, 0);
-		encoding.writeVarUint(encoder, 1);
-		const newMessageByteArray = encoding.toUint8Array(encoder);
-		Utils.messageHandler(ws, doc, newMessageByteArray);
+		const { msg } = createMessage([0, 1]);
+		Utils.messageHandler(ws, doc, msg);
 
 		expect(sendSpy).toHaveBeenCalledTimes(0);
 
@@ -275,11 +259,7 @@ describe('TldrawGateway', () => {
 
 	it('should throw error when trying to close already closed connection', async () => {
 		await app.init();
-
-		ws = new WebSocket(wsUrl);
-		await new Promise((resolve) => {
-			ws.on('open', resolve);
-		});
+		await setupWs();
 
 		jest.spyOn(ws, 'close').mockImplementationOnce(() => {
 			throw new Error('some error');
@@ -297,19 +277,12 @@ describe('TldrawGateway', () => {
 
 	it('should handle message', async () => {
 		await app.init();
-
-		ws = new WebSocket(`${wsUrl}/TEST`);
-		await new Promise((resolve) => {
-			ws.on('open', resolve);
-		});
+		await setupWs('TEST');
 
 		const messageHandlerSpy = jest.spyOn(Utils, 'messageHandler').mockImplementation(() => {});
-		const encoder = encoding.createEncoder();
-		encoding.writeVarUint(encoder, 0);
-		encoding.writeVarUint(encoder, 1);
-		const newMessageByteArray = encoding.toUint8Array(encoder);
+		const { msg } = createMessage([0, 1]);
 		Utils.setupWSConnection(ws);
-		ws.emit('message', newMessageByteArray);
+		ws.emit('message', msg);
 
 		expect(messageHandlerSpy).toHaveBeenCalledTimes(1);
 
@@ -319,11 +292,7 @@ describe('TldrawGateway', () => {
 
 	it('should close connection if ping failed', async () => {
 		await app.init();
-
-		ws = new WebSocket(`${wsUrl}/TEST`);
-		await new Promise((resolve) => {
-			ws.on('open', resolve);
-		});
+		await setupWs('TEST');
 
 		const messageHandlerSpy = jest.spyOn(Utils, 'messageHandler').mockImplementation(() => {});
 		const closeConnSpy = jest.spyOn(Utils, 'closeConn');
@@ -343,11 +312,7 @@ describe('TldrawGateway', () => {
 
 	it('should send if awareness states size greater then one', async () => {
 		await app.init();
-
-		ws = new WebSocket(`${wsUrl}/TEST`);
-		await new Promise((resolve) => {
-			ws.on('open', resolve);
-		});
+		await setupWs('TEST');
 
 		const doc = new WSSharedDoc('TEST');
 		doc.awareness.states = new Map();
@@ -357,11 +322,8 @@ describe('TldrawGateway', () => {
 		const messageHandlerSpy = jest.spyOn(Utils, 'messageHandler').mockImplementation(() => {});
 		const sendSpy = jest.spyOn(Utils, 'send');
 		const getYDocSpy = jest.spyOn(Utils, 'getYDoc').mockImplementation(() => doc);
-		const encoder = encoding.createEncoder();
-		encoding.writeVarUint(encoder, 0);
-		encoding.writeVarUint(encoder, 1);
-		const newMessageByteArray = encoding.toUint8Array(encoder);
-		jest.spyOn(AwarenessProtocol, 'encodeAwarenessUpdate').mockImplementation(() => newMessageByteArray);
+		const { msg } = createMessage([0, 1]);
+		jest.spyOn(AwarenessProtocol, 'encodeAwarenessUpdate').mockImplementation(() => msg);
 		Utils.setupWSConnection(ws);
 
 		await delay(200);
