@@ -5,6 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { EntityId, Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import {
 	cleanupCollections,
 	fileRecordFactory,
@@ -19,7 +20,6 @@ import { FilesStorageTestModule } from '@src/modules/files-storage';
 import { FileRecordListResponse, FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
-import { S3ClientAdapter } from '../../client/s3-client.adapter';
 import { FileRecordParentType, PreviewStatus } from '../../entity';
 import { availableParentTypes } from './mocks';
 

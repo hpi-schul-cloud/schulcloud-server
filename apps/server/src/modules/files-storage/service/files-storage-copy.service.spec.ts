@@ -3,12 +3,12 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
-import { createICopyFiles } from '../helper';
+import { createCopyFiles } from '../helper';
 import { CopyFileResponseBuilder } from '../mapper';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
@@ -213,7 +213,7 @@ describe('FilesStorageService copy methods', () => {
 
 				await service.copy(userId, [sourceFile], params);
 
-				const expectedParams = createICopyFiles(sourceFile, targetFile);
+				const expectedParams = createCopyFiles(sourceFile, targetFile);
 
 				expect(storageClient.copy).toBeCalledWith([expectedParams]);
 			});

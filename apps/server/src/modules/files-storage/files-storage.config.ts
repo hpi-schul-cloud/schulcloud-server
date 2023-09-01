@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { S3Config } from '@shared/infra/s3-client';
 import { ICoreModuleConfig } from '@src/core';
-import { S3Config } from './interface';
 
 export interface IFileStorageConfig extends ICoreModuleConfig {
 	MAX_FILE_SIZE: number;

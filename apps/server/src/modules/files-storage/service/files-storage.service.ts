@@ -8,10 +8,10 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Counted, EntityId } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
 import StreamMimeType from 'stream-mime-type-cjs/stream-mime-type-cjs-index';
-import { S3ClientAdapter } from '../client/s3-client.adapter';
 import {
 	CopyFileResponse,
 	CopyFilesOfParentParams,
@@ -26,15 +26,15 @@ import { FileRecord, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
 import { IFileStorageConfig } from '../files-storage.config';
 import {
+	createCopyFiles,
 	createFileRecord,
-	createICopyFiles,
 	createPath,
 	getPaths,
 	markForDelete,
 	resolveFileNameDuplicates,
 	unmarkForDelete,
 } from '../helper';
-import { IGetFile, IGetFileResponse } from '../interface';
+import { GetFileResponse } from '../interface';
 import { CopyFileResponseBuilder, FileRecordMapper, FileResponseBuilder, FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
 
@@ -245,9 +245,10 @@ export class FilesStorageService {
 		}
 	}
 
-	public async downloadFile(schoolId: EntityId, fileRecordId: EntityId, bytesRange?: string): Promise<IGetFile> {
-		const pathToFile = createPath(schoolId, fileRecordId);
-		const response = await this.storageClient.get(pathToFile, bytesRange);
+	public async downloadFile(fileRecord: FileRecord, bytesRange?: string): Promise<GetFileResponse> {
+		const pathToFile = createPath(fileRecord.schoolId, fileRecord.id);
+		const file = await this.storageClient.get(pathToFile, bytesRange);
+		const response = FileResponseBuilder.build(file, fileRecord.getName());
 
 		return response;
 	}
@@ -256,12 +257,11 @@ export class FilesStorageService {
 		fileRecord: FileRecord,
 		params: DownloadFileParams,
 		bytesRange?: string
-	): Promise<IGetFileResponse> {
+	): Promise<GetFileResponse> {
 		this.checkFileName(fileRecord, params);
 		this.checkScanStatus(fileRecord);
 
-		const file = await this.downloadFile(fileRecord.getSchoolId(), fileRecord.id, bytesRange);
-		const response = FileResponseBuilder.build(file, fileRecord.getName());
+		const response = await this.downloadFile(fileRecord, bytesRange);
 
 		return response;
 	}
@@ -378,7 +378,7 @@ export class FilesStorageService {
 		targetFile: FileRecord
 	): Promise<CopyFileResponse> {
 		try {
-			const paths = createICopyFiles(sourceFile, targetFile);
+			const paths = createCopyFiles(sourceFile, targetFile);
 
 			await this.storageClient.copy([paths]);
 			await this.sendToAntiVirusService(targetFile);

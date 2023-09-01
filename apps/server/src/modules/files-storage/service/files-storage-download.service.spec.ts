@@ -4,14 +4,13 @@ import { NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { GetFile, S3ClientAdapter } from '@shared/infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
 import { createPath } from '../helper';
-import { IGetFile, IGetFileResponse } from '../interface';
 import { FileResponseBuilder } from '../mapper';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
@@ -101,10 +100,10 @@ describe('FilesStorageService download methods', () => {
 					fileName: fileRecord.name,
 				};
 
-				const fileResponse = createMock<IGetFile>();
+				const fileResponse = createMock<GetFile>();
 				const expectedResponse = FileResponseBuilder.build(fileResponse, fileRecord.getName());
 
-				spy = jest.spyOn(service, 'downloadFile').mockResolvedValueOnce(fileResponse);
+				spy = jest.spyOn(service, 'downloadFile').mockResolvedValueOnce(expectedResponse);
 
 				return { fileRecord, params, expectedResponse };
 			};
@@ -114,7 +113,7 @@ describe('FilesStorageService download methods', () => {
 
 				await service.download(fileRecord, params);
 
-				expect(service.downloadFile).toHaveBeenCalledWith(fileRecord.schoolId, fileRecord.id, undefined);
+				expect(service.downloadFile).toHaveBeenCalledWith(fileRecord, undefined);
 			});
 
 			it('returns correct response', async () => {
@@ -204,9 +203,10 @@ describe('FilesStorageService download methods', () => {
 				const { fileRecords } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 
-				const expectedResponse = createMock<IGetFileResponse>();
+				const fileResponse = createMock<GetFile>();
 
-				storageClient.get.mockResolvedValueOnce(expectedResponse);
+				storageClient.get.mockResolvedValueOnce(fileResponse);
+				const expectedResponse = FileResponseBuilder.build(fileResponse, fileRecord.getName());
 
 				return { fileRecord, expectedResponse };
 			};
@@ -216,7 +216,7 @@ describe('FilesStorageService download methods', () => {
 
 				const path = createPath(fileRecord.schoolId, fileRecord.id);
 
-				await service.downloadFile(fileRecord.schoolId, fileRecord.id);
+				await service.downloadFile(fileRecord);
 
 				expect(storageClient.get).toHaveBeenCalledWith(path, undefined);
 			});
@@ -224,7 +224,7 @@ describe('FilesStorageService download methods', () => {
 			it('returns correct response', async () => {
 				const { fileRecord, expectedResponse } = setup();
 
-				const response = await service.downloadFile(fileRecord.schoolId, fileRecord.id);
+				const response = await service.downloadFile(fileRecord);
 
 				expect(response).toEqual(expectedResponse);
 			});
@@ -244,7 +244,7 @@ describe('FilesStorageService download methods', () => {
 			it('passes error', async () => {
 				const { fileRecord, error } = setup();
 
-				await expect(service.downloadFile(fileRecord.schoolId, fileRecord.id)).rejects.toThrowError(error);
+				await expect(service.downloadFile(fileRecord)).rejects.toThrowError(error);
 			});
 		});
 	});
