@@ -109,6 +109,11 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getPreviewFile" >getPreviewFile</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#getPreviewName" >getPreviewName</a>
                             </li>
                             <li>
@@ -143,7 +148,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:25</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:16</a></div>
                             </td>
                         </tr>
 
@@ -232,8 +237,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="75"
-                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:75</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="63"
+                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:63</a></div>
                 </td>
             </tr>
 
@@ -297,15 +302,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deletePreviews(fileRecords: FileRecord[])</code>
+                    <code>deletePreviews(fileRecords: <a href="../interfaces/File.html" target="_self">FileRecord[]</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="61"
-                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:61</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="49"
+                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:49</a></div>
                 </td>
             </tr>
 
@@ -328,7 +333,7 @@
                                 <tr>
                                     <td>fileRecords</td>
                                     <td>
-                                            <code>FileRecord[]</code>
+                                                <code><a href="../interfaces/File.html" target="_self" >FileRecord[]</a></code>
                                     </td>
 
                                     <td>
@@ -376,8 +381,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="99"
-                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:99</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="96"
+                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:96</a></div>
                 </td>
             </tr>
 
@@ -415,7 +420,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../interfaces/IGetFile.html" target="_self" >Promise&lt;IGetFile&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/File.html" target="_self" >Promise&lt;GetFileResponse&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -447,8 +452,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="135"
-                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:135</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="132"
+                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:132</a></div>
                 </td>
             </tr>
 
@@ -519,8 +524,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="34"
-                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:34</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="25"
+                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:25</a></div>
                 </td>
             </tr>
 
@@ -594,7 +599,79 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/File.html" target="_self" >Promise&lt;IGetFileResponse&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/File.html" target="_self" >Promise&lt;GetFileResponse&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getPreviewFile"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>getPreviewFile</b></span>
+                        <a href="#getPreviewFile"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getPreviewFile(params: <a href="../interfaces/PreviewFileParams.html" target="_self">PreviewFileParams</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="86"
+                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:86</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>params</td>
+                                    <td>
+                                                <code><a href="../interfaces/PreviewFileParams.html" target="_self" >PreviewFileParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/File.html" target="_self" >Promise&lt;GetFileResponse&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -626,8 +703,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="141"
-                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:141</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="138"
+                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:138</a></div>
                 </td>
             </tr>
 
@@ -702,15 +779,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>resizeAndConvert(original: <a href="../interfaces/IGetFileResponse.html" target="_self">IGetFileResponse</a>, fileRecord: <a href="../classes/FileRecord.html" target="_self">FileRecord</a>, previewParams: <a href="../classes/PreviewParams.html" target="_self">PreviewParams</a>)</code>
+                    <code>resizeAndConvert(original: <a href="../interfaces/GetFileResponse.html" target="_self">GetFileResponse</a>, fileRecord: <a href="../classes/FileRecord.html" target="_self">FileRecord</a>, previewParams: <a href="../classes/PreviewParams.html" target="_self">PreviewParams</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="114"
-                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:114</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="111"
+                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:111</a></div>
                 </td>
             </tr>
 
@@ -733,7 +810,7 @@
                                 <tr>
                                     <td>original</td>
                                     <td>
-                                                <code><a href="../interfaces/IGetFileResponse.html" target="_self" >IGetFileResponse</a></code>
+                                                <code><a href="../interfaces/GetFileResponse.html" target="_self" >GetFileResponse</a></code>
                                     </td>
 
                                     <td>
@@ -805,8 +882,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="82"
-                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:82</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="70"
+                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:70</a></div>
                 </td>
             </tr>
 
@@ -844,7 +921,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../interfaces/IGetFile.html" target="_self" >Promise&lt;IGetFile&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/File.html" target="_self" >Promise&lt;GetFileResponse&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -861,27 +938,18 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, NotFoundException, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
+import { S3ClientAdapter } from &#x27;@shared/infra/s3-client&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { subClass } from &#x27;gm&#x27;;
 import { PassThrough } from &#x27;stream&#x27;;
-import { S3ClientAdapter } from &#x27;../client/s3-client.adapter&#x27;;
 import { DownloadFileParams, PreviewParams } from &#x27;../controller/dto&#x27;;
 import { FileRecord, PreviewStatus } from &#x27;../entity&#x27;;
 import { ErrorType } from &#x27;../error&#x27;;
 import { createPreviewDirectoryPath, createPreviewFilePath, createPreviewNameHash } from &#x27;../helper&#x27;;
-import { IGetFile, IGetFileResponse } from &#x27;../interface&#x27;;
+import { GetFileResponse, PreviewFileParams } from &#x27;../interface&#x27;;
 import { PreviewOutputMimeTypes } from &#x27;../interface/preview-output-mime-types.enum&#x27;;
 import { FileDtoBuilder, FileResponseBuilder } from &#x27;../mapper&#x27;;
 import { FilesStorageService } from &#x27;./files-storage.service&#x27;;
-
-interface PreviewFileParams {
-	fileRecord: FileRecord;
-	downloadParams: DownloadFileParams;
-	previewParams: PreviewParams;
-	hash: string;
-	filePath: string;
-	bytesRange?: string;
-}
 
 @Injectable()
 export class PreviewService {
@@ -898,24 +966,21 @@ export class PreviewService {
 		downloadParams: DownloadFileParams,
 		previewParams: PreviewParams,
 		bytesRange?: string
-	): Promise&lt;IGetFileResponse&gt; {
+	): Promise&lt;GetFileResponse&gt; {
 		this.checkIfPreviewPossible(fileRecord);
 
-		const { forceUpdate, outputFormat } &#x3D; previewParams;
 		const hash &#x3D; createPreviewNameHash(fileRecord.id, previewParams);
 		const filePath &#x3D; createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
-		const name &#x3D; this.getPreviewName(fileRecord, outputFormat);
-		let file: IGetFile;
+
+		let response: GetFileResponse;
 
 		const previewFileParams &#x3D; { fileRecord, downloadParams, previewParams, hash, filePath, bytesRange };
 
-		if (forceUpdate) {
-			file &#x3D; await this.generatePreview(previewFileParams);
+		if (previewParams.forceUpdate) {
+			response &#x3D; await this.generatePreview(previewFileParams);
 		} else {
-			file &#x3D; await this.tryGetPreviewOrGenerate(previewFileParams);
+			response &#x3D; await this.tryGetPreviewOrGenerate(previewFileParams);
 		}
-
-		const response &#x3D; FileResponseBuilder.build(file, name);
 
 		return response;
 	}
@@ -941,12 +1006,11 @@ export class PreviewService {
 		}
 	}
 
-	private async tryGetPreviewOrGenerate(params: PreviewFileParams): Promise&lt;IGetFile&gt; {
-		const { filePath, bytesRange } &#x3D; params;
-		let file: IGetFile;
+	private async tryGetPreviewOrGenerate(params: PreviewFileParams): Promise&lt;GetFileResponse&gt; {
+		let file: GetFileResponse;
 
 		try {
-			file &#x3D; await this.storageClient.get(filePath, bytesRange);
+			file &#x3D; await this.getPreviewFile(params);
 		} catch (error) {
 			if (!(error instanceof NotFoundException)) {
 				throw error;
@@ -958,7 +1022,17 @@ export class PreviewService {
 		return file;
 	}
 
-	private async generatePreview(params: PreviewFileParams): Promise&lt;IGetFile&gt; {
+	private async getPreviewFile(params: PreviewFileParams): Promise&lt;GetFileResponse&gt; {
+		const { fileRecord, filePath, bytesRange, previewParams } &#x3D; params;
+		const name &#x3D; this.getPreviewName(fileRecord, previewParams.outputFormat);
+		const file &#x3D; await this.storageClient.get(filePath, bytesRange);
+
+		const response &#x3D; FileResponseBuilder.build(file, name);
+
+		return response;
+	}
+
+	private async generatePreview(params: PreviewFileParams): Promise&lt;GetFileResponse&gt; {
 		const { fileRecord, downloadParams, previewParams, hash, filePath, bytesRange } &#x3D; params;
 
 		const original &#x3D; await this.fileStorageService.download(fileRecord, downloadParams, bytesRange);
@@ -968,13 +1042,13 @@ export class PreviewService {
 		const fileDto &#x3D; FileDtoBuilder.build(hash, preview, format);
 		await this.storageClient.create(filePath, fileDto);
 
-		const response &#x3D; await this.storageClient.get(filePath, bytesRange);
+		const response &#x3D; await this.getPreviewFile(params);
 
 		return response;
 	}
 
 	private resizeAndConvert(
-		original: IGetFileResponse,
+		original: GetFileResponse,
 		fileRecord: FileRecord,
 		previewParams: PreviewParams
 	): PassThrough {

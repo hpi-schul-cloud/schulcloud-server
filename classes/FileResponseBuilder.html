@@ -127,15 +127,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>build(file: <a href="../interfaces/IGetFile.html" target="_self">IGetFile</a>, name: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>build(file: <a href="../interfaces/GetFile.html" target="_self">GetFile</a>, name: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="4"
-                            class="link-to-prism">apps/server/src/modules/files-storage/mapper/file-response.builder.ts:4</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="5"
+                            class="link-to-prism">apps/server/src/modules/files-storage/mapper/file-response.builder.ts:5</a></div>
                 </td>
             </tr>
 
@@ -158,7 +158,7 @@
                                 <tr>
                                     <td>file</td>
                                     <td>
-                                                <code><a href="../interfaces/IGetFile.html" target="_self" >IGetFile</a></code>
+                                                <code><a href="../interfaces/GetFile.html" target="_self" >GetFile</a></code>
                                     </td>
 
                                     <td>
@@ -185,7 +185,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../interfaces/IGetFileResponse.html" target="_self" >IGetFileResponse</a></code>
+                        <b>Returns : </b>        <code><a href="../interfaces/GetFileResponse.html" target="_self" >GetFileResponse</a></code>
 
                     </div>
                     <div class="io-description">
@@ -205,10 +205,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IGetFile, IGetFileResponse } from &#x27;../interface&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { GetFile } from &#x27;@shared/infra/s3-client&#x27;;
+import { GetFileResponse } from &#x27;../interface&#x27;;
 
 export class FileResponseBuilder {
-	public static build(file: IGetFile, name: string): IGetFileResponse {
+	public static build(file: GetFile, name: string): GetFileResponse {
 		const fileResponse &#x3D; { ...file, data: file.data, name };
 
 		return fileResponse;

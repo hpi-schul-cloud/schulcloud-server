@@ -190,8 +190,8 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
+import { S3Config } from &#x27;@shared/infra/s3-client&#x27;;
 import { ICoreModuleConfig } from &#x27;@src/core&#x27;;
-import { S3Config } from &#x27;./interface&#x27;;
 
 export interface IFileStorageConfig extends ICoreModuleConfig {
 	MAX_FILE_SIZE: number;

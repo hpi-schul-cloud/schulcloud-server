@@ -256,8 +256,8 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { S3ClientAdapter } from &#x27;@shared/infra/s3-client&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { S3ClientAdapter } from &#x27;../../files-storage/client/s3-client.adapter&#x27;;
 
 @Injectable()
 export class FwuLearningContentsUc {

@@ -28,13 +28,13 @@
 <title>cluster_AuthorizationModule_providers</title>
 <polygon fill="none" stroke="black" points="380,-78 380,-130 5004,-130 5004,-78 380,-78"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_AuthorizationModule_exports</title>
-<polygon fill="none" stroke="black" points="2098,-208 2098,-260 2458,-260 2458,-208 2098,-208"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_AuthorizationModule_imports</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 372,-130 372,-78 16,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_AuthorizationModule_exports</title>
+<polygon fill="none" stroke="black" points="2098,-208 2098,-260 2458,-260 2458,-208 2098,-208"/>
 </g>
 <!-- FeathersModule -->
 <g id="node1" class="node">

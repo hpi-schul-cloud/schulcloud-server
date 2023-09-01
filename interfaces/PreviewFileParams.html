@@ -71,7 +71,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/files-storage/service/preview.service.ts</code>
+            <code>apps/server/src/modules/files-storage/interface/interfaces.ts</code>
         </p>
 
 
@@ -345,157 +345,26 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, NotFoundException, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
-import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { subClass } from &#x27;gm&#x27;;
-import { PassThrough } from &#x27;stream&#x27;;
-import { S3ClientAdapter } from &#x27;../client/s3-client.adapter&#x27;;
-import { DownloadFileParams, PreviewParams } from &#x27;../controller/dto&#x27;;
-import { FileRecord, PreviewStatus } from &#x27;../entity&#x27;;
-import { ErrorType } from &#x27;../error&#x27;;
-import { createPreviewDirectoryPath, createPreviewFilePath, createPreviewNameHash } from &#x27;../helper&#x27;;
-import { IGetFile, IGetFileResponse } from &#x27;../interface&#x27;;
-import { PreviewOutputMimeTypes } from &#x27;../interface/preview-output-mime-types.enum&#x27;;
-import { FileDtoBuilder, FileResponseBuilder } from &#x27;../mapper&#x27;;
-import { FilesStorageService } from &#x27;./files-storage.service&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Readable } from &#x27;stream&#x27;;
+import type { DownloadFileParams, PreviewParams } from &#x27;../controller/dto&#x27;;
+import { FileRecord } from &#x27;../entity&#x27;;
 
-interface PreviewFileParams {
+export interface GetFileResponse {
+	data: Readable;
+	etag?: string;
+	contentType?: string;
+	contentLength?: number;
+	contentRange?: string;
+	name: string;
+}
+
+export interface PreviewFileParams {
 	fileRecord: FileRecord;
 	downloadParams: DownloadFileParams;
 	previewParams: PreviewParams;
 	hash: string;
 	filePath: string;
 	bytesRange?: string;
-}
-
-@Injectable()
-export class PreviewService {
-	constructor(
-		private readonly storageClient: S3ClientAdapter,
-		private readonly fileStorageService: FilesStorageService,
-		private logger: LegacyLogger
-	) {
-		this.logger.setContext(PreviewService.name);
-	}
-
-	public async getPreview(
-		fileRecord: FileRecord,
-		downloadParams: DownloadFileParams,
-		previewParams: PreviewParams,
-		bytesRange?: string
-	): Promise&lt;IGetFileResponse&gt; {
-		this.checkIfPreviewPossible(fileRecord);
-
-		const { forceUpdate, outputFormat } &#x3D; previewParams;
-		const hash &#x3D; createPreviewNameHash(fileRecord.id, previewParams);
-		const filePath &#x3D; createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
-		const name &#x3D; this.getPreviewName(fileRecord, outputFormat);
-		let file: IGetFile;
-
-		const previewFileParams &#x3D; { fileRecord, downloadParams, previewParams, hash, filePath, bytesRange };
-
-		if (forceUpdate) {
-			file &#x3D; await this.generatePreview(previewFileParams);
-		} else {
-			file &#x3D; await this.tryGetPreviewOrGenerate(previewFileParams);
-		}
-
-		const response &#x3D; FileResponseBuilder.build(file, name);
-
-		return response;
-	}
-
-	public async deletePreviews(fileRecords: FileRecord[]): Promise&lt;void&gt; {
-		try {
-			const paths &#x3D; fileRecords.map((fileRecord) &#x3D;&gt;
-				createPreviewDirectoryPath(fileRecord.getSchoolId(), fileRecord.id)
-			);
-
-			const promises &#x3D; paths.map((path) &#x3D;&gt; this.storageClient.deleteDirectory(path));
-
-			await Promise.all(promises);
-		} catch (error) {
-			this.logger.warn(error);
-		}
-	}
-
-	private checkIfPreviewPossible(fileRecord: FileRecord): void | UnprocessableEntityException {
-		if (fileRecord.getPreviewStatus() !&#x3D;&#x3D; PreviewStatus.PREVIEW_POSSIBLE) {
-			this.logger.warn(&#x60;could not generate preview for : ${fileRecord.id} ${fileRecord.mimeType}&#x60;);
-			throw new UnprocessableEntityException(ErrorType.PREVIEW_NOT_POSSIBLE);
-		}
-	}
-
-	private async tryGetPreviewOrGenerate(params: PreviewFileParams): Promise&lt;IGetFile&gt; {
-		const { filePath, bytesRange } &#x3D; params;
-		let file: IGetFile;
-
-		try {
-			file &#x3D; await this.storageClient.get(filePath, bytesRange);
-		} catch (error) {
-			if (!(error instanceof NotFoundException)) {
-				throw error;
-			}
-
-			file &#x3D; await this.generatePreview(params);
-		}
-
-		return file;
-	}
-
-	private async generatePreview(params: PreviewFileParams): Promise&lt;IGetFile&gt; {
-		const { fileRecord, downloadParams, previewParams, hash, filePath, bytesRange } &#x3D; params;
-
-		const original &#x3D; await this.fileStorageService.download(fileRecord, downloadParams, bytesRange);
-		const preview &#x3D; this.resizeAndConvert(original, fileRecord, previewParams);
-
-		const format &#x3D; previewParams.outputFormat ?? fileRecord.mimeType;
-		const fileDto &#x3D; FileDtoBuilder.build(hash, preview, format);
-		await this.storageClient.create(filePath, fileDto);
-
-		const response &#x3D; await this.storageClient.get(filePath, bytesRange);
-
-		return response;
-	}
-
-	private resizeAndConvert(
-		original: IGetFileResponse,
-		fileRecord: FileRecord,
-		previewParams: PreviewParams
-	): PassThrough {
-		const mimeType &#x3D; previewParams.outputFormat ?? fileRecord.mimeType;
-		const format &#x3D; this.getFormat(mimeType);
-		const im &#x3D; subClass({ imageMagick: true });
-
-		const preview &#x3D; im(original.data, fileRecord.name);
-		const { width } &#x3D; previewParams;
-
-		if (width) {
-			preview.resize(width);
-		}
-
-		const result &#x3D; preview.stream(format);
-
-		return result;
-	}
-
-	private getFormat(mimeType: string): string {
-		const format &#x3D; mimeType.split(&#x27;/&#x27;)[1];
-
-		return format;
-	}
-
-	private getPreviewName(fileRecord: FileRecord, outputFormat?: PreviewOutputMimeTypes): string {
-		if (!outputFormat) {
-			return fileRecord.name;
-		}
-
-		const fileNameWithoutExtension &#x3D; fileRecord.name.split(&#x27;.&#x27;)[0];
-		const format &#x3D; this.getFormat(outputFormat);
-		const name &#x3D; &#x60;${fileNameWithoutExtension}.${format}&#x60;;
-
-		return name;
-	}
 }
 </code></pre>
     </div>

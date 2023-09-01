@@ -134,7 +134,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/files-storage/helper/test-helper.ts:5</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/files-storage/helper/test-helper.ts:6</a></div>
                         </td>
                     </tr>
 
@@ -160,7 +160,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/files-storage/helper/test-helper.ts:20</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">apps/server/src/modules/files-storage/helper/test-helper.ts:21</a></div>
                         </td>
                     </tr>
 
@@ -179,11 +179,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Readable } from &#x27;stream&#x27;;
-import { IGetFile, IGetFileResponse } from &#x27;../interface&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { GetFile } from &#x27;@shared/infra/s3-client&#x27;;
+import { Readable } from &#x27;stream&#x27;;
+import { GetFileResponse } from &#x27;../interface&#x27;;
 
 export class TestHelper {
-	public static createFile &#x3D; (contentRange?: string): IGetFile &#x3D;&gt; {
+	public static createFile &#x3D; (contentRange?: string): GetFile &#x3D;&gt; {
 		const text &#x3D; &#x27;testText&#x27;;
 		const readable &#x3D; Readable.from(text);
 
@@ -198,7 +199,7 @@ export class TestHelper {
 		return fileResponse;
 	};
 
-	public static createFileResponse &#x3D; (contentRange?: string): IGetFileResponse &#x3D;&gt; {
+	public static createFileResponse &#x3D; (contentRange?: string): GetFileResponse &#x3D;&gt; {
 		const name &#x3D; &#x27;testName&#x27;;
 		const file &#x3D; this.createFile(contentRange);
 		const fileResponse &#x3D; { ...file, name };

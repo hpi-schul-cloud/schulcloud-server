@@ -266,7 +266,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(fileRecordRepo: <a href="../injectables/FileRecordRepo.html" target="_self">FileRecordRepo</a>, storageClient: <a href="../injectables/S3ClientAdapter.html" target="_self">S3ClientAdapter</a>, antivirusService: <a href="../injectables/AntivirusService.html" target="_self">AntivirusService</a>, configService: <a href="../interfaces/IFileStorageConfig.html" target="_self">ConfigService&lt;IFileStorageConfig | &gt;</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
+<code>constructor(fileRecordRepo: <a href="../injectables/FileRecordRepo.html" target="_self">FileRecordRepo</a>, storageClient: <a href="../injectables/S3ClientAdapter.html" target="_self">S3ClientAdapter</a>, antivirusService: <a href="../injectables/AntivirusService.html" target="_self">AntivirusService</a>, configService: <a href="../classes/File.html" target="_self">ConfigService&lt;IFileStorageConfig | &gt;</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -328,7 +328,7 @@
                                                         <td>configService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/IFileStorageConfig.html" target="_self" >ConfigService&lt;IFileStorageConfig | &gt;</a></code>
+                                                                        <code><a href="../classes/File.html" target="_self" >ConfigService&lt;IFileStorageConfig | &gt;</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -377,7 +377,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkDuplicatedNames(fileRecords: FileRecord[], newFileName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>checkDuplicatedNames(fileRecords: <a href="../interfaces/File.html" target="_self">FileRecord[]</a>, newFileName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -408,7 +408,7 @@
                                 <tr>
                                     <td>fileRecords</td>
                                     <td>
-                                            <code>FileRecord[]</code>
+                                                <code><a href="../interfaces/File.html" target="_self" >FileRecord[]</a></code>
                                     </td>
 
                                     <td>
@@ -615,7 +615,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>copy(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, sourceFileRecords: FileRecord[], targetParams: <a href="../classes/FileRecordParams.html" target="_self">FileRecordParams</a>)</code>
+                    <code>copy(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, sourceFileRecords: <a href="../interfaces/File.html" target="_self">FileRecord[]</a>, targetParams: <a href="../classes/FileRecordParams.html" target="_self">FileRecordParams</a>)</code>
                 </td>
             </tr>
 
@@ -658,7 +658,7 @@
                                 <tr>
                                     <td>sourceFileRecords</td>
                                     <td>
-                                            <code>FileRecord[]</code>
+                                                <code><a href="../interfaces/File.html" target="_self" >FileRecord[]</a></code>
                                     </td>
 
                                     <td>
@@ -685,7 +685,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/File.html" target="_self" >Promise&lt;CopyFileResponse[]&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;CopyFileResponse[]&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -781,7 +781,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;FileRecord&gt;</code>
+                        <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;FileRecord&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -877,7 +877,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/File.html" target="_self" >Promise&lt;Counted&lt;CopyFileResponse[]&gt;&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;Counted&lt;CopyFileResponse[]&gt;&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -961,7 +961,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/File.html" target="_self" >Promise&lt;CopyFileResponse&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;CopyFileResponse&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -1250,7 +1250,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>delete(fileRecords: FileRecord[])</code>
+                    <code>delete(fileRecords: <a href="../interfaces/File.html" target="_self">FileRecord[]</a>)</code>
                 </td>
             </tr>
 
@@ -1281,7 +1281,7 @@
                                 <tr>
                                     <td>fileRecords</td>
                                     <td>
-                                            <code>FileRecord[]</code>
+                                                <code><a href="../interfaces/File.html" target="_self" >FileRecord[]</a></code>
                                     </td>
 
                                     <td>
@@ -1322,7 +1322,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteFilesInFilesStorageClient(fileRecords: FileRecord[])</code>
+                    <code>deleteFilesInFilesStorageClient(fileRecords: <a href="../interfaces/File.html" target="_self">FileRecord[]</a>)</code>
                 </td>
             </tr>
 
@@ -1353,7 +1353,7 @@
                                 <tr>
                                     <td>fileRecords</td>
                                     <td>
-                                            <code>FileRecord[]</code>
+                                                <code><a href="../interfaces/File.html" target="_self" >FileRecord[]</a></code>
                                     </td>
 
                                     <td>
@@ -1440,7 +1440,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#Counted" target="_self" >Promise&lt;Counted&lt;FileRecord[]&gt;&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;Counted&lt;FileRecord[]&gt;&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -1466,7 +1466,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteWithRollbackByError(fileRecords: FileRecord[])</code>
+                    <code>deleteWithRollbackByError(fileRecords: <a href="../interfaces/File.html" target="_self">FileRecord[]</a>)</code>
                 </td>
             </tr>
 
@@ -1497,7 +1497,7 @@
                                 <tr>
                                     <td>fileRecords</td>
                                     <td>
-                                            <code>FileRecord[]</code>
+                                                <code><a href="../interfaces/File.html" target="_self" >FileRecord[]</a></code>
                                     </td>
 
                                     <td>
@@ -1689,8 +1689,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="255"
-                            class="link-to-prism">apps/server/src/modules/files-storage/service/files-storage.service.ts:255</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="256"
+                            class="link-to-prism">apps/server/src/modules/files-storage/service/files-storage.service.ts:256</a></div>
                 </td>
             </tr>
 
@@ -1752,7 +1752,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/File.html" target="_self" >Promise&lt;IGetFileResponse&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/File.html" target="_self" >Promise&lt;GetFileResponse&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -1778,7 +1778,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>downloadFile(schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, fileRecordId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, bytesRange?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>downloadFile(fileRecord: <a href="../classes/FileRecord.html" target="_self">FileRecord</a>, bytesRange?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -1807,21 +1807,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>schoolId</td>
+                                    <td>fileRecord</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>fileRecordId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                <code><a href="../classes/FileRecord.html" target="_self" >FileRecord</a></code>
                                     </td>
 
                                     <td>
@@ -1848,7 +1836,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../interfaces/IGetFile.html" target="_self" >Promise&lt;IGetFile&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/File.html" target="_self" >Promise&lt;GetFileResponse&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -1920,7 +1908,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;FileRecord&gt;</code>
+                        <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;FileRecord&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -1992,7 +1980,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;FileRecord&gt;</code>
+                        <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;FileRecord&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -2136,7 +2124,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#Counted" target="_self" >Promise&lt;Counted&lt;FileRecord[]&gt;&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;Counted&lt;FileRecord[]&gt;&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -2401,7 +2389,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>restore(fileRecords: FileRecord[])</code>
+                    <code>restore(fileRecords: <a href="../interfaces/File.html" target="_self">FileRecord[]</a>)</code>
                 </td>
             </tr>
 
@@ -2432,7 +2420,7 @@
                                 <tr>
                                     <td>fileRecords</td>
                                     <td>
-                                            <code>FileRecord[]</code>
+                                                <code><a href="../interfaces/File.html" target="_self" >FileRecord[]</a></code>
                                     </td>
 
                                     <td>
@@ -2473,7 +2461,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>restoreFilesInFileStorageClient(fileRecords: FileRecord[])</code>
+                    <code>restoreFilesInFileStorageClient(fileRecords: <a href="../interfaces/File.html" target="_self">FileRecord[]</a>)</code>
                 </td>
             </tr>
 
@@ -2504,7 +2492,7 @@
                                 <tr>
                                     <td>fileRecords</td>
                                     <td>
-                                            <code>FileRecord[]</code>
+                                                <code><a href="../interfaces/File.html" target="_self" >FileRecord[]</a></code>
                                     </td>
 
                                     <td>
@@ -2591,7 +2579,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#Counted" target="_self" >Promise&lt;Counted&lt;FileRecord[]&gt;&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;Counted&lt;FileRecord[]&gt;&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -2617,7 +2605,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>restoreWithRollbackByError(fileRecords: FileRecord[])</code>
+                    <code>restoreWithRollbackByError(fileRecords: <a href="../interfaces/File.html" target="_self">FileRecord[]</a>)</code>
                 </td>
             </tr>
 
@@ -2648,7 +2636,7 @@
                                 <tr>
                                     <td>fileRecords</td>
                                     <td>
-                                            <code>FileRecord[]</code>
+                                                <code><a href="../interfaces/File.html" target="_self" >FileRecord[]</a></code>
                                     </td>
 
                                     <td>
@@ -3058,7 +3046,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;FileRecord&gt;</code>
+                        <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;FileRecord&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -3084,10 +3072,10 @@
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { Counted, EntityId } from &#x27;@shared/domain&#x27;;
 import { AntivirusService } from &#x27;@shared/infra/antivirus/antivirus.service&#x27;;
+import { S3ClientAdapter } from &#x27;@shared/infra/s3-client&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { Readable } from &#x27;stream&#x27;;
 import StreamMimeType from &#x27;stream-mime-type-cjs/stream-mime-type-cjs-index&#x27;;
-import { S3ClientAdapter } from &#x27;../client/s3-client.adapter&#x27;;
 import {
 	CopyFileResponse,
 	CopyFilesOfParentParams,
@@ -3102,15 +3090,15 @@ import { FileRecord, ScanStatus } from &#x27;../entity&#x27;;
 import { ErrorType } from &#x27;../error&#x27;;
 import { IFileStorageConfig } from &#x27;../files-storage.config&#x27;;
 import {
+	createCopyFiles,
 	createFileRecord,
-	createICopyFiles,
 	createPath,
 	getPaths,
 	markForDelete,
 	resolveFileNameDuplicates,
 	unmarkForDelete,
 } from &#x27;../helper&#x27;;
-import { IGetFile, IGetFileResponse } from &#x27;../interface&#x27;;
+import { GetFileResponse } from &#x27;../interface&#x27;;
 import { CopyFileResponseBuilder, FileRecordMapper, FileResponseBuilder, FilesStorageMapper } from &#x27;../mapper&#x27;;
 import { FileRecordRepo } from &#x27;../repo&#x27;;
 
@@ -3321,9 +3309,10 @@ export class FilesStorageService {
 		}
 	}
 
-	public async downloadFile(schoolId: EntityId, fileRecordId: EntityId, bytesRange?: string): Promise&lt;IGetFile&gt; {
-		const pathToFile &#x3D; createPath(schoolId, fileRecordId);
-		const response &#x3D; await this.storageClient.get(pathToFile, bytesRange);
+	public async downloadFile(fileRecord: FileRecord, bytesRange?: string): Promise&lt;GetFileResponse&gt; {
+		const pathToFile &#x3D; createPath(fileRecord.schoolId, fileRecord.id);
+		const file &#x3D; await this.storageClient.get(pathToFile, bytesRange);
+		const response &#x3D; FileResponseBuilder.build(file, fileRecord.getName());
 
 		return response;
 	}
@@ -3332,12 +3321,11 @@ export class FilesStorageService {
 		fileRecord: FileRecord,
 		params: DownloadFileParams,
 		bytesRange?: string
-	): Promise&lt;IGetFileResponse&gt; {
+	): Promise&lt;GetFileResponse&gt; {
 		this.checkFileName(fileRecord, params);
 		this.checkScanStatus(fileRecord);
 
-		const file &#x3D; await this.downloadFile(fileRecord.getSchoolId(), fileRecord.id, bytesRange);
-		const response &#x3D; FileResponseBuilder.build(file, fileRecord.getName());
+		const response &#x3D; await this.downloadFile(fileRecord, bytesRange);
 
 		return response;
 	}
@@ -3454,7 +3442,7 @@ export class FilesStorageService {
 		targetFile: FileRecord
 	): Promise&lt;CopyFileResponse&gt; {
 		try {
-			const paths &#x3D; createICopyFiles(sourceFile, targetFile);
+			const paths &#x3D; createCopyFiles(sourceFile, targetFile);
 
 			await this.storageClient.copy([paths]);
 			await this.sendToAntiVirusService(targetFile);

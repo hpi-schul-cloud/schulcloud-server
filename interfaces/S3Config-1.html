@@ -71,7 +71,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/fwu-learning-contents/interface/config.ts</code>
+            <code>apps/server/src/shared/infra/s3-client/interface/index.ts</code>
         </p>
 
 
@@ -300,12 +300,33 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export interface S3Config {
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Readable } from &#x27;stream&#x27;;
+
+export interface S3Config {
 	endpoint: string;
 	region: string;
 	bucket: string;
 	accessKeyId: string;
 	secretAccessKey: string;
+}
+
+export interface GetFile {
+	data: Readable;
+	etag?: string;
+	contentType?: string;
+	contentLength?: number;
+	contentRange?: string;
+}
+
+export interface CopyFiles {
+	sourcePath: string;
+	targetPath: string;
+}
+
+export interface File {
+	data: Readable;
+	name: string;
+	mimeType: string;
 }
 </code></pre>
     </div>

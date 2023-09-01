@@ -289,7 +289,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToFileRecordListResponse(fileRecords: FileRecord[], total: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, skip?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, limit?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                    <code>mapToFileRecordListResponse(fileRecords: <a href="../interfaces/File.html" target="_self">FileRecord[]</a>, total: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, skip?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, limit?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
@@ -320,7 +320,7 @@
                                 <tr>
                                     <td>fileRecords</td>
                                     <td>
-                                            <code>FileRecord[]</code>
+                                                <code><a href="../interfaces/File.html" target="_self" >FileRecord[]</a></code>
                                     </td>
 
                                     <td>
@@ -538,7 +538,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToStreamableFile(fileResponse: <a href="../interfaces/IGetFileResponse.html" target="_self">IGetFileResponse</a>)</code>
+                    <code>mapToStreamableFile(fileResponse: <a href="../interfaces/GetFileResponse.html" target="_self">GetFileResponse</a>)</code>
                 </td>
             </tr>
 
@@ -569,7 +569,7 @@
                                 <tr>
                                     <td>fileResponse</td>
                                     <td>
-                                                <code><a href="../interfaces/IGetFileResponse.html" target="_self" >IGetFileResponse</a></code>
+                                                <code><a href="../interfaces/GetFileResponse.html" target="_self" >GetFileResponse</a></code>
                                     </td>
 
                                     <td>
@@ -584,7 +584,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/File.html" target="_self" >StreamableFile</a></code>
+                        <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >StreamableFile</a></code>
 
                     </div>
                     <div class="io-description">
@@ -615,7 +615,7 @@ import {
 	SingleFileParams,
 } from &#x27;../controller/dto&#x27;;
 import { FileRecord, FileRecordParentType } from &#x27;../entity&#x27;;
-import { IGetFileResponse } from &#x27;../interface&#x27;;
+import { GetFileResponse } from &#x27;../interface&#x27;;
 
 export class FilesStorageMapper {
 	static mapToAllowedAuthorizationEntityType(type: FileRecordParentType): AuthorizableReferenceType {
@@ -668,7 +668,7 @@ export class FilesStorageMapper {
 		return response;
 	}
 
-	static mapToStreamableFile(fileResponse: IGetFileResponse): StreamableFile {
+	static mapToStreamableFile(fileResponse: GetFileResponse): StreamableFile {
 		const streamableFile &#x3D; new StreamableFile(fileResponse.data, {
 			type: fileResponse.contentType,
 			disposition: &#x60;inline; filename&#x3D;&quot;${encodeURI(fileResponse.name)}&quot;&#x60;,
