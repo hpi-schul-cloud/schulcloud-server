@@ -373,9 +373,7 @@ describe('FilesStorageService upload methods', () => {
 					}
 				});
 
-				antivirusService.send.mockImplementationOnce(() => {
-					throw error;
-				});
+				antivirusService.send.mockRejectedValueOnce(error);
 
 				return { params, file, userId, error };
 			};

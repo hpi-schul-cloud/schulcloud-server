@@ -365,9 +365,7 @@ describe('FilesStorageService copy methods', () => {
 				const expectedResponse = [{ sourceId: sourceFile.id, name: sourceFile.name }];
 				const error = new Error('test');
 
-				antivirusService.send.mockImplementation(() => {
-					throw error;
-				});
+				antivirusService.send.mockRejectedValueOnce(error);
 
 				return { sourceFile, targetFile, userId, params, error, expectedResponse };
 			};
