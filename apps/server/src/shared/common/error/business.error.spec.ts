@@ -89,7 +89,7 @@ describe('BusinessError', () => {
 			const cause = { error: 'Cause' };
 			const error = new BusinessErrorImpl('custom message', 123, undefined, cause);
 			const result = error.cause;
-			console.log(new Error(String(cause)));
+
 			expect(result).toEqual(new Error(JSON.stringify(cause)));
 		});
 	});
