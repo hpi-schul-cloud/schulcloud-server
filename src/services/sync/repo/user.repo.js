@@ -147,11 +147,10 @@ const findByLdapDnsAndSchool = async (ldapDns, schoolId) =>
 				{
 					schoolId,
 					previousExternalId: { $in: ldapDns },
-					'schoolId.features': '???',
 				},
 			],
 		})
-		.populate('roles', 'schoolId')
+		.populate('roles')
 		.lean()
 		.exec();
 

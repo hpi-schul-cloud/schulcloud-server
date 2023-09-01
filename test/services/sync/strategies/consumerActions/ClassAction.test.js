@@ -77,8 +77,82 @@ describe('Class Actions', () => {
 
 		it('should throw an error if school could not be found', async () => {
 			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			const findSchoolByPreviousExternalIdAndSystemStub = sinon.stub(
+				SchoolRepo,
+				'findSchoolByPreviousExternalIdAndSystem'
+			);
 			findSchoolByLdapIdAndSystemStub.returns(null);
+			findSchoolByPreviousExternalIdAndSystemStub.returns(null);
+
 			await expect(classAction.action({ class: { schoolDn: 'SCHOOL_DN', systemId: '' } })).to.be.rejectedWith(NotFound);
+		});
+
+		describe('when migrated school could be found, but does not have the sync feature', () => {
+			const setup = () => {
+				const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+				const findSchoolByPreviousExternalIdAndSystemStub = sinon.stub(
+					SchoolRepo,
+					'findSchoolByPreviousExternalIdAndSystem'
+				);
+
+				findSchoolByLdapIdAndSystemStub.returns(null);
+				findSchoolByPreviousExternalIdAndSystemStub.returns({ name: testSchoolName });
+			};
+
+			it('should throw an error', async () => {
+				setup();
+
+				const func = () => classAction.action({ class: { schoolDn: 'SCHOOL_DN', systemId: '' } });
+
+				await expect(func).to.be.rejectedWith(NotFound);
+			});
+		});
+
+		describe('when migrated school could be found and has the sync feature', () => {
+			const setup = () => {
+				const schoolId = new ObjectId();
+				const className = 'Class Name';
+				const ldapDn = 'some ldap';
+				const currentYear = new ObjectId();
+
+				const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+				const findSchoolByPreviousExternalIdAndSystemStub = sinon.stub(
+					SchoolRepo,
+					'findSchoolByPreviousExternalIdAndSystem'
+				);
+				const findClassByYearAndLdapDnStub = sinon.stub(ClassRepo, 'findClassByYearAndLdapDn');
+				const createClassStub = sinon.stub(ClassRepo, 'createClass');
+
+				findSchoolByLdapIdAndSystemStub.returns(null);
+				findSchoolByPreviousExternalIdAndSystemStub.returns({
+					name: testSchoolName,
+					_id: schoolId,
+					currentYear,
+					features: ['enableLdapSyncDuringMigration'],
+				});
+				findClassByYearAndLdapDnStub.returns(null);
+				createClassStub.returns({ _id: new ObjectId() });
+
+				return {
+					className,
+					ldapDn,
+					currentYear,
+					createClassStub,
+				};
+			};
+
+			it('should sync the classes', async () => {
+				const { className, ldapDn, currentYear, createClassStub } = setup();
+
+				await classAction.action({ class: { name: className, ldapDN: ldapDn } });
+
+				expect(createClassStub.calledOnce).to.be.true;
+				const { firstArg, lastArg } = createClassStub.firstCall;
+				expect(firstArg.name).to.be.equal(className);
+				expect(firstArg.ldapDN).to.be.equal(ldapDn);
+				expect(lastArg.name).to.be.equal(testSchoolName);
+				expect(lastArg.currentYear._id.toString()).to.be.equal(currentYear.toString());
+			});
 		});
 
 		describe('When school is in maintenance mode', () => {

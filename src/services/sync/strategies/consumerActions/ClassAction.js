@@ -32,7 +32,7 @@ class ClassAction extends BaseConsumerAction {
 				classData.systemId
 			);
 
-			if (migratedSchool) {
+			if (migratedSchool?.features?.includes('enableLdapSyncDuringMigration')) {
 				school = migratedSchool;
 			} else {
 				throw new NotFound(
