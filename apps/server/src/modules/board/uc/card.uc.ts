@@ -72,8 +72,8 @@ export class CardUc {
 					`${Configuration.get('TLDRAW_URI') as string}/api/v3/tldraw-document/${element.drawingName}`,
 					{
 						headers: {
-							Authorization: auth,
 							Accept: 'Application/json',
+							Authorization: auth,
 						},
 					}
 				)
