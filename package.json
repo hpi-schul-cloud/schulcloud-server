@@ -69,7 +69,6 @@
 		"nest:start:fwu-learning-contents": "nest start fwu-learning-contents",
 		"nest:start:fwu-learning-contents:debug": "nest start fwu-learning-contents --debug --watch",
 		"nest:start:fwu-learning-contents:prod": "node dist/apps/server/apps/fwu-learning-contents.app",
-		"h5p:test": "npm run nest:start:console -- h5p test",
 		"nest:start:h5p": "nest start h5p-editor",
 		"nest:start:h5p:dev": "nest start h5p-editor --debug --watch",
 		"nest:start:h5p:prod": "node dist/apps/server/apps/h5p-editor.app",

@@ -312,10 +312,6 @@ export class H5PEditorUc {
 		return newContentId;
 	}
 
-	public dummyFunction(): void {
-		console.log('Dummy command works!');
-	}
-
 	private changeUserType(currentUser: ICurrentUser): IUser {
 		// TODO: declare IUser (e.g. add roles, schoolId, etc.)
 		const user: IUser = {
