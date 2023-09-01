@@ -545,6 +545,11 @@
 			"description": "enables antivirus check for files",
 			"default": false
 		},
+		"FILE_SECURITY_CHECK_MAX_FILE_SIZE": {
+			"type": "integer",
+			"description": "Maximum file size for antivirus check in Byte.",
+			"default": 25000000
+		},
 		"FILE_SECURITY_CHECK_SERVICE_URI": {
 			"type": "string",
 			"description": "Antivirus file endpoint, only used for legacy file implementation",
