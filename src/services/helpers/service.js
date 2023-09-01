@@ -49,7 +49,7 @@ module.exports = function setup(app) {
 			// send mail with defined transport object in production mode
 			if (NODE_ENV === ENVIRONMENTS.PRODUCTION || FORCE_SEND_EMAIL) {
 				const mailService = app.service('/nest-mail');
-				mailService.send(mailContent);
+				await mailService.send(mailContent);
 			} else {
 				// otherwise print email message object on console
 				logger.debug('E-Mail Message not sent (not in production mode):', mailContent);
