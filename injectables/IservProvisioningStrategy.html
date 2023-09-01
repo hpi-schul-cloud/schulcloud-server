@@ -124,12 +124,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>)</code>
+<code>constructor(schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/provisioning/strategy/iserv/iserv.strategy.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/provisioning/strategy/iserv/iserv.strategy.ts:19</a></div>
                             </td>
                         </tr>
 
@@ -150,7 +150,7 @@
                                                         <td>schoolService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/SchoolService.html" target="_self" >SchoolService</a></code>
+                                                                        <code><a href="../injectables/LegacySchoolService.html" target="_self" >LegacySchoolService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -212,7 +212,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:64</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:61</a></code>
 </div>
                 </td>
             </tr>
@@ -283,8 +283,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="68"
-                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/iserv/iserv.strategy.ts:68</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="65"
+                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/iserv/iserv.strategy.ts:65</a></div>
                 </td>
             </tr>
 
@@ -361,7 +361,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:31</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:28</a></code>
 </div>
                 </td>
             </tr>
@@ -436,7 +436,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:27</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:24</a></code>
 </div>
                 </td>
             </tr>
@@ -460,13 +460,10 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { RoleName, User } from &#x27;@shared/domain&#x27;;
-import { RoleReference } from &#x27;@shared/domain/domainobject&#x27;;
-import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
-import { UserDO } from &#x27;@shared/domain/domainobject/user.do&#x27;;
+import { LegacySchoolDo, RoleName, RoleReference, User, UserDO } from &#x27;@shared/domain&#x27;;
 import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
 import { OAuthSSOError } from &#x27;@src/modules/oauth/error/oauth-sso.error&#x27;;
-import { SchoolService } from &#x27;@src/modules/school&#x27;;
+import { LegacySchoolService } from &#x27;@src/modules/school&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
 import jwt, { JwtPayload } from &#x27;jsonwebtoken&#x27;;
 import {
@@ -481,7 +478,7 @@ import { IservMapper } from &#x27;./iserv-do.mapper&#x27;;
 
 @Injectable()
 export class IservProvisioningStrategy extends ProvisioningStrategy {
-	constructor(private readonly schoolService: SchoolService, private readonly userService: UserService) {
+	constructor(private readonly schoolService: LegacySchoolService, private readonly userService: UserService) {
 		super();
 	}
 
@@ -508,7 +505,7 @@ export class IservProvisioningStrategy extends ProvisioningStrategy {
 			);
 		}
 
-		const ldapSchool: SchoolDO &#x3D; await this.schoolService.getSchoolById(ldapUser.schoolId);
+		const ldapSchool: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(ldapUser.schoolId);
 		const roleNames: RoleName[] &#x3D; ldapUser.roles.map((roleRef: RoleReference): RoleName &#x3D;&gt; roleRef.name);
 
 		const externalUser: ExternalUserDto &#x3D; IservMapper.mapToExternalUserDto(ldapUser, roleNames);

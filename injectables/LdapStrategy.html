@@ -124,12 +124,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(systemRepo: <a href="../injectables/SystemRepo.html" target="_self">SystemRepo</a>, schoolRepo: <a href="../injectables/SchoolRepo.html" target="_self">SchoolRepo</a>, ldapService: <a href="../injectables/LdapService.html" target="_self">LdapService</a>, authenticationService: <a href="../injectables/AuthenticationService.html" target="_self">AuthenticationService</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(systemRepo: <a href="../injectables/SystemRepo.html" target="_self">SystemRepo</a>, schoolRepo: <a href="../injectables/LegacySchoolRepo.html" target="_self">LegacySchoolRepo</a>, ldapService: <a href="../injectables/LdapService.html" target="_self">LdapService</a>, authenticationService: <a href="../injectables/AuthenticationService.html" target="_self">AuthenticationService</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:16</a></div>
                             </td>
                         </tr>
 
@@ -162,7 +162,7 @@
                                                         <td>schoolRepo</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/SchoolRepo.html" target="_self" >SchoolRepo</a></code>
+                                                                        <code><a href="../injectables/LegacySchoolRepo.html" target="_self" >LegacySchoolRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -255,8 +255,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="76"
-                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:76</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="75"
+                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:75</a></div>
                 </td>
             </tr>
 
@@ -362,8 +362,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="69"
-                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:69</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="68"
+                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:68</a></div>
                 </td>
             </tr>
 
@@ -441,8 +441,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="57"
-                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:57</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="56"
+                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:56</a></div>
                 </td>
             </tr>
 
@@ -506,15 +506,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>loadAccount(username: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, systemId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, school: <a href="../classes/SchoolDO.html" target="_self">SchoolDO</a>)</code>
+                    <code>loadAccount(username: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, systemId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, school: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="87"
-                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:87</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="86"
+                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:86</a></div>
                 </td>
             </tr>
 
@@ -561,7 +561,7 @@
                                 <tr>
                                     <td>school</td>
                                     <td>
-                                                <code><a href="../classes/SchoolDO.html" target="_self" >SchoolDO</a></code>
+                                                <code><a href="../classes/LegacySchoolDo.html" target="_self" >LegacySchoolDo</a></code>
                                     </td>
 
                                     <td>
@@ -608,8 +608,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="29"
-                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:29</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="28"
+                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:28</a></div>
                 </td>
             </tr>
 
@@ -665,9 +665,8 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
 import { PassportStrategy } from &#x27;@nestjs/passport&#x27;;
-import { System, User } from &#x27;@shared/domain&#x27;;
-import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
-import { SchoolRepo, SystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
+import { LegacySchoolDo, System, User } from &#x27;@shared/domain&#x27;;
+import { LegacySchoolRepo, SystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
 import { ErrorLoggable } from &#x27;@src/core/error/loggable/error.loggable&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { AccountDto } from &#x27;@src/modules/account/services/dto&#x27;;
@@ -682,7 +681,7 @@ import { LdapService } from &#x27;../services/ldap.service&#x27;;
 export class LdapStrategy extends PassportStrategy(Strategy, &#x27;ldap&#x27;) {
 	constructor(
 		private readonly systemRepo: SystemRepo,
-		private readonly schoolRepo: SchoolRepo,
+		private readonly schoolRepo: LegacySchoolRepo,
 		private readonly ldapService: LdapService,
 		private readonly authenticationService: AuthenticationService,
 		private readonly userRepo: UserRepo,
@@ -696,7 +695,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, &#x27;ldap&#x27;) {
 
 		const system: System &#x3D; await this.systemRepo.findById(systemId);
 
-		const school: SchoolDO &#x3D; await this.schoolRepo.findById(schoolId);
+		const school: LegacySchoolDo &#x3D; await this.schoolRepo.findById(schoolId);
 
 		if (!school.systems || !school.systems.includes(systemId)) {
 			throw new UnauthorizedException(&#x60;School ${schoolId} does not have the selected system ${systemId}&#x60;);
@@ -749,7 +748,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, &#x27;ldap&#x27;) {
 		}
 	}
 
-	private async loadAccount(username: string, systemId: string, school: SchoolDO): Promise&lt;AccountDto&gt; {
+	private async loadAccount(username: string, systemId: string, school: LegacySchoolDo): Promise&lt;AccountDto&gt; {
 		const externalSchoolId &#x3D; this.checkValue(school.externalId);
 
 		let account: AccountDto;

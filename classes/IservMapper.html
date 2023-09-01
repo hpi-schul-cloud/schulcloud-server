@@ -131,15 +131,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToExternalSchoolDto(schoolDO: <a href="../classes/SchoolDO.html" target="_self">SchoolDO</a>)</code>
+                    <code>mapToExternalSchoolDto(schoolDO: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="7"
-                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/iserv/iserv-do.mapper.ts:7</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="5"
+                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/iserv/iserv-do.mapper.ts:5</a></div>
                 </td>
             </tr>
 
@@ -162,7 +162,7 @@
                                 <tr>
                                     <td>schoolDO</td>
                                     <td>
-                                                <code><a href="../classes/SchoolDO.html" target="_self" >SchoolDO</a></code>
+                                                <code><a href="../classes/LegacySchoolDo.html" target="_self" >LegacySchoolDo</a></code>
                                     </td>
 
                                     <td>
@@ -209,8 +209,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="15"
-                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/iserv/iserv-do.mapper.ts:15</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="13"
+                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/iserv/iserv-do.mapper.ts:13</a></div>
                 </td>
             </tr>
 
@@ -280,13 +280,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { RoleName } from &#x27;@shared/domain&#x27;;
-import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
-import { UserDO } from &#x27;@shared/domain/domainobject/user.do&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LegacySchoolDo, RoleName, UserDO } from &#x27;@shared/domain&#x27;;
 import { ExternalSchoolDto, ExternalUserDto } from &#x27;../../dto&#x27;;
 
 export class IservMapper {
-	static mapToExternalSchoolDto(schoolDO: SchoolDO): ExternalSchoolDto {
+	static mapToExternalSchoolDto(schoolDO: LegacySchoolDo): ExternalSchoolDto {
 		return new ExternalSchoolDto({
 			name: schoolDO.name,
 			externalId: schoolDO.externalId || &#x27;&#x27;,

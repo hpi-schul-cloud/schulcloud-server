@@ -44,7 +44,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >SchoolFactory</li>
+  <li class="breadcrumb-item" >LegacySchoolFactory</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -68,7 +68,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/testing/factory/domainobject/school.factory.ts</code>
+            <code>apps/server/src/shared/testing/factory/domainobject/legacy-school.factory.ts</code>
         </p>
 
 
@@ -1257,14 +1257,14 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LegacySchoolDo } from &#x27;@shared/domain&#x27;;
 import { federalStateFactory } from &#x27;../federal-state.factory&#x27;;
 import { schoolYearFactory } from &#x27;../schoolyear.factory&#x27;;
 import { DoBaseFactory } from &#x27;./do-base.factory&#x27;;
 
-class SchoolFactory extends DoBaseFactory&lt;SchoolDO, SchoolDO&gt; {}
+class LegacySchoolFactory extends DoBaseFactory&lt;LegacySchoolDo, LegacySchoolDo&gt; {}
 
-export const schoolDOFactory &#x3D; SchoolFactory.define(SchoolDO, ({ sequence }) &#x3D;&gt; {
+export const legacySchoolDoFactory &#x3D; LegacySchoolFactory.define(LegacySchoolDo, ({ sequence }) &#x3D;&gt; {
 	return {
 		name: &#x60;schoolName-${sequence}&#x60;,
 		externalId: &#x27;123&#x27;,
@@ -1319,7 +1319,7 @@ export const schoolDOFactory &#x3D; SchoolFactory.define(SchoolDO, ({ sequence }
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'SchoolFactory.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'LegacySchoolFactory.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

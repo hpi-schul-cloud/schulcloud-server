@@ -169,7 +169,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, pseudonymService: <a href="../injectables/PseudonymService.html" target="_self">PseudonymService</a>, lti11EncryptionService: <a href="../injectables/Lti11EncryptionService.html" target="_self">Lti11EncryptionService</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>)</code>
+<code>constructor(userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, pseudonymService: <a href="../injectables/PseudonymService.html" target="_self">PseudonymService</a>, lti11EncryptionService: <a href="../injectables/Lti11EncryptionService.html" target="_self">Lti11EncryptionService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -231,7 +231,7 @@
                                                         <td>schoolService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/SchoolService.html" target="_self" >SchoolService</a></code>
+                                                                        <code><a href="../injectables/LegacySchoolService.html" target="_self" >LegacySchoolService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -1502,7 +1502,7 @@ import { EntityId, LtiPrivacyPermission, Pseudonym, RoleName, UserDO } from &#x2
 import { RoleReference } from &#x27;@shared/domain/domainobject&#x27;;
 import { CourseRepo } from &#x27;@shared/repo&#x27;;
 import { PseudonymService } from &#x27;@src/modules/pseudonym&#x27;;
-import { SchoolService } from &#x27;@src/modules/school&#x27;;
+import { LegacySchoolService } from &#x27;@src/modules/school&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
 import { Authorization } from &#x27;oauth-1.0a&#x27;;
 import { LtiRole } from &#x27;../../../common/enum&#x27;;
@@ -1519,7 +1519,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		private readonly userService: UserService,
 		private readonly pseudonymService: PseudonymService,
 		private readonly lti11EncryptionService: Lti11EncryptionService,
-		schoolService: SchoolService,
+		schoolService: LegacySchoolService,
 		courseRepo: CourseRepo
 	) {
 		super(schoolService, courseRepo);

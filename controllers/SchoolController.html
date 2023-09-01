@@ -340,14 +340,14 @@ import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { MigrationMapper } from &#x27;../mapper/migration.mapper&#x27;;
 import { OauthMigrationDto } from &#x27;../uc/dto/oauth-migration.dto&#x27;;
-import { SchoolUc } from &#x27;../uc/school.uc&#x27;;
+import { LegacySchoolUc } from &#x27;../uc&#x27;;
 import { MigrationBody, MigrationResponse, SchoolParams } from &#x27;./dto&#x27;;
 
 @ApiTags(&#x27;School&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
 @Controller(&#x27;school&#x27;)
 export class SchoolController {
-	constructor(private readonly schoolUc: SchoolUc, private readonly migrationMapper: MigrationMapper) {}
+	constructor(private readonly schoolUc: LegacySchoolUc, private readonly migrationMapper: MigrationMapper) {}
 
 	@Put(&#x27;:schoolId/migration&#x27;)
 	@Authenticate(&#x27;jwt&#x27;)
