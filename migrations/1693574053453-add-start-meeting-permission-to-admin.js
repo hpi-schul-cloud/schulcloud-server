@@ -7,7 +7,7 @@ const { connect, close } = require('../src/utils/database');
 // use your own name for your model, otherwise other migrations may fail.
 // The third parameter is the actually relevent one for what collection to write to.
 const Roles = mongoose.model(
-	'roles0109231450',
+	'roles0109231514',
 	new mongoose.Schema(
 		{
 			name: { type: String, required: true },
@@ -30,46 +30,46 @@ module.exports = {
 	up: async function up() {
 		// eslint-disable-next-line no-process-env
 		if (process.env.SC_THEME !== 'n21') {
-			info('Migration does not add the JOIN_MEETING permission for this instance.');
+			info('Migration does not add the START_MEETING permission for this instance.');
 			return;
 		}
 
 		await connect();
 
 		await Roles.updateOne(
-			{ name: 'teacher' },
+			{ name: 'administrator' },
 			{
 				$addToSet: {
 					permissions: {
-						$each: ['JOIN_MEETING'],
+						$each: ['START_MEETING'],
 					},
 				},
 			}
 		).exec();
-		alert(`Permission JOIN_MEETING added to role teacher`);
+		alert(`Permission START_MEETING added to role administrator`);
 		await close();
 	},
 
 	down: async function down() {
 		// eslint-disable-next-line no-process-env
 		if (process.env.SC_THEME !== 'n21') {
-			info('Migration does not add the JOIN_MEETING permission for this instance.');
+			info('Migration does not add the START_MEETING permission for this instance.');
 			return;
 		}
 
 		await connect();
 
 		await Roles.updateOne(
-			{ name: 'teacher' },
+			{ name: 'administrator' },
 			{
 				$pull: {
 					permissions: {
-						$in: ['JOIN_MEETING'],
+						$in: ['START_MEETING'],
 					},
 				},
 			}
 		).exec();
-		alert(`Permission JOIN_MEETING removed from role teacher`);
+		alert(`Permission START_MEETING removed from role administrator`);
 		await close();
 	},
 };
