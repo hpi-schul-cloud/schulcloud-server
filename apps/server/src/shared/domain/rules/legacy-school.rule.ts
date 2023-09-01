@@ -12,14 +12,14 @@ import { AuthorizableObject } from '../domain-object';
 export class LegacySchoolRule implements Rule {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
-	public isApplicable(user: User, entity: AuthorizableObject | BaseDO): boolean {
-		const isMatched: boolean = entity instanceof LegacySchoolDo;
+	public isApplicable(user: User, object: AuthorizableObject | BaseDO): boolean {
+		const isMatched = object instanceof LegacySchoolDo;
 
 		return isMatched;
 	}
 
 	public hasPermission(user: User, entity: LegacySchoolDo, context: AuthorizationContext): boolean {
-		const hasPermission: boolean =
+		const hasPermission =
 			this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions) && user.school.id === entity.id;
 
 		return hasPermission;
