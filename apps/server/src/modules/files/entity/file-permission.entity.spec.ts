@@ -4,15 +4,15 @@ import { FilePermissionEntity } from './file-permission.entity';
 
 describe(FilePermissionEntity.name, () => {
 	describe('constructor', () => {
-		describe('should set proper fields values', () => {
-			const setup = () => {
-				const refId = new ObjectId();
-				const refPermModel = FilePermissionReferenceModel.USER;
+		const setup = () => {
+			const refId = new ObjectId();
+			const refPermModel = FilePermissionReferenceModel.USER;
 
-				return { refId, refPermModel };
-			};
+			return { refId, refPermModel };
+		};
 
-			it('for the minimal valid props object', () => {
+		describe('when passed a minimal valid props object', () => {
+			it(`should return a valid ${FilePermissionEntity.name} object with proper default fields values and with the values taken from the passed props object`, () => {
 				const { refId, refPermModel } = setup();
 
 				const entity = new FilePermissionEntity({
@@ -31,8 +31,10 @@ describe(FilePermissionEntity.name, () => {
 					})
 				);
 			});
+		});
 
-			it('from the provided complete props object', () => {
+		describe('when passed a complete (fully filled) props object', () => {
+			it(`should return a valid ${FilePermissionEntity.name} object with proper fields values taken from the passed props object`, () => {
 				const { refId, refPermModel } = setup();
 
 				const entity = new FilePermissionEntity({
