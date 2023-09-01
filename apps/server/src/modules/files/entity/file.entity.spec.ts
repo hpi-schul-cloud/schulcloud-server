@@ -11,10 +11,6 @@ describe(FileEntity.name, () => {
 	const anotherUserId = new ObjectId().toHexString();
 	const yetAnotherUserId = new ObjectId().toHexString();
 
-	beforeAll(async () => {
-		await setupEntities();
-	});
-
 	const copyFile = (file: FileEntity) =>
 		new FileEntity({
 			createdAt: file.createdAt,
@@ -38,38 +34,34 @@ describe(FileEntity.name, () => {
 			versionKey: file.versionKey,
 		});
 
+	beforeAll(async () => {
+		await setupEntities();
+	});
+
 	describe('removePermissionsByRefId', () => {
-		it('should remove proper permission with given refId', () => {
-			const anotherUsersPermissions = [
-				filePermissionEntityFactory.build({ refId: anotherUserId }),
-				filePermissionEntityFactory.build({ refId: yetAnotherUserId }),
-			];
-			const file = fileEntityFactory.build({
-				ownerId: mainUserId,
-				creatorId: mainUserId,
-				permissions: [filePermissionEntityFactory.build({ refId: mainUserId }), ...anotherUsersPermissions],
-			});
+		describe('when called on a file that contains some permission with given refId', () => {
+			it('should properly remove this permission', () => {
+				const anotherUsersPermissions = [
+					filePermissionEntityFactory.build({ refId: anotherUserId }),
+					filePermissionEntityFactory.build({ refId: yetAnotherUserId }),
+				];
+				const file = fileEntityFactory.build({
+					ownerId: mainUserId,
+					creatorId: mainUserId,
+					permissions: [filePermissionEntityFactory.build({ refId: mainUserId }), ...anotherUsersPermissions],
+				});
 
-			const expectedFile = copyFile(file);
-			expectedFile.permissions = anotherUsersPermissions;
-
-			file.removePermissionsByRefId(mainUserId);
-
-			expect(file).toEqual(expectedFile);
-		});
-
-		describe('should not remove any permissions', () => {
-			it('if there are none at all', () => {
-				const file = fileEntityFactory.build({ permissions: [] });
-
-				const originalFile = copyFile(file);
+				const expectedFile = copyFile(file);
+				expectedFile.permissions = anotherUsersPermissions;
 
 				file.removePermissionsByRefId(mainUserId);
 
-				expect(file).toEqual(originalFile);
+				expect(file).toEqual(expectedFile);
 			});
+		});
 
-			it('if none of them contains given refId', () => {
+		describe("when called on a file that doesn't have any permission with given refId", () => {
+			it('should not modify the file in any way (including the other present permissions)', () => {
 				const file = fileEntityFactory.build({
 					ownerId: mainUserId,
 					creatorId: mainUserId,
@@ -88,73 +80,85 @@ describe(FileEntity.name, () => {
 				expect(file).toEqual(originalFile);
 			});
 		});
+
+		describe("when called on a file that doesn't have any permissions at all", () => {
+			it('should not modify the file in any way', () => {
+				const file = fileEntityFactory.build({ permissions: [] });
+
+				const originalFile = copyFile(file);
+
+				file.removePermissionsByRefId(mainUserId);
+
+				expect(file).toEqual(originalFile);
+			});
+		});
 	});
 
-	const setup = () => {
-		const file = fileEntityFactory.build({
-			ownerId: mainUserId,
-			creatorId: mainUserId,
-			permissions: [],
-		});
-
-		return { file };
-	};
-
 	describe('markForDeletion', () => {
-		it('should properly mark the file for deletion', () => {
-			const { file } = setup();
+		describe('when called on some typical file', () => {
+			it('should properly mark the file for deletion', () => {
+				const file = fileEntityFactory.build();
 
-			const expectedFile = copyFile(file);
+				const expectedFile = copyFile(file);
 
-			const fakeCurrentDate = new Date('2023-01-01');
+				const fakeCurrentDate = new Date('2023-01-01');
 
-			expectedFile.deletedAt = fakeCurrentDate;
-			expectedFile.deleted = true;
+				expectedFile.deletedAt = fakeCurrentDate;
+				expectedFile.deleted = true;
 
-			jest.useFakeTimers().setSystemTime(fakeCurrentDate);
+				jest.useFakeTimers().setSystemTime(fakeCurrentDate);
 
-			file.markForDeletion();
+				file.markForDeletion();
 
-			expect(file).toEqual(expectedFile);
+				expect(file).toEqual(expectedFile);
+			});
 		});
 	});
 
 	describe('isMarkedForDeletion', () => {
-		it('should say the file is marked for deletion in case of a valid marking', () => {
-			const { file } = setup();
+		describe('when called on a file marked for deletion', () => {
+			it('should return "true"', () => {
+				const file = fileEntityFactory.build();
 
-			file.markForDeletion();
+				file.markForDeletion();
 
-			expect(file.isMarkedForDeletion()).toEqual(true);
+				expect(file.isMarkedForDeletion()).toEqual(true);
+			});
 		});
 
-		describe('should say the file is not marked for deletion', () => {
-			it('in case of just some random file', () => {
-				const { file } = setup();
+		describe('when called on a file not marked for deletion (missing all the fields required for the proper marking)', () => {
+			it('should return "false"', () => {
+				const file = fileEntityFactory.build();
 
 				expect(file.isMarkedForDeletion()).toEqual(false);
 			});
+		});
 
-			it("in case of an invalid 'deleteAt' date", () => {
-				const { file } = setup();
-
-				file.deletedAt = new Date(0);
-
-				expect(file.isMarkedForDeletion()).toEqual(false);
-			});
-
-			it("in case of the 'deleted' flag being false", () => {
-				const { file } = setup();
+		describe('when called on a file not marked for deletion (missing "deleted" flag)', () => {
+			it('should return "false"', () => {
+				const file = fileEntityFactory.build();
 
 				file.deleted = false;
 
 				expect(file.isMarkedForDeletion()).toEqual(false);
 			});
+		});
 
-			it("in case of a deleted flag being set to 'true', but no deletedAt date being set", () => {
-				const { file } = setup();
+		describe('when called on a file not marked for deletion (missing "deletedAt" timestamp)', () => {
+			it('should return "false"', () => {
+				const file = fileEntityFactory.build();
 
 				file.deleted = true;
+
+				expect(file.isMarkedForDeletion()).toEqual(false);
+			});
+		});
+
+		describe('when called on a file not marked for deletion (invalid "deletedAt" timestamp)', () => {
+			it('should return "false"', () => {
+				const file = fileEntityFactory.build();
+
+				file.deletedAt = new Date(0);
 
 				expect(file.isMarkedForDeletion()).toEqual(false);
 			});
@@ -163,7 +167,7 @@ describe(FileEntity.name, () => {
 
 	describe('constructor', () => {
 		describe('when creating a directory', () => {
-			it('should set proper fields values from the provided complete props object', () => {
+			it(`should return a valid ${FileEntity.name} object with fields values set from the provided complete props object`, () => {
 				const userId = new ObjectId().toHexString();
 				const props = {
 					createdAt: new Date(2023, 8, 1),
@@ -228,55 +232,61 @@ describe(FileEntity.name, () => {
 		describe('when creating a file (non-directory)', () => {
 			const userId = new ObjectId().toHexString();
 
-			it('should create file', () => {
+			it(`should create an object of the ${FileEntity.name} class`, () => {
 				const file = fileEntityFactory.build();
 
 				expect(file).toBeInstanceOf(FileEntity);
 			});
 
-			it('should throw without bucket', () => {
-				const call = () =>
-					new FileEntity({
-						name: 'name',
-						size: 42,
-						storageFileName: 'name',
-						storageProvider,
-						ownerId: userId,
-						refOwnerModel: FileOwnerModel.USER,
-						creatorId: userId,
-						permissions: [filePermissionEntityFactory.build({ refId: userId })],
-					});
-				expect(call).toThrow();
+			describe('when there is no bucket set in the provided props object', () => {
+				it('should throw an exception', () => {
+					const call = () =>
+						new FileEntity({
+							name: 'name',
+							size: 42,
+							storageFileName: 'name',
+							storageProvider,
+							ownerId: userId,
+							refOwnerModel: FileOwnerModel.USER,
+							creatorId: userId,
+							permissions: [filePermissionEntityFactory.build({ refId: userId })],
+						});
+					expect(call).toThrow();
+				});
 			});
 
-			it('should throw without storageFileName', () => {
-				const call = () =>
-					new FileEntity({
-						name: 'name',
-						size: 42,
-						bucket: 'bucket',
-						storageProvider,
-						ownerId: userId,
-						refOwnerModel: FileOwnerModel.USER,
-						creatorId: userId,
-						permissions: [filePermissionEntityFactory.build({ refId: userId })],
-					});
-				expect(call).toThrow();
+			describe('when there is no storageFileName set in the provided props object', () => {
+				it('should throw an exception', () => {
+					const call = () =>
+						new FileEntity({
+							name: 'name',
+							size: 42,
+							bucket: 'bucket',
+							storageProvider,
+							ownerId: userId,
+							refOwnerModel: FileOwnerModel.USER,
+							creatorId: userId,
+							permissions: [filePermissionEntityFactory.build({ refId: userId })],
+						});
+					expect(call).toThrow();
+				});
 			});
 
-			it('should throw without storageProvider', () => {
-				const call = () =>
-					new FileEntity({
-						name: 'name',
-						size: 42,
-						bucket: 'bucket',
-						storageFileName: 'name',
-						ownerId: userId,
-						refOwnerModel: FileOwnerModel.USER,
-						creatorId: userId,
-						permissions: [filePermissionEntityFactory.build({ refId: userId })],
-					});
-				expect(call).toThrow();
+			describe('when there is no storageProvider set in the provided props object', () => {
+				it('should throw an exception', () => {
+					const call = () =>
+						new FileEntity({
+							name: 'name',
+							size: 42,
+							bucket: 'bucket',
+							storageFileName: 'name',
+							ownerId: userId,
+							refOwnerModel: FileOwnerModel.USER,
+							creatorId: userId,
+							permissions: [filePermissionEntityFactory.build({ refId: userId })],
+						});
+					expect(call).toThrow();
+				});
 			});
 		});
 	});
