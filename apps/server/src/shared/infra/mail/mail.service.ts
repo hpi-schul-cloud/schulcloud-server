@@ -15,7 +15,7 @@ export class MailService {
 		@Inject('MAIL_SERVICE_OPTIONS') private readonly options: MailServiceOptions
 	) {}
 
-	public send(data: Mail): void {
-		this.amqpConnection.publish(this.options.exchange, this.options.routingKey, data, { persistent: true });
+	public async send(data: Mail): Promise<void> {
+		await this.amqpConnection.publish(this.options.exchange, this.options.routingKey, data, { persistent: true });
 	}
 }
