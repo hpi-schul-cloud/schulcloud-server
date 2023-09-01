@@ -60,7 +60,7 @@ export class CardUc {
 		return element;
 	}
 
-	async deleteElement(userId: EntityId, elementId: EntityId, req: string): Promise<void> {
+	async deleteElement(userId: EntityId, elementId: EntityId, auth: string): Promise<void> {
 		this.logger.debug({ action: 'deleteElement', userId, elementId });
 
 		const element = await this.elementService.findById(elementId);
@@ -72,7 +72,7 @@ export class CardUc {
 					`${Configuration.get('TLDRAW_URI') as string}/api/v3/tldraw-document/${element.drawingName}`,
 					{
 						headers: {
-							Authorization: req,
+							Authorization: auth,
 							Accept: 'Application/json',
 						},
 					}

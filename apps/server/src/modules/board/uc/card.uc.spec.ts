@@ -169,7 +169,7 @@ describe(CardUc.name, () => {
 			it('should call the service to find the element', async () => {
 				const { user, element } = setup();
 
-				await uc.deleteElement(user.id, element.id);
+				await uc.deleteElement(user.id, element.id, 'auth');
 
 				expect(elementService.findById).toHaveBeenCalledWith(element.id);
 			});
@@ -178,7 +178,7 @@ describe(CardUc.name, () => {
 				const { user, element } = setup();
 				elementService.findById.mockResolvedValueOnce(element);
 
-				await uc.deleteElement(user.id, element.id);
+				await uc.deleteElement(user.id, element.id, 'auth');
 
 				expect(elementService.delete).toHaveBeenCalledWith(element);
 			});
