@@ -121,11 +121,15 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 
 		const element = new SubmissionContainerElement({
 			id: boardNode.id,
-			dueDate: boardNode.dueDate,
 			children: elements,
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
 		});
+
+		if (boardNode.dueDate) {
+			element.dueDate = boardNode.dueDate;
+		}
+
 		return element;
 	}
 
