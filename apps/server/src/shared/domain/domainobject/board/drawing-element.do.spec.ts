@@ -20,7 +20,7 @@ describe(DrawingElement.name, () => {
 
 			drawingElement.accept(visitor);
 
-			expect(visitor.visitRichTextElement).toHaveBeenCalledWith(drawingElement);
+			expect(visitor.visitDrawingElement).toHaveBeenCalledWith(drawingElement);
 		});
 	});
 
@@ -31,7 +31,7 @@ describe(DrawingElement.name, () => {
 
 			await drawingElement.acceptAsync(visitor);
 
-			expect(visitor.visitRichTextElementAsync).toHaveBeenCalledWith(drawingElement);
+			expect(visitor.visitDrawingElementAsync).toHaveBeenCalledWith(drawingElement);
 		});
 	});
 });
