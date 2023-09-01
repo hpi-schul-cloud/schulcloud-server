@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { CopyStatus, CopyStatusEnum } from '../types/copy.types';
+import { CopyDictionary, CopyStatus, CopyStatusEnum } from '../types/copy.types';
 
 const isAtLeastPartialSuccessfull = (status) => status === CopyStatusEnum.PARTIAL || status === CopyStatusEnum.SUCCESS;
 
@@ -32,7 +33,7 @@ export class CopyHelperService {
 		let num = 1;
 		const matches = name.match(/^(?<name>.*) \((?<number>\d+)\)$/);
 		if (matches && matches.groups) {
-			name = matches.groups.name;
+			({ name } = matches.groups);
 			num = Number(matches.groups.number) + 1;
 		}
 		const composedName = `${name} (${num})`;
@@ -42,8 +43,8 @@ export class CopyHelperService {
 		return composedName;
 	}
 
-	buildCopyEntityDict(status: CopyStatus): Map<EntityId, BaseEntity> {
-		const map = new Map<EntityId, BaseEntity>();
+	buildCopyEntityDict(status: CopyStatus): CopyDictionary {
+		const map = this.instanciateCopyDictionary();
 		status.elements?.forEach((elementStatus: CopyStatus) => {
 			this.buildCopyEntityDict(elementStatus).forEach((el, key) => map.set(key, el));
 		});
@@ -51,5 +52,9 @@ export class CopyHelperService {
 			map.set(status.originalEntity.id, status.copyEntity);
 		}
 		return map;
+	}
+
+	private instanciateCopyDictionary(): CopyDictionary {
+		return new Map<EntityId, BaseEntity | AuthorizableObject>();
 	}
 }

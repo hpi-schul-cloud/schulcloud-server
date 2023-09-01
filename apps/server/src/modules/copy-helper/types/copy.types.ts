@@ -1,3 +1,5 @@
+import { EntityId } from '@shared/domain';
+import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseEntity } from '@shared/domain/entity/base.entity';
 
 export type CopyStatus = {
@@ -6,12 +8,13 @@ export type CopyStatus = {
 	type: CopyElementType;
 	status: CopyStatusEnum;
 	elements?: CopyStatus[];
-	copyEntity?: BaseEntity;
-	originalEntity?: BaseEntity;
+	copyEntity?: BaseEntity | AuthorizableObject;
+	originalEntity?: BaseEntity | AuthorizableObject;
 };
 
 export enum CopyElementType {
 	'BOARD' = 'BOARD',
+	'ColumnBoard' = 'ColumnBoard',
 	'CONTENT' = 'CONTENT',
 	'COURSE' = 'COURSE',
 	'COURSEGROUP_GROUP' = 'COURSEGROUP_GROUP',
@@ -44,3 +47,5 @@ export enum CopyStatusEnum {
 	'NOT_IMPLEMENTED' = 'not-implemented', // might be implemented in the future
 	'PARTIAL' = 'partial', // parent is partial successful
 }
+
+export type CopyDictionary = Map<EntityId, BaseEntity | AuthorizableObject>;
