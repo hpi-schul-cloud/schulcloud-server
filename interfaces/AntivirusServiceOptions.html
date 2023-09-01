@@ -280,13 +280,13 @@ export class AntivirusService {
 		@Inject(&#x27;ANTIVIRUS_SERVICE_OPTIONS&#x27;) private readonly options: AntivirusServiceOptions
 	) {}
 
-	public send(requestToken: string | undefined) {
+	public async send(requestToken: string | undefined): Promise&lt;void&gt; {
 		try {
 			if (this.options.enabled &amp;&amp; requestToken) {
 				const downloadUri &#x3D; this.getUrl(FilesStorageInternalActions.downloadBySecurityToken, requestToken);
 				const callbackUri &#x3D; this.getUrl(FilesStorageInternalActions.updateSecurityStatus, requestToken);
 
-				this.amqpConnection.publish(
+				await this.amqpConnection.publish(
 					this.options.exchange,
 					this.options.routingKey,
 					{ download_uri: downloadUri, callback_uri: callbackUri },

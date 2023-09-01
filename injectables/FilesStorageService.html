@@ -231,6 +231,7 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#sendToAntiVirusService" >sendToAntiVirusService</a>
                             </li>
                             <li>
@@ -2751,6 +2752,7 @@
                     <a name="sendToAntiVirusService"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
+                        <span class="modifier">Async</span>
                         <span ><b>sendToAntiVirusService</b></span>
                         <a href="#sendToAntiVirusService"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -2805,7 +2807,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                     </div>
                     <div class="io-description">
@@ -3267,7 +3269,7 @@ export class FilesStorageService {
 			fileRecord.updateSecurityCheckStatus(ScanStatus.WONT_CHECK, &#x27;File is too big&#x27;);
 			await this.fileRecordRepo.save(fileRecord);
 		} else {
-			this.antivirusService.send(fileRecord.getSecurityToken());
+			await this.antivirusService.send(fileRecord.getSecurityToken());
 		}
 	}
 
@@ -3441,9 +3443,9 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
-	private sendToAntiVirusService(fileRecord: FileRecord) {
+	private async sendToAntiVirusService(fileRecord: FileRecord) {
 		if (fileRecord.isPending()) {
-			this.antivirusService.send(fileRecord.getSecurityToken());
+			await this.antivirusService.send(fileRecord.getSecurityToken());
 		}
 	}
 
@@ -3455,7 +3457,7 @@ export class FilesStorageService {
 			const paths &#x3D; createICopyFiles(sourceFile, targetFile);
 
 			await this.storageClient.copy([paths]);
-			this.sendToAntiVirusService(targetFile);
+			await this.sendToAntiVirusService(targetFile);
 			const copyFileResponse &#x3D; CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.getName());
 
 			return copyFileResponse;

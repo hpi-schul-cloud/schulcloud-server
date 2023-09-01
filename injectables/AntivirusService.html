@@ -90,6 +90,7 @@
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#send" >send</a>
                             </li>
                         </ul>
@@ -260,6 +261,7 @@
                     <a name="send"></a>
                     <span class="name">
                         <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
                         <span ><b>send</b></span>
                         <a href="#send"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -314,7 +316,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -349,13 +351,13 @@ export class AntivirusService {
 		@Inject(&#x27;ANTIVIRUS_SERVICE_OPTIONS&#x27;) private readonly options: AntivirusServiceOptions
 	) {}
 
-	public send(requestToken: string | undefined) {
+	public async send(requestToken: string | undefined): Promise&lt;void&gt; {
 		try {
 			if (this.options.enabled &amp;&amp; requestToken) {
 				const downloadUri &#x3D; this.getUrl(FilesStorageInternalActions.downloadBySecurityToken, requestToken);
 				const callbackUri &#x3D; this.getUrl(FilesStorageInternalActions.updateSecurityStatus, requestToken);
 
-				this.amqpConnection.publish(
+				await this.amqpConnection.publish(
 					this.options.exchange,
 					this.options.routingKey,
 					{ download_uri: downloadUri, callback_uri: callbackUri },
