@@ -102,9 +102,9 @@ describe('Class Actions', () => {
 			it('should throw an error', async () => {
 				setup();
 
-				const func = () => classAction.action({ class: { schoolDn: 'SCHOOL_DN', systemId: '' } });
-
-				await expect(func).to.be.rejectedWith(NotFound);
+				await expect(classAction.action({ class: { schoolDn: 'SCHOOL_DN', systemId: '' } })).to.be.rejectedWith(
+					NotFound
+				);
 			});
 		});
 
