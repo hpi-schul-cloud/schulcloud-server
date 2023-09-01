@@ -67,11 +67,14 @@ export class UserLoginMigrationService {
 			userLoginMigration.finishedAt = oauthMigrationFinished
 				? new Date(Date.now() + (Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number))
 				: undefined;
-
-			await this.schoolService.removeFeature(schoolId, SchoolFeatures.ENABLE_LDAP_SYNC_DURING_MIGRATION);
 		}
 
 		const savedMigration: UserLoginMigrationDO = await this.userLoginMigrationRepo.save(userLoginMigration);
+
+		// userLoginMigration throws an error when saved, if this codeblock runs before the userLoginMigrationRepo.save method.
+		if (oauthMigrationFinished !== undefined) {
+			await this.schoolService.removeFeature(schoolId, SchoolFeatures.ENABLE_LDAP_SYNC_DURING_MIGRATION);
+		}
 
 		return savedMigration;
 	}
