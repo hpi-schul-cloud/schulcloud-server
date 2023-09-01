@@ -34,10 +34,12 @@ describe('MailService', () => {
 		expect(service).toBeDefined();
 	});
 
-	it('should send given data to queue', () => {
+	it('should send given data to queue', async () => {
 		const data: Mail = { mail: { plainTextContent: 'content', subject: 'Test' }, recipients: ['test@example.com'] };
 		const amqpConnectionSpy = jest.spyOn(amqpConnection, 'publish');
-		service.send(data);
+
+		await service.send(data);
+
 		const expectedParams = [mailServiceOptions.exchange, mailServiceOptions.routingKey, data, { persistent: true }];
 		expect(amqpConnectionSpy).toHaveBeenCalledWith(...expectedParams);
 	});
