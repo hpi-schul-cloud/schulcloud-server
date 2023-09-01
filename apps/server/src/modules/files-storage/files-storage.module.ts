@@ -9,7 +9,6 @@ import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq/rabbitmq.module';
 import { S3ClientModule } from '@shared/infra/s3-client';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
-import { S3ClientAdapter } from './client/s3-client.adapter';
 import { FileRecord, FileRecordSecurityCheck } from './entity';
 import { config, s3Config } from './files-storage.config';
 import { FileRecordRepo } from './repo';
