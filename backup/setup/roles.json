@@ -58,7 +58,6 @@
 			"TOOL_VIEW",
 			"TOPIC_VIEW",
 			"NEXTCLOUD_USER",
-			"JOIN_MEETING",
 			"CONTEXT_TOOL_USER"
 		],
 		"__v": 0
@@ -361,8 +360,7 @@
 			"CREATE_TOPICS_AND_TASKS",
 			"EDIT_ALL_FILES",
 			"NEWS_CREATE",
-			"START_MEETING",
-			"JOIN_MEETING"
+			"START_MEETING"
 		],
 		"__v": 0
 	},
