@@ -68,7 +68,7 @@
 		},
 		"name": "administrator",
 		"updatedAt": {
-			"$date": "2023-09-01T13:25:44.573Z"
+			"$date": "2023-09-01T13:35:21.524Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -131,7 +131,8 @@
 			"SYSTEM_VIEW",
 			"SCHOOL_TOOL_ADMIN",
 			"USER_LOGIN_MIGRATION_ADMIN",
-			"START_MEETING"
+			"START_MEETING",
+			"JOIN_MEETING"
 		],
 		"__v": 2
 	},
