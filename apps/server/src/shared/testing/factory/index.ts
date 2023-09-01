@@ -15,6 +15,7 @@ export * from './news.factory';
 export * from './role.factory';
 export * from './school-external-tool-entity.factory';
 export * from './school.factory';
+export * from './schoolyear.factory';
 export * from './share-token.do.factory';
 export * from './storageprovider.factory';
 export * from './submission.factory';
