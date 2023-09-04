@@ -53,7 +53,7 @@ module.exports = {
 	down: async function down() {
 		// eslint-disable-next-line no-process-env
 		if (process.env.SC_THEME !== 'n21') {
-			info('Migration does not add the START_MEETING permission for this instance.');
+			info('Migration does not remove the START_MEETING permission for this instance.');
 			return;
 		}
 
