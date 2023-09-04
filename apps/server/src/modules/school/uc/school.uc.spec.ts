@@ -1,11 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain';
-import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@shared/testing/factory';
+import { UserLoginMigrationDO } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { schoolDOFactory, userLoginMigrationDOFactory } from '@shared/testing/factory';
 import { AuthorizationService } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/school/service';
-import { LegacySchoolUc } from '@src/modules/school/uc';
+import { SchoolService } from '@src/modules/school/service/school.service';
+import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import {
 	SchoolMigrationService,
 	UserLoginMigrationRevertService,
@@ -13,11 +14,11 @@ import {
 } from '@src/modules/user-login-migration';
 import { OauthMigrationDto } from './dto/oauth-migration.dto';
 
-describe('LegacySchoolUc', () => {
+describe('SchoolUc', () => {
 	let module: TestingModule;
-	let schoolUc: LegacySchoolUc;
+	let schoolUc: SchoolUc;
 
-	let schoolService: DeepMocked<LegacySchoolService>;
+	let schoolService: DeepMocked<SchoolService>;
 	let authService: DeepMocked<AuthorizationService>;
 	let schoolMigrationService: DeepMocked<SchoolMigrationService>;
 	let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
@@ -26,10 +27,10 @@ describe('LegacySchoolUc', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				LegacySchoolUc,
+				SchoolUc,
 				{
-					provide: LegacySchoolService,
-					useValue: createMock<LegacySchoolService>(),
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
 				},
 				{
 					provide: AuthorizationService,
@@ -50,9 +51,9 @@ describe('LegacySchoolUc', () => {
 			],
 		}).compile();
 
-		schoolService = module.get(LegacySchoolService);
+		schoolService = module.get(SchoolService);
 		authService = module.get(AuthorizationService);
-		schoolUc = module.get(LegacySchoolUc);
+		schoolUc = module.get(SchoolUc);
 		schoolMigrationService = module.get(SchoolMigrationService);
 		userLoginMigrationService = module.get(UserLoginMigrationService);
 		userLoginMigrationRevertService = module.get(UserLoginMigrationRevertService);
@@ -69,7 +70,7 @@ describe('LegacySchoolUc', () => {
 	describe('setMigration is called', () => {
 		describe('when first starting the migration', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school: SchoolDO = schoolDOFactory.buildWithId();
 				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
@@ -97,7 +98,7 @@ describe('LegacySchoolUc', () => {
 		describe('when closing a migration', () => {
 			describe('when there were migrated users', () => {
 				const setup = () => {
-					const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+					const school: SchoolDO = schoolDOFactory.buildWithId();
 					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
 						closedAt: undefined,
 					});
@@ -128,7 +129,7 @@ describe('LegacySchoolUc', () => {
 
 			describe('when there were no users migrated', () => {
 				const setup = () => {
-					const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+					const school: SchoolDO = schoolDOFactory.buildWithId();
 					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
 						closedAt: undefined,
 					});
@@ -162,7 +163,7 @@ describe('LegacySchoolUc', () => {
 
 		describe('when restarting a migration', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school: SchoolDO = schoolDOFactory.buildWithId();
 				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
@@ -193,7 +194,7 @@ describe('LegacySchoolUc', () => {
 
 		describe('when trying to start a finished migration after the grace period', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school: SchoolDO = schoolDOFactory.buildWithId();
 				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
@@ -229,7 +230,7 @@ describe('LegacySchoolUc', () => {
 	describe('getMigration is called', () => {
 		describe('when the school has a migration', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school: SchoolDO = schoolDOFactory.buildWithId();
 				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
@@ -261,7 +262,7 @@ describe('LegacySchoolUc', () => {
 
 		describe('when the school has no migration', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school: SchoolDO = schoolDOFactory.buildWithId();
 
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(null);
 				schoolService.getSchoolById.mockResolvedValue(school);
