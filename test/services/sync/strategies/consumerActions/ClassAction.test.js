@@ -108,6 +108,34 @@ describe('Class Actions', () => {
 			});
 		});
 
+		describe('when migrated school could be found, but migration is closed', () => {
+			const setup = () => {
+				const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+				const findSchoolByPreviousExternalIdAndSystemStub = sinon.stub(
+					SchoolRepo,
+					'findSchoolByPreviousExternalIdAndSystem'
+				);
+
+				findSchoolByLdapIdAndSystemStub.returns(null);
+				findSchoolByPreviousExternalIdAndSystemStub.returns({
+					name: testSchoolName,
+					features: ['enableLdapSyncDuringMigration'],
+					userLoginMigration: {
+						startedAt: new Date(),
+						closedAt: new Date(),
+					},
+				});
+			};
+
+			it('should throw an error', async () => {
+				setup();
+
+				await expect(classAction.action({ class: { schoolDn: 'SCHOOL_DN', systemId: '' } })).to.be.rejectedWith(
+					NotFound
+				);
+			});
+		});
+
 		describe('when migrated school could be found and has the sync feature', () => {
 			const setup = () => {
 				const schoolId = new ObjectId();
@@ -129,6 +157,9 @@ describe('Class Actions', () => {
 					_id: schoolId,
 					currentYear,
 					features: ['enableLdapSyncDuringMigration'],
+					userLoginMigration: {
+						startedAt: new Date(),
+					},
 				});
 				findClassByYearAndLdapDnStub.returns(null);
 				createClassStub.returns({ _id: new ObjectId() });
