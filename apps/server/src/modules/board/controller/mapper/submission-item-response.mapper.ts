@@ -20,6 +20,7 @@ export class SubmissionItemResponseMapper {
 				createdAt: submissionItem.createdAt,
 			}),
 			completed: submissionItem.completed,
+			description: submissionItem.description,
 			userId: submissionItem.userId,
 		});
 

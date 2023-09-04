@@ -74,7 +74,7 @@ describe('submission item update (api)', () => {
 
 			expect(response.status).toEqual(403);
 		});
-		it('should not actually update submission item entity', async () => {
+		it('should actually not update submission item', async () => {
 			const { loggedInClient, submissionItemNode } = await setup();
 
 			await loggedInClient.patch(`${submissionItemNode.id}`, { completed: false });

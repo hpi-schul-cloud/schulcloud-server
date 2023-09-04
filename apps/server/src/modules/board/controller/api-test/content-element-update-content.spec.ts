@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { sanitizeRichText } from '@shared/controller';
-import { BoardExternalReferenceType, InputFormat, RichTextElementNode } from '@shared/domain';
+import { BoardExternalReferenceType, InputFormat, RichTextNode } from '@shared/domain';
 import {
 	cardNodeFactory,
 	cleanupCollections,
@@ -78,7 +78,7 @@ describe(`content element update content (api)`, () => {
 			await loggedInClient.patch(`${element.id}/content`, {
 				data: { content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' },
 			});
-			const result = await em.findOneOrFail(RichTextElementNode, element.id);
+			const result = await em.findOneOrFail(RichTextNode, element.id);
 
 			expect(result.text).toEqual('hello world');
 		});
@@ -93,7 +93,7 @@ describe(`content element update content (api)`, () => {
 			await loggedInClient.patch(`${element.id}/content`, {
 				data: { content: { text, inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' },
 			});
-			const result = await em.findOneOrFail(RichTextElementNode, element.id);
+			const result = await em.findOneOrFail(RichTextNode, element.id);
 
 			expect(result.text).toEqual(sanitizedText);
 		});

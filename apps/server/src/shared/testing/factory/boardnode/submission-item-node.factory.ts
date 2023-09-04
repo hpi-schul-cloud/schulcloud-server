@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { SubmissionItemNode, SubmissionItemNodeProps } from '@shared/domain';
+import { InputFormat, SubmissionItemNode, SubmissionItemNodeProps } from '@shared/domain';
 import { BaseFactory } from '../base.factory';
 import { userFactory } from '../user.factory';
 
@@ -11,6 +11,10 @@ export const submissionItemNodeFactory = BaseFactory.define<SubmissionItemNode, 
 		return {
 			completed: false,
 			userId: creator.id,
+			description: {
+				text: 'foo',
+				inputFormat: InputFormat.RICH_TEXT_CK5,
+			},
 		};
 	}
 );

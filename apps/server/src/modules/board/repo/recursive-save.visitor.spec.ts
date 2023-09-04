@@ -6,7 +6,7 @@ import {
 	ColumnBoardNode,
 	ColumnNode,
 	FileElementNode,
-	RichTextElementNode,
+	RichTextNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
 } from '@shared/domain';
@@ -137,9 +137,9 @@ describe(RecursiveSaveVisitor.name, () => {
 
 			visitor.visitRichTextElement(richTextElement);
 
-			const expectedNode: Partial<RichTextElementNode> = {
+			const expectedNode: Partial<RichTextNode> = {
 				id: richTextElement.id,
-				type: BoardNodeType.RICH_TEXT_ELEMENT,
+				type: BoardNodeType.RICH_TEXT,
 				text: richTextElement.text,
 			};
 			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));

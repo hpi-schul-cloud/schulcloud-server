@@ -10,7 +10,7 @@ import {
 	CardNode,
 	Column,
 	ColumnBoard,
-	RichTextElementNode,
+	RichTextNode,
 } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
@@ -466,7 +466,7 @@ describe(BoardDoRepo.name, () => {
 				await repo.delete(elements[0]);
 				em.clear();
 
-				await expect(em.findOneOrFail(RichTextElementNode, elements[0].id)).rejects.toThrow();
+				await expect(em.findOneOrFail(RichTextNode, elements[0].id)).rejects.toThrow();
 			});
 
 			it('should delete all descendants', async () => {
@@ -475,11 +475,11 @@ describe(BoardDoRepo.name, () => {
 				await repo.delete(card);
 				em.clear();
 
-				await expect(em.findOneOrFail(RichTextElementNode, elements[0].id)).rejects.toThrow();
-				await expect(em.findOneOrFail(RichTextElementNode, elements[1].id)).rejects.toThrow();
-				await expect(em.findOneOrFail(RichTextElementNode, elements[2].id)).rejects.toThrow();
-				await expect(em.findOneOrFail(RichTextElementNode, elements[3].id)).rejects.toThrow();
-				await expect(em.findOneOrFail(RichTextElementNode, elements[4].id)).rejects.toThrow();
+				await expect(em.findOneOrFail(RichTextNode, elements[0].id)).rejects.toThrow();
+				await expect(em.findOneOrFail(RichTextNode, elements[1].id)).rejects.toThrow();
+				await expect(em.findOneOrFail(RichTextNode, elements[2].id)).rejects.toThrow();
+				await expect(em.findOneOrFail(RichTextNode, elements[3].id)).rejects.toThrow();
+				await expect(em.findOneOrFail(RichTextNode, elements[4].id)).rejects.toThrow();
 			});
 
 			it('should not delete descendants of siblings', async () => {
@@ -488,9 +488,9 @@ describe(BoardDoRepo.name, () => {
 				await repo.delete(card);
 				em.clear();
 
-				await expect(em.findOneOrFail(RichTextElementNode, siblingCardElements[0].id)).resolves.toBeDefined();
-				await expect(em.findOneOrFail(RichTextElementNode, siblingCardElements[1].id)).resolves.toBeDefined();
-				await expect(em.findOneOrFail(RichTextElementNode, siblingCardElements[2].id)).resolves.toBeDefined();
+				await expect(em.findOneOrFail(RichTextNode, siblingCardElements[0].id)).resolves.toBeDefined();
+				await expect(em.findOneOrFail(RichTextNode, siblingCardElements[1].id)).resolves.toBeDefined();
+				await expect(em.findOneOrFail(RichTextNode, siblingCardElements[2].id)).resolves.toBeDefined();
 			});
 
 			it('should use the visitor', async () => {

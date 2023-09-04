@@ -11,7 +11,7 @@ import type { CardNode } from '../card-node.entity';
 import type { ColumnBoardNode } from '../column-board-node.entity';
 import type { ColumnNode } from '../column-node.entity';
 import type { FileElementNode } from '../file-element-node.entity';
-import type { RichTextElementNode } from '../rich-text-element-node.entity';
+import type { RichTextNode } from '../rich-text-node.entity';
 import type { SubmissionContainerElementNode } from '../submission-container-element-node.entity';
 import type { SubmissionItemNode } from '../submission-item-node.entity';
 
@@ -20,7 +20,7 @@ export interface BoardDoBuilder {
 	buildColumn(boardNode: ColumnNode): Column;
 	buildCard(boardNode: CardNode): Card;
 	buildFileElement(boardNode: FileElementNode): FileElement;
-	buildRichTextElement(boardNode: RichTextElementNode): RichTextElement;
+	buildRichTextElement(boardNode: RichTextNode): RichTextElement;
 	buildSubmissionContainerElement(boardNode: SubmissionContainerElementNode): SubmissionContainerElement;
 	buildSubmissionItem(boardNode: SubmissionItemNode): SubmissionItem;
 }

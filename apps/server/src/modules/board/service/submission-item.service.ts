@@ -1,8 +1,8 @@
 import { ObjectId } from 'bson';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-import { EntityId, SubmissionContainerElement, SubmissionItem } from '@shared/domain';
-import {BusinessError, ValidationError} from '@shared/common';
+import { EntityId, InputFormat, SubmissionContainerElement, SubmissionItem } from '@shared/domain';
+import { ValidationError } from '@shared/common';
 
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
@@ -32,6 +32,10 @@ export class SubmissionItemService {
 			updatedAt: new Date(),
 			completed: payload.completed,
 			userId,
+			description: {
+				text: '<b>asdsada</b>',
+				inputFormat: InputFormat.RICH_TEXT_CK5,
+			},
 		});
 
 		submissionContainer.addChild(submissionItem);

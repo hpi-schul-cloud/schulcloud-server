@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType, ContentElementType, RichTextElementNode } from '@shared/domain';
+import { BoardExternalReferenceType, ContentElementType, RichTextNode } from '@shared/domain';
 import {
 	TestApiClient,
 	UserAndAccountTestFactory,
@@ -99,7 +99,7 @@ describe(`content element create (api)`, () => {
 
 			const elementId = (response.body as AnyContentElementResponse).id;
 
-			const result = await em.findOneOrFail(RichTextElementNode, elementId);
+			const result = await em.findOneOrFail(RichTextNode, elementId);
 			expect(result.id).toEqual(elementId);
 		});
 

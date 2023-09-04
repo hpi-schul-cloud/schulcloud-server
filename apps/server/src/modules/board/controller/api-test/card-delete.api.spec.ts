@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { BoardExternalReferenceType, CardNode, RichTextElementNode } from '@shared/domain';
+import { BoardExternalReferenceType, CardNode, RichTextNode } from '@shared/domain';
 import {
 	cardNodeFactory,
 	cleanupCollections,
@@ -115,7 +115,7 @@ describe(`card delete (api)`, () => {
 
 			await api.delete(cardNode.id);
 
-			await expect(em.findOneOrFail(RichTextElementNode, richTextElementNode.id)).rejects.toThrow();
+			await expect(em.findOneOrFail(RichTextNode, richTextElementNode.id)).rejects.toThrow();
 		});
 
 		it('should not delete siblings', async () => {

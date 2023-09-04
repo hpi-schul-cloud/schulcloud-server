@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { BoardExternalReferenceType, RichTextElementNode } from '@shared/domain';
+import { BoardExternalReferenceType, RichTextNode } from '@shared/domain';
 import {
 	cardNodeFactory,
 	cleanupCollections,
@@ -107,7 +107,7 @@ describe(`content element move (api)`, () => {
 			currentUser = mapUserToCurrentUser(user);
 
 			await api.move(element.id, targetCard.id, 2);
-			const result = await em.findOneOrFail(RichTextElementNode, element.id);
+			const result = await em.findOneOrFail(RichTextNode, element.id);
 
 			expect(result.parentId).toEqual(targetCard.id);
 			expect(result.position).toEqual(2);

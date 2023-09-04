@@ -14,7 +14,7 @@ import {
 	FileElement,
 	FileElementNode,
 	RichTextElement,
-	RichTextElementNode,
+	RichTextNode,
 	SubmissionContainerElement,
 	SubmissionContainerElementNode,
 	SubmissionItem,
@@ -107,7 +107,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 	visitRichTextElement(richTextElement: RichTextElement): void {
 		const parentData = this.parentsMap.get(richTextElement.id);
 
-		const boardNode = new RichTextElementNode({
+		const boardNode = new RichTextNode({
 			id: richTextElement.id,
 			text: richTextElement.text,
 			inputFormat: richTextElement.inputFormat,
@@ -140,6 +140,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			parent: parentData?.boardNode,
 			position: parentData?.position,
 			completed: submission.completed,
+			description: submission.description,
 			userId: submission.userId,
 		});
 

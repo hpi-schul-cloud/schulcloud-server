@@ -9,7 +9,7 @@ import {
 	ColumnBoardNode,
 	ColumnNode,
 	FileElementNode,
-	RichTextElementNode,
+	RichTextNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
 } from './boardnode';
@@ -55,7 +55,7 @@ export const ALL_ENTITIES = [
 	ColumnBoardTarget,
 	ColumnNode,
 	FileElementNode,
-	RichTextElementNode,
+	RichTextNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
 	Course,

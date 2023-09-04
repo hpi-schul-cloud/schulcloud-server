@@ -4,17 +4,17 @@ import { InputFormat } from '@shared/domain/types';
 import { BoardNode, BoardNodeProps } from './boardnode.entity';
 import { BoardDoBuilder, BoardNodeType } from './types';
 
-@Entity({ discriminatorValue: BoardNodeType.RICH_TEXT_ELEMENT })
-export class RichTextElementNode extends BoardNode {
+@Entity({ discriminatorValue: BoardNodeType.RICH_TEXT })
+export class RichTextNode extends BoardNode {
 	@Property()
 	text: string;
 
 	@Property()
 	inputFormat: InputFormat;
 
-	constructor(props: RichTextElementNodeProps) {
+	constructor(props: RichTextNodeProps) {
 		super(props);
-		this.type = BoardNodeType.RICH_TEXT_ELEMENT;
+		this.type = BoardNodeType.RICH_TEXT;
 		this.text = props.text;
 		this.inputFormat = props.inputFormat;
 	}
@@ -25,7 +25,7 @@ export class RichTextElementNode extends BoardNode {
 	}
 }
 
-export interface RichTextElementNodeProps extends BoardNodeProps {
+export interface RichTextNodeProps extends BoardNodeProps {
 	text: string;
 	inputFormat: InputFormat;
 }

@@ -6,7 +6,7 @@ import type {
 	ColumnBoardNode,
 	ColumnNode,
 	FileElementNode,
-	RichTextElementNode,
+	RichTextNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
 } from '@shared/domain';
@@ -17,6 +17,7 @@ import {
 	Column,
 	ColumnBoard,
 	FileElement,
+	InputFormat,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
@@ -71,7 +72,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 	public buildCard(boardNode: CardNode): Card {
 		this.ensureBoardNodeType(this.getChildren(boardNode), [
 			BoardNodeType.FILE_ELEMENT,
-			BoardNodeType.RICH_TEXT_ELEMENT,
+			BoardNodeType.RICH_TEXT,
 			BoardNodeType.SUBMISSION_CONTAINER_ELEMENT,
 		]);
 
@@ -101,7 +102,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 		return element;
 	}
 
-	public buildRichTextElement(boardNode: RichTextElementNode): RichTextElement {
+	public buildRichTextElement(boardNode: RichTextNode): RichTextElement {
 		this.ensureLeafNode(boardNode);
 
 		const element = new RichTextElement({
@@ -138,6 +139,10 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			updatedAt: boardNode.updatedAt,
 			completed: boardNode.completed,
 			userId: boardNode.userId,
+			description: {
+				text: 'todo',
+				inputFormat: InputFormat.RICH_TEXT_CK5,
+			},
 			children: [],
 		});
 		return element;

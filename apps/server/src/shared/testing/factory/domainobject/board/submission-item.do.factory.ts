@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { SubmissionItem, SubmissionItemProps } from '@shared/domain';
+import { InputFormat, SubmissionItem, SubmissionItemProps } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { BaseFactory } from '../../base.factory';
 
@@ -14,6 +14,10 @@ export const submissionItemFactory = BaseFactory.define<SubmissionItem, Submissi
 			userId: new ObjectId().toHexString(),
 			createdAt: new Date(),
 			updatedAt: new Date(),
+			description: {
+				text: 'bla',
+				inputFormat: InputFormat.RICH_TEXT_CK5,
+			},
 		};
 	}
 );
