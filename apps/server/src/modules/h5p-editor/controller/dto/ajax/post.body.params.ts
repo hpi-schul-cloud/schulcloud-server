@@ -19,7 +19,7 @@ class ContentBodyParams {
 	@ApiProperty()
 	@IsString()
 	@IsOptional()
-	field!: string; // Todo: Reason
+	field!: string;
 }
 
 class LibraryParametersBodyParams {
@@ -30,6 +30,10 @@ class LibraryParametersBodyParams {
 
 export type AjaxPostBodyParams = LibrariesBodyParams | ContentBodyParams | LibraryParametersBodyParams | undefined;
 
+/**
+ * This transform pipe allows nest to validate the incoming request.
+ * Since H5P does sent bodies with different shapes, this custom ValidationPipe makes sure the different cases are correctly validated.
+ */
 @Injectable()
 export class AjaxPostBodyParamsTransformPipe implements PipeTransform {
 	async transform(value: AjaxPostBodyParams) {
@@ -43,7 +47,7 @@ export class AjaxPostBodyParamsTransformPipe implements PipeTransform {
 			} else if ('libraryParameters' in value) {
 				transformed = plainToClass(LibraryParametersBodyParams, value);
 			} else {
-				return undefined; // Todo Check this
+				return undefined;
 			}
 
 			const validationResult = await validate(transformed);
@@ -59,14 +63,3 @@ export class AjaxPostBodyParamsTransformPipe implements PipeTransform {
 		return undefined;
 	}
 }
-
-export const AjaxPostBodyParamsFilesInterceptor = AnyFilesInterceptor({
-	limits: { files: 2 },
-	fileFilter(_req, file, callback) {
-		if (file.fieldname === 'file' || file.fieldname === 'h5p') {
-			callback(null, true);
-		} else {
-			callback(new BadRequestException('File not allowed'), false);
-		}
-	},
-});

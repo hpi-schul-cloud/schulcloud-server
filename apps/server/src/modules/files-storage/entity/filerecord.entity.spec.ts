@@ -2,11 +2,13 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ErrorType } from '../error';
+import { PreviewInputMimeTypes } from '../interface';
 import {
 	FileRecord,
 	FileRecordParentType,
 	FileSecurityCheck,
 	IFileRecordProperties,
+	PreviewStatus,
 	ScanStatus,
 } from './filerecord.entity';
 
@@ -303,6 +305,44 @@ describe('FileRecord Entity', () => {
 		});
 	});
 
+	describe('hasScanStatusError is called', () => {
+		describe('WHEN file record security status is ERROR', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+
+				fileRecord.securityCheck.status = ScanStatus.ERROR;
+
+				return { fileRecord };
+			};
+
+			it('should return true', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.hasScanStatusError();
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('WHEN file record security status is not ERROR', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+
+				fileRecord.securityCheck.status = ScanStatus.VERIFIED;
+
+				return { fileRecord };
+			};
+
+			it('should return false', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.isBlocked();
+
+				expect(result).toBe(false);
+			});
+		});
+	});
+
 	describe('isPending is called', () => {
 		describe('WHEN file record security status is PENDING', () => {
 			const setup = () => {
@@ -528,6 +568,101 @@ describe('FileRecord Entity', () => {
 
 					expect(result.securityCheck).not.toStrictEqual(fileRecord.securityCheck);
 				});
+			});
+		});
+	});
+
+	describe('getPreviewStatus is called', () => {
+		describe('WHEN file record preview status is PENDING', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+
+				fileRecord.securityCheck.status = ScanStatus.PENDING;
+
+				return { fileRecord };
+			};
+
+			it('should return AWAITING_SCAN_STATUS', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.getPreviewStatus();
+
+				expect(result).toEqual(PreviewStatus.AWAITING_SCAN_STATUS);
+			});
+		});
+
+		describe('WHEN file record preview status is VERIFIED', () => {
+			describe('MIMETYPE is supported', () => {
+				const setup = () => {
+					const fileRecord = fileRecordFactory.build({ mimeType: PreviewInputMimeTypes.IMAGE_JPEG });
+
+					fileRecord.securityCheck.status = ScanStatus.VERIFIED;
+
+					return { fileRecord };
+				};
+
+				it('should return PREVIEW_POSSIBLE', () => {
+					const { fileRecord } = setup();
+
+					const result = fileRecord.getPreviewStatus();
+
+					expect(result).toEqual(PreviewStatus.PREVIEW_POSSIBLE);
+				});
+			});
+
+			describe('MIMETYPE is not supported', () => {
+				const setup = () => {
+					const fileRecord = fileRecordFactory.build();
+
+					fileRecord.securityCheck.status = ScanStatus.VERIFIED;
+					fileRecord.mimeType = 'application/octet-stream';
+
+					return { fileRecord };
+				};
+
+				it('should return PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE', () => {
+					const { fileRecord } = setup();
+
+					const result = fileRecord.getPreviewStatus();
+
+					expect(result).toEqual(PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE);
+				});
+			});
+		});
+
+		describe('WHEN file record preview status is ERROR', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+
+				fileRecord.securityCheck.status = ScanStatus.ERROR;
+
+				return { fileRecord };
+			};
+
+			it('should return PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.getPreviewStatus();
+
+				expect(result).toEqual(PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR);
+			});
+		});
+
+		describe('WHEN file record preview status is BLOCKED', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+
+				fileRecord.securityCheck.status = ScanStatus.BLOCKED;
+
+				return { fileRecord };
+			};
+
+			it('should return PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.getPreviewStatus();
+
+				expect(result).toEqual(PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED);
 			});
 		});
 	});

@@ -5,7 +5,7 @@ import {
 	IContentStorage,
 	IFileStats,
 	ILibraryName,
-	IUser,
+	IUser as ILumiUser,
 	LibraryName,
 	Permission,
 } from '@lumieducation/h5p-server';
@@ -15,6 +15,7 @@ import { Readable } from 'stream';
 import { S3ClientAdapter } from '../../files-storage/client/s3-client.adapter';
 import { H5PContent } from '../entity';
 import { H5PContentRepo } from '../repo';
+import { LumiUserWithContentData } from '../types/lumi-types';
 
 @Injectable()
 export class ContentStorage implements IContentStorage {
@@ -23,13 +24,23 @@ export class ContentStorage implements IContentStorage {
 		@Inject('S3ClientAdapter_Content') private readonly storageClient: S3ClientAdapter
 	) {}
 
+	private checkExtendedUserType(user: ILumiUser) {
+		const isExtendedUserType = user instanceof LumiUserWithContentData;
+
+		if (!isExtendedUserType) {
+			throw new Error('Method expected LumiUserWithContentData instead of IUser');
+		}
+	}
+
 	public async addContent(
 		metadata: IContentMetadata,
 		content: unknown,
-		user: IUser,
+		user: LumiUserWithContentData,
 		contentId?: ContentId | undefined
 	): Promise<ContentId> {
 		try {
+			this.checkExtendedUserType(user);
+
 			let h5pContent: H5PContent;
 
 			if (contentId) {
@@ -37,7 +48,14 @@ export class ContentStorage implements IContentStorage {
 				h5pContent.metadata = metadata;
 				h5pContent.content = content;
 			} else {
-				h5pContent = new H5PContent({ metadata, content });
+				h5pContent = new H5PContent({
+					parentType: user.contentParentType,
+					parentId: user.contentParentId,
+					creatorId: user.id,
+					schoolId: user.schoolId,
+					metadata,
+					content,
+				});
 			}
 
 			await this.repo.save(h5pContent);
@@ -48,10 +66,11 @@ export class ContentStorage implements IContentStorage {
 		}
 	}
 
-	public async addFile(contentId: string, filename: string, stream: Readable, user?: IUser): Promise<void> {
+	public async addFile(contentId: string, filename: string, stream: Readable, user?: ILumiUser): Promise<void> {
 		this.checkFilename(filename);
 
-		if (!(await this.contentExists(contentId))) {
+		const contentExists = await this.contentExists(contentId);
+		if (contentExists) {
 			throw new NotFoundException('The content does not exist');
 		}
 
@@ -66,15 +85,12 @@ export class ContentStorage implements IContentStorage {
 	}
 
 	public async contentExists(contentId: string): Promise<boolean> {
-		try {
-			await this.repo.findById(contentId);
-			return true;
-		} catch (error) {
-			return false;
-		}
+		const exists = await this.repo.existsOne(contentId);
+
+		return exists;
 	}
 
-	public async deleteContent(contentId: string, user?: IUser): Promise<void> {
+	public async deleteContent(contentId: string, user?: ILumiUser): Promise<void> {
 		try {
 			const h5pContent = await this.repo.findById(contentId);
 
@@ -87,7 +103,7 @@ export class ContentStorage implements IContentStorage {
 		}
 	}
 
-	public async deleteFile(contentId: string, filename: string, user?: IUser | undefined): Promise<void> {
+	public async deleteFile(contentId: string, filename: string, user?: ILumiUser | undefined): Promise<void> {
 		this.checkFilename(filename);
 		const filePath = this.getFilePath(contentId, filename);
 		await this.storageClient.delete([filePath]);
@@ -101,7 +117,7 @@ export class ContentStorage implements IContentStorage {
 		return this.exists(filePath);
 	}
 
-	public async getFileStats(contentId: string, file: string, user: IUser): Promise<IFileStats> {
+	public async getFileStats(contentId: string, file: string, user: ILumiUser): Promise<IFileStats> {
 		const filePath = this.getFilePath(contentId, file);
 		const { ContentLength, LastModified } = await this.storageClient.head(filePath);
 
@@ -123,7 +139,7 @@ export class ContentStorage implements IContentStorage {
 	public async getFileStream(
 		contentId: string,
 		file: string,
-		user: IUser,
+		user: ILumiUser,
 		rangeStart = 0,
 		rangeEnd?: number
 	): Promise<Readable> {
@@ -142,18 +158,18 @@ export class ContentStorage implements IContentStorage {
 		return fileResponse.data;
 	}
 
-	public async getMetadata(contentId: string, user?: IUser | undefined): Promise<IContentMetadata> {
+	public async getMetadata(contentId: string, user?: ILumiUser | undefined): Promise<IContentMetadata> {
 		const h5pContent = await this.repo.findById(contentId);
 		return h5pContent.metadata;
 	}
 
-	public async getParameters(contentId: string, user?: IUser | undefined): Promise<unknown> {
+	public async getParameters(contentId: string, user?: ILumiUser | undefined): Promise<unknown> {
 		const h5pContent = await this.repo.findById(contentId);
 		return h5pContent.content;
 	}
 
 	public async getUsage(library: ILibraryName): Promise<{ asDependency: number; asMainLibrary: number }> {
-		const defaultUser: IUser = {
+		const defaultUser: ILumiUser = {
 			canCreateRestricted: false,
 			canInstallRecommended: false,
 			canUpdateAndInstallLibraries: false,
@@ -168,26 +184,28 @@ export class ContentStorage implements IContentStorage {
 		return result;
 	}
 
-	public getUserPermissions(contentId: string, user: IUser): Promise<Permission[]> {
+	public getUserPermissions(contentId: string, user: ILumiUser): Promise<Permission[]> {
 		const permissions = [Permission.Delete, Permission.Download, Permission.Edit, Permission.Embed, Permission.View];
 
 		return Promise.resolve(permissions);
 	}
 
-	public async listContent(user?: IUser): Promise<string[]> {
+	public async listContent(user?: ILumiUser): Promise<string[]> {
 		const contentList = await this.repo.getAllContents();
 
 		const contentIDs = contentList.map((c) => c.id);
 		return contentIDs;
 	}
 
-	public async listFiles(contentId: string, user?: IUser): Promise<string[]> {
-		if (!(await this.contentExists(contentId))) {
+	public async listFiles(contentId: string, user?: ILumiUser): Promise<string[]> {
+		const contentExists = await this.contentExists(contentId);
+		if (contentExists) {
 			throw new NotFoundException('Content could not be found');
 		}
 
-		const prefix = this.getContentPath(contentId);
-		const files = await this.storageClient.list(prefix);
+		const path = this.getContentPath(contentId);
+		const { files } = await this.storageClient.list({ path });
+
 		return files;
 	}
 
@@ -223,7 +241,7 @@ export class ContentStorage implements IContentStorage {
 		return false;
 	}
 
-	private async resolveDependecies(contentIds: string[], user: IUser, library: ILibraryName) {
+	private async resolveDependecies(contentIds: string[], user: ILumiUser, library: ILibraryName) {
 		let asDependency = 0;
 		let asMainLibrary = 0;
 

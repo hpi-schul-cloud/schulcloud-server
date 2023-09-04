@@ -7,7 +7,6 @@ import { CourseGroup } from './coursegroup.entity';
 import type { ILessonParent } from './lesson.entity';
 import type { School } from './school.entity';
 import type { ITaskParent } from './task.entity';
-import { UsersList } from './task.entity';
 import type { User } from './user.entity';
 
 export interface ICourseProperties {
@@ -129,22 +128,6 @@ export class Course
 		const ids = objectIds.map((id): string => id.toString());
 
 		return ids;
-	}
-
-	public getStudentsList(): UsersList[] {
-		const users = this.students.getItems();
-		if (users.length) {
-			const usersList: UsersList[] = users.map((user) => {
-				return {
-					id: user.id,
-					firstName: user.firstName,
-					lastName: user.lastName,
-				};
-			});
-			return usersList;
-		}
-
-		return [];
 	}
 
 	public isUserSubstitutionTeacher(user: User): boolean {

@@ -1,9 +1,10 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable } from '@nestjs/common';
-import { ExternalToolDO, LtiToolDO, Pseudonym, Team, UserDO } from '@shared/domain';
+import { LtiToolDO, Pseudonym, TeamEntity, UserDO } from '@shared/domain';
 import { TeamsRepo } from '@shared/repo';
 import { PseudonymService } from '@src/modules/pseudonym';
 import { UserService } from '@src/modules/user';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain';
 import { GroupNameIdTuple, IdToken, OauthScope } from '../interface';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
 import { IdTokenCreationLoggableException } from '../error/id-token-creation-exception.loggable';
@@ -25,7 +26,7 @@ export class IdTokenService {
 	}
 
 	async createIdToken(userId: string, scopes: string[], clientId: string): Promise<IdToken> {
-		let teams: Team[] = [];
+		let teams: TeamEntity[] = [];
 		if (scopes.includes(OauthScope.GROUPS)) {
 			teams = await this.teamsRepo.findByUserId(userId);
 		}
@@ -45,8 +46,8 @@ export class IdTokenService {
 		};
 	}
 
-	private buildGroupsClaim(teams: Team[]): GroupNameIdTuple[] {
-		return teams.map((team: Team): GroupNameIdTuple => {
+	private buildGroupsClaim(teams: TeamEntity[]): GroupNameIdTuple[] {
+		return teams.map((team: TeamEntity): GroupNameIdTuple => {
 			return {
 				gid: team.id,
 				displayName: team.name,
@@ -56,7 +57,7 @@ export class IdTokenService {
 
 	// TODO N21-335 How we can refactor the iframe in the id token?
 	private async createIframeSubject(user: UserDO, clientId: string): Promise<string> {
-		const tool: ExternalToolDO | LtiToolDO = await this.oauthProviderLoginFlowService.findToolByClientId(clientId);
+		const tool: ExternalTool | LtiToolDO = await this.oauthProviderLoginFlowService.findToolByClientId(clientId);
 
 		if (!tool.id) {
 			throw new IdTokenCreationLoggableException(clientId, user.id);

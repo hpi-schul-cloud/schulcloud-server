@@ -1,7 +1,6 @@
 const { getUsername } = require('./TSP');
 const { FileModel } = require('../../../fileStorage/model');
 const { info: logInfo, error: logError } = require('../../../../logger');
-const { teamsRepo } = require('../../../../components/teams/repo');
 
 const getInvalidatedUuid = (uuid) => `${uuid}/invalid!`;
 const getInvalidatedEmail = (email) => `${email}.invalid`;
@@ -26,10 +25,11 @@ const invalidateUser = async (app, user) => {
 const deleteUser = (app, user) => {
 	const userService = app.service('usersModel');
 	const accountService = app.service('nest-account-service');
+	const teamsService = app.service('/teams');
 	return Promise.all([
 		userService.remove({ _id: user._id }),
 		accountService.deleteByUserId(user._id.toString()),
-		teamsRepo.removeUserFromTeams(user._id.toString()),
+		teamsService.updateMany({ 'userIds.userId': { $in: [user._id] } }, { $pull: { userIds: { userId: user._id } } })
 	]);
 };
 

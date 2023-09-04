@@ -1,7 +1,8 @@
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '@shared/domain';
-import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/tool';
-import { customParameterDOFactory, externalToolDOFactory } from '@shared/testing/factory/domainobject/tool';
+import { customParameterFactory, externalToolFactory } from '@shared/testing/factory/domainobject/tool';
 import { ExternalToolVersionService } from './external-tool-version.service';
+import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '../../common/enum';
+import { CustomParameter } from '../../common/domain';
+import { ExternalTool } from '../domain';
 
 describe('ExternalToolVersionService', () => {
 	let service: ExternalToolVersionService;
@@ -11,7 +12,7 @@ describe('ExternalToolVersionService', () => {
 	});
 
 	const setup = () => {
-		const param1: CustomParameterDO = new CustomParameterDO({
+		const param1: CustomParameter = new CustomParameter({
 			name: 'param1',
 			displayName: 'displayName',
 			default: 'defaulValueParam1',
@@ -22,26 +23,26 @@ describe('ExternalToolVersionService', () => {
 			scope: CustomParameterScope.GLOBAL,
 			type: CustomParameterType.STRING,
 		});
-		const oldTool: ExternalToolDO = externalToolDOFactory
+		const oldTool: ExternalTool = externalToolFactory
 			.params({
 				parameters: [param1],
 				version: 1,
 			})
 			.build();
-		const newTool: ExternalToolDO = externalToolDOFactory.build({ ...oldTool, parameters: [{ ...param1 }] });
+		const newTool: ExternalTool = externalToolFactory.build({ ...oldTool, parameters: [{ ...param1 }] });
 
 		return {
 			oldTool,
 			newTool,
 			param1,
-			newToolParams: newTool.parameters as CustomParameterDO[],
+			newToolParams: newTool.parameters as CustomParameter[],
 		};
 	};
 
-	const expectIncreasement = (newTool: ExternalToolDO) => expect(newTool.version).toEqual(2);
-	const expectNoIncreasement = (newTool: ExternalToolDO) => expect(newTool.version).toEqual(1);
+	const expectIncreasement = (newTool: ExternalTool) => expect(newTool.version).toEqual(2);
+	const expectNoIncreasement = (newTool: ExternalTool) => expect(newTool.version).toEqual(1);
 
-	describe('increaseVersionOfNewToolIfNecessary is called', () => {
+	describe('increaseVersionOfNewToolIfNecessary', () => {
 		describe('when customParameters on old tool is not defined', () => {
 			it('should not increase version', () => {
 				const { oldTool, newTool } = setup();
@@ -64,7 +65,7 @@ describe('ExternalToolVersionService', () => {
 			});
 		});
 
-		describe('compareParameters is called', () => {
+		describe('compareParameters', () => {
 			describe('when customParameters are the same', () => {
 				it('should not increase version', () => {
 					const { oldTool, newTool } = setup();
@@ -78,7 +79,7 @@ describe('ExternalToolVersionService', () => {
 			describe('when length of customParameters is different', () => {
 				it('should increase version', () => {
 					const { oldTool, newTool } = setup();
-					newTool.parameters?.push(customParameterDOFactory.build());
+					newTool.parameters?.push(customParameterFactory.build());
 
 					service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
 
@@ -87,11 +88,11 @@ describe('ExternalToolVersionService', () => {
 			});
 		});
 
-		describe('hasNewRequiredParameter is called', () => {
+		describe('hasNewRequiredParameter', () => {
 			describe('when new required parameter exists', () => {
 				it('should increase version', () => {
 					const { oldTool, newTool } = setup();
-					newTool.parameters?.push(customParameterDOFactory.build({ isOptional: false }));
+					newTool.parameters?.push(customParameterFactory.build({ isOptional: false }));
 
 					service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
 
@@ -100,7 +101,7 @@ describe('ExternalToolVersionService', () => {
 			});
 		});
 
-		describe('hasChangedParameterNames is called', () => {
+		describe('hasChangedParameterNames', () => {
 			describe('when the name of some customParameter has changed', () => {
 				it('should increase version', () => {
 					const { oldTool, newTool, param1 } = setup();
@@ -115,7 +116,7 @@ describe('ExternalToolVersionService', () => {
 			describe('when a new optional custom parameter added', () => {
 				it('should not increase version', () => {
 					const { oldTool, newTool, newToolParams } = setup();
-					const newOptionalParam: CustomParameterDO = customParameterDOFactory.build({ isOptional: true });
+					const newOptionalParam: CustomParameter = customParameterFactory.build({ isOptional: true });
 					newToolParams.push(newOptionalParam);
 
 					service.increaseVersionOfNewToolIfNecessary(oldTool, newTool);
@@ -125,7 +126,7 @@ describe('ExternalToolVersionService', () => {
 			});
 		});
 
-		describe('hasChangedRequiredParameters is called', () => {
+		describe('hasChangedRequiredParameters', () => {
 			describe('when one customParameter change from optional to required', () => {
 				it('should increase version', () => {
 					const { oldTool, newTool, param1 } = setup();
@@ -138,7 +139,7 @@ describe('ExternalToolVersionService', () => {
 			});
 		});
 
-		describe('hasChangedParameterRegex is called', () => {
+		describe('hasChangedParameterRegex', () => {
 			describe('when one customParameter has a changed regex', () => {
 				it('should increase version', () => {
 					const { oldTool, newTool, param1 } = setup();
@@ -151,7 +152,7 @@ describe('ExternalToolVersionService', () => {
 			});
 		});
 
-		describe('hasChangedParameterTypes is called', () => {
+		describe('hasChangedParameterTypes', () => {
 			describe('when one customParameter has a changed type', () => {
 				it('should increase version', () => {
 					const { oldTool, newTool, param1 } = setup();
@@ -164,7 +165,7 @@ describe('ExternalToolVersionService', () => {
 			});
 		});
 
-		describe('hasChangedParameterScope is called', () => {
+		describe('hasChangedParameterScope', () => {
 			describe('when one customParameter has a changed scope', () => {
 				it('should increase version', () => {
 					const { oldTool, newTool, param1 } = setup();

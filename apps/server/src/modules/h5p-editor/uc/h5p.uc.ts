@@ -6,7 +6,7 @@ import {
 	IContentMetadata,
 	IEditorModel,
 	IPlayerModel,
-	IUser,
+	IUser as LumiIUser,
 } from '@lumieducation/h5p-server';
 import {
 	BadRequestException,
@@ -15,13 +15,17 @@ import {
 	InternalServerErrorException,
 	NotFoundException,
 } from '@nestjs/common';
-import { LanguageType } from '@shared/domain';
-import { UserService } from '@src/modules';
+import { EntityId, LanguageType } from '@shared/domain';
+import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService, UserService } from '@src/modules';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Request } from 'express';
 import { Readable } from 'stream';
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams } from '../controller/dto';
+import { H5PContentParentType } from '../entity';
+import { H5PContentMapper } from '../mapper/h5p-content.mapper';
+import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
+import { LumiUserWithContentData } from '../types/lumi-types';
 
 @Injectable()
 export class H5PEditorUc {
@@ -30,8 +34,20 @@ export class H5PEditorUc {
 		private h5pPlayer: H5PPlayer,
 		private h5pAjaxEndpoint: H5PAjaxEndpoint,
 		private libraryService: LibraryStorage,
-		private readonly userService: UserService
+		private readonly userService: UserService,
+		private readonly authorizationService: AuthorizationService,
+		private readonly h5pContentRepo: H5PContentRepo
 	) {}
+
+	private async checkContentPermission(
+		userId: EntityId,
+		parentType: H5PContentParentType,
+		parentId: EntityId,
+		context: AuthorizationContext
+	) {
+		const allowedType = H5PContentMapper.mapToAllowedAuthorizationEntityType(parentType);
+		await this.authorizationService.checkPermissionByReferences(userId, allowedType, parentId, context);
+	}
 
 	/**
 	 * Returns a callback that parses the request range.
@@ -61,8 +77,6 @@ export class H5PEditorUc {
 	}
 
 	private mapH5pError(error: unknown) {
-		console.error(error);
-
 		if (error instanceof H5pError) {
 			return new HttpException(error.message, error.httpStatusCode);
 		}
@@ -94,33 +108,31 @@ export class H5PEditorUc {
 		currentUser: ICurrentUser,
 		query: AjaxPostQueryParams,
 		body: AjaxPostBodyParams,
-		files?: Express.Multer.File[]
+		contentFile?: Express.Multer.File,
+		h5pFile?: Express.Multer.File
 	) {
 		const user = this.changeUserType(currentUser);
 		const language = await this.getUserLanguage(currentUser);
 
 		try {
-			const filesFile = files?.find((file) => file.fieldname === 'file');
-			const libraryUploadFile = files?.find((file) => file.fieldname === 'h5p');
-
 			const result = await this.h5pAjaxEndpoint.postAjax(
 				query.action,
 				body,
 				language,
 				user,
-				filesFile && {
-					data: filesFile.buffer,
-					mimetype: filesFile.mimetype,
-					name: filesFile.originalname,
-					size: filesFile.size,
+				contentFile && {
+					data: contentFile.buffer,
+					mimetype: contentFile.mimetype,
+					name: contentFile.originalname,
+					size: contentFile.size,
 				},
 				query.id,
 				undefined,
-				libraryUploadFile && {
-					data: libraryUploadFile.buffer,
-					mimetype: libraryUploadFile.mimetype,
-					name: libraryUploadFile.originalname,
-					size: libraryUploadFile.size,
+				h5pFile && {
+					data: h5pFile.buffer,
+					mimetype: h5pFile.mimetype,
+					name: h5pFile.originalname,
+					size: h5pFile.size,
 				},
 				undefined // TODO: HubID?
 			);
@@ -132,6 +144,9 @@ export class H5PEditorUc {
 	}
 
 	public async getContentParameters(contentId: string, currentUser: ICurrentUser) {
+		const { parentType, parentId } = await this.h5pContentRepo.findById(contentId);
+		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.read([]));
+
 		const user = this.changeUserType(currentUser);
 
 		try {
@@ -154,14 +169,18 @@ export class H5PEditorUc {
 		contentLength: number;
 		contentRange?: { start: number; end: number };
 	}> {
+		const { parentType, parentId } = await this.h5pContentRepo.findById(contentId);
+		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.read([]));
+
 		const user = this.changeUserType(currentUser);
 
 		try {
+			const rangeCallback = this.getRange(req);
 			const { mimetype, range, stats, stream } = await this.h5pAjaxEndpoint.getContentFile(
 				contentId,
 				file,
 				user,
-				this.getRange(req)
+				rangeCallback
 			);
 
 			return {
@@ -202,11 +221,12 @@ export class H5PEditorUc {
 		const user = this.changeUserType(currentUser);
 
 		try {
+			const rangeCallback = this.getRange(req);
 			const { mimetype, range, stats, stream } = await this.h5pAjaxEndpoint.getTemporaryFile(
 				file,
 				user,
 				// @ts-expect-error 2345: Callback can return undefined, typings from @lumieducation/h5p-server are wrong
-				this.getRange(req)
+				rangeCallback
 			);
 
 			return {
@@ -221,16 +241,19 @@ export class H5PEditorUc {
 	}
 
 	public async getH5pPlayer(currentUser: ICurrentUser, contentId: string): Promise<IPlayerModel> {
-		// TODO: await this.checkPermission...
+		const { parentType, parentId } = await this.h5pContentRepo.findById(contentId);
+		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.read([]));
+
 		const user = this.changeUserType(currentUser);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		const playerModel: IPlayerModel = await this.h5pPlayer.render(contentId, user);
+
 		return playerModel;
 	}
 
 	public async getEmptyH5pEditor(currentUser: ICurrentUser, language: LanguageType) {
-		// TODO: await this.checkPermission...
 		const user = this.changeUserType(currentUser);
+
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		const createdH5PEditor: IEditorModel = await this.h5pEditor.render(
 			undefined as unknown as string, // Lumi typings are wrong because they dont "use strict", this method actually accepts both string and undefined
@@ -242,7 +265,9 @@ export class H5PEditorUc {
 	}
 
 	public async getH5pEditor(currentUser: ICurrentUser, contentId: string, language: LanguageType) {
-		// TODO: await this.checkPermission...
+		const { parentType, parentId } = await this.h5pContentRepo.findById(contentId);
+		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.write([]));
+
 		const user = this.changeUserType(currentUser);
 
 		const [editorModel, content] = await Promise.all([
@@ -257,7 +282,9 @@ export class H5PEditorUc {
 	}
 
 	public async deleteH5pContent(currentUser: ICurrentUser, contentId: string): Promise<boolean> {
-		// TODO: await this.checkPermission...
+		const { parentType, parentId } = await this.h5pContentRepo.findById(contentId);
+		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.write([]));
+
 		const user = this.changeUserType(currentUser);
 		let deletedContent = false;
 		try {
@@ -275,10 +302,13 @@ export class H5PEditorUc {
 		currentUser: ICurrentUser,
 		params: unknown,
 		metadata: IContentMetadata,
-		mainLibraryUbername: string
+		mainLibraryUbername: string,
+		parentType: H5PContentParentType,
+		parentId: EntityId
 	): Promise<{ id: string; metadata: IContentMetadata }> {
-		// TODO: await this.checkPermission...
-		const user = this.changeUserType(currentUser);
+		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.write([]));
+
+		const user = this.createAugmentedLumiUser(currentUser, parentType, parentId);
 
 		const newContentId = await this.h5pEditor.saveOrUpdateContentReturnMetaData(
 			undefined as unknown as string, // Lumi typings are wrong because they dont "use strict", this method actually accepts both string and undefined
@@ -296,10 +326,13 @@ export class H5PEditorUc {
 		currentUser: ICurrentUser,
 		params: unknown,
 		metadata: IContentMetadata,
-		mainLibraryUbername: string
+		mainLibraryUbername: string,
+		parentType: H5PContentParentType,
+		parentId: EntityId
 	): Promise<{ id: string; metadata: IContentMetadata }> {
-		// TODO: await this.checkPermission...
-		const user = this.changeUserType(currentUser);
+		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.write([]));
+
+		const user = this.createAugmentedLumiUser(currentUser, parentType, parentId);
 
 		const newContentId = await this.h5pEditor.saveOrUpdateContentReturnMetaData(
 			contentId,
@@ -312,9 +345,8 @@ export class H5PEditorUc {
 		return newContentId;
 	}
 
-	private changeUserType(currentUser: ICurrentUser): IUser {
-		// TODO: declare IUser (e.g. add roles, schoolId, etc.)
-		const user: IUser = {
+	private changeUserType(currentUser: ICurrentUser): LumiIUser {
+		const user: LumiIUser = {
 			canCreateRestricted: false,
 			canInstallRecommended: true,
 			canUpdateAndInstallLibraries: true,
@@ -323,13 +355,28 @@ export class H5PEditorUc {
 			name: '',
 			type: '',
 		};
+
+		return user;
+	}
+
+	private createAugmentedLumiUser(
+		currentUser: ICurrentUser,
+		contentParentType: H5PContentParentType,
+		contentParentId: EntityId
+	) {
+		const user = new LumiUserWithContentData(this.changeUserType(currentUser), {
+			parentType: contentParentType,
+			parentId: contentParentId,
+			schoolId: currentUser.schoolId,
+		});
+
 		return user;
 	}
 
 	private async getUserLanguage(currentUser: ICurrentUser): Promise<string> {
 		const languageUser = await this.userService.findById(currentUser.userId);
 		let language = 'de';
-		if (languageUser && languageUser.language) {
+		if (languageUser?.language) {
 			language = languageUser.language.toString();
 		}
 		return language;

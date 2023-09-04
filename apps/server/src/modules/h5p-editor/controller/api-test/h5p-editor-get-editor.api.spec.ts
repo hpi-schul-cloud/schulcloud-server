@@ -1,14 +1,14 @@
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import request from 'supertest';
+import { DeepMocked, createMock } from '@golevelup/ts-jest/lib/mocks';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
-import { Request } from 'express';
-import { DeepMocked, createMock } from '@golevelup/ts-jest/lib/mocks';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
+import { Request } from 'express';
+import request from 'supertest';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 import { H5PEditorUc } from '../../uc/h5p.uc';
 
@@ -18,11 +18,11 @@ class API {
 	}
 
 	async emptyEditor() {
-		return request(this.app.getHttpServer()).get(`/h5p-editor/edit`);
+		return request(this.app.getHttpServer()).get(`/h5p-editor/edit/de`);
 	}
 
 	async editH5pContent(contentId: string) {
-		return request(this.app.getHttpServer()).get(`/h5p-editor/edit/${contentId}`);
+		return request(this.app.getHttpServer()).get(`/h5p-editor/edit/${contentId}/de`);
 	}
 }
 

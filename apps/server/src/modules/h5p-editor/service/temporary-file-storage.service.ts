@@ -67,10 +67,18 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		return response.data;
 	}
 
-	public async listFiles(user?: IUser | undefined): Promise<ITemporaryFile[]> {
+	public async listFiles(user?: IUser): Promise<ITemporaryFile[]> {
 		// method is expected to support listing all files in database
 		// Lumi uses the variant without a user to search for expired files, so we only return those
-		return user ? this.repo.findByUser(user.id) : this.repo.findExpired();
+
+		let files: ITemporaryFile[];
+		if (user) {
+			files = await this.repo.findByUser(user.id);
+		} else {
+			files = await this.repo.findExpired();
+		}
+
+		return files;
 	}
 
 	public async saveFile(

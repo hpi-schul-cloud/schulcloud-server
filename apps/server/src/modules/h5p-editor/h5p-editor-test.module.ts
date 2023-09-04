@@ -1,7 +1,6 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
+import { MongoMemoryDatabaseModule, MongoDatabaseModuleOptions } from '@shared/infra/database';
 import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
 import { CoreModule } from '@src/core';
 import { LegacyLogger, LoggerModule } from '@src/core/logger';

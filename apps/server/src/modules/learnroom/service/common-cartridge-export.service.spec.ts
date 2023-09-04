@@ -70,7 +70,7 @@ describe('CommonCartridgeExportService', () => {
 				{} as IComponentProperties,
 			],
 		});
-		tasks = taskFactory.buildList(5);
+		tasks = taskFactory.buildListWithId(5);
 	});
 
 	afterAll(async () => {
@@ -132,13 +132,14 @@ describe('CommonCartridgeExportService', () => {
 				expect(manifest).toContain(course.teachers[1].lastName);
 				expect(manifest).toContain(course.createdAt.getFullYear().toString());
 			});
-			// TODO: will be done in EW-526: https://ticketsystem.dbildungscloud.de/browse/EW-526
-			// it('should add tasks as assignments', () => {
-			// 	const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
-			// 	tasks.forEach((task) => {
-			// 		expect(manifest).toContain(`i${task.id}`);
-			// 	});
-			// });
+
+			it('should add tasks as assignments', () => {
+				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+				tasks.forEach((task) => {
+					expect(manifest).toContain(`<title>${task.name}</title>`);
+					expect(manifest).toContain(`identifier="i${task.id}" type="webcontent" intendeduse="unspecified"`);
+				});
+			});
 
 			it('should add version 1 information to manifest file', () => {
 				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
@@ -180,6 +181,14 @@ describe('CommonCartridgeExportService', () => {
 				expect(manifest).toContain(course.teachers[1].firstName);
 				expect(manifest).toContain(course.teachers[1].lastName);
 				expect(manifest).toContain(course.createdAt.getFullYear().toString());
+			});
+
+			it('should add tasks as assignments', () => {
+				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+				tasks.forEach((task) => {
+					expect(manifest).toContain(`<title>${task.name}</title>`);
+					expect(manifest).toContain(`identifier="i${task.id}" type="webcontent" intendeduse="assignment"`);
+				});
 			});
 
 			it('should add version 3 information to manifest file', () => {

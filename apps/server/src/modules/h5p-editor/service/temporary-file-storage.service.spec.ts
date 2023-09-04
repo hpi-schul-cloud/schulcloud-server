@@ -1,16 +1,16 @@
+import { ServiceOutputTypes } from '@aws-sdk/client-s3';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { IUser } from '@lumieducation/h5p-server';
+import { Test, TestingModule } from '@nestjs/testing';
+import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
+import { FileDto } from '@src/modules/files-storage/dto';
+import { IGetFileResponse } from '@src/modules/files-storage/interface';
 import { ReadStream } from 'fs';
 import { join } from 'node:path';
 import { Readable } from 'node:stream';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ServiceOutputTypes } from '@aws-sdk/client-s3';
-import { IUser } from '@lumieducation/h5p-server';
-import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
-import { IGetFileResponse } from '@src/modules/files-storage/interface';
-import { FileDto } from '@src/modules/files-storage/dto';
-import { TemporaryFileStorage } from './temporary-file-storage.service';
 import { TemporaryFile } from '../entity/temporary-file.entity';
 import { TemporaryFileRepo } from '../repo/temporary-file.repo';
+import { TemporaryFileStorage } from './temporary-file-storage.service';
 
 const today = new Date();
 const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
@@ -188,6 +188,7 @@ describe('TemporaryFileStorage', () => {
 					contentLength: undefined,
 					contentRange: undefined,
 					etag: undefined,
+					name: '',
 				};
 				repo.findByUserAndFilename.mockResolvedValueOnce(file1);
 				s3clientAdapter.get.mockResolvedValueOnce(response);

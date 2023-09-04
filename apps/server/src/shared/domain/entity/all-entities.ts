@@ -1,5 +1,8 @@
 import { ShareToken } from '@src/modules/sharing/entity/share-token.entity';
 import { ExternalToolPseudonymEntity, PseudonymEntity } from '@src/modules/pseudonym/entity';
+import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
+import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity';
+import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
 import { Account } from './account.entity';
 import {
 	CardNode,
@@ -11,7 +14,6 @@ import {
 	SubmissionItemNode,
 } from './boardnode';
 import { BoardNode } from './boardnode/boardnode.entity';
-import { CardElement, RichTextCardElement } from './card-element.entity';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
@@ -36,10 +38,8 @@ import { SchoolYear } from './schoolyear.entity';
 import { StorageProvider } from './storageprovider.entity';
 import { Submission } from './submission.entity';
 import { System } from './system.entity';
-import { TaskCard } from './task-card.entity';
 import { Task } from './task.entity';
-import { Team, TeamUser } from './team.entity';
-import { ContextExternalTool, ExternalTool, SchoolExternalTool } from './tools';
+import { TeamEntity, TeamUserEntity } from './team.entity';
 import { UserLoginMigration } from './user-login-migration.entity';
 import { User } from './user.entity';
 import { VideoConference } from './video-conference.entity';
@@ -59,12 +59,12 @@ export const ALL_ENTITIES = [
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
 	Course,
-	ContextExternalTool,
+	ContextExternalToolEntity,
 	CourseGroup,
 	CourseNews,
 	DashboardGridElementModel,
 	DashboardModelEntity,
-	ExternalTool,
+	ExternalToolEntity,
 	FederalState,
 	File,
 	ImportUser,
@@ -77,7 +77,7 @@ export const ALL_ENTITIES = [
 	ExternalToolPseudonymEntity,
 	Role,
 	School,
-	SchoolExternalTool,
+	SchoolExternalToolEntity,
 	SchoolNews,
 	SchoolRolePermission,
 	SchoolRoles,
@@ -88,12 +88,9 @@ export const ALL_ENTITIES = [
 	System,
 	Task,
 	TaskBoardElement,
-	TaskCard,
-	CardElement,
-	RichTextCardElement,
-	Team,
+	TeamEntity,
 	TeamNews,
-	TeamUser,
+	TeamUserEntity,
 	User,
 	UserLoginMigration,
 	VideoConference,

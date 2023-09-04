@@ -5,7 +5,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
-import { H5PEditorTestModule } from '@src/modules/h5p-editor/h5p-editor-test.module';
+import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 
 describe('H5PEditor Controller (api)', () => {
 	let app: INestApplication;

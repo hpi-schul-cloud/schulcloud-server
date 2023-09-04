@@ -9,6 +9,7 @@ import { ICurrentUser } from '@src/modules/authentication';
 import { Request } from 'express';
 import { DeepMocked, createMock } from '@golevelup/ts-jest/lib/mocks';
 import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
+import { IPlayerModel } from '@lumieducation/h5p-server';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 import { H5PEditorUc } from '../../uc/h5p.uc';
 
@@ -26,7 +27,8 @@ const setup = () => {
 	const contentId = new ObjectId(0).toString();
 	const notExistingContentId = new ObjectId(1).toString();
 
-	const playerResult = {
+	// @ts-expect-error partial object
+	const playerResult: IPlayerModel = {
 		contentId,
 		dependencies: [],
 		downloadPath: '',
@@ -94,7 +96,6 @@ describe('H5PEditor Controller (api)', () => {
 		describe('with valid request params', () => {
 			it('should return 200 status', async () => {
 				const { contentId, playerResult } = setup();
-				// @ts-expect-error partial object
 				h5PEditorUc.getH5pPlayer.mockResolvedValueOnce(playerResult);
 				const response = await api.getPlayer(contentId);
 				expect(response.status).toEqual(200);

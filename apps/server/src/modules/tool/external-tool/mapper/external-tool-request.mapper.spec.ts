@@ -1,30 +1,27 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { SortOrder, SortOrderMap } from '@shared/domain';
+
+import {
+	basicToolConfigFactory,
+	customParameterFactory,
+	externalToolFactory,
+	lti11ToolConfigFactory,
+	oauth2ToolConfigFactory,
+} from '@shared/testing';
+import { CustomParameter } from '../../common/domain';
 import {
 	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	SortOrder,
-	SortOrderMap,
-	ToolConfigType,
-} from '@shared/domain';
-import {
-	BasicToolConfigDO,
-	CustomParameterDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/tool';
-import { basicToolConfigDOFactory, customParameterDOFactory, externalToolDOFactory } from '@shared/testing';
-import {
 	CustomParameterLocationParams,
+	CustomParameterScope,
 	CustomParameterScopeTypeParams,
+	CustomParameterType,
 	CustomParameterTypeParams,
-	ExternalToolSearchQuery,
 	LtiMessageType,
 	LtiPrivacyPermission,
 	TokenEndpointAuthMethod,
-} from '../../common/interface';
-import { ExternalToolRequestMapper } from './external-tool-request.mapper';
+	ToolConfigType,
+} from '../../common/enum';
+import { ExternalToolSearchQuery } from '../../common/interface';
 import {
 	BasicToolConfigParams,
 	CustomParameterPostParams,
@@ -37,6 +34,8 @@ import {
 	Oauth2ToolConfigCreateParams,
 	SortExternalToolParams,
 } from '../controller/dto';
+import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
+import { ExternalToolRequestMapper } from './external-tool-request.mapper';
 
 describe('ExternalToolRequestMapper', () => {
 	let module: TestingModule;
@@ -54,98 +53,71 @@ describe('ExternalToolRequestMapper', () => {
 		await module.close();
 	});
 
-	const setup = () => {
-		const basicConfigParams = new BasicToolConfigParams();
-		basicConfigParams.type = ToolConfigType.BASIC;
-		basicConfigParams.baseUrl = 'mockUrl';
-
-		const customParameterPostParams = new CustomParameterPostParams();
-		customParameterPostParams.name = 'mockName';
-		customParameterPostParams.displayName = 'displayName';
-		customParameterPostParams.description = 'description';
-		customParameterPostParams.defaultValue = 'mockDefault';
-		customParameterPostParams.location = CustomParameterLocationParams.PATH;
-		customParameterPostParams.scope = CustomParameterScopeTypeParams.SCHOOL;
-		customParameterPostParams.type = CustomParameterTypeParams.STRING;
-		customParameterPostParams.regex = 'mockRegex';
-		customParameterPostParams.regexComment = 'mockComment';
-		customParameterPostParams.isOptional = false;
-
-		const externalToolCreateParams = new ExternalToolCreateParams();
-		externalToolCreateParams.name = 'mockName';
-		externalToolCreateParams.url = 'mockUrl';
-		externalToolCreateParams.logoUrl = 'mockLogoUrl';
-		externalToolCreateParams.parameters = [customParameterPostParams];
-		externalToolCreateParams.isHidden = true;
-		externalToolCreateParams.openNewTab = true;
-
-		const externalToolUpdateParams = new ExternalToolUpdateParams();
-		externalToolUpdateParams.id = 'id';
-		externalToolUpdateParams.name = 'mockName';
-		externalToolUpdateParams.url = 'mockUrl';
-		externalToolUpdateParams.logoUrl = 'mockLogoUrl';
-		externalToolUpdateParams.parameters = [customParameterPostParams];
-		externalToolUpdateParams.isHidden = true;
-		externalToolUpdateParams.openNewTab = true;
-
-		const basicToolConfigDO: BasicToolConfigDO = basicToolConfigDOFactory.build({
-			type: ToolConfigType.BASIC,
-			baseUrl: 'mockUrl',
-		});
-
-		const customParameterDO: CustomParameterDO = customParameterDOFactory.build({
-			name: 'mockName',
-			displayName: 'displayName',
-			description: 'description',
-			default: 'mockDefault',
-			location: CustomParameterLocation.PATH,
-			scope: CustomParameterScope.SCHOOL,
-			type: CustomParameterType.STRING,
-			regex: 'mockRegex',
-			regexComment: 'mockComment',
-			isOptional: false,
-		});
-
-		const externalToolDOCreate: ExternalToolDO = externalToolDOFactory.build({
-			name: 'mockName',
-			url: 'mockUrl',
-			logoUrl: 'mockLogoUrl',
-			parameters: [customParameterDO],
-			isHidden: true,
-			openNewTab: true,
-			version: 1,
-			config: basicToolConfigDO,
-		});
-
-		const externalToolDOUpdate: ExternalToolDO = externalToolDOFactory.buildWithId(
-			{
-				name: 'mockName',
-				url: 'mockUrl',
-				logoUrl: 'mockLogoUrl',
-				parameters: [customParameterDO],
-				isHidden: true,
-				openNewTab: true,
-				version: 1,
-				config: basicToolConfigDO,
-			},
-			externalToolUpdateParams.id
-		);
-
-		return {
-			externalToolCreateParams,
-			externalToolUpdateParams,
-			externalToolDOCreate,
-			externalToolDOUpdate,
-			basicToolConfigDO,
-			basicConfigParams,
-		};
-	};
-
 	describe('mapCreateRequest', () => {
 		describe('when mapping basic tool', () => {
-			it('should map the request to external tool DO with basicConfig', () => {
-				const { externalToolCreateParams, externalToolDOCreate, basicConfigParams } = setup();
+			const setup = () => {
+				const basicConfigParams = new BasicToolConfigParams();
+				basicConfigParams.type = ToolConfigType.BASIC;
+				basicConfigParams.baseUrl = 'mockUrl';
+
+				const customParameterPostParams = new CustomParameterPostParams();
+				customParameterPostParams.name = 'mockName';
+				customParameterPostParams.displayName = 'displayName';
+				customParameterPostParams.description = 'description';
+				customParameterPostParams.defaultValue = 'mockDefault';
+				customParameterPostParams.location = CustomParameterLocationParams.PATH;
+				customParameterPostParams.scope = CustomParameterScopeTypeParams.SCHOOL;
+				customParameterPostParams.type = CustomParameterTypeParams.STRING;
+				customParameterPostParams.regex = 'mockRegex';
+				customParameterPostParams.regexComment = 'mockComment';
+				customParameterPostParams.isOptional = false;
+
+				const externalToolCreateParams = new ExternalToolCreateParams();
+				externalToolCreateParams.name = 'mockName';
+				externalToolCreateParams.url = 'mockUrl';
+				externalToolCreateParams.logoUrl = 'mockLogoUrl';
+				externalToolCreateParams.parameters = [customParameterPostParams];
+				externalToolCreateParams.isHidden = true;
+				externalToolCreateParams.openNewTab = true;
 				externalToolCreateParams.config = basicConfigParams;
+
+				const customParameterDO: CustomParameter = customParameterFactory.build({
+					name: 'mockName',
+					displayName: 'displayName',
+					description: 'description',
+					default: 'mockDefault',
+					location: CustomParameterLocation.PATH,
+					scope: CustomParameterScope.SCHOOL,
+					type: CustomParameterType.STRING,
+					regex: 'mockRegex',
+					regexComment: 'mockComment',
+					isOptional: false,
+				});
+
+				const basicToolConfigDO: BasicToolConfig = basicToolConfigFactory.build({
+					type: ToolConfigType.BASIC,
+					baseUrl: 'mockUrl',
+				});
+
+				const externalToolDOCreate: ExternalTool = externalToolFactory.build({
+					name: 'mockName',
+					url: 'mockUrl',
+					logoUrl: 'mockLogoUrl',
+					parameters: [customParameterDO],
+					isHidden: true,
+					openNewTab: true,
+					version: 1,
+					config: basicToolConfigDO,
+				});
+
+				return {
+					externalToolCreateParams,
+					externalToolDOCreate,
+				};
+			};
+
+			it('should map the request to external tool DO with basicConfig', () => {
+				const { externalToolCreateParams, externalToolDOCreate } = setup();
 
 				const result = mapper.mapCreateRequest(externalToolCreateParams, 1);
 
@@ -154,7 +126,7 @@ describe('ExternalToolRequestMapper', () => {
 		});
 
 		describe('when mapping lti tool', () => {
-			const ltiSetup = () => {
+			const setup = () => {
 				const lti11ConfigParams = new Lti11ToolConfigCreateParams();
 				lti11ConfigParams.type = ToolConfigType.LTI11;
 				lti11ConfigParams.baseUrl = 'mockUrl';
@@ -163,8 +135,9 @@ describe('ExternalToolRequestMapper', () => {
 				lti11ConfigParams.resource_link_id = 'mockLink';
 				lti11ConfigParams.lti_message_type = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
 				lti11ConfigParams.privacy_permission = LtiPrivacyPermission.NAME;
+				lti11ConfigParams.launch_presentation_locale = 'de-DE';
 
-				const lti11ToolConfigDO: Lti11ToolConfigDO = new Lti11ToolConfigDO({
+				const lti11ToolConfigDO: Lti11ToolConfig = new Lti11ToolConfig({
 					privacy_permission: LtiPrivacyPermission.NAME,
 					secret: 'mockSecret',
 					key: 'mockKey',
@@ -172,15 +145,62 @@ describe('ExternalToolRequestMapper', () => {
 					lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 					type: ToolConfigType.LTI11,
 					baseUrl: 'mockUrl',
+					launch_presentation_locale: 'de-DE',
 				});
-				return { lti11ToolConfigDO, lti11ConfigParams };
+
+				const customParameterPostParams = new CustomParameterPostParams();
+				customParameterPostParams.name = 'mockName';
+				customParameterPostParams.displayName = 'displayName';
+				customParameterPostParams.description = 'description';
+				customParameterPostParams.defaultValue = 'mockDefault';
+				customParameterPostParams.location = CustomParameterLocationParams.PATH;
+				customParameterPostParams.scope = CustomParameterScopeTypeParams.SCHOOL;
+				customParameterPostParams.type = CustomParameterTypeParams.STRING;
+				customParameterPostParams.regex = 'mockRegex';
+				customParameterPostParams.regexComment = 'mockComment';
+				customParameterPostParams.isOptional = false;
+
+				const externalToolCreateParams = new ExternalToolCreateParams();
+				externalToolCreateParams.name = 'mockName';
+				externalToolCreateParams.url = 'mockUrl';
+				externalToolCreateParams.logoUrl = 'mockLogoUrl';
+				externalToolCreateParams.parameters = [customParameterPostParams];
+				externalToolCreateParams.isHidden = true;
+				externalToolCreateParams.openNewTab = true;
+				externalToolCreateParams.config = lti11ConfigParams;
+
+				const customParameterDO: CustomParameter = customParameterFactory.build({
+					name: 'mockName',
+					displayName: 'displayName',
+					description: 'description',
+					default: 'mockDefault',
+					location: CustomParameterLocation.PATH,
+					scope: CustomParameterScope.SCHOOL,
+					type: CustomParameterType.STRING,
+					regex: 'mockRegex',
+					regexComment: 'mockComment',
+					isOptional: false,
+				});
+
+				const externalToolDOCreate: ExternalTool = externalToolFactory.build({
+					name: 'mockName',
+					url: 'mockUrl',
+					logoUrl: 'mockLogoUrl',
+					parameters: [customParameterDO],
+					isHidden: true,
+					openNewTab: true,
+					version: 1,
+					config: lti11ToolConfigDO,
+				});
+
+				return {
+					externalToolCreateParams,
+					externalToolDOCreate,
+				};
 			};
 
 			it('should map the request to external tool DO with lti11 config', () => {
-				const { lti11ToolConfigDO, lti11ConfigParams } = ltiSetup();
 				const { externalToolCreateParams, externalToolDOCreate } = setup();
-				externalToolCreateParams.config = lti11ConfigParams;
-				externalToolDOCreate.config = lti11ToolConfigDO;
 
 				const result = mapper.mapCreateRequest(externalToolCreateParams, 1);
 
@@ -189,7 +209,7 @@ describe('ExternalToolRequestMapper', () => {
 		});
 
 		describe('when mapping oauth tool', () => {
-			const oauthSetup = () => {
+			const setup = () => {
 				const oauth2ConfigParams = new Oauth2ToolConfigCreateParams();
 				oauth2ConfigParams.type = ToolConfigType.OAUTH2;
 				oauth2ConfigParams.baseUrl = 'mockUrl';
@@ -201,7 +221,7 @@ describe('ExternalToolRequestMapper', () => {
 				oauth2ConfigParams.redirectUris = ['mockUri'];
 				oauth2ConfigParams.tokenEndpointAuthMethod = TokenEndpointAuthMethod.CLIENT_SECRET_POST;
 
-				const oauth2ToolConfigDO: Oauth2ToolConfigDO = new Oauth2ToolConfigDO({
+				const oauth2ToolConfigDO: Oauth2ToolConfig = oauth2ToolConfigFactory.build({
 					clientId: 'mockId',
 					type: ToolConfigType.OAUTH2,
 					baseUrl: 'mockUrl',
@@ -213,17 +233,59 @@ describe('ExternalToolRequestMapper', () => {
 					tokenEndpointAuthMethod: TokenEndpointAuthMethod.CLIENT_SECRET_POST,
 				});
 
+				const customParameterPostParams = new CustomParameterPostParams();
+				customParameterPostParams.name = 'mockName';
+				customParameterPostParams.displayName = 'displayName';
+				customParameterPostParams.description = 'description';
+				customParameterPostParams.defaultValue = 'mockDefault';
+				customParameterPostParams.location = CustomParameterLocationParams.PATH;
+				customParameterPostParams.scope = CustomParameterScopeTypeParams.SCHOOL;
+				customParameterPostParams.type = CustomParameterTypeParams.STRING;
+				customParameterPostParams.regex = 'mockRegex';
+				customParameterPostParams.regexComment = 'mockComment';
+				customParameterPostParams.isOptional = false;
+
+				const externalToolCreateParams = new ExternalToolCreateParams();
+				externalToolCreateParams.name = 'mockName';
+				externalToolCreateParams.url = 'mockUrl';
+				externalToolCreateParams.logoUrl = 'mockLogoUrl';
+				externalToolCreateParams.parameters = [customParameterPostParams];
+				externalToolCreateParams.isHidden = true;
+				externalToolCreateParams.openNewTab = true;
+				externalToolCreateParams.config = oauth2ConfigParams;
+
+				const customParameterDO: CustomParameter = customParameterFactory.build({
+					name: 'mockName',
+					displayName: 'displayName',
+					description: 'description',
+					default: 'mockDefault',
+					location: CustomParameterLocation.PATH,
+					scope: CustomParameterScope.SCHOOL,
+					type: CustomParameterType.STRING,
+					regex: 'mockRegex',
+					regexComment: 'mockComment',
+					isOptional: false,
+				});
+
+				const externalToolDOCreate: ExternalTool = externalToolFactory.build({
+					name: 'mockName',
+					url: 'mockUrl',
+					logoUrl: 'mockLogoUrl',
+					parameters: [customParameterDO],
+					isHidden: true,
+					openNewTab: true,
+					version: 1,
+					config: oauth2ToolConfigDO,
+				});
+
 				return {
-					oauth2ConfigParams,
-					oauth2ToolConfigDO,
+					externalToolCreateParams,
+					externalToolDOCreate,
 				};
 			};
 
 			it('should map the request to external tool DO with oauth2', () => {
-				const { oauth2ConfigParams, oauth2ToolConfigDO } = oauthSetup();
 				const { externalToolCreateParams, externalToolDOCreate } = setup();
-				externalToolCreateParams.config = oauth2ConfigParams;
-				externalToolDOCreate.config = oauth2ToolConfigDO;
 
 				const result = mapper.mapCreateRequest(externalToolCreateParams, 1);
 
@@ -234,9 +296,73 @@ describe('ExternalToolRequestMapper', () => {
 
 	describe('mapUpdateRequest', () => {
 		describe('when mapping basic tool', () => {
-			it('should map the request to external tool DO with basicConfig', () => {
-				const { externalToolUpdateParams, externalToolDOUpdate, basicConfigParams } = setup();
+			const setup = () => {
+				const basicConfigParams = new BasicToolConfigParams();
+				basicConfigParams.type = ToolConfigType.BASIC;
+				basicConfigParams.baseUrl = 'mockUrl';
+
+				const customParameterPostParams = new CustomParameterPostParams();
+				customParameterPostParams.name = 'mockName';
+				customParameterPostParams.displayName = 'displayName';
+				customParameterPostParams.description = 'description';
+				customParameterPostParams.defaultValue = 'mockDefault';
+				customParameterPostParams.location = CustomParameterLocationParams.PATH;
+				customParameterPostParams.scope = CustomParameterScopeTypeParams.SCHOOL;
+				customParameterPostParams.type = CustomParameterTypeParams.STRING;
+				customParameterPostParams.regex = 'mockRegex';
+				customParameterPostParams.regexComment = 'mockComment';
+				customParameterPostParams.isOptional = false;
+
+				const externalToolUpdateParams = new ExternalToolUpdateParams();
+				externalToolUpdateParams.id = 'id';
+				externalToolUpdateParams.name = 'mockName';
+				externalToolUpdateParams.url = 'mockUrl';
+				externalToolUpdateParams.logoUrl = 'mockLogoUrl';
+				externalToolUpdateParams.parameters = [customParameterPostParams];
+				externalToolUpdateParams.isHidden = true;
+				externalToolUpdateParams.openNewTab = true;
 				externalToolUpdateParams.config = basicConfigParams;
+
+				const customParameterDO: CustomParameter = customParameterFactory.build({
+					name: 'mockName',
+					displayName: 'displayName',
+					description: 'description',
+					default: 'mockDefault',
+					location: CustomParameterLocation.PATH,
+					scope: CustomParameterScope.SCHOOL,
+					type: CustomParameterType.STRING,
+					regex: 'mockRegex',
+					regexComment: 'mockComment',
+					isOptional: false,
+				});
+
+				const basicToolConfigDO: BasicToolConfig = basicToolConfigFactory.build({
+					type: ToolConfigType.BASIC,
+					baseUrl: 'mockUrl',
+				});
+
+				const externalToolDOUpdate: ExternalTool = externalToolFactory.buildWithId(
+					{
+						name: 'mockName',
+						url: 'mockUrl',
+						logoUrl: 'mockLogoUrl',
+						parameters: [customParameterDO],
+						isHidden: true,
+						openNewTab: true,
+						version: 1,
+						config: basicToolConfigDO,
+					},
+					externalToolUpdateParams.id
+				);
+
+				return {
+					externalToolUpdateParams,
+					externalToolDOUpdate,
+				};
+			};
+
+			it('should map the request to external tool DO with basicConfig', () => {
+				const { externalToolUpdateParams, externalToolDOUpdate } = setup();
 
 				const result = mapper.mapUpdateRequest(externalToolUpdateParams, 1);
 
@@ -245,7 +371,7 @@ describe('ExternalToolRequestMapper', () => {
 		});
 
 		describe('when mapping lti tool', () => {
-			const ltiSetup = () => {
+			const setup = () => {
 				const lti11ConfigParams = new Lti11ToolConfigUpdateParams();
 				lti11ConfigParams.type = ToolConfigType.LTI11;
 				lti11ConfigParams.baseUrl = 'mockUrl';
@@ -254,8 +380,9 @@ describe('ExternalToolRequestMapper', () => {
 				lti11ConfigParams.resource_link_id = 'mockLink';
 				lti11ConfigParams.lti_message_type = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
 				lti11ConfigParams.privacy_permission = LtiPrivacyPermission.NAME;
+				lti11ConfigParams.launch_presentation_locale = 'de-DE';
 
-				const lti11ToolConfigDO: Lti11ToolConfigDO = new Lti11ToolConfigDO({
+				const lti11ToolConfigDO: Lti11ToolConfig = lti11ToolConfigFactory.build({
 					privacy_permission: LtiPrivacyPermission.NAME,
 					secret: 'mockSecret',
 					key: 'mockKey',
@@ -263,16 +390,66 @@ describe('ExternalToolRequestMapper', () => {
 					lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 					type: ToolConfigType.LTI11,
 					baseUrl: 'mockUrl',
+					launch_presentation_locale: 'de-DE',
 				});
 
-				return { lti11ToolConfigDO, lti11ConfigParams };
+				const customParameterPostParams = new CustomParameterPostParams();
+				customParameterPostParams.name = 'mockName';
+				customParameterPostParams.displayName = 'displayName';
+				customParameterPostParams.description = 'description';
+				customParameterPostParams.defaultValue = 'mockDefault';
+				customParameterPostParams.location = CustomParameterLocationParams.PATH;
+				customParameterPostParams.scope = CustomParameterScopeTypeParams.SCHOOL;
+				customParameterPostParams.type = CustomParameterTypeParams.STRING;
+				customParameterPostParams.regex = 'mockRegex';
+				customParameterPostParams.regexComment = 'mockComment';
+				customParameterPostParams.isOptional = false;
+
+				const externalToolUpdateParams = new ExternalToolUpdateParams();
+				externalToolUpdateParams.id = 'id';
+				externalToolUpdateParams.name = 'mockName';
+				externalToolUpdateParams.url = 'mockUrl';
+				externalToolUpdateParams.logoUrl = 'mockLogoUrl';
+				externalToolUpdateParams.parameters = [customParameterPostParams];
+				externalToolUpdateParams.isHidden = true;
+				externalToolUpdateParams.openNewTab = true;
+				externalToolUpdateParams.config = lti11ConfigParams;
+
+				const customParameterDO: CustomParameter = customParameterFactory.build({
+					name: 'mockName',
+					displayName: 'displayName',
+					description: 'description',
+					default: 'mockDefault',
+					location: CustomParameterLocation.PATH,
+					scope: CustomParameterScope.SCHOOL,
+					type: CustomParameterType.STRING,
+					regex: 'mockRegex',
+					regexComment: 'mockComment',
+					isOptional: false,
+				});
+
+				const externalToolDOUpdate: ExternalTool = externalToolFactory.buildWithId(
+					{
+						name: 'mockName',
+						url: 'mockUrl',
+						logoUrl: 'mockLogoUrl',
+						parameters: [customParameterDO],
+						isHidden: true,
+						openNewTab: true,
+						version: 1,
+						config: lti11ToolConfigDO,
+					},
+					externalToolUpdateParams.id
+				);
+
+				return {
+					externalToolUpdateParams,
+					externalToolDOUpdate,
+				};
 			};
 
 			it('should map the request to external tool DO with lti11 config', () => {
-				const { lti11ToolConfigDO, lti11ConfigParams } = ltiSetup();
 				const { externalToolUpdateParams, externalToolDOUpdate } = setup();
-				externalToolUpdateParams.config = lti11ConfigParams;
-				externalToolDOUpdate.config = lti11ToolConfigDO;
 
 				const result = mapper.mapUpdateRequest(externalToolUpdateParams, 1);
 
@@ -281,7 +458,7 @@ describe('ExternalToolRequestMapper', () => {
 		});
 
 		describe('when mapping oauth tool', () => {
-			const oauthSetup = () => {
+			const setup = () => {
 				const oauth2ConfigParams = new Oauth2ToolConfigCreateParams();
 				oauth2ConfigParams.type = ToolConfigType.OAUTH2;
 				oauth2ConfigParams.baseUrl = 'mockUrl';
@@ -293,7 +470,7 @@ describe('ExternalToolRequestMapper', () => {
 				oauth2ConfigParams.redirectUris = ['mockUri'];
 				oauth2ConfigParams.tokenEndpointAuthMethod = TokenEndpointAuthMethod.CLIENT_SECRET_POST;
 
-				const oauth2ToolConfigDO: Oauth2ToolConfigDO = new Oauth2ToolConfigDO({
+				const oauth2ToolConfigDO: Oauth2ToolConfig = oauth2ToolConfigFactory.build({
 					clientId: 'mockId',
 					type: ToolConfigType.OAUTH2,
 					baseUrl: 'mockUrl',
@@ -305,17 +482,63 @@ describe('ExternalToolRequestMapper', () => {
 					tokenEndpointAuthMethod: TokenEndpointAuthMethod.CLIENT_SECRET_POST,
 				});
 
+				const customParameterPostParams = new CustomParameterPostParams();
+				customParameterPostParams.name = 'mockName';
+				customParameterPostParams.displayName = 'displayName';
+				customParameterPostParams.description = 'description';
+				customParameterPostParams.defaultValue = 'mockDefault';
+				customParameterPostParams.location = CustomParameterLocationParams.PATH;
+				customParameterPostParams.scope = CustomParameterScopeTypeParams.SCHOOL;
+				customParameterPostParams.type = CustomParameterTypeParams.STRING;
+				customParameterPostParams.regex = 'mockRegex';
+				customParameterPostParams.regexComment = 'mockComment';
+				customParameterPostParams.isOptional = false;
+
+				const externalToolUpdateParams = new ExternalToolUpdateParams();
+				externalToolUpdateParams.id = 'id';
+				externalToolUpdateParams.name = 'mockName';
+				externalToolUpdateParams.url = 'mockUrl';
+				externalToolUpdateParams.logoUrl = 'mockLogoUrl';
+				externalToolUpdateParams.parameters = [customParameterPostParams];
+				externalToolUpdateParams.isHidden = true;
+				externalToolUpdateParams.openNewTab = true;
+				externalToolUpdateParams.config = oauth2ConfigParams;
+
+				const customParameterDO: CustomParameter = customParameterFactory.build({
+					name: 'mockName',
+					displayName: 'displayName',
+					description: 'description',
+					default: 'mockDefault',
+					location: CustomParameterLocation.PATH,
+					scope: CustomParameterScope.SCHOOL,
+					type: CustomParameterType.STRING,
+					regex: 'mockRegex',
+					regexComment: 'mockComment',
+					isOptional: false,
+				});
+
+				const externalToolDOUpdate: ExternalTool = externalToolFactory.buildWithId(
+					{
+						name: 'mockName',
+						url: 'mockUrl',
+						logoUrl: 'mockLogoUrl',
+						parameters: [customParameterDO],
+						isHidden: true,
+						openNewTab: true,
+						version: 1,
+						config: oauth2ToolConfigDO,
+					},
+					externalToolUpdateParams.id
+				);
+
 				return {
-					oauth2ConfigParams,
-					oauth2ToolConfigDO,
+					externalToolUpdateParams,
+					externalToolDOUpdate,
 				};
 			};
 
 			it('should map the request to external tool DO with oauth2', () => {
-				const { oauth2ConfigParams, oauth2ToolConfigDO } = oauthSetup();
 				const { externalToolUpdateParams, externalToolDOUpdate } = setup();
-				externalToolUpdateParams.config = oauth2ConfigParams;
-				externalToolDOUpdate.config = oauth2ToolConfigDO;
 
 				const result = mapper.mapUpdateRequest(externalToolUpdateParams, 1);
 
@@ -325,34 +548,56 @@ describe('ExternalToolRequestMapper', () => {
 	});
 
 	describe('mapSortingQueryToDomain', () => {
-		it('should map controller sorting query to domain sort order map', () => {
-			const sortingQuery: SortExternalToolParams = {
-				sortBy: ExternalToolSortBy.ID,
-				sortOrder: SortOrder.asc,
+		describe('when sortBy is given', () => {
+			const setup = () => {
+				const sortingQuery: SortExternalToolParams = {
+					sortBy: ExternalToolSortBy.ID,
+					sortOrder: SortOrder.asc,
+				};
+
+				return { sortingQuery };
 			};
 
-			const result: SortOrderMap<ExternalToolDO> | undefined = mapper.mapSortingQueryToDomain(sortingQuery);
+			it('should map controller sorting query to domain sort order map', () => {
+				const { sortingQuery } = setup();
 
-			expect(result).toEqual({ id: SortOrder.asc });
+				const result: SortOrderMap<ExternalTool> | undefined = mapper.mapSortingQueryToDomain(sortingQuery);
+
+				expect(result).toEqual({ id: SortOrder.asc });
+			});
 		});
 
-		it('should map controller sorting query to undefined', () => {
-			const sortingQuery: SortExternalToolParams = {
-				sortOrder: SortOrder.asc,
+		describe('when sortBy is not given', () => {
+			const setup = () => {
+				const sortingQuery: SortExternalToolParams = {
+					sortOrder: SortOrder.asc,
+				};
+
+				return { sortingQuery };
 			};
 
-			const result: SortOrderMap<ExternalToolDO> | undefined = mapper.mapSortingQueryToDomain(sortingQuery);
+			it('should map controller sorting query to undefined', () => {
+				const { sortingQuery } = setup();
 
-			expect(result).toBeUndefined();
+				const result: SortOrderMap<ExternalTool> | undefined = mapper.mapSortingQueryToDomain(sortingQuery);
+
+				expect(result).toBeUndefined();
+			});
 		});
 	});
 
 	describe('mapExternalToolFilterQueryToExternalToolSearchQuery', () => {
-		it('should map params to a search query', () => {
+		const setup = () => {
 			const params: ExternalToolSearchParams = {
 				name: 'name',
 				clientId: 'clientId',
 			};
+
+			return { params };
+		};
+
+		it('should map params to a search query', () => {
+			const { params } = setup();
 
 			const result: ExternalToolSearchQuery = mapper.mapExternalToolFilterQueryToExternalToolSearchQuery(params);
 

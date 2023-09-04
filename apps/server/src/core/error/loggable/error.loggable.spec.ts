@@ -1,6 +1,8 @@
 import { NotFound } from '@feathersjs/errors';
-import { BadRequestException, HttpStatus } from '@nestjs/common';
+import { BadRequestException, HttpStatus, ValidationError } from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
 import { ApiValidationError, BusinessError } from '@shared/common';
+import { PrivacyProtect } from '@shared/controller';
 import { ErrorLoggable } from './error.loggable';
 
 class SampleBusinessError extends BusinessError {
@@ -16,21 +18,49 @@ class SampleBusinessError extends BusinessError {
 	}
 }
 
+class UserDto {
+	@ApiProperty()
+	username!: string;
+
+	@ApiProperty()
+	email!: string;
+
+	@PrivacyProtect()
+	@ApiProperty()
+	password!: string;
+}
+
 describe('ErrorLoggable', () => {
 	describe('getLogMessage', () => {
 		describe('when error is an ApiValidationError', () => {
 			const setup = () => {
-				const validationError1 = { property: 'foo', value: 'bar', constraints: { foo: 'must be baz' } };
-				const validationError2 = { property: 'bla', value: 'bli', constraints: { bla: 'must be blub' } };
-				const error = new ApiValidationError([validationError1, validationError2]);
+				const validationError1: ValidationError = {
+					property: 'username',
+					target: new UserDto(),
+					value: '',
+					constraints: { username: 'must not be empty' },
+				};
+				const validationError2 = {
+					property: 'email',
+					// missing target
+					value: 'john-example.com',
+					constraints: { email: 'must be a valid email address' },
+				};
+				const validationError3 = {
+					property: 'password', // privacy protected property
+					target: new UserDto(),
+					value: 'john-example.com',
+					constraints: { password: 'must contain at least one number' },
+				};
+				const error = new ApiValidationError([validationError1, validationError2, validationError3]);
 				const errorLoggable = new ErrorLoggable(error);
 				const expectedMessage = {
 					validationErrors: [
-						'Wrong property foo got bar : {"foo":"must be baz"}',
-						'Wrong property bla got bli : {"bla":"must be blub"}',
+						'Wrong property value for \'username\' got \'\' : {"username":"must not be empty"}',
+						'Wrong property value for \'email\' got \'######\' : {"email":"must be a valid email address"}',
+						'Wrong property value for \'password\' got \'######\' : {"password":"must contain at least one number"}',
 					],
 					type: 'API Validation Error',
-					stack: error.stack,
 				};
 
 				return { errorLoggable, expectedMessage };
@@ -52,7 +82,6 @@ describe('ErrorLoggable', () => {
 				const expectedMessage = {
 					error,
 					type: 'Feathers Error',
-					stack: error.stack,
 				};
 
 				return { errorLoggable, expectedMessage };
@@ -74,7 +103,6 @@ describe('ErrorLoggable', () => {
 				const expectedMessage = {
 					error,
 					type: 'Business Error',
-					stack: error.stack,
 				};
 
 				return { errorLoggable, expectedMessage };
@@ -96,7 +124,6 @@ describe('ErrorLoggable', () => {
 				const expectedMessage = {
 					error,
 					type: 'Technical Error',
-					stack: error.stack,
 				};
 
 				return { errorLoggable, expectedMessage };
@@ -118,7 +145,6 @@ describe('ErrorLoggable', () => {
 				const expectedMessage = {
 					error,
 					type: 'Unhandled or Unknown Error',
-					stack: error.stack,
 				};
 
 				return { errorLoggable, expectedMessage };

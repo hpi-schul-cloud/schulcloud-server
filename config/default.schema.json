@@ -330,22 +330,22 @@
 				"S3_ACCESS_KEY_ID_RW": {
 					"type": "string",
 					"default": "",
-					"description": "Access Key to S3 with R/W permissions"
+					"description": "Access Key to S3_BUCKET_CONTENT with R/W permissions"
 				},
 				"S3_SECRET_ACCESS_KEY_RW": {
 					"type": "string",
 					"default": "",
-					"description": "Secret key to S3 with R/W permissions"
+					"description": "Secret key to S3_BUCKET_CONTENT with R/W permissions"
 				},
 				"S3_ACCESS_KEY_ID_R": {
 					"type": "string",
 					"default": "",
-					"description": "Access Key to S3 with R permissions"
+					"description": "Access Key to S3_BUCKET_LIBRARIES with R permissions"
 				},
 				"S3_SECRET_ACCESS_KEY_R": {
 					"type": "string",
 					"default": "",
-					"description": "Secret key to S3 with R permissions"
+					"description": "Secret key to S3_BUCKET_LIBRARIES with R permissions"
 				},
 				"S3_BUCKET_CONTENT": {
 					"type": "string",
@@ -602,13 +602,8 @@
 		},
 		"SC_TITLE": {
 			"type": "string",
-			"default": "HPI Schul-Cloud",
+			"default": "dBildungscloud",
 			"description": "The used title."
-		},
-		"SC_SHORT_TITLE": {
-			"type": "string",
-			"default": "HPI Schul-Cloud",
-			"description": "Look to SC_TITLE, it is a possible short form of it."
 		},
 		"SC_DOMAIN": {
 			"type": "string",
@@ -630,11 +625,16 @@
 				"IS_ENABLED_BY_DEFAULT": {
 					"type": "boolean",
 					"description": "Grants teachers STUDENT_LIST permission by default."
+				},
+				"IS_VISIBLE": {
+					"type": "boolean",
+					"description": "Defines whether feature toggle for visibility of students to teachers is visible."
 				}
 			},
 			"default": {
 				"IS_CONFIGURABLE": false,
-				"IS_ENABLED_BY_DEFAULT": true
+				"IS_ENABLED_BY_DEFAULT": true,
+				"IS_VISIBLE": true
 			}
 		},
 		"FEATURE_SCHOOL_POLICY_ENABLED": {
@@ -1025,6 +1025,11 @@
 			"default": false,
 			"description": "Toggle for activating the column board."
 		},
+		"FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable submissions in column board."
+		},
 		"COLUMN_BOARD_HELP_LINK": {
 			"type": "string",
 			"default": "https://docs.dbildungscloud.de/pages/viewpage.action?pageId=270827606",
@@ -1207,11 +1212,6 @@
 				}
 			}
 		},
-		"FEATURE_TASK_CARD_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enable task card feature"
-		},
 		"FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1241,6 +1241,27 @@
 			"type": "boolean",
 			"default": false,
 			"description": "This feature flag controls whether the outdated user accounts are displayed or not. After a migration, all user accounts which were not migrated will be marked as outdated."
+		},
+		"FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION": {
+			"type": "boolean",
+			"default": false,
+			"description": "Displays the school-feature switch ENABLE_LDAP_SYNC_DURING_MIGRATION on the school-settings page."
+		},
+		"FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the configuration of custom parameters for context external tools"
+		},
+		"CTL_TOOLS": {
+			"type": "object",
+			"description": "CTL Tools properties",
+			"properties": {
+				"EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES": {
+					"type": "integer",
+					"default": 300000,
+					"description": "Maximum size of the logo of an external tool in bytes"
+				}
+			}
 		},
 		"TSP_SCHOOL_SYNCER": {
 			"type": "object",
