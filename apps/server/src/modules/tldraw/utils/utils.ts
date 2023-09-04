@@ -5,7 +5,7 @@ import { encoding, decoding, map } from 'lib0';
 import { writeUpdate, readSyncMessage, writeSyncStep1 } from 'y-protocols/sync';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import WebSocket from 'ws';
-import { WSMessageType, WSConnectionState, Persitence } from '@src/modules/tldraw/types';
+import { WSMessageType, WSConnectionState, Persitence } from '../types';
 
 const pingTimeout: number = (Configuration.get('TLDRAW__PING_TIMEOUT') as number) ?? 10000;
 // disable gc when using snapshots!
