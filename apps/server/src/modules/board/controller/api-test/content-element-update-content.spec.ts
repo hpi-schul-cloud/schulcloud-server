@@ -2,7 +2,12 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { sanitizeRichText } from '@shared/controller';
-import { BoardExternalReferenceType, InputFormat, RichTextElementNode } from '@shared/domain';
+import {
+	BoardExternalReferenceType,
+	InputFormat,
+	RichTextElementNode,
+	SubmissionContainerElementNode,
+} from '@shared/domain';
 import {
 	cardNodeFactory,
 	cleanupCollections,
@@ -10,6 +15,7 @@ import {
 	columnNodeFactory,
 	courseFactory,
 	richTextElementNodeFactory,
+	submissionContainerElementNodeFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
@@ -52,50 +58,115 @@ describe(`content element update content (api)`, () => {
 
 			const column = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 			const parentCard = cardNodeFactory.buildWithId({ parent: column });
-			const element = richTextElementNodeFactory.buildWithId({ parent: parentCard });
+			const richTextElement = richTextElementNodeFactory.buildWithId({ parent: parentCard });
+			const submissionContainerElement = submissionContainerElementNodeFactory.buildWithId({ parent: parentCard });
 
-			await em.persistAndFlush([teacherAccount, teacherUser, parentCard, column, columnBoardNode, element]);
+			await em.persistAndFlush([
+				teacherAccount,
+				teacherUser,
+				parentCard,
+				column,
+				columnBoardNode,
+				richTextElement,
+				submissionContainerElement,
+			]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 
-			return { loggedInClient, element };
+			return { loggedInClient, richTextElement, submissionContainerElement };
 		};
 
-		it('should return status 204', async () => {
-			const { loggedInClient, element } = await setup();
+		it('should return status 204 for rich text element', async () => {
+			const { loggedInClient, richTextElement } = await setup();
 
-			const response = await loggedInClient.patch(`${element.id}/content`, {
+			const response = await loggedInClient.patch(`${richTextElement.id}/content`, {
 				data: { content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' },
 			});
 
 			expect(response.statusCode).toEqual(204);
 		});
 
-		it('should actually change content of the element', async () => {
-			const { loggedInClient, element } = await setup();
+		it('should actually change content of the rich text element', async () => {
+			const { loggedInClient, richTextElement } = await setup();
 
-			await loggedInClient.patch(`${element.id}/content`, {
+			await loggedInClient.patch(`${richTextElement.id}/content`, {
 				data: { content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' },
 			});
-			const result = await em.findOneOrFail(RichTextElementNode, element.id);
+			const result = await em.findOneOrFail(RichTextElementNode, richTextElement.id);
 
 			expect(result.text).toEqual('hello world');
 		});
 
-		it('should sanitize rich text before changing content of the element', async () => {
-			const { loggedInClient, element } = await setup();
+		it('should sanitize rich text before changing content of the rich text element', async () => {
+			const { loggedInClient, richTextElement } = await setup();
 
 			const text = '<iframe>rich text 1</iframe> some more text';
 
 			const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
 
-			await loggedInClient.patch(`${element.id}/content`, {
+			await loggedInClient.patch(`${richTextElement.id}/content`, {
 				data: { content: { text, inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' },
 			});
-			const result = await em.findOneOrFail(RichTextElementNode, element.id);
+			const result = await em.findOneOrFail(RichTextElementNode, richTextElement.id);
 
 			expect(result.text).toEqual(sanitizedText);
+		});
+
+		it('should return status 204 (nothing changed) without dueDate parameter for submission container element', async () => {
+			const { loggedInClient, submissionContainerElement } = await setup();
+
+			const response = await loggedInClient.patch(`${submissionContainerElement.id}/content`, {
+				data: {
+					content: {},
+					type: 'submissionContainer',
+				},
+			});
+
+			expect(response.statusCode).toEqual(204);
+		});
+
+		it('should not change dueDate value without dueDate parameter for submission container element', async () => {
+			const { loggedInClient, submissionContainerElement } = await setup();
+
+			await loggedInClient.patch(`${submissionContainerElement.id}/content`, {
+				data: {
+					content: {},
+					type: 'submissionContainer',
+				},
+			});
+			const result = await em.findOneOrFail(SubmissionContainerElementNode, submissionContainerElement.id);
+
+			expect(result.dueDate).toBeUndefined();
+		});
+
+		it('should set dueDate value when dueDate parameter is provided for submission container element', async () => {
+			const { loggedInClient, submissionContainerElement } = await setup();
+
+			const inThreeDays = new Date(Date.now() + 259200000);
+
+			await loggedInClient.patch(`${submissionContainerElement.id}/content`, {
+				data: {
+					content: { dueDate: inThreeDays },
+					type: 'submissionContainer',
+				},
+			});
+			const result = await em.findOneOrFail(SubmissionContainerElementNode, submissionContainerElement.id);
+
+			expect(result.dueDate).toEqual(inThreeDays);
+		});
+
+		it('should return status 400 for wrong date format for submission container element', async () => {
+			const { loggedInClient, submissionContainerElement } = await setup();
+
+			const response = await loggedInClient.patch(`${submissionContainerElement.id}/content`, {
+				data: {
+					content: { dueDate: 'hello world' },
+					type: 'submissionContainer',
+				},
+			});
+
+			expect(response.statusCode).toEqual(400);
 		});
 	});
 
@@ -114,21 +185,35 @@ describe(`content element update content (api)`, () => {
 
 			const column = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 			const parentCard = cardNodeFactory.buildWithId({ parent: column });
-			const element = richTextElementNodeFactory.buildWithId({ parent: parentCard });
+			const richTextElement = richTextElementNodeFactory.buildWithId({ parent: parentCard });
+			const submissionContainerElement = submissionContainerElementNodeFactory.buildWithId({ parent: parentCard });
 
-			await em.persistAndFlush([parentCard, column, columnBoardNode, element]);
+			await em.persistAndFlush([parentCard, column, columnBoardNode, richTextElement, submissionContainerElement]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(invalidTeacherAccount);
 
-			return { loggedInClient, element };
+			return { loggedInClient, richTextElement, submissionContainerElement };
 		};
 
-		it('should return status 403', async () => {
-			const { loggedInClient, element } = await setup();
+		it('should return status 403 for rich text element', async () => {
+			const { loggedInClient, richTextElement } = await setup();
 
-			const response = await loggedInClient.patch(`${element.id}/content`, {
+			const response = await loggedInClient.patch(`${richTextElement.id}/content`, {
 				data: { content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' },
+			});
+
+			expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
+		});
+
+		it('should return status 403 for submission container element', async () => {
+			const { loggedInClient, submissionContainerElement } = await setup();
+
+			const response = await loggedInClient.patch(`${submissionContainerElement.id}/content`, {
+				data: {
+					content: {},
+					type: 'submissionContainer',
+				},
 			});
 
 			expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
