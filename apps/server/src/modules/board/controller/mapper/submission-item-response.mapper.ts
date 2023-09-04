@@ -1,5 +1,5 @@
 import { SubmissionItem } from '@shared/domain';
-import { SubmissionItemResponse, TimestampsResponse } from '../dto';
+import { SubmissionItemResponse, TimestampsResponse, UserDataResponse } from '../dto';
 
 export class SubmissionItemResponseMapper {
 	private static instance: SubmissionItemResponseMapper;
@@ -14,13 +14,17 @@ export class SubmissionItemResponseMapper {
 
 	public mapToResponse(submissionItem: SubmissionItem): SubmissionItemResponse {
 		const result = new SubmissionItemResponse({
+			completed: submissionItem.completed,
 			id: submissionItem.id,
 			timestamps: new TimestampsResponse({
 				lastUpdatedAt: submissionItem.updatedAt,
 				createdAt: submissionItem.createdAt,
 			}),
-			completed: submissionItem.completed,
-			userId: submissionItem.userId,
+			userData: new UserDataResponse({
+				firstName: 'John',
+				lastName: 'Mr Doe',
+				userId: submissionItem.userId,
+			}),
 		});
 
 		return result;
