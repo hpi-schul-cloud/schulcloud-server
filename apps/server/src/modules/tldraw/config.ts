@@ -24,5 +24,5 @@ const tldrawConfig = {
 	CONNECTION_STRING: TLDRAW_DB_URL,
 };
 
-export const SOCKET_PORT = Configuration.get('NODE_ENV') === NodeEnvType.TEST ? 3346 : 3345;
+export const SOCKET_PORT = Configuration.get('TLDRAW__SOCKET_PORT') as number;
 export const config = () => tldrawConfig;

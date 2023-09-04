@@ -18,7 +18,7 @@ export class TldrawGateway implements OnGatewayInit, OnGatewayConnection {
 	}
 
 	handleConnection(client: WebSocket, request: Request) {
-		const docName = request.url.slice(1).split('?')[0].replace('tldraw-server/', '');
+		const docName = this.getDocNameFromRequest(request);
 
 		if (docName.length > 0 && this.configService.get<string>('FEATURE_TLDRAW_ENABLED')) {
 			setupWSConnection(client, docName);
@@ -37,14 +37,10 @@ export class TldrawGateway implements OnGatewayInit, OnGatewayConnection {
 
 		setPersistence({
 			bindState: async (docName, ydoc) => {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-				const persistedYdoc = await (mdb.getYDoc(docName) as Promise<Doc>);
+				const persistedYdoc = await this.getYDoc(mdb, docName);
 				const persistedStateVector = encodeStateVector(persistedYdoc);
 				const diff = encodeStateAsUpdate(ydoc, persistedStateVector);
-				if (diff.reduce((previousValue, currentValue) => previousValue + currentValue, 0) > 0) {
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-					mdb.storeUpdate(docName, diff);
-				}
+				this.updateStoredDocWithDiff(mdb, docName, diff);
 
 				applyUpdate(ydoc, encodeStateAsUpdate(persistedYdoc));
 
@@ -56,5 +52,27 @@ export class TldrawGateway implements OnGatewayInit, OnGatewayConnection {
 				await mdb.flushDocument(docName);
 			},
 		});
+	}
+
+	private getDocNameFromRequest(request: Request): string {
+		return request.url.slice(1).split('?')[0].replace('tldraw-server/', '');
+	}
+
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	// eslint-disable-next-line consistent-return
+	private async getYDoc(mdb: MongodbPersistence, docName: string): Promise<Doc> {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+		const yDoc = await mdb.getYDoc(docName);
+		if (yDoc instanceof Doc) {
+			return yDoc;
+		}
+	}
+
+	private updateStoredDocWithDiff(mdb: MongodbPersistence, docName: string, diff: Uint8Array) {
+		if (diff.reduce((previousValue, currentValue) => previousValue + currentValue, 0) > 0) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+			mdb.storeUpdate(docName, diff);
+		}
 	}
 }

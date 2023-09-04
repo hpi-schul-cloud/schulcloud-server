@@ -60,77 +60,106 @@ describe('WebSocketGateway (WsAdapter)', () => {
 		jest.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] });
 	});
 
-	beforeEach(() => {
+	afterEach(() => {
 		jest.clearAllMocks();
 	});
 
-	it(`should handle connection and data transfer`, async () => {
-		const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
-		jest.spyOn(Uint8Array.prototype, 'reduce').mockReturnValue(1);
+	describe('when tldraw is correctly setup', () => {
+		const setup = async () => {
+			const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
+			jest.spyOn(Uint8Array.prototype, 'reduce').mockReturnValue(1);
 
-		await setupWs('TEST1');
+			await setupWs('TEST');
 
-		const { buffer } = getMessage();
-		ws.send(buffer, () => {});
+			const { buffer } = getMessage();
 
-		expect(handleConnectionSpy).toHaveBeenCalled();
-		expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
+			return { handleConnectionSpy, buffer };
+		};
 
-		await delay(2000);
-		ws.close();
-	});
+		it(`should handle connection and data transfer`, async () => {
+			const { handleConnectionSpy, buffer } = await setup();
+			ws.send(buffer, () => {});
 
-	it(`should refuse connection if there is no docName`, async () => {
-		const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
-		const utilsSpy = jest.spyOn(Utils, 'messageHandler').mockReturnValue();
+			expect(handleConnectionSpy).toHaveBeenCalled();
+			expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
 
-		await setupWs();
-
-		const { buffer } = getMessage();
-		ws.send(buffer);
-
-		expect(gateway.server).toBeDefined();
-		expect(handleConnectionSpy).toHaveBeenCalled();
-		expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
-		expect(utilsSpy).not.toHaveBeenCalled();
-
-		await delay(200);
-		ws.close();
-	});
-
-	it(`should handle 2 connections at same doc and data transfer`, async () => {
-		const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
-		await setupWs('TEST2');
-		const ws2 = new WebSocket(`${wsUrl}/TEST2`);
-		await new Promise((resolve) => {
-			ws2.on('open', resolve);
+			await delay(2000);
+			ws.close();
 		});
 
-		const { buffer } = getMessage();
-		ws.send(buffer);
-		ws2.send(buffer);
+		it(`check if client will receive message`, async () => {
+			const { buffer } = await setup();
+			ws.send(buffer, () => {});
 
-		expect(handleConnectionSpy).toHaveBeenCalled();
-		expect(handleConnectionSpy).toHaveBeenCalledTimes(2);
-
-		await delay(200);
-		ws.close();
-		ws2.close();
-	}, 120000);
-
-	it(`check if client will receive message`, async () => {
-		await setupWs('TEST3');
-
-		const { buffer } = getMessage();
-		ws.send(buffer, () => {});
-
-		gateway.server.on('connection', (client) => {
-			client.on('message', (payload) => {
-				expect(payload).toBeInstanceOf(Buffer);
+			gateway.server.on('connection', (client) => {
+				client.on('message', (payload) => {
+					expect(payload).toBeInstanceOf(ArrayBuffer);
+				});
 			});
-		});
 
-		await delay(200);
-		ws.close();
+			await delay(200);
+			ws.close();
+		});
+	});
+
+	describe('when tldraw doc has multiple clients', () => {
+		const setup = async () => {
+			const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
+			await setupWs('TEST2');
+			const ws2 = new WebSocket(`${wsUrl}/TEST2`);
+			await new Promise((resolve) => {
+				ws2.on('open', resolve);
+			});
+
+			const { buffer } = getMessage();
+
+			return {
+				handleConnectionSpy,
+				ws2,
+				buffer,
+			};
+		};
+
+		it(`should handle 2 connections at same doc and data transfer`, async () => {
+			const { handleConnectionSpy, ws2, buffer } = await setup();
+			ws.send(buffer);
+			ws2.send(buffer);
+
+			expect(handleConnectionSpy).toHaveBeenCalled();
+			expect(handleConnectionSpy).toHaveBeenCalledTimes(2);
+
+			await delay(200);
+			ws.close();
+			ws2.close();
+		}, 120000);
+	});
+
+	describe('when tldraw is not correctly setup', () => {
+		const setup = async () => {
+			const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
+			const utilsSpy = jest.spyOn(Utils, 'messageHandler').mockReturnValue();
+
+			await setupWs();
+
+			return {
+				handleConnectionSpy,
+				utilsSpy,
+			};
+		};
+
+		it(`should refuse connection if there is no docName`, async () => {
+			const { handleConnectionSpy, utilsSpy } = await setup();
+
+			const { buffer } = getMessage();
+			ws.send(buffer);
+
+			expect(gateway.server).toBeDefined();
+			expect(handleConnectionSpy).toHaveBeenCalled();
+			expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
+			expect(utilsSpy).not.toHaveBeenCalled();
+
+			await delay(200);
+			ws.close();
+		});
 	});
 });

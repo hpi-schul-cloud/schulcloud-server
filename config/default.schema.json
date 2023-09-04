@@ -1287,8 +1287,12 @@
 		"TLDRAW": {
 			"type": "object",
 			"description": "Tldraw managing variables.",
-			"required": ["PING_TIMEOUT", "GC_ENABLED", "DB_COLLECTION_NAME", "DB_FLUSH_SIZE", "DB_MULTIPLE_COLLECTIONS"],
+			"required": ["PING_TIMEOUT", "SOCKET_PORT","GC_ENABLED", "DB_COLLECTION_NAME", "DB_FLUSH_SIZE", "DB_MULTIPLE_COLLECTIONS"],
 			"properties": {
+				"SOCKET_PORT": {
+					"type": "number",
+					"description": "Web socket port for tldraw"
+				},
 				"PING_TIMEOUT": {
 					"type": "number",
 					"description": "Max time for waiting between calls for tldraw"
@@ -1311,6 +1315,7 @@
 				}
 			},
 			"default": {
+				"SOCKET_PORT": 3345,
 				"PING_TIMEOUT": 30000,
 				"GC_ENABLED": true,
 				"DB_COLLECTION_NAME": "drawing",
