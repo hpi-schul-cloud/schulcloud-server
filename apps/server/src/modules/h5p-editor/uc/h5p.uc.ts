@@ -108,33 +108,31 @@ export class H5PEditorUc {
 		currentUser: ICurrentUser,
 		query: AjaxPostQueryParams,
 		body: AjaxPostBodyParams,
-		files?: Express.Multer.File[]
+		contentFile?: Express.Multer.File,
+		h5pFile?: Express.Multer.File
 	) {
 		const user = this.changeUserType(currentUser);
 		const language = await this.getUserLanguage(currentUser);
 
 		try {
-			const filesFile = files?.find((file) => file.fieldname === 'file');
-			const libraryUploadFile = files?.find((file) => file.fieldname === 'h5p');
-
 			const result = await this.h5pAjaxEndpoint.postAjax(
 				query.action,
 				body,
 				language,
 				user,
-				filesFile && {
-					data: filesFile.buffer,
-					mimetype: filesFile.mimetype,
-					name: filesFile.originalname,
-					size: filesFile.size,
+				contentFile && {
+					data: contentFile.buffer,
+					mimetype: contentFile.mimetype,
+					name: contentFile.originalname,
+					size: contentFile.size,
 				},
 				query.id,
 				undefined,
-				libraryUploadFile && {
-					data: libraryUploadFile.buffer,
-					mimetype: libraryUploadFile.mimetype,
-					name: libraryUploadFile.originalname,
-					size: libraryUploadFile.size,
+				h5pFile && {
+					data: h5pFile.buffer,
+					mimetype: h5pFile.mimetype,
+					name: h5pFile.originalname,
+					size: h5pFile.size,
 				},
 				undefined // TODO: HubID?
 			);
