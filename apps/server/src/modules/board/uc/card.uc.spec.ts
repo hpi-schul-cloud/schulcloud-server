@@ -6,6 +6,7 @@ import { cardFactory, richTextElementFactory } from '@shared/testing/factory/dom
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { ObjectId } from 'bson';
+import { HttpService } from '@nestjs/axios';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { CardService } from '../service/card.service';
 import { CardUc } from './card.uc';
@@ -41,6 +42,10 @@ describe(CardUc.name, () => {
 				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
+				},
+				{
+					provide: HttpService,
+					useValue: createMock<HttpService>(),
 				},
 			],
 		}).compile();
