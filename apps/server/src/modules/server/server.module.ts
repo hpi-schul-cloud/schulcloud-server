@@ -34,6 +34,7 @@ import { VideoConferenceApiModule } from '@src/modules/video-conference/video-co
 import connectRedis from 'connect-redis';
 import session from 'express-session';
 import { RedisClient } from 'redis';
+import { FederalStateApiModule } from '../federal-state';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
 
@@ -50,6 +51,7 @@ const serverModules = [
 	UserApiModule,
 	ImportUserModule,
 	LearnroomApiModule,
+	FederalStateApiModule,
 	FilesStorageClientModule,
 	SystemApiModule,
 	MailModule.forRoot({
