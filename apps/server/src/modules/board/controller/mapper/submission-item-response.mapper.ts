@@ -21,6 +21,7 @@ export class SubmissionItemResponseMapper {
 				createdAt: submissionItem.createdAt,
 			}),
 			userData: new UserDataResponse({
+				// TODO: put valid user info here which comes from the submission owner
 				firstName: 'John',
 				lastName: 'Mr Doe',
 				userId: submissionItem.userId,
