@@ -9,7 +9,7 @@ import {
 	SingleFileParams,
 } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
-import { IGetFileResponse } from '../interface';
+import { GetFileResponse } from '../interface';
 
 export class FilesStorageMapper {
 	static mapToAllowedAuthorizationEntityType(type: FileRecordParentType): AuthorizableReferenceType {
@@ -62,7 +62,7 @@ export class FilesStorageMapper {
 		return response;
 	}
 
-	static mapToStreamableFile(fileResponse: IGetFileResponse): StreamableFile {
+	static mapToStreamableFile(fileResponse: GetFileResponse): StreamableFile {
 		const streamableFile = new StreamableFile(fileResponse.data, {
 			type: fileResponse.contentType,
 			disposition: `inline; filename="${encodeURI(fileResponse.name)}"`,

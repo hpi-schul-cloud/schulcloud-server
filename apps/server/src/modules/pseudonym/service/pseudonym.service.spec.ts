@@ -3,10 +3,9 @@ import { InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing';
 import { LtiToolDO, Pseudonym, UserDO } from '@shared/domain';
 import { externalToolFactory, ltiToolDOFactory, pseudonymFactory, userDoFactory } from '@shared/testing/factory';
-import { IToolFeatures, ToolFeatures } from '@src/modules/tool/tool-config';
 import { ExternalTool } from '@src/modules/tool/external-tool/domain';
-import { PseudonymService } from './pseudonym.service';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
+import { PseudonymService } from './pseudonym.service';
 
 describe('PseudonymService', () => {
 	let module: TestingModule;
@@ -14,18 +13,11 @@ describe('PseudonymService', () => {
 
 	let pseudonymRepo: DeepMocked<PseudonymsRepo>;
 	let externalToolPseudonymRepo: DeepMocked<ExternalToolPseudonymRepo>;
-	let toolFeatures: IToolFeatures;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				PseudonymService,
-				{
-					provide: ToolFeatures,
-					useValue: {
-						ctlToolsTabEnabled: true,
-					},
-				},
 				{
 					provide: PseudonymsRepo,
 					useValue: createMock<PseudonymsRepo>(),
@@ -38,13 +30,11 @@ describe('PseudonymService', () => {
 		}).compile();
 
 		service = module.get(PseudonymService);
-		toolFeatures = module.get(ToolFeatures);
 		pseudonymRepo = module.get(PseudonymsRepo);
 		externalToolPseudonymRepo = module.get(ExternalToolPseudonymRepo);
 	});
 
 	beforeEach(() => {
-		toolFeatures.ctlToolsTabEnabled = true;
 		jest.resetAllMocks();
 	});
 
@@ -71,51 +61,27 @@ describe('PseudonymService', () => {
 			});
 		});
 
-		describe('when tool parameter is an ExternalToolDO', () => {
-			describe('when ctl tools tab feature is enabled', () => {
-				const setup = () => {
-					const user: UserDO = userDoFactory.buildWithId();
-					const externalTool: ExternalTool = externalToolFactory.buildWithId();
+		describe('when tool parameter is an ExternalTool', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.buildWithId();
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
-					return {
-						user,
-						externalTool,
-					};
+				return {
+					user,
+					externalTool,
 				};
+			};
 
-				it('should call externalToolPseudonymRepo', async () => {
-					const { user, externalTool } = setup();
+			it('should call externalToolPseudonymRepo', async () => {
+				const { user, externalTool } = setup();
 
-					await service.findByUserAndTool(user, externalTool);
+				await service.findByUserAndTool(user, externalTool);
 
-					expect(externalToolPseudonymRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(user.id, externalTool.id);
-				});
-			});
-
-			describe('when tools feature ctl tools tab is disabled', () => {
-				const setup = () => {
-					const user: UserDO = userDoFactory.buildWithId();
-					const externalTool: ExternalTool = externalToolFactory.buildWithId();
-
-					toolFeatures.ctlToolsTabEnabled = false;
-
-					return {
-						user,
-						externalTool,
-					};
-				};
-
-				it('should call pseudonymRepo', async () => {
-					const { user, externalTool } = setup();
-
-					await service.findByUserAndTool(user, externalTool);
-
-					expect(pseudonymRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(user.id, externalTool.id);
-				});
+				expect(externalToolPseudonymRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(user.id, externalTool.id);
 			});
 		});
 
-		describe('when tool parameter is an LtiToolDO', () => {
+		describe('when tool parameter is an LtiTool', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.buildWithId();
 				const ltiToolDO: LtiToolDO = ltiToolDOFactory.buildWithId();

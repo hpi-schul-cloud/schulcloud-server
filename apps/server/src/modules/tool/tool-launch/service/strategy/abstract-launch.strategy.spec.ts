@@ -2,18 +2,18 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, EntityId, SchoolDO } from '@shared/domain';
+import { Course, EntityId, LegacySchoolDo } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
 import {
 	contextExternalToolFactory,
 	courseFactory,
 	customParameterFactory,
 	externalToolFactory,
-	schoolDOFactory,
+	legacySchoolDoFactory,
 	schoolExternalToolFactory,
 	setupEntities,
 } from '@shared/testing';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school';
 import { MissingToolParameterValueLoggableException, ParameterTypeNotImplementedLoggableException } from '../../error';
 import {
 	LaunchRequestMethod,
@@ -73,7 +73,7 @@ describe('AbstractLaunchStrategy', () => {
 	let module: TestingModule;
 	let launchStrategy: TestLaunchStrategy;
 
-	let schoolService: DeepMocked<SchoolService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 	let courseRepo: DeepMocked<CourseRepo>;
 
 	beforeAll(async () => {
@@ -83,8 +83,8 @@ describe('AbstractLaunchStrategy', () => {
 			providers: [
 				TestLaunchStrategy,
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 				{
 					provide: CourseRepo,
@@ -94,7 +94,7 @@ describe('AbstractLaunchStrategy', () => {
 		}).compile();
 
 		launchStrategy = module.get(TestLaunchStrategy);
-		schoolService = module.get(SchoolService);
+		schoolService = module.get(LegacySchoolService);
 		courseRepo = module.get(CourseRepo);
 	});
 
@@ -184,7 +184,7 @@ describe('AbstractLaunchStrategy', () => {
 				});
 
 				// Other
-				const school: SchoolDO = schoolDOFactory.buildWithId(
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(
 					{
 						officialSchoolNumber: '1234',
 					},
@@ -369,7 +369,7 @@ describe('AbstractLaunchStrategy', () => {
 					parameters: [],
 				});
 
-				const school: SchoolDO = schoolDOFactory.buildWithId({
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					officialSchoolNumber: undefined,
 				});
 

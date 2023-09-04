@@ -2,7 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CourseRepo } from '@shared/repo';
 import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school';
 import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
 import { BasicToolLaunchStrategy } from './basic-tool-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
@@ -19,8 +19,8 @@ describe('BasicToolLaunchStrategy', () => {
 			providers: [
 				BasicToolLaunchStrategy,
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 				{
 					provide: CourseRepo,
