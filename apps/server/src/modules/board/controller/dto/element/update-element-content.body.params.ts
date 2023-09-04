@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { ContentElementType, InputFormat } from '@shared/domain';
 import { Type } from 'class-transformer';
-import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsDate, IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 export abstract class ElementContentBody {
 	@ApiProperty({
@@ -48,9 +48,11 @@ export class RichTextElementContentBody extends ElementContentBody {
 }
 
 export class SubmissionContainerContentBody {
+	@IsDate()
 	@IsOptional()
 	@ApiPropertyOptional({
 		required: false,
+		description: 'The point in time until when a submission can be handed in.',
 	})
 	dueDate?: Date;
 }

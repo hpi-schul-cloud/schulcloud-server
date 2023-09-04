@@ -11,9 +11,7 @@ export class SubmissionContainerElementNode extends BoardNode {
 	constructor(props: SubmissionContainerNodeProps) {
 		super(props);
 		this.type = BoardNodeType.SUBMISSION_CONTAINER_ELEMENT;
-		if (props.dueDate) {
-			this.dueDate = props.dueDate;
-		}
+		this.dueDate = props.dueDate;
 	}
 
 	useDoBuilder(builder: BoardDoBuilder): AnyBoardDo {
