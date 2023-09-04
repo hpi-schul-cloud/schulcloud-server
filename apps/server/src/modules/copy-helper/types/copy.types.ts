@@ -1,6 +1,5 @@
 import { EntityId } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object';
-import { BaseEntity } from '@shared/domain/entity/base.entity';
 
 export type CopyStatus = {
 	id?: string;
@@ -8,8 +7,8 @@ export type CopyStatus = {
 	type: CopyElementType;
 	status: CopyStatusEnum;
 	elements?: CopyStatus[];
-	copyEntity?: BaseEntity | AuthorizableObject;
-	originalEntity?: BaseEntity | AuthorizableObject;
+	copyEntity?: AuthorizableObject;
+	originalEntity?: AuthorizableObject;
 };
 
 export enum CopyElementType {
@@ -48,4 +47,4 @@ export enum CopyStatusEnum {
 	'PARTIAL' = 'partial', // parent is partial successful
 }
 
-export type CopyDictionary = Map<EntityId, BaseEntity | AuthorizableObject>;
+export type CopyDictionary = Map<EntityId, AuthorizableObject>;
