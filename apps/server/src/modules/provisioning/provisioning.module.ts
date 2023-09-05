@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import { AccountModule } from '@src/modules/account/account.module';
 import { RoleModule } from '@src/modules/role';
-import { SchoolMigrationModule } from '@src/modules/school-migration/school.module';
+import { SchoolMigrationModule } from '@src/modules/school-migration/school-migration.module';
 import { SystemModule } from '@src/modules/system/system.module';
 import { UserModule } from '@src/modules/user';
 import { ProvisioningService } from './service/provisioning.service';
