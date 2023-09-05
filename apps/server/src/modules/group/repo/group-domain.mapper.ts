@@ -1,9 +1,7 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExternalSource, ExternalSourceEntity, Role, System, User } from '@shared/domain';
 import { Group, GroupProps, GroupTypes, GroupUser } from '../domain';
-import { GroupEntity, GroupEntityProps, GroupEntityTypes } from '../entity';
-import { GroupUserEntity } from '../entity/group-user.entity';
-import { GroupValidPeriodEntity } from '../entity/group-valid-period.entity';
+import { GroupEntity, GroupEntityProps, GroupEntityTypes, GroupUserEntity, GroupValidPeriodEntity } from '../entity';
 
 const GroupEntityTypesToGroupTypesMapping: Record<GroupEntityTypes, GroupTypes> = {
 	[GroupEntityTypes.CLASS]: GroupTypes.CLASS,
@@ -18,6 +16,7 @@ export class GroupDomainMapper {
 		const props: GroupProps = group.getProps();
 
 		const mapped: GroupEntityProps = {
+			id: props.id,
 			name: props.name,
 			type: GroupTypesToGroupEntityTypesMapping[props.type],
 			externalSource: props.externalSource
@@ -30,6 +29,7 @@ export class GroupDomainMapper {
 				until: props.validUntil,
 				from: props.validFrom,
 			}),
+			organizationId: props.organizationId ? new ObjectId(props.organizationId) : undefined,
 		};
 
 		return mapped;
@@ -46,6 +46,7 @@ export class GroupDomainMapper {
 				: undefined,
 			type: GroupEntityTypesToGroupTypesMapping[entity.type],
 			name: entity.name,
+			organizationId: entity.organizationId?.toHexString(),
 		};
 
 		return mapped;

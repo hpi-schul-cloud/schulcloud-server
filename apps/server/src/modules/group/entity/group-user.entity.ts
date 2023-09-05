@@ -1,4 +1,4 @@
-import { Embeddable, Property } from '@mikro-orm/core';
+import { Embeddable, ManyToOne } from '@mikro-orm/core';
 import { Role, User } from '@shared/domain';
 
 export interface GroupUserEntityProps {
@@ -9,10 +9,10 @@ export interface GroupUserEntityProps {
 
 @Embeddable()
 export class GroupUserEntity {
-	@Property()
+	@ManyToOne(() => User)
 	user: User;
 
-	@Property()
+	@ManyToOne(() => Role)
 	role: Role;
 
 	constructor(props: GroupUserEntityProps) {

@@ -1,5 +1,8 @@
 import { Embedded, Entity, Enum, Property } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps, ExternalSourceEntity } from '@shared/domain';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { EntityId } from '@shared/domain';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
+import { ExternalSourceEntity } from '@shared/domain/entity/external-source.entity';
 import { GroupUserEntity } from './group-user.entity';
 import { GroupValidPeriodEntity } from './group-valid-period.entity';
 
@@ -8,6 +11,8 @@ export enum GroupEntityTypes {
 }
 
 export interface GroupEntityProps {
+	id?: EntityId;
+
 	name: string;
 
 	type: GroupEntityTypes;
@@ -18,7 +23,7 @@ export interface GroupEntityProps {
 
 	users: GroupUserEntity[];
 
-	organizationId?: string;
+	organizationId?: ObjectId;
 }
 
 @Entity({ tableName: 'groups' })
@@ -38,11 +43,15 @@ export class GroupEntity extends BaseEntityWithTimestamps {
 	@Embedded(() => GroupUserEntity, { array: true })
 	users: GroupUserEntity[];
 
+	// TODO saving an id without knowing where it comes from is bad. should this always be a school for now?
 	@Property({ nullable: true })
-	organizationId?: string;
+	organizationId?: ObjectId;
 
 	constructor(props: GroupEntityProps) {
 		super();
+		if (props.id) {
+			this.id = props.id;
+		}
 		this.name = props.name;
 		this.type = props.type;
 		this.externalSource = props.externalSource;

@@ -1,9 +1,11 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { EntityId } from '@shared/domain';
+import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 import { Group, GroupProps } from '../domain';
 import { GroupEntity, GroupEntityProps } from '../entity';
 import { GroupDomainMapper } from './group-domain.mapper';
 
+@Injectable()
 export class GroupRepo {
 	constructor(private readonly em: EntityManager) {}
 
