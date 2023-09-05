@@ -37,6 +37,55 @@ describe('TeamService', () => {
 		await module.close();
 	});
 
+	describe('findUserDataFromTeams', () => {
+		describe('when user is missing', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.build({ id: undefined });
+				const userId = user.id as EntityId;
+
+				return {
+					userId,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { userId } = setup();
+
+				await expect(service.deleteUserDataFromTeams(userId)).rejects.toThrowError(InternalServerErrorException);
+			});
+		});
+
+		describe('when finding by userId', () => {
+			const setup = () => {
+				const teamUser = teamUserFactory.buildWithId();
+				const team1 = teamFactory.withTeamUser([teamUser]).build();
+				const team2 = teamFactory.withTeamUser([teamUser]).build();
+
+				teamsRepo.findByUserId.mockResolvedValue([team1, team2]);
+
+				return {
+					teamUser,
+				};
+			};
+
+			it('should call teamsRepo.findByUserId', async () => {
+				const { teamUser } = setup();
+
+				await service.deleteUserDataFromTeams(teamUser.user.id);
+
+				expect(teamsRepo.findByUserId).toBeCalledWith(teamUser.user.id);
+			});
+
+			it('should return array of two teams with user', async () => {
+				const { teamUser } = setup();
+
+				const result = await service.deleteUserDataFromTeams(teamUser.user.id);
+
+				expect(result).toEqual(2);
+			});
+		});
+	});
+
 	describe('deleteUserDataFromTeams', () => {
 		describe('when user is missing', () => {
 			const setup = () => {
