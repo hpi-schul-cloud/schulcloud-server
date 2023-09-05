@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { SchoolModule } from '@src/modules/school-migration';
+import { SchoolMigrationModule } from '@src/modules/school-migration';
 import { UserModule } from '@src/modules/user';
 import { PseudonymModule } from '@src/modules/pseudonym';
 import { CourseRepo } from '@shared/repo';
@@ -16,7 +16,7 @@ import { CommonToolModule } from '../common';
 		ExternalToolModule,
 		SchoolExternalToolModule,
 		ContextExternalToolModule,
-		SchoolModule,
+		SchoolMigrationModule,
 		UserModule,
 		PseudonymModule,
 	],

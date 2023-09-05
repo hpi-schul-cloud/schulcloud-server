@@ -17,4 +17,4 @@ import { FederalStateService, LegacySchoolService, SchoolValidationService, Scho
 	],
 	exports: [LegacySchoolService, SchoolYearService, FederalStateService],
 })
-export class SchoolModule {}
+export class SchoolMigrationModule {}
