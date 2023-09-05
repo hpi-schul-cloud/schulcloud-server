@@ -15,6 +15,11 @@ export class FederalStateUC {
 		const federalStates = await this.federalStateService.findAll();
 		return federalStates;
 	}
+
+	async findFederalStateByName(name: string) {
+		const federalState = await this.federalStateService.findFederalStateByName(name);
+		return federalState;
+	}
 	// async delete(userId: EntityId, lessonId: EntityId) {
 	// 	const [user, lesson] = await Promise.all([
 	// 		this.authorizationService.getUserWithPermissions(userId),
