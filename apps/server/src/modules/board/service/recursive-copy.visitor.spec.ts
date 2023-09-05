@@ -1,5 +1,5 @@
-import { Column, ColumnBoard, isColumn, isColumnBoard } from '@shared/domain';
-import { columnBoardFactory, columnFactory } from '@shared/testing';
+import { Card, Column, ColumnBoard, isCard, isColumn, isColumnBoard } from '@shared/domain';
+import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing';
 import { CopyElementType, CopyStatusEnum } from '@src/modules/copy-helper';
 import { RecursiveCopyVisitor } from './recursive-copy.visitor';
 
@@ -112,6 +112,63 @@ describe('recursive board copy visitor', () => {
 			const result = visitor.copy(column);
 
 			expect(result.type).toEqual(CopyElementType.COLUMN);
+		});
+	});
+
+	describe('when copying an empty card', () => {
+		const setup = () => {
+			const card = cardFactory.build();
+			const visitor = new RecursiveCopyVisitor();
+
+			return { card, visitor };
+		};
+
+		it('should return a columnboard as copy', () => {
+			const { card, visitor } = setup();
+
+			const copy = visitor.copy(card).copyEntity;
+
+			expect(isCard(copy)).toEqual(true);
+		});
+
+		it('should copy title', () => {
+			const { card, visitor } = setup();
+
+			const copy = visitor.copy(card).copyEntity as Card;
+
+			expect(copy.title).toEqual(card.title);
+		});
+
+		it('should copy height', () => {
+			const { card, visitor } = setup();
+
+			const copy = visitor.copy(card).copyEntity as Card;
+
+			expect(copy.height).toEqual(card.height);
+		});
+
+		it('should create new id', () => {
+			const { card, visitor } = setup();
+
+			const copy = visitor.copy(card).copyEntity as Card;
+
+			expect(copy.id).not.toEqual(card.id);
+		});
+
+		it('should show status successful', () => {
+			const { card, visitor } = setup();
+
+			const result = visitor.copy(card);
+
+			expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
+		});
+
+		it('should show type Columnboard', () => {
+			const { card, visitor } = setup();
+
+			const result = visitor.copy(card);
+
+			expect(result.type).toEqual(CopyElementType.CARD);
 		});
 	});
 });

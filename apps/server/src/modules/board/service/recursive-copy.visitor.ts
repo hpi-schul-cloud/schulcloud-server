@@ -54,7 +54,19 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitor {
 	}
 
 	visitCard(original: Card): void {
-		this.throwNotHandled(original);
+		const copy = new Card({
+			id: new ObjectId().toHexString(),
+			title: original.title,
+			height: original.height,
+			children: [],
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
+		this.result = {
+			copyEntity: copy,
+			type: CopyElementType.CARD,
+			status: CopyStatusEnum.SUCCESS,
+		};
 	}
 
 	visitFileElement(original: FileElement): void {
