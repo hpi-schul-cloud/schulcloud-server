@@ -13,7 +13,7 @@ import {
 	schoolExternalToolFactory,
 	setupEntities,
 } from '@shared/testing';
-import { LegacySchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school-migration';
 import { MissingToolParameterValueLoggableException, ParameterTypeNotImplementedLoggableException } from '../../error';
 import {
 	LaunchRequestMethod,

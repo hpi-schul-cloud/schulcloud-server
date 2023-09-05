@@ -6,7 +6,7 @@ import { LtiToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { ProvisioningModule } from '@src/modules/provisioning';
-import { SchoolModule } from '@src/modules/school';
+import { SchoolModule } from '@src/modules/school-migration';
 import { SystemModule } from '@src/modules/system';
 import { UserModule } from '@src/modules/user';
 import { UserLoginMigrationModule } from '@src/modules/user-login-migration';

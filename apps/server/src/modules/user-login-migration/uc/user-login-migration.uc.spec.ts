@@ -18,7 +18,7 @@ import { OAuthTokenDto } from '@src/modules/oauth';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
-import { LegacySchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school-migration';
 import { Oauth2MigrationParams } from '../controller/dto/oauth2-migration.params';
 import { OAuthMigrationError, SchoolMigrationError, UserLoginMigrationError } from '../error';
 import { PageTypes } from '../interface/page-types.enum';

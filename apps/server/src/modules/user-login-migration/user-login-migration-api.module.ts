@@ -4,7 +4,7 @@ import { AuthenticationModule } from '@src/modules/authentication/authentication
 import { AuthorizationModule } from '@src/modules/authorization';
 import { OauthModule } from '@src/modules/oauth';
 import { ProvisioningModule } from '@src/modules/provisioning';
-import { SchoolModule } from '@src/modules/school';
+import { SchoolModule } from '@src/modules/school-migration';
 import { UserLoginMigrationController } from './controller/user-login-migration.controller';
 import { UserMigrationController } from './controller/user-migration.controller';
 import { PageContentMapper } from './mapper';

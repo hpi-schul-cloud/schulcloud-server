@@ -8,7 +8,7 @@ import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-log
 import { legacySchoolDoFactory, setupEntities, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
-import { LegacySchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school-migration';
 import { UserService } from '@src/modules/user';
 import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
 import { SchoolMigrationService } from './school-migration.service';

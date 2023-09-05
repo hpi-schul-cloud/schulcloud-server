@@ -5,7 +5,7 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 import { LegacyLogger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
-import { LegacySchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school-migration';
 import { SystemDto, SystemService } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
 import { EntityId } from '@src/shared/domain/types';

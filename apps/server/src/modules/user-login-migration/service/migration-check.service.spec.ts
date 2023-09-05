@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { legacySchoolDoFactory, userDoFactory } from '@shared/testing';
-import { LegacySchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school-migration';
 import { UserService } from '@src/modules/user';
 import { MigrationCheckService } from './migration-check.service';
 

@@ -2,7 +2,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { ContextExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '@src/modules/authorization';
-import { SchoolModule } from '@src/modules/school';
+import { SchoolModule } from '@src/modules/school-migration';
 import { CommonToolService, CommonToolValidationService } from './service';
 import { ToolPermissionHelper } from './uc/tool-permission-helper';
 

@@ -4,7 +4,7 @@ import { CalendarModule } from '@shared/infra/calendar';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { TeamsRepo } from '@shared/repo';
-import { SchoolModule } from '@src/modules/school/school.module';
+import { SchoolModule } from '@src/modules/school-migration/school.module';
 import { LoggerModule } from '@src/core/logger';
 import { ConverterUtil } from '@shared/common';
 import { UserModule } from '@src/modules/user';

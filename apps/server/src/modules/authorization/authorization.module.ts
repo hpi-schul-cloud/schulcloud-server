@@ -13,7 +13,7 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { SchoolModule } from '@src/modules/school';
+import { SchoolModule } from '@src/modules/school-migration';
 import { ToolModule } from '@src/modules/tool';
 import { BoardModule } from '../board';
 import { AuthorizationHelper } from './authorization.helper';

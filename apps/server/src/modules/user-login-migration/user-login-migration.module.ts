@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AccountModule } from '@src/modules/account';
-import { SchoolModule } from '@src/modules/school';
+import { SchoolModule } from '@src/modules/school-migration';
 import { SystemModule } from '@src/modules/system';
 import { UserModule } from '@src/modules/user';
 import {

@@ -3,7 +3,7 @@ import { EntityId, LtiPrivacyPermission, Pseudonym, RoleName, UserDO } from '@sh
 import { RoleReference } from '@shared/domain/domainobject';
 import { CourseRepo } from '@shared/repo';
 import { PseudonymService } from '@src/modules/pseudonym';
-import { LegacySchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school-migration';
 import { UserService } from '@src/modules/user';
 import { Authorization } from 'oauth-1.0a';
 import { LtiRole } from '../../../common/enum';

@@ -6,7 +6,7 @@ import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encr
 import { LegacyLogger } from '@src/core/logger';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
-import { LegacySchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school-migration';
 import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';

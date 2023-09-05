@@ -8,7 +8,7 @@ import {
 } from '@shared/testing';
 import { Permission, LegacySchoolDo } from '@shared/domain';
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/school-migration';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ToolPermissionHelper } from './tool-permission-helper';
 import { SchoolExternalTool } from '../../school-external-tool/domain';

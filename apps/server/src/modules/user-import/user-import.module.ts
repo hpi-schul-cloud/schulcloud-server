@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ImportUserRepo, LegacySchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
+import { SchoolModule } from '@src/modules/school-migration';
 import { AccountModule } from '../account';
 import { AuthorizationModule } from '../authorization';
-import { SchoolModule } from '../school';
 import { ImportUserController } from './controller/import-user.controller';
 import { UserImportUc } from './uc/user-import.uc';
 
