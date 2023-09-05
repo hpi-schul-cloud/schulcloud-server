@@ -1,10 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, UserDO } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { ISession } from '@shared/domain/types/session';
-import { legacySchoolDoFactory, setupEntities } from '@shared/testing';
+import { schoolDOFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
@@ -12,7 +13,7 @@ import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import { OauthUc } from '@src/modules/oauth/uc/oauth.uc';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
-import { LegacySchoolService } from '@src/modules/school';
+import { SchoolService } from '@src/modules/school';
 import { SystemService } from '@src/modules/system';
 import { OauthConfigDto, SystemDto } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
@@ -76,8 +77,8 @@ describe('OAuthUc', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: LegacySchoolService,
-					useValue: createMock<LegacySchoolService>(),
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
 				},
 				{
 					provide: UserMigrationService,
@@ -658,7 +659,7 @@ describe('OAuthUc', () => {
 
 					oauthService.requestToken.mockResolvedValue(tokenDto);
 					provisioningService.getData.mockResolvedValue(oauthData);
-					const schoolToMigrate: LegacySchoolDo | void = legacySchoolDoFactory.build({ name: 'mockName' });
+					const schoolToMigrate: SchoolDO | void = schoolDOFactory.build({ name: 'mockName' });
 					oauthService.authenticateUser.mockResolvedValue(tokenDto);
 					schoolMigrationService.schoolToMigrate.mockResolvedValue(schoolToMigrate);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);

@@ -3,7 +3,7 @@ import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { CacheWrapperModule } from '@shared/infra/cache';
 import { IdentityManagementModule } from '@shared/infra/identity-management';
-import { LegacySchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
+import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AccountModule } from '@src/modules/account';
 import { OauthModule } from '@src/modules/oauth/oauth.module';
@@ -70,7 +70,7 @@ const jwtModuleOptions: JwtModuleOptions = {
 		JwtValidationAdapter,
 		UserRepo,
 		SystemRepo,
-		LegacySchoolRepo,
+		SchoolRepo,
 		LocalStrategy,
 		AuthenticationService,
 		LdapService,
