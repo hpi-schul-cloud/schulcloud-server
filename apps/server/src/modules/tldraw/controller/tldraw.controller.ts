@@ -9,7 +9,7 @@ import { TldrawDeleteParams } from '@src/modules/tldraw/controller/tldraw.params
 @Authenticate('jwt')
 @Controller('tldraw-document')
 export class TldrawController {
-	constructor(private readonly tldrawSrevice: TldrawService) {}
+	constructor(private readonly tldrawService: TldrawService) {}
 
 	@ApiOperation({ summary: 'Delete every element of tldraw drawing by his docName.' })
 	@ApiResponse({ status: 204 })
@@ -19,6 +19,6 @@ export class TldrawController {
 	@HttpCode(204)
 	@Delete(':docName')
 	async deleteByDrawingName(@Param() urlParams: TldrawDeleteParams) {
-		await this.tldrawSrevice.deleteByDrawingName(urlParams.docName);
+		await this.tldrawService.deleteByDrawingName(urlParams.docName);
 	}
 }
