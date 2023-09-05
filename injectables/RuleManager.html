@@ -126,7 +126,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(courseRule: <a href="../injectables/CourseRule.html" target="_self">CourseRule</a>, courseGroupRule: <a href="../injectables/CourseGroupRule.html" target="_self">CourseGroupRule</a>, lessonRule: <a href="../injectables/LessonRule.html" target="_self">LessonRule</a>, legaySchoolRule: <a href="../injectables/LegacySchoolRule.html" target="_self">LegacySchoolRule</a>, taskRule: <a href="../injectables/TaskRule.html" target="_self">TaskRule</a>, userRule: <a href="../injectables/UserRule.html" target="_self">UserRule</a>, teamRule: <a href="../injectables/TeamRule.html" target="_self">TeamRule</a>, submissionRule: <a href="../injectables/SubmissionRule.html" target="_self">SubmissionRule</a>, schoolExternalToolRule: <a href="../injectables/SchoolExternalToolRule.html" target="_self">SchoolExternalToolRule</a>, boardDoRule: <a href="../injectables/BoardDoRule.html" target="_self">BoardDoRule</a>, contextExternalToolRule: <a href="../injectables/ContextExternalToolRule.html" target="_self">ContextExternalToolRule</a>, userLoginMigrationRule: <a href="../injectables/UserLoginMigrationRule.html" target="_self">UserLoginMigrationRule</a>)</code>
+<code>constructor(courseRule: <a href="../injectables/CourseRule.html" target="_self">CourseRule</a>, courseGroupRule: <a href="../injectables/CourseGroupRule.html" target="_self">CourseGroupRule</a>, lessonRule: <a href="../injectables/LessonRule.html" target="_self">LessonRule</a>, schoolRule: <a href="../injectables/SchoolRule.html" target="_self">SchoolRule</a>, taskRule: <a href="../injectables/TaskRule.html" target="_self">TaskRule</a>, userRule: <a href="../injectables/UserRule.html" target="_self">UserRule</a>, teamRule: <a href="../injectables/TeamRule.html" target="_self">TeamRule</a>, submissionRule: <a href="../injectables/SubmissionRule.html" target="_self">SubmissionRule</a>, schoolExternalToolRule: <a href="../injectables/SchoolExternalToolRule.html" target="_self">SchoolExternalToolRule</a>, boardDoRule: <a href="../injectables/BoardDoRule.html" target="_self">BoardDoRule</a>, contextExternalToolRule: <a href="../injectables/ContextExternalToolRule.html" target="_self">ContextExternalToolRule</a>, userLoginMigrationRule: <a href="../injectables/UserLoginMigrationRule.html" target="_self">UserLoginMigrationRule</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -185,10 +185,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>legaySchoolRule</td>
+                                                        <td>schoolRule</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/LegacySchoolRule.html" target="_self" >LegacySchoolRule</a></code>
+                                                                        <code><a href="../injectables/SchoolRule.html" target="_self" >SchoolRule</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -521,7 +521,7 @@ import {
 	CourseRule,
 	LessonRule,
 	SchoolExternalToolRule,
-	LegacySchoolRule,
+	SchoolRule,
 	SubmissionRule,
 	TaskRule,
 	TeamRule,
@@ -539,7 +539,7 @@ export class RuleManager {
 		private readonly courseRule: CourseRule,
 		private readonly courseGroupRule: CourseGroupRule,
 		private readonly lessonRule: LessonRule,
-		private readonly legaySchoolRule: LegacySchoolRule,
+		private readonly schoolRule: SchoolRule,
 		private readonly taskRule: TaskRule,
 		private readonly userRule: UserRule,
 		private readonly teamRule: TeamRule,
@@ -556,7 +556,7 @@ export class RuleManager {
 			this.taskRule,
 			this.teamRule,
 			this.userRule,
-			this.legaySchoolRule,
+			this.schoolRule,
 			this.submissionRule,
 			this.schoolExternalToolRule,
 			this.boardDoRule,

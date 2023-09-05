@@ -112,7 +112,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(schoolRepo: <a href="../injectables/LegacySchoolRepo.html" target="_self">LegacySchoolRepo</a>)</code>
+<code>constructor(schoolRepo: <a href="../injectables/SchoolRepo.html" target="_self">SchoolRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -138,7 +138,7 @@
                                                         <td>schoolRepo</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/LegacySchoolRepo.html" target="_self" >LegacySchoolRepo</a></code>
+                                                                        <code><a href="../injectables/SchoolRepo.html" target="_self" >SchoolRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -176,7 +176,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isSchoolNumberUnique(school: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>)</code>
+                    <code>isSchoolNumberUnique(school: <a href="../classes/SchoolDO.html" target="_self">SchoolDO</a>)</code>
                 </td>
             </tr>
 
@@ -207,7 +207,7 @@
                                 <tr>
                                     <td>school</td>
                                     <td>
-                                                <code><a href="../classes/LegacySchoolDo.html" target="_self" >LegacySchoolDo</a></code>
+                                                <code><a href="../classes/SchoolDO.html" target="_self" >SchoolDO</a></code>
                                     </td>
 
                                     <td>
@@ -248,7 +248,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>validate(school: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>)</code>
+                    <code>validate(school: <a href="../classes/SchoolDO.html" target="_self">SchoolDO</a>)</code>
                 </td>
             </tr>
 
@@ -279,7 +279,7 @@
                                 <tr>
                                     <td>school</td>
                                     <td>
-                                                <code><a href="../classes/LegacySchoolDo.html" target="_self" >LegacySchoolDo</a></code>
+                                                <code><a href="../classes/SchoolDO.html" target="_self" >SchoolDO</a></code>
                                     </td>
 
                                     <td>
@@ -311,26 +311,26 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { LegacySchoolDo } from &#x27;@shared/domain&#x27;;
-import { LegacySchoolRepo } from &#x27;@shared/repo&#x27;;
+import { SchoolDO } from &#x27;@shared/domain&#x27;;
+import { SchoolRepo } from &#x27;@shared/repo&#x27;;
 import { SchoolNumberDuplicateLoggableException } from &#x27;../../error&#x27;;
 
 @Injectable()
 export class SchoolValidationService {
-	constructor(private readonly schoolRepo: LegacySchoolRepo) {}
+	constructor(private readonly schoolRepo: SchoolRepo) {}
 
-	public async validate(school: LegacySchoolDo): Promise&lt;void&gt; {
+	public async validate(school: SchoolDO): Promise&lt;void&gt; {
 		if (!(await this.isSchoolNumberUnique(school))) {
 			throw new SchoolNumberDuplicateLoggableException(school.officialSchoolNumber as string);
 		}
 	}
 
-	private async isSchoolNumberUnique(school: LegacySchoolDo): Promise&lt;boolean&gt; {
+	private async isSchoolNumberUnique(school: SchoolDO): Promise&lt;boolean&gt; {
 		if (!school.officialSchoolNumber) {
 			return true;
 		}
 
-		const foundSchool: LegacySchoolDo | null &#x3D; await this.schoolRepo.findBySchoolNumber(school.officialSchoolNumber);
+		const foundSchool: SchoolDO | null &#x3D; await this.schoolRepo.findBySchoolNumber(school.officialSchoolNumber);
 
 		return foundSchool &#x3D;&#x3D;&#x3D; null || foundSchool.id &#x3D;&#x3D;&#x3D; school.id;
 	}

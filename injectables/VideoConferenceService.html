@@ -166,7 +166,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(vcSettings: <a href="../interfaces/IVideoConferenceSettings.html" target="_self">IVideoConferenceSettings</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, calendarService: <a href="../injectables/CalendarService.html" target="_self">CalendarService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, teamsRepo: <a href="../injectables/TeamsRepo.html" target="_self">TeamsRepo</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, videoConferenceRepo: <a href="../injectables/VideoConferenceRepo.html" target="_self">VideoConferenceRepo</a>)</code>
+<code>constructor(vcSettings: <a href="../interfaces/IVideoConferenceSettings.html" target="_self">IVideoConferenceSettings</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, calendarService: <a href="../injectables/CalendarService.html" target="_self">CalendarService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, teamsRepo: <a href="../injectables/TeamsRepo.html" target="_self">TeamsRepo</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, videoConferenceRepo: <a href="../injectables/VideoConferenceRepo.html" target="_self">VideoConferenceRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -240,7 +240,7 @@
                                                         <td>schoolService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/LegacySchoolService.html" target="_self" >LegacySchoolService</a></code>
+                                                                        <code><a href="../injectables/SchoolService.html" target="_self" >SchoolService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -1430,7 +1430,7 @@ import {
 	AuthorizationService,
 } from &#x27;@src/modules/authorization&#x27;;
 import { CourseService } from &#x27;@src/modules/learnroom/service/course.service&#x27;;
-import { LegacySchoolService } from &#x27;@src/modules/school&#x27;;
+import { SchoolService } from &#x27;@src/modules/school&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
 import { BBBRole } from &#x27;../bbb&#x27;;
 import { ErrorStatus } from &#x27;../error/error-status.enum&#x27;;
@@ -1445,7 +1445,7 @@ export class VideoConferenceService {
 		private readonly courseService: CourseService,
 		private readonly calendarService: CalendarService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly schoolService: LegacySchoolService,
+		private readonly schoolService: SchoolService,
 		private readonly teamsRepo: TeamsRepo,
 		private readonly userService: UserService,
 		private readonly videoConferenceRepo: VideoConferenceRepo

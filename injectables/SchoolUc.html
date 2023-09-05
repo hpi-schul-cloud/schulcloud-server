@@ -40,9 +40,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" 
-        class="breadcrumb-item deprecated-name"
-    >LegacySchoolUc</li>
+  <li class="breadcrumb-item" >SchoolUc</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -66,15 +64,9 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/school/uc/legacy-school.uc.ts</code>
+            <code>apps/server/src/modules/school/uc/school.uc.ts</code>
         </p>
 
-            <p class="comment">
-                <h3 class="deprecated">Deprecated</h3>
-            </p>
-            <p class="comment">
-                because it uses the deprecated LegacySchoolService.
-            </p>
 
 
 
@@ -118,12 +110,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, authService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolMigrationService: <a href="../injectables/SchoolMigrationService.html" target="_self">SchoolMigrationService</a>, userLoginMigrationService: <a href="../injectables/UserLoginMigrationService.html" target="_self">UserLoginMigrationService</a>, userLoginMigrationRevertService: <a href="../injectables/UserLoginMigrationRevertService.html" target="_self">UserLoginMigrationRevertService</a>)</code>
+<code>constructor(schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, authService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolMigrationService: <a href="../injectables/SchoolMigrationService.html" target="_self">SchoolMigrationService</a>, userLoginMigrationService: <a href="../injectables/UserLoginMigrationService.html" target="_self">UserLoginMigrationService</a>, userLoginMigrationRevertService: <a href="../injectables/UserLoginMigrationRevertService.html" target="_self">UserLoginMigrationRevertService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/school/uc/legacy-school.uc.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/school/uc/school.uc.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -144,7 +136,7 @@
                                                         <td>schoolService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/LegacySchoolService.html" target="_self" >LegacySchoolService</a></code>
+                                                                        <code><a href="../injectables/SchoolService.html" target="_self" >SchoolService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -236,8 +228,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="77"
-                            class="link-to-prism">apps/server/src/modules/school/uc/legacy-school.uc.ts:77</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="74"
+                            class="link-to-prism">apps/server/src/modules/school/uc/school.uc.ts:74</a></div>
                 </td>
             </tr>
 
@@ -319,8 +311,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="26"
-                            class="link-to-prism">apps/server/src/modules/school/uc/legacy-school.uc.ts:26</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="23"
+                            class="link-to-prism">apps/server/src/modules/school/uc/school.uc.ts:23</a></div>
                 </td>
             </tr>
 
@@ -423,23 +415,20 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Permission, LegacySchoolDo, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
+import { Permission, SchoolDO, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
 import { Action, AuthorizableReferenceType, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
 import {
 	SchoolMigrationService,
 	UserLoginMigrationRevertService,
 	UserLoginMigrationService,
 } from &#x27;@src/modules/user-login-migration&#x27;;
-import { LegacySchoolService } from &#x27;../service&#x27;;
+import { SchoolService } from &#x27;../service&#x27;;
 import { OauthMigrationDto } from &#x27;./dto/oauth-migration.dto&#x27;;
 
-/**
- * @deprecated because it uses the deprecated LegacySchoolService.
- */
 @Injectable()
-export class LegacySchoolUc {
+export class SchoolUc {
 	constructor(
-		private readonly schoolService: LegacySchoolService,
+		private readonly schoolService: SchoolService,
 		private readonly authService: AuthorizationService,
 		private readonly schoolMigrationService: SchoolMigrationService,
 		private readonly userLoginMigrationService: UserLoginMigrationService,
@@ -485,7 +474,7 @@ export class LegacySchoolUc {
 			await this.schoolMigrationService.unmarkOutdatedUsers(schoolId);
 		}
 
-		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(schoolId);
+		const school: SchoolDO &#x3D; await this.schoolService.getSchoolById(schoolId);
 
 		const migrationDto: OauthMigrationDto &#x3D; new OauthMigrationDto({
 			oauthMigrationPossible: !updatedUserLoginMigration.closedAt ? updatedUserLoginMigration.startedAt : undefined,
@@ -508,7 +497,7 @@ export class LegacySchoolUc {
 			schoolId
 		);
 
-		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(schoolId);
+		const school: SchoolDO &#x3D; await this.schoolService.getSchoolById(schoolId);
 
 		const migrationDto: OauthMigrationDto &#x3D; new OauthMigrationDto({
 			oauthMigrationPossible:
@@ -565,7 +554,7 @@ export class LegacySchoolUc {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'LegacySchoolUc.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'SchoolUc.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

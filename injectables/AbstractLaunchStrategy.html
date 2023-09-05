@@ -162,7 +162,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>)</code>
+<code>constructor(schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -188,7 +188,7 @@
                                                         <td>schoolService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/LegacySchoolService.html" target="_self" >LegacySchoolService</a></code>
+                                                                        <code><a href="../injectables/SchoolService.html" target="_self" >SchoolService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -1376,9 +1376,9 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Course, EntityId, LegacySchoolDo } from &#x27;@shared/domain&#x27;;
+import { Course, EntityId, SchoolDO } from &#x27;@shared/domain&#x27;;
 import { CourseRepo } from &#x27;@shared/repo&#x27;;
-import { LegacySchoolService } from &#x27;@src/modules/school&#x27;;
+import { SchoolService } from &#x27;@src/modules/school&#x27;;
 import { URLSearchParams } from &#x27;url&#x27;;
 import {
 	CustomParameterLocation,
@@ -1398,7 +1398,7 @@ import { ExternalTool } from &#x27;../../../external-tool/domain&#x27;;
 
 @Injectable()
 export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
-	constructor(private readonly schoolService: LegacySchoolService, private readonly courseRepo: CourseRepo) {}
+	constructor(private readonly schoolService: SchoolService, private readonly courseRepo: CourseRepo) {}
 
 	public async createLaunchData(userId: EntityId, data: IToolLaunchParams): Promise&lt;ToolLaunchData&gt; {
 		const launchData: ToolLaunchData &#x3D; this.buildToolLaunchDataFromExternalTool(data.externalTool);
@@ -1603,7 +1603,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 				);
 			}
 			case CustomParameterType.AUTO_SCHOOLNUMBER: {
-				const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
+				const school: SchoolDO &#x3D; await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
 
 				return school.officialSchoolNumber;
 			}
