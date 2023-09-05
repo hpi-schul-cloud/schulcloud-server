@@ -37,7 +37,7 @@ export class TldrawDrawing {
 }
 
 export interface TldrawDrawingProps {
-	id?: string;
+	_id?: string;
 	docName: string;
 	version: string;
 	clock?: number;

@@ -5,7 +5,7 @@ export const tldrawEntityFactory = BaseFactory.define<TldrawDrawing, TldrawDrawi
 	TldrawDrawing,
 	({ sequence }) => {
 		return {
-			id: 'test',
+			_id: 'test-id',
 			docName: 'test-name',
 			value: 'test-value',
 			version: `test-version-${sequence}`,

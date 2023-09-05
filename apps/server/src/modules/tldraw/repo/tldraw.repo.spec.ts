@@ -1,12 +1,9 @@
-import { createMock } from '@golevelup/ts-jest';
-import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CardNode } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections } from '@shared/testing';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { tldrawEntityFactory } from '@src/modules/tldraw/factory';
+import { TldrawDrawing } from '@src/modules/tldraw/entities';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { TldrawRepo } from './tldraw.repo';
 
 describe(TldrawRepo.name, () => {
@@ -16,11 +13,8 @@ describe(TldrawRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [
-				TldrawRepo,
-				{ provide: FilesStorageClientAdapterService, useValue: createMock<FilesStorageClientAdapterService>() },
-			],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [TldrawDrawing] })],
+			providers: [TldrawRepo],
 		}).compile();
 		repo = module.get(TldrawRepo);
 		em = module.get(EntityManager);
@@ -42,8 +36,8 @@ describe(TldrawRepo.name, () => {
 				await repo.create(drawing);
 				em.clear();
 
-				const result = await em.find(CardNode, { _id: drawing._id });
-				expect(result.map((n) => n.id).sort()).toEqual(drawing._id);
+				const result = await em.find(TldrawDrawing, {});
+				expect(result[0]._id).toEqual(drawing._id);
 			});
 
 			it('should flush the changes', async () => {
@@ -71,10 +65,12 @@ describe(TldrawRepo.name, () => {
 				const { drawing } = await setup();
 				const result = await repo.findByDrawingName(drawing.docName);
 				expect(result[0].docName).toEqual(drawing.docName);
+				expect(result[0]._id).toEqual(drawing._id);
 			});
 
-			it('should throw an error when not found', async () => {
-				await expect(repo.findByDrawingName('invalid-name')).rejects.toThrowError(NotFoundError);
+			it('should not find any record giving wrong docName', async () => {
+				const result = await repo.findByDrawingName('invalid-name');
+				expect(result.length).toEqual(0);
 			});
 		});
 	});
