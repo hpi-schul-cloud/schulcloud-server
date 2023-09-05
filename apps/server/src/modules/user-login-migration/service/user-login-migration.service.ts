@@ -71,8 +71,8 @@ export class UserLoginMigrationService {
 
 		const savedMigration: UserLoginMigrationDO = await this.userLoginMigrationRepo.save(userLoginMigration);
 
-		// userLoginMigration throws an error when saved, if this codeblock runs before the userLoginMigrationRepo.save method.
 		if (oauthMigrationFinished !== undefined) {
+			// this would throw an error when executed before the userLoginMigrationRepo.save method.
 			await this.schoolService.removeFeature(schoolId, SchoolFeatures.ENABLE_LDAP_SYNC_DURING_MIGRATION);
 		}
 
