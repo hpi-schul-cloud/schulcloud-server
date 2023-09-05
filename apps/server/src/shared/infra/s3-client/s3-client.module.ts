@@ -25,8 +25,8 @@ export class S3ClientModule {
 	static register(configs: S3Config[]): DynamicModule {
 		const providers = configs.flatMap((config) => [
 			{
-				provide: configs.connectionName,
-				useFactory: (logger: LegacyLogger) => createS3ClientAdapter(configs, logger),
+				provide: config.connectionName,
+				useFactory: (logger: LegacyLogger) => createS3ClientAdapter(config, logger),
 				inject: [LegacyLogger],
 			},
 		]);

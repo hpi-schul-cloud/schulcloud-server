@@ -8,7 +8,6 @@ import { S3ClientModule } from './s3-client.module';
 
 const connectionOne = 'connectionOne';
 const connectionTwo = 'connectionTwo';
-const connectionThree = 'connectionThree';
 
 class OneService {
 	constructor(@Inject(connectionOne) public s3client: S3ClientAdapter) {}
