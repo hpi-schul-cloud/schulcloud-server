@@ -32,12 +32,22 @@ class ClassAction extends BaseConsumerAction {
 				classData.systemId
 			);
 
-			if (
-				migratedSchool?.userLoginMigration &&
-				!migratedSchool.userLoginMigration.closedAt &&
-				migratedSchool?.features?.includes('enableLdapSyncDuringMigration')
-			) {
-				school = migratedSchool;
+			if (migratedSchool) {
+				if (
+					migratedSchool.userLoginMigration &&
+					!migratedSchool.userLoginMigration.closedAt &&
+					migratedSchool.features?.includes('enableLdapSyncDuringMigration')
+				) {
+					school = migratedSchool;
+				} else {
+					throw new NotFound(
+						`Migrated School for schoolDn ${classData.schoolDn} and system ${classData.systemId} couldn't be synced, since the feature is deactivated.`,
+						{
+							schoolDn: classData.schoolDn,
+							systemId: classData.systemId,
+						}
+					);
+				}
 			} else {
 				throw new NotFound(
 					`School for schoolDn ${classData.schoolDn} and system ${classData.systemId} couldn't be found.`,
