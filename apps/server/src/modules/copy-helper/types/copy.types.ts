@@ -13,7 +13,8 @@ export type CopyStatus = {
 
 export enum CopyElementType {
 	'BOARD' = 'BOARD',
-	'ColumnBoard' = 'ColumnBoard',
+	'COLUMN' = 'COLUMN',
+	'COLUMNBOARD' = 'COLUMNBOARD',
 	'CONTENT' = 'CONTENT',
 	'COURSE' = 'COURSE',
 	'COURSEGROUP_GROUP' = 'COURSEGROUP_GROUP',

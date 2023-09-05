@@ -249,7 +249,7 @@ describe('board copy service', () => {
 				const copyOfColumnBoard = columnBoardFactory.build();
 
 				columnBoardCopyService.copyColumnBoard.mockResolvedValue({
-					type: CopyElementType.ColumnBoard,
+					type: CopyElementType.COLUMNBOARD,
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: copyOfColumnBoard,
 					originalEntity: originalColumnBoard,
@@ -286,7 +286,7 @@ describe('board copy service', () => {
 			it('should add status of columnBoard copy to board copy status', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
 				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
-				const lessonStatus = status.elements?.find((el) => el.type === CopyElementType.ColumnBoard);
+				const lessonStatus = status.elements?.find((el) => el.type === CopyElementType.COLUMNBOARD);
 
 				expect(lessonStatus).toBeDefined();
 			});
