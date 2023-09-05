@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { LegacyLogger } from '@src/core/logger';
-import { S3ClientAdapter } from '../../files-storage/client/s3-client.adapter';
 
 @Injectable()
 export class FwuLearningContentsUc {

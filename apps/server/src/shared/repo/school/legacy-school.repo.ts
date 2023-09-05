@@ -1,13 +1,15 @@
 import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EntityId, ISchoolProperties, School, System, UserLoginMigration } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { EntityId, ISchoolProperties, LegacySchoolDo, School, System, UserLoginMigration } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { BaseDORepo } from '../base.do.repo';
 
+/**
+ * @deprecated because it uses the deprecated LegacySchoolDo.
+ */
 @Injectable()
-export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> {
+export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, School, ISchoolProperties> {
 	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
 	}
@@ -16,20 +18,20 @@ export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> 
 		return School;
 	}
 
-	async findByExternalId(externalId: string, systemId: string): Promise<SchoolDO | null> {
+	async findByExternalId(externalId: string, systemId: string): Promise<LegacySchoolDo | null> {
 		const school: School | null = await this._em.findOne(School, { externalId, systems: systemId });
 
-		const schoolDo: SchoolDO | null = school ? this.mapEntityToDO(school) : null;
+		const schoolDo: LegacySchoolDo | null = school ? this.mapEntityToDO(school) : null;
 		return schoolDo;
 	}
 
-	async findBySchoolNumber(officialSchoolNumber: string): Promise<SchoolDO | null> {
+	async findBySchoolNumber(officialSchoolNumber: string): Promise<LegacySchoolDo | null> {
 		const [schools, count] = await this._em.findAndCount(School, { officialSchoolNumber });
 		if (count > 1) {
 			throw new InternalServerErrorException(`Multiple schools found for officialSchoolNumber ${officialSchoolNumber}`);
 		}
 
-		const schoolDo: SchoolDO | null = schools[0] ? this.mapEntityToDO(schools[0]) : null;
+		const schoolDo: LegacySchoolDo | null = schools[0] ? this.mapEntityToDO(schools[0]) : null;
 		return schoolDo;
 	}
 
@@ -37,8 +39,8 @@ export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> 
 		return new School(props);
 	}
 
-	mapEntityToDO(entity: School): SchoolDO {
-		return new SchoolDO({
+	mapEntityToDO(entity: School): LegacySchoolDo {
+		return new LegacySchoolDo({
 			id: entity.id,
 			externalId: entity.externalId,
 			features: entity.features,
@@ -54,7 +56,7 @@ export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> 
 		});
 	}
 
-	mapDOToEntityProperties(entityDO: SchoolDO): ISchoolProperties {
+	mapDOToEntityProperties(entityDO: LegacySchoolDo): ISchoolProperties {
 		return {
 			externalId: entityDO.externalId,
 			features: entityDO.features,

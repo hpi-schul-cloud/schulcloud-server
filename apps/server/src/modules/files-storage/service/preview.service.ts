@@ -1,25 +1,16 @@
 import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { LegacyLogger } from '@src/core/logger';
 import { subClass } from 'gm';
 import { PassThrough } from 'stream';
-import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { DownloadFileParams, PreviewParams } from '../controller/dto';
 import { FileRecord, PreviewStatus } from '../entity';
 import { ErrorType } from '../error';
 import { createPreviewDirectoryPath, createPreviewFilePath, createPreviewNameHash } from '../helper';
-import { IGetFile, IGetFileResponse } from '../interface';
+import { GetFileResponse, PreviewFileParams } from '../interface';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
 import { FileDtoBuilder, FileResponseBuilder } from '../mapper';
 import { FilesStorageService } from './files-storage.service';
-
-interface PreviewFileParams {
-	fileRecord: FileRecord;
-	downloadParams: DownloadFileParams;
-	previewParams: PreviewParams;
-	hash: string;
-	filePath: string;
-	bytesRange?: string;
-}
 
 @Injectable()
 export class PreviewService {
@@ -36,24 +27,21 @@ export class PreviewService {
 		downloadParams: DownloadFileParams,
 		previewParams: PreviewParams,
 		bytesRange?: string
-	): Promise<IGetFileResponse> {
+	): Promise<GetFileResponse> {
 		this.checkIfPreviewPossible(fileRecord);
 
-		const { forceUpdate, outputFormat } = previewParams;
 		const hash = createPreviewNameHash(fileRecord.id, previewParams);
 		const filePath = createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
-		const name = this.getPreviewName(fileRecord, outputFormat);
-		let file: IGetFile;
+
+		let response: GetFileResponse;
 
 		const previewFileParams = { fileRecord, downloadParams, previewParams, hash, filePath, bytesRange };
 
-		if (forceUpdate) {
-			file = await this.generatePreview(previewFileParams);
+		if (previewParams.forceUpdate) {
+			response = await this.generatePreview(previewFileParams);
 		} else {
-			file = await this.tryGetPreviewOrGenerate(previewFileParams);
+			response = await this.tryGetPreviewOrGenerate(previewFileParams);
 		}
-
-		const response = FileResponseBuilder.build(file, name);
 
 		return response;
 	}
@@ -79,12 +67,11 @@ export class PreviewService {
 		}
 	}
 
-	private async tryGetPreviewOrGenerate(params: PreviewFileParams): Promise<IGetFile> {
-		const { filePath, bytesRange } = params;
-		let file: IGetFile;
+	private async tryGetPreviewOrGenerate(params: PreviewFileParams): Promise<GetFileResponse> {
+		let file: GetFileResponse;
 
 		try {
-			file = await this.storageClient.get(filePath, bytesRange);
+			file = await this.getPreviewFile(params);
 		} catch (error) {
 			if (!(error instanceof NotFoundException)) {
 				throw error;
@@ -96,7 +83,17 @@ export class PreviewService {
 		return file;
 	}
 
-	private async generatePreview(params: PreviewFileParams): Promise<IGetFile> {
+	private async getPreviewFile(params: PreviewFileParams): Promise<GetFileResponse> {
+		const { fileRecord, filePath, bytesRange, previewParams } = params;
+		const name = this.getPreviewName(fileRecord, previewParams.outputFormat);
+		const file = await this.storageClient.get(filePath, bytesRange);
+
+		const response = FileResponseBuilder.build(file, name);
+
+		return response;
+	}
+
+	private async generatePreview(params: PreviewFileParams): Promise<GetFileResponse> {
 		const { fileRecord, downloadParams, previewParams, hash, filePath, bytesRange } = params;
 
 		const original = await this.fileStorageService.download(fileRecord, downloadParams, bytesRange);
@@ -106,13 +103,13 @@ export class PreviewService {
 		const fileDto = FileDtoBuilder.build(hash, preview, format);
 		await this.storageClient.create(filePath, fileDto);
 
-		const response = await this.storageClient.get(filePath, bytesRange);
+		const response = await this.getPreviewFile(params);
 
 		return response;
 	}
 
 	private resizeAndConvert(
-		original: IGetFileResponse,
+		original: GetFileResponse,
 		fileRecord: FileRecord,
 		previewParams: PreviewParams
 	): PassThrough {

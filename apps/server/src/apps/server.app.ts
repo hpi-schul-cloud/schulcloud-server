@@ -61,9 +61,9 @@ async function bootstrap() {
 	// provide NestJS mail service to feathers app
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 	feathersExpress.services['nest-mail'] = {
-		send(data: Mail): void {
+		async send(data: Mail): Promise<void> {
 			const mailService = nestApp.get(MailService);
-			mailService.send(data);
+			await mailService.send(data);
 		},
 	};
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
