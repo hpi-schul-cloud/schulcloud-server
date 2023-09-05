@@ -9,6 +9,13 @@ export class ColumnBoardCopyService {
 		destinationExternalReference: BoardExternalReference;
 		userId: EntityId;
 	}): Promise<CopyStatus> {
+		// load original DO
+		// instanciate copy visitor
+		// run copy visitor
+		// fetch copy result from visitor
+		// persist copy
+		// return
+
 		throw new NotImplementedException(props);
 	}
 }
