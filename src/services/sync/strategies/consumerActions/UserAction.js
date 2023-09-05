@@ -28,6 +28,13 @@ class UserAction extends BaseConsumerAction {
 		if (!school) {
 			const migratedSchool = await SchoolRepo.findSchoolByPreviousExternalIdAndSystem(user.schoolDn, user.systemId);
 
+			if (!migratedSchool) {
+				throw new NotFound(`School for schoolDn ${user.schoolDn} and systemId ${user.systemId} couldn't be found.`, {
+					schoolDn: user.schoolDn,
+					systemId: user.systemId,
+				});
+			}
+
 			if (
 				migratedSchool?.userLoginMigration &&
 				!migratedSchool.userLoginMigration.closedAt &&
@@ -35,10 +42,14 @@ class UserAction extends BaseConsumerAction {
 			) {
 				school = migratedSchool;
 			} else {
-				throw new NotFound(`School for schoolDn ${user.schoolDn} and systemId ${user.systemId} couldn't be found.`, {
-					schoolDn: user.schoolDn,
-					systemId: user.systemId,
-				});
+				throw new NotFound(
+					`Migrated School with previous schoolDn ${user.schoolDn} and systemId ${user.systemId} has been found. 
+				The Ldap-Sync for this school has been skipped, because the conditions for an extended Sync for migrated schools have not been met.`,
+					{
+						schoolDn: user.schoolDn,
+						systemId: user.systemId,
+					}
+				);
 			}
 		}
 

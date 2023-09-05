@@ -17,7 +17,7 @@ const { SCHOOL_FEATURES } = require('../../../../../src/services/school/model');
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
-describe.only('User Actions', () => {
+describe('User Actions', () => {
 	let userAction;
 	let userAccountService;
 	let nestServices;
