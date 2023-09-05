@@ -9,12 +9,12 @@ describe('tldraw entity', () => {
 	describe('constructor', () => {
 		describe('when creating a tldraw doc', () => {
 			it('should create drawing', () => {
-				const tldraw = new TldrawDrawing({ docName: 'test', version: 'v1_tst', value: 'bindatamock', id: 'id' });
+				const tldraw = new TldrawDrawing({ docName: 'test', version: 'v1_tst', value: 'bindatamock', _id: 'test-id' });
 				expect(tldraw).toBeInstanceOf(TldrawDrawing);
 			});
 
 			it('should throw with empty docName', () => {
-				const call = () => new TldrawDrawing({ docName: '', version: 'v1_tst', value: 'bindatamock', id: 'id' });
+				const call = () => new TldrawDrawing({ docName: '', version: 'v1_tst', value: 'bindatamock', _id: 'test-id' });
 				expect(call).toThrow();
 			});
 		});
