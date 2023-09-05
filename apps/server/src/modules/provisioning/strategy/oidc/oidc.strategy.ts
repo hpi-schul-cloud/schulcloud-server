@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { UserDO } from '@shared/domain/domainobject/user.do';
+import { LegacySchoolDo, UserDO } from '@shared/domain';
 import { OauthDataDto, ProvisioningDto } from '../../dto';
 import { ProvisioningStrategy } from '../base.strategy';
 import { OidcProvisioningService } from './service/oidc-provisioning.service';
@@ -12,7 +11,7 @@ export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
 	}
 
 	override async apply(data: OauthDataDto): Promise<ProvisioningDto> {
-		let school: SchoolDO | undefined;
+		let school: LegacySchoolDo | undefined;
 		if (data.externalSchool) {
 			school = await this.oidcProvisioningService.provisionExternalSchool(data.externalSchool, data.system.systemId);
 		}
