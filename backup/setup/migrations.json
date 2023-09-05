@@ -273,5 +273,38 @@
 			"$date": "2023-08-03T09:46:49.653Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "64f1e7ce5f01dac16032e59d"
+		},
+		"state": "up",
+		"name": "add-join-meeting-permission-to-admin",
+		"createdAt": {
+			"$date": "2023-09-01T13:28:44.835Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "64f5c9d76edbcaa5cc4431d2"
+		},
+		"state": "up",
+		"name": "add-join-meeting-permission-to-teacher",
+		"createdAt": {
+			"$date": "2023-09-01T12:31:41.993Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "64f5c9d76edbcaa5cc4431d3"
+		},
+		"state": "up",
+		"name": "add-start-meeting-permission-to-admin",
+		"createdAt": {
+			"$date": "2023-09-01T13:14:13.453Z"
+		},
+		"__v": 0
 	}
 ]
