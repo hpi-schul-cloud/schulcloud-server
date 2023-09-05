@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo } from '@shared/domain';
-import { LegacySchoolRepo } from '@shared/repo';
-import { legacySchoolDoFactory } from '@shared/testing';
+import { SchoolDO } from '@shared/domain';
+import { SchoolRepo } from '@shared/repo';
+import { schoolDOFactory } from '@shared/testing';
 import { SchoolNumberDuplicateLoggableException } from '../../error';
 import { SchoolValidationService } from './school-validation.service';
 
@@ -10,21 +10,21 @@ describe('SchoolValidationService', () => {
 	let module: TestingModule;
 	let service: SchoolValidationService;
 
-	let schoolRepo: DeepMocked<LegacySchoolRepo>;
+	let schoolRepo: DeepMocked<SchoolRepo>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				SchoolValidationService,
 				{
-					provide: LegacySchoolRepo,
-					useValue: createMock<LegacySchoolRepo>(),
+					provide: SchoolRepo,
+					useValue: createMock<SchoolRepo>(),
 				},
 			],
 		}).compile();
 
 		service = module.get(SchoolValidationService);
-		schoolRepo = module.get(LegacySchoolRepo);
+		schoolRepo = module.get(SchoolRepo);
 	});
 
 	afterAll(async () => {
@@ -35,7 +35,7 @@ describe('SchoolValidationService', () => {
 		describe('isSchoolNumberUnique', () => {
 			describe('when a school has no official school number', () => {
 				const setup = () => {
-					const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ officialSchoolNumber: undefined });
+					const school: SchoolDO = schoolDOFactory.buildWithId({ officialSchoolNumber: undefined });
 
 					return {
 						school,
@@ -51,7 +51,7 @@ describe('SchoolValidationService', () => {
 
 			describe('when a new school is created and the school number is unique', () => {
 				const setup = () => {
-					const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ officialSchoolNumber: '1234' });
+					const school: SchoolDO = schoolDOFactory.buildWithId({ officialSchoolNumber: '1234' });
 
 					schoolRepo.findBySchoolNumber.mockResolvedValue(null);
 
@@ -69,7 +69,7 @@ describe('SchoolValidationService', () => {
 
 			describe('when an existing school is updated and the school number is unique', () => {
 				const setup = () => {
-					const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ officialSchoolNumber: '1234' });
+					const school: SchoolDO = schoolDOFactory.buildWithId({ officialSchoolNumber: '1234' });
 
 					schoolRepo.findBySchoolNumber.mockResolvedValue(school);
 
@@ -87,8 +87,8 @@ describe('SchoolValidationService', () => {
 
 			describe('when the school number already exists on another school', () => {
 				const setup = () => {
-					const newSchool: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ officialSchoolNumber: '1234' });
-					const existingSchool: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ officialSchoolNumber: '1234' });
+					const newSchool: SchoolDO = schoolDOFactory.buildWithId({ officialSchoolNumber: '1234' });
+					const existingSchool: SchoolDO = schoolDOFactory.buildWithId({ officialSchoolNumber: '1234' });
 
 					schoolRepo.findBySchoolNumber.mockResolvedValue(existingSchool);
 
