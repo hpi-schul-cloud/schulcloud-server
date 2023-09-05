@@ -24,21 +24,22 @@ class UserAction extends BaseConsumerAction {
 		const { user = {}, account = {} } = data;
 
 		let school = await SchoolRepo.findSchoolByLdapIdAndSystem(user.schoolDn, user.systemId);
-		if (!school) {
-			school = await SchoolRepo.findSchoolByPreviousExternalIdAndSystem(user.schoolDn, user.systemId);
-			if (school) {
-				const skipLdapSync = this.shouldSkipLdapSync(school);
-				if (skipLdapSync) {
-					return;
-				}
-			}
-		}
 
 		if (!school) {
-			throw new NotFound(`School for schoolDn ${user.schoolDn} and systemId ${user.systemId} couldn't be found.`, {
-				schoolDn: user.schoolDn,
-				systemId: user.systemId,
-			});
+			const migratedSchool = await SchoolRepo.findSchoolByPreviousExternalIdAndSystem(user.schoolDn, user.systemId);
+
+			if (
+				migratedSchool?.userLoginMigration &&
+				!migratedSchool.userLoginMigration.closedAt &&
+				migratedSchool?.features?.includes(SCHOOL_FEATURES.ENABLE_LDAP_SYNC_DURING_MIGRATION)
+			) {
+				school = migratedSchool;
+			} else {
+				throw new NotFound(`School for schoolDn ${user.schoolDn} and systemId ${user.systemId} couldn't be found.`, {
+					schoolDn: user.schoolDn,
+					systemId: user.systemId,
+				});
+			}
 		}
 
 		const foundUser = await UserRepo.findByLdapIdAndSchool(user.ldapId, school._id);
@@ -68,18 +69,6 @@ class UserAction extends BaseConsumerAction {
 		} else {
 			await this.createUserAndAccount(user, account, school);
 		}
-	}
-
-	shouldSkipLdapSync(school) {
-		let skipLdapSync = false;
-		if (school.userLoginMigration) {
-			skipLdapSync =
-				school.userLoginMigration.closedAt ||
-				!school.features.includes(SCHOOL_FEATURES.ENABLE_LDAP_SYNC_DURING_MIGRATION);
-		} else {
-			skipLdapSync = !school.features.includes(SCHOOL_FEATURES.ENABLE_LDAP_SYNC_DURING_MIGRATION);
-		}
-		return skipLdapSync;
 	}
 
 	async autoMatchImportUser(schoolId, userUpdateObject) {
