@@ -43,6 +43,14 @@ export class VideoConferenceJoinUc {
 			joinBuilder.withRole(BBBRole.MODERATOR);
 		}
 
+		if (
+			videoConference.options.moderatorMustApproveJoinRequests &&
+			!isGuest &&
+			!videoConference.options.everybodyJoinsAsModerator
+		) {
+			joinBuilder.asGuest(true);
+		}
+
 		if (!videoConference.options.moderatorMustApproveJoinRequests && isGuest) {
 			throw new ForbiddenException(
 				ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE,
