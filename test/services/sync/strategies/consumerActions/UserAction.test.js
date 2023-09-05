@@ -17,7 +17,7 @@ const { SCHOOL_FEATURES } = require('../../../../../src/services/school/model');
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
-describe('User Actions', () => {
+describe.only('User Actions', () => {
 	let userAction;
 	let userAccountService;
 	let nestServices;
@@ -228,33 +228,8 @@ describe('User Actions', () => {
 			});
 		});
 
-		describe('When school has oauth migrated', () => {
-			it('should not throw', async () => {
-				const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
-				findSchoolByLdapIdAndSystemStub.returns(null);
-
-				const findSchoolByPreviousExternalIdAndSystemStub = sinon.stub(
-					SchoolRepo,
-					'findSchoolByPreviousExternalIdAndSystem'
-				);
-				findSchoolByPreviousExternalIdAndSystemStub.returns({ name: 'Test Schhool' });
-
-				const testUserInput = {
-					_id: 1,
-					firstName: 'New fname',
-					lastName: 'New lname',
-					email: 'New email',
-					ldapDn: 'new ldapdn',
-					roles: [new ObjectId()],
-				};
-				const testAccountInput = { _id: 2 };
-
-				await expect(userAction.action({ user: testUserInput, account: testAccountInput })).not.to.be.rejectedWith(
-					NotFound
-				);
-			});
-
-			it('should neither create nor update user and account, when school feature does not exist in school', async () => {
+		describe('When school has migrated its login system', () => {
+			it('should throw, when school feature does not exist in school', async () => {
 				const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
 				findSchoolByLdapIdAndSystemStub.returns(null);
 
@@ -266,13 +241,11 @@ describe('User Actions', () => {
 					_id: new ObjectId(),
 					name: 'Test Schhool',
 					features: [],
+					userLoginMigration: { startedAt: new Date() },
 				});
 
 				sinon.stub(UserRepo, 'findByLdapIdAndSchool').returns(null);
 				sinon.stub(UserRepo, 'findByPreviousExternalIdAndSchool').returns(null);
-
-				const createUserStub = sinon.stub(userAccountService, 'createUserAndAccount');
-				const updateUserStub = sinon.stub(userAccountService, 'updateUserAndAccount');
 
 				const testUserInput = {
 					_id: 1,
@@ -285,13 +258,12 @@ describe('User Actions', () => {
 
 				const testAccountInput = { _id: 2 };
 
-				await userAction.action({ user: testUserInput, account: testAccountInput });
-
-				expect(createUserStub.notCalled).to.be.true;
-				expect(updateUserStub.notCalled).to.be.true;
+				await expect(userAction.action({ user: testUserInput, account: testAccountInput })).to.be.rejectedWith(
+					NotFound
+				);
 			});
 
-			it('should neither create nor update user and account, when migration is closed', async () => {
+			it('should throw, when migration is closed', async () => {
 				const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
 				findSchoolByLdapIdAndSystemStub.returns(null);
 
@@ -306,8 +278,38 @@ describe('User Actions', () => {
 					userLoginMigration: { closedAt: new Date() },
 				});
 
-				const createUserSpy = sinon.spy(userAccountService, 'createUserAndAccount');
-				const updateUserSpy = sinon.spy(userAccountService, 'updateUserAndAccount');
+				sinon.stub(UserRepo, 'findByLdapIdAndSchool').returns(null);
+				sinon.stub(UserRepo, 'findByPreviousExternalIdAndSchool').returns(null);
+
+				const testUserInput = {
+					_id: 1,
+					firstName: 'New fname',
+					lastName: 'New lname',
+					email: 'New email',
+					ldapDn: 'new ldapdn',
+					roles: [new ObjectId()],
+				};
+
+				const testAccountInput = { _id: 2 };
+
+				await expect(userAction.action({ user: testUserInput, account: testAccountInput })).to.be.rejectedWith(
+					NotFound
+				);
+			});
+
+			it('should throw, when no user login migration exists', async () => {
+				const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+				findSchoolByLdapIdAndSystemStub.returns(null);
+
+				const findSchoolByPreviousExternalIdAndSystemStub = sinon.stub(
+					SchoolRepo,
+					'findSchoolByPreviousExternalIdAndSystem'
+				);
+				findSchoolByPreviousExternalIdAndSystemStub.returns({
+					_id: new ObjectId(),
+					name: 'Test Schhool',
+					features: [SCHOOL_FEATURES.ENABLE_LDAP_SYNC_DURING_MIGRATION],
+				});
 
 				sinon.stub(UserRepo, 'findByLdapIdAndSchool').returns(null);
 				sinon.stub(UserRepo, 'findByPreviousExternalIdAndSchool').returns(null);
@@ -323,10 +325,9 @@ describe('User Actions', () => {
 
 				const testAccountInput = { _id: 2 };
 
-				await userAction.action({ user: testUserInput, account: testAccountInput });
-
-				expect(createUserSpy.notCalled).to.be.true;
-				expect(updateUserSpy.notCalled).to.be.true;
+				await expect(userAction.action({ user: testUserInput, account: testAccountInput })).to.be.rejectedWith(
+					NotFound
+				);
 			});
 
 			it('should create new user and account, when school feature exists in school', async () => {
@@ -342,6 +343,7 @@ describe('User Actions', () => {
 					_id: testSchoolId,
 					name: 'Test Schhool',
 					features: [SCHOOL_FEATURES.ENABLE_LDAP_SYNC_DURING_MIGRATION],
+					userLoginMigration: { startedAt: new Date() },
 				});
 
 				sinon.stub(UserRepo, 'findByLdapIdAndSchool').returns(null);
@@ -379,6 +381,7 @@ describe('User Actions', () => {
 					_id: testSchoolId,
 					name: 'Test Schhool',
 					features: [SCHOOL_FEATURES.ENABLE_LDAP_SYNC_DURING_MIGRATION],
+					userLoginMigration: { startedAt: new Date() },
 				});
 
 				const userId = new ObjectId();
