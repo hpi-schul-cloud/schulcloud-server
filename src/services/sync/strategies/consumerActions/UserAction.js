@@ -23,13 +23,14 @@ class UserAction extends BaseConsumerAction {
 	async action(data = {}) {
 		const { user = {}, account = {} } = data;
 
-		let school;
-		school = await SchoolRepo.findSchoolByLdapIdAndSystem(user.schoolDn, user.systemId);
+		let school = await SchoolRepo.findSchoolByLdapIdAndSystem(user.schoolDn, user.systemId);
 		if (!school) {
 			school = await SchoolRepo.findSchoolByPreviousExternalIdAndSystem(user.schoolDn, user.systemId);
-			// school has been found as a migrated school, no need for an error but do not continue
-			if (school && !school.features.includes(SCHOOL_FEATURES.ENABLE_LDAP_SYNC_DURING_MIGRATION)) {
-				return;
+			if (school) {
+				const skipLdapSync = this.shouldSkipLdapSync(school);
+				if (skipLdapSync) {
+					return;
+				}
 			}
 		}
 
@@ -67,6 +68,18 @@ class UserAction extends BaseConsumerAction {
 		} else {
 			await this.createUserAndAccount(user, account, school);
 		}
+	}
+
+	shouldSkipLdapSync(school) {
+		let skipLdapSync = false;
+		if (school.userLoginMigration) {
+			skipLdapSync =
+				school.userLoginMigration.closedAt ||
+				!school.features.includes(SCHOOL_FEATURES.ENABLE_LDAP_SYNC_DURING_MIGRATION);
+		} else {
+			skipLdapSync = !school.features.includes(SCHOOL_FEATURES.ENABLE_LDAP_SYNC_DURING_MIGRATION);
+		}
+		return skipLdapSync;
 	}
 
 	async autoMatchImportUser(schoolId, userUpdateObject) {
