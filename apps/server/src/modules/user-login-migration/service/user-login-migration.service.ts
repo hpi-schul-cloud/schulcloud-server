@@ -1,8 +1,8 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, LegacySchoolDo, SchoolFeatures, SystemTypeEnum, UserDO, UserLoginMigrationDO } from '@shared/domain';
+import { EntityId, SchoolDO, SchoolFeatures, SystemTypeEnum, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo';
-import { LegacySchoolService } from '@src/modules/school';
+import { SchoolService } from '@src/modules/school';
 import { SystemDto, SystemService } from '@src/modules/system';
 import { UserService } from '@src/modules/user';
 import { UserLoginMigrationNotFoundLoggableException } from '../error';
@@ -13,7 +13,7 @@ export class UserLoginMigrationService {
 	constructor(
 		private readonly userService: UserService,
 		private readonly userLoginMigrationRepo: UserLoginMigrationRepo,
-		private readonly schoolService: LegacySchoolService,
+		private readonly schoolService: SchoolService,
 		private readonly systemService: SystemService,
 		private readonly schoolMigrationService: SchoolMigrationService
 	) {}
@@ -32,7 +32,7 @@ export class UserLoginMigrationService {
 		oauthMigrationMandatory?: boolean,
 		oauthMigrationFinished?: boolean
 	): Promise<UserLoginMigrationDO> {
-		const schoolDo: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
+		const schoolDo: SchoolDO = await this.schoolService.getSchoolById(schoolId);
 
 		const existingUserLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(
 			schoolId
@@ -80,7 +80,7 @@ export class UserLoginMigrationService {
 	}
 
 	async startMigration(schoolId: string): Promise<UserLoginMigrationDO> {
-		const schoolDo: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
+		const schoolDo: SchoolDO = await this.schoolService.getSchoolById(schoolId);
 
 		const userLoginMigrationDO: UserLoginMigrationDO = await this.createNewMigration(schoolDo);
 
@@ -146,7 +146,7 @@ export class UserLoginMigrationService {
 		return userLoginMigration;
 	}
 
-	private async createNewMigration(school: LegacySchoolDo): Promise<UserLoginMigrationDO> {
+	private async createNewMigration(school: SchoolDO): Promise<UserLoginMigrationDO> {
 		const oauthSystems: SystemDto[] = await this.systemService.findByType(SystemTypeEnum.OAUTH);
 		const sanisSystem: SystemDto | undefined = oauthSystems.find((system: SystemDto) => system.alias === 'SANIS');
 
@@ -178,7 +178,7 @@ export class UserLoginMigrationService {
 		return userLoginMigration;
 	}
 
-	private enableOauthMigrationFeature(schoolDo: LegacySchoolDo) {
+	private enableOauthMigrationFeature(schoolDo: SchoolDO) {
 		if (schoolDo.features && !schoolDo.features.includes(SchoolFeatures.OAUTH_PROVISIONING_ENABLED)) {
 			schoolDo.features.push(SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
 		} else {

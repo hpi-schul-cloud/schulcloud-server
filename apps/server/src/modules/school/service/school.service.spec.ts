@@ -1,25 +1,26 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, SchoolFeatures } from '@shared/domain';
-import { LegacySchoolRepo } from '@shared/repo';
-import { legacySchoolDoFactory, setupEntities } from '@shared/testing';
-import { LegacySchoolService } from './legacy-school.service';
+import { SchoolFeatures } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { SchoolRepo } from '@shared/repo';
+import { schoolDOFactory, setupEntities } from '@shared/testing';
+import { SchoolService } from './school.service';
 import { SchoolValidationService } from './validation/school-validation.service';
 
-describe('LegacySchoolService', () => {
+describe('SchoolService', () => {
 	let module: TestingModule;
-	let schoolService: LegacySchoolService;
+	let schoolService: SchoolService;
 
-	let schoolRepo: DeepMocked<LegacySchoolRepo>;
+	let schoolRepo: DeepMocked<SchoolRepo>;
 	let schoolValidationService: DeepMocked<SchoolValidationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				LegacySchoolService,
+				SchoolService,
 				{
-					provide: LegacySchoolRepo,
-					useValue: createMock<LegacySchoolRepo>(),
+					provide: SchoolRepo,
+					useValue: createMock<SchoolRepo>(),
 				},
 				{
 					provide: SchoolValidationService,
@@ -28,8 +29,8 @@ describe('LegacySchoolService', () => {
 			],
 		}).compile();
 
-		schoolRepo = module.get(LegacySchoolRepo);
-		schoolService = module.get(LegacySchoolService);
+		schoolRepo = module.get(SchoolRepo);
+		schoolService = module.get(SchoolService);
 		schoolValidationService = module.get(SchoolValidationService);
 
 		await setupEntities();
@@ -41,7 +42,7 @@ describe('LegacySchoolService', () => {
 
 	const setupOld = () => {
 		const systems: string[] = ['systemId'];
-		const schoolSaved: LegacySchoolDo = legacySchoolDoFactory.build({
+		const schoolSaved: SchoolDO = schoolDOFactory.build({
 			id: 'testId',
 			name: 'schoolName',
 			externalId: 'externalId',
@@ -49,7 +50,7 @@ describe('LegacySchoolService', () => {
 			systems,
 			features: [SchoolFeatures.VIDEOCONFERENCE],
 		});
-		const schoolUnsaved: LegacySchoolDo = legacySchoolDoFactory.build({ name: 'school #2}', systems: [] });
+		const schoolUnsaved: SchoolDO = schoolDOFactory.build({ name: 'school #2}', systems: [] });
 		schoolRepo.findById.mockResolvedValue(schoolSaved);
 		schoolRepo.findByExternalId.mockResolvedValue(schoolSaved);
 		schoolRepo.findBySchoolNumber.mockResolvedValue(schoolSaved);
@@ -109,7 +110,7 @@ describe('LegacySchoolService', () => {
 	describe('removeFeature', () => {
 		describe('when given schoolFeature exists on school', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+				const school: SchoolDO = schoolDOFactory.buildWithId({
 					features: [SchoolFeatures.VIDEOCONFERENCE, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
 				});
 
@@ -131,7 +132,7 @@ describe('LegacySchoolService', () => {
 
 		describe('when school has a feature which should be removed', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+				const school: SchoolDO = schoolDOFactory.buildWithId({
 					features: [SchoolFeatures.VIDEOCONFERENCE, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
 				});
 
@@ -169,9 +170,9 @@ describe('LegacySchoolService', () => {
 			it('should return a do', async () => {
 				const { schoolSavedId } = setupOld();
 
-				const schoolDO: LegacySchoolDo = await schoolService.getSchoolById(schoolSavedId);
+				const schoolDO: SchoolDO = await schoolService.getSchoolById(schoolSavedId);
 
-				expect(schoolDO).toBeInstanceOf(LegacySchoolDo);
+				expect(schoolDO).toBeInstanceOf(SchoolDO);
 			});
 		});
 	});
@@ -188,19 +189,16 @@ describe('LegacySchoolService', () => {
 		it('should return a do', async () => {
 			const { schoolSavedExternalId, systems } = setupOld();
 
-			const schoolDO: LegacySchoolDo | null = await schoolService.getSchoolByExternalId(
-				schoolSavedExternalId,
-				systems[0]
-			);
+			const schoolDO: SchoolDO | null = await schoolService.getSchoolByExternalId(schoolSavedExternalId, systems[0]);
 
-			expect(schoolDO).toBeInstanceOf(LegacySchoolDo);
+			expect(schoolDO).toBeInstanceOf(SchoolDO);
 		});
 		it('should return null', async () => {
 			const { systems } = setupOld();
 
 			schoolRepo.findByExternalId.mockResolvedValue(null);
 
-			const schoolDO: LegacySchoolDo | null = await schoolService.getSchoolByExternalId('null', systems[0]);
+			const schoolDO: SchoolDO | null = await schoolService.getSchoolByExternalId('null', systems[0]);
 
 			expect(schoolDO).toBeNull();
 		});
@@ -218,14 +216,14 @@ describe('LegacySchoolService', () => {
 		it('should return a do', async () => {
 			const { schoolSavedNumber } = setupOld();
 
-			const schoolDO: LegacySchoolDo | null = await schoolService.getSchoolBySchoolNumber(schoolSavedNumber);
+			const schoolDO: SchoolDO | null = await schoolService.getSchoolBySchoolNumber(schoolSavedNumber);
 
-			expect(schoolDO).toBeInstanceOf(LegacySchoolDo);
+			expect(schoolDO).toBeInstanceOf(SchoolDO);
 		});
 		it('should return null', async () => {
 			schoolRepo.findBySchoolNumber.mockResolvedValue(null);
 
-			const schoolDO: LegacySchoolDo | null = await schoolService.getSchoolBySchoolNumber('null');
+			const schoolDO: SchoolDO | null = await schoolService.getSchoolBySchoolNumber('null');
 
 			expect(schoolDO).toBeNull();
 		});
@@ -234,7 +232,7 @@ describe('LegacySchoolService', () => {
 	describe('save is called', () => {
 		describe('when validation is deactivated', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.build();
+				const school: SchoolDO = schoolDOFactory.build();
 
 				schoolRepo.save.mockResolvedValue(school);
 
@@ -254,7 +252,7 @@ describe('LegacySchoolService', () => {
 			it('should return a do', async () => {
 				const { school } = setup();
 
-				const schoolDO: LegacySchoolDo = await schoolService.save(school);
+				const schoolDO: SchoolDO = await schoolService.save(school);
 
 				expect(schoolDO).toBeDefined();
 			});
@@ -271,7 +269,7 @@ describe('LegacySchoolService', () => {
 		describe('when validation is active', () => {
 			describe('when the validation fails', () => {
 				const setup = () => {
-					const school: LegacySchoolDo = legacySchoolDoFactory.build();
+					const school: SchoolDO = schoolDOFactory.build();
 
 					schoolRepo.save.mockResolvedValueOnce(school);
 					schoolValidationService.validate.mockRejectedValueOnce(new Error());
@@ -308,7 +306,7 @@ describe('LegacySchoolService', () => {
 
 			describe('when the validation succeeds', () => {
 				const setup = () => {
-					const school: LegacySchoolDo = legacySchoolDoFactory.build();
+					const school: SchoolDO = schoolDOFactory.build();
 
 					schoolRepo.save.mockResolvedValueOnce(school);
 
@@ -328,7 +326,7 @@ describe('LegacySchoolService', () => {
 				it('should return a do', async () => {
 					const { school } = setup();
 
-					const schoolDO: LegacySchoolDo = await schoolService.save(school, true);
+					const schoolDO: SchoolDO = await schoolService.save(school, true);
 
 					expect(schoolDO).toBeDefined();
 				});
