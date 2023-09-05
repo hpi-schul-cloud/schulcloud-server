@@ -1,7 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { LegacySchoolDo, System, User } from '@shared/domain';
-import { LegacySchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
+import { System, User } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { ErrorLoggable } from '@src/core/error/loggable/error.loggable';
 import { Logger } from '@src/core/logger';
 import { AccountDto } from '@src/modules/account/services/dto';
@@ -16,7 +17,7 @@ import { LdapService } from '../services/ldap.service';
 export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 	constructor(
 		private readonly systemRepo: SystemRepo,
-		private readonly schoolRepo: LegacySchoolRepo,
+		private readonly schoolRepo: SchoolRepo,
 		private readonly ldapService: LdapService,
 		private readonly authenticationService: AuthenticationService,
 		private readonly userRepo: UserRepo,
@@ -30,7 +31,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 
 		const system: System = await this.systemRepo.findById(systemId);
 
-		const school: LegacySchoolDo = await this.schoolRepo.findById(schoolId);
+		const school: SchoolDO = await this.schoolRepo.findById(schoolId);
 
 		if (!school.systems || !school.systems.includes(systemId)) {
 			throw new UnauthorizedException(`School ${schoolId} does not have the selected system ${systemId}`);
@@ -83,7 +84,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 		}
 	}
 
-	private async loadAccount(username: string, systemId: string, school: LegacySchoolDo): Promise<AccountDto> {
+	private async loadAccount(username: string, systemId: string, school: SchoolDO): Promise<AccountDto> {
 		const externalSchoolId = this.checkValue(school.externalId);
 
 		let account: AccountDto;
