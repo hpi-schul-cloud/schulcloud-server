@@ -109,7 +109,7 @@ describe('GroupService', () => {
 				};
 			};
 
-			it('should throw NotFoundLoggableException', async () => {
+			it('should return null', async () => {
 				const { group } = setup();
 
 				const result: Group | null = await service.tryFindById(group.id);

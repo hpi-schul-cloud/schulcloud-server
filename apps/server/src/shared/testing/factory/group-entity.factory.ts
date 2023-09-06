@@ -1,8 +1,8 @@
-import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalSourceEntity, RoleName } from '@shared/domain';
 import { GroupEntity, GroupEntityProps, GroupEntityTypes, GroupValidPeriodEntity } from '@src/modules/group/entity';
 import { BaseFactory } from './base.factory';
 import { roleFactory } from './role.factory';
+import { schoolFactory } from './school.factory';
 import { systemFactory } from './system.factory';
 import { userFactory } from './user.factory';
 
@@ -24,7 +24,7 @@ export const groupEntityFactory = BaseFactory.define<GroupEntity, GroupEntityPro
 			from: new Date(2023, 1),
 			until: new Date(2023, 6),
 		}),
-		organizationId: new ObjectId(),
+		organization: schoolFactory.buildWithId(),
 		externalSource: new ExternalSourceEntity({
 			externalId: `externalId-${sequence}`,
 			system: systemFactory.buildWithId(),

@@ -66,7 +66,7 @@ describe('GroupRepo', () => {
 							roleId: group.users[1].role.id,
 						}),
 					],
-					organizationId: group.organizationId?.toHexString(),
+					organizationId: group.organization?.id,
 					validFrom: group.validPeriod.from,
 					validUntil: group.validPeriod.until,
 				});

@@ -1,11 +1,11 @@
 import { MethodNotAllowedException } from '@nestjs/common';
+import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { BuildOptions, DeepPartial } from 'fishery';
-import { AuthorizableObject, DomainObject } from '../../../domain/domain-object';
 import { BaseFactory } from '../base.factory';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export class DomainObjectFactory<
-	T extends DomainObject<U extends AuthorizableObject ? U : never>,
+	T extends DomainObject<U>,
 	U extends AuthorizableObject = T extends DomainObject<infer X> ? X : never,
 	I = any,
 	C = U

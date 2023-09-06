@@ -1,5 +1,5 @@
-import { Embedded, Entity, Enum, Property } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { Embedded, Entity, Enum, ManyToOne, Property } from '@mikro-orm/core';
+import { School } from '@shared/domain';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { ExternalSourceEntity } from '@shared/domain/entity/external-source.entity';
 import { EntityId } from '@shared/domain/types';
@@ -23,7 +23,7 @@ export interface GroupEntityProps {
 
 	users: GroupUserEntity[];
 
-	organizationId?: ObjectId;
+	organization?: School;
 }
 
 @Entity({ tableName: 'groups' })
@@ -43,9 +43,8 @@ export class GroupEntity extends BaseEntityWithTimestamps {
 	@Embedded(() => GroupUserEntity, { array: true })
 	users: GroupUserEntity[];
 
-	// TODO saving an id without knowing where it comes from is bad. should this always be a school for now?
-	@Property({ nullable: true })
-	organizationId?: ObjectId;
+	@ManyToOne(() => School, { nullable: true })
+	organization?: School;
 
 	constructor(props: GroupEntityProps) {
 		super();
@@ -57,6 +56,6 @@ export class GroupEntity extends BaseEntityWithTimestamps {
 		this.externalSource = props.externalSource;
 		this.validPeriod = props.validPeriod;
 		this.users = props.users;
-		this.organizationId = props.organizationId;
+		this.organization = props.organization;
 	}
 }
