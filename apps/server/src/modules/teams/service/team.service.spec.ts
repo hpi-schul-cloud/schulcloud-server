@@ -71,7 +71,7 @@ describe('TeamService', () => {
 			it('should call teamsRepo.findByUserId', async () => {
 				const { teamUser } = setup();
 
-				await service.deleteUserDataFromTeams(teamUser.user.id);
+				await service.findUserDataFromTeams(teamUser.user.id);
 
 				expect(teamsRepo.findByUserId).toBeCalledWith(teamUser.user.id);
 			});
@@ -79,7 +79,7 @@ describe('TeamService', () => {
 			it('should return array of two teams with user', async () => {
 				const { teamUser } = setup();
 
-				const result = await service.deleteUserDataFromTeams(teamUser.user.id);
+				const result = await service.findUserDataFromTeams(teamUser.user.id);
 
 				expect(result).toEqual(2);
 			});
