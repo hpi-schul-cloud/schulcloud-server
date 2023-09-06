@@ -1,0 +1,50 @@
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { EntityId, User } from '@shared/domain';
+import { ReferenceLoader } from './reference.loader';
+import { AuthorizableReferenceType, AuthorizationContext } from '../../types';
+import { ForbiddenLoggableException } from '../../errors';
+import { AuthorizationService } from '../../authorization.service';
+import { ErrorUtils } from '@src/core/error/utils';
+
+@Injectable()
+export class AuthorizationReferenceService {
+	constructor(private readonly loader: ReferenceLoader, private readonly authorizationService: AuthorizationService) {}
+
+	public async checkPermissionByReferences(
+		userId: EntityId,
+		entityName: AuthorizableReferenceType,
+		entityId: EntityId,
+		context: AuthorizationContext
+	): Promise<void> {
+		if (!(await this.hasPermissionByReferences(userId, entityName, entityId, context))) {
+			throw new ForbiddenLoggableException(userId, entityName, context);
+		}
+	}
+
+	public async hasPermissionByReferences(
+		userId: EntityId,
+		entityName: AuthorizableReferenceType,
+		entityId: EntityId,
+		context: AuthorizationContext
+	): Promise<boolean> {
+		try {
+			const [user, object] = await Promise.all([
+				this.getUserWithPermissions(userId),
+				this.loader.loadAuthorizableObject(entityName, entityId),
+			]);
+
+			const hasPermission = this.authorizationService.hasPermission(user, object, context);
+
+			return hasPermission;
+		} catch (error) {
+			throw new ForbiddenLoggableException(userId, entityName, context); // TODO: cause
+		}
+	}
+
+	// think about it
+	public async getUserWithPermissions(userId: EntityId): Promise<User> {
+		const userWithPermissions = await this.loader.getUserWithPermissions(userId);
+
+		return userWithPermissions;
+	}
+}
