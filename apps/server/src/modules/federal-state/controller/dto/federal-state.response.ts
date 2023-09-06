@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
+import { CountyResponse } from './county.response';
 
 /**
  * DTO for returning a task document via api.
@@ -32,7 +33,7 @@ export class FederalStateResponse {
 
 	@ApiPropertyOptional()
 	@DecodeHtmlEntities()
-	counties?: string[];
+	counties?: CountyResponse[];
 
 	@ApiProperty()
 	createdAt: Date;

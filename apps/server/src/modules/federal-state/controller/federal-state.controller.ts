@@ -2,10 +2,11 @@ import { Body, Controller, ForbiddenException, Get, NotFoundException, Post } fr
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
-import { FederalStateEntity } from '../entity';
-import { FederalStateUC } from '../uc/federal-state.uc';
+import { ObjectId } from 'mongodb';
+import { FederalStateUC } from '../uc';
 import { CreateFederalStateBodyParams } from './dto/create-federal-state.body.params';
 import { FederalStateResponse } from './dto/federal-state.response';
+import { FederalStateMapper } from './mapper';
 
 @ApiTags('Federal-State')
 @Authenticate('jwt')
@@ -21,19 +22,22 @@ export class FederalStateController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Get()
-	findAll(): FederalStateResponse[] {
-		const federalStates = [
-			{
-				id: '1',
-				name: 'Bayern',
-				abbreviation: 'BY',
-				logoUrl:
-					'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Coat_of_arms_of_Bavaria.svg/1200px-Coat_of_arms_of_Bavaria.svg.png',
-				createdAt: new Date(),
-				updatedAt: new Date(),
-			},
-		];
-		return federalStates;
+	async findAll(): Promise<FederalStateResponse[]> {
+		const federalStates = await this.federalStateUC.findAllFederalStates();
+		// const federalStates = [
+		// 	{
+		// 		_id: new ObjectId('123456789012345678901234'),
+		// 		id: '1',
+		// 		name: 'Bayern',
+		// 		abbreviation: 'BY',
+		// 		logoUrl:
+		// 			'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Coat_of_arms_of_Bavaria.svg/1200px-Coat_of_arms_of_Bavaria.svg.png',
+		// 		createdAt: new Date(),
+		// 		updatedAt: new Date(),
+		// 	},
+		// ];
+		const federalStateResponse = federalStates.map((federalState) => FederalStateMapper.mapToResponse(federalState));
+		return federalStateResponse;
 	}
 
 	// @Post(':federalStateName')
