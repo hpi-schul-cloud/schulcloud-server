@@ -158,43 +158,86 @@ describe('VideoConferenceJoinUc', () => {
 			});
 
 			describe('and waiting room is enabled', () => {
-				const setup = () => {
-					const user: UserDO = userDoFactory.buildWithId();
-					const currentUserId: string = user.id as string;
+				describe('and everybodyJoinsAsModerator is true', () => {
+					const setup = () => {
+						const user: UserDO = userDoFactory.buildWithId();
+						const currentUserId: string = user.id as string;
 
-					const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
-					const options: VideoConferenceOptions = {
-						everyAttendeeJoinsMuted: true,
-						everybodyJoinsAsModerator: true,
-						moderatorMustApproveJoinRequests: true,
+						const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
+						const options: VideoConferenceOptions = {
+							everyAttendeeJoinsMuted: true,
+							everybodyJoinsAsModerator: true,
+							moderatorMustApproveJoinRequests: true,
+						};
+						const videoConference: VideoConferenceDO = videoConferenceDOFactory.build({ options });
+
+						const bbbJoinResponse: BBBResponse<BBBJoinResponse> = {
+							response: {
+								url: 'url',
+							},
+						} as BBBResponse<BBBJoinResponse>;
+
+						userService.findById.mockResolvedValue(user);
+						videoConferenceService.getUserRoleAndGuestStatusByUserIdForBbb.mockResolvedValue({
+							role: BBBRole.VIEWER,
+							isGuest: true,
+						});
+						bbbService.join.mockResolvedValue(bbbJoinResponse.response.url);
+						videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConference);
+
+						return { user, currentUserId, scope, options, bbbJoinResponse };
 					};
-					const videoConference: VideoConferenceDO = videoConferenceDOFactory.build({ options });
 
-					const bbbJoinResponse: BBBResponse<BBBJoinResponse> = {
-						response: {
-							url: 'url',
-						},
-					} as BBBResponse<BBBJoinResponse>;
+					it('should return a video conference join with url from bbb', async () => {
+						const { currentUserId, scope, bbbJoinResponse } = setup();
 
-					userService.findById.mockResolvedValue(user);
-					videoConferenceService.getUserRoleAndGuestStatusByUserIdForBbb.mockResolvedValue({
-						role: BBBRole.VIEWER,
-						isGuest: true,
+						const result: VideoConferenceJoin = await uc.join(currentUserId, scope);
+
+						expect(result).toEqual(
+							expect.objectContaining<Partial<VideoConferenceJoin>>({ url: bbbJoinResponse.response.url })
+						);
 					});
-					bbbService.join.mockResolvedValue(bbbJoinResponse.response.url);
-					videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConference);
+				});
 
-					return { user, currentUserId, scope, options, bbbJoinResponse };
-				};
+				describe('and everybodyJoinsAsModerator is false', () => {
+					const setup = () => {
+						const user: UserDO = userDoFactory.buildWithId();
+						const currentUserId: string = user.id as string;
 
-				it('should return a video conference join with url from bbb', async () => {
-					const { currentUserId, scope, bbbJoinResponse } = setup();
+						const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
+						const options: VideoConferenceOptions = {
+							everyAttendeeJoinsMuted: true,
+							everybodyJoinsAsModerator: false,
+							moderatorMustApproveJoinRequests: true,
+						};
+						const videoConference: VideoConferenceDO = videoConferenceDOFactory.build({ options });
 
-					const result: VideoConferenceJoin = await uc.join(currentUserId, scope);
+						const bbbJoinResponse: BBBResponse<BBBJoinResponse> = {
+							response: {
+								url: 'url',
+							},
+						} as BBBResponse<BBBJoinResponse>;
 
-					expect(result).toEqual(
-						expect.objectContaining<Partial<VideoConferenceJoin>>({ url: bbbJoinResponse.response.url })
-					);
+						userService.findById.mockResolvedValue(user);
+						videoConferenceService.getUserRoleAndGuestStatusByUserIdForBbb.mockResolvedValue({
+							role: BBBRole.VIEWER,
+							isGuest: false,
+						});
+						bbbService.join.mockResolvedValue(bbbJoinResponse.response.url);
+						videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConference);
+
+						return { user, currentUserId, scope, options, bbbJoinResponse };
+					};
+
+					it('should return a video conference join with url from bbb', async () => {
+						const { currentUserId, scope, bbbJoinResponse } = setup();
+
+						const result: VideoConferenceJoin = await uc.join(currentUserId, scope);
+
+						expect(result).toEqual(
+							expect.objectContaining<Partial<VideoConferenceJoin>>({ url: bbbJoinResponse.response.url })
+						);
+					});
 				});
 			});
 		});

@@ -45,7 +45,6 @@ export class VideoConferenceJoinUc {
 
 		if (
 			videoConference.options.moderatorMustApproveJoinRequests &&
-			!isGuest &&
 			!videoConference.options.everybodyJoinsAsModerator
 		) {
 			joinBuilder.asGuest(true);
