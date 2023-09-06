@@ -19,6 +19,16 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		return group;
 	}
 
+	async findByExternalSource(externalId: string, systemId: EntityId) {
+		const group: Group | null = await this.groupRepo.findByExternalSource(externalId, systemId);
+
+		if (!group) {
+			throw new NotFoundLoggableException(Group.name, 'externalid', externalId);
+		}
+
+		return group;
+	}
+
 	async tryFindById(id: EntityId): Promise<Group | null> {
 		const group: Group | null = await this.groupRepo.findById(id);
 

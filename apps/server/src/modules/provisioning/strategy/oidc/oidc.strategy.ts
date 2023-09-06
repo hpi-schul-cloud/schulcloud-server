@@ -22,6 +22,19 @@ export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
 			data.system.systemId,
 			school?.id
 		);
+
+		// TODO: feature flag for group provisioning
+		if (data.externalGroups) {
+			// TODO remove user from groups
+
+			// Create/Update group
+			await Promise.all(
+				data.externalGroups.map((externalGroup) =>
+					this.oidcProvisioningService.provisionExternalGroup(externalGroup, data.system.systemId)
+				)
+			);
+		}
+
 		return new ProvisioningDto({ externalUserId: user.externalId || data.externalUser.externalId });
 	}
 }

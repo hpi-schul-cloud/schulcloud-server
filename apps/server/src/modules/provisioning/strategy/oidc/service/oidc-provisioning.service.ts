@@ -1,5 +1,5 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, FederalState, SchoolFeatures, SchoolYear } from '@shared/domain';
+import { EntityId, ExternalSource, FederalState, SchoolFeatures, SchoolYear } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
@@ -11,17 +11,22 @@ import { FederalStateService, SchoolService, SchoolYearService } from '@src/modu
 import { FederalStateNames } from '@src/modules/school/types';
 import { UserService } from '@src/modules/user';
 import CryptoJS from 'crypto-js';
-import { ExternalSchoolDto, ExternalUserDto } from '../../../dto';
+import { Group, GroupService, GroupUser } from '@src/modules/group';
+import { Logger } from '@src/core/logger';
+import { ObjectId } from 'bson';
+import { ExternalSchoolDto, ExternalUserDto, ExternalGroupDto, ExternalGroupUserDto } from '../../../dto';
 
 @Injectable()
 export class OidcProvisioningService {
 	constructor(
 		private readonly userService: UserService,
 		private readonly schoolService: SchoolService,
+		private readonly groupService: GroupService,
 		private readonly roleService: RoleService,
 		private readonly accountService: AccountService,
 		private readonly schoolYearService: SchoolYearService,
-		private readonly federalStateService: FederalStateService
+		private readonly federalStateService: FederalStateService,
+		private readonly logger: Logger
 	) {}
 
 	async provisionExternalSchool(externalSchool: ExternalSchoolDto, systemId: EntityId): Promise<SchoolDO> {
@@ -111,5 +116,76 @@ export class OidcProvisioningService {
 		}
 
 		return savedUser;
+	}
+
+	// TODO: Test it
+	async provisionExternalGroup(externalGroup: ExternalGroupDto, systemId: EntityId): Promise<void> {
+		const existingGroup: Group | null = await this.groupService.findByExternalSource(
+			externalGroup.externalId,
+			systemId
+		);
+
+		let organizationId: string | undefined;
+		if (externalGroup.externalOrganizationId) {
+			const existingSchool: SchoolDO | null = await this.schoolService.getSchoolByExternalId(
+				externalGroup.externalOrganizationId,
+				systemId
+			);
+
+			if (!existingSchool || !existingSchool.id) {
+				this.logger.info('school for group xyz not found');
+				return;
+			}
+
+			organizationId = existingSchool.id;
+		}
+
+		const users: GroupUser[] = await this.getFilteredGroupUsers(externalGroup, systemId);
+
+		let group: Group;
+		if (existingGroup) {
+			group = existingGroup;
+		} else {
+			group = new Group({
+				id: new ObjectId().toHexString(),
+				name: externalGroup.name,
+				externalSource: new ExternalSource({
+					externalId: externalGroup.externalId,
+					systemId,
+				}),
+				type: externalGroup.type,
+				organizationId,
+				validFrom: externalGroup.from,
+				validUntil: externalGroup.until,
+				users,
+			});
+		}
+
+		await this.groupService.save(group);
+	}
+
+	private async getFilteredGroupUsers(externalGroup: ExternalGroupDto, systemId: string): Promise<GroupUser[]> {
+		const users: (GroupUser | null)[] = await Promise.all(
+			externalGroup.users.map(async (externalGroupUser: ExternalGroupUserDto): Promise<GroupUser | null> => {
+				const user: UserDO | null = await this.userService.findByExternalId(externalGroupUser.externalUserId, systemId);
+				const roles: RoleDto[] = await this.roleService.findByNames([externalGroupUser.roleName]);
+
+				if (!user || !user.id || roles.length !== 1 || !roles[0].id) {
+					this.logger.debug('user is not in svs yet');
+					return null;
+				}
+
+				const groupUser: GroupUser = new GroupUser({
+					userId: user.id,
+					roleId: roles[0].id,
+				});
+
+				return groupUser;
+			})
+		);
+
+		const filteredUsers: GroupUser[] = users.filter((groupUser): groupUser is GroupUser => groupUser !== null);
+
+		return filteredUsers;
 	}
 }

@@ -8,7 +8,9 @@ import { AxiosResponse } from 'axios';
 import { UUID } from 'bson';
 import { of } from 'rxjs';
 import { RoleName } from '@shared/domain';
+import { GroupTypes } from '@src/modules/group';
 import {
+	ExternalGroupDto,
 	ExternalSchoolDto,
 	ExternalUserDto,
 	OauthDataDto,
@@ -17,13 +19,7 @@ import {
 } from '../../dto';
 import { OidcProvisioningService } from '../oidc/service/oidc-provisioning.service';
 import { SanisResponseMapper } from './sanis-response.mapper';
-import {
-	SanisResponse,
-	SanisResponseName,
-	SanisResponseOrganisation,
-	SanisResponsePersonenkontext,
-	SanisRole,
-} from './sanis.response';
+import { SanisGroupRole, SanisGroupType, SanisGruppenResponse, SanisResponse, SanisRole } from './response';
 import { SanisProvisioningStrategy } from './sanis.strategy';
 
 const createAxiosResponse = (data: SanisResponse): AxiosResponse<SanisResponse> => {
@@ -95,32 +91,54 @@ describe('SanisStrategy', () => {
 				idToken: 'sanisIdToken',
 				accessToken: 'sanisAccessToken',
 			});
-			const sanisResponse: SanisResponse = new SanisResponse({
+			const sanisResponse: SanisResponse = {
 				pid: 'aef1f4fd-c323-466e-962b-a84354c0e713',
 				person: {
-					name: new SanisResponseName({
+					name: {
 						vorname: 'Hans',
 						familienname: 'Peter',
-					}),
+					},
 					geschlecht: 'any',
 					lokalisierung: 'sn_ZW',
 					vertrauensstufe: '0',
 				},
 				personenkontexte: [
-					new SanisResponsePersonenkontext({
-						id: new UUID(),
+					{
+						id: new UUID().toString(),
 						rolle: SanisRole.LEIT,
-						organisation: new SanisResponseOrganisation({
-							id: new UUID('df66c8e6-cfac-40f7-b35b-0da5d8ee680e'),
+						organisation: {
+							id: new UUID('df66c8e6-cfac-40f7-b35b-0da5d8ee680e').toString(),
 							name: 'schoolName',
 							typ: 'SCHULE',
 							kennung: 'Kennung',
-						}),
+						},
 						personenstatus: 'dead',
-						email: 'test@te.st',
-					}),
+						gruppen: [
+							{
+								gruppe: {
+									id: new UUID().toString(),
+									bezeichnung: 'bezeichnung',
+									typ: SanisGroupType.CLASS,
+									laufzeit: {
+										von: new Date(2023, 1, 8),
+										bis: new Date(2024, 7, 31),
+									},
+									orgid: 'orgid',
+								},
+								gruppenzugehoerigkeiten: [
+									{
+										id: new UUID().toString(),
+										rollen: [SanisGroupRole.CLASS_LEADER],
+										ktid: 'ktid',
+										von: new Date(2023, 1, 8),
+										bis: new Date(2024, 7, 31),
+									},
+								],
+							},
+						],
+					},
 				],
-			});
+			};
 			const user: ExternalUserDto = new ExternalUserDto({
 				externalId: 'externalUserId',
 			});
@@ -128,16 +146,35 @@ describe('SanisStrategy', () => {
 				externalId: 'externalSchoolId',
 				name: 'schoolName',
 			});
+			const sanisGruppeResponse: SanisGruppenResponse = sanisResponse.personenkontexte[0].gruppen[0];
+			const groups: ExternalGroupDto[] = [
+				new ExternalGroupDto({
+					name: sanisGruppeResponse.gruppe.bezeichnung,
+					externalId: sanisGruppeResponse.gruppe.id,
+					type: GroupTypes.CLASS,
+					externalOrganizationId: sanisGruppeResponse.gruppe.orgid,
+					from: sanisGruppeResponse.gruppe.laufzeit.von,
+					until: sanisGruppeResponse.gruppe.laufzeit.bis,
+					users: [
+						{
+							externalUserId: sanisGruppeResponse.gruppenzugehoerigkeiten[0].ktid,
+							roleName: RoleName.TEACHER,
+						},
+					],
+				}),
+			];
 
 			httpService.get.mockReturnValue(of(createAxiosResponse(sanisResponse)));
 			mapper.mapToExternalUserDto.mockReturnValue(user);
 			mapper.mapToExternalSchoolDto.mockReturnValue(school);
+			mapper.mapToExternalGroupDtos.mockReturnValue(groups);
 
 			return {
 				input,
 				provisioningUrl,
 				user,
 				school,
+				groups,
 			};
 		};
 
@@ -157,7 +194,7 @@ describe('SanisStrategy', () => {
 			});
 
 			it('should return the oauth data', async () => {
-				const { input, user, school } = setup();
+				const { input, user, school, groups } = setup();
 
 				const result: OauthDataDto = await strategy.getData(input);
 
@@ -165,6 +202,7 @@ describe('SanisStrategy', () => {
 					system: input.system,
 					externalUser: user,
 					externalSchool: school,
+					externalGroups: groups,
 				});
 			});
 		});
