@@ -5,6 +5,7 @@ import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import {
 	columnBoardFactory,
 	columnFactory,
+	drawingElementFactory,
 	fileElementFactory,
 	setupEntities,
 	submissionContainerElementFactory,
@@ -141,6 +142,22 @@ describe(RecursiveDeleteVisitor.name, () => {
 
 				await expect(service.visitFileElementAsync(fileElement)).rejects.toThrowError(error);
 			});
+		});
+	});
+
+	describe('visitDrawingElementAsync', () => {
+		const setup = () => {
+			const childDrawingElement = drawingElementFactory.build();
+
+			return { childDrawingElement };
+		};
+
+		it('should call entity remove', async () => {
+			const { childDrawingElement } = setup();
+
+			await service.visitDrawingElementAsync(childDrawingElement);
+
+			expect(em.remove).toHaveBeenCalledWith(em.getReference(childDrawingElement.constructor, childDrawingElement.id));
 		});
 	});
 
