@@ -182,6 +182,7 @@ describe('VideoConferenceJoinUc', () => {
 							role: BBBRole.VIEWER,
 							isGuest: true,
 						});
+						videoConferenceService.sanitizeString.mockReturnValue(`${user.firstName} ${user.lastName}`);
 						bbbService.join.mockResolvedValue(bbbJoinResponse.response.url);
 						videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConference);
 
@@ -237,6 +238,7 @@ describe('VideoConferenceJoinUc', () => {
 							role: BBBRole.VIEWER,
 							isGuest: false,
 						});
+						videoConferenceService.sanitizeString.mockReturnValue(`${user.firstName} ${user.lastName}`);
 						bbbService.join.mockResolvedValue(bbbJoinResponse.response.url);
 						videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConference);
 
@@ -284,6 +286,7 @@ describe('VideoConferenceJoinUc', () => {
 					role: BBBRole.VIEWER,
 					isGuest: false,
 				});
+				videoConferenceService.sanitizeString.mockReturnValue(`${user.firstName} ${user.lastName}`);
 				bbbService.join.mockResolvedValue(bbbJoinResponse.response.url);
 				videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConference);
 
