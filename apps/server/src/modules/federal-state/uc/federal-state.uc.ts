@@ -11,8 +11,8 @@ export class FederalStateUC {
 		return 'hi from the uc';
 	}
 
-	async findAll() {
-		const federalStates = await this.federalStateService.findAll();
+	findAll() {
+		const federalStates = this.federalStateService.findAll();
 		return federalStates;
 	}
 

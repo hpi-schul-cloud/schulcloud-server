@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FederalStateUC } from '../uc/federal-state.uc';
 import { CreateFederalStateBodyParams } from './dto/create-federal-state.body.params';
