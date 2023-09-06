@@ -84,13 +84,24 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitor {
 		});
 		this.result = {
 			copyEntity: copy,
-			type: CopyElementType.RICHTEXTELEMENT,
+			type: CopyElementType.RICHTEXT_ELEMENT,
 			status: CopyStatusEnum.SUCCESS,
 		};
 	}
 
 	visitSubmissionContainerElement(original: SubmissionContainerElement): void {
-		this.throwNotHandled(original);
+		const copy = new SubmissionContainerElement({
+			id: new ObjectId().toHexString(),
+			dueDate: original.dueDate,
+			children: [],
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
+		this.result = {
+			copyEntity: copy,
+			type: CopyElementType.SUBMISSION_CONTAINER_ELEMENT,
+			status: CopyStatusEnum.SUCCESS,
+		};
 	}
 
 	visitSubmissionItem(original: SubmissionItem): void {

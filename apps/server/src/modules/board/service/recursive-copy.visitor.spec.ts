@@ -6,9 +6,17 @@ import {
 	isColumn,
 	isColumnBoard,
 	isRichTextElement,
+	isSubmissionContainerElement,
 	RichTextElement,
+	SubmissionContainerElement,
 } from '@shared/domain';
-import { cardFactory, columnBoardFactory, columnFactory, richTextElementFactory } from '@shared/testing';
+import {
+	cardFactory,
+	columnBoardFactory,
+	columnFactory,
+	richTextElementFactory,
+	submissionContainerElementFactory,
+} from '@shared/testing';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { RecursiveCopyVisitor } from './recursive-copy.visitor';
 
@@ -269,7 +277,64 @@ describe('recursive board copy visitor', () => {
 
 			const result = visitor.copy(richTextElement);
 
-			expect(result.type).toEqual(CopyElementType.RICHTEXTELEMENT);
+			expect(result.type).toEqual(CopyElementType.RICHTEXT_ELEMENT);
+		});
+	});
+
+	describe('when copying an empty submission container element', () => {
+		const setup = () => {
+			const submissionContainer = submissionContainerElementFactory.build();
+			const visitor = new RecursiveCopyVisitor();
+
+			return { submissionContainer, visitor };
+		};
+
+		const getSubmissionContainerFromStatus = (status: CopyStatus) => {
+			const copy = status.copyEntity;
+			expect(isSubmissionContainerElement(copy)).toEqual(true);
+			return copy as SubmissionContainerElement;
+		};
+
+		it('should return a submission container element as copy', () => {
+			const { submissionContainer, visitor } = setup();
+
+			const copy = visitor.copy(submissionContainer).copyEntity;
+
+			expect(isSubmissionContainerElement(copy)).toEqual(true);
+		});
+
+		it('should copy dueDate', () => {
+			const { submissionContainer, visitor } = setup();
+
+			const result = visitor.copy(submissionContainer);
+			const copy = getSubmissionContainerFromStatus(result);
+
+			expect(copy.dueDate).toEqual(submissionContainer.dueDate);
+		});
+
+		it('should create new id', () => {
+			const { submissionContainer, visitor } = setup();
+
+			const result = visitor.copy(submissionContainer);
+			const copy = getSubmissionContainerFromStatus(result);
+
+			expect(copy.id).not.toEqual(submissionContainer.id);
+		});
+
+		it('should show status successful', () => {
+			const { submissionContainer, visitor } = setup();
+
+			const result = visitor.copy(submissionContainer);
+
+			expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
+		});
+
+		it('should show type SUBMISSION_CONTAINER', () => {
+			const { submissionContainer, visitor } = setup();
+
+			const result = visitor.copy(submissionContainer);
+
+			expect(result.type).toEqual(CopyElementType.SUBMISSION_CONTAINER_ELEMENT);
 		});
 	});
 });
