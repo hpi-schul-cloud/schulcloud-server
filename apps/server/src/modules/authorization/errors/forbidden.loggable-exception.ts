@@ -8,7 +8,7 @@ export class ForbiddenLoggableException extends ForbiddenException implements Lo
 	constructor(
 		private readonly userId: EntityId,
 		private readonly entityName: string,
-		private readonly context: AuthorizationContext,
+		private readonly context: AuthorizationContext
 	) {
 		super();
 	}
