@@ -20,7 +20,7 @@ export class FederalStateController {
 		return this.federalStateUC.findAll();
 	}
 
-	// @Get(':federalStateName')
+	// @Post(':federalStateName')
 	// findFederalStateByName(@Param() federalStateName: string) {
 	// 	return this.federalStateUC.findFederalStateByName(federalStateName);
 	// }
