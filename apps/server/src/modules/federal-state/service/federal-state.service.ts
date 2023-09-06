@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { FederalStateRepo } from '@shared/repo';
 import { FederalState } from '@shared/domain';
+import { FederalStateRepo } from '../repo';
 
 @Injectable()
 export class FederalStateService {

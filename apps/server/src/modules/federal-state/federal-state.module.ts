@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { FederalStateRepo } from '@shared/repo';
+import { FederalStateRepo } from './repo';
 import { FederalStateService } from './service/federal-state.service';
 
 @Module({
