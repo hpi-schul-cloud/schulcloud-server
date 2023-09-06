@@ -1,15 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, RoleName, SchoolFeatures } from '@shared/domain';
+import { RoleName, SchoolFeatures } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { federalStateFactory, legacySchoolDoFactory, userDoFactory } from '@shared/testing';
+import { federalStateFactory, schoolDOFactory, userDoFactory } from '@shared/testing';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { LegacySchoolService, SchoolYearService } from '@src/modules/school';
+import { SchoolService, SchoolYearService } from '@src/modules/school';
 import { FederalStateService } from '@src/modules/federal-state';
 import { UserService } from '@src/modules/user';
 import CryptoJS from 'crypto-js';
@@ -23,7 +24,7 @@ describe('OidcProvisioningService', () => {
 	let service: OidcProvisioningService;
 
 	let userService: DeepMocked<UserService>;
-	let schoolService: DeepMocked<LegacySchoolService>;
+	let schoolService: DeepMocked<SchoolService>;
 	let roleService: DeepMocked<RoleService>;
 	let accountService: DeepMocked<AccountService>;
 	let schoolYearService: DeepMocked<SchoolYearService>;
@@ -38,8 +39,8 @@ describe('OidcProvisioningService', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: LegacySchoolService,
-					useValue: createMock<LegacySchoolService>(),
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
 				},
 				{
 					provide: RoleService,
@@ -62,7 +63,7 @@ describe('OidcProvisioningService', () => {
 
 		service = module.get(OidcProvisioningService);
 		userService = module.get(UserService);
-		schoolService = module.get(LegacySchoolService);
+		schoolService = module.get(SchoolService);
 		roleService = module.get(RoleService);
 		accountService = module.get(AccountService);
 		schoolYearService = module.get(SchoolYearService);
@@ -85,7 +86,7 @@ describe('OidcProvisioningService', () => {
 				name: 'name',
 				officialSchoolNumber: 'officialSchoolNumber',
 			});
-			const savedSchoolDO = legacySchoolDoFactory.build({
+			const savedSchoolDO = schoolDOFactory.build({
 				id: 'schoolId',
 				externalId: 'externalId',
 				name: 'name',
@@ -93,7 +94,7 @@ describe('OidcProvisioningService', () => {
 				systems: [systemId],
 				features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
 			});
-			const existingSchoolDO = legacySchoolDoFactory.build({
+			const existingSchoolDO = schoolDOFactory.build({
 				id: 'schoolId',
 				externalId: 'externalId',
 				name: 'existingName',
@@ -119,7 +120,7 @@ describe('OidcProvisioningService', () => {
 			it('should save the new school', async () => {
 				const { systemId, externalSchoolDto, savedSchoolDO } = setup();
 
-				const result: LegacySchoolDo = await service.provisionExternalSchool(externalSchoolDto, systemId);
+				const result: SchoolDO = await service.provisionExternalSchool(externalSchoolDto, systemId);
 
 				expect(result).toEqual(savedSchoolDO);
 			});
@@ -131,7 +132,7 @@ describe('OidcProvisioningService', () => {
 
 				schoolService.getSchoolByExternalId.mockResolvedValue(existingSchoolDO);
 
-				const result: LegacySchoolDo = await service.provisionExternalSchool(externalSchoolDto, systemId);
+				const result: SchoolDO = await service.provisionExternalSchool(externalSchoolDto, systemId);
 
 				expect(result).toEqual(savedSchoolDO);
 			});

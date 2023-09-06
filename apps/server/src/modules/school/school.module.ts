@@ -1,19 +1,19 @@
 import { Module } from '@nestjs/common';
-import { FederalStateRepo, LegacySchoolRepo } from '@shared/repo';
+import { FederalStateRepo, SchoolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { SchoolYearRepo } from './repo';
-import { LegacySchoolService, SchoolValidationService, SchoolYearService } from './service';
+import { SchoolService, SchoolValidationService, SchoolYearService } from './service';
 
 @Module({
 	imports: [LoggerModule],
 	providers: [
-		LegacySchoolRepo,
-		LegacySchoolService,
+		SchoolRepo,
+		SchoolService,
 		SchoolYearService,
 		SchoolYearRepo,
 		FederalStateRepo,
 		SchoolValidationService,
 	],
-	exports: [LegacySchoolService, SchoolYearService],
+	exports: [SchoolService, SchoolYearService],
 })
 export class SchoolModule {}

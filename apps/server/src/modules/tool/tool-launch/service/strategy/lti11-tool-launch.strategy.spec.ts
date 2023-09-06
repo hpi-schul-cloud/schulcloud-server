@@ -11,7 +11,7 @@ import {
 } from '@shared/testing';
 import { pseudonymFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
 import { PseudonymService } from '@src/modules/pseudonym/service';
-import { LegacySchoolService } from '@src/modules/school';
+import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
 import { Authorization } from 'oauth-1.0a';
@@ -49,8 +49,8 @@ describe('Lti11ToolLaunchStrategy', () => {
 					useValue: createMock<Lti11EncryptionService>(),
 				},
 				{
-					provide: LegacySchoolService,
-					useValue: createMock<LegacySchoolService>(),
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
 				},
 				{
 					provide: CourseRepo,
@@ -348,7 +348,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 
 				const user: UserDO = userDoFactory.buildWithId();
 
-				const pseudonym: Pseudonym = pseudonymFactory.buildWithId();
+				const pseudonym: Pseudonym = pseudonymFactory.build();
 
 				userService.findById.mockResolvedValue(user);
 				pseudonymService.findOrCreatePseudonym.mockResolvedValue(pseudonym);

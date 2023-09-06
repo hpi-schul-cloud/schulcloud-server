@@ -19,7 +19,7 @@ import {
 	AuthorizationContextBuilder,
 	AuthorizationService,
 } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/school';
+import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { courseFactory, roleFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
@@ -39,7 +39,7 @@ describe('VideoConferenceService', () => {
 	let courseService: DeepMocked<CourseService>;
 	let calendarService: DeepMocked<CalendarService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let schoolService: DeepMocked<LegacySchoolService>;
+	let schoolService: DeepMocked<SchoolService>;
 	let teamsRepo: DeepMocked<TeamsRepo>;
 	let userService: DeepMocked<UserService>;
 	let videoConferenceRepo: DeepMocked<VideoConferenceRepo>;
@@ -68,8 +68,8 @@ describe('VideoConferenceService', () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: LegacySchoolService,
-					useValue: createMock<LegacySchoolService>(),
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
 				},
 				{
 					provide: TeamsRepo,
@@ -90,7 +90,7 @@ describe('VideoConferenceService', () => {
 		courseService = module.get(CourseService);
 		calendarService = module.get(CalendarService);
 		authorizationService = module.get(AuthorizationService);
-		schoolService = module.get(LegacySchoolService);
+		schoolService = module.get(SchoolService);
 		teamsRepo = module.get(TeamsRepo);
 		userService = module.get(UserService);
 		videoConferenceRepo = module.get(VideoConferenceRepo);

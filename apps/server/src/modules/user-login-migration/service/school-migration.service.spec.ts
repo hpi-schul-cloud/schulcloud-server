@@ -3,12 +3,16 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
-import { LegacySchoolDo, Page, UserDO, UserLoginMigrationDO } from '@shared/domain';
+import { UserLoginMigrationDO } from '@shared/domain';
+import { Page } from '@shared/domain/domainobject/page';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
-import { legacySchoolDoFactory, setupEntities, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
+import { setupEntities, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
+import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
-import { LegacySchoolService } from '@src/modules/school';
+import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
 import { SchoolMigrationService } from './school-migration.service';
@@ -18,7 +22,7 @@ describe('SchoolMigrationService', () => {
 	let service: SchoolMigrationService;
 
 	let userService: DeepMocked<UserService>;
-	let schoolService: DeepMocked<LegacySchoolService>;
+	let schoolService: DeepMocked<SchoolService>;
 	let userLoginMigrationRepo: DeepMocked<UserLoginMigrationRepo>;
 
 	beforeAll(async () => {
@@ -28,8 +32,8 @@ describe('SchoolMigrationService', () => {
 			providers: [
 				SchoolMigrationService,
 				{
-					provide: LegacySchoolService,
-					useValue: createMock<LegacySchoolService>(),
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
 				},
 				{
 					provide: UserService,
@@ -47,7 +51,7 @@ describe('SchoolMigrationService', () => {
 		}).compile();
 
 		service = module.get(SchoolMigrationService);
-		schoolService = module.get(LegacySchoolService);
+		schoolService = module.get(SchoolService);
 		userService = module.get(UserService);
 		userLoginMigrationRepo = module.get(UserLoginMigrationRepo);
 
@@ -118,7 +122,7 @@ describe('SchoolMigrationService', () => {
 	describe('schoolToMigrate is called', () => {
 		describe('when school number is missing', () => {
 			const setup = () => {
-				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
@@ -155,7 +159,7 @@ describe('SchoolMigrationService', () => {
 
 		describe('when school could not be found with official school number', () => {
 			const setup = () => {
-				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
@@ -192,7 +196,7 @@ describe('SchoolMigrationService', () => {
 
 		describe('when current users school not match with school of to migrate user ', () => {
 			const setup = () => {
-				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
@@ -232,7 +236,7 @@ describe('SchoolMigrationService', () => {
 
 		describe('when school was already migrated', () => {
 			const setup = () => {
-				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
@@ -255,7 +259,7 @@ describe('SchoolMigrationService', () => {
 				schoolService.getSchoolById.mockResolvedValue(schoolDO);
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(schoolDO);
 
-				const result: LegacySchoolDo | null = await service.schoolToMigrate(
+				const result: SchoolDO | null = await service.schoolToMigrate(
 					currentUserId,
 					externalId,
 					schoolDO.officialSchoolNumber
@@ -267,7 +271,7 @@ describe('SchoolMigrationService', () => {
 
 		describe('when school has to be migrated', () => {
 			const setup = () => {
-				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
@@ -289,7 +293,7 @@ describe('SchoolMigrationService', () => {
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(schoolDO);
 				userService.findById.mockResolvedValue(userDO);
 
-				const result: LegacySchoolDo | null = await service.schoolToMigrate(
+				const result: SchoolDO | null = await service.schoolToMigrate(
 					currentUserId,
 					'newExternalId',
 					schoolDO.officialSchoolNumber
@@ -303,7 +307,7 @@ describe('SchoolMigrationService', () => {
 	describe('migrateSchool is called', () => {
 		describe('when school will be migrated', () => {
 			const setup = () => {
-				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
@@ -325,7 +329,7 @@ describe('SchoolMigrationService', () => {
 				await service.migrateSchool(newExternalId, schoolDO, targetSystemId);
 
 				expect(schoolService.save).toHaveBeenCalledWith(
-					expect.objectContaining<Partial<LegacySchoolDo>>({
+					expect.objectContaining<Partial<SchoolDO>>({
 						systems: [targetSystemId],
 						previousExternalId: firstExternalId,
 						externalId: newExternalId,
@@ -341,7 +345,7 @@ describe('SchoolMigrationService', () => {
 					await service.migrateSchool('newExternalId', schoolDO, targetSystemId);
 
 					expect(schoolService.save).toHaveBeenCalledWith(
-						expect.objectContaining<Partial<LegacySchoolDo>>({
+						expect.objectContaining<Partial<SchoolDO>>({
 							systems: ['existingSystem', targetSystemId],
 						})
 					);
@@ -356,7 +360,7 @@ describe('SchoolMigrationService', () => {
 					await service.migrateSchool('newExternalId', schoolDO, targetSystemId);
 
 					expect(schoolService.save).toHaveBeenCalledWith(
-						expect.objectContaining<Partial<LegacySchoolDo>>({
+						expect.objectContaining<Partial<SchoolDO>>({
 							systems: [targetSystemId],
 						})
 					);
