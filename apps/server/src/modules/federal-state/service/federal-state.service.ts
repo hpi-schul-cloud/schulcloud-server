@@ -12,7 +12,8 @@ export class FederalStateService {
 		return federalState;
 	}
 
-	findAll() {
-		return 'federalStates';
+	async findAll() {
+		const federalStates: FederalStateEntity[] = await this.federalStateRepo.findAll();
+		return federalStates;
 	}
 }

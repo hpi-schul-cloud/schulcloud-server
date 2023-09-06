@@ -1,0 +1,52 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { DecodeHtmlEntities } from '@shared/controller';
+
+/**
+ * DTO for returning a task document via api.
+ */
+export class FederalStateResponse {
+	constructor({ id, name, abbreviation, logoUrl, counties, createdAt, updatedAt }: FederalStateResponse) {
+		this.id = id;
+		this.name = name;
+		this.abbreviation = abbreviation;
+		this.logoUrl = logoUrl;
+		this.counties = counties;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+	}
+
+	@ApiProperty()
+	id: string;
+
+	@ApiProperty()
+	@DecodeHtmlEntities()
+	name: string;
+
+	@ApiProperty()
+	@DecodeHtmlEntities()
+	abbreviation: string;
+
+	@ApiProperty()
+	@DecodeHtmlEntities()
+	logoUrl: string;
+
+	@ApiPropertyOptional()
+	@DecodeHtmlEntities()
+	counties?: string[];
+
+	@ApiProperty()
+	createdAt: Date;
+
+	@ApiProperty()
+	updatedAt: Date;
+}
+
+// export class TaskListResponse extends PaginationResponse<TaskResponse[]> {
+// 	constructor(data: TaskResponse[], total: number, skip?: number, limit?: number) {
+// 		super(total, skip, limit);
+// 		this.data = data;
+// 	}
+
+// 	@ApiProperty({ type: [TaskResponse] })
+// 	data: TaskResponse[];
+// }
