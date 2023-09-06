@@ -4,11 +4,12 @@ import { HttpService } from '@nestjs/axios';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
-import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { AntivirusService } from '@shared/infra/antivirus';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { Action, AuthorizationService } from '@src/modules/authorization';
+import { Action } from '@src/modules/authorization';
+import { AuthorizationReferenceService } from '@src/modules/authorization/domain';
 import { AxiosRequestConfig, AxiosResponse, AxiosResponseHeaders } from 'axios';
 import { Request } from 'express';
 import { of } from 'rxjs';
@@ -85,7 +86,7 @@ describe('FilesStorageUC upload methods', () => {
 	let module: TestingModule;
 	let filesStorageUC: FilesStorageUC;
 	let filesStorageService: DeepMocked<FilesStorageService>;
-	let authorizationService: DeepMocked<AuthorizationService>;
+	let authorizationReferenceService: DeepMocked<AuthorizationReferenceService>;
 	let httpService: DeepMocked<HttpService>;
 
 	beforeAll(async () => {
@@ -111,8 +112,8 @@ describe('FilesStorageUC upload methods', () => {
 					useValue: createMock<LegacyLogger>(),
 				},
 				{
-					provide: AuthorizationService,
-					useValue: createMock<AuthorizationService>(),
+					provide: AuthorizationReferenceService,
+					useValue: createMock<AuthorizationReferenceService>(),
 				},
 				{
 					provide: HttpService,
@@ -126,7 +127,7 @@ describe('FilesStorageUC upload methods', () => {
 		}).compile();
 
 		filesStorageUC = module.get(FilesStorageUC);
-		authorizationService = module.get(AuthorizationService);
+		authorizationReferenceService = module.get(AuthorizationReferenceService);
 		httpService = module.get(HttpService);
 		filesStorageService = module.get(FilesStorageService);
 	});
@@ -184,7 +185,7 @@ describe('FilesStorageUC upload methods', () => {
 
 				await filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams);
 
-				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
+				expect(authorizationReferenceService.checkPermissionByReferences).toBeCalledWith(
 					userId,
 					uploadFromUrlParams.parentType,
 					uploadFromUrlParams.parentId,
@@ -231,7 +232,7 @@ describe('FilesStorageUC upload methods', () => {
 			const setup = () => {
 				const { userId, uploadFromUrlParams } = createUploadFromUrlParams();
 				const error = new Error('test');
-				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(error);
+				authorizationReferenceService.checkPermissionByReferences.mockRejectedValueOnce(error);
 
 				return { uploadFromUrlParams, userId, error };
 			};
@@ -313,7 +314,7 @@ describe('FilesStorageUC upload methods', () => {
 				await filesStorageUC.upload(userId, params, request);
 
 				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(params.parentType);
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
 					userId,
 					allowedType,
 					params.parentId,
@@ -378,7 +379,7 @@ describe('FilesStorageUC upload methods', () => {
 				const request = createRequest();
 				const error = new ForbiddenException();
 
-				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(error);
+				authorizationReferenceService.checkPermissionByReferences.mockRejectedValueOnce(error);
 
 				return { params, userId, request, error };
 			};

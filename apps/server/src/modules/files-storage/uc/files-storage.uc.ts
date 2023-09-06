@@ -2,7 +2,8 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Counted, EntityId } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationContext } from '@src/modules/authorization';
+import { AuthorizationReferenceService } from '@src/modules/authorization/domain';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import busboy from 'busboy';
 import { Request } from 'express';
@@ -32,7 +33,7 @@ import { PreviewService } from '../service/preview.service';
 export class FilesStorageUC {
 	constructor(
 		private logger: LegacyLogger,
-		private readonly authorizationService: AuthorizationService,
+		private readonly authorizationReferenceService: AuthorizationReferenceService,
 		private readonly httpService: HttpService,
 		private readonly filesStorageService: FilesStorageService,
 		private readonly previewService: PreviewService
@@ -47,7 +48,7 @@ export class FilesStorageUC {
 		context: AuthorizationContext
 	) {
 		const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(parentType);
-		await this.authorizationService.checkPermissionByReferences(userId, allowedType, parentId, context);
+		await this.authorizationReferenceService.checkPermissionByReferences(userId, allowedType, parentId, context);
 	}
 
 	// upload
