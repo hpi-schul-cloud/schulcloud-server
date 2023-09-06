@@ -61,6 +61,12 @@ describe(`content element update content (api)`, () => {
 			const richTextElement = richTextElementNodeFactory.buildWithId({ parent: parentCard });
 			const submissionContainerElement = submissionContainerElementNodeFactory.buildWithId({ parent: parentCard });
 
+			const tomorrow = new Date(Date.now() + 86400000);
+			const submissionContainerElementWithDueDate = submissionContainerElementNodeFactory.buildWithId({
+				parent: parentCard,
+				dueDate: tomorrow,
+			});
+
 			await em.persistAndFlush([
 				teacherAccount,
 				teacherUser,
@@ -69,12 +75,13 @@ describe(`content element update content (api)`, () => {
 				columnBoardNode,
 				richTextElement,
 				submissionContainerElement,
+				submissionContainerElementWithDueDate,
 			]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 
-			return { loggedInClient, richTextElement, submissionContainerElement };
+			return { loggedInClient, richTextElement, submissionContainerElement, submissionContainerElementWithDueDate };
 		};
 
 		it('should return status 204 for rich text element', async () => {
@@ -154,6 +161,20 @@ describe(`content element update content (api)`, () => {
 			const result = await em.findOneOrFail(SubmissionContainerElementNode, submissionContainerElement.id);
 
 			expect(result.dueDate).toEqual(inThreeDays);
+		});
+
+		it('should unset dueDate value when dueDate parameter is not provided for submission container element', async () => {
+			const { loggedInClient, submissionContainerElementWithDueDate } = await setup();
+
+			await loggedInClient.patch(`${submissionContainerElementWithDueDate.id}/content`, {
+				data: {
+					content: {},
+					type: 'submissionContainer',
+				},
+			});
+			const result = await em.findOneOrFail(SubmissionContainerElementNode, submissionContainerElementWithDueDate.id);
+
+			expect(result.dueDate).toBeUndefined();
 		});
 
 		it('should return status 400 for wrong date format for submission container element', async () => {

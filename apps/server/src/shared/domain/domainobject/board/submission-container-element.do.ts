@@ -8,9 +8,7 @@ export class SubmissionContainerElement extends BoardComposite<SubmissionContain
 	}
 
 	set dueDate(value: Date | undefined) {
-		if (value) {
-			this.props.dueDate = value;
-		}
+		this.props.dueDate = value;
 	}
 
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
