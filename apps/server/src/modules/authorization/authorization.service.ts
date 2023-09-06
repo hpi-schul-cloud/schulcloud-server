@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { BaseDO, User } from '@shared/domain';
+import { BaseDO, EntityId, User } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object';
+import { UserRepo } from '@shared/repo';
 import { AuthorizationHelper } from './authorization.helper';
 import { ForbiddenLoggableException } from './errors/forbidden.loggable-exception';
 import { RuleManager } from './rule-manager';
@@ -8,7 +9,11 @@ import { AuthorizationContext } from './types';
 
 @Injectable()
 export class AuthorizationService {
-	constructor(private readonly ruleManager: RuleManager, private readonly authorizationHelper: AuthorizationHelper) {}
+	constructor(
+		private readonly ruleManager: RuleManager,
+		private readonly authorizationHelper: AuthorizationHelper,
+		private readonly userRepo: UserRepo
+	) {}
 
 	public checkPermission(user: User, object: AuthorizableObject | BaseDO, context: AuthorizationContext): void {
 		if (!this.hasPermission(user, object, context)) {
@@ -44,11 +49,13 @@ export class AuthorizationService {
 	public hasOneOfPermissions(user: User, requiredPermissions: string[]): boolean {
 		return this.authorizationHelper.hasOneOfPermissions(user, requiredPermissions);
 	}
-	/* think about it
-	public async getUserWithPermissions(userId: EntityId): Promise<User> {
-		const userWithPermissions = await this.loader.getUserWithPermissions(userId);
 
-		return userWithPermissions;
+	// TODO: think about it
+	// TODO: Rename
+	public async getUserWithPermissions(userId: EntityId): Promise<User> {
+		// replace with service method getUserWithPermissions
+		const userWithPopulatedRoles = await this.userRepo.findById(userId, true);
+
+		return userWithPopulatedRoles;
 	}
-*/
 }
