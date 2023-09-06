@@ -13,7 +13,7 @@ import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.e
 import { BaseEntity } from './base.entity';
 import { SchoolYear } from './schoolyear.entity';
 import { System } from './system.entity';
-import { FederalState } from './federal-state.entity';
+import { FederalStateEntity } from '../../../modules/federal-state/entity/federal-state.entity';
 
 export enum SchoolFeatures {
 	ROCKET_CHAT = 'rocketChat',
@@ -38,7 +38,7 @@ export interface ISchoolProperties {
 	features?: SchoolFeatures[];
 	schoolYear?: SchoolYear;
 	userLoginMigration?: UserLoginMigration;
-	federalState: FederalState;
+	federalState: FederalStateEntity;
 }
 
 @Embeddable()
@@ -99,8 +99,8 @@ export class School extends BaseEntity {
 	})
 	userLoginMigration?: UserLoginMigration;
 
-	@ManyToOne(() => FederalState, { fieldName: 'federalState', nullable: false })
-	federalState: FederalState;
+	@ManyToOne(() => FederalStateEntity, { fieldName: 'federalState', nullable: false })
+	federalState: FederalStateEntity;
 
 	constructor(props: ISchoolProperties) {
 		super();

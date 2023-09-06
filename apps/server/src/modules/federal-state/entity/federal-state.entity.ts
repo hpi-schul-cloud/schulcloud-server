@@ -1,5 +1,5 @@
 import { Embeddable, Embedded, Entity, Property } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps } from './base.entity';
+import { BaseEntityWithTimestamps } from '../../../shared/domain/entity/base.entity';
 
 export interface IFederalStateProperties {
 	name: string;
@@ -26,7 +26,7 @@ export class County {
 }
 
 @Entity({ tableName: 'federalstates' })
-export class FederalState extends BaseEntityWithTimestamps {
+export class FederalStateEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: false })
 	name: string;
 

@@ -1,4 +1,4 @@
-import { FederalState, SchoolFeatures, SchoolYear } from '@shared/domain/entity';
+import { FederalStateEntity, SchoolFeatures, SchoolYear } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseDO } from './base.do';
 
@@ -25,7 +25,7 @@ export class SchoolDO extends BaseDO {
 	userLoginMigrationId?: EntityId;
 
 	// TODO: N21-990 Refactoring: Create domain objects for schoolYear and federalState
-	federalState: FederalState;
+	federalState: FederalStateEntity;
 
 	constructor(params: SchoolDO) {
 		super();
