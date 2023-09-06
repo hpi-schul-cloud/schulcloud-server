@@ -177,14 +177,6 @@ describe('VideoConferenceJoinUc', () => {
 							},
 						} as BBBResponse<BBBJoinResponse>;
 
-						const joinConfig: BBBJoinConfig = {
-							fullName: `${user.firstName} ${user.lastName}`,
-							meetingID: scope.id,
-							role: BBBRole.VIEWER,
-							userID: currentUserId,
-							guest: true,
-						};
-
 						userService.findById.mockResolvedValue(user);
 						videoConferenceService.getUserRoleAndGuestStatusByUserIdForBbb.mockResolvedValue({
 							role: BBBRole.VIEWER,
@@ -193,7 +185,7 @@ describe('VideoConferenceJoinUc', () => {
 						bbbService.join.mockResolvedValue(bbbJoinResponse.response.url);
 						videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConference);
 
-						return { user, currentUserId, scope, options, joinConfig, bbbJoinResponse };
+						return { user, currentUserId, scope, options, bbbJoinResponse };
 					};
 
 					it('should return a video conference join with url from bbb', async () => {
@@ -207,11 +199,17 @@ describe('VideoConferenceJoinUc', () => {
 					});
 
 					it('should call join with guest true', async () => {
-						const { currentUserId, scope, joinConfig } = setup();
+						const { currentUserId, scope, user } = setup();
 
 						await uc.join(currentUserId, scope);
 
-						expect(bbbService.join).toHaveBeenCalledWith(joinConfig);
+						expect(bbbService.join).toHaveBeenCalledWith({
+							fullName: `${user.firstName} ${user.lastName}`,
+							meetingID: scope.id,
+							role: BBBRole.VIEWER,
+							userID: currentUserId,
+							guest: true,
+						});
 					});
 				});
 
@@ -234,14 +232,6 @@ describe('VideoConferenceJoinUc', () => {
 							},
 						} as BBBResponse<BBBJoinResponse>;
 
-						const joinConfig: BBBJoinConfig = {
-							fullName: `${user.firstName} ${user.lastName}`,
-							meetingID: scope.id,
-							role: BBBRole.VIEWER,
-							userID: currentUserId,
-							guest: true,
-						};
-
 						userService.findById.mockResolvedValue(user);
 						videoConferenceService.getUserRoleAndGuestStatusByUserIdForBbb.mockResolvedValue({
 							role: BBBRole.VIEWER,
@@ -250,15 +240,21 @@ describe('VideoConferenceJoinUc', () => {
 						bbbService.join.mockResolvedValue(bbbJoinResponse.response.url);
 						videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConference);
 
-						return { user, currentUserId, scope, options, bbbJoinResponse, joinConfig };
+						return { user, currentUserId, scope, options, bbbJoinResponse };
 					};
 
 					it('should call join with guest true', async () => {
-						const { currentUserId, scope, joinConfig } = setup();
+						const { currentUserId, scope, user } = setup();
 
 						await uc.join(currentUserId, scope);
 
-						expect(bbbService.join).toHaveBeenCalledWith(joinConfig);
+						expect(bbbService.join).toHaveBeenCalledWith({
+							fullName: `${user.firstName} ${user.lastName}`,
+							meetingID: scope.id,
+							role: BBBRole.VIEWER,
+							userID: currentUserId,
+							guest: true,
+						});
 					});
 				});
 			});
@@ -283,14 +279,6 @@ describe('VideoConferenceJoinUc', () => {
 					},
 				} as BBBResponse<BBBJoinResponse>;
 
-				const joinConfig: BBBJoinConfig = {
-					fullName: `${user.firstName} ${user.lastName}`,
-					meetingID: scope.id,
-					role: BBBRole.MODERATOR,
-					userID: currentUserId,
-					guest: false,
-				};
-
 				userService.findById.mockResolvedValue(user);
 				videoConferenceService.getUserRoleAndGuestStatusByUserIdForBbb.mockResolvedValue({
 					role: BBBRole.VIEWER,
@@ -299,7 +287,7 @@ describe('VideoConferenceJoinUc', () => {
 				bbbService.join.mockResolvedValue(bbbJoinResponse.response.url);
 				videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConference);
 
-				return { currentUserId, scope, bbbJoinResponse, joinConfig };
+				return { currentUserId, scope, bbbJoinResponse, user };
 			};
 
 			it('should return a video conference join with url from bbb', async () => {
@@ -325,11 +313,17 @@ describe('VideoConferenceJoinUc', () => {
 			});
 
 			it('should call join with guest false', async () => {
-				const { currentUserId, scope, joinConfig } = setup();
+				const { currentUserId, scope, user } = setup();
 
 				await uc.join(currentUserId, scope);
 
-				expect(bbbService.join).toHaveBeenCalledWith(joinConfig);
+				expect(bbbService.join).toHaveBeenCalledWith({
+					fullName: `${user.firstName} ${user.lastName}`,
+					meetingID: scope.id,
+					role: BBBRole.MODERATOR,
+					userID: currentUserId,
+					guest: false,
+				});
 			});
 		});
 	});
