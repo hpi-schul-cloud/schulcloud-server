@@ -1,11 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, RoleName, User, UserDO } from '@shared/domain';
+import { RoleName, User } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { legacySchoolDoFactory, schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
+import { schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
+import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-import { LegacySchoolService } from '@src/modules/school';
+import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import jwt from 'jsonwebtoken';
 import { RoleDto } from '../../../role/service/dto/role.dto';
@@ -25,7 +28,7 @@ describe('IservProvisioningStrategy', () => {
 	let module: TestingModule;
 	let strategy: IservProvisioningStrategy;
 
-	let schoolService: DeepMocked<LegacySchoolService>;
+	let schoolService: DeepMocked<SchoolService>;
 	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
@@ -38,14 +41,14 @@ describe('IservProvisioningStrategy', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: LegacySchoolService,
-					useValue: createMock<LegacySchoolService>(),
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
 				},
 			],
 		}).compile();
 
 		strategy = module.get(IservProvisioningStrategy);
-		schoolService = module.get(LegacySchoolService);
+		schoolService = module.get(SchoolService);
 		userService = module.get(UserService);
 	});
 
@@ -89,7 +92,7 @@ describe('IservProvisioningStrategy', () => {
 				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.STUDENT }]).buildWithId({
 					externalId: userUUID,
 				});
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ externalId: 'schoolExternalId' });
+				const school: SchoolDO = schoolDOFactory.buildWithId({ externalId: 'schoolExternalId' });
 				const roleDto: RoleDto = new RoleDto({
 					name: RoleName.STUDENT,
 				});

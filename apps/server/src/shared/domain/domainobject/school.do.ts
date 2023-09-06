@@ -2,10 +2,7 @@ import { FederalState, SchoolFeatures, SchoolYear } from '@shared/domain/entity'
 import { EntityId } from '@shared/domain/types';
 import { BaseDO } from './base.do';
 
-/**
- * @deprecated because it extends the deprecated BaseDO.
- */
-export class LegacySchoolDo extends BaseDO {
+export class SchoolDO extends BaseDO {
 	externalId?: string;
 
 	inMaintenanceSince?: Date;
@@ -30,7 +27,7 @@ export class LegacySchoolDo extends BaseDO {
 	// TODO: N21-990 Refactoring: Create domain objects for schoolYear and federalState
 	federalState: FederalState;
 
-	constructor(params: LegacySchoolDo) {
+	constructor(params: SchoolDO) {
 		super();
 		this.id = params.id;
 		this.externalId = params.externalId;

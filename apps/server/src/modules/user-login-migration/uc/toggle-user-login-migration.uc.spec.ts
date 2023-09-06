@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, LegacySchoolDo, User, UserLoginMigrationDO } from '@shared/domain';
-import { legacySchoolDoFactory, setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
+import { Permission, SchoolDO, User, UserLoginMigrationDO } from '@shared/domain';
+import { schoolDOFactory, setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/school';
+import { SchoolService } from '@src/modules/school';
 import {
 	UserLoginMigrationAlreadyClosedLoggableException,
 	UserLoginMigrationGracePeriodExpiredLoggableException,
@@ -20,7 +20,7 @@ describe('ToggleUserLoginMigrationUc', () => {
 
 	let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let schoolService: DeepMocked<LegacySchoolService>;
+	let schoolService: DeepMocked<SchoolService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -35,8 +35,8 @@ describe('ToggleUserLoginMigrationUc', () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: LegacySchoolService,
-					useValue: createMock<LegacySchoolService>(),
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
 				},
 				{
 					provide: Logger,
@@ -48,7 +48,7 @@ describe('ToggleUserLoginMigrationUc', () => {
 		uc = module.get(ToggleUserLoginMigrationUc);
 		userLoginMigrationService = module.get(UserLoginMigrationService);
 		authorizationService = module.get(AuthorizationService);
-		schoolService = module.get(LegacySchoolService);
+		schoolService = module.get(SchoolService);
 
 		await setupEntities();
 	});
@@ -71,7 +71,7 @@ describe('ToggleUserLoginMigrationUc', () => {
 
 				const user: User = userFactory.buildWithId();
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school: SchoolDO = schoolDOFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
@@ -119,7 +119,7 @@ describe('ToggleUserLoginMigrationUc', () => {
 
 				const user: User = userFactory.buildWithId();
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school: SchoolDO = schoolDOFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
@@ -162,7 +162,7 @@ describe('ToggleUserLoginMigrationUc', () => {
 			const setup = () => {
 				const user: User = userFactory.buildWithId();
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school: SchoolDO = schoolDOFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
@@ -184,7 +184,7 @@ describe('ToggleUserLoginMigrationUc', () => {
 			const setup = () => {
 				const user: User = userFactory.buildWithId();
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school: SchoolDO = schoolDOFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
@@ -212,7 +212,7 @@ describe('ToggleUserLoginMigrationUc', () => {
 
 				const user: User = userFactory.buildWithId();
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school: SchoolDO = schoolDOFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
@@ -236,7 +236,7 @@ describe('ToggleUserLoginMigrationUc', () => {
 
 				const user: User = userFactory.buildWithId();
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school: SchoolDO = schoolDOFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
