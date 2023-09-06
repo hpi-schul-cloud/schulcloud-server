@@ -16,6 +16,7 @@ import {
 	columnFactory,
 	richTextElementFactory,
 	submissionContainerElementFactory,
+	submissionItemFactory,
 } from '@shared/testing';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { RecursiveCopyVisitor } from './recursive-copy.visitor';
@@ -335,6 +336,39 @@ describe('recursive board copy visitor', () => {
 			const result = visitor.copy(submissionContainer);
 
 			expect(result.type).toEqual(CopyElementType.SUBMISSION_CONTAINER_ELEMENT);
+		});
+	});
+
+	describe('when copying an empty submission item', () => {
+		const setup = () => {
+			const submissionItem = submissionItemFactory.build();
+			const visitor = new RecursiveCopyVisitor();
+
+			return { submissionItem, visitor };
+		};
+
+		it('should NOT make a copy', () => {
+			const { submissionItem, visitor } = setup();
+
+			const result = visitor.copy(submissionItem);
+
+			expect(result.copyEntity).toBeUndefined();
+		});
+
+		it('should show status not-doing', () => {
+			const { submissionItem, visitor } = setup();
+
+			const result = visitor.copy(submissionItem);
+
+			expect(result.status).toEqual(CopyStatusEnum.NOT_DOING);
+		});
+
+		it('should show type SUBMISSION_ITEM', () => {
+			const { submissionItem, visitor } = setup();
+
+			const result = visitor.copy(submissionItem);
+
+			expect(result.type).toEqual(CopyElementType.SUBMISSION_ITEM);
 		});
 	});
 });

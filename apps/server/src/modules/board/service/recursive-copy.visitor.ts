@@ -7,7 +7,6 @@ import {
 	FileElement,
 	RichTextElement,
 	SubmissionContainerElement,
-	SubmissionItem,
 } from '@shared/domain';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { ObjectId } from 'bson';
@@ -104,8 +103,11 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitor {
 		};
 	}
 
-	visitSubmissionItem(original: SubmissionItem): void {
-		this.throwNotHandled(original);
+	visitSubmissionItem(): void {
+		this.result = {
+			type: CopyElementType.SUBMISSION_ITEM,
+			status: CopyStatusEnum.NOT_DOING,
+		};
 	}
 
 	private throwNotHandled(component: AnyBoardDo) {
