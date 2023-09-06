@@ -43,7 +43,7 @@ export class AuthorizationReferenceService {
 
 	// think about it
 	public async getUserWithPermissions(userId: EntityId): Promise<User> {
-		const userWithPermissions = await this.loader.getUserWithPermissions(userId);
+		const userWithPermissions = await this.authorizationService.getUserWithPermissions(userId);
 
 		return userWithPermissions;
 	}

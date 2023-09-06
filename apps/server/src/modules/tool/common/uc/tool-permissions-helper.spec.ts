@@ -3,6 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { contextExternalToolFactory, schoolDOFactory, schoolExternalToolFactory, setupEntities } from '@shared/testing';
 import { Permission, SchoolDO } from '@shared/domain';
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationReferenceService } from '@src/modules/authorization/domain';
 import { SchoolService } from '@src/modules/school';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ToolPermissionHelper } from './tool-permission-helper';
@@ -13,6 +14,7 @@ describe('ToolPermissionHelper', () => {
 	let helper: ToolPermissionHelper;
 
 	let authorizationService: DeepMocked<AuthorizationService>;
+	let authorizationReferenceService: DeepMocked<AuthorizationReferenceService>;
 	let schoolService: DeepMocked<SchoolService>;
 
 	beforeAll(async () => {
@@ -25,6 +27,10 @@ describe('ToolPermissionHelper', () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
+					provide: AuthorizationReferenceService,
+					useValue: createMock<AuthorizationReferenceService>(),
+				},
+				{
 					provide: SchoolService,
 					useValue: createMock<SchoolService>(),
 				},
@@ -33,6 +39,7 @@ describe('ToolPermissionHelper', () => {
 
 		helper = module.get(ToolPermissionHelper);
 		authorizationService = module.get(AuthorizationService);
+		authorizationReferenceService = module.get(AuthorizationReferenceService);
 		schoolService = module.get(SchoolService);
 	});
 
@@ -63,7 +70,7 @@ describe('ToolPermissionHelper', () => {
 
 				await helper.ensureContextPermissions(userId, contextExternalTool, context);
 
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
 					userId,
 					'courses',
 					contextExternalTool.contextRef.id,

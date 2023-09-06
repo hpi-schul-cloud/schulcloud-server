@@ -14,9 +14,8 @@ import {
 } from '@shared/repo';
 import { BoardDoAuthorizableService } from '@src/modules/board/service';
 import { ContextExternalToolAuthorizableService } from '@src/modules/tool/context-external-tool/service';
-import { AuthorizableReferenceType } from '../../types';
+import { AuthorizableReferenceType } from './types';
 
-// replace later with general "base" do-repo
 type RepoType =
 	| TaskRepo
 	| CourseRepo
@@ -55,7 +54,7 @@ export class ReferenceLoader {
 		this.repos.set(AuthorizableReferenceType.Task, { repo: this.taskRepo });
 		this.repos.set(AuthorizableReferenceType.Course, { repo: this.courseRepo });
 		this.repos.set(AuthorizableReferenceType.CourseGroup, { repo: this.courseGroupRepo });
-		this.repos.set(AuthorizableReferenceType.User, { repo: this.userRepo, populate: true });
+		this.repos.set(AuthorizableReferenceType.User, { repo: this.userRepo });
 		this.repos.set(AuthorizableReferenceType.School, { repo: this.schoolRepo });
 		this.repos.set(AuthorizableReferenceType.Lesson, { repo: this.lessonRepo });
 		this.repos.set(AuthorizableReferenceType.Team, { repo: this.teamsRepo, populate: true });

@@ -1,6 +1,8 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { EntityId, SchoolDO, User } from '@shared/domain';
-import { AuthorizableReferenceType, AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationReferenceService } from '@src/modules/authorization/domain';
+import { AuthorizableReferenceType } from '@src/modules/authorization/domain/reference/types';
 import { SchoolService } from '@src/modules/school';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
@@ -10,6 +12,7 @@ import { ContextTypeMapper } from '../mapper';
 export class ToolPermissionHelper {
 	constructor(
 		@Inject(forwardRef(() => AuthorizationService)) private authorizationService: AuthorizationService,
+		private authorizationReferenceService: AuthorizationReferenceService,
 		private readonly schoolService: SchoolService
 	) {}
 
@@ -20,7 +23,7 @@ export class ToolPermissionHelper {
 		context: AuthorizationContext
 	): Promise<void> {
 		if (contextExternalTool.id) {
-			await this.authorizationService.checkPermissionByReferences(
+			await this.authorizationReferenceService.checkPermissionByReferences(
 				userId,
 				AuthorizableReferenceType.ContextExternalToolEntity,
 				contextExternalTool.id,
@@ -28,7 +31,7 @@ export class ToolPermissionHelper {
 			);
 		}
 
-		await this.authorizationService.checkPermissionByReferences(
+		await this.authorizationReferenceService.checkPermissionByReferences(
 			userId,
 			ContextTypeMapper.mapContextTypeToAllowedAuthorizationEntityType(contextExternalTool.contextRef.type),
 			contextExternalTool.contextRef.id,
