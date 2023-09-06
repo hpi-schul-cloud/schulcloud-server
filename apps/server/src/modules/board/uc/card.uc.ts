@@ -68,7 +68,7 @@ export class CardUc {
 		await this.elementService.delete(element);
 		if (element instanceof DrawingElement) {
 			await firstValueFrom(
-				this.httpService.get(
+				this.httpService.delete(
 					`${Configuration.get('TLDRAW_URI') as string}/api/v3/tldraw-document/${element.drawingName}`,
 					{
 						headers: {
