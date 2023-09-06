@@ -19,7 +19,7 @@ import { BoardModule } from '../board';
 import { AuthorizationHelper } from './authorization.helper';
 import { AuthorizationService } from './authorization.service';
 import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
-import { ReferenceLoader } from './reference.loader';
+import { ReferenceLoader } from './domain/reference/reference.loader';
 import { RuleManager } from './rule-manager';
 
 @Module({
