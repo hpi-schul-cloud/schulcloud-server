@@ -22,11 +22,6 @@ import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-h
 import { RecursiveCopyVisitor } from './recursive-copy.visitor';
 
 describe('recursive board copy visitor', () => {
-	it('should create visitor', () => {
-		const visitor = new RecursiveCopyVisitor();
-		expect(visitor).toBeInstanceOf(RecursiveCopyVisitor);
-	});
-
 	describe('when copying empty column board', () => {
 		const setup = () => {
 			const board = columnBoardFactory.build();
