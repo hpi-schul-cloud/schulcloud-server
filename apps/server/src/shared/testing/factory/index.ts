@@ -31,3 +31,4 @@ export * from './base.factory';
 export * from './external-tool-pseudonym.factory';
 export * from './team.factory';
 export * from './teamuser.factory';
+export * from './group-entity.factory';
