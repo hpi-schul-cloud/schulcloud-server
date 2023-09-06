@@ -1,6 +1,15 @@
-import { Card, Column, ColumnBoard, isCard, isColumn, isColumnBoard } from '@shared/domain';
-import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing';
-import { CopyElementType, CopyStatusEnum } from '@src/modules/copy-helper';
+import {
+	Card,
+	Column,
+	ColumnBoard,
+	isCard,
+	isColumn,
+	isColumnBoard,
+	isRichTextElement,
+	RichTextElement,
+} from '@shared/domain';
+import { cardFactory, columnBoardFactory, columnFactory, richTextElementFactory } from '@shared/testing';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { RecursiveCopyVisitor } from './recursive-copy.visitor';
 
 describe('recursive board copy visitor', () => {
@@ -17,6 +26,12 @@ describe('recursive board copy visitor', () => {
 			return { board, visitor };
 		};
 
+		const getColumnBoardCopyFromStatus = (status: CopyStatus) => {
+			const copy = status.copyEntity;
+			expect(isColumnBoard(copy)).toEqual(true);
+			return copy as ColumnBoard;
+		};
+
 		it('should return a columnboard as copy', () => {
 			const { board, visitor } = setup();
 
@@ -28,7 +43,8 @@ describe('recursive board copy visitor', () => {
 		it('should copy title', () => {
 			const { board, visitor } = setup();
 
-			const copy = visitor.copy(board).copyEntity as ColumnBoard;
+			const result = visitor.copy(board);
+			const copy = getColumnBoardCopyFromStatus(result);
 
 			expect(copy.title).toEqual(board.title);
 		});
@@ -36,7 +52,8 @@ describe('recursive board copy visitor', () => {
 		it('should create new id', () => {
 			const { board, visitor } = setup();
 
-			const copy = visitor.copy(board).copyEntity as ColumnBoard;
+			const result = visitor.copy(board);
+			const copy = getColumnBoardCopyFromStatus(result);
 
 			expect(copy.id).not.toEqual(board.id);
 		});
@@ -44,7 +61,8 @@ describe('recursive board copy visitor', () => {
 		it('should copy the context', () => {
 			const { board, visitor } = setup();
 
-			const copy = visitor.copy(board).copyEntity as ColumnBoard;
+			const result = visitor.copy(board);
+			const copy = getColumnBoardCopyFromStatus(result);
 
 			expect(copy.context).toEqual(board.context);
 		});
@@ -74,7 +92,13 @@ describe('recursive board copy visitor', () => {
 			return { column, visitor };
 		};
 
-		it('should return a columnboard as copy', () => {
+		const getColumnCopyFromStatus = (status: CopyStatus) => {
+			const copy = status.copyEntity;
+			expect(isColumn(copy)).toEqual(true);
+			return copy as Column;
+		};
+
+		it('should return a column as copy', () => {
 			const { column, visitor } = setup();
 
 			const copy = visitor.copy(column).copyEntity;
@@ -85,7 +109,8 @@ describe('recursive board copy visitor', () => {
 		it('should copy title', () => {
 			const { column, visitor } = setup();
 
-			const copy = visitor.copy(column).copyEntity as Column;
+			const result = visitor.copy(column);
+			const copy = getColumnCopyFromStatus(result);
 
 			expect(copy.title).toEqual(column.title);
 		});
@@ -93,7 +118,8 @@ describe('recursive board copy visitor', () => {
 		it('should create new id', () => {
 			const { column, visitor } = setup();
 
-			const copy = visitor.copy(column).copyEntity as Column;
+			const result = visitor.copy(column);
+			const copy = getColumnCopyFromStatus(result);
 
 			expect(copy.id).not.toEqual(column.id);
 		});
@@ -106,7 +132,7 @@ describe('recursive board copy visitor', () => {
 			expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
 		});
 
-		it('should show type Columnboard', () => {
+		it('should show type Column', () => {
 			const { column, visitor } = setup();
 
 			const result = visitor.copy(column);
@@ -123,7 +149,13 @@ describe('recursive board copy visitor', () => {
 			return { card, visitor };
 		};
 
-		it('should return a columnboard as copy', () => {
+		const getCardFromStatus = (status: CopyStatus) => {
+			const copy = status.copyEntity;
+			expect(isCard(copy)).toEqual(true);
+			return copy as Card;
+		};
+
+		it('should return a richtext element as copy', () => {
 			const { card, visitor } = setup();
 
 			const copy = visitor.copy(card).copyEntity;
@@ -134,7 +166,8 @@ describe('recursive board copy visitor', () => {
 		it('should copy title', () => {
 			const { card, visitor } = setup();
 
-			const copy = visitor.copy(card).copyEntity as Card;
+			const result = visitor.copy(card);
+			const copy = getCardFromStatus(result);
 
 			expect(copy.title).toEqual(card.title);
 		});
@@ -142,7 +175,8 @@ describe('recursive board copy visitor', () => {
 		it('should copy height', () => {
 			const { card, visitor } = setup();
 
-			const copy = visitor.copy(card).copyEntity as Card;
+			const result = visitor.copy(card);
+			const copy = getCardFromStatus(result);
 
 			expect(copy.height).toEqual(card.height);
 		});
@@ -150,7 +184,8 @@ describe('recursive board copy visitor', () => {
 		it('should create new id', () => {
 			const { card, visitor } = setup();
 
-			const copy = visitor.copy(card).copyEntity as Card;
+			const result = visitor.copy(card);
+			const copy = getCardFromStatus(result);
 
 			expect(copy.id).not.toEqual(card.id);
 		});
@@ -163,12 +198,78 @@ describe('recursive board copy visitor', () => {
 			expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
 		});
 
-		it('should show type Columnboard', () => {
+		it('should show type Card', () => {
 			const { card, visitor } = setup();
 
 			const result = visitor.copy(card);
 
 			expect(result.type).toEqual(CopyElementType.CARD);
+		});
+	});
+
+	describe('when copying an empty richtext element', () => {
+		const setup = () => {
+			const richTextElement = richTextElementFactory.build();
+			const visitor = new RecursiveCopyVisitor();
+
+			return { richTextElement, visitor };
+		};
+
+		const getRichTextFromStatus = (status: CopyStatus) => {
+			const copy = status.copyEntity;
+			expect(isRichTextElement(copy)).toEqual(true);
+			return copy as RichTextElement;
+		};
+
+		it('should return a richtext element as copy', () => {
+			const { richTextElement, visitor } = setup();
+
+			const copy = visitor.copy(richTextElement).copyEntity;
+
+			expect(isRichTextElement(copy)).toEqual(true);
+		});
+
+		it('should copy text', () => {
+			const { richTextElement, visitor } = setup();
+
+			const result = visitor.copy(richTextElement);
+			const copy = getRichTextFromStatus(result);
+
+			expect(copy.text).toEqual(richTextElement.text);
+		});
+
+		it('should copy text', () => {
+			const { richTextElement, visitor } = setup();
+
+			const result = visitor.copy(richTextElement);
+			const copy = getRichTextFromStatus(result);
+
+			expect(copy.inputFormat).toEqual(richTextElement.inputFormat);
+		});
+
+		it('should create new id', () => {
+			const { richTextElement, visitor } = setup();
+
+			const result = visitor.copy(richTextElement);
+			const copy = getRichTextFromStatus(result);
+
+			expect(copy.id).not.toEqual(richTextElement.id);
+		});
+
+		it('should show status successful', () => {
+			const { richTextElement, visitor } = setup();
+
+			const result = visitor.copy(richTextElement);
+
+			expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
+		});
+
+		it('should show type RichTextElement', () => {
+			const { richTextElement, visitor } = setup();
+
+			const result = visitor.copy(richTextElement);
+
+			expect(result.type).toEqual(CopyElementType.RICHTEXTELEMENT);
 		});
 	});
 });
