@@ -31,3 +31,4 @@ export * from './external-tool-pseudonym.factory';
 export * from './team.factory';
 export * from './teamuser.factory';
 export * from './legacy-file-entity-mock.factory';
+export * from './group-entity.factory';
