@@ -3,6 +3,7 @@ const BaseConsumerAction = require('./BaseConsumerAction');
 const { LDAP_SYNC_ACTIONS } = require('../SyncMessageBuilder');
 const { SchoolRepo, ClassRepo, UserRepo } = require('../../repo');
 const { NotFound } = require('../../../../errors');
+const { SCHOOL_FEATURES } = require('../../../school/model');
 
 const defaultOptions = {
 	allowedLogKeys: ['class', 'ldapDN', 'systemId', 'schoolDn', 'year'],
@@ -36,7 +37,7 @@ class ClassAction extends BaseConsumerAction {
 				if (
 					migratedSchool.userLoginMigration &&
 					!migratedSchool.userLoginMigration.closedAt &&
-					migratedSchool.features?.includes('enableLdapSyncDuringMigration')
+					migratedSchool.features?.includes(SCHOOL_FEATURES.ENABLE_LDAP_SYNC_DURING_MIGRATION)
 				) {
 					school = migratedSchool;
 				} else {
