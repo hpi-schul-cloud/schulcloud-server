@@ -1,11 +1,11 @@
-import { LegacySchoolDo } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { federalStateFactory } from '../federal-state.factory';
 import { schoolYearFactory } from '../schoolyear.factory';
 import { DoBaseFactory } from './do-base.factory';
 
-class LegacySchoolFactory extends DoBaseFactory<LegacySchoolDo, LegacySchoolDo> {}
+class SchoolFactory extends DoBaseFactory<SchoolDO, SchoolDO> {}
 
-export const legacySchoolDoFactory = LegacySchoolFactory.define(LegacySchoolDo, ({ sequence }) => {
+export const schoolDOFactory = SchoolFactory.define(SchoolDO, ({ sequence }) => {
 	return {
 		name: `schoolName-${sequence}`,
 		externalId: '123',

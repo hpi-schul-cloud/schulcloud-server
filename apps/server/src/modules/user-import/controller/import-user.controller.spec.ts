@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AuthorizationService } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/school';
+import { SchoolService } from '@src/modules/school';
 import { LoggerModule } from '@src/core/logger';
 import { ConfigModule } from '@nestjs/config';
 import { UserImportUc } from '../uc/user-import.uc';
@@ -34,7 +34,7 @@ describe('ImportUserController', () => {
 					useValue: {},
 				},
 				{
-					provide: LegacySchoolService,
+					provide: SchoolService,
 					useValue: {},
 				},
 				{
