@@ -618,7 +618,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../interfaces/IPseudonymEntityProps.html" target="_self" >IPseudonymEntityProps</a></code>
+                        <b>Returns : </b>        <code><a href="../interfaces/PseudonymEntityProps.html" target="_self" >PseudonymEntityProps</a></code>
 
                     </div>
                     <div class="io-description">
@@ -705,10 +705,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager, ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId, Pseudonym } from &#x27;@shared/domain&#x27;;
-import { EntityManager, ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
-import { IPseudonymEntityProps, PseudonymEntity } from &#x27;../entity&#x27;;
+import { PseudonymEntity, PseudonymEntityProps } from &#x27;../entity&#x27;;
 
 @Injectable()
 export class PseudonymsRepo {
@@ -753,7 +753,7 @@ export class PseudonymsRepo {
 			.getUnitOfWork()
 			.getById&lt;PseudonymEntity&gt;(PseudonymEntity.name, domainObject.id);
 
-		const entityProps: IPseudonymEntityProps &#x3D; this.mapDomainObjectToEntityProperties(domainObject);
+		const entityProps: PseudonymEntityProps &#x3D; this.mapDomainObjectToEntityProperties(domainObject);
 		let entity: PseudonymEntity &#x3D; new PseudonymEntity(entityProps);
 
 		if (existing) {
@@ -786,8 +786,9 @@ export class PseudonymsRepo {
 		});
 	}
 
-	protected mapDomainObjectToEntityProperties(entityDO: Pseudonym): IPseudonymEntityProps {
+	protected mapDomainObjectToEntityProperties(entityDO: Pseudonym): PseudonymEntityProps {
 		return {
+			id: entityDO.id,
 			pseudonym: entityDO.pseudonym,
 			toolId: new ObjectId(entityDO.toolId),
 			userId: new ObjectId(entityDO.userId),

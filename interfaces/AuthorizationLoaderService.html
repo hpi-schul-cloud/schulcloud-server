@@ -188,6 +188,11 @@ import { AuthorizableObject } from &#x27;@shared/domain/domain-object&#x27;; // 
 export interface AuthorizationLoaderService {
 	findById(id: EntityId): Promise&lt;AuthorizableObject | BaseDO&gt;;
 }
+
+export interface AuthorizationLoaderServiceGeneric&lt;T extends AuthorizableObject | BaseDO&gt;
+	extends AuthorizationLoaderService {
+	findById(id: EntityId): Promise&lt;T&gt;;
+}
 </code></pre>
     </div>
 </div>
