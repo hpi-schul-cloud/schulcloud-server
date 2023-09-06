@@ -159,19 +159,22 @@ describe('TldrawGateway', () => {
 			const doc: { conns: Map<WebSocket, Set<number>> } = { conns: new Map() };
 			const socketMock = { readyState: 0, close: () => {} };
 			doc.conns.set(socketMock as WebSocket, new Set());
-			const byteArray = new TextEncoder().encode(testMessage);
-
+			const encoder = encoding.createEncoder();
+			encoding.writeVarUint(encoder, 2);
+			const updateByteArray = new TextEncoder().encode(testMessage);
+			encoding.writeVarUint8Array(encoder, updateByteArray);
+			const msg = encoding.toUint8Array(encoder);
 			return {
 				sendSpy,
 				doc,
-				byteArray,
+				msg,
 			};
 		};
 
 		it('should call send in updateHandler', async () => {
-			const { sendSpy, doc, byteArray } = await setup();
+			const { sendSpy, doc, msg } = await setup();
 
-			Utils.updateHandler(byteArray, {}, doc as WSSharedDoc);
+			Utils.updateHandler(msg, {}, doc as WSSharedDoc);
 
 			expect(sendSpy).toHaveBeenCalled();
 
