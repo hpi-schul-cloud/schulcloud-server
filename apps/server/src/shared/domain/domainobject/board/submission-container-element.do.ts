@@ -4,7 +4,7 @@ import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } fr
 
 export class SubmissionContainerElement extends BoardComposite<SubmissionContainerElementProps> {
 	get dueDate(): Date | undefined {
-		return this.props.dueDate ?? undefined;
+		return this.props.dueDate;
 	}
 
 	set dueDate(value: Date | undefined) {
