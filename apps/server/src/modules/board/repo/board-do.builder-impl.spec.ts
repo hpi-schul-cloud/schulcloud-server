@@ -8,6 +8,7 @@ import {
 	submissionContainerElementNodeFactory,
 	setupEntities,
 } from '@shared/testing';
+import { drawingElementNodeFactory } from '@shared/testing/factory/boardnode/drawing-element-node.factory';
 import { BoardDoBuilderImpl } from './board-do.builder-impl';
 
 describe(BoardDoBuilderImpl.name, () => {
@@ -162,6 +163,25 @@ describe(BoardDoBuilderImpl.name, () => {
 
 			expect(() => {
 				new BoardDoBuilderImpl([columnNode]).buildRichTextElement(richTextElementNode);
+			}).toThrowError();
+		});
+	});
+
+	describe('when building a drawing element', () => {
+		it('should work without descendants', () => {
+			const drawingElementNode = drawingElementNodeFactory.build();
+
+			const domainObject = new BoardDoBuilderImpl().buildDrawingElement(drawingElementNode);
+
+			expect(domainObject.constructor.name).toBe('DrawingElement');
+		});
+
+		it('should throw error if drawingElement is not a leaf', () => {
+			const drawingElementNode = drawingElementNodeFactory.buildWithId();
+			const columnNode = columnNodeFactory.buildWithId({ parent: drawingElementNode });
+
+			expect(() => {
+				new BoardDoBuilderImpl([columnNode]).buildDrawingElement(drawingElementNode);
 			}).toThrowError();
 		});
 	});

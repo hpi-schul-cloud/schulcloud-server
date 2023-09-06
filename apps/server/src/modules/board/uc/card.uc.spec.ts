@@ -1,12 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardDoAuthorizable, BoardRoles, ContentElementType, UserRoleEnum } from '@shared/domain';
-import { setupEntities, userFactory } from '@shared/testing';
+import { drawingElementFactory, setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { ObjectId } from 'bson';
 import { HttpService } from '@nestjs/axios';
+import { AxiosResponse } from 'axios';
+import { of } from 'rxjs';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { CardService } from '../service/card.service';
 import { CardUc } from './card.uc';
@@ -18,6 +20,7 @@ describe(CardUc.name, () => {
 	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
 	let cardService: DeepMocked<CardService>;
 	let elementService: DeepMocked<ContentElementService>;
+	let httpService: DeepMocked<HttpService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -56,6 +59,7 @@ describe(CardUc.name, () => {
 
 		cardService = module.get(CardService);
 		elementService = module.get(ContentElementService);
+		httpService = module.get(HttpService);
 		await setupEntities();
 	});
 
@@ -162,13 +166,14 @@ describe(CardUc.name, () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const element = richTextElementFactory.build();
+				const drawing = drawingElementFactory.build();
 				const card = cardFactory.build();
 
 				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
 					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
 				);
 
-				return { user, card, element };
+				return { user, card, element, drawing };
 			};
 
 			it('should call the service to find the element', async () => {
@@ -186,6 +191,23 @@ describe(CardUc.name, () => {
 				await uc.deleteElement(user.id, element.id, 'auth');
 
 				expect(elementService.delete).toHaveBeenCalledWith(element);
+			});
+
+			it('should call external controller via delete method to clear drawing bin data', async () => {
+				const { user, drawing } = setup();
+				elementService.findById.mockResolvedValueOnce(drawing);
+				const axiosResponse: AxiosResponse<string> = {
+					data: '',
+					status: 0,
+					statusText: 'statusText',
+					headers: {},
+					config: {},
+				};
+				httpService.delete.mockReturnValue(of(axiosResponse));
+
+				await uc.deleteElement(user.id, drawing.id, 'auth');
+
+				expect(httpService.delete).toHaveBeenCalled();
 			});
 		});
 	});

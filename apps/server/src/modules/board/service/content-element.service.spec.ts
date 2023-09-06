@@ -2,14 +2,19 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ContentElementFactory, ContentElementType, FileElement, InputFormat, RichTextElement } from '@shared/domain';
-import { setupEntities } from '@shared/testing';
+import { drawingElementFactory, setupEntities } from '@shared/testing';
 import {
 	cardFactory,
 	fileElementFactory,
 	richTextElementFactory,
 	submissionContainerElementFactory,
 } from '@shared/testing/factory/domainobject';
-import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from '../controller/dto';
+import {
+	DrawingContentBody,
+	FileContentBody,
+	RichTextContentBody,
+	SubmissionContainerContentBody,
+} from '../controller/dto';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementService } from './content-element.service';
@@ -195,6 +200,36 @@ describe(ContentElementService.name, () => {
 				await service.update(richTextElement, content);
 
 				expect(boardDoRepo.save).toHaveBeenCalledWith(richTextElement, card);
+			});
+		});
+
+		describe('when element is a drawing element', () => {
+			const setup = () => {
+				const drawingElement = drawingElementFactory.build();
+				const content = new DrawingContentBody();
+				content.drawingName = 'test-drawingName';
+				content.description = 'test-description';
+				const card = cardFactory.build();
+				boardDoRepo.findParentOfId.mockResolvedValue(card);
+
+				return { drawingElement, content, card };
+			};
+
+			it('should update the element', async () => {
+				const { drawingElement, content } = setup();
+
+				await service.update(drawingElement, content);
+
+				expect(drawingElement.drawingName).toEqual(content.drawingName);
+				expect(drawingElement.description).toEqual(content.description);
+			});
+
+			it('should persist the element', async () => {
+				const { drawingElement, content, card } = setup();
+
+				await service.update(drawingElement, content);
+
+				expect(boardDoRepo.save).toHaveBeenCalledWith(drawingElement, card);
 			});
 		});
 

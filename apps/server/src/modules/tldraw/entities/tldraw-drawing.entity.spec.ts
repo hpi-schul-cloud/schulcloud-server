@@ -9,7 +9,14 @@ describe('tldraw entity', () => {
 	describe('constructor', () => {
 		describe('when creating a tldraw doc', () => {
 			it('should create drawing', () => {
-				const tldraw = new TldrawDrawing({ docName: 'test', version: 'v1_tst', value: 'bindatamock', _id: 'test-id' });
+				const tldraw = new TldrawDrawing({
+					docName: 'test',
+					version: 'v1_tst',
+					value: 'bindatamock',
+					_id: 'test-id',
+					clock: 0,
+					action: 'update',
+				});
 				expect(tldraw).toBeInstanceOf(TldrawDrawing);
 			});
 

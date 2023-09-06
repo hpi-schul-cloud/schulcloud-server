@@ -7,7 +7,12 @@ import {
 	EntityId,
 	isAnyContentElement,
 } from '@shared/domain';
-import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from '../controller/dto';
+import {
+	DrawingContentBody,
+	FileContentBody,
+	RichTextContentBody,
+	SubmissionContainerContentBody,
+} from '../controller/dto';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementUpdateVisitor } from './content-element-update.visitor';
@@ -47,7 +52,7 @@ export class ContentElementService {
 
 	async update(
 		element: AnyContentElementDo,
-		content: FileContentBody | RichTextContentBody | SubmissionContainerContentBody
+		content: FileContentBody | RichTextContentBody | DrawingContentBody | SubmissionContainerContentBody
 	): Promise<void> {
 		const updater = new ContentElementUpdateVisitor(content);
 		element.accept(updater);
