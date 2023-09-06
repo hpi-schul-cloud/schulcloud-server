@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { EntityId, Page, Permission, LegacySchoolDo, User, UserLoginMigrationDO } from '@shared/domain';
+import { EntityId, Page, Permission, SchoolDO, User, UserLoginMigrationDO } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { Action, AuthorizationService } from '@src/modules/authorization';
@@ -95,7 +95,7 @@ export class UserLoginMigrationUc {
 		this.logMigrationInformation(currentUserId, undefined, data, targetSystemId);
 
 		if (data.externalSchool) {
-			let schoolToMigrate: LegacySchoolDo | null;
+			let schoolToMigrate: SchoolDO | null;
 			// TODO: N21-820 after fully switching to the new client login flow, try/catch will be obsolete and schoolToMigrate should throw correct errors
 			try {
 				schoolToMigrate = await this.schoolMigrationService.schoolToMigrate(
@@ -157,7 +157,7 @@ export class UserLoginMigrationUc {
 		text?: string,
 		oauthData?: OauthDataDto,
 		targetSystemId?: string,
-		school?: LegacySchoolDo
+		school?: SchoolDO
 	) {
 		let message = `MIGRATION (userId: ${userId}): ${text ?? ''}`;
 		if (!school && oauthData) {
