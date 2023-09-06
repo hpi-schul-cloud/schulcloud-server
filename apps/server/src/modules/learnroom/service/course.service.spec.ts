@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Course } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { courseFactory, userFactory } from '@shared/testing';
 import { CourseService } from './course.service';
 
 describe('CourseService', () => {
@@ -21,6 +22,7 @@ describe('CourseService', () => {
 		}).compile();
 		courseRepo = module.get(CourseRepo);
 		courseService = module.get(CourseService);
+
 	});
 
 	afterAll(async () => {
@@ -39,6 +41,36 @@ describe('CourseService', () => {
 			await expect(courseService.findById(courseId)).resolves.not.toThrow();
 			expect(courseRepo.findById).toBeCalledTimes(1);
 			expect(courseRepo.findById).toBeCalledWith(courseId);
+		});
+	});
+
+	describe('when deleting by userId', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const allCourses = courseFactory.buildList(3, { teachers: [user] });
+
+			courseRepo.findAllByUserId.mockResolvedValue([allCourses, allCourses.length]);
+
+			return {
+				user,
+				allCourses,
+			};
+		};
+
+		it('should call courseRepo.findAllByUserId', async () => {
+			const { user } = setup();
+
+			await courseService.deleteUserDataFromCourse(user.id);
+
+			expect(courseRepo.findAllByUserId).toBeCalledWith(user.id);
+		});
+
+		it('should update courses without deleted user', () => {
+			const { user } = setup();
+
+			const result = courseService.deleteUserDataFromCourse(user.id);
+
+			expect(result).toEqual(4);
 		});
 	});
 });

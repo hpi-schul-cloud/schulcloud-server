@@ -172,7 +172,7 @@ describe('LessonRepo', () => {
 				component: ComponentType.TEXT,
 				content: { text: 'test of content' },
 			};
-			const lesson1 = lessonFactory.buildWithId({ contents: [contentExample] });
+			const lesson1 = lessonFactory.buildWithId({ contents: [contentExample, contentExample] });
 			const lesson2 = lessonFactory.buildWithId({ contents: [contentExample] });
 			const lesson3 = lessonFactory.buildWithId();
 			await em.persistAndFlush([lesson1, lesson2, lesson3]);
@@ -184,13 +184,12 @@ describe('LessonRepo', () => {
 			// Assert
 			expect(result).toHaveLength(2);
 			expect(result.some((lesson: LessonEntity) => lesson.id === lesson3.id)).toBeFalsy();
-			// expect(result).toEqual(
-			// 	expect.arrayContaining([expect.objectContaining(expectedLesson1), expect.objectContaining(expectedLesson2)])
-			// );
+			const receivedContents = result.flatMap((o) => o.contents);
+			receivedContents.forEach((content) => {
+				expect(content.user).toEqual(userId);
+			});
 		});
 	});
-
-	//Add test with no lesson finded
 
 	describe('updateLessons', () => {
 		it('should update Lessons without deleted user', async () => {
@@ -203,7 +202,7 @@ describe('LessonRepo', () => {
 				component: ComponentType.TEXT,
 				content: { text: 'test of content' },
 			};
-			const lesson1 = lessonFactory.buildWithId({ contents: [contentExample] });
+			const lesson1 = lessonFactory.buildWithId({ contents: [contentExample, contentExample] });
 			await em.persistAndFlush([lesson1]);
 			em.clear();
 
@@ -215,6 +214,12 @@ describe('LessonRepo', () => {
 
 			const result1 = await repo.findByUserId(userId);
 			expect(result1).toHaveLength(0);
+
+			const result2 = await repo.findById(lesson1.id);
+			const receivedContents = result2.contents;
+			receivedContents.forEach((content) => {
+				expect(content.user).toEqual('');
+			});
 		});
 	});
 });

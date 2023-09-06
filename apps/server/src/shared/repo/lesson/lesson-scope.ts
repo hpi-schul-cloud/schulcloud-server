@@ -11,9 +11,4 @@ export class LessonScope extends Scope<LessonEntity> {
 		this.addQuery({ hidden: { $eq: isHidden } });
 		return this;
 	}
-
-	// byUserId(userId: EntityId): LessonScope {
-	// 	this.addQuery({ 'content.user': new ObjectId(userId) });
-	// 	return this;
-	// }
 }
