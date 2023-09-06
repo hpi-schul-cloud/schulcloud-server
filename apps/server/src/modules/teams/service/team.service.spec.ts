@@ -51,7 +51,7 @@ describe('TeamService', () => {
 			it('should throw an error', async () => {
 				const { userId } = setup();
 
-				await expect(service.deleteUserDataFromTeams(userId)).rejects.toThrowError(InternalServerErrorException);
+				await expect(service.findUserDataFromTeams(userId)).rejects.toThrowError(InternalServerErrorException);
 			});
 		});
 
