@@ -12,7 +12,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
 import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
 import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AxiosRequestHeaders, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { of } from 'rxjs';
 import { StatelessAuthorizationParams } from '../controller/dto/stateless-authorization.params';
 
@@ -34,7 +34,7 @@ const createAxiosResponse = <T = unknown>(data: T): AxiosResponse<T> => {
 		status: 0,
 		statusText: '',
 		headers: {},
-		config: {},
+		config: {} as InternalAxiosRequestConfig,
 	};
 };
 
@@ -133,8 +133,8 @@ describe('HydraService', () => {
 		const expectedAuthParams: StatelessAuthorizationParams = {
 			code: 'defaultAuthCode',
 		};
-		const axiosConfig: AxiosRequestConfig = {
-			headers: {},
+		const axiosConfig: InternalAxiosRequestConfig = {
+			headers: {} as AxiosRequestHeaders,
 			withCredentials: true,
 			maxRedirects: 0,
 			validateStatus: jest.fn().mockImplementationOnce(() => true),

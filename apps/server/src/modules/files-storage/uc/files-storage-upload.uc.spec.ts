@@ -9,7 +9,13 @@ import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { Action, AuthorizationService } from '@src/modules/authorization';
-import { AxiosRequestConfig, AxiosResponse, AxiosResponseHeaders } from 'axios';
+import {
+	AxiosHeaders,
+	AxiosRequestConfig,
+	AxiosResponse,
+	InternalAxiosRequestConfig,
+	RawAxiosRequestHeaders,
+} from 'axios';
 import { Request } from 'express';
 import { of } from 'rxjs';
 import { Readable } from 'stream';
@@ -22,21 +28,21 @@ import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
 import { FilesStorageUC } from './files-storage.uc';
 
-const createAxiosResponse = (data: Readable, headers: AxiosResponseHeaders = {}): AxiosResponse<Readable> => {
+const createAxiosResponse = (data: Readable, headers: RawAxiosRequestHeaders = {}): AxiosResponse<Readable> => {
 	const response: AxiosResponse<Readable> = {
 		data,
 		status: 0,
 		statusText: '',
 		headers,
-		config: {},
+		config: {} as InternalAxiosRequestConfig,
 	};
 
 	return response;
 };
 
 const createAxiosErrorResponse = (): AxiosResponse => {
-	const headers: AxiosResponseHeaders = {};
-	const config: AxiosRequestConfig = {};
+	const headers = {}; // AxiosResponseHeaders;
+	const config = {} as InternalAxiosRequestConfig;
 	const errorResponse: AxiosResponse = {
 		data: {},
 		status: 404,
@@ -163,7 +169,7 @@ describe('FilesStorageUC upload methods', () => {
 				'content-type': 'image/jpeg',
 			};
 			const readable = Readable.from('abc');
-			const response = createAxiosResponse(readable, headers);
+			const response = createAxiosResponse(readable, new AxiosHeaders(headers));
 
 			return { fileRecord, userId, uploadFromUrlParams, response };
 		};

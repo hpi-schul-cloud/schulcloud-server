@@ -1,23 +1,23 @@
-import { of, throwError } from 'rxjs';
-import { HttpException, HttpStatus } from '@nestjs/common';
-import { AxiosResponse } from 'axios';
-import { Test, TestingModule } from '@nestjs/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
-import { Logger } from '@src/core/logger';
+import { HttpException, HttpStatus } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { externalToolFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
+import { AxiosResponse } from 'axios';
+import { of, throwError } from 'rxjs';
+import { IToolFeatures, ToolFeatures } from '../../tool-config';
+import { ExternalTool } from '../domain';
+import { ExternalToolLogo } from '../domain/external-tool-logo';
 import {
+	ExternalToolLogoFetchFailedLoggableException,
 	ExternalToolLogoFetchedLoggable,
 	ExternalToolLogoNotFoundLoggableException,
 	ExternalToolLogoSizeExceededLoggableException,
-	ExternalToolLogoFetchFailedLoggableException,
 	ExternalToolLogoWrongFileTypeLoggableException,
 } from '../loggable';
 import { ExternalToolLogoService } from './external-tool-logo.service';
-import { ExternalTool } from '../domain';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalToolService } from './external-tool.service';
-import { ExternalToolLogo } from '../domain/external-tool-logo';
 
 describe('ExternalToolLogoService', () => {
 	let module: TestingModule;
@@ -199,9 +199,7 @@ describe('ExternalToolLogoService', () => {
 						data: logoBuffer,
 						status: HttpStatus.OK,
 						statusText: 'OK',
-						headers: {},
-						config: {},
-					} as AxiosResponse<ArrayBuffer>)
+					} as unknown as AxiosResponse<ArrayBuffer>)
 				);
 
 				const logoUrl = 'https://logo.com/';

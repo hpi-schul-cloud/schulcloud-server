@@ -2,12 +2,12 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { RoleName } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { setupEntities } from '@shared/testing';
-import { AxiosResponse } from 'axios';
+import { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { UUID } from 'bson';
 import { of } from 'rxjs';
-import { RoleName } from '@shared/domain';
 import {
 	ExternalSchoolDto,
 	ExternalUserDto,
@@ -32,7 +32,7 @@ const createAxiosResponse = (data: SanisResponse): AxiosResponse<SanisResponse> 
 		status: 0,
 		statusText: '',
 		headers: {},
-		config: {},
+		config: {} as InternalAxiosRequestConfig,
 	};
 };
 

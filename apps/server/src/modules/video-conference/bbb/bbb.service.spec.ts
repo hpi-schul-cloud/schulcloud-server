@@ -3,11 +3,11 @@ import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConverterUtil } from '@shared/common';
-import { AxiosResponse } from 'axios';
+import { ErrorUtils } from '@src/core/error/utils';
+import { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import crypto, { Hash } from 'crypto';
 import { of } from 'rxjs';
 import { URLSearchParams } from 'url';
-import { ErrorUtils } from '@src/core/error/utils';
 import { BbbSettings, IBbbSettings } from './bbb-settings.interface';
 import { BBBService } from './bbb.service';
 import { BBBBaseMeetingConfig, BBBCreateConfig, BBBJoinConfig, BBBRole, GuestPolicy } from './request';
@@ -84,7 +84,7 @@ const createAxiosResponse = (data: BBBResponse<BBBResponseType>): AxiosResponse<
 		status: 0,
 		statusText: '',
 		headers: {},
-		config: {},
+		config: {} as InternalAxiosRequestConfig,
 	};
 };
 
