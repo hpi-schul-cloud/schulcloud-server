@@ -81,7 +81,7 @@ describe('TeamService', () => {
 
 				const result = await service.findUserDataFromTeams(teamUser.user.id);
 
-				expect(result).toEqual(2);
+				expect(result.length).toEqual(2);
 			});
 		});
 	});
