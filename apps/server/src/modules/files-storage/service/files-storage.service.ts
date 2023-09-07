@@ -1,6 +1,7 @@
 import {
 	BadRequestException,
 	ConflictException,
+	Inject,
 	Injectable,
 	NotAcceptableException,
 	NotFoundException,
@@ -24,7 +25,7 @@ import {
 import { FileDto } from '../dto';
 import { FileRecord, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
-import { IFileStorageConfig } from '../files-storage.config';
+import { FILES_STORAGE_S3_CONNECTION, IFileStorageConfig } from '../files-storage.config';
 import {
 	createCopyFiles,
 	createFileRecord,
@@ -42,7 +43,7 @@ import { FileRecordRepo } from '../repo';
 export class FilesStorageService {
 	constructor(
 		private readonly fileRecordRepo: FileRecordRepo,
-		private readonly storageClient: S3ClientAdapter,
+		@Inject(FILES_STORAGE_S3_CONNECTION) private readonly storageClient: S3ClientAdapter,
 		private readonly antivirusService: AntivirusService,
 		private readonly configService: ConfigService<IFileStorageConfig, true>,
 		private logger: LegacyLogger
