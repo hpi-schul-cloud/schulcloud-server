@@ -4,9 +4,9 @@ This module allows to connect to the S3 storage with our abstraction layer.
 
 ## how to use
 
-You need to create a uniq connection token and set it as the connection name in S3Config. And you must use this token when injecting the S3 client into your service. This is **very important** because many modules can use the S3 client module with other configs.
+You need to create a unique connection token and set it as the connection name in S3 configuration. And you must use this token, when injecting the S3 client into your service. This is **very important**, because multiple modules could potentially use the S3 client with different configurations.
 
-The S3ClientModule.register method await a array of S3Configs also you can create many connection to deferent s3 providers and buckets.
+The S3ClientModule.register method awaits an array of S3 configurations. Also you can create many connections to different S3 providers and buckets.
 
 ```ts
 // your.config.ts
