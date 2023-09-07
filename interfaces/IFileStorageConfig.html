@@ -193,6 +193,7 @@
 import { S3Config } from &#x27;@shared/infra/s3-client&#x27;;
 import { ICoreModuleConfig } from &#x27;@src/core&#x27;;
 
+export const FILES_STORAGE_S3_CONNECTION &#x3D; &#x27;FILES_STORAGE_S3_CONNECTION&#x27;;
 export interface IFileStorageConfig extends ICoreModuleConfig {
 	MAX_FILE_SIZE: number;
 	MAX_SECURITY_CHECK_FILE_SIZE: number;
@@ -210,6 +211,7 @@ const fileStorageConfig: IFileStorageConfig &#x3D; {
 // config/development.json for development
 // config/test.json for tests
 export const s3Config: S3Config &#x3D; {
+	connectionName: FILES_STORAGE_S3_CONNECTION,
 	endpoint: Configuration.get(&#x27;FILES_STORAGE__S3_ENDPOINT&#x27;) as string,
 	region: Configuration.get(&#x27;FILES_STORAGE__S3_REGION&#x27;) as string,
 	bucket: Configuration.get(&#x27;FILES_STORAGE__S3_BUCKET&#x27;) as string,

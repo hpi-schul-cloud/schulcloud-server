@@ -148,7 +148,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:17</a></div>
                             </td>
                         </tr>
 
@@ -237,8 +237,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="63"
-                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:63</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="64"
+                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:64</a></div>
                 </td>
             </tr>
 
@@ -309,8 +309,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="49"
-                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:49</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="50"
+                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:50</a></div>
                 </td>
             </tr>
 
@@ -381,8 +381,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="96"
-                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:96</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="97"
+                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:97</a></div>
                 </td>
             </tr>
 
@@ -452,8 +452,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="132"
-                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:132</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="133"
+                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:133</a></div>
                 </td>
             </tr>
 
@@ -524,8 +524,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="25"
-                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:25</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="26"
+                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:26</a></div>
                 </td>
             </tr>
 
@@ -632,8 +632,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="86"
-                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:86</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="87"
+                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:87</a></div>
                 </td>
             </tr>
 
@@ -703,8 +703,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="138"
-                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:138</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="139"
+                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:139</a></div>
                 </td>
             </tr>
 
@@ -786,8 +786,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="111"
-                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:111</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="112"
+                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:112</a></div>
                 </td>
             </tr>
 
@@ -882,8 +882,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="70"
-                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:70</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="71"
+                            class="link-to-prism">apps/server/src/modules/files-storage/service/preview.service.ts:71</a></div>
                 </td>
             </tr>
 
@@ -937,7 +937,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, NotFoundException, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable, NotFoundException, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
 import { S3ClientAdapter } from &#x27;@shared/infra/s3-client&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { subClass } from &#x27;gm&#x27;;
@@ -945,6 +945,7 @@ import { PassThrough } from &#x27;stream&#x27;;
 import { DownloadFileParams, PreviewParams } from &#x27;../controller/dto&#x27;;
 import { FileRecord, PreviewStatus } from &#x27;../entity&#x27;;
 import { ErrorType } from &#x27;../error&#x27;;
+import { FILES_STORAGE_S3_CONNECTION } from &#x27;../files-storage.config&#x27;;
 import { createPreviewDirectoryPath, createPreviewFilePath, createPreviewNameHash } from &#x27;../helper&#x27;;
 import { GetFileResponse, PreviewFileParams } from &#x27;../interface&#x27;;
 import { PreviewOutputMimeTypes } from &#x27;../interface/preview-output-mime-types.enum&#x27;;
@@ -954,7 +955,7 @@ import { FilesStorageService } from &#x27;./files-storage.service&#x27;;
 @Injectable()
 export class PreviewService {
 	constructor(
-		private readonly storageClient: S3ClientAdapter,
+		@Inject(FILES_STORAGE_S3_CONNECTION) private readonly storageClient: S3ClientAdapter,
 		private readonly fileStorageService: FilesStorageService,
 		private logger: LegacyLogger
 	) {
