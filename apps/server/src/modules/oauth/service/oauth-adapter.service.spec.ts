@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { AxiosResponse } from 'axios';
+import { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { of, throwError } from 'rxjs';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthGrantType } from '../interface/oauth-grant-type.enum';
@@ -17,7 +17,7 @@ const createAxiosResponse = <T = unknown>(data: T): AxiosResponse<T> => {
 		status: 0,
 		statusText: '',
 		headers: {},
-		config: {},
+		config: {} as InternalAxiosRequestConfig,
 	};
 };
 
