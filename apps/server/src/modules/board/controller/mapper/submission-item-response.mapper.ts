@@ -12,12 +12,15 @@ export class SubmissionItemResponseMapper {
 		return SubmissionItemResponseMapper.instance;
 	}
 
-	public mapToResponse(submission: SubmissionItem): SubmissionItemResponse {
+	public mapToResponse(submissionItem: SubmissionItem): SubmissionItemResponse {
 		const result = new SubmissionItemResponse({
-			id: submission.id,
-			timestamps: new TimestampsResponse({ lastUpdatedAt: submission.updatedAt, createdAt: submission.createdAt }),
-			completed: submission.completed,
-			userId: submission.userId,
+			id: submissionItem.id,
+			timestamps: new TimestampsResponse({
+				lastUpdatedAt: submissionItem.updatedAt,
+				createdAt: submissionItem.createdAt,
+			}),
+			completed: submissionItem.completed,
+			userId: submissionItem.userId,
 		});
 
 		return result;

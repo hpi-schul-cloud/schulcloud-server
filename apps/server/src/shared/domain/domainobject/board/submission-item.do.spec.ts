@@ -1,5 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { submissionContainerElementFactory, submissionItemFactory } from '@shared/testing';
+import { ObjectId } from 'bson';
 import { SubmissionItem } from './submission-item.do';
 import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
@@ -32,6 +33,26 @@ describe(SubmissionItem.name, () => {
 			await submissionContainerElement.acceptAsync(visitor);
 
 			expect(visitor.visitSubmissionContainerElementAsync).toHaveBeenCalledWith(submissionContainerElement);
+		});
+	});
+
+	describe('set userId', () => {
+		it('should set userId', () => {
+			const userId = new ObjectId().toHexString();
+			const submissionItem = submissionItemFactory.build();
+			submissionItem.userId = userId;
+
+			expect(submissionItem.userId).toEqual(userId);
+		});
+	});
+
+	describe('set completed', () => {
+		it('should set completed', () => {
+			const completed = true;
+			const submissionItem = submissionItemFactory.build();
+			submissionItem.completed = completed;
+
+			expect(submissionItem.completed).toEqual(completed);
 		});
 	});
 });

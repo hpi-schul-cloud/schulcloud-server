@@ -23,7 +23,7 @@ import {
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
-import { IGetFile, IGetFileResponse } from '../interface';
+import { GetFileResponse } from '../interface';
 import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
@@ -124,7 +124,7 @@ export class FilesStorageUC {
 	}
 
 	// download
-	public async download(userId: EntityId, params: DownloadFileParams, bytesRange?: string): Promise<IGetFileResponse> {
+	public async download(userId: EntityId, params: DownloadFileParams, bytesRange?: string): Promise<GetFileResponse> {
 		const singleFileParams = FilesStorageMapper.mapToSingleFileParams(params);
 		const fileRecord = await this.filesStorageService.getFileRecord(singleFileParams);
 		const { parentType, parentId } = fileRecord.getParentInfo();
@@ -134,9 +134,9 @@ export class FilesStorageUC {
 		return this.filesStorageService.download(fileRecord, params, bytesRange);
 	}
 
-	public async downloadBySecurityToken(token: string): Promise<IGetFile> {
+	public async downloadBySecurityToken(token: string): Promise<GetFileResponse> {
 		const fileRecord = await this.filesStorageService.getFileRecordBySecurityCheckRequestToken(token);
-		const res = await this.filesStorageService.downloadFile(fileRecord.getSchoolId(), fileRecord.id);
+		const res = await this.filesStorageService.downloadFile(fileRecord);
 
 		return res;
 	}
@@ -146,7 +146,7 @@ export class FilesStorageUC {
 		params: DownloadFileParams,
 		previewParams: PreviewParams,
 		bytesRange?: string
-	): Promise<IGetFileResponse> {
+	): Promise<GetFileResponse> {
 		const singleFileParams = FilesStorageMapper.mapToSingleFileParams(params);
 		const fileRecord = await this.filesStorageService.getFileRecord(singleFileParams);
 		const { parentType, parentId } = fileRecord.getParentInfo();

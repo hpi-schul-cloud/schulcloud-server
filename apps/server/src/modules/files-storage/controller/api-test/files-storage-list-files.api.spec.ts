@@ -188,7 +188,7 @@ describe(`${baseRouteName} (api)`, () => {
 				mimeType: 'application/octet-stream',
 				securityCheckStatus: 'pending',
 				size: expect.any(Number),
-				previewStatus: PreviewStatus.AWAITING_SCAN_STATUS,
+				previewStatus: PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE,
 			});
 		});
 
