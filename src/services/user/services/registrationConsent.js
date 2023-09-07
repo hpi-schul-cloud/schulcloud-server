@@ -24,7 +24,7 @@ const registrationConsentServiceHooks = {
 class RegistrationConsentService {
 	async get(importHash, params) {
 		const consentType = params.query.consentType || 'privacy';
-		if (consentType !== 'privacy' || consentType !== 'termsOfUse') {
+		if (consentType !== 'privacy' && consentType !== 'termsOfUse') {
 			throw new BadRequest('Invalid Consent Type!');
 		}
 
