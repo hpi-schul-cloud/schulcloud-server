@@ -10,3 +10,4 @@ export * from './sanis-organisation-response';
 export * from './sanis-personenkontext-response';
 export * from './sanis-gruppenzugehoerigkeit-response';
 export * from './sanis-person-response';
+export * from './sanis-sonstige-gruppenzugehoerige-response';

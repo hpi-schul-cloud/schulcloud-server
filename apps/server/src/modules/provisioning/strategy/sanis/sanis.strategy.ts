@@ -49,7 +49,9 @@ export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
 		this.addTeacherRoleIfAdmin(externalUser);
 
 		const externalSchool: ExternalSchoolDto = this.responseMapper.mapToExternalSchoolDto(axiosResponse.data);
-		const externalGroups: ExternalGroupDto[] = this.responseMapper.mapToExternalGroupDtos(axiosResponse.data);
+		const externalGroups: ExternalGroupDto[] | undefined = this.responseMapper.mapToExternalGroupDtos(
+			axiosResponse.data
+		);
 
 		const oauthData: OauthDataDto = new OauthDataDto({
 			system: input.system,

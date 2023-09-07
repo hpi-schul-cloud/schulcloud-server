@@ -10,6 +10,7 @@ import {
 	SanisGroupType,
 	SanisGruppenResponse,
 	SanisGruppenzugehoerigkeitResponse,
+	SanisSonstigeGruppenzugehoerigeResponse,
 } from './response';
 import { GroupRoleUnknownLoggable } from '../../loggable';
 
@@ -76,16 +77,27 @@ export class SanisResponseMapper {
 					return null;
 				}
 
+				const sanisGroupUsers = [
+					...group.sonstige_gruppenzugehoerige,
+					{
+						ktid: source.personenkontexte[0].id,
+						rollen: group.gruppenzugehoerigkeit.rollen,
+					},
+				].sort();
+
+				const gruppenzugehoerigkeiten: ExternalGroupUserDto[] = sanisGroupUsers
+					.map((relation): ExternalGroupUserDto | null => this.mapToExternalGroupUser(relation))
+					.filter((user): user is ExternalGroupUserDto => user !== null);
+
 				return {
 					name: group.gruppe.bezeichnung,
 					type: groupType,
 					externalOrganizationId: group.gruppe.orgid,
+					// TODO: default laufzeit setzen
 					from: group.gruppe.laufzeit.von,
 					until: group.gruppe.laufzeit.bis,
 					externalId: group.gruppe.id,
-					users: group.gruppenzugehoerigkeiten
-						.map((relation): ExternalGroupUserDto | null => this.mapToExternalGroupUser(relation))
-						.filter((user): user is ExternalGroupUserDto => user !== null),
+					users: gruppenzugehoerigkeiten,
 				};
 			})
 			.filter((group): group is ExternalGroupDto => group !== null);
@@ -93,7 +105,7 @@ export class SanisResponseMapper {
 		return mapped;
 	}
 
-	private mapToExternalGroupUser(relation: SanisGruppenzugehoerigkeitResponse): ExternalGroupUserDto | null {
+	private mapToExternalGroupUser(relation: SanisSonstigeGruppenzugehoerigeResponse): ExternalGroupUserDto | null {
 		const userRole = GroupRoleMapping[relation.rollen[0]];
 
 		if (!userRole) {
@@ -102,8 +114,8 @@ export class SanisResponseMapper {
 		}
 
 		const mapped = new ExternalGroupUserDto({
-			externalUserId: relation.ktid,
 			roleName: userRole,
+			externalUserId: relation.ktid,
 		});
 
 		return mapped;

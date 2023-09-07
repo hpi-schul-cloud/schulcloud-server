@@ -11,5 +11,5 @@ export interface SanisPersonenkontextResponse {
 
 	personenstatus: string;
 
-	gruppen: SanisGruppenResponse[];
+	gruppen?: SanisGruppenResponse[];
 }
