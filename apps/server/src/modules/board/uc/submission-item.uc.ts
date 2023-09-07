@@ -3,6 +3,7 @@ import { AnyBoardDo, EntityId, SubmissionContainerElement, SubmissionItem, UserR
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Action } from '@src/modules/authorization/types/action.enum';
+import { UpdateSubmissionItemBodyParams } from '@src/modules/board/controller/dto';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 
 @Injectable()
@@ -42,7 +43,7 @@ export class SubmissionItemUc {
 	async updateSubmissionItem(
 		userId: EntityId,
 		submissionItemId: EntityId,
-		completed: boolean
+		bodyParams: UpdateSubmissionItemBodyParams
 	): Promise<SubmissionItem> {
 		const submissionItem = await this.submissionItemService.findById(submissionItemId);
 
@@ -51,7 +52,7 @@ export class SubmissionItemUc {
 			throw new ForbiddenException();
 		}
 
-		await this.submissionItemService.update(submissionItem, completed);
+		await this.submissionItemService.update(submissionItem, bodyParams);
 
 		return submissionItem;
 	}

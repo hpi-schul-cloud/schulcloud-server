@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean } from 'class-validator';
+import { IsBoolean, IsEnum, IsString } from 'class-validator';
+import { InputFormat } from '@shared/domain';
 
 export class UpdateSubmissionItemBodyParams {
 	@IsBoolean()
@@ -8,4 +9,14 @@ export class UpdateSubmissionItemBodyParams {
 		required: true,
 	})
 	completed!: boolean;
+
+	@IsString()
+	caption!: string;
+
+	@IsString()
+	text!: string;
+
+	@IsEnum(InputFormat)
+	@ApiProperty()
+	inputFormat!: InputFormat;
 }

@@ -1,7 +1,7 @@
 import { ObjectId } from 'bson';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-import { EntityId, SubmissionContainerElement, SubmissionItem } from '@shared/domain';
+import { EntityId, SubmissionContainerElement, SubmissionItem, InputFormat } from '@shared/domain';
 import { ValidationError } from '@shared/common';
 
 import { BoardDoRepo } from '../repo';
@@ -24,13 +24,16 @@ export class SubmissionItemService {
 	async create(
 		userId: EntityId,
 		submissionContainer: SubmissionContainerElement,
-		payload: { completed: boolean }
+		payload: { completed: boolean; text: string; inputFormat: InputFormat; caption: string }
 	): Promise<SubmissionItem> {
 		const submissionItem = new SubmissionItem({
 			id: new ObjectId().toHexString(),
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			completed: payload.completed,
+			caption: payload.caption,
+			text: payload.text,
+			inputFormat: payload.inputFormat,
 			userId,
 		});
 
@@ -41,13 +44,19 @@ export class SubmissionItemService {
 		return submissionItem;
 	}
 
-	async update(submissionItem: SubmissionItem, completed: boolean): Promise<void> {
+	async update(
+		submissionItem: SubmissionItem,
+		payload: { completed: boolean; text: string; inputFormat: InputFormat; caption: string }
+	): Promise<void> {
 		const parent = (await this.boardDoRepo.findParentOfId(submissionItem.id)) as SubmissionContainerElement;
 		const now = new Date();
 		if (parent.dueDate && parent.dueDate < now) {
 			throw new ValidationError('not allowed to save anymore');
 		}
-		submissionItem.completed = completed;
+		submissionItem.completed = payload.completed;
+		submissionItem.caption = payload.caption;
+		submissionItem.text = payload.text;
+		submissionItem.inputFormat = payload.inputFormat;
 
 		await this.boardDoRepo.save(submissionItem, parent);
 	}

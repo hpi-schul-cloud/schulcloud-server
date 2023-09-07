@@ -102,7 +102,7 @@ export class ElementController {
 		const submissionItem = await this.elementUc.createSubmissionItem(
 			currentUser.userId,
 			urlParams.contentElementId,
-			bodyParams.completed
+			bodyParams
 		);
 		const mapper = SubmissionItemResponseMapper.getInstance();
 		const response = mapper.mapToResponse(submissionItem);

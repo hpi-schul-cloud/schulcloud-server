@@ -2,6 +2,7 @@ import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { ContentElementType, InputFormat } from '@shared/domain';
 import { Type } from 'class-transformer';
 import { IsDate, IsEnum, IsString, ValidateNested } from 'class-validator';
+import { SanitizeHtml } from '@shared/controller';
 
 export abstract class ElementContentBody {
 	@ApiProperty({

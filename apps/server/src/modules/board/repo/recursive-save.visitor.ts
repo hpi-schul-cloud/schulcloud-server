@@ -141,6 +141,9 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			position: parentData?.position,
 			completed: submission.completed,
 			userId: submission.userId,
+			caption: submission.caption,
+			text: submission.text,
+			inputFormat: submission.inputFormat,
 		});
 
 		this.createOrUpdateBoardNode(boardNode);

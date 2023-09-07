@@ -1,5 +1,5 @@
 import { Entity, Property } from '@mikro-orm/core';
-import { EntityId } from '@shared/domain';
+import { EntityId, InputFormat } from '@shared/domain';
 import { AnyBoardDo } from '../../domainobject';
 import { BoardNode, BoardNodeProps } from './boardnode.entity';
 import { BoardDoBuilder, BoardNodeType } from './types';
@@ -15,11 +15,23 @@ export class SubmissionItemNode extends BoardNode {
 	})
 	userId!: EntityId;
 
+	@Property()
+	text: string;
+
+	@Property()
+	inputFormat: InputFormat;
+
+	@Property()
+	caption: string;
+
 	constructor(props: SubmissionItemNodeProps) {
 		super(props);
 		this.type = BoardNodeType.SUBMISSION_ITEM;
 		this.completed = props.completed;
 		this.userId = props.userId;
+		this.caption = props.caption;
+		this.text = props.text;
+		this.inputFormat = props.inputFormat;
 	}
 
 	useDoBuilder(builder: BoardDoBuilder): AnyBoardDo {
@@ -32,4 +44,7 @@ export class SubmissionItemNode extends BoardNode {
 export interface SubmissionItemNodeProps extends BoardNodeProps {
 	completed: boolean;
 	userId: EntityId;
+	caption: string;
+	text: string;
+	inputFormat: InputFormat;
 }

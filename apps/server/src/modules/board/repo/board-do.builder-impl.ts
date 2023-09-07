@@ -138,6 +138,9 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			updatedAt: boardNode.updatedAt,
 			completed: boardNode.completed,
 			userId: boardNode.userId,
+			caption: boardNode.caption,
+			text: boardNode.text,
+			inputFormat: boardNode.inputFormat,
 			children: [],
 		});
 		return element;

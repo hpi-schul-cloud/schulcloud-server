@@ -3,7 +3,12 @@ import { AnyBoardDo, EntityId, SubmissionContainerElement, SubmissionItem, UserR
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Action } from '@src/modules/authorization/types/action.enum';
-import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from '../controller/dto';
+import {
+	CreateSubmissionItemBodyParams,
+	FileContentBody,
+	RichTextContentBody,
+	SubmissionContainerContentBody,
+} from '../controller/dto';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { SubmissionItemService } from '../service/submission-item.service';
 
@@ -35,7 +40,7 @@ export class ElementUc {
 	async createSubmissionItem(
 		userId: EntityId,
 		contentElementId: EntityId,
-		completed: boolean
+		bodyParams: CreateSubmissionItemBodyParams
 	): Promise<SubmissionItem> {
 		const submissionContainer = (await this.elementService.findById(contentElementId)) as SubmissionContainerElement;
 
@@ -63,7 +68,12 @@ export class ElementUc {
 
 		await this.checkPermission(userId, submissionContainer, Action.read, UserRoleEnum.STUDENT);
 
-		const submissionItem = await this.submissionItemService.create(userId, submissionContainer, { completed });
+		const submissionItem = await this.submissionItemService.create(userId, submissionContainer, {
+			completed: bodyParams.completed,
+			caption: bodyParams.caption,
+			text: bodyParams.text,
+			inputFormat: bodyParams.inputFormat,
+		});
 
 		return submissionItem;
 	}

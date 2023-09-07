@@ -50,10 +50,6 @@ export class BoardSubmissionController {
 		@Param() urlParams: SubmissionItemUrlParams,
 		@Body() bodyParams: UpdateSubmissionItemBodyParams
 	) {
-		await this.submissionItemUc.updateSubmissionItem(
-			currentUser.userId,
-			urlParams.submissionItemId,
-			bodyParams.completed
-		);
+		await this.submissionItemUc.updateSubmissionItem(currentUser.userId, urlParams.submissionItemId, bodyParams);
 	}
 }

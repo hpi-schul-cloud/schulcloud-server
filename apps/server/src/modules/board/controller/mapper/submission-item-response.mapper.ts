@@ -21,6 +21,11 @@ export class SubmissionItemResponseMapper {
 			}),
 			completed: submissionItem.completed,
 			userId: submissionItem.userId,
+			caption: submissionItem.caption,
+			description: {
+				text: submissionItem.text,
+				inputFormat: submissionItem.inputFormat,
+			},
 		});
 
 		return result;
