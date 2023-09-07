@@ -18,6 +18,14 @@ export class UserLoginMigrationService {
 		private readonly schoolMigrationService: SchoolMigrationService
 	) {}
 
+	/**
+	 * @deprecated Use the other functions in this class instead.
+	 *
+	 * @param schoolId
+	 * @param oauthMigrationPossible
+	 * @param oauthMigrationMandatory
+	 * @param oauthMigrationFinished
+	 */
 	async setMigration(
 		schoolId: EntityId,
 		oauthMigrationPossible?: boolean,
@@ -62,6 +70,11 @@ export class UserLoginMigrationService {
 		}
 
 		const savedMigration: UserLoginMigrationDO = await this.userLoginMigrationRepo.save(userLoginMigration);
+
+		if (oauthMigrationFinished !== undefined) {
+			// this would throw an error when executed before the userLoginMigrationRepo.save method.
+			await this.schoolService.removeFeature(schoolId, SchoolFeatures.ENABLE_LDAP_SYNC_DURING_MIGRATION);
+		}
 
 		return savedMigration;
 	}
@@ -119,6 +132,8 @@ export class UserLoginMigrationService {
 		if (!userLoginMigration) {
 			throw new UserLoginMigrationNotFoundLoggableException(schoolId);
 		}
+
+		await this.schoolService.removeFeature(schoolId, SchoolFeatures.ENABLE_LDAP_SYNC_DURING_MIGRATION);
 
 		const now: Date = new Date();
 		const gracePeriodDuration: number = Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number;

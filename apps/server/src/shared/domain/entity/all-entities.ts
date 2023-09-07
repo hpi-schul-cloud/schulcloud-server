@@ -1,7 +1,8 @@
-import { ShareToken } from '@src/modules/sharing/entity/share-token.entity';
+import { GroupEntity } from '@src/modules/group/entity';
 import { ExternalToolPseudonymEntity, PseudonymEntity } from '@src/modules/pseudonym/entity';
-import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
+import { ShareToken } from '@src/modules/sharing/entity/share-token.entity';
 import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity';
+import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
 import { Account } from './account.entity';
 import {
@@ -23,8 +24,8 @@ import { ImportUser } from './import-user.entity';
 import {
 	Board,
 	BoardElement,
-	ColumnBoardTarget,
 	ColumnboardBoardElement,
+	ColumnBoardTarget,
 	LessonBoardElement,
 	TaskBoardElement,
 } from './legacy-board';
@@ -39,7 +40,7 @@ import { StorageProvider } from './storageprovider.entity';
 import { Submission } from './submission.entity';
 import { System } from './system.entity';
 import { Task } from './task.entity';
-import { Team, TeamUser } from './team.entity';
+import { TeamEntity, TeamUserEntity } from './team.entity';
 import { UserLoginMigration } from './user-login-migration.entity';
 import { User } from './user.entity';
 import { VideoConference } from './video-conference.entity';
@@ -88,10 +89,11 @@ export const ALL_ENTITIES = [
 	System,
 	Task,
 	TaskBoardElement,
-	Team,
+	TeamEntity,
 	TeamNews,
-	TeamUser,
+	TeamUserEntity,
 	User,
 	UserLoginMigration,
 	VideoConference,
+	GroupEntity,
 ];

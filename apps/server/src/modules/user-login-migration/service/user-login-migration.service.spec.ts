@@ -160,7 +160,7 @@ describe('UserLoginMigrationService', () => {
 		});
 	});
 
-	describe('setMigration is called', () => {
+	describe('setMigration', () => {
 		describe('when first starting the migration', () => {
 			describe('when the school has no systems', () => {
 				const setup = () => {
@@ -531,6 +531,17 @@ describe('UserLoginMigrationService', () => {
 				};
 			};
 
+			it('should call schoolService.removeFeature', async () => {
+				const { schoolId } = setup();
+
+				await service.setMigration(schoolId, undefined, undefined, true);
+
+				expect(schoolService.removeFeature).toHaveBeenCalledWith(
+					schoolId,
+					SchoolFeatures.ENABLE_LDAP_SYNC_DURING_MIGRATION
+				);
+			});
+
 			it('should save the UserLoginMigration with close date and finish date', async () => {
 				const { schoolId, userLoginMigration } = setup();
 				const expected: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
@@ -547,7 +558,7 @@ describe('UserLoginMigrationService', () => {
 		});
 	});
 
-	describe('startMigration is called', () => {
+	describe('startMigration', () => {
 		describe('when schoolId is given', () => {
 			const setup = () => {
 				const schoolId: EntityId = new ObjectId().toHexString();
@@ -739,7 +750,7 @@ describe('UserLoginMigrationService', () => {
 		});
 	});
 
-	describe('findMigrationBySchool is called', () => {
+	describe('findMigrationBySchool', () => {
 		describe('when a UserLoginMigration exists for the school', () => {
 			const setup = () => {
 				const schoolId = new ObjectId().toHexString();
@@ -792,76 +803,6 @@ describe('UserLoginMigrationService', () => {
 		});
 	});
 
-	describe('restartMigration is called', () => {
-		describe('when migration restart was successfully', () => {
-			const setup = () => {
-				const schoolId: EntityId = new ObjectId().toHexString();
-
-				const targetSystemId: EntityId = new ObjectId().toHexString();
-
-				const userLoginMigrationDO: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					targetSystemId,
-					schoolId,
-					startedAt: mockedDate,
-				});
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigrationDO);
-				schoolMigrationService.unmarkOutdatedUsers.mockResolvedValue();
-				userLoginMigrationRepo.save.mockResolvedValue(userLoginMigrationDO);
-
-				return {
-					schoolId,
-					targetSystemId,
-					userLoginMigrationDO,
-				};
-			};
-
-			it('should call save the user login migration', async () => {
-				const { schoolId, userLoginMigrationDO } = setup();
-
-				await service.restartMigration(schoolId);
-
-				expect(userLoginMigrationRepo.save).toHaveBeenCalledWith(userLoginMigrationDO);
-			});
-
-			it('should call unmark the outdated users from this migration', async () => {
-				const { schoolId } = setup();
-
-				await service.restartMigration(schoolId);
-
-				expect(schoolMigrationService.unmarkOutdatedUsers).toHaveBeenCalledWith(schoolId);
-			});
-		});
-
-		describe('when migration could not be found', () => {
-			const setup = () => {
-				const schoolId: EntityId = new ObjectId().toHexString();
-
-				const targetSystemId: EntityId = new ObjectId().toHexString();
-
-				const userLoginMigrationDO: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					targetSystemId,
-					schoolId,
-					startedAt: mockedDate,
-				});
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
-
-				return {
-					schoolId,
-					targetSystemId,
-					userLoginMigrationDO,
-				};
-			};
-
-			it('should throw ModifyUserLoginMigrationLoggableException ', async () => {
-				const { schoolId } = setup();
-
-				const func = async () => service.restartMigration(schoolId);
-
-				await expect(func).rejects.toThrow(UserLoginMigrationNotFoundLoggableException);
-			});
-		});
-	});
-
 	describe('deleteUserLoginMigration', () => {
 		describe('when a userLoginMigration is given', () => {
 			const setup = () => {
@@ -882,7 +823,7 @@ describe('UserLoginMigrationService', () => {
 		});
 	});
 
-	describe('restartMigration is called', () => {
+	describe('restartMigration', () => {
 		describe('when migration restart was successfully', () => {
 			const setup = () => {
 				const schoolId: EntityId = new ObjectId().toHexString();
@@ -954,7 +895,7 @@ describe('UserLoginMigrationService', () => {
 		});
 	});
 
-	describe('setMigrationMandatory is called', () => {
+	describe('setMigrationMandatory', () => {
 		describe('when migration is set to mandatory', () => {
 			const setup = () => {
 				const schoolId: EntityId = new ObjectId().toHexString();
@@ -1074,6 +1015,17 @@ describe('UserLoginMigrationService', () => {
 					closedUserLoginMigration,
 				};
 			};
+
+			it('should call schoolService.removeFeature', async () => {
+				const { schoolId } = setup();
+
+				await service.closeMigration(schoolId);
+
+				expect(schoolService.removeFeature).toHaveBeenCalledWith(
+					schoolId,
+					SchoolFeatures.ENABLE_LDAP_SYNC_DURING_MIGRATION
+				);
+			});
 
 			it('should save the closed user login migration', async () => {
 				const { schoolId, closedUserLoginMigration } = setup();

@@ -16,6 +16,7 @@ import { AuthenticationApiModule } from '@src/modules/authentication/authenticat
 import { BoardApiModule } from '@src/modules/board/board-api.module';
 import { CollaborativeStorageModule } from '@src/modules/collaborative-storage';
 import { FilesStorageClientModule } from '@src/modules/files-storage-client';
+import { GroupApiModule } from '@src/modules/group/group-api.module';
 import { LearnroomApiModule } from '@src/modules/learnroom/learnroom-api.module';
 import { LessonApiModule } from '@src/modules/lesson/lesson-api.module';
 import { NewsModule } from '@src/modules/news';
@@ -70,6 +71,7 @@ const serverModules = [
 	ToolApiModule,
 	UserLoginMigrationApiModule,
 	BoardApiModule,
+	GroupApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
