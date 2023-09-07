@@ -9,7 +9,7 @@ export class TldrawDrawing {
 		this.docName = props.docName;
 		this.version = props.version;
 		this.value = props.value;
-		if (props.clock) {
+		if (typeof props.clock === 'number') {
 			this.clock = props.clock;
 		}
 		if (props.action) {
