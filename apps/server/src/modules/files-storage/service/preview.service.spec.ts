@@ -9,6 +9,7 @@ import { Readable } from 'stream';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
+import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { createPreviewDirectoryPath, createPreviewFilePath, createPreviewNameHash } from '../helper';
 import { TestHelper } from '../helper/test-helper';
 import { PreviewWidth } from '../interface';
@@ -75,7 +76,7 @@ describe('PreviewService', () => {
 					useValue: createMock<FilesStorageService>(),
 				},
 				{
-					provide: S3ClientAdapter,
+					provide: FILES_STORAGE_S3_CONNECTION,
 					useValue: createMock<S3ClientAdapter>(),
 				},
 				{
@@ -87,7 +88,7 @@ describe('PreviewService', () => {
 
 		previewService = module.get(PreviewService);
 		fileStorageService = module.get(FilesStorageService);
-		s3ClientAdapter = module.get(S3ClientAdapter);
+		s3ClientAdapter = module.get(FILES_STORAGE_S3_CONNECTION);
 	});
 
 	beforeEach(() => {

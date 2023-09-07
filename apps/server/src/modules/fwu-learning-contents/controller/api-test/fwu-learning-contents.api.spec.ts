@@ -7,6 +7,7 @@ import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { Readable } from 'stream';
 import request from 'supertest';
 import { FwuLearningContentsTestModule } from '../../fwu-learning-contents-test.module';
+import { FWU_CONTENT_S3_CONNECTION } from '../../fwu-learning-contents.config';
 
 class API {
 	constructor(private app: INestApplication) {
@@ -37,13 +38,13 @@ describe('FwuLearningContents Controller (api)', () => {
 					return true;
 				},
 			})
-			.overrideProvider(S3ClientAdapter)
+			.overrideProvider(FWU_CONTENT_S3_CONNECTION)
 			.useValue(createMock<S3ClientAdapter>())
 			.compile();
 
 		app = module.createNestApplication();
 		await app.init();
-		s3ClientAdapter = module.get(S3ClientAdapter);
+		s3ClientAdapter = module.get(FWU_CONTENT_S3_CONNECTION);
 
 		api = new API(app);
 	});
