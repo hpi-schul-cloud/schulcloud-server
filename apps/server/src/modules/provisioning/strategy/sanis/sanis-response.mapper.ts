@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain';
 import { GroupTypes } from '@src/modules/group';
+import { Logger } from '@src/core/logger';
 import { ExternalSchoolDto, ExternalUserDto, ExternalGroupDto, ExternalGroupUserDto } from '../../dto';
 import {
 	SanisResponse,
@@ -10,6 +11,7 @@ import {
 	SanisGruppenResponse,
 	SanisGruppenzugehoerigkeitResponse,
 } from './response';
+import { GroupRoleUnknownLoggable } from '../../loggable';
 
 const RoleMapping: Record<SanisRole, RoleName> = {
 	[SanisRole.LEHR]: RoleName.TEACHER,
@@ -18,15 +20,9 @@ const RoleMapping: Record<SanisRole, RoleName> = {
 	[SanisRole.ORGADMIN]: RoleName.ADMINISTRATOR,
 };
 
-// TODO: ask B.H. if mapping is accepted
-const GroupRoleMapping: Record<SanisGroupRole, RoleName> = {
+const GroupRoleMapping: Partial<Record<SanisGroupRole, RoleName>> = {
 	[SanisGroupRole.TEACHER]: RoleName.TEACHER,
 	[SanisGroupRole.STUDENT]: RoleName.STUDENT,
-	[SanisGroupRole.CLASS_LEADER]: RoleName.TEACHER,
-	[SanisGroupRole.SUPPORT_TEACHER]: RoleName.TEACHER,
-	[SanisGroupRole.SCHOOL_SUPPORT]: RoleName.HELPDESK,
-	[SanisGroupRole.GROUP_MEMBER]: RoleName.COURSESTUDENT,
-	[SanisGroupRole.GROUP_LEADER]: RoleName.COURSETEACHER,
 };
 
 const GroupTypeMapping: Partial<Record<SanisGroupType, GroupTypes>> = {
@@ -36,6 +32,8 @@ const GroupTypeMapping: Partial<Record<SanisGroupType, GroupTypes>> = {
 @Injectable()
 export class SanisResponseMapper {
 	SCHOOLNUMBER_PREFIX_REGEX = /^NI_/;
+
+	constructor(private readonly logger: Logger) {}
 
 	mapToExternalSchoolDto(source: SanisResponse): ExternalSchoolDto {
 		const officialSchoolNumber: string = source.personenkontexte[0].organisation.kennung.replace(
@@ -85,9 +83,9 @@ export class SanisResponseMapper {
 					from: group.gruppe.laufzeit.von,
 					until: group.gruppe.laufzeit.bis,
 					externalId: group.gruppe.id,
-					users: group.gruppenzugehoerigkeiten.map(
-						(relation): ExternalGroupUserDto => this.mapToExternalGroupUser(relation)
-					),
+					users: group.gruppenzugehoerigkeiten
+						.map((relation): ExternalGroupUserDto | null => this.mapToExternalGroupUser(relation))
+						.filter((user): user is ExternalGroupUserDto => user !== null),
 				};
 			})
 			.filter((group): group is ExternalGroupDto => group !== null);
@@ -95,10 +93,17 @@ export class SanisResponseMapper {
 		return mapped;
 	}
 
-	private mapToExternalGroupUser(relation: SanisGruppenzugehoerigkeitResponse): ExternalGroupUserDto {
+	private mapToExternalGroupUser(relation: SanisGruppenzugehoerigkeitResponse): ExternalGroupUserDto | null {
+		const userRole = GroupRoleMapping[relation.rollen[0]];
+
+		if (!userRole) {
+			this.logger.info(new GroupRoleUnknownLoggable(relation));
+			return null;
+		}
+
 		const mapped = new ExternalGroupUserDto({
 			externalUserId: relation.ktid,
-			roleName: GroupRoleMapping[relation.rollen[0]],
+			roleName: userRole,
 		});
 
 		return mapped;

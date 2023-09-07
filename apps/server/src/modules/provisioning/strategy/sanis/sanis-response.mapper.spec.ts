@@ -1,15 +1,32 @@
 import { RoleName } from '@shared/domain';
 import { UUID } from 'bson';
 import { GroupTypes } from '@src/modules/group';
+import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@src/core/logger';
 import { ExternalGroupDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
 import { SanisResponseMapper } from './sanis-response.mapper';
 import { SanisGroupRole, SanisGroupType, SanisGruppenResponse, SanisResponse, SanisRole } from './response';
 
 describe('SanisResponseMapper', () => {
+	let module: TestingModule;
 	let mapper: SanisResponseMapper;
 
-	beforeAll(() => {
-		mapper = new SanisResponseMapper();
+	let logger: DeepMocked<Logger>;
+
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
+			providers: [
+				SanisResponseMapper,
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
+			],
+		}).compile();
+
+		mapper = module.get(SanisResponseMapper);
+		logger = module.get(Logger);
 	});
 
 	const setupSanisResponse = () => {
@@ -154,6 +171,27 @@ describe('SanisResponseMapper', () => {
 				const result: ExternalGroupDto[] = mapper.mapToExternalGroupDtos(sanisResponse);
 
 				expect(result).toHaveLength(0);
+			});
+		});
+
+		describe('when a group role mapping is missing', () => {
+			const setup = () => {
+				const { sanisResponse } = setupSanisResponse();
+				sanisResponse.personenkontexte[0].gruppen[0].gruppenzugehoerigkeiten[0].rollen = [
+					SanisGroupRole.SCHOOL_SUPPORT,
+				];
+
+				return {
+					sanisResponse,
+				};
+			};
+
+			it('should return skip the user', () => {
+				const { sanisResponse } = setup();
+
+				const result: ExternalGroupDto[] = mapper.mapToExternalGroupDtos(sanisResponse);
+
+				expect(result[0].users).toHaveLength(0);
 			});
 		});
 	});

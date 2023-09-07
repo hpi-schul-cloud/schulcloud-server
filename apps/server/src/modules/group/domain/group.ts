@@ -21,28 +21,4 @@ export interface GroupProps extends AuthorizableObject {
 	organizationId?: string;
 }
 
-export class Group extends DomainObject<GroupProps> {
-	get name(): string {
-		return this.props.name;
-	}
-
-	set name(value: string) {
-		this.props.name = value;
-	}
-
-	get validFrom(): Date {
-		return this.props.validFrom;
-	}
-
-	set validFrom(value: Date) {
-		this.props.validFrom = value;
-	}
-
-	get validUntil(): Date {
-		return this.props.validUntil;
-	}
-
-	set validUntil(value: Date) {
-		this.props.validUntil = value;
-	}
-}
+export class Group extends DomainObject<GroupProps> {}

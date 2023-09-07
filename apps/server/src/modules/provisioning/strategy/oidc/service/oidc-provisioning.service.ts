@@ -15,6 +15,7 @@ import { Group, GroupService, GroupUser } from '@src/modules/group';
 import { Logger } from '@src/core/logger';
 import { ObjectId } from 'bson';
 import { ExternalSchoolDto, ExternalUserDto, ExternalGroupDto, ExternalGroupUserDto } from '../../../dto';
+import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
 
 @Injectable()
 export class OidcProvisioningService {
@@ -118,7 +119,6 @@ export class OidcProvisioningService {
 		return savedUser;
 	}
 
-	// TODO: Test it
 	async provisionExternalGroup(externalGroup: ExternalGroupDto, systemId: EntityId): Promise<void> {
 		const existingGroup: Group | null = await this.groupService.findByExternalSource(
 			externalGroup.externalId,
@@ -133,7 +133,7 @@ export class OidcProvisioningService {
 			);
 
 			if (!existingSchool || !existingSchool.id) {
-				this.logger.info('school for group xyz not found');
+				this.logger.info(new SchoolForGroupNotFoundLoggable(externalGroup));
 				return;
 			}
 
@@ -142,24 +142,19 @@ export class OidcProvisioningService {
 
 		const users: GroupUser[] = await this.getFilteredGroupUsers(externalGroup, systemId);
 
-		let group: Group;
-		if (existingGroup) {
-			group = existingGroup;
-		} else {
-			group = new Group({
-				id: new ObjectId().toHexString(),
-				name: externalGroup.name,
-				externalSource: new ExternalSource({
-					externalId: externalGroup.externalId,
-					systemId,
-				}),
-				type: externalGroup.type,
-				organizationId,
-				validFrom: externalGroup.from,
-				validUntil: externalGroup.until,
-				users,
-			});
-		}
+		const group: Group = new Group({
+			id: existingGroup ? existingGroup.id : new ObjectId().toHexString(),
+			name: externalGroup.name,
+			externalSource: new ExternalSource({
+				externalId: externalGroup.externalId,
+				systemId,
+			}),
+			type: externalGroup.type,
+			organizationId,
+			validFrom: externalGroup.from,
+			validUntil: externalGroup.until,
+			users,
+		});
 
 		await this.groupService.save(group);
 	}
@@ -171,7 +166,7 @@ export class OidcProvisioningService {
 				const roles: RoleDto[] = await this.roleService.findByNames([externalGroupUser.roleName]);
 
 				if (!user || !user.id || roles.length !== 1 || !roles[0].id) {
-					this.logger.debug('user is not in svs yet');
+					this.logger.info(new UserForGroupNotFoundLoggable(externalGroupUser));
 					return null;
 				}
 
