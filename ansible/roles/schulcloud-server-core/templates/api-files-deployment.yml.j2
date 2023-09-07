@@ -24,6 +24,9 @@ spec:
     metadata:
       labels:
         app: api-files
+{% if DOF_APP_DEPLOY_IMAGE_TAG is defined %}
+        cfgVersion: {{ DOF_APP_DEPLOY_IMAGE_TAG }}
+{% endif  %}
     spec:
       securityContext:
         runAsUser: 1000

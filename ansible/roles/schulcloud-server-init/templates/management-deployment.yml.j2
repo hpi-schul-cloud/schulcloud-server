@@ -23,6 +23,9 @@ spec:
     metadata:
       labels:
         app: management-deployment
+{% if DOF_APP_DEPLOY_IMAGE_TAG is defined %}
+        cfgVersion: {{ DOF_APP_DEPLOY_IMAGE_TAG }}
+{% endif  %}
     spec:
       securityContext:
         runAsUser: 1000
