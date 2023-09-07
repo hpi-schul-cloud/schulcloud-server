@@ -10,6 +10,14 @@ export class FileElement extends BoardComposite<FileElementProps> {
 		this.props.caption = value;
 	}
 
+	get alternativeText(): string | undefined {
+		return this.props.alternativeText;
+	}
+
+	set alternativeText(value: string | undefined) {
+		this.props.alternativeText = value;
+	}
+
 	isAllowedAsChild(): boolean {
 		return false;
 	}
@@ -25,4 +33,5 @@ export class FileElement extends BoardComposite<FileElementProps> {
 
 export interface FileElementProps extends BoardCompositeProps {
 	caption: string;
+	alternativeText?: string;
 }
