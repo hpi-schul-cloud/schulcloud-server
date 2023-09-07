@@ -1,6 +1,6 @@
 /* eslint-disable no-new */
 import { setupEntities } from '@shared/testing';
-import { classEntityFactory } from '@src/modules/classes/entity/testing/factory/class.factory';
+import { classEntityFactory } from '@src/modules/classes/entity/testing/factory/class.entity.factory';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ClassEntity } from '../class.entity';
 

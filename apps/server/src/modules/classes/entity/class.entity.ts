@@ -69,6 +69,10 @@ export class ClassEntity extends BaseEntityWithTimestamps {
 		super();
 		this.validate(props);
 
+		if (props.id !== undefined) {
+			this.id = props.id;
+		}
+
 		this.name = props.name;
 		this.schoolId = props.schoolId;
 

@@ -3,9 +3,11 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
-import { classEntityFactory } from '@src/modules/classes/entity/testing/factory/class.factory';
+import { classEntityFactory } from '@src/modules/classes/entity/testing/factory/class.entity.factory';
 import { ClassesRepo } from './classes.repo';
 import { ClassEntity } from '../entity';
+import { ClassMapper } from '../service/mapper';
+import { Class } from '../domain';
 
 describe(ClassesRepo.name, () => {
 	let module: TestingModule;
@@ -15,7 +17,7 @@ describe(ClassesRepo.name, () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [ClassesRepo],
+			providers: [ClassesRepo, ClassMapper],
 		}).compile();
 
 		repo = module.get(ClassesRepo);
@@ -94,8 +96,9 @@ describe(ClassesRepo.name, () => {
 				class2.userIds = [testUser3];
 
 				const updatedArray: ClassEntity[] = [class1, class2];
+				const domainObjectsArray: Class[] = ClassMapper.mapToDOs(updatedArray);
 
-				await repo.updateMany(updatedArray);
+				await repo.updateMany(domainObjectsArray);
 
 				const result1 = await repo.findAllByUserId(testUser1.toHexString());
 				expect(result1).toHaveLength(0);
