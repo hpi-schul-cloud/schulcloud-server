@@ -23,7 +23,7 @@ describe(FileElementNode.name, () => {
 
 	describe('useDoBuilder()', () => {
 		const setup = () => {
-			const element = new FileElementNode({ caption: 'Test' });
+			const element = new FileElementNode({ caption: 'Test', alternativeText: 'altTest' });
 			const builder: DeepMocked<BoardDoBuilder> = createMock<BoardDoBuilder>();
 			const elementDo = fileElementFactory.build();
 
