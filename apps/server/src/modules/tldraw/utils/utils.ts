@@ -288,4 +288,8 @@ export const updateDocument = async (mdb: MongodbPersistence, docName: string, y
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 		mdb.storeUpdate(docName, update);
 	});
+
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	persistedYdoc.destroy();
 };
