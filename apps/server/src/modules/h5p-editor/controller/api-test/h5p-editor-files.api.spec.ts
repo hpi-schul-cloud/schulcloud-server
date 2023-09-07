@@ -3,12 +3,13 @@ import { ContentMetadata } from '@lumieducation/h5p-server/build/src/ContentMeta
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
-import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 import { Readable } from 'stream';
-import { H5PEditorTestModule } from '../../h5p-editor-test.module';
-import { LibraryStorage, TemporaryFileStorage, ContentStorage } from '../../service';
 import { TemporaryFile } from '../../entity';
+import { H5PEditorTestModule } from '../../h5p-editor-test.module';
+import { H5P_CONTENT_S3_CONNECTION, H5P_LIBRARIES_S3_CONNECTION } from '../../h5p-editor.config';
+import { ContentStorage, LibraryStorage, TemporaryFileStorage } from '../../service';
 
 describe('H5PEditor Controller (api)', () => {
 	let app: INestApplication;
@@ -23,9 +24,9 @@ describe('H5PEditor Controller (api)', () => {
 		const module = await Test.createTestingModule({
 			imports: [H5PEditorTestModule],
 		})
-			.overrideProvider('S3ClientAdapter_Content')
+			.overrideProvider(H5P_CONTENT_S3_CONNECTION)
 			.useValue(createMock<S3ClientAdapter>())
-			.overrideProvider('S3ClientAdapter_Libraries')
+			.overrideProvider(H5P_LIBRARIES_S3_CONNECTION)
 			.useValue(createMock<S3ClientAdapter>())
 			.overrideProvider(ContentStorage)
 			.useValue(createMock<ContentStorage>())

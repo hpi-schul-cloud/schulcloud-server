@@ -1,16 +1,17 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain';
-import { MongoMemoryDatabaseModule, MongoDatabaseModuleOptions } from '@shared/infra/database';
+import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
+import { S3ClientModule } from '@shared/infra/s3-client';
 import { CoreModule } from '@src/core';
-import { LegacyLogger, LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@src/core/logger';
 import { AuthenticationApiModule } from '@src/modules/authentication/authentication-api.module';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { UserModule } from '..';
 import { H5PEditorController } from './controller';
 import { s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
-import { H5PEditorModule, createS3ClientAdapter } from './h5p-editor.module';
+import { H5PEditorModule } from './h5p-editor.module';
 import { H5PContentRepo, LibraryRepo, TemporaryFileRepo } from './repo';
 import {
 	ContentStorage,
@@ -32,6 +33,7 @@ const imports = [
 	CoreModule,
 	LoggerModule,
 	RabbitMQWrapperTestModule,
+	S3ClientModule.register([s3ConfigContent, s3ConfigLibraries]),
 ];
 const controllers = [H5PEditorController];
 const providers = [
@@ -45,24 +47,6 @@ const providers = [
 	ContentStorage,
 	LibraryStorage,
 	TemporaryFileStorage,
-	{
-		provide: 'S3Config_Content',
-		useValue: s3ConfigContent,
-	},
-	{
-		provide: 'S3Config_Libraries',
-		useValue: s3ConfigLibraries,
-	},
-	{
-		provide: 'S3ClientAdapter_Content',
-		useFactory: createS3ClientAdapter,
-		inject: ['S3Config_Content', LegacyLogger],
-	},
-	{
-		provide: 'S3ClientAdapter_Libraries',
-		useFactory: createS3ClientAdapter,
-		inject: ['S3Config_Libraries', LegacyLogger],
-	},
 ];
 
 @Module({

@@ -10,10 +10,11 @@ import {
 	Permission,
 } from '@lumieducation/h5p-server';
 import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { FileDto } from '@src/modules/files-storage/dto';
 import { Readable } from 'stream';
-import { S3ClientAdapter } from '../../files-storage/client/s3-client.adapter';
 import { H5PContent } from '../entity';
+import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
 import { H5PContentRepo } from '../repo';
 import { LumiUserWithContentData } from '../types/lumi-types';
 
@@ -21,7 +22,7 @@ import { LumiUserWithContentData } from '../types/lumi-types';
 export class ContentStorage implements IContentStorage {
 	constructor(
 		private readonly repo: H5PContentRepo,
-		@Inject('S3ClientAdapter_Content') private readonly storageClient: S3ClientAdapter
+		@Inject(H5P_CONTENT_S3_CONNECTION) private readonly storageClient: S3ClientAdapter
 	) {}
 
 	private checkExtendedUserType(user: ILumiUser) {
