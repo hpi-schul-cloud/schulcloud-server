@@ -1,44 +1,41 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { DynamicModule, Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
-import { S3_CLIENT, S3_CONFIG } from './constants';
+import { LegacyLogger, LoggerModule } from '@src/core/logger';
 import { S3Config } from './interface';
 import { S3ClientAdapter } from './s3-client.adapter';
 
-@Module({
-	imports: [LoggerModule],
-	providers: [S3ClientAdapter],
-})
+const createS3ClientAdapter = (config: S3Config, legacyLogger: LegacyLogger) => {
+	const { region, accessKeyId, secretAccessKey, endpoint } = config;
+
+	const s3Client = new S3Client({
+		region,
+		credentials: {
+			accessKeyId,
+			secretAccessKey,
+		},
+		endpoint,
+		forcePathStyle: true,
+		tls: true,
+	});
+	return new S3ClientAdapter(s3Client, config, legacyLogger);
+};
+
+@Module({})
 export class S3ClientModule {
-	static register(options: S3Config): DynamicModule {
-		const providers = [
+	static register(configs: S3Config[]): DynamicModule {
+		const providers = configs.flatMap((config) => [
 			{
-				provide: S3_CONFIG,
-				useValue: options,
+				provide: config.connectionName,
+				useFactory: (logger: LegacyLogger) => createS3ClientAdapter(config, logger),
+				inject: [LegacyLogger],
 			},
-			{
-				provide: S3_CLIENT,
-				useFactory: (config: S3Config) => {
-					const { region, accessKeyId, secretAccessKey, endpoint } = config;
-					return new S3Client({
-						region,
-						credentials: {
-							accessKeyId,
-							secretAccessKey,
-						},
-						endpoint,
-						forcePathStyle: true,
-						tls: true,
-					});
-				},
-				inject: [S3_CONFIG],
-			},
-		];
+		]);
 
 		return {
 			module: S3ClientModule,
+			imports: [LoggerModule],
 			providers,
-			exports: [S3ClientAdapter],
+			exports: providers,
 		};
 	}
 }

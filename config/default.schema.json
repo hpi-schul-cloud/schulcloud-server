@@ -650,7 +650,12 @@
 		"FEATURE_SCHOOL_POLICY_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "Custom School Policy can be uploaded by the school admin "
+			"description": "Enables uploading of school specific Privacy Policy on old admin page "
+		},
+		"FEATURE_SCHOOL_POLICY_ENABLED_NEW": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables uploading of school specific Privacy Policy on new admin page."
 		},
 		"ROCKETCHAT_SERVICE_ENABLED": {
 			"type": "boolean",
