@@ -24,18 +24,6 @@ export class FederalStateController {
 	@Get()
 	async findAll(): Promise<FederalStateResponse[]> {
 		const federalStates = await this.federalStateUC.findAllFederalStates();
-		// const federalStates = [
-		// 	{
-		// 		_id: new ObjectId('123456789012345678901234'),
-		// 		id: '1',
-		// 		name: 'Bayern',
-		// 		abbreviation: 'BY',
-		// 		logoUrl:
-		// 			'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Coat_of_arms_of_Bavaria.svg/1200px-Coat_of_arms_of_Bavaria.svg.png',
-		// 		createdAt: new Date(),
-		// 		updatedAt: new Date(),
-		// 	},
-		// ];
 		const federalStateResponse = federalStates.map((federalState) => FederalStateMapper.mapToResponse(federalState));
 		return federalStateResponse;
 	}
