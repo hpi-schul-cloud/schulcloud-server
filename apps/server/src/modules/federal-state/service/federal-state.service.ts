@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { FederalStateEntity } from '@shared/domain';
+import { FederalStateDO } from '../domainobject/federal-state.do';
 import { FederalStateRepo } from '../repo';
 
 @Injectable()
 export class FederalStateService {
 	constructor(private readonly federalStateRepo: FederalStateRepo) {}
 
-	async findFederalStateByName(name: string): Promise<FederalStateEntity> {
-		const federalState: FederalStateEntity = await this.federalStateRepo.findByName(name);
+	async findFederalStateByName(name: string): Promise<FederalStateDO> {
+		const federalState: FederalStateDO = await this.federalStateRepo.findByName(name);
 
 		return federalState;
 	}
 
 	async findAll() {
-		const federalStates: FederalStateEntity[] = await this.federalStateRepo.findAll();
+		const federalStates: FederalStateDO[] = await this.federalStateRepo.findAll();
 		return federalStates;
 	}
 }

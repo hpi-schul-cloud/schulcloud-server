@@ -2,7 +2,6 @@ import { Body, Controller, ForbiddenException, Get, NotFoundException, Post } fr
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
-import { ObjectId } from 'mongodb';
 import { FederalStateUC } from '../uc';
 import { CreateFederalStateBodyParams } from './dto/create-federal-state.body.params';
 import { FederalStateResponse } from './dto/federal-state.response';
@@ -28,17 +27,6 @@ export class FederalStateController {
 		return federalStateResponse;
 	}
 
-	// @Post(':federalStateName')
-	// findFederalStateByName(@Param() federalStateName: string) {
-	// 	return this.federalStateUC.findFederalStateByName(federalStateName);
-	// }
-
-	// @ApiResponse({
-	// 	status: 201,
-	// })
-	// @ApiResponse({ status: 400, type: ApiValidationError })
-	// @ApiResponse({ status: 403, type: ForbiddenException })
-	// @ApiResponse({ status: 404, type: NotFoundException })
 	@Post()
 	@ApiOperation({ summary: 'Create a new element on a card.' })
 	createElement(

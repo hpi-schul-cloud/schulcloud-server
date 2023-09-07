@@ -44,6 +44,7 @@ export class FederalStateEntity extends BaseEntityWithTimestamps {
 		this.name = props.name;
 		this.abbreviation = props.abbreviation;
 		this.logoUrl = props.logoUrl;
+		this.counties = props.counties;
 		this.updatedAt = props.updatedAt;
 		this.createdAt = props.createdAt;
 	}

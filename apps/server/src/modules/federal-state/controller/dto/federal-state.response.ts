@@ -41,13 +41,3 @@ export class FederalStateResponse {
 	@ApiProperty()
 	updatedAt: Date;
 }
-
-// export class TaskListResponse extends PaginationResponse<TaskResponse[]> {
-// 	constructor(data: TaskResponse[], total: number, skip?: number, limit?: number) {
-// 		super(total, skip, limit);
-// 		this.data = data;
-// 	}
-
-// 	@ApiProperty({ type: [TaskResponse] })
-// 	data: TaskResponse[];
-// }
