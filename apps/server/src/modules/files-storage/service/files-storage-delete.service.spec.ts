@@ -9,6 +9,7 @@ import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
+import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { getPaths } from '../helper';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
@@ -45,7 +46,7 @@ describe('FilesStorageService delete methods', () => {
 			providers: [
 				FilesStorageService,
 				{
-					provide: S3ClientAdapter,
+					provide: FILES_STORAGE_S3_CONNECTION,
 					useValue: createMock<S3ClientAdapter>(),
 				},
 				{
@@ -68,7 +69,7 @@ describe('FilesStorageService delete methods', () => {
 		}).compile();
 
 		service = module.get(FilesStorageService);
-		storageClient = module.get(S3ClientAdapter);
+		storageClient = module.get(FILES_STORAGE_S3_CONNECTION);
 		fileRecordRepo = module.get(FileRecordRepo);
 	});
 

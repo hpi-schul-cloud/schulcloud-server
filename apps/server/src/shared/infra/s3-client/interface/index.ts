@@ -1,6 +1,7 @@
 import { Readable } from 'stream';
 
 export interface S3Config {
+	connectionName: string;
 	endpoint: string;
 	region: string;
 	bucket: string;

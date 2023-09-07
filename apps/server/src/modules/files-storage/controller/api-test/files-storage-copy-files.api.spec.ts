@@ -17,7 +17,7 @@ import {
 } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { FilesStorageTestModule } from '@src/modules/files-storage';
+import { FILES_STORAGE_S3_CONNECTION, FilesStorageTestModule } from '@src/modules/files-storage';
 import {
 	CopyFileParams,
 	CopyFilesOfParentParams,
@@ -90,7 +90,7 @@ describe(`${baseRouteName} (api)`, () => {
 		})
 			.overrideProvider(AntivirusService)
 			.useValue(createMock<AntivirusService>())
-			.overrideProvider(S3ClientAdapter)
+			.overrideProvider(FILES_STORAGE_S3_CONNECTION)
 			.useValue(createMock<S3ClientAdapter>())
 			.overrideGuard(JwtAuthGuard)
 			.useValue({

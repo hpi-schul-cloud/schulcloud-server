@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { LegacyLogger } from '@src/core/logger';
 import { subClass } from 'gm';
@@ -6,6 +6,7 @@ import { PassThrough } from 'stream';
 import { DownloadFileParams, PreviewParams } from '../controller/dto';
 import { FileRecord, PreviewStatus } from '../entity';
 import { ErrorType } from '../error';
+import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { createPreviewDirectoryPath, createPreviewFilePath, createPreviewNameHash } from '../helper';
 import { GetFileResponse, PreviewFileParams } from '../interface';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
@@ -15,7 +16,7 @@ import { FilesStorageService } from './files-storage.service';
 @Injectable()
 export class PreviewService {
 	constructor(
-		private readonly storageClient: S3ClientAdapter,
+		@Inject(FILES_STORAGE_S3_CONNECTION) private readonly storageClient: S3ClientAdapter,
 		private readonly fileStorageService: FilesStorageService,
 		private logger: LegacyLogger
 	) {
