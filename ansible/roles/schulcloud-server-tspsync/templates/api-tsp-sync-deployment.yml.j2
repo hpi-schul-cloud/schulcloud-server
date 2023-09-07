@@ -5,6 +5,9 @@ metadata:
   namespace: {{ NAMESPACE }}
   labels:
     app: api-tsp-sync
+{% if DOF_APP_DEPLOY_IMAGE_TAG is defined %}
+    cfgVersion: {{ DOF_APP_DEPLOY_IMAGE_TAG }}
+{% endif  %}
 spec:
   replicas: {{ API_TSP_REPLICAS|default("1", true) }}
   strategy:

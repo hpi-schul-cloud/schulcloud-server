@@ -5,6 +5,9 @@ metadata:
   namespace: {{ NAMESPACE }}
   labels:
     app: api-worker
+{% if DOF_APP_DEPLOY_IMAGE_TAG is defined %}
+    cfgVersion: {{ DOF_APP_DEPLOY_IMAGE_TAG }}
+{% endif  %}
 spec:
   replicas: {{ API_WORKER_REPLICAS|default("2", true) }}
   strategy:
