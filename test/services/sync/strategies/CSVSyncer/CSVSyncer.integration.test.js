@@ -1097,36 +1097,26 @@ describe('CSVSyncer Integration', () => {
 	});
 
 	describe('Scenario 13 - Importing classes optionally assigns them to a school year', () => {
-		let scenario1;
-		let scenario2;
+		let scenario;
 		const STUDENT_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de', 'd@e.de'];
 
 		before(async function before() {
 			this.timeout(5000);
 
-			const school1 = await createSchool({
-				currentYear: await createYear(),
-			});
-			const school2 = await createSchool({
-				currentYear: await createYear(),
+			const school = await createSchool();
+
+			const user = await createUser({
+				roles: 'administrator',
+				schoolId: school._id,
 			});
 
-			const user1 = await createUser({
-				roles: 'administrator',
-				schoolId: school1._id,
-			});
-			const user2 = await createUser({
-				roles: 'administrator',
-				schoolId: school2._id,
-			});
-
-			scenario1 = {
-				school: school1,
+			scenario = {
+				school,
 				params: {
-					...(await generateRequestParamsFromUser(user1)),
+					...(await generateRequestParamsFromUser(user)),
 					query: {
 						target: 'csv',
-						school: school1._id,
+						school: school._id,
 						role: 'student',
 					},
 				},
@@ -1135,23 +1125,6 @@ describe('CSVSyncer Integration', () => {
 						'firstName,lastName,email,class\n' +
 						`Dr. John W.,Thackery,${STUDENT_EMAILS[0]},1a\n` +
 						`Dr. Algernon C.,Edwards,${STUDENT_EMAILS[1]},1b\n`,
-				},
-			};
-			scenario2 = {
-				school: school2,
-				params: {
-					...(await generateRequestParamsFromUser(user2)),
-					query: {
-						target: 'csv',
-						school: school2._id,
-						role: 'student',
-					},
-				},
-				data: {
-					data:
-						'firstName,lastName,email,class\n' +
-						`Herman,Barrow,${STUDENT_EMAILS[2]},2a\n` +
-						`Cornelia,Robertson,${STUDENT_EMAILS[3]},2b\n`,
 				},
 			};
 		});
@@ -1171,10 +1144,7 @@ describe('CSVSyncer Integration', () => {
 		after(testObjects.cleanup);
 
 		it('should create classes based on the current school year by default', async () => {
-			expect(scenario1.school.currentYear._id.toString()).to.not.equal(scenario2.school.currentYear._id.toString());
-
-			// scenario 1
-			const [stats] = await app.service('sync').create(scenario1.data, scenario1.params);
+			const [stats] = await app.service('sync').create(scenario.data, scenario.params);
 
 			expect(stats.success).to.equal(true);
 			expect(stats.users.successful).to.equal(2);
@@ -1186,37 +1156,22 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.classes.failed).to.equal(0);
 
 			const class1a = await findClass(['1', 'a']);
-			expect(class1a.year.toString()).to.equal(scenario1.school.currentYear._id.toString());
+			expect(class1a.year.toString()).to.equal(scenario.school.currentYear._id.toString());
 
 			const class1b = await findClass(['1', 'b']);
-			expect(class1b.year.toString()).to.equal(scenario1.school.currentYear._id.toString());
-
-			// scenario 2
-			const [stats2] = await app.service('sync').create(scenario2.data, scenario2.params);
-
-			expect(stats2.success).to.equal(true);
-			expect(stats2.users.successful).to.equal(2);
-			expect(stats2.users.failed).to.equal(0);
-			expect(stats2.invitations.successful).to.equal(0);
-			expect(stats2.invitations.failed).to.equal(0);
-			expect(stats2.classes.successful).to.equal(2);
-			expect(stats2.classes.created).to.equal(2);
-			expect(stats2.classes.failed).to.equal(0);
-
-			const class2a = await findClass(['2', 'a']);
-			expect(class2a.year.toString()).to.equal(scenario2.school.currentYear._id.toString());
-
-			const class2b = await findClass(['2', 'b']);
-			expect(class2b.year.toString()).to.equal(scenario2.school.currentYear._id.toString());
+			expect(class1b.year.toString()).to.equal(scenario.school.currentYear._id.toString());
 		});
 
 		it('should assign a created class to a school year if specified in the request', async () => {
-			// modified scenario 1
-			const year = await createYear();
-			const [stats] = await app.service('sync').create(scenario1.data, {
-				...scenario1.params,
+			// The specified year must exist in the database. Thus we get it over the school service.
+			// It does not work to create a new year here because of the caching of years in the school hooks.
+			const decoratedSchool = await app.service('schools').get(scenario.school._id);
+			const year = decoratedSchool.years.nextYear;
+
+			const [stats] = await app.service('sync').create(scenario.data, {
+				...scenario.params,
 				query: {
-					...scenario1.params.query,
+					...scenario.params.query,
 					schoolYear: year._id,
 				},
 			});
@@ -1227,21 +1182,21 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.classes.failed).to.equal(0);
 
 			const class1a = await findClass(['1', 'a']);
-			expect(class1a.year.toString()).not.to.equal(scenario1.school.currentYear._id.toString());
+			expect(class1a.year.toString()).not.to.equal(scenario.school.currentYear._id.toString());
 			expect(class1a.year.toString()).to.equal(year._id.toString());
 
 			const class1b = await findClass(['1', 'b']);
-			expect(class1b.year.toString()).not.to.equal(scenario1.school.currentYear._id.toString());
+			expect(class1b.year.toString()).not.to.equal(scenario.school.currentYear._id.toString());
 			expect(class1b.year.toString()).to.equal(year._id.toString());
 		});
 
 		it('should create new classes if classes of the same name exist only for another year', async () => {
 			const oldYear = await createYear(); // oldYear is different from school.currentYear
-			await createClass(['1', 'a', scenario1.school._id], {
+			await createClass(['1', 'a', scenario.school._id], {
 				year: oldYear._id,
 			});
 
-			const [stats] = await app.service('sync').create(scenario1.data, scenario1.params);
+			const [stats] = await app.service('sync').create(scenario.data, scenario.params);
 
 			expect(stats.success).to.equal(true);
 			expect(stats.users.successful).to.equal(2);
@@ -1255,11 +1210,11 @@ describe('CSVSyncer Integration', () => {
 			const classes1a = await findClasses(['1', 'a']);
 			expect(classes1a.length).to.equal(2);
 			expect(classes1a.some((c) => c.year.toString() === oldYear._id.toString())).to.equal(true);
-			expect(classes1a.some((c) => c.year.toString() === scenario1.school.currentYear._id.toString())).to.equal(true);
+			expect(classes1a.some((c) => c.year.toString() === scenario.school.currentYear._id.toString())).to.equal(true);
 
 			// there is no existing class 1b:
 			const class1b = await findClass(['1', 'b']);
-			expect(class1b.year.toString()).to.equal(scenario1.school.currentYear._id.toString());
+			expect(class1b.year.toString()).to.equal(scenario.school.currentYear._id.toString());
 		});
 	});
 

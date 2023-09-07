@@ -3,16 +3,16 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Pseudonym, TeamEntity, UserDO } from '@shared/domain';
 import { TeamsRepo } from '@shared/repo';
-import { externalToolFactory, setupEntities, userDoFactory, pseudonymFactory } from '@shared/testing';
+import { externalToolFactory, pseudonymFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { IdToken } from '@src/modules/oauth-provider/interface/id-token';
 import { OauthScope } from '@src/modules/oauth-provider/interface/oauth-scope.enum';
 import { IdTokenService } from '@src/modules/oauth-provider/service/id-token.service';
 import { PseudonymService } from '@src/modules/pseudonym/service';
-import { UserService } from '@src/modules/user/service/user.service';
 import { ExternalTool } from '@src/modules/tool/external-tool/domain';
-import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
+import { UserService } from '@src/modules/user/service/user.service';
 import { IdTokenCreationLoggableException } from '../error/id-token-creation-exception.loggable';
+import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
 import resetAllMocks = jest.resetAllMocks;
 
 describe('IdTokenService', () => {
@@ -85,7 +85,7 @@ describe('IdTokenService', () => {
 
 				const tool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId();
 
-				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({ pseudonym: 'pseudonym' });
+				const pseudonym: Pseudonym = pseudonymFactory.build({ pseudonym: 'pseudonym' });
 
 				userService.findById.mockResolvedValue(user);
 				userService.getDisplayName.mockResolvedValue(displayName);
@@ -123,7 +123,7 @@ describe('IdTokenService', () => {
 
 				const tool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId();
 
-				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({ pseudonym: 'pseudonym' });
+				const pseudonym: Pseudonym = pseudonymFactory.build({ pseudonym: 'pseudonym' });
 
 				teamsRepo.findByUserId.mockResolvedValue([team]);
 				userService.findById.mockResolvedValue(user);
@@ -167,7 +167,7 @@ describe('IdTokenService', () => {
 
 				const tool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId();
 
-				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({ pseudonym: 'pseudonym' });
+				const pseudonym: Pseudonym = pseudonymFactory.build({ pseudonym: 'pseudonym' });
 
 				userService.findById.mockResolvedValue(user);
 				userService.getDisplayName.mockResolvedValue(displayName);
@@ -204,7 +204,7 @@ describe('IdTokenService', () => {
 
 				const tool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId();
 
-				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({ pseudonym: 'pseudonym' });
+				const pseudonym: Pseudonym = pseudonymFactory.build({ pseudonym: 'pseudonym' });
 
 				userService.findById.mockResolvedValue(user);
 				userService.getDisplayName.mockResolvedValue(displayName);
@@ -242,7 +242,7 @@ describe('IdTokenService', () => {
 
 				const tool: ExternalTool = externalToolFactory.withOauth2Config().build({ id: undefined });
 
-				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({ pseudonym: 'pseudonym' });
+				const pseudonym: Pseudonym = pseudonymFactory.build({ pseudonym: 'pseudonym' });
 
 				userService.findById.mockResolvedValue(user);
 				userService.getDisplayName.mockResolvedValue(displayName);

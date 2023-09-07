@@ -2,13 +2,14 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
-import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
+import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { createPreviewDirectoryPath, createPreviewFilePath, createPreviewNameHash } from '../helper';
 import { TestHelper } from '../helper/test-helper';
 import { PreviewWidth } from '../interface';
@@ -75,7 +76,7 @@ describe('PreviewService', () => {
 					useValue: createMock<FilesStorageService>(),
 				},
 				{
-					provide: S3ClientAdapter,
+					provide: FILES_STORAGE_S3_CONNECTION,
 					useValue: createMock<S3ClientAdapter>(),
 				},
 				{
@@ -87,7 +88,7 @@ describe('PreviewService', () => {
 
 		previewService = module.get(PreviewService);
 		fileStorageService = module.get(FilesStorageService);
-		s3ClientAdapter = module.get(S3ClientAdapter);
+		s3ClientAdapter = module.get(FILES_STORAGE_S3_CONNECTION);
 	});
 
 	beforeEach(() => {

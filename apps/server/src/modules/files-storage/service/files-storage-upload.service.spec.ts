@@ -4,15 +4,16 @@ import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
 import StreamMimeType from 'stream-mime-type-cjs/stream-mime-type-cjs-index';
-import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
 import { FileDto } from '../dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
+import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { createFileRecord, resolveFileNameDuplicates } from '../helper';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
@@ -57,7 +58,7 @@ describe('FilesStorageService upload methods', () => {
 			providers: [
 				FilesStorageService,
 				{
-					provide: S3ClientAdapter,
+					provide: FILES_STORAGE_S3_CONNECTION,
 					useValue: createMock<S3ClientAdapter>(),
 				},
 				{
@@ -80,7 +81,7 @@ describe('FilesStorageService upload methods', () => {
 		}).compile();
 
 		service = module.get(FilesStorageService);
-		storageClient = module.get(S3ClientAdapter);
+		storageClient = module.get(FILES_STORAGE_S3_CONNECTION);
 		fileRecordRepo = module.get(FileRecordRepo);
 		antivirusService = module.get(AntivirusService);
 		configService = module.get(ConfigService);
@@ -373,9 +374,7 @@ describe('FilesStorageService upload methods', () => {
 					}
 				});
 
-				antivirusService.send.mockImplementationOnce(() => {
-					throw error;
-				});
+				antivirusService.send.mockRejectedValueOnce(error);
 
 				return { params, file, userId, error };
 			};
