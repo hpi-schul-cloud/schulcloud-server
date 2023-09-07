@@ -287,7 +287,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SubmissionItem } from &#x27;@shared/domain&#x27;;
-import { SubmissionItemResponse, TimestampsResponse } from &#x27;../dto&#x27;;
+import { SubmissionItemResponse, TimestampsResponse, UserDataResponse } from &#x27;../dto&#x27;;
 
 export class SubmissionItemResponseMapper {
 	private static instance: SubmissionItemResponseMapper;
@@ -302,13 +302,18 @@ export class SubmissionItemResponseMapper {
 
 	public mapToResponse(submissionItem: SubmissionItem): SubmissionItemResponse {
 		const result &#x3D; new SubmissionItemResponse({
+			completed: submissionItem.completed,
 			id: submissionItem.id,
 			timestamps: new TimestampsResponse({
 				lastUpdatedAt: submissionItem.updatedAt,
 				createdAt: submissionItem.createdAt,
 			}),
-			completed: submissionItem.completed,
-			userId: submissionItem.userId,
+			userData: new UserDataResponse({
+				// TODO: put valid user info here which comes from the submission owner
+				firstName: &#x27;John&#x27;,
+				lastName: &#x27;Mr Doe&#x27;,
+				userId: submissionItem.userId,
+			}),
 		});
 
 		return result;
