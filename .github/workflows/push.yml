@@ -61,7 +61,7 @@ jobs:
 
       - name: Build and push ${{ github.repository }}
         if: ${{ env.IMAGE_EXISTS == 0 }}
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v4.1
         with:
           context: .
           file: ./Dockerfile
@@ -93,7 +93,7 @@ jobs:
 
       - name: Build and push ${{ github.repository }} (file storage)
         if: ${{ env.IMAGE_EXISTS == 0 }}
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v4.1
         with:
           build-args: |
             BASE_IMAGE=ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }}
