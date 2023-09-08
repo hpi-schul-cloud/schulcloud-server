@@ -24,13 +24,13 @@
 <title>cluster_PseudonymModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 813,-268 813,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_PseudonymModule_exports</title>
-<polygon fill="none" stroke="black" points="301,-208 301,-260 443,-260 443,-208 301,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_PseudonymModule_providers</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 805,-130 805,-78 16,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_PseudonymModule_exports</title>
+<polygon fill="none" stroke="black" points="301,-208 301,-260 443,-260 443,-208 301,-208"/>
 </g>
 <!-- PseudonymService  -->
 <g id="node1" class="node">
