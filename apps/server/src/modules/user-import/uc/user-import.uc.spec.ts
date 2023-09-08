@@ -17,7 +17,8 @@ import {
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
-import { federalStateFactory, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
+import { importUserFactory, schoolFactory, userFactory } from '@shared/testing';
+import { federalStateFactory } from '@shared/testing/factory/domainobject/federal-state.do.factory';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AuthorizationService } from '@src/modules/authorization';
@@ -124,7 +125,7 @@ describe('[ImportUserModule]', () => {
 			const inUserMigration = school ? school.inUserMigration : undefined;
 			const systems =
 				school && school.systems.isInitialized() ? school.systems.getItems().map((system: System) => system.id) : [];
-			const federalState = school ? school.federalState : federalStateFactory.build();
+			const federalState = federalStateFactory.build();
 
 			return new SchoolDO({
 				id,

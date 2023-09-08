@@ -1,5 +1,5 @@
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { federalStateFactory } from '../federal-state.factory';
+import { federalStateDoFactory } from './federal-state.do.factory';
 import { schoolYearFactory } from '../schoolyear.factory';
 import { DoBaseFactory } from './do-base.factory';
 
@@ -18,7 +18,7 @@ export const schoolDOFactory = SchoolFactory.define(SchoolDO, ({ sequence }) => 
 		previousExternalId: '456',
 		officialSchoolNumber: '789',
 		systems: [],
-		federalState: federalStateFactory.build(),
+		federalState: federalStateDoFactory.build(),
 		schoolYear: schoolYearFactory.build(),
 	};
 });

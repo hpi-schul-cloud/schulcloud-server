@@ -1,12 +1,15 @@
-import { County, FederalStateEntity, IFederalStateProperties } from '@shared/domain';
+import { FederalStateDO, FederalStateProps } from '@src/modules/federal-state/domainobject/federal-state.do';
+import { ObjectId } from 'bson';
+import { County } from '@shared/domain';
+import { DomainObjectFactory } from './domain-object.factory';
 
-import { BaseFactory } from './base.factory';
-
-export const federalStateFactory = BaseFactory.define<FederalStateEntity, IFederalStateProperties>(
-	FederalStateEntity,
+export const federalStateDoFactory = DomainObjectFactory.define<FederalStateDO, FederalStateProps>(
+	FederalStateDO,
 	() => {
 		return {
 			name: 'Hamburg',
+			id: new ObjectId().toHexString(),
+
 			abbreviation: 'HH',
 			logoUrl:
 				'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Coat_of_arms_of_Hamburg.svg/1200px-Coat_of_arms_of_Hamburg.svg.png',
