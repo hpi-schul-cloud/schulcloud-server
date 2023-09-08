@@ -109,7 +109,7 @@ describe('UserLoginMigrationController (API)', () => {
 						{
 							sourceSystemId: sourceSystem.id,
 							targetSystemId: targetSystem.id,
-							startedAt: userLoginMigration.startedAt.toISOString(),
+							startedAt: userLoginMigration.startedAt?.toISOString(),
 							closedAt: userLoginMigration.closedAt?.toISOString(),
 							finishedAt: userLoginMigration.finishedAt?.toISOString(),
 							mandatorySince: userLoginMigration.mandatorySince?.toISOString(),
@@ -173,7 +173,7 @@ describe('UserLoginMigrationController (API)', () => {
 				expect(response.body).toEqual({
 					sourceSystemId: sourceSystem.id,
 					targetSystemId: targetSystem.id,
-					startedAt: userLoginMigration.startedAt.toISOString(),
+					startedAt: userLoginMigration.startedAt?.toISOString(),
 					closedAt: userLoginMigration.closedAt?.toISOString(),
 					finishedAt: userLoginMigration.finishedAt?.toISOString(),
 					mandatorySince: userLoginMigration.mandatorySince?.toISOString(),
@@ -1030,7 +1030,7 @@ describe('UserLoginMigrationController (API)', () => {
 				expect(response.body).toEqual({
 					targetSystemId: userLoginMigration.targetSystem.id,
 					sourceSystemId: userLoginMigration.sourceSystem?.id,
-					startedAt: userLoginMigration.startedAt.toISOString(),
+					startedAt: userLoginMigration.startedAt?.toISOString(),
 					closedAt: expect.any(String),
 					finishedAt: expect.any(String),
 				});
@@ -1109,7 +1109,7 @@ describe('UserLoginMigrationController (API)', () => {
 				expect(response.body).toEqual({
 					targetSystemId: userLoginMigration.targetSystem.id,
 					sourceSystemId: userLoginMigration.sourceSystem?.id,
-					startedAt: userLoginMigration.startedAt.toISOString(),
+					startedAt: userLoginMigration.startedAt?.toISOString(),
 					closedAt: userLoginMigration.closedAt?.toISOString(),
 				});
 			});

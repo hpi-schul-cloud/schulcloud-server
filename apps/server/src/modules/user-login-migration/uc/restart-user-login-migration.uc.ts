@@ -39,8 +39,6 @@ export class RestartUserLoginMigrationUc {
 			userLoginMigration = await this.userLoginMigrationService.restartMigration(schoolId);
 
 			this.logger.info(new UserLoginMigrationStartLoggable(userId, schoolId));
-		} else {
-			// Do nothing, if migration is already started but not stopped.
 		}
 
 		return userLoginMigration;
