@@ -1,18 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain';
-import { GroupTypes } from '@src/modules/group';
 import { Logger } from '@src/core/logger';
-import { ExternalSchoolDto, ExternalUserDto, ExternalGroupDto, ExternalGroupUserDto } from '../../dto';
+import { GroupTypes } from '@src/modules/group';
+import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
+import { GroupRoleUnknownLoggable } from '../../loggable';
 import {
-	SanisResponse,
-	SanisRole,
 	SanisGroupRole,
 	SanisGroupType,
 	SanisGruppenResponse,
-	SanisGruppenzugehoerigkeitResponse,
+	SanisResponse,
+	SanisRole,
 	SanisSonstigeGruppenzugehoerigeResponse,
 } from './response';
-import { GroupRoleUnknownLoggable } from '../../loggable';
 
 const RoleMapping: Record<SanisRole, RoleName> = {
 	[SanisRole.LEHR]: RoleName.TEACHER,
@@ -66,8 +65,12 @@ export class SanisResponseMapper {
 		return RoleMapping[source.personenkontexte[0].rolle];
 	}
 
-	mapToExternalGroupDtos(source: SanisResponse): ExternalGroupDto[] {
-		const groups: SanisGruppenResponse[] = source.personenkontexte[0].gruppen;
+	mapToExternalGroupDtos(source: SanisResponse): ExternalGroupDto[] | undefined {
+		const groups: SanisGruppenResponse[] | undefined = source.personenkontexte[0].gruppen;
+
+		if (!groups) {
+			return undefined;
+		}
 
 		const mapped: ExternalGroupDto[] = groups
 			.map((group): ExternalGroupDto | null => {
@@ -93,9 +96,8 @@ export class SanisResponseMapper {
 					name: group.gruppe.bezeichnung,
 					type: groupType,
 					externalOrganizationId: group.gruppe.orgid,
-					// TODO: default laufzeit setzen
-					from: group.gruppe.laufzeit.von,
-					until: group.gruppe.laufzeit.bis,
+					from: group.gruppe.laufzeit?.von,
+					until: group.gruppe.laufzeit?.bis,
 					externalId: group.gruppe.id,
 					users: gruppenzugehoerigkeiten,
 				};

@@ -9,6 +9,7 @@ import { UUID } from 'bson';
 import { of } from 'rxjs';
 import { RoleName } from '@shared/domain';
 import { GroupTypes } from '@src/modules/group';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import {
 	ExternalGroupDto,
 	ExternalSchoolDto,
@@ -69,6 +70,57 @@ describe('SanisStrategy', () => {
 		jest.resetAllMocks();
 	});
 
+	const setupSanisResponse = () => {
+		return {
+			pid: 'aef1f4fd-c323-466e-962b-a84354c0e713',
+			person: {
+				name: {
+					vorname: 'Hans',
+					familienname: 'Peter',
+				},
+				geschlecht: 'any',
+				lokalisierung: 'sn_ZW',
+				vertrauensstufe: '0',
+			},
+			personenkontexte: [
+				{
+					id: new UUID().toString(),
+					rolle: SanisRole.LEIT,
+					organisation: {
+						id: new UUID('df66c8e6-cfac-40f7-b35b-0da5d8ee680e').toString(),
+						name: 'schoolName',
+						typ: 'SCHULE',
+						kennung: 'Kennung',
+					},
+					personenstatus: 'dead',
+					gruppen: [
+						{
+							gruppe: {
+								id: new UUID().toString(),
+								bezeichnung: 'bezeichnung',
+								typ: SanisGroupType.CLASS,
+								laufzeit: {
+									von: new Date(2023, 1, 8),
+									bis: new Date(2024, 7, 31),
+								},
+								orgid: 'orgid',
+							},
+							gruppenzugehoerigkeit: {
+								rollen: [SanisGroupRole.TEACHER],
+							},
+							sonstige_gruppenzugehoerige: [
+								{
+									rollen: [SanisGroupRole.STUDENT],
+									ktid: 'ktid',
+								},
+							],
+						},
+					],
+				},
+			],
+		};
+	};
+
 	describe('getType is called', () => {
 		describe('when it is called', () => {
 			it('should return type SANIS', () => {
@@ -80,105 +132,58 @@ describe('SanisStrategy', () => {
 	});
 
 	describe('getData is called', () => {
-		const setup = () => {
-			const provisioningUrl = 'sanisProvisioningUrl';
-			const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
-				system: new ProvisioningSystemDto({
-					systemId: 'systemId',
-					provisioningStrategy: SystemProvisioningStrategy.SANIS,
-					provisioningUrl,
-				}),
-				idToken: 'sanisIdToken',
-				accessToken: 'sanisAccessToken',
-			});
-			const sanisResponse: SanisResponse = {
-				pid: 'aef1f4fd-c323-466e-962b-a84354c0e713',
-				person: {
-					name: {
-						vorname: 'Hans',
-						familienname: 'Peter',
-					},
-					geschlecht: 'any',
-					lokalisierung: 'sn_ZW',
-					vertrauensstufe: '0',
-				},
-				personenkontexte: [
-					{
-						id: new UUID().toString(),
-						rolle: SanisRole.LEIT,
-						organisation: {
-							id: new UUID('df66c8e6-cfac-40f7-b35b-0da5d8ee680e').toString(),
-							name: 'schoolName',
-							typ: 'SCHULE',
-							kennung: 'Kennung',
-						},
-						personenstatus: 'dead',
-						gruppen: [
+		describe('when fetching data from sanis', () => {
+			const setup = () => {
+				const provisioningUrl = 'sanisProvisioningUrl';
+				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'systemId',
+						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						provisioningUrl,
+					}),
+					idToken: 'sanisIdToken',
+					accessToken: 'sanisAccessToken',
+				});
+				const sanisResponse: SanisResponse = setupSanisResponse();
+				const user: ExternalUserDto = new ExternalUserDto({
+					externalId: 'externalUserId',
+				});
+				const school: ExternalSchoolDto = new ExternalSchoolDto({
+					externalId: 'externalSchoolId',
+					name: 'schoolName',
+				});
+				const sanisGruppeResponse: SanisGruppenResponse = sanisResponse.personenkontexte[0].gruppen![0]!;
+				const groups: ExternalGroupDto[] = [
+					new ExternalGroupDto({
+						name: sanisGruppeResponse.gruppe.bezeichnung,
+						externalId: sanisGruppeResponse.gruppe.id,
+						type: GroupTypes.CLASS,
+						externalOrganizationId: sanisGruppeResponse.gruppe.orgid,
+						from: sanisGruppeResponse.gruppe.laufzeit.von,
+						until: sanisGruppeResponse.gruppe.laufzeit.bis,
+						users: [
 							{
-								gruppe: {
-									id: new UUID().toString(),
-									bezeichnung: 'bezeichnung',
-									typ: SanisGroupType.CLASS,
-									laufzeit: {
-										von: new Date(2023, 1, 8),
-										bis: new Date(2024, 7, 31),
-									},
-									orgid: 'orgid',
-								},
-								gruppenzugehoerigkeiten: [
-									{
-										id: new UUID().toString(),
-										rollen: [SanisGroupRole.CLASS_LEADER],
-										ktid: 'ktid',
-										von: new Date(2023, 1, 8),
-										bis: new Date(2024, 7, 31),
-									},
-								],
+								externalUserId: sanisResponse.personenkontexte[0].id,
+								roleName: RoleName.TEACHER,
 							},
 						],
-					},
-				],
+					}),
+				];
+
+				httpService.get.mockReturnValue(of(createAxiosResponse(sanisResponse)));
+				mapper.mapToExternalUserDto.mockReturnValue(user);
+				mapper.mapToExternalSchoolDto.mockReturnValue(school);
+				mapper.mapToExternalGroupDtos.mockReturnValue(groups);
+
+				return {
+					input,
+					provisioningUrl,
+					user,
+					school,
+					groups,
+				};
 			};
-			const user: ExternalUserDto = new ExternalUserDto({
-				externalId: 'externalUserId',
-			});
-			const school: ExternalSchoolDto = new ExternalSchoolDto({
-				externalId: 'externalSchoolId',
-				name: 'schoolName',
-			});
-			const sanisGruppeResponse: SanisGruppenResponse = sanisResponse.personenkontexte[0].gruppen[0];
-			const groups: ExternalGroupDto[] = [
-				new ExternalGroupDto({
-					name: sanisGruppeResponse.gruppe.bezeichnung,
-					externalId: sanisGruppeResponse.gruppe.id,
-					type: GroupTypes.CLASS,
-					externalOrganizationId: sanisGruppeResponse.gruppe.orgid,
-					from: sanisGruppeResponse.gruppe.laufzeit.von,
-					until: sanisGruppeResponse.gruppe.laufzeit.bis,
-					users: [
-						{
-							externalUserId: sanisGruppeResponse.gruppenzugehoerigkeiten[0].ktid,
-							roleName: RoleName.TEACHER,
-						},
-					],
-				}),
-			];
 
-			httpService.get.mockReturnValue(of(createAxiosResponse(sanisResponse)));
-			mapper.mapToExternalUserDto.mockReturnValue(user);
-			mapper.mapToExternalSchoolDto.mockReturnValue(school);
-			mapper.mapToExternalGroupDtos.mockReturnValue(groups);
-
-			return {
-				input,
-				provisioningUrl,
-				user,
-				school,
-				groups,
-			};
-		};
-
-		describe('when fetching data from sanis', () => {
 			it('should make a Http-GET-Request to the provisioning url of sanis with an access token', async () => {
 				const { input, provisioningUrl } = setup();
 
@@ -207,10 +212,95 @@ describe('SanisStrategy', () => {
 			});
 		});
 
+		describe('when FEATURE_SANIS_GROUP_PROVISIONING_ENABLED is false', () => {
+			const setup = () => {
+				const provisioningUrl = 'sanisProvisioningUrl';
+				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'systemId',
+						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						provisioningUrl,
+					}),
+					idToken: 'sanisIdToken',
+					accessToken: 'sanisAccessToken',
+				});
+				const sanisResponse: SanisResponse = setupSanisResponse();
+				const user: ExternalUserDto = new ExternalUserDto({
+					externalId: 'externalUserId',
+				});
+				const school: ExternalSchoolDto = new ExternalSchoolDto({
+					externalId: 'externalSchoolId',
+					name: 'schoolName',
+				});
+
+				httpService.get.mockReturnValue(of(createAxiosResponse(sanisResponse)));
+				mapper.mapToExternalUserDto.mockReturnValue(user);
+				mapper.mapToExternalSchoolDto.mockReturnValue(school);
+
+				return {
+					input,
+				};
+			};
+
+			it('should not call mapToExternalGroupDtos', async () => {
+				const { input } = setup();
+				Configuration.set('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED', 'false');
+
+				await strategy.getData(input);
+
+				expect(mapper.mapToExternalGroupDtos).not.toHaveBeenCalled();
+			});
+		});
+
 		describe('when the provided system has no provisioning url', () => {
+			const setup = () => {
+				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'systemId',
+						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						provisioningUrl: undefined,
+					}),
+					idToken: 'sanisIdToken',
+					accessToken: 'sanisAccessToken',
+				});
+				const sanisResponse: SanisResponse = setupSanisResponse();
+				const user: ExternalUserDto = new ExternalUserDto({
+					externalId: 'externalUserId',
+				});
+				const school: ExternalSchoolDto = new ExternalSchoolDto({
+					externalId: 'externalSchoolId',
+					name: 'schoolName',
+				});
+				const sanisGruppeResponse: SanisGruppenResponse = sanisResponse.personenkontexte[0].gruppen![0]!;
+				const groups: ExternalGroupDto[] = [
+					new ExternalGroupDto({
+						name: sanisGruppeResponse.gruppe.bezeichnung,
+						externalId: sanisGruppeResponse.gruppe.id,
+						type: GroupTypes.CLASS,
+						externalOrganizationId: sanisGruppeResponse.gruppe.orgid,
+						from: sanisGruppeResponse.gruppe.laufzeit.von,
+						until: sanisGruppeResponse.gruppe.laufzeit.bis,
+						users: [
+							{
+								externalUserId: sanisResponse.personenkontexte[0].id,
+								roleName: RoleName.TEACHER,
+							},
+						],
+					}),
+				];
+
+				httpService.get.mockReturnValue(of(createAxiosResponse(sanisResponse)));
+				mapper.mapToExternalUserDto.mockReturnValue(user);
+				mapper.mapToExternalSchoolDto.mockReturnValue(school);
+				mapper.mapToExternalGroupDtos.mockReturnValue(groups);
+
+				return {
+					input,
+				};
+			};
+
 			it('should throw an InternalServerErrorException', async () => {
 				const { input } = setup();
-				input.system.provisioningUrl = undefined;
 
 				const promise: Promise<OauthDataDto> = strategy.getData(input);
 
@@ -219,13 +309,56 @@ describe('SanisStrategy', () => {
 		});
 
 		describe('when role from sanis is admin', () => {
-			it('should add teacher and admin svs role to externalUser', async () => {
-				const { input } = setup();
+			const setup = () => {
+				const provisioningUrl = 'sanisProvisioningUrl';
+				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'systemId',
+						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						provisioningUrl,
+					}),
+					idToken: 'sanisIdToken',
+					accessToken: 'sanisAccessToken',
+				});
+				const sanisResponse: SanisResponse = setupSanisResponse();
 				const user = new ExternalUserDto({
 					externalId: 'externalSchoolId',
 					roles: [RoleName.ADMINISTRATOR],
 				});
+				const school: ExternalSchoolDto = new ExternalSchoolDto({
+					externalId: 'externalSchoolId',
+					name: 'schoolName',
+				});
+				const sanisGruppeResponse: SanisGruppenResponse = sanisResponse.personenkontexte[0].gruppen![0]!;
+				const groups: ExternalGroupDto[] = [
+					new ExternalGroupDto({
+						name: sanisGruppeResponse.gruppe.bezeichnung,
+						externalId: sanisGruppeResponse.gruppe.id,
+						type: GroupTypes.CLASS,
+						externalOrganizationId: sanisGruppeResponse.gruppe.orgid,
+						from: sanisGruppeResponse.gruppe.laufzeit.von,
+						until: sanisGruppeResponse.gruppe.laufzeit.bis,
+						users: [
+							{
+								externalUserId: sanisResponse.personenkontexte[0].id,
+								roleName: RoleName.TEACHER,
+							},
+						],
+					}),
+				];
+
+				httpService.get.mockReturnValue(of(createAxiosResponse(sanisResponse)));
 				mapper.mapToExternalUserDto.mockReturnValue(user);
+				mapper.mapToExternalSchoolDto.mockReturnValue(school);
+				mapper.mapToExternalGroupDtos.mockReturnValue(groups);
+
+				return {
+					input,
+				};
+			};
+
+			it('should add teacher and admin svs role to externalUser', async () => {
+				const { input } = setup();
 
 				const result: OauthDataDto = await strategy.getData(input);
 

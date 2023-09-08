@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
@@ -49,9 +50,11 @@ export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
 		this.addTeacherRoleIfAdmin(externalUser);
 
 		const externalSchool: ExternalSchoolDto = this.responseMapper.mapToExternalSchoolDto(axiosResponse.data);
-		const externalGroups: ExternalGroupDto[] | undefined = this.responseMapper.mapToExternalGroupDtos(
-			axiosResponse.data
-		);
+
+		let externalGroups: ExternalGroupDto[] | undefined;
+		if (Configuration.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED')) {
+			externalGroups = this.responseMapper.mapToExternalGroupDtos(axiosResponse.data);
+		}
 
 		const oauthData: OauthDataDto = new OauthDataDto({
 			system: input.system,

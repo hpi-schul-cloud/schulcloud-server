@@ -5,7 +5,14 @@ import { Logger } from '@src/core/logger';
 import { GroupTypes } from '@src/modules/group';
 import { UUID } from 'bson';
 import { ExternalGroupDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
-import { SanisGroupRole, SanisGroupType, SanisGruppenResponse, SanisResponse, SanisRole } from './response';
+import {
+	SanisGroupRole,
+	SanisGroupType,
+	SanisGruppenResponse,
+	SanisPersonenkontextResponse,
+	SanisResponse,
+	SanisRole,
+} from './response';
 import { SanisResponseMapper } from './sanis-response.mapper';
 
 describe('SanisResponseMapper', () => {
@@ -64,11 +71,11 @@ describe('SanisResponseMapper', () => {
 								orgid: 'orgid',
 							},
 							gruppenzugehoerigkeit: {
-								rollen: [SanisGroupRole.CLASS_LEADER],
+								rollen: [SanisGroupRole.TEACHER],
 							},
 							sonstige_gruppenzugehoerige: [
 								{
-									rollen: [SanisGroupRole.CLASS_LEADER],
+									rollen: [SanisGroupRole.STUDENT],
 									ktid: 'ktid',
 								},
 							],
@@ -119,23 +126,44 @@ describe('SanisResponseMapper', () => {
 	});
 
 	describe('mapToExternalGroupDtos', () => {
+		describe('when no group is given', () => {
+			const setup = () => {
+				const { sanisResponse } = setupSanisResponse();
+				sanisResponse.personenkontexte[0].gruppen = undefined;
+
+				return {
+					sanisResponse,
+				};
+			};
+
+			it('should return undefined', () => {
+				const { sanisResponse } = setup();
+
+				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
+
+				expect(result).toBeUndefined();
+			});
+		});
+
 		describe('when group type is given', () => {
 			const setup = () => {
 				const { sanisResponse } = setupSanisResponse();
-				const group: SanisGruppenResponse = sanisResponse.personenkontexte[0].gruppen[0];
+				const personenkontext: SanisPersonenkontextResponse = sanisResponse.personenkontexte[0];
+				const group: SanisGruppenResponse = personenkontext.gruppen![0];
 
 				return {
 					sanisResponse,
 					group,
+					personenkontext,
 				};
 			};
 
 			it('should map the sanis response to external group dtos', () => {
-				const { sanisResponse, group } = setup();
+				const { sanisResponse, group, personenkontext } = setup();
 
 				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
 
-				expect(result[0]).toEqual<ExternalGroupDto>({
+				expect(result![0]).toEqual<ExternalGroupDto>({
 					name: group.gruppe.bezeichnung,
 					type: GroupTypes.CLASS,
 					externalOrganizationId: group.gruppe.orgid,
@@ -145,6 +173,10 @@ describe('SanisResponseMapper', () => {
 					users: [
 						{
 							externalUserId: group.sonstige_gruppenzugehoerige[0].ktid,
+							roleName: RoleName.STUDENT,
+						},
+						{
+							externalUserId: personenkontext.id,
 							roleName: RoleName.TEACHER,
 						},
 					],
@@ -155,7 +187,7 @@ describe('SanisResponseMapper', () => {
 		describe('when no group type is provided', () => {
 			const setup = () => {
 				const { sanisResponse } = setupSanisResponse();
-				sanisResponse.personenkontexte[0].gruppen[0].gruppe.typ = SanisGroupType.OTHER;
+				sanisResponse.personenkontexte[0].gruppen![0]!.gruppe.typ = SanisGroupType.OTHER;
 
 				return {
 					sanisResponse,
@@ -174,7 +206,7 @@ describe('SanisResponseMapper', () => {
 		describe('when a group role mapping is missing', () => {
 			const setup = () => {
 				const { sanisResponse } = setupSanisResponse();
-				sanisResponse.personenkontexte[0].gruppen[0].sonstige_gruppenzugehoerige[0].rollen = [
+				sanisResponse.personenkontexte[0].gruppen![0]!.sonstige_gruppenzugehoerige[0].rollen = [
 					SanisGroupRole.SCHOOL_SUPPORT,
 				];
 
@@ -183,12 +215,12 @@ describe('SanisResponseMapper', () => {
 				};
 			};
 
-			it('should return skip the user', () => {
+			it('should return only users with known roles', () => {
 				const { sanisResponse } = setup();
 
 				const result: ExternalGroupDto[] | undefined = mapper.mapToExternalGroupDtos(sanisResponse);
 
-				expect(result[0].users).toHaveLength(0);
+				expect(result![0].users).toHaveLength(1);
 			});
 		});
 	});
