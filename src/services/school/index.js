@@ -7,7 +7,6 @@ const schoolModels = require('./model');
 const hooks = require('./hooks');
 const publicSchoolsHooks = require('./hooks/publicSchools.hooks');
 const schoolGroupHooks = require('./hooks/schoolGroup.hooks');
-const yearsHooks = require('./hooks/years.hooks');
 const { SchoolMaintenanceService } = require('./maintenance');
 const { HandlePermissions, handlePermissionsHooks } = require('./services/permissions');
 const { SchoolsListService } = require('./services/schoolsList');
@@ -62,21 +61,6 @@ module.exports = function schoolServices() {
 	);
 	const schoolGroupService = app.service('/schoolGroup');
 	schoolGroupService.hooks(schoolGroupHooks);
-
-	/* year Service */
-	app.use(
-		'/years',
-		service({
-			Model: schoolModels.yearModel,
-			paginate: {
-				default: 500,
-				max: 5000,
-			},
-			lean: true,
-		})
-	);
-	const yearService = app.service('/years');
-	yearService.hooks(yearsHooks);
 
 	/* gradeLevel Service */
 	app.use(
