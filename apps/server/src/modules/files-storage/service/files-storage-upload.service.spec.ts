@@ -13,6 +13,7 @@ import { FileRecordParams } from '../controller/dto';
 import { FileDto } from '../dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
+import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { createFileRecord, resolveFileNameDuplicates } from '../helper';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
@@ -57,7 +58,7 @@ describe('FilesStorageService upload methods', () => {
 			providers: [
 				FilesStorageService,
 				{
-					provide: S3ClientAdapter,
+					provide: FILES_STORAGE_S3_CONNECTION,
 					useValue: createMock<S3ClientAdapter>(),
 				},
 				{
@@ -80,7 +81,7 @@ describe('FilesStorageService upload methods', () => {
 		}).compile();
 
 		service = module.get(FilesStorageService);
-		storageClient = module.get(S3ClientAdapter);
+		storageClient = module.get(FILES_STORAGE_S3_CONNECTION);
 		fileRecordRepo = module.get(FileRecordRepo);
 		antivirusService = module.get(AntivirusService);
 		configService = module.get(ConfigService);

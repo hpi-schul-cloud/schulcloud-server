@@ -58,6 +58,10 @@
 			{
 				"title": "Code Style",
 				"file": "code-style.md"
+			},
+			{
+				"title": "S3ClientModule",
+				"file": "../src/shared/infra/s3-client/README.md"
 			}
 		]
 	}
