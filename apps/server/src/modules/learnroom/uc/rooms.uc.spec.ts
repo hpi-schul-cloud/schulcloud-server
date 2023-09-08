@@ -89,6 +89,7 @@ describe('rooms usecase', () => {
 				title: room.name,
 				elements: [],
 				isArchived: room.isFinished(),
+				usersList: room.getStudentUsers(),
 			};
 
 			board.syncBoardElementReferences([...lessons, ...tasks]);

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Course, TaskWithStatusVo } from '@shared/domain';
+import { UserInfoMapper } from '@src/modules/news/mapper/user-info.mapper';
 import {
 	BoardElementResponse,
 	BoardLessonResponse,
@@ -14,6 +15,7 @@ import { BoardTaskStatusMapper } from './board-taskStatus.mapper';
 export class RoomBoardResponseMapper {
 	mapToResponse(board: RoomBoardDTO): SingleColumnBoardResponse {
 		const elements = this.mapBoardElements(board);
+		const usersList = board.usersList.map((user) => UserInfoMapper.mapToResponse(user));
 
 		const mapped = new SingleColumnBoardResponse({
 			roomId: board.roomId,
@@ -21,6 +23,7 @@ export class RoomBoardResponseMapper {
 			displayColor: board.displayColor,
 			elements,
 			isArchived: board.isArchived,
+			usersList,
 		});
 
 		return mapped;

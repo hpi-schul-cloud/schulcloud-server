@@ -1,4 +1,4 @@
-import { EntityId, TaskWithStatusVo } from '@shared/domain';
+import { EntityId, TaskWithStatusVo, User } from '@shared/domain';
 
 export type RoomBoardDTO = {
 	roomId: string;
@@ -6,6 +6,7 @@ export type RoomBoardDTO = {
 	title: string;
 	elements: RoomBoardElementDTO[];
 	isArchived: boolean;
+	usersList: User[];
 };
 
 export enum RoomBoardElementTypes {

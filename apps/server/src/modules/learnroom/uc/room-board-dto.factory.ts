@@ -178,6 +178,7 @@ class DtoCreator {
 			title: this.room.name,
 			elements,
 			isArchived: this.room.isFinished(),
+			usersList: this.room.getStudentUsers(),
 		};
 		return dto;
 	}

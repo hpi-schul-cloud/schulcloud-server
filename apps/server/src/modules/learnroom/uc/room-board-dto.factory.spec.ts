@@ -87,6 +87,17 @@ describe(RoomBoardDTOFactory.name, () => {
 			expect(result.title).toEqual(room.name);
 		});
 
+		it('should set usersList', () => {
+			const teacher = userFactory.buildWithId();
+			const student = userFactory.buildWithId();
+			const room = courseFactory.buildWithId({ teachers: [teacher], students: [student] });
+			const board = boardFactory.buildWithId({ course: room });
+
+			const result = mapper.createDTO({ room, board, user: teacher });
+			const expectedUsers = room.students.getItems();
+			expect(result.usersList).toEqual(expectedUsers);
+		});
+
 		describe('when board contains allowed tasks', () => {
 			let teacher: User;
 			let student: User;

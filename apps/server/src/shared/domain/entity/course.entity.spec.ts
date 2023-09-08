@@ -214,6 +214,50 @@ describe('CourseEntity', () => {
 		});
 	});
 
+	describe('getStudentUsers is called', () => {
+		describe('when students exist', () => {
+			const setup = () => {
+				const student1 = userFactory.buildWithId();
+				const student2 = userFactory.buildWithId();
+				const student3 = userFactory.buildWithId();
+				const students = [student1, student2, student3];
+				const studentUsers = [student1, student2, student3];
+
+				const course = courseFactory.build({ students });
+
+				return { course, studentUsers };
+			};
+
+			it('should be return the user objects of the students.', () => {
+				const { course, studentUsers } = setup();
+
+				const result = course.getStudentUsers();
+
+				expect(result.length).toEqual(3);
+				expect(result).toContain(studentUsers[0]);
+				expect(result).toContain(studentUsers[1]);
+				expect(result).toContain(studentUsers[2]);
+			});
+		});
+
+		describe('when course is not populated', () => {
+			const setup = () => {
+				const course = courseFactory.build();
+				Object.assign(course, { students: undefined });
+
+				return { course };
+			};
+
+			it('should throw with internal server exception.', () => {
+				const { course } = setup();
+
+				expect(() => {
+					course.getStudentUsers();
+				}).toThrowError(InternalServerErrorException);
+			});
+		});
+	});
+
 	describe('isUserSubstitutionTeacher is called', () => {
 		describe('when user is a subsitution teacher', () => {
 			const setup = () => {

@@ -1,15 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
+import { UserInfoResponse } from '@src/modules/news/controller/dto/user-info.response';
 import { BoardElementResponse } from './board-element.response';
 
 // TODO: this and DashboardResponse should be combined
 export class SingleColumnBoardResponse {
-	constructor({ roomId, title, displayColor, elements, isArchived }: SingleColumnBoardResponse) {
+	constructor({ roomId, title, displayColor, elements, isArchived, usersList }: SingleColumnBoardResponse) {
 		this.roomId = roomId;
 		this.title = title;
 		this.displayColor = displayColor;
 		this.elements = elements;
 		this.isArchived = isArchived;
+		this.usersList = usersList;
 	}
 
 	@ApiProperty({
@@ -39,4 +41,9 @@ export class SingleColumnBoardResponse {
 		description: 'Boolean if the room this board belongs to is archived',
 	})
 	isArchived: boolean;
+
+	@ApiProperty({
+		description: 'Reference to the list of students assigned to the room.',
+	})
+	usersList: UserInfoResponse[];
 }

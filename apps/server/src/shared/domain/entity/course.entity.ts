@@ -107,6 +107,15 @@ export class Course
 		return studentIds;
 	}
 
+	public getStudentUsers(): User[] {
+		if (!this.students) {
+			throw new InternalServerErrorException(`Students is undefined. The course needs to be populated`);
+		}
+
+		const students = this.students.getItems();
+		return students;
+	}
+
 	public getTeacherIds(): EntityId[] {
 		const teacherIds = this.extractIds(this.teachers);
 		return teacherIds;

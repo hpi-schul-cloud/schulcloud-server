@@ -76,7 +76,13 @@ describe('Rooms Controller (API)', () => {
 
 		expect(response.status).toEqual(200);
 		const body = response.body as SingleColumnBoardResponse;
+		const expectedUsersObject = {
+			id: student.id,
+			firstName: student.firstName,
+			lastName: student.lastName,
+		};
 		expect(body.roomId).toEqual(course.id);
+		expect(body.usersList[0]).toEqual(expectedUsersObject);
 	});
 
 	describe('[PATCH] ElementVisibility', () => {

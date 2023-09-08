@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory, setupEntities, taskFactory } from '@shared/testing';
+import { courseFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { BoardElementResponse, SingleColumnBoardResponse } from '../controller/dto';
 import { RoomBoardElementTypes } from '../types';
@@ -25,12 +25,15 @@ describe('room board response mapper', () => {
 
 	describe('mapToResponse', () => {
 		it('should map plain board into response', () => {
+			const student = userFactory.buildWithId();
+
 			const board = {
 				roomId: 'roomId',
 				displayColor: '#ACACAC',
 				title: 'boardTitle',
 				elements: [],
 				isArchived: false,
+				usersList: [student],
 			};
 
 			const result = mapper.mapToResponse(board);
@@ -39,7 +42,8 @@ describe('room board response mapper', () => {
 		});
 
 		it('should map tasks with status on board to response', () => {
-			const course = courseFactory.buildWithId();
+			const student = userFactory.buildWithId();
+			const course = courseFactory.buildWithId({ students: [student] });
 			const task = taskFactory.buildWithId({ course });
 			const status = {
 				graded: 0,
@@ -55,6 +59,7 @@ describe('room board response mapper', () => {
 				title: 'boardTitle',
 				elements: [{ type: RoomBoardElementTypes.TASK, content: { task, status } }],
 				isArchived: false,
+				usersList: [student],
 			};
 
 			const result = mapper.mapToResponse(board);
@@ -63,7 +68,8 @@ describe('room board response mapper', () => {
 		});
 
 		it('should map tasks with status on board to response', () => {
-			const course = courseFactory.buildWithId();
+			const student = userFactory.buildWithId();
+			const course = courseFactory.buildWithId({ students: [student] });
 			const linkedTask = taskFactory.buildWithId({ course });
 			const status = {
 				graded: 0,
@@ -79,6 +85,7 @@ describe('room board response mapper', () => {
 				title: 'boardTitle',
 				elements: [{ type: RoomBoardElementTypes.TASK, content: { task: linkedTask, status } }],
 				isArchived: false,
+				usersList: [student],
 			};
 
 			const result = mapper.mapToResponse(board);
@@ -87,7 +94,8 @@ describe('room board response mapper', () => {
 		});
 
 		it('should map lessons on board to response', () => {
-			const course = courseFactory.buildWithId();
+			const student = userFactory.buildWithId();
+			const course = courseFactory.buildWithId({ students: [student] });
 			const lessonMetadata = {
 				id: 'lessonId',
 				name: 'lesson',
@@ -105,6 +113,7 @@ describe('room board response mapper', () => {
 				title: 'boardTitle',
 				elements: [{ type: RoomBoardElementTypes.LESSON, content: lessonMetadata }],
 				isArchived: false,
+				usersList: [student],
 			};
 
 			const result = mapper.mapToResponse(board);
@@ -113,7 +122,8 @@ describe('room board response mapper', () => {
 		});
 
 		it('should map mix of tasks and lessons on board to response', () => {
-			const course = courseFactory.buildWithId();
+			const student = userFactory.buildWithId();
+			const course = courseFactory.buildWithId({ students: [student] });
 			const lessonMetadata = {
 				id: 'lessonId',
 				name: 'lesson',
@@ -143,6 +153,7 @@ describe('room board response mapper', () => {
 					{ type: RoomBoardElementTypes.TASK, content: { task, status } },
 				],
 				isArchived: false,
+				usersList: [student],
 			};
 
 			const result = mapper.mapToResponse(board);
@@ -152,6 +163,7 @@ describe('room board response mapper', () => {
 		});
 
 		it('should map column board targets on board to response', () => {
+			const student = userFactory.buildWithId();
 			const columnBoardMetaData = {
 				id: new ObjectId().toHexString(),
 				columnBoardId: new ObjectId().toHexString(),
@@ -166,11 +178,33 @@ describe('room board response mapper', () => {
 				title: 'boardTitle',
 				elements: [{ type: RoomBoardElementTypes.COLUMN_BOARD, content: columnBoardMetaData }],
 				isArchived: false,
+				usersList: [student],
 			};
 
 			const result = mapper.mapToResponse(board);
 
 			expect(result.elements[0] instanceof BoardElementResponse).toEqual(true);
+		});
+
+		it('should map list of assigned course users to response', () => {
+			const student = userFactory.buildWithId();
+
+			const board = {
+				roomId: 'roomId',
+				displayColor: '#ACACAC',
+				title: 'boardTitle',
+				elements: [],
+				isArchived: false,
+				usersList: [student],
+			};
+
+			const result = mapper.mapToResponse(board);
+			const expectedUser = {
+				id: student.id,
+				firstName: student.firstName,
+				lastName: student.lastName,
+			};
+			expect(result.usersList[0]).toEqual(expectedUser);
 		});
 	});
 });
