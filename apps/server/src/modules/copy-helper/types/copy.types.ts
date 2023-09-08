@@ -20,6 +20,7 @@ export enum CopyElementType {
 	'COURSE' = 'COURSE',
 	'COURSEGROUP_GROUP' = 'COURSEGROUP_GROUP',
 	'FILE' = 'FILE',
+	'FILE_ELEMENT' = 'FILE_ELEMENT',
 	'FILE_GROUP' = 'FILE_GROUP',
 	'LEAF' = 'LEAF',
 	'LESSON' = 'LESSON',

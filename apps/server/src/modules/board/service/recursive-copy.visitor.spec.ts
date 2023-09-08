@@ -1,27 +1,46 @@
+import { createMock } from '@golevelup/ts-jest';
 import {
 	Card,
 	Column,
 	ColumnBoard,
+	FileElement,
 	isCard,
 	isColumn,
 	isColumnBoard,
+	isFileElement,
 	isRichTextElement,
 	isSubmissionContainerElement,
 	RichTextElement,
 	SubmissionContainerElement,
 } from '@shared/domain';
+import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import {
 	cardFactory,
 	columnBoardFactory,
 	columnFactory,
+	fileElementFactory,
 	richTextElementFactory,
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '@shared/testing';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { ObjectId } from 'bson';
 import { RecursiveCopyVisitor } from './recursive-copy.visitor';
 
 describe('recursive board copy visitor', () => {
+	const setupVisitor = () => {
+		const fileAdapter = createMock<FilesStorageClientAdapterService>();
+
+		const userId = new ObjectId().toHexString();
+		const originSchoolId = new ObjectId().toHexString();
+		const targetSchoolId = new ObjectId().toHexString();
+
+		const visitor = new RecursiveCopyVisitor(fileAdapter, { userId, originSchoolId, targetSchoolId });
+
+		return { fileAdapter, visitor, userId, originSchoolId, targetSchoolId };
+	};
+
 	describe('copying column boards', () => {
 		const getColumnBoardCopyFromStatus = (status: CopyStatus) => {
 			const copy = status.copyEntity;
@@ -31,59 +50,58 @@ describe('recursive board copy visitor', () => {
 
 		describe('when copying empty column board', () => {
 			const setup = () => {
-				const board = columnBoardFactory.build();
-				const visitor = new RecursiveCopyVisitor();
+				const original = columnBoardFactory.build();
 
-				return { board, visitor };
+				return { original, ...setupVisitor() };
 			};
 
-			it('should return a columnboard as copy', () => {
-				const { board, visitor } = setup();
+			it('should return a columnboard as copy', async () => {
+				const { original, visitor } = setup();
 
-				const copy = visitor.copy(board).copyEntity;
+				const result = await visitor.copy(original);
 
-				expect(isColumnBoard(copy)).toEqual(true);
+				expect(isColumnBoard(result.copyEntity)).toEqual(true);
 			});
 
-			it('should copy title', () => {
-				const { board, visitor } = setup();
+			it('should copy title', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(board);
+				const result = await visitor.copy(original);
 				const copy = getColumnBoardCopyFromStatus(result);
 
-				expect(copy.title).toEqual(board.title);
+				expect(copy.title).toEqual(original.title);
 			});
 
-			it('should create new id', () => {
-				const { board, visitor } = setup();
+			it('should create new id', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(board);
+				const result = await visitor.copy(original);
 				const copy = getColumnBoardCopyFromStatus(result);
 
-				expect(copy.id).not.toEqual(board.id);
+				expect(copy.id).not.toEqual(original.id);
 			});
 
-			it('should copy the context', () => {
-				const { board, visitor } = setup();
+			it('should copy the context', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(board);
+				const result = await visitor.copy(original);
 				const copy = getColumnBoardCopyFromStatus(result);
 
-				expect(copy.context).toEqual(board.context);
+				expect(copy.context).toEqual(original.context);
 			});
 
-			it('should show status successful', () => {
-				const { board, visitor } = setup();
+			it('should show status successful', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(board);
+				const result = await visitor.copy(original);
 
 				expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
 			});
 
-			it('should show type Columnboard', () => {
-				const { board, visitor } = setup();
+			it('should show type Columnboard', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(board);
+				const result = await visitor.copy(original);
 
 				expect(result.type).toEqual(CopyElementType.COLUMNBOARD);
 			});
@@ -93,29 +111,27 @@ describe('recursive board copy visitor', () => {
 			const setup = () => {
 				const children = columnFactory.buildList(5);
 
-				const columnBoardWithChildren = columnBoardFactory.build({ children });
+				const original = columnBoardFactory.build({ children });
 
-				const visitor = new RecursiveCopyVisitor();
-
-				return { columnBoardWithChildren, visitor };
+				return { original, ...setupVisitor() };
 			};
 
-			it('should add children to copy of columnboard', () => {
-				const { columnBoardWithChildren, visitor } = setup();
+			it('should add children to copy of columnboard', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(columnBoardWithChildren);
+				const result = await visitor.copy(original);
 				const copy = getColumnBoardCopyFromStatus(result);
 
-				expect(copy.children.length).toEqual(columnBoardWithChildren.children.length);
+				expect(copy.children.length).toEqual(original.children.length);
 			});
 
-			it('should create copies of children', () => {
-				const { columnBoardWithChildren, visitor } = setup();
+			it('should create copies of children', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(columnBoardWithChildren);
+				const result = await visitor.copy(original);
 				const copy = getColumnBoardCopyFromStatus(result);
 
-				const originalChildIds = columnBoardWithChildren.children.map((child) => child.id);
+				const originalChildIds = original.children.map((child) => child.id);
 				const copyChildrenIds = copy.children.map((child) => child.id);
 
 				originalChildIds.forEach((id) => {
@@ -124,12 +140,12 @@ describe('recursive board copy visitor', () => {
 				});
 			});
 
-			it('should add status of child copies to copystatus', () => {
-				const { columnBoardWithChildren, visitor } = setup();
+			it('should add status of child copies to copystatus', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(columnBoardWithChildren);
+				const result = await visitor.copy(original);
 
-				expect(result.elements?.length).toEqual(columnBoardWithChildren.children.length);
+				expect(result.elements?.length).toEqual(original.children.length);
 			});
 		});
 	});
@@ -143,50 +159,49 @@ describe('recursive board copy visitor', () => {
 
 		describe('when copying an empty column', () => {
 			const setup = () => {
-				const column = columnFactory.build();
-				const visitor = new RecursiveCopyVisitor();
+				const original = columnFactory.build();
 
-				return { column, visitor };
+				return { original, ...setupVisitor() };
 			};
 
-			it('should return a column as copy', () => {
-				const { column, visitor } = setup();
+			it('should return a column as copy', async () => {
+				const { original, visitor } = setup();
 
-				const copy = visitor.copy(column).copyEntity;
+				const result = await visitor.copy(original);
 
-				expect(isColumn(copy)).toEqual(true);
+				expect(isColumn(result.copyEntity)).toEqual(true);
 			});
 
-			it('should copy title', () => {
-				const { column, visitor } = setup();
+			it('should copy title', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(column);
+				const result = await visitor.copy(original);
 				const copy = getColumnCopyFromStatus(result);
 
-				expect(copy.title).toEqual(column.title);
+				expect(copy.title).toEqual(original.title);
 			});
 
-			it('should create new id', () => {
-				const { column, visitor } = setup();
+			it('should create new id', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(column);
+				const result = await visitor.copy(original);
 				const copy = getColumnCopyFromStatus(result);
 
-				expect(copy.id).not.toEqual(column.id);
+				expect(copy.id).not.toEqual(original.id);
 			});
 
-			it('should show status successful', () => {
-				const { column, visitor } = setup();
+			it('should show status successful', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(column);
+				const result = await visitor.copy(original);
 
 				expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
 			});
 
-			it('should show type Column', () => {
-				const { column, visitor } = setup();
+			it('should show type Column', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(column);
+				const result = await visitor.copy(original);
 
 				expect(result.type).toEqual(CopyElementType.COLUMN);
 			});
@@ -195,29 +210,27 @@ describe('recursive board copy visitor', () => {
 		describe('when copying a column with children', () => {
 			const setup = () => {
 				const children = cardFactory.buildList(2);
-				const column = columnFactory.build({ children });
+				const original = columnFactory.build({ children });
 
-				const visitor = new RecursiveCopyVisitor();
-
-				return { column, visitor };
+				return { original, ...setupVisitor() };
 			};
 
-			it('should add children to copy of columnboard', () => {
-				const { column, visitor } = setup();
+			it('should add children to copy of columnboard', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(column);
+				const result = await visitor.copy(original);
 				const copy = getColumnCopyFromStatus(result);
 
-				expect(copy.children.length).toEqual(column.children.length);
+				expect(copy.children.length).toEqual(original.children.length);
 			});
 
-			it('should create copies of children', () => {
-				const { column, visitor } = setup();
+			it('should create copies of children', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(column);
+				const result = await visitor.copy(original);
 				const copy = getColumnCopyFromStatus(result);
 
-				const originalChildIds = column.children.map((child) => child.id);
+				const originalChildIds = original.children.map((child) => child.id);
 				const copyChildrenIds = copy.children.map((child) => child.id);
 
 				originalChildIds.forEach((id) => {
@@ -226,12 +239,12 @@ describe('recursive board copy visitor', () => {
 				});
 			});
 
-			it('should add status of child copies to copystatus', () => {
-				const { column, visitor } = setup();
+			it('should add status of child copies to copystatus', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(column);
+				const result = await visitor.copy(original);
 
-				expect(result.elements?.length).toEqual(column.children.length);
+				expect(result.elements?.length).toEqual(original.children.length);
 			});
 		});
 	});
@@ -245,59 +258,58 @@ describe('recursive board copy visitor', () => {
 
 		describe('when copying an empty card', () => {
 			const setup = () => {
-				const card = cardFactory.build();
-				const visitor = new RecursiveCopyVisitor();
+				const original = cardFactory.build();
 
-				return { card, visitor };
+				return { original, ...setupVisitor() };
 			};
 
-			it('should return a richtext element as copy', () => {
-				const { card, visitor } = setup();
+			it('should return a richtext element as copy', async () => {
+				const { original, visitor } = setup();
 
-				const copy = visitor.copy(card).copyEntity;
+				const result = await visitor.copy(original);
 
-				expect(isCard(copy)).toEqual(true);
+				expect(isCard(result.copyEntity)).toEqual(true);
 			});
 
-			it('should copy title', () => {
-				const { card, visitor } = setup();
+			it('should copy title', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(card);
+				const result = await visitor.copy(original);
 				const copy = getCardCopyFromStatus(result);
 
-				expect(copy.title).toEqual(card.title);
+				expect(copy.title).toEqual(original.title);
 			});
 
-			it('should copy height', () => {
-				const { card, visitor } = setup();
+			it('should copy height', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(card);
+				const result = await visitor.copy(original);
 				const copy = getCardCopyFromStatus(result);
 
-				expect(copy.height).toEqual(card.height);
+				expect(copy.height).toEqual(original.height);
 			});
 
-			it('should create new id', () => {
-				const { card, visitor } = setup();
+			it('should create new id', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(card);
+				const result = await visitor.copy(original);
 				const copy = getCardCopyFromStatus(result);
 
-				expect(copy.id).not.toEqual(card.id);
+				expect(copy.id).not.toEqual(original.id);
 			});
 
-			it('should show status successful', () => {
-				const { card, visitor } = setup();
+			it('should show status successful', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(card);
+				const result = await visitor.copy(original);
 
 				expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
 			});
 
-			it('should show type Card', () => {
-				const { card, visitor } = setup();
+			it('should show type Card', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(card);
+				const result = await visitor.copy(original);
 
 				expect(result.type).toEqual(CopyElementType.CARD);
 			});
@@ -306,29 +318,27 @@ describe('recursive board copy visitor', () => {
 		describe('when copying a card with children', () => {
 			const setup = () => {
 				const children = [...richTextElementFactory.buildList(4), ...submissionContainerElementFactory.buildList(3)];
-				const card = cardFactory.build({ children });
+				const original = cardFactory.build({ children });
 
-				const visitor = new RecursiveCopyVisitor();
-
-				return { card, visitor };
+				return { original, ...setupVisitor() };
 			};
 
-			it('should add children to copy of columnboard', () => {
-				const { card, visitor } = setup();
+			it('should add children to copy of columnboard', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(card);
+				const result = await visitor.copy(original);
 				const copy = getCardCopyFromStatus(result);
 
-				expect(copy.children.length).toEqual(card.children.length);
+				expect(copy.children.length).toEqual(original.children.length);
 			});
 
-			it('should create copies of children', () => {
-				const { card, visitor } = setup();
+			it('should create copies of children', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(card);
+				const result = await visitor.copy(original);
 				const copy = getCardCopyFromStatus(result);
 
-				const originalChildIds = card.children.map((child) => child.id);
+				const originalChildIds = original.children.map((child) => child.id);
 				const copyChildrenIds = copy.children.map((child) => child.id);
 
 				originalChildIds.forEach((id) => {
@@ -337,22 +347,21 @@ describe('recursive board copy visitor', () => {
 				});
 			});
 
-			it('should add status of child copies to copystatus', () => {
-				const { card, visitor } = setup();
+			it('should add status of child copies to copystatus', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(card);
+				const result = await visitor.copy(original);
 
-				expect(result.elements?.length).toEqual(card.children.length);
+				expect(result.elements?.length).toEqual(original.children.length);
 			});
 		});
 	});
 
 	describe('when copying a richtext element', () => {
 		const setup = () => {
-			const richTextElement = richTextElementFactory.build();
-			const visitor = new RecursiveCopyVisitor();
+			const original = richTextElementFactory.build();
 
-			return { richTextElement, visitor };
+			return { original, ...setupVisitor() };
 		};
 
 		const getRichTextFromStatus = (status: CopyStatus) => {
@@ -361,55 +370,153 @@ describe('recursive board copy visitor', () => {
 			return copy as RichTextElement;
 		};
 
-		it('should return a richtext element as copy', () => {
-			const { richTextElement, visitor } = setup();
+		it('should return a richtext element as copy', async () => {
+			const { original, visitor } = setup();
 
-			const copy = visitor.copy(richTextElement).copyEntity;
+			const result = await visitor.copy(original);
 
-			expect(isRichTextElement(copy)).toEqual(true);
+			expect(isRichTextElement(result.copyEntity)).toEqual(true);
 		});
 
-		it('should copy text', () => {
-			const { richTextElement, visitor } = setup();
+		it('should copy text', async () => {
+			const { original, visitor } = setup();
 
-			const result = visitor.copy(richTextElement);
+			const result = await visitor.copy(original);
 			const copy = getRichTextFromStatus(result);
 
-			expect(copy.text).toEqual(richTextElement.text);
+			expect(copy.text).toEqual(original.text);
 		});
 
-		it('should copy text', () => {
-			const { richTextElement, visitor } = setup();
+		it('should copy text', async () => {
+			const { original, visitor } = setup();
 
-			const result = visitor.copy(richTextElement);
+			const result = await visitor.copy(original);
 			const copy = getRichTextFromStatus(result);
 
-			expect(copy.inputFormat).toEqual(richTextElement.inputFormat);
+			expect(copy.inputFormat).toEqual(original.inputFormat);
 		});
 
-		it('should create new id', () => {
-			const { richTextElement, visitor } = setup();
+		it('should create new id', async () => {
+			const { original, visitor } = setup();
 
-			const result = visitor.copy(richTextElement);
+			const result = await visitor.copy(original);
 			const copy = getRichTextFromStatus(result);
 
-			expect(copy.id).not.toEqual(richTextElement.id);
+			expect(copy.id).not.toEqual(original.id);
 		});
 
-		it('should show status successful', () => {
-			const { richTextElement, visitor } = setup();
+		it('should show status successful', async () => {
+			const { original, visitor } = setup();
 
-			const result = visitor.copy(richTextElement);
+			const result = await visitor.copy(original);
 
 			expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
 		});
 
-		it('should show type RichTextElement', () => {
-			const { richTextElement, visitor } = setup();
+		it('should show type RichTextElement', async () => {
+			const { original, visitor } = setup();
 
-			const result = visitor.copy(richTextElement);
+			const result = await visitor.copy(original);
 
 			expect(result.type).toEqual(CopyElementType.RICHTEXT_ELEMENT);
+		});
+	});
+
+	describe('when copying a file element', () => {
+		const setup = () => {
+			const original = fileElementFactory.build();
+
+			const visitorSetup = setupVisitor();
+
+			visitorSetup.fileAdapter.copyFilesOfParent.mockResolvedValueOnce([
+				{ id: new ObjectId().toHexString(), sourceId: original.id, name: original.caption },
+			]);
+
+			return { original, ...visitorSetup };
+		};
+
+		const getFileElementFromStatus = (status: CopyStatus) => {
+			const copy = status.copyEntity;
+			expect(isFileElement(copy)).toEqual(true);
+			return copy as FileElement;
+		};
+
+		it('should return a file element as copy', async () => {
+			const { original, visitor } = setup();
+
+			const result = await visitor.copy(original);
+
+			expect(isFileElement(result.copyEntity)).toEqual(true);
+		});
+
+		it('should create new id', async () => {
+			const { original, visitor } = setup();
+
+			const result = await visitor.copy(original);
+			const copy = getFileElementFromStatus(result);
+
+			expect(copy.id).not.toEqual(original.id);
+		});
+
+		it('should copy caption', async () => {
+			const { original, visitor } = setup();
+
+			const result = await visitor.copy(original);
+			const copy = getFileElementFromStatus(result);
+
+			expect(copy.caption).toEqual(original.caption);
+		});
+
+		it('should call fileCopy Service', async () => {
+			const { original, fileAdapter, visitor, targetSchoolId, originSchoolId, userId } = setup();
+
+			const result = await visitor.copy(original);
+			const copy = getFileElementFromStatus(result);
+
+			expect(fileAdapter.copyFilesOfParent).toHaveBeenCalledWith({
+				source: {
+					parentId: original.id,
+					parentType: FileRecordParentType.BoardNode,
+					schoolId: originSchoolId,
+				},
+				target: {
+					parentId: copy.id,
+					parentType: FileRecordParentType.BoardNode,
+					schoolId: targetSchoolId,
+				},
+				userId,
+			});
+		});
+
+		it('should show status successful', async () => {
+			const { original, visitor } = setup();
+
+			const result = await visitor.copy(original);
+
+			expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
+		});
+
+		it('should show type FILE_ELEMENT', async () => {
+			const { original, visitor } = setup();
+
+			const result = await visitor.copy(original);
+
+			expect(result.type).toEqual(CopyElementType.FILE_ELEMENT);
+		});
+
+		it('should include file copy status', async () => {
+			const { original, visitor } = setup();
+
+			const result = await visitor.copy(original);
+
+			const fileCopyStatus = result.elements?.at(0);
+
+			expect(fileCopyStatus).toEqual(
+				expect.objectContaining({
+					status: CopyStatusEnum.SUCCESS,
+					type: CopyElementType.FILE,
+				})
+			);
 		});
 	});
 
@@ -422,50 +529,49 @@ describe('recursive board copy visitor', () => {
 
 		describe('when copying an empty submission container element', () => {
 			const setup = () => {
-				const submissionContainer = submissionContainerElementFactory.build();
-				const visitor = new RecursiveCopyVisitor();
+				const original = submissionContainerElementFactory.build();
 
-				return { submissionContainer, visitor };
+				return { original, ...setupVisitor() };
 			};
 
-			it('should return a submission container element as copy', () => {
-				const { submissionContainer, visitor } = setup();
+			it('should return a submission container element as copy', async () => {
+				const { original, visitor } = setup();
 
-				const copy = visitor.copy(submissionContainer).copyEntity;
+				const result = await visitor.copy(original);
 
-				expect(isSubmissionContainerElement(copy)).toEqual(true);
+				expect(isSubmissionContainerElement(result.copyEntity)).toEqual(true);
 			});
 
-			it('should copy dueDate', () => {
-				const { submissionContainer, visitor } = setup();
+			it('should copy dueDate', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(submissionContainer);
+				const result = await visitor.copy(original);
 				const copy = getSubmissionContainerFromStatus(result);
 
-				expect(copy.dueDate).toEqual(submissionContainer.dueDate);
+				expect(copy.dueDate).toEqual(original.dueDate);
 			});
 
-			it('should create new id', () => {
-				const { submissionContainer, visitor } = setup();
+			it('should create new id', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(submissionContainer);
+				const result = await visitor.copy(original);
 				const copy = getSubmissionContainerFromStatus(result);
 
-				expect(copy.id).not.toEqual(submissionContainer.id);
+				expect(copy.id).not.toEqual(original.id);
 			});
 
-			it('should show status successful', () => {
-				const { submissionContainer, visitor } = setup();
+			it('should show status successful', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(submissionContainer);
+				const result = await visitor.copy(original);
 
 				expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
 			});
 
-			it('should show type SUBMISSION_CONTAINER', () => {
-				const { submissionContainer, visitor } = setup();
+			it('should show type SUBMISSION_CONTAINER', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(submissionContainer);
+				const result = await visitor.copy(original);
 
 				expect(result.type).toEqual(CopyElementType.SUBMISSION_CONTAINER_ELEMENT);
 			});
@@ -474,60 +580,57 @@ describe('recursive board copy visitor', () => {
 		describe('when copying a card with children', () => {
 			const setup = () => {
 				const children = [...submissionItemFactory.buildList(4)];
-				const container = submissionContainerElementFactory.build({ children });
+				const original = submissionContainerElementFactory.build({ children });
 
-				const visitor = new RecursiveCopyVisitor();
-
-				return { container, visitor };
+				return { original, ...setupVisitor() };
 			};
 
-			it('should NOT add children to copy of columnboard', () => {
-				const { container, visitor } = setup();
+			it('should NOT add children to copy of columnboard', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(container);
+				const result = await visitor.copy(original);
 				const copy = getSubmissionContainerFromStatus(result);
 
 				expect(copy.children.length).toEqual(0);
 			});
 
-			it('should add status of child copies to copystatus', () => {
-				const { container, visitor } = setup();
+			it('should add status of child copies to copystatus', async () => {
+				const { original, visitor } = setup();
 
-				const result = visitor.copy(container);
+				const result = await visitor.copy(original);
 
-				expect(result.elements?.length).toEqual(container.children.length);
+				expect(result.elements?.length).toEqual(original.children.length);
 			});
 		});
 	});
 
 	describe('when copying a submission item', () => {
 		const setup = () => {
-			const submissionItem = submissionItemFactory.build();
-			const visitor = new RecursiveCopyVisitor();
+			const original = submissionItemFactory.build();
 
-			return { submissionItem, visitor };
+			return { original, ...setupVisitor() };
 		};
 
-		it('should NOT make a copy', () => {
-			const { submissionItem, visitor } = setup();
+		it('should NOT make a copy', async () => {
+			const { original, visitor } = setup();
 
-			const result = visitor.copy(submissionItem);
+			const result = await visitor.copy(original);
 
 			expect(result.copyEntity).toBeUndefined();
 		});
 
-		it('should show status not-doing', () => {
-			const { submissionItem, visitor } = setup();
+		it('should show status not-doing', async () => {
+			const { original, visitor } = setup();
 
-			const result = visitor.copy(submissionItem);
+			const result = await visitor.copy(original);
 
 			expect(result.status).toEqual(CopyStatusEnum.NOT_DOING);
 		});
 
-		it('should show type SUBMISSION_ITEM', () => {
-			const { submissionItem, visitor } = setup();
+		it('should show type SUBMISSION_ITEM', async () => {
+			const { original, visitor } = setup();
 
-			const result = visitor.copy(submissionItem);
+			const result = await visitor.copy(original);
 
 			expect(result.type).toEqual(CopyElementType.SUBMISSION_ITEM);
 		});
