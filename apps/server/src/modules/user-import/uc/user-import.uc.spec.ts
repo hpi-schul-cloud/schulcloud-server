@@ -18,7 +18,7 @@ import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { importUserFactory, schoolFactory, userFactory } from '@shared/testing';
-import { federalStateFactory } from '@shared/testing/factory/domainobject/federal-state.do.factory';
+import { federalStateDoFactory } from '@shared/testing/factory/domainobject/federal-state.do.factory';
 import { systemFactory } from '@shared/testing/factory/system.factory';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AuthorizationService } from '@src/modules/authorization';
@@ -125,7 +125,7 @@ describe('[ImportUserModule]', () => {
 			const inUserMigration = school ? school.inUserMigration : undefined;
 			const systems =
 				school && school.systems.isInitialized() ? school.systems.getItems().map((system: System) => system.id) : [];
-			const federalState = federalStateFactory.build();
+			const federalState = federalStateDoFactory.build();
 
 			return new SchoolDO({
 				id,
@@ -643,8 +643,6 @@ describe('[ImportUserModule]', () => {
 				schoolParams.externalId = 'foo';
 				schoolParams.inMaintenanceSince = currentDate;
 				schoolParams.systems = [system.id];
-				schoolParams.federalState.createdAt = currentDate;
-				schoolParams.federalState.updatedAt = currentDate;
 
 				expect(schoolServiceSaveSpy).toHaveBeenCalledWith(schoolParams);
 			});

@@ -1,10 +1,9 @@
-import { Body, Controller, ForbiddenException, Get, NotFoundException, Post } from '@nestjs/common';
+import { Controller, ForbiddenException, Get, NotFoundException } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
 import { FederalStateUC } from '../uc';
-import { CreateFederalStateBodyParams } from './dto/create-federal-state.body.params';
-import { FederalStateResponse } from './dto/federal-state.response';
+import { FederalStateResponse } from './dto';
 import { FederalStateMapper } from './mapper';
 
 @ApiTags('Federal-State')
@@ -25,19 +24,5 @@ export class FederalStateController {
 		const federalStates = await this.federalStateUC.findAllFederalStates();
 		const federalStateResponse = federalStates.map((federalState) => FederalStateMapper.mapToResponse(federalState));
 		return federalStateResponse;
-	}
-
-	@Post()
-	@ApiOperation({ summary: 'Create a new element on a card.' })
-	createElement(
-		@Body() bodyParams: CreateFederalStateBodyParams
-		// @CurrentUser() currentUser: ICurrentUser
-	) {
-		console.log(bodyParams);
-		// const element = await this.cardUc.createElement(currentUser.userId, urlParams.cardId, type, toPosition);
-		// const response = ContentElementResponseFactory.mapToResponse(element);
-
-		// return response;
-		return 'hi';
 	}
 }

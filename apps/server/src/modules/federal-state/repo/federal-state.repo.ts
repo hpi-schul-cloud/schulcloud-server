@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { FederalStateEntity } from '@shared/domain';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { EntityName } from '@mikro-orm/core';
-import { FederalStateDO } from '../domainobject/federal-state.do';
+import { FederalStateDO } from '../domainobject';
 
 @Injectable()
 export class FederalStateRepo {
@@ -20,12 +20,14 @@ export class FederalStateRepo {
 
 	async findAll(): Promise<FederalStateDO[]> {
 		const federalStateEntities = await this.em.find(FederalStateEntity, {});
-		const federalStates = federalStateEntities.map((entity) => this.mapEntityToDomainObject(entity));
+		const federalStates = federalStateEntities.map((federalStateEntity) =>
+			this.mapEntityToDomainObject(federalStateEntity)
+		);
 		return federalStates;
 	}
 
 	mapEntityToDomainObject(entity: FederalStateEntity): FederalStateDO {
-		return new FederalStateDO({
+		const federalStateDo = new FederalStateDO({
 			id: entity.id,
 			name: entity.name,
 			abbreviation: entity.abbreviation,
@@ -34,5 +36,6 @@ export class FederalStateRepo {
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,
 		});
+		return federalStateDo;
 	}
 }

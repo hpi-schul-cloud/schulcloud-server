@@ -7,15 +7,12 @@ export class FederalStateUC {
 		private readonly federalStateService: FederalStateService // 	private readonly authorizationService: AuthorizationService, // 	private readonly lessonService: LessonService
 	) {}
 
-	createFederalState() {
-		return 'hi from the uc';
-	}
-
 	async findAllFederalStates() {
 		const federalStates = await this.federalStateService.findAll();
 		return federalStates;
 	}
 
+	// TODO: names could be an enum
 	async findFederalStateByName(name: string) {
 		const federalState = await this.federalStateService.findFederalStateByName(name);
 		return federalState;

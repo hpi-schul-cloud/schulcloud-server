@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName, SchoolFeatures } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { federalStateFactory, schoolDOFactory, userDoFactory } from '@shared/testing';
+import { federalStateDoFactory, schoolDOFactory, userDoFactory } from '@shared/testing';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
@@ -106,7 +106,7 @@ describe('OidcProvisioningService', () => {
 			schoolService.save.mockResolvedValue(savedSchoolDO);
 			schoolService.getSchoolByExternalId.mockResolvedValue(null);
 			schoolYearService.getCurrentSchoolYear.mockResolvedValue(schoolYearFactory.build());
-			federalStateService.findFederalStateByName.mockResolvedValue(federalStateFactory.build());
+			federalStateService.findFederalStateByName.mockResolvedValue(federalStateDoFactory.build());
 
 			return {
 				systemId,
