@@ -3,7 +3,7 @@ import { EntityId, LtiPrivacyPermission, Pseudonym, RoleName, UserDO } from '@sh
 import { RoleReference } from '@shared/domain/domainobject';
 import { CourseRepo } from '@shared/repo';
 import { PseudonymService } from '@src/modules/pseudonym';
-import { LegacySchoolService } from '@src/modules/school';
+import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { Authorization } from 'oauth-1.0a';
 import { LtiRole } from '../../../common/enum';
@@ -20,7 +20,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		private readonly userService: UserService,
 		private readonly pseudonymService: PseudonymService,
 		private readonly lti11EncryptionService: Lti11EncryptionService,
-		schoolService: LegacySchoolService,
+		schoolService: SchoolService,
 		courseRepo: CourseRepo
 	) {
 		super(schoolService, courseRepo);
