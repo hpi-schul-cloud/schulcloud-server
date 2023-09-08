@@ -607,7 +607,7 @@
 		},
 		"FEATURE_SANIS_GROUP_PROVISIONING_ENABLED": {
 			"type": "boolean",
-			"default": "false",
+			"default": false,
 			"description": "Groups of type class also gets provisioned, when provisioning a user via oauth login."
 		},
 		"SC_TITLE": {
