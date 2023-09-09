@@ -16,6 +16,8 @@ import {
 	ContentElementService,
 	SubmissionItemService,
 } from './service';
+import { BoardDoCopyService } from './service/board-do-copy.service';
+import { ColumnBoardCopyService } from './service/column-board-copy.service';
 
 @Module({
 	imports: [ConsoleWriterModule, FilesStorageClientModule, LoggerModule, UserModule],
@@ -32,6 +34,7 @@ import {
 		CourseRepo, // TODO: import learnroom module instead. This is currently not possible due to dependency cycle with authorisation service
 		RecursiveDeleteVisitor,
 		SubmissionItemService,
+		BoardDoCopyService,
 	],
 	exports: [
 		BoardDoAuthorizableService,
@@ -40,6 +43,7 @@ import {
 		ColumnService,
 		ContentElementService,
 		SubmissionItemService,
+		ColumnBoardCopyService,
 	],
 })
 export class BoardModule {}
