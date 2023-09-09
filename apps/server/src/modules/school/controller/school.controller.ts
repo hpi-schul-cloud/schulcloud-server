@@ -10,14 +10,14 @@ import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { MigrationMapper } from '../mapper/migration.mapper';
 import { OauthMigrationDto } from '../uc/dto/oauth-migration.dto';
-import { LegacySchoolUc } from '../uc';
+import { SchoolUc } from '../uc/school.uc';
 import { MigrationBody, MigrationResponse, SchoolParams } from './dto';
 
 @ApiTags('School')
 @Authenticate('jwt')
 @Controller('school')
 export class SchoolController {
-	constructor(private readonly schoolUc: LegacySchoolUc, private readonly migrationMapper: MigrationMapper) {}
+	constructor(private readonly schoolUc: SchoolUc, private readonly migrationMapper: MigrationMapper) {}
 
 	@Put(':schoolId/migration')
 	@Authenticate('jwt')

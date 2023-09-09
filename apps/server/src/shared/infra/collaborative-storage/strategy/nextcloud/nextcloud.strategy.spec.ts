@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiPrivacyPermission, LtiRoleType, Pseudonym, RoleName, User, UserDO } from '@shared/domain';
+import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { TeamRolePermissionsDto } from '@shared/infra/collaborative-storage/dto/team-role-permissions.dto';
 import { NextcloudClient } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.client';
 import { NextcloudStrategy } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.strategy';
@@ -10,8 +10,8 @@ import { LtiToolRepo } from '@shared/repo';
 import { ltiToolDOFactory, pseudonymFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { TeamDto, TeamUserDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
-import { ExternalToolService } from '@src/modules/tool/external-tool/service';
 import { PseudonymService } from '@src/modules/pseudonym';
+import { ExternalToolService } from '@src/modules/tool/external-tool/service';
 import { UserService } from '@src/modules/user';
 
 class NextcloudStrategySpec extends NextcloudStrategy {
@@ -385,7 +385,7 @@ describe('NextCloudStrategy', () => {
 				const userDo: UserDO = userDoFactory.build({ id: user.id });
 				const teamUsers: TeamUserDto[] = [{ userId: user.id, schoolId: user.school.id, roleId: user.roles[0].id }];
 
-				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({
+				const pseudonym: Pseudonym = pseudonymFactory.build({
 					userId: user.id,
 					toolId: nextcloudTool.id as string,
 					pseudonym: `ps${user.id}`,
@@ -465,7 +465,7 @@ describe('NextCloudStrategy', () => {
 				const user: User = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
 				const teamUsers: TeamUserDto[] = [];
 
-				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({
+				const pseudonym: Pseudonym = pseudonymFactory.build({
 					userId: user.id,
 					toolId: nextcloudTool.id as string,
 					pseudonym: `ps${user.id}`,
@@ -531,7 +531,7 @@ describe('NextCloudStrategy', () => {
 					{ userId: 'invalidId', schoolId: 'someSchool', roleId: 'someRole' },
 				];
 
-				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({
+				const pseudonym: Pseudonym = pseudonymFactory.build({
 					userId: user.id,
 					toolId: nextcloudTool.id as string,
 					pseudonym: `ps${user.id}`,
@@ -570,7 +570,7 @@ describe('NextCloudStrategy', () => {
 				const user: User = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
 				const teamUsers: TeamUserDto[] = [{ userId: user.id, schoolId: user.school.id, roleId: user.roles[0].id }];
 
-				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({
+				const pseudonym: Pseudonym = pseudonymFactory.build({
 					userId: user.id,
 					toolId: nextcloudTool.id as string,
 					pseudonym: `ps${user.id}`,
