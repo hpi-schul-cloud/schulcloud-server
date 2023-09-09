@@ -17,7 +17,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { ColumnBoardCopyService } from '@src/modules/board/service/column-board-copy-service';
+import { ColumnBoardCopyService } from '@src/modules/board/service/column-board-copy.service';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { LessonCopyService } from '@src/modules/lesson/service';
 import { TaskCopyService } from '@src/modules/task/service';

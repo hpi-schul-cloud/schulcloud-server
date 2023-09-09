@@ -4,6 +4,7 @@ import { ConsoleWriterModule } from '@shared/infra/console';
 import { CourseRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { FilesStorageClientModule } from '../files-storage-client';
+import { UserModule } from '../user';
 import { BoardDoRepo, BoardNodeRepo } from './repo';
 import { RecursiveDeleteVisitor } from './repo/recursive-delete.vistor';
 import {
@@ -17,7 +18,7 @@ import {
 } from './service';
 
 @Module({
-	imports: [ConsoleWriterModule, FilesStorageClientModule, LoggerModule],
+	imports: [ConsoleWriterModule, FilesStorageClientModule, LoggerModule, UserModule],
 	providers: [
 		BoardDoAuthorizableService,
 		BoardDoRepo,

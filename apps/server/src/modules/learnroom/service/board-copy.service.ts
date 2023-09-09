@@ -19,7 +19,7 @@ import {
 } from '@shared/domain';
 import { BoardRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { ColumnBoardCopyService } from '@src/modules/board/service/column-board-copy-service';
+import { ColumnBoardCopyService } from '@src/modules/board/service/column-board-copy.service';
 import { CopyElementType, CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
 import { getResolvedValues } from '@src/modules/files-storage/helper';
 import { LessonCopyService } from '@src/modules/lesson/service';
