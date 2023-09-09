@@ -28,7 +28,7 @@ import {
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { ObjectId } from 'bson';
-import { BoardDoCopyService } from './recursive-copy.visitor';
+import { BoardDoCopyService } from './board-do-copy.service';
 
 describe('recursive board copy visitor', () => {
 	let module: TestingModule;
