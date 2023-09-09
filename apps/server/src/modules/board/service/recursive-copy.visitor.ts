@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import {
 	AnyBoardDo,
 	BoardCompositeVisitorAsync,
@@ -15,20 +16,20 @@ import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-h
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { ObjectId } from 'bson';
 
-export type BoardDoCopyParams = {
+type RecursiveCopyVisitorParams = {
 	originSchoolId: EntityId;
 	targetSchoolId: EntityId;
 	userId: EntityId;
 };
 
-export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
+class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 	resultMap = new Map<EntityId, CopyStatus>();
 
 	copyMap = new Map<EntityId, AnyBoardDo>();
 
 	constructor(
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
-		private readonly params: BoardDoCopyParams
+		private readonly params: RecursiveCopyVisitorParams
 	) {}
 
 	async copy(original: AnyBoardDo): Promise<CopyStatus> {
@@ -209,5 +210,29 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		});
 
 		return copies;
+	}
+}
+
+export type BoardDoCopyParams = {
+	originSchoolId: EntityId;
+	targetSchoolId?: EntityId;
+	userId: EntityId;
+	original: AnyBoardDo;
+};
+
+@Injectable()
+export class BoardDoCopyService {
+	constructor(private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService) {}
+
+	public async copy(params: BoardDoCopyParams): Promise<CopyStatus> {
+		const visitor = new RecursiveCopyVisitor(this.filesStorageClientAdapterService, {
+			userId: params.userId,
+			originSchoolId: params.originSchoolId,
+			targetSchoolId: params.targetSchoolId || params.originSchoolId,
+		});
+
+		const result = await visitor.copy(params.original);
+
+		return result;
 	}
 }

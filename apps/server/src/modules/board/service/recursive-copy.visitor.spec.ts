@@ -1,4 +1,5 @@
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
 import {
 	Card,
 	Column,
@@ -20,25 +21,40 @@ import {
 	columnFactory,
 	fileElementFactory,
 	richTextElementFactory,
+	setupEntities,
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '@shared/testing';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { ObjectId } from 'bson';
-import { RecursiveCopyVisitor } from './recursive-copy.visitor';
+import { BoardDoCopyService } from './recursive-copy.visitor';
 
 describe('recursive board copy visitor', () => {
-	const setupVisitor = () => {
-		const fileAdapter = createMock<FilesStorageClientAdapterService>();
+	let module: TestingModule;
+	let service: BoardDoCopyService;
+	let fileAdapter: DeepMocked<FilesStorageClientAdapterService>;
 
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
+			providers: [
+				BoardDoCopyService,
+				{ provide: FilesStorageClientAdapterService, useValue: createMock<FilesStorageClientAdapterService>() },
+			],
+		}).compile();
+
+		service = module.get(BoardDoCopyService);
+		fileAdapter = module.get(FilesStorageClientAdapterService);
+
+		await setupEntities();
+	});
+
+	const setupVisitor = () => {
 		const userId = new ObjectId().toHexString();
 		const originSchoolId = new ObjectId().toHexString();
 		const targetSchoolId = new ObjectId().toHexString();
 
-		const visitor = new RecursiveCopyVisitor(fileAdapter, { userId, originSchoolId, targetSchoolId });
-
-		return { fileAdapter, visitor, userId, originSchoolId, targetSchoolId };
+		return { fileAdapter, userId, originSchoolId, targetSchoolId };
 	};
 
 	describe('copying column boards', () => {
@@ -56,52 +72,52 @@ describe('recursive board copy visitor', () => {
 			};
 
 			it('should return a columnboard as copy', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 				expect(isColumnBoard(result.copyEntity)).toEqual(true);
 			});
 
 			it('should copy title', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 				const copy = getColumnBoardCopyFromStatus(result);
 
 				expect(copy.title).toEqual(original.title);
 			});
 
 			it('should create new id', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 				const copy = getColumnBoardCopyFromStatus(result);
 
 				expect(copy.id).not.toEqual(original.id);
 			});
 
 			it('should copy the context', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 				const copy = getColumnBoardCopyFromStatus(result);
 
 				expect(copy.context).toEqual(original.context);
 			});
 
 			it('should show status successful', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 				expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
 			});
 
 			it('should show type Columnboard', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 				expect(result.type).toEqual(CopyElementType.COLUMNBOARD);
 			});
@@ -117,18 +133,18 @@ describe('recursive board copy visitor', () => {
 			};
 
 			it('should add children to copy of columnboard', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 				const copy = getColumnBoardCopyFromStatus(result);
 
 				expect(copy.children.length).toEqual(original.children.length);
 			});
 
 			it('should create copies of children', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 				const copy = getColumnBoardCopyFromStatus(result);
 
 				const originalChildIds = original.children.map((child) => child.id);
@@ -141,9 +157,9 @@ describe('recursive board copy visitor', () => {
 			});
 
 			it('should add status of child copies to copystatus', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 				expect(result.elements?.length).toEqual(original.children.length);
 			});
@@ -165,43 +181,43 @@ describe('recursive board copy visitor', () => {
 			};
 
 			it('should return a column as copy', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 				expect(isColumn(result.copyEntity)).toEqual(true);
 			});
 
 			it('should copy title', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 				const copy = getColumnCopyFromStatus(result);
 
 				expect(copy.title).toEqual(original.title);
 			});
 
 			it('should create new id', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 				const copy = getColumnCopyFromStatus(result);
 
 				expect(copy.id).not.toEqual(original.id);
 			});
 
 			it('should show status successful', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 				expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
 			});
 
 			it('should show type Column', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 				expect(result.type).toEqual(CopyElementType.COLUMN);
 			});
@@ -216,18 +232,18 @@ describe('recursive board copy visitor', () => {
 			};
 
 			it('should add children to copy of columnboard', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 				const copy = getColumnCopyFromStatus(result);
 
 				expect(copy.children.length).toEqual(original.children.length);
 			});
 
 			it('should create copies of children', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 				const copy = getColumnCopyFromStatus(result);
 
 				const originalChildIds = original.children.map((child) => child.id);
@@ -240,9 +256,9 @@ describe('recursive board copy visitor', () => {
 			});
 
 			it('should add status of child copies to copystatus', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 				expect(result.elements?.length).toEqual(original.children.length);
 			});
@@ -264,52 +280,52 @@ describe('recursive board copy visitor', () => {
 			};
 
 			it('should return a richtext element as copy', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 				expect(isCard(result.copyEntity)).toEqual(true);
 			});
 
 			it('should copy title', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 				const copy = getCardCopyFromStatus(result);
 
 				expect(copy.title).toEqual(original.title);
 			});
 
 			it('should copy height', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 				const copy = getCardCopyFromStatus(result);
 
 				expect(copy.height).toEqual(original.height);
 			});
 
 			it('should create new id', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 				const copy = getCardCopyFromStatus(result);
 
 				expect(copy.id).not.toEqual(original.id);
 			});
 
 			it('should show status successful', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 				expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
 			});
 
 			it('should show type Card', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 				expect(result.type).toEqual(CopyElementType.CARD);
 			});
@@ -324,18 +340,18 @@ describe('recursive board copy visitor', () => {
 			};
 
 			it('should add children to copy of columnboard', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 				const copy = getCardCopyFromStatus(result);
 
 				expect(copy.children.length).toEqual(original.children.length);
 			});
 
 			it('should create copies of children', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 				const copy = getCardCopyFromStatus(result);
 
 				const originalChildIds = original.children.map((child) => child.id);
@@ -348,9 +364,9 @@ describe('recursive board copy visitor', () => {
 			});
 
 			it('should add status of child copies to copystatus', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 				expect(result.elements?.length).toEqual(original.children.length);
 			});
@@ -371,52 +387,52 @@ describe('recursive board copy visitor', () => {
 		};
 
 		it('should return a richtext element as copy', async () => {
-			const { original, visitor } = setup();
+			const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-			const result = await visitor.copy(original);
+			const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 			expect(isRichTextElement(result.copyEntity)).toEqual(true);
 		});
 
 		it('should copy text', async () => {
-			const { original, visitor } = setup();
+			const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-			const result = await visitor.copy(original);
+			const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 			const copy = getRichTextFromStatus(result);
 
 			expect(copy.text).toEqual(original.text);
 		});
 
 		it('should copy text', async () => {
-			const { original, visitor } = setup();
+			const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-			const result = await visitor.copy(original);
+			const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 			const copy = getRichTextFromStatus(result);
 
 			expect(copy.inputFormat).toEqual(original.inputFormat);
 		});
 
 		it('should create new id', async () => {
-			const { original, visitor } = setup();
+			const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-			const result = await visitor.copy(original);
+			const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 			const copy = getRichTextFromStatus(result);
 
 			expect(copy.id).not.toEqual(original.id);
 		});
 
 		it('should show status successful', async () => {
-			const { original, visitor } = setup();
+			const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-			const result = await visitor.copy(original);
+			const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 			expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
 		});
 
 		it('should show type RichTextElement', async () => {
-			const { original, visitor } = setup();
+			const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-			const result = await visitor.copy(original);
+			const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 			expect(result.type).toEqual(CopyElementType.RICHTEXT_ELEMENT);
 		});
@@ -442,35 +458,35 @@ describe('recursive board copy visitor', () => {
 		};
 
 		it('should return a file element as copy', async () => {
-			const { original, visitor } = setup();
+			const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-			const result = await visitor.copy(original);
+			const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 			expect(isFileElement(result.copyEntity)).toEqual(true);
 		});
 
 		it('should create new id', async () => {
-			const { original, visitor } = setup();
+			const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-			const result = await visitor.copy(original);
+			const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 			const copy = getFileElementFromStatus(result);
 
 			expect(copy.id).not.toEqual(original.id);
 		});
 
 		it('should copy caption', async () => {
-			const { original, visitor } = setup();
+			const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-			const result = await visitor.copy(original);
+			const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 			const copy = getFileElementFromStatus(result);
 
 			expect(copy.caption).toEqual(original.caption);
 		});
 
 		it('should call fileCopy Service', async () => {
-			const { original, fileAdapter, visitor, targetSchoolId, originSchoolId, userId } = setup();
+			const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-			const result = await visitor.copy(original);
+			const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 			const copy = getFileElementFromStatus(result);
 
 			expect(fileAdapter.copyFilesOfParent).toHaveBeenCalledWith({
@@ -489,25 +505,25 @@ describe('recursive board copy visitor', () => {
 		});
 
 		it('should show status successful', async () => {
-			const { original, visitor } = setup();
+			const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-			const result = await visitor.copy(original);
+			const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 			expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
 		});
 
 		it('should show type FILE_ELEMENT', async () => {
-			const { original, visitor } = setup();
+			const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-			const result = await visitor.copy(original);
+			const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 			expect(result.type).toEqual(CopyElementType.FILE_ELEMENT);
 		});
 
 		it('should include file copy status', async () => {
-			const { original, visitor } = setup();
+			const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-			const result = await visitor.copy(original);
+			const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 			const fileCopyStatus = result.elements?.at(0);
 
@@ -535,43 +551,43 @@ describe('recursive board copy visitor', () => {
 			};
 
 			it('should return a submission container element as copy', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 				expect(isSubmissionContainerElement(result.copyEntity)).toEqual(true);
 			});
 
 			it('should copy dueDate', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 				const copy = getSubmissionContainerFromStatus(result);
 
 				expect(copy.dueDate).toEqual(original.dueDate);
 			});
 
 			it('should create new id', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 				const copy = getSubmissionContainerFromStatus(result);
 
 				expect(copy.id).not.toEqual(original.id);
 			});
 
 			it('should show status successful', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 				expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
 			});
 
 			it('should show type SUBMISSION_CONTAINER', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 				expect(result.type).toEqual(CopyElementType.SUBMISSION_CONTAINER_ELEMENT);
 			});
@@ -586,18 +602,18 @@ describe('recursive board copy visitor', () => {
 			};
 
 			it('should NOT add children to copy of columnboard', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 				const copy = getSubmissionContainerFromStatus(result);
 
 				expect(copy.children.length).toEqual(0);
 			});
 
 			it('should add status of child copies to copystatus', async () => {
-				const { original, visitor } = setup();
+				const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-				const result = await visitor.copy(original);
+				const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 				expect(result.elements?.length).toEqual(original.children.length);
 			});
@@ -612,25 +628,25 @@ describe('recursive board copy visitor', () => {
 		};
 
 		it('should NOT make a copy', async () => {
-			const { original, visitor } = setup();
+			const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-			const result = await visitor.copy(original);
+			const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 			expect(result.copyEntity).toBeUndefined();
 		});
 
 		it('should show status not-doing', async () => {
-			const { original, visitor } = setup();
+			const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-			const result = await visitor.copy(original);
+			const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 			expect(result.status).toEqual(CopyStatusEnum.NOT_DOING);
 		});
 
 		it('should show type SUBMISSION_ITEM', async () => {
-			const { original, visitor } = setup();
+			const { original, originSchoolId, targetSchoolId, userId } = setup();
 
-			const result = await visitor.copy(original);
+			const result = await service.copy({ original, originSchoolId, targetSchoolId, userId });
 
 			expect(result.type).toEqual(CopyElementType.SUBMISSION_ITEM);
 		});
