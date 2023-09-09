@@ -7,9 +7,8 @@ import {
 	isColumnBoard,
 } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
-import { UserService } from '@src/modules/user';
-// import { UserService } from '@src/modules';
 import { CopyStatus } from '@src/modules/copy-helper';
+import { UserService } from '@src/modules/user';
 import { BoardDoRepo } from '../repo';
 import { BoardDoCopyService } from './board-do-copy.service';
 
@@ -27,13 +26,6 @@ export class ColumnBoardCopyService {
 		destinationExternalReference: BoardExternalReference;
 		userId: EntityId;
 	}): Promise<CopyStatus> {
-		// load original DO
-		// instanciate copy visitor
-		// run copy visitor
-		// fetch copy result from visitor
-		// persist copy
-		// return
-
 		const originalBoard = await this.boardDoRepo.findByClassAndId(ColumnBoard, props.originalColumnBoardId);
 
 		const user = await this.userService.findById(props.userId);
