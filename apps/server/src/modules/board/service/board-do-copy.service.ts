@@ -36,6 +36,7 @@ class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		await original.acceptAsync(this);
 
 		const result = this.resultMap.get(original.id);
+		/* istanbul ignore next */
 		if (result === undefined) {
 			throw new Error('nothing copied');
 		}

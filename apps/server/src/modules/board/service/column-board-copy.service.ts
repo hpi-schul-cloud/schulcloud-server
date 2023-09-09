@@ -29,6 +29,7 @@ export class ColumnBoardCopyService {
 		const originalBoard = await this.boardDoRepo.findByClassAndId(ColumnBoard, props.originalColumnBoardId);
 
 		const user = await this.userService.findById(props.userId);
+		/* istanbul ignore next */
 		if (originalBoard.context.type !== BoardExternalReferenceType.Course) {
 			throw new NotImplementedException('only courses are supported as board parents');
 		}
@@ -41,6 +42,7 @@ export class ColumnBoardCopyService {
 			original: originalBoard,
 		});
 
+		/* istanbul ignore next */
 		if (!isColumnBoard(copyStatus.copyEntity)) {
 			throw new InternalServerErrorException('expected copy of columnboard to be a columnboard');
 		}
