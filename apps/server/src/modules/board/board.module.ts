@@ -35,6 +35,7 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		RecursiveDeleteVisitor,
 		SubmissionItemService,
 		BoardDoCopyService,
+		ColumnBoardCopyService,
 	],
 	exports: [
 		BoardDoAuthorizableService,
