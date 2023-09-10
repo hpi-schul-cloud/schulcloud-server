@@ -5,6 +5,8 @@ import { SanitizeHtml } from '@shared/controller';
 /**
  * DTO for creating a news document.
  */
+
+// TODO: Add County to Federal State
 export class CreateFederalStateBodyParams {
 	@IsString()
 	@SanitizeHtml()

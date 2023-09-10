@@ -1,4 +1,5 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+// TODO: County should have a domain object too
 import { County } from '../entity';
 
 export interface FederalStateProps extends AuthorizableObject {
