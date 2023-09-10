@@ -70,4 +70,8 @@ export class Class extends DomainObject<ClassProps> {
 	get updatedAt(): Date {
 		return this.props.updatedAt;
 	}
+
+	public removeUsers(userId: string) {
+		this.props.userIds = this.props.userIds?.filter((userId1) => userId1 !== userId);
+	}
 }

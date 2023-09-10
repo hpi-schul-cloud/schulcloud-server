@@ -16,7 +16,7 @@ export class ClassService {
 
 		const updatedClasses: Class[] = domainObjects.map((domainObject) => {
 			if (domainObject.userIds !== undefined) {
-				domainObject.userIds.filter((userId1) => userId1 !== userId);
+				domainObject.removeUsers(userId);
 			}
 			return domainObject;
 		});

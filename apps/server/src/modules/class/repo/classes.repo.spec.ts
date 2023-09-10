@@ -3,10 +3,10 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
-import { classEntityFactory } from '@src/modules/classes/entity/testing/factory/class.entity.factory';
+import { classEntityFactory } from '@src/modules/class/entity/testing/factory/class.entity.factory';
 import { ClassesRepo } from './classes.repo';
 import { ClassEntity } from '../entity';
-import { ClassMapper } from '../service/mapper';
+import { ClassMapper } from './mapper';
 import { Class } from '../domain';
 
 describe(ClassesRepo.name, () => {

@@ -4,7 +4,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain';
 import { ClassEntity } from '../entity';
 import { Class } from '../domain';
-import { ClassMapper } from '../service/mapper';
+import { ClassMapper } from './mapper';
 
 @Injectable()
 export class ClassesRepo {

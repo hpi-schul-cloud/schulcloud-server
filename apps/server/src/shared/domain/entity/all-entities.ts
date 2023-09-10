@@ -4,7 +4,7 @@ import { ShareToken } from '@src/modules/sharing/entity/share-token.entity';
 import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
-import { ClassEntity } from '@src/modules/classes/entity';
+import { ClassEntity } from '@src/modules/class/entity';
 import { Account } from './account.entity';
 import {
 	CardNode,

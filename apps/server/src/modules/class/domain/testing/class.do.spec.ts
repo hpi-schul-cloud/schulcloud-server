@@ -71,4 +71,19 @@ describe(Class.name, () => {
 			});
 		});
 	});
+	describe('removeUsers', () => {
+		describe('When function is called', () => {
+			it('domainObject userIds table should be updated and userId should be removed', () => {
+				const userToDeleteId = new ObjectId().toHexString();
+				const user2 = new ObjectId().toHexString();
+				const user3 = new ObjectId().toHexString();
+
+				const domainObject = classFactory.withUserIds([userToDeleteId, user2, user3]).build();
+
+				domainObject.removeUsers(userToDeleteId);
+
+				expect(domainObject.userIds).toEqual([user2, user3]);
+			});
+		});
+	});
 });
