@@ -68,6 +68,7 @@ describe('SanisStrategy', () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
+		Configuration.set('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED', 'true');
 	});
 
 	const setupSanisResponse = () => {
@@ -237,6 +238,8 @@ describe('SanisStrategy', () => {
 				mapper.mapToExternalUserDto.mockReturnValue(user);
 				mapper.mapToExternalSchoolDto.mockReturnValue(school);
 
+				Configuration.set('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED', 'false');
+
 				return {
 					input,
 				};
@@ -244,7 +247,6 @@ describe('SanisStrategy', () => {
 
 			it('should not call mapToExternalGroupDtos', async () => {
 				const { input } = setup();
-				Configuration.set('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED', 'false');
 
 				await strategy.getData(input);
 
