@@ -1,10 +1,11 @@
 import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EntityId, FederalStateEntity, ISchoolProperties, School, System, UserLoginMigration } from '@shared/domain';
+import { EntityId, ISchoolProperties, School, System, UserLoginMigration } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { LegacyLogger } from '@src/core/logger';
 import { FederalStateDO } from '@src/modules/federal-state/domainobject/federal-state.do';
+import { FederalStateEntity } from '@src/modules/federal-state/entity';
 import { BaseDORepo } from '../base.do.repo';
 
 @Injectable()

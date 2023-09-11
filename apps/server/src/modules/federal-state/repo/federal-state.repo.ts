@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { FederalStateEntity } from '@shared/domain';
-import { EntityManager } from '@mikro-orm/mongodb';
 import { EntityName } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { Injectable } from '@nestjs/common';
 import { FederalStateDO } from '../domainobject';
+import { FederalStateEntity } from '../entity';
 
 @Injectable()
 export class FederalStateRepo {
