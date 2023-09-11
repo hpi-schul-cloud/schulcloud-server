@@ -84,7 +84,7 @@ const switchSchool = async (app, currentUser, createUserMethod) => {
 		await deleteUser(app, currentUser);
 		return newUser;
 	} catch (err) {
-		logError(`Something went wrong during switching school for user: ${err}`);
+		logError(`Something went wrong during switching school for user (${currentUser.sourceOptions.tspUid}): ${err}`);
 		return null;
 	}
 };
