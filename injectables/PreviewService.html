@@ -1061,7 +1061,7 @@ export class PreviewService {
 		const { width } &#x3D; previewParams;
 
 		if (width) {
-			preview.resize(width);
+			preview.resize(width, undefined, &#x27;&gt;&#x27;);
 		}
 
 		const result &#x3D; preview.stream(format);
