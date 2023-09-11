@@ -89,6 +89,11 @@
                                     <span class="modifier">Async</span>
                                 <a href="#deleteUserDataFromTeams" >deleteUserDataFromTeams</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#findUserDataFromTeams" >findUserDataFromTeams</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -178,8 +183,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="9"
-                            class="link-to-prism">apps/server/src/modules/teams/service/team.service.ts:9</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="15"
+                            class="link-to-prism">apps/server/src/modules/teams/service/team.service.ts:15</a></div>
                 </td>
             </tr>
 
@@ -227,13 +232,85 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findUserDataFromTeams"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>findUserDataFromTeams</b></span>
+                        <a href="#findUserDataFromTeams"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findUserDataFromTeams(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="9"
+                            class="link-to-prism">apps/server/src/modules/teams/service/team.service.ts:9</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../entitys/TeamEntity.html" target="_self" >Promise&lt;TeamEntity[]&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId, TeamEntity } from &#x27;@shared/domain&#x27;;
 import { TeamsRepo } from &#x27;@shared/repo&#x27;;
 
@@ -241,11 +318,13 @@ import { TeamsRepo } from &#x27;@shared/repo&#x27;;
 export class TeamService {
 	constructor(private readonly teamsRepo: TeamsRepo) {}
 
-	public async deleteUserDataFromTeams(userId: EntityId): Promise&lt;number&gt; {
-		if (!userId) {
-			throw new InternalServerErrorException(&#x27;User id is missing&#x27;);
-		}
+	public async findUserDataFromTeams(userId: EntityId): Promise&lt;TeamEntity[]&gt; {
+		const teams &#x3D; await this.teamsRepo.findByUserId(userId);
 
+		return teams;
+	}
+
+	public async deleteUserDataFromTeams(userId: EntityId): Promise&lt;number&gt; {
 		const teams &#x3D; await this.teamsRepo.findByUserId(userId);
 
 		const updatedTeams: TeamEntity[] &#x3D; teams.map((team: TeamEntity) &#x3D;&gt; {

@@ -4777,9 +4777,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/TeamsRepo.html" data-type="entity-link" >TeamsRepo</a>
                                 </li>
                                 <li class="link">
-                                    <a href="injectables/TeamUC.html" data-type="entity-link" >TeamUC</a>
-                                </li>
-                                <li class="link">
                                     <a href="injectables/TimeoutInterceptor.html" data-type="entity-link" >TimeoutInterceptor</a>
                                 </li>
                                 <li class="link">
