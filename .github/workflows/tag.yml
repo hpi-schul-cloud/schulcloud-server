@@ -39,7 +39,7 @@ jobs:
           password: ${{ secrets.QUAY_TOKEN }}
 
       - name: Build and push ${{ github.repository }}
-        uses: docker/build-push-action@v4.1.1
+        uses: docker/build-push-action@v4
         with:
           context: .
           file: ./Dockerfile
@@ -59,7 +59,7 @@ jobs:
           labels: |
             org.opencontainers.image.title=schulcloud-file-storage
       - name: Build and push ${{ github.repository }} (file-storage)
-        uses: docker/build-push-action@v4.1.1
+        uses: docker/build-push-action@v4
         with:
           build-args: |
             BASE_IMAGE=quay.io/schulcloudverbund/schulcloud-server:${{ github.ref_name }}
