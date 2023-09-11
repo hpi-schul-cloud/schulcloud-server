@@ -179,7 +179,7 @@ describe('SanisResponseMapper', () => {
 							externalUserId: personenkontext.id,
 							roleName: RoleName.TEACHER,
 						},
-					],
+					].sort((a, b) => a.externalUserId.localeCompare(b.externalUserId)),
 				});
 			});
 		});
