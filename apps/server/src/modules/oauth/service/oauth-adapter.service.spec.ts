@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
+import { axiosResponseFactory } from '@shared/testing/factory/axios-response.factory';
 import { LegacyLogger } from '@src/core/logger';
-import { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { of, throwError } from 'rxjs';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthGrantType } from '../interface/oauth-grant-type.enum';
@@ -11,15 +11,10 @@ import { OauthAdapterService } from './oauth-adapter.service';
 
 const publicKey = 'publicKey';
 
-const createAxiosResponse = <T = unknown>(data: T): AxiosResponse<T> => {
-	return {
+const createAxiosResponse = <T>(data: T) =>
+	axiosResponseFactory.build({
 		data,
-		status: 0,
-		statusText: '',
-		headers: {},
-		config: {} as InternalAxiosRequestConfig,
-	};
-};
+	});
 
 jest.mock('jwks-rsa', () => () => {
 	return {

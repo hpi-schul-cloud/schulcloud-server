@@ -3,8 +3,8 @@ import { HttpService } from '@nestjs/axios';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { externalToolFactory } from '@shared/testing';
+import { axiosResponseFactory } from '@shared/testing/factory/axios-response.factory';
 import { Logger } from '@src/core/logger';
-import { AxiosResponse } from 'axios';
 import { of, throwError } from 'rxjs';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
@@ -195,11 +195,13 @@ describe('ExternalToolLogoService', () => {
 				const logoBuffer: Buffer = Buffer.from(base64Logo, 'base64');
 
 				httpService.get.mockReturnValue(
-					of({
-						data: logoBuffer,
-						status: HttpStatus.OK,
-						statusText: 'OK',
-					} as unknown as AxiosResponse<ArrayBuffer>)
+					of(
+						axiosResponseFactory.build({
+							data: logoBuffer,
+							status: HttpStatus.OK,
+							statusText: 'OK',
+						})
+					)
 				);
 
 				const logoUrl = 'https://logo.com/';

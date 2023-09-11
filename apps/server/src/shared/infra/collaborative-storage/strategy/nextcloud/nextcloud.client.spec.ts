@@ -4,8 +4,9 @@ import { HttpService } from '@nestjs/axios';
 import { NotFoundException, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NextcloudClient } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.client';
+import { axiosResponseFactory } from '@shared/testing/factory/axios-response.factory';
 import { LegacyLogger } from '@src/core/logger';
-import { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import { AxiosResponse } from 'axios';
 import { Observable, of } from 'rxjs';
 import {
 	GroupUsers,
@@ -42,15 +43,10 @@ function createOcsResponse<T = unknown>(data: T, meta: Meta = defaultMetadata): 
 	};
 }
 
-function createAxiosResponse<T = unknown>(data: T): AxiosResponse<T> {
-	return {
+const createAxiosResponse = (data: unknown) =>
+	axiosResponseFactory.build({
 		data,
-		status: 0,
-		statusText: '',
-		headers: {},
-		config: {} as InternalAxiosRequestConfig,
-	};
-}
+	});
 
 function createObservable<T = unknown>(data: T): Observable<AxiosResponse<T>> {
 	return of(createAxiosResponse(data));

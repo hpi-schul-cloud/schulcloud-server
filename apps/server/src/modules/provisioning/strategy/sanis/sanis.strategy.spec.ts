@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { setupEntities } from '@shared/testing';
-import { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import { axiosResponseFactory } from '@shared/testing/factory/axios-response.factory';
 import { UUID } from 'bson';
 import { of } from 'rxjs';
 import {
@@ -26,15 +26,10 @@ import {
 } from './sanis.response';
 import { SanisProvisioningStrategy } from './sanis.strategy';
 
-const createAxiosResponse = (data: SanisResponse): AxiosResponse<SanisResponse> => {
-	return {
-		data: data ?? {},
-		status: 0,
-		statusText: '',
-		headers: {},
-		config: {} as InternalAxiosRequestConfig,
-	};
-};
+const createAxiosResponse = (data: SanisResponse) =>
+	axiosResponseFactory.build({
+		data,
+	});
 
 describe('SanisStrategy', () => {
 	let module: TestingModule;

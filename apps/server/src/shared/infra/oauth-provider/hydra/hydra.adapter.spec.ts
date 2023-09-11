@@ -14,7 +14,8 @@ import {
 } from '@shared/infra/oauth-provider/dto';
 import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
 import { HydraAdapter } from '@shared/infra/oauth-provider/hydra/hydra.adapter';
-import { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig, Method, RawAxiosRequestHeaders } from 'axios';
+import { axiosResponseFactory } from '@shared/testing/factory/axios-response.factory';
+import { AxiosRequestConfig, Method, RawAxiosRequestHeaders } from 'axios';
 import { of } from 'rxjs';
 import resetAllMocks = jest.resetAllMocks;
 
@@ -29,15 +30,10 @@ class HydraAdapterSpec extends HydraAdapter {
 	}
 }
 
-const createAxiosResponse = <T>(data: T): AxiosResponse<T> => {
-	return {
+const createAxiosResponse = <T>(data: T) =>
+	axiosResponseFactory.build({
 		data,
-		status: 200,
-		statusText: '',
-		headers: {},
-		config: {} as InternalAxiosRequestConfig,
-	};
-};
+	});
 
 describe('HydraService', () => {
 	let module: TestingModule;
