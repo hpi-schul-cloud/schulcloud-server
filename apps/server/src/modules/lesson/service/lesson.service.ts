@@ -25,10 +25,6 @@ export class LessonService {
 	}
 
 	async deleteUserDataFromLessons(userId: EntityId): Promise<number> {
-		if (!userId) {
-			throw new InternalServerErrorException('User id is missing');
-		}
-
 		const lessons = await this.lessonRepo.findByUserId(userId);
 
 		const updatedLessons = lessons.map((lesson: LessonEntity) => {

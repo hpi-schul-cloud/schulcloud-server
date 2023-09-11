@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CourseRepo } from '@shared/repo';
 import { Course, EntityId } from '@shared/domain';
 
@@ -11,17 +11,15 @@ export class CourseService {
 	}
 
 	public async deleteUserDataFromCourse(userId: EntityId): Promise<number> {
-		if (!userId) {
-			throw new InternalServerErrorException('User id is missing');
-		}
-
 		const [courses, count] = await this.repo.findAllByUserId(userId);
 
 		const updatedCourses = courses.map(
 			(course: Course) =>
 				({
 					...course,
-					students: course.students.remove((u) => u.id !== userId),
+					students: course.students.remove((u) => u.id === userId),
+					teachers: course.teachers.remove((u) => u.id === userId),
+					substitutionTeachers: course.substitutionTeachers.remove((u) => u.id === userId),
 				} as unknown as Course)
 		);
 

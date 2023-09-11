@@ -436,7 +436,7 @@ describe('course repo', () => {
 			// Act
 			await repo.save([course1, course2, course3]);
 
-			const [result, count] = await repo.findAllByUserId(user.id);
+			const [, count] = await repo.findAllByUserId(user.id);
 			expect(count).toEqual(0);
 		});
 	});

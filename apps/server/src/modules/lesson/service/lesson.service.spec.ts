@@ -1,11 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LessonRepo } from '@shared/repo';
-import { lessonFactory, setupEntities, userDoFactory } from '@shared/testing';
+import { lessonFactory, setupEntities } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { InternalServerErrorException } from '@nestjs/common';
-import { ComponentType, EntityId, IComponentProperties, UserDO } from '@shared/domain';
+import { ComponentType, IComponentProperties } from '@shared/domain';
 import { LessonService } from './lesson.service';
 
 describe('LessonService', () => {
@@ -79,17 +78,6 @@ describe('LessonService', () => {
 	});
 
 	describe('deleteUserDataFromTeams', () => {
-		describe('when user is missing', () => {
-			it('should throw an error when user is missing', async () => {
-				const user: UserDO = userDoFactory.build({ id: undefined });
-				const userId = user.id as EntityId;
-
-				await expect(lessonService.deleteUserDataFromLessons(userId)).rejects.toThrowError(
-					InternalServerErrorException
-				);
-			});
-		});
-
 		describe('when deleting by userId', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();

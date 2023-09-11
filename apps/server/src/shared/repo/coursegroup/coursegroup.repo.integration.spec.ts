@@ -136,9 +136,6 @@ describe('course group repo', () => {
 
 			expect(count).toEqual(1);
 			expect(result[0].students[0].id).toEqual(userId);
-
-			// expect(result).toHaveLength(1);
-			// expect(result[0].students[0].id).toEqual(userId);
 		});
 	});
 
@@ -158,7 +155,7 @@ describe('course group repo', () => {
 			// Act
 			await repo.save(courseGroup1);
 
-			const [result, count] = await repo.findByUserId(userId);
+			const [, count] = await repo.findByUserId(userId);
 
 			expect(count).toEqual(0);
 		});
