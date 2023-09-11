@@ -1,9 +1,7 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TeamsRepo } from '@shared/repo';
-import { setupEntities, teamFactory, teamUserFactory, userDoFactory } from '@shared/testing';
-import { EntityId, UserDO } from '@shared/domain';
+import { setupEntities, teamFactory, teamUserFactory } from '@shared/testing';
 import { TeamService } from './team.service';
 
 describe('TeamService', () => {
@@ -37,24 +35,39 @@ describe('TeamService', () => {
 		await module.close();
 	});
 
-	describe('deleteUserDataFromTeams', () => {
-		describe('when user is missing', () => {
+	describe('findUserDataFromTeams', () => {
+		describe('when finding by userId', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.build({ id: undefined });
-				const userId = user.id as EntityId;
+				const teamUser = teamUserFactory.buildWithId();
+				const team1 = teamFactory.withTeamUser([teamUser]).build();
+				const team2 = teamFactory.withTeamUser([teamUser]).build();
+
+				teamsRepo.findByUserId.mockResolvedValue([team1, team2]);
 
 				return {
-					userId,
+					teamUser,
 				};
 			};
 
-			it('should throw an error', async () => {
-				const { userId } = setup();
+			it('should call teamsRepo.findByUserId', async () => {
+				const { teamUser } = setup();
 
-				await expect(service.deleteUserDataFromTeams(userId)).rejects.toThrowError(InternalServerErrorException);
+				await service.findUserDataFromTeams(teamUser.user.id);
+
+				expect(teamsRepo.findByUserId).toBeCalledWith(teamUser.user.id);
+			});
+
+			it('should return array of two teams with user', async () => {
+				const { teamUser } = setup();
+
+				const result = await service.findUserDataFromTeams(teamUser.user.id);
+
+				expect(result.length).toEqual(2);
 			});
 		});
+	});
 
+	describe('deleteUserDataFromTeams', () => {
 		describe('when deleting by userId', () => {
 			const setup = () => {
 				const teamUser = teamUserFactory.buildWithId();
