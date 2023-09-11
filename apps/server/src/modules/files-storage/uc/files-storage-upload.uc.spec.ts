@@ -41,7 +41,7 @@ const createAxiosResponse = (data: Readable, headers: RawAxiosRequestHeaders = {
 };
 
 const createAxiosErrorResponse = (): AxiosResponse => {
-	const headers = {}; // AxiosResponseHeaders;
+	const headers = {};
 	const config = {} as InternalAxiosRequestConfig;
 	const errorResponse: AxiosResponse = {
 		data: {},

@@ -169,7 +169,10 @@ describe('HydraService', () => {
 			const resDto: HydraRedirectDto = await service.processRedirect(responseDto1);
 
 			// Assert
-			expect(httpService.get).toHaveBeenCalledWith(`${apiHost}${axiosResponse1.headers.location}`, axiosConfig);
+			expect(httpService.get).toHaveBeenCalledWith(
+				`${apiHost}${axiosResponse1.headers.location as string}`,
+				axiosConfig
+			);
 			expect(resDto.response.data).toEqual(expectedAuthParams);
 		});
 		it('should process a hydra request', async () => {
@@ -196,7 +199,7 @@ describe('HydraService', () => {
 			const resDto: HydraRedirectDto = await service.processRedirect(responseDto2);
 
 			// Assert
-			expect(httpService.get).toHaveBeenCalledWith(`${axiosResponse2.headers.location}`, axiosConfig);
+			expect(httpService.get).toHaveBeenCalledWith(`${axiosResponse2.headers.location as string}`, axiosConfig);
 			expect(resDto.response.data).toEqual(expectedAuthParams);
 		});
 	});
