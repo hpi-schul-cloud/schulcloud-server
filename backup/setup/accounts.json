@@ -1455,5 +1455,25 @@
 		"lasttriedFailedLogin": {
 			"$date": "1970-01-01T00:00:00Z"
 		}
-	}
+	},
+	{
+		"_id": {
+		  "$oid": "64fb25239cee75d95d71b734"
+		},
+		"username": "test.setup@schul-cloud.org",
+		"password": "$2a$10$wzt5Td5KNZ02ezAz.u6IKOp6Tytaqt/MgaprWpEjznnDjAbzoLX/6",
+		"updatedAt": {
+		  "$date": "2023-09-08T15:40:02.033Z"
+		},
+		"createdAt": {
+		  "$date": "2023-09-08T15:40:02.033Z"
+		},
+		"userId": {
+		  "$oid": "64fb21cd55c24876db74fb52"
+		},
+		"__v": 0,
+		"lasttriedFailedLogin": {
+		  "$date": "1970-01-01T00:00:00.000Z"
+		}
+	  }
 ]
