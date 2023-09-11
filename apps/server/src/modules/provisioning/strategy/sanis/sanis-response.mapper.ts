@@ -81,7 +81,7 @@ export class SanisResponseMapper {
 				}
 
 				const sanisGroupUsers = [
-					...group.sonstige_gruppenzugehoerige,
+					...(group.sonstige_gruppenzugehoerige ?? []),
 					{
 						ktid: source.personenkontexte[0].id,
 						rollen: group.gruppenzugehoerigkeit.rollen,

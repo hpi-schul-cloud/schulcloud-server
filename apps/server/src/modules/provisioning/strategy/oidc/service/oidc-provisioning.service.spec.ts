@@ -13,18 +13,18 @@ import {
 	schoolYearFactory,
 	userDoFactory,
 } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
+import { Group, GroupService } from '@src/modules/group';
 import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { FederalStateService, SchoolService, SchoolYearService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import CryptoJS from 'crypto-js';
-import { Group, GroupService } from '@src/modules/group';
-import { Logger } from '@src/core/logger';
 import { ExternalGroupDto, ExternalSchoolDto, ExternalUserDto } from '../../../dto';
-import { OidcProvisioningService } from './oidc-provisioning.service';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
+import { OidcProvisioningService } from './oidc-provisioning.service';
 
 jest.mock('crypto-js');
 
@@ -343,6 +343,24 @@ describe('OidcProvisioningService', () => {
 	});
 
 	describe('provisionExternalGroup', () => {
+		describe('when the group has no users', () => {
+			const setup = () => {
+				const externalGroupDto: ExternalGroupDto = externalGroupDtoFactory.build({ users: [] });
+
+				return {
+					externalGroupDto,
+				};
+			};
+
+			it('should not create a group', async () => {
+				const { externalGroupDto } = setup();
+
+				await service.provisionExternalGroup(externalGroupDto, 'systemId');
+
+				expect(groupService.save).not.toHaveBeenCalled();
+			});
+		});
+
 		describe('when group does not have an externalOrganizationId', () => {
 			const setup = () => {
 				const externalGroupDto: ExternalGroupDto = externalGroupDtoFactory.build({ externalOrganizationId: undefined });

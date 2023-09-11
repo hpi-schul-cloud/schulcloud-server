@@ -3,18 +3,18 @@ import { EntityId, ExternalSource, FederalState, SchoolFeatures, SchoolYear } fr
 import { RoleReference } from '@shared/domain/domainobject';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
+import { Group, GroupService, GroupUser } from '@src/modules/group';
 import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { FederalStateService, SchoolService, SchoolYearService } from '@src/modules/school';
 import { FederalStateNames } from '@src/modules/school/types';
 import { UserService } from '@src/modules/user';
-import CryptoJS from 'crypto-js';
-import { Group, GroupService, GroupUser } from '@src/modules/group';
-import { Logger } from '@src/core/logger';
 import { ObjectId } from 'bson';
-import { ExternalSchoolDto, ExternalUserDto, ExternalGroupDto, ExternalGroupUserDto } from '../../../dto';
+import CryptoJS from 'crypto-js';
+import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
 
 @Injectable()
@@ -120,6 +120,10 @@ export class OidcProvisioningService {
 	}
 
 	async provisionExternalGroup(externalGroup: ExternalGroupDto, systemId: EntityId): Promise<void> {
+		if (externalGroup.users.length === 0) {
+			return;
+		}
+
 		const existingGroup: Group | null = await this.groupService.findByExternalSource(
 			externalGroup.externalId,
 			systemId

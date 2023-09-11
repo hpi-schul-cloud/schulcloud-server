@@ -7,5 +7,5 @@ export interface SanisGruppenResponse {
 
 	gruppenzugehoerigkeit: SanisGruppenzugehoerigkeitResponse;
 
-	sonstige_gruppenzugehoerige: SanisSonstigeGruppenzugehoerigeResponse[];
+	sonstige_gruppenzugehoerige?: SanisSonstigeGruppenzugehoerigeResponse[];
 }
