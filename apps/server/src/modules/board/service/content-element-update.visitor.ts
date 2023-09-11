@@ -6,6 +6,7 @@ import {
 	Column,
 	ColumnBoard,
 	FileElement,
+	InputFormat,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
@@ -35,8 +36,13 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 
 	visitFileElement(fileElement: FileElement): void {
 		if (this.content instanceof FileContentBody) {
-			fileElement.caption = this.content.caption;
-			fileElement.alternativeText = this.content.alternativeText;
+			fileElement.caption = this.content.caption
+				? sanitizeRichText(this.content.caption, InputFormat.PLAIN_TEXT)
+				: fileElement.caption;
+
+			fileElement.alternativeText = this.content.alternativeText
+				? sanitizeRichText(this.content.alternativeText, InputFormat.PLAIN_TEXT)
+				: fileElement.alternativeText;
 		} else {
 			this.throwNotHandled(fileElement);
 		}
