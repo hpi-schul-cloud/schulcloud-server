@@ -10,6 +10,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
+import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { createPath } from '../helper';
 import { FileResponseBuilder } from '../mapper';
 import { FileRecordRepo } from '../repo';
@@ -46,7 +47,7 @@ describe('FilesStorageService download methods', () => {
 			providers: [
 				FilesStorageService,
 				{
-					provide: S3ClientAdapter,
+					provide: FILES_STORAGE_S3_CONNECTION,
 					useValue: createMock<S3ClientAdapter>(),
 				},
 				{
@@ -69,7 +70,7 @@ describe('FilesStorageService download methods', () => {
 		}).compile();
 
 		service = module.get(FilesStorageService);
-		storageClient = module.get(S3ClientAdapter);
+		storageClient = module.get(FILES_STORAGE_S3_CONNECTION);
 	});
 
 	beforeEach(() => {
