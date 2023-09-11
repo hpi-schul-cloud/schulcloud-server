@@ -5,62 +5,62 @@ import { DemoConfiguration } from '../types';
 const configuration: DemoConfiguration = {
 	schools: [
 		{
-			name: 'Meine kleine Demoschule',
+			name: 'DEMO_Meine kleine Demoschule',
 			federalStateName: FederalStateName.NIEDERSACHSEN,
 			users: [
 				{
 					roleNames: [RoleName.ADMINISTRATOR],
 					firstName: 'Adam',
 					lastName: 'Riese',
-					email: 'adam.riese@example.com',
+					email: 'adam.riese@schul-cloud.org',
 				},
 				{
 					roleNames: [RoleName.TEACHER],
 					firstName: 'Teddy',
 					lastName: 'Cherwood',
-					email: 'teddy.cherwood@example.com',
+					email: 'teddy.cherwood@schul-cloud.org',
 				},
 				{
 					roleNames: [RoleName.TEACHER],
 					firstName: 'Susan',
 					lastName: 'Teak',
-					email: 'susan.teak@example.com',
+					email: 'susan.teak@schul-cloud.org',
 				},
 				{
 					roleNames: [RoleName.STUDENT],
 					firstName: 'Alex',
 					lastName: 'Erster',
-					email: 'alex.erster@example.com',
+					email: 'alex.erster@schul-cloud.org',
 				},
 				{
 					roleNames: [RoleName.STUDENT],
 					firstName: 'Bart',
 					lastName: 'Sekundus',
-					email: 'bart.sekundus@example.com',
+					email: 'bart.sekundus@schul-cloud.org',
 				},
 				{
 					roleNames: [RoleName.STUDENT],
 					firstName: 'Celin',
 					lastName: 'Tres',
-					email: 'celin.tres@example.com',
+					email: 'celin.tres@schul-cloud.org',
 				},
 				{
 					roleNames: [RoleName.STUDENT],
 					firstName: 'Dave',
 					lastName: 'Quadro',
-					email: 'dave.quadro@example.com',
+					email: 'dave.quadro@schul-cloud.org',
 				},
 			],
 			courses: [
 				{
 					name: 'DemoCourse',
-					teachers: ['teddy.cherwood@example.com'],
-					substitutionTeachers: ['susan.teak@example.com'],
+					teachers: ['teddy.cherwood@schul-cloud.org'],
+					substitutionTeachers: ['susan.teak@schul-cloud.org'],
 					students: [
-						'alex.erster@example.com',
-						'bart.sekundus@example.com',
-						'celin.tres@example.com',
-						'dave.quadro@example.com',
+						'alex.erster@schul-cloud.org',
+						'bart.sekundus@schul-cloud.org',
+						'celin.tres@schul-cloud.org',
+						'dave.quadro@schul-cloud.org',
 					],
 					lessons: [
 						{
