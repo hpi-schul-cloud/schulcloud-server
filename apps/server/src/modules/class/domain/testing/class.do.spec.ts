@@ -80,7 +80,7 @@ describe(Class.name, () => {
 
 				const domainObject = classFactory.withUserIds([userToDeleteId, user2, user3]).build();
 
-				domainObject.removeUsers(userToDeleteId);
+				domainObject.removeUser(userToDeleteId);
 
 				expect(domainObject.userIds).toEqual([user2, user3]);
 			});
