@@ -21,7 +21,7 @@ export interface ICourseProperties {
 	startDate?: Date;
 	untilDate?: Date;
 	copyingSince?: Date;
-	features?: CourseFeatures[];
+	features?: CourseFeature[];
 }
 
 // that is really really shit default handling :D constructor, getter, js default, em default...what the hell
@@ -32,8 +32,11 @@ const DEFAULT = {
 	description: '',
 };
 
-const enum CourseFeatures {
+export const enum CourseFeature {
+	IS_TEAM = 'isTeam',
+	ROCKETCHAT = 'rocketChat',
 	VIDEOCONFERENCE = 'videoconference',
+	MESSENGER = 'messenger',
 }
 
 @Entity({ tableName: 'courses' })
@@ -85,7 +88,7 @@ export class Course
 	shareToken?: string;
 
 	@Enum({ nullable: true, array: true })
-	features?: CourseFeatures[];
+	features?: CourseFeature[];
 
 	constructor(props: ICourseProperties) {
 		super();

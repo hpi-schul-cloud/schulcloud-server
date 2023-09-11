@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Course, EntityId, User } from '@shared/domain';
 import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
+import { CourseCreateDto } from '../types';
 import { BoardCopyService } from './board-copy.service';
 import { RoomsService } from './rooms.service';
 
@@ -55,17 +56,17 @@ export class CourseCopyService {
 
 	private async copyCourseEntity(params: CourseCopyParams): Promise<Course> {
 		const { originalCourse, user, copyName } = params;
-		const courseCopy = new Course({
-			school: user.school,
-			name: copyName,
+		const courseCreateDto: CourseCreateDto = {
+			schoolId: user.school.id,
+			name: copyName ?? '',
 			color: originalCourse.color,
-			teachers: [user],
+			teacherIds: [user.id],
 			startDate: user.school.schoolYear?.startDate,
 			untilDate: user.school.schoolYear?.endDate,
 			copyingSince: new Date(),
-		});
+		};
 
-		await this.courseRepo.createCourse(courseCopy);
+		const courseCopy = await this.courseRepo.createCourse(courseCreateDto);
 		return courseCopy;
 	}
 

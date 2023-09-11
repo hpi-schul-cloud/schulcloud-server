@@ -1,3 +1,3 @@
 export enum FederalStateNames {
-	NIEDERSACHEN = 'Niedersachsen',
+	NIEDERSACHSEN = 'Niedersachsen',
 }

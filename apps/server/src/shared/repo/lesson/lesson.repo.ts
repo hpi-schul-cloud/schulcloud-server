@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Counted, EntityId, Lesson, SortOrder } from '@shared/domain';
+import { Counted, Course, EntityId, Lesson, SortOrder } from '@shared/domain';
+import { LessonCreateDto } from '@src/modules/lesson/types';
 import { BaseRepo } from '../base.repo';
 import { LessonScope } from './lesson-scope';
 
@@ -9,8 +10,19 @@ export class LessonRepo extends BaseRepo<Lesson> {
 		return Lesson;
 	}
 
-	async createLesson(lesson: Lesson): Promise<void> {
-		return this.save(this.create(lesson));
+	async createLesson(lessonCreateDto: LessonCreateDto): Promise<Lesson> {
+		const { name, courseId, hidden, contents, position } = lessonCreateDto;
+		const courseRef = this._em.getReference(Course, courseId);
+		const lesson = new Lesson({
+			name,
+			hidden: hidden ?? false,
+			course: courseRef,
+			position: position ?? 0,
+			contents: contents ?? [],
+		});
+		if (lessonCreateDto.id) lesson.id = lessonCreateDto.id;
+		await this.save(this.create(lesson));
+		return lesson;
 	}
 
 	async findById(id: EntityId): Promise<Lesson> {

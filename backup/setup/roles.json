@@ -562,5 +562,23 @@
 		],
 		"permissions": [],
 		"__v": 0
-	}
+	},
+	{
+		"_id": {
+		  "$oid": "64fb23319cee75d95d71b732"
+		},
+		"name": "cypresssetup",
+		"updatedAt": {
+		  "$date": "2023-09-08T12:24:48.000Z"
+		},
+		"createdAt": {
+		  "$date": "2023-09-08T12:24:48.000Z"
+		},
+		"roles": [],
+		"permissions": [
+		  "CREATE_DEMO_SCHOOL",
+		  "DELETE_DEMO_SCHOOL"
+		],
+		"__v": 0
+	  }
 ]

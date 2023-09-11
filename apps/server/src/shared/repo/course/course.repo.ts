@@ -1,7 +1,8 @@
 import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
-import { Counted, Course, EntityId, IFindOptions } from '@shared/domain';
+import { Counted, Course, EntityId, IFindOptions, School, User } from '@shared/domain';
+import { CourseCreateDto } from '@src/modules/learnroom/types';
 import { BaseRepo } from '../base.repo';
 import { Scope } from '../scope';
 
@@ -56,8 +57,32 @@ export class CourseRepo extends BaseRepo<Course> {
 		return Course;
 	}
 
-	async createCourse(course: Course): Promise<void> {
-		return this.save(this.create(course));
+	async createCourse(courseDto: CourseCreateDto): Promise<Course> {
+		const schoolRef = this._em.getReference(School, courseDto.schoolId);
+
+		const getUserRef = (id: EntityId) => this._em.getReference(User, id);
+		const studentRefs = (courseDto.studentIds ?? []).map(getUserRef);
+		const teacherRefs = (courseDto.teacherIds ?? []).map(getUserRef);
+		const substitutionTeacherRefs = (courseDto.substitutionTeacherIds ?? []).map(getUserRef);
+
+		const course = new Course({
+			name: courseDto.name,
+			description: courseDto.description,
+			school: schoolRef,
+			students: studentRefs,
+			teachers: teacherRefs,
+			substitutionTeachers: substitutionTeacherRefs,
+			// WIP: courseGroups,
+			color: courseDto.color,
+			startDate: courseDto.startDate,
+			untilDate: courseDto.untilDate,
+			copyingSince: courseDto.copyingSince,
+			// shareToken: courseDO.shareToken,
+			features: courseDto.features ?? [],
+		});
+		if (courseDto.id) course.id = courseDto.id;
+		await this.save(this.create(course));
+		return course;
 	}
 
 	async findById(id: EntityId, populate = true): Promise<Course> {

@@ -6339,5 +6339,89 @@
 		"preferences": {
 			"firstLogin": true
 		}
-	}
+	},
+	{
+		"_id": {
+		  "$oid": "64fb21cd55c24876db74fb52"
+		},
+		"consent": {
+			"parentConsents": [],
+			"userConsent": {
+				"form": "digital",
+				"privacyConsent": true,
+				"termsOfUseConsent": true,
+				"dateOfPrivacyConsent": {
+					"$date": "2023-09-08T11:05:11.270Z"
+				},
+				"dateOfTermsOfUseConsent": {
+					"$date": "2023-09-08T11:05:11.270Z"
+				}
+			}
+		},
+		"roles": [
+		  {
+			"$oid": "64fb23319cee75d95d71b732"
+		  }
+		],
+		"emailSearchValues": [
+		  "t",
+		  "te",
+		  "tes",
+		  "est",
+		  "st.",
+		  "t.s",
+		  ".se",
+		  "set",
+		  "etu",
+		  "tup",
+		  "up@",
+		  "p@s",
+		  "@sc",
+		  "sch",
+		  "chu",
+		  "hul",
+		  "c",
+		  "cl",
+		  "clo",
+		  "lou",
+		  "oud",
+		  "ud.",
+		  "d.o",
+		  ".or",
+		  "org"
+		],
+		"firstNameSearchValues": [
+		  "T",
+		  "Te",
+		  "Tes",
+		  "est"
+		],
+		"lastNameSearchValues": [
+		  "S",
+		  "Se",
+		  "Set",
+		  "etu",
+		  "tup"
+		],
+		"forcePasswordChange": false,
+		"features": [],
+		"deletedAt": null,
+		"firstName": "Test",
+		"lastName": "Setup",
+		"email": "test.setup@schul-cloud.org",
+		"schoolId": {
+		  "$oid": "5f2987e020834114b8efd6f8"
+		},
+		"parents": [],
+		"createdAt": {
+		  "$date": "2023-09-08T13:29:49.081Z"
+		},
+		"updatedAt": {
+		  "$date": "2023-09-08T13:29:49.081Z"
+		},
+		"preferences": {
+			"firstLogin": false
+		},
+		"__v": 0
+	  }
 ]

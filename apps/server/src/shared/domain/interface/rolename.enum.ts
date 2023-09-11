@@ -4,6 +4,7 @@ export enum RoleName {
 	COURSESTUDENT = 'courseStudent',
 	COURSESUBSTITUTIONTEACHER = 'courseSubstitutionTeacher',
 	COURSETEACHER = 'courseTeacher',
+	CYPRESSSETUP = 'cypresssetup',
 	DEMO = 'demo',
 	DEMOSTUDENT = 'demoStudent',
 	DEMOTEACHER = 'demoTeacher',

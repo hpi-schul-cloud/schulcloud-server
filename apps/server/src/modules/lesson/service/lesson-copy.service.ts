@@ -19,7 +19,7 @@ import { CopyFilesService } from '@src/modules/files-storage-client';
 import { FileUrlReplacement } from '@src/modules/files-storage-client/service/copy-files.service';
 import { TaskCopyService } from '@src/modules/task/service/task-copy.service';
 import { randomBytes } from 'crypto';
-import { LessonCopyParams } from '../types';
+import { LessonCopyParams, LessonCreateDto } from '../types';
 import { EtherpadService } from './etherpad.service';
 import { NexboardService } from './nexboard.service';
 
@@ -39,17 +39,16 @@ export class LessonCopyService {
 		const { copiedContent, contentStatus } = await this.copyLessonContent(lesson.contents, params);
 		const { copiedMaterials, materialsStatus } = this.copyLinkedMaterials(lesson);
 
-		const lessonCopy = new Lesson({
-			course: params.destinationCourse,
+		const lessonCreateDto: LessonCreateDto = {
+			courseId: params.destinationCourse.id,
 			hidden: true,
 			name: params.copyName ?? lesson.name,
 			position: lesson.position,
 			contents: copiedContent,
-			materials: copiedMaterials,
-		});
+			materialIds: (copiedMaterials ?? []).map((material) => material.id),
+		};
 
-		await this.lessonRepo.createLesson(lessonCopy);
-
+		const lessonCopy = await this.lessonRepo.createLesson(lessonCreateDto);
 		const copiedTasksStatus: CopyStatus[] = await this.copyLinkedTasks(lessonCopy, lesson, params);
 
 		const { status, elements } = this.deriveCopyStatus(

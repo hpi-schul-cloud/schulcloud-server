@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Counted, EntityId, Lesson } from '@shared/domain';
 import { LessonRepo } from '@shared/repo';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { LessonCreateDto } from '../types';
 
 @Injectable()
 export class LessonService {
@@ -9,6 +10,11 @@ export class LessonService {
 		private readonly lessonRepo: LessonRepo,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
 	) {}
+
+	async createLesson(lessonCreateDto: LessonCreateDto): Promise<string> {
+		const lesson = await this.lessonRepo.createLesson(lessonCreateDto);
+		return lesson.id;
+	}
 
 	async deleteLesson(lesson: Lesson): Promise<void> {
 		await this.filesStorageClientAdapterService.deleteFilesOfParent(lesson.id);

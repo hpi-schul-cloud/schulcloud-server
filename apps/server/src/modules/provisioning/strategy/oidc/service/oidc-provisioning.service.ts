@@ -42,7 +42,7 @@ export class OidcProvisioningService {
 		} else {
 			const schoolYear: SchoolYear = await this.schoolYearService.getCurrentSchoolYear();
 			const federalState: FederalState = await this.federalStateService.findFederalStateByName(
-				FederalStateNames.NIEDERSACHEN
+				FederalStateNames.NIEDERSACHSEN
 			);
 
 			school = new SchoolDO({
