@@ -60,6 +60,7 @@ describe('KeycloakAdministrationService', () => {
 		jest.resetAllMocks();
 	});
 
+	// TODO: describe blocks for when clauses (test structure)
 	describe('callKcAdminClient', () => {
 		it('should return the original client', async () => {
 			const ret = await service.callKcAdminClient();

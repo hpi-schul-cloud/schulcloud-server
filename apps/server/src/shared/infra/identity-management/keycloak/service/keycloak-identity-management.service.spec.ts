@@ -14,6 +14,7 @@ describe('KeycloakIdentityManagementService', () => {
 	let idm: IdentityManagementService;
 	let kcUsersMock: DeepMocked<Users>;
 
+	// does a test factory make sense here?
 	type MockUser = {
 		id: string;
 		username: string;
@@ -76,6 +77,7 @@ describe('KeycloakIdentityManagementService', () => {
 		expect(idm).toBeDefined();
 	});
 
+	// TODO: test structure (setups in particular)
 	describe('createAccount', () => {
 		it('should allow to create an account', async () => {
 			kcUsersMock.find.mockResolvedValueOnce([]);

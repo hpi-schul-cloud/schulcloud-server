@@ -12,6 +12,8 @@ import { IdentityManagementService } from '../../identity-management.service';
 import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';
 
 describe('KeycloakIdentityManagementService Integration', () => {
+	// TODO: for much later, we need to think about how to set up integration tests with keykloak (or other systems) in a better way
+	// TODO: maybe add a comment on how to use this (these tests only have a use when consciously run locally with a keykloak)
 	let module: TestingModule;
 	let idmService: KeycloakIdentityManagementService;
 	let keycloakAdminService: KeycloakAdministrationService;
@@ -19,6 +21,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 	let isKeycloakReachable: boolean;
 
 	const testRealm = `test-realm-${v1().toString()}`;
+	// TODO: Test Factory?
 	const testAccount: IdmAccount = {
 		id: new ObjectId().toString(),
 		email: 'john.doe@mail.tld',

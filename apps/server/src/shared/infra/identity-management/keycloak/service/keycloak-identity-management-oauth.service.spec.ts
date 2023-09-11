@@ -55,6 +55,10 @@ describe('KeycloakIdentityManagementService', () => {
 	});
 
 	const setupOauthConfigurationReturn = () => {
+		/* TODO: When Mocks are defined in general, but have to be overwritten later, that can lead to confusion.
+		It would be better to either only define the mocks here that are actually needed everywhere and dont need
+		to be overwritten, or to add a parameter to this function to be able to set things only once */
+		// TODO: check if the others could also be once (though the mocks are resetted afterEach)
 		oAuthEncryptionService.encrypt.mockImplementation((value: string) => `${value}_enc`);
 		oAuthEncryptionService.decrypt.mockImplementation((value: string) => value.substring(0, -4));
 		configServiceMock.get.mockReturnValue('testdomain');

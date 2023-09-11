@@ -1,6 +1,7 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+// todo: relative import for files in same module
 import { KeycloakModule } from '@shared/infra/identity-management/keycloak/keycloak.module';
 import { LoggerModule } from '@src/core/logger';
 import { v1 } from 'uuid';

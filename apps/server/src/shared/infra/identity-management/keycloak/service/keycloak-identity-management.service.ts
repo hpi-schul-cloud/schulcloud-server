@@ -12,7 +12,9 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 	}
 
 	async createAccount(account: IdmAccount, password?: string): Promise<string> {
+		// TODO: could be wrapped in a private method (slightly reduces complexity)
 		const kc = await this.kcAdminClient.callKcAdminClient();
+		// TODO: either destructure the response to get the id directly, or name it differently
 		const id = await kc.users.create({
 			username: account.username,
 			email: account.email,
@@ -43,7 +45,9 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 		return id.id;
 	}
 
+	// TODO: use a more strict type for the id, a new "KeykloakId" or "UUID" or something
 	async updateAccount(id: string, account: IdmAccountUpdate): Promise<string> {
+		// TODO: double await makes this hard to read, maybe chaining here isnt such a good idea :)
 		await (
 			await this.kcAdminClient.callKcAdminClient()
 		).users.update(
@@ -60,6 +64,8 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 	}
 
 	async updateAccountPassword(id: string, password: string): Promise<string> {
+		// TODO: double await makes this hard to read, maybe chaining here isnt such a good idea :)
+		// potentially wrap calls into private functions
 		await (
 			await this.kcAdminClient.callKcAdminClient()
 		).users.resetPassword({
@@ -85,6 +91,8 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 		const keycloakUsers = await (
 			await this.kcAdminClient.callKcAdminClient()
 		).users.find({ q: `dbcAccountId:${accountDbcAccountId} }` });
+		// TODO: consider using a self-defined error. (or EntityNotFoundError to be consistent with functions below)
+		// TODO: this check is done multiple times, should be extracted into a private method
 		if (keycloakUsers.length > 1) {
 			throw new Error('Multiple accounts for the same id!');
 		}
@@ -112,6 +120,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 
 	async findAccountsByUsername(username: string, options?: SearchOptions): Promise<Counted<IdmAccount[]>> {
 		const kc = await this.kcAdminClient.callKcAdminClient();
+		// TODO: promise.all, maybe check if there is a way to directly get a paginated response from keycloak
 		const total = await kc.users.count({ username });
 		const results = await kc.users.find({
 			username,
@@ -143,6 +152,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 			throw new EntityNotFoundError(`User '${userId}' not found`);
 		}
 		if (user.attributes && user.attributes[attributeName] && Array.isArray(user.attributes[attributeName])) {
+			// TODO: use typeguard instead of as (you can also create a function to do a typeguard together with as cast)
 			const [value] = (user.attributes[attributeName] as TValue[]) || null;
 			return value;
 		}
@@ -168,6 +178,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 	}
 
 	private extractAccount(user: UserRepresentation): IdmAccount {
+		// TODO: if something similar is done in multiple places, consider a mapper or builder for IdmAccount
 		const ret: IdmAccount = {
 			id: user.id ?? '',
 			username: user.username,
@@ -184,6 +195,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 	}
 
 	private extractAttributeValue(value: unknown): string {
+		// TODO: Typeguard
 		if (Array.isArray(value)) {
 			return value[0] as string;
 		}

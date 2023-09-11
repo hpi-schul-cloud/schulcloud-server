@@ -13,6 +13,8 @@ export default class KeycloakAdministration {
 					password: Configuration.get('IDENTITY_MANAGEMENT__ADMIN_PASSWORD') as string,
 					clientId: Configuration.get('IDENTITY_MANAGEMENT__ADMIN_CLIENTID') as string,
 				},
+				// TODO: this as cast is unnecessary, just type the static variable
 		  } as IKeycloakSettings)
-		: ({} as IKeycloakSettings);
+		: // TODO: this as cast is dangerous and needs to go. either change the interface to allow empty object, or throw an error.
+		  ({} as IKeycloakSettings);
 }
