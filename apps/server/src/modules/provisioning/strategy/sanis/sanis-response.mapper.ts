@@ -80,7 +80,7 @@ export class SanisResponseMapper {
 					return null;
 				}
 
-				const sanisGroupUsers = [
+				const sanisGroupUsers: SanisSonstigeGruppenzugehoerigeResponse[] = [
 					...(group.sonstige_gruppenzugehoerige ?? []),
 					{
 						ktid: source.personenkontexte[0].id,
