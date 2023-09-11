@@ -253,6 +253,49 @@ data:
 
     # ========== End of the Dev IServ configuration section.
 
+    # ========== Start of the Test BRB Univention LDAP system (also used on the REF BRB) configuration section.
+
+    # This is currently performed for any 'brb-*' namespace ('brb-main' for example).
+
+    if [[ "$NS" =~ ^brb-[^\s]+$ ]]; then
+        UNIVENTION_LDAP_SYSTEM_ID=621beef78ec63ea12a3adae6
+        UNIVENTION_LDAP_FEDERAL_STATE_ID=0000b186816abba584714c53
+
+        # Encrypt LDAP server's search user password.
+        UNIVENTION_LDAP_SEARCH_USER_PASSWORD=$(node scripts/secret.js -s $AES_KEY -e $UNIVENTION_LDAP_SEARCH_USER_PASSWORD)
+
+        # Add (or replace) document with the test BRB Univention LDAP system configuration.
+        mongosh $DATABASE__URL --eval 'db.systems.replaceOne(
+            {
+                "_id": ObjectId("'$UNIVENTION_LDAP_SYSTEM_ID'"),
+            },
+            {
+                "_id": ObjectId("'$UNIVENTION_LDAP_SYSTEM_ID'"),
+                "alias": "TEST BRB UNIVENTION LDAP",
+                "ldapConfig": {
+                    "active": true,
+                    "federalState": ObjectId("'$UNIVENTION_LDAP_FEDERAL_STATE_ID'"),
+                    "url": "'$UNIVENTION_LDAP_URL'",
+                    "rootPath": "'$UNIVENTION_LDAP_ROOT_PATH'",
+                    "searchUser": "'$UNIVENTION_LDAP_SEARCH_USER'",
+                    "searchUserPassword": "'$UNIVENTION_LDAP_SEARCH_USER_PASSWORD'",
+                    "provider": "univention",
+                    "providerOptions": {
+                        "userAttributeNameMapping": {},
+                        "roleAttributeNameMapping": {},
+                        "classAttributeNameMapping": {}
+                    }
+                },
+                "type": "ldap"
+            },
+            {
+                "upsert": true
+            }
+        );'
+    fi
+
+    # ========== End of the Test BRB Univention LDAP system (also used on the REF BRB) configuration section.
+
     # ========== Start of the Bettermarks tool configuration section.
 
     # This is currently performed only for the following 4 namespaces:
