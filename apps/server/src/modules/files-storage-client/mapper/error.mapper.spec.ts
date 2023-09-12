@@ -45,7 +45,8 @@ describe('ErrorMapper', () => {
 			const result = ErrorMapper.mapRpcErrorResponseToDomainError(json);
 
 			expect(result).toStrictEqual(new InternalServerErrorException('Internal Server Error Exception'));
-			expect((result.cause as IError).message).toContain(errorText);
+			// @ts-expect-error cause is always unknown
+			expect(result.cause?.message).toContain(errorText);
 		});
 	});
 });

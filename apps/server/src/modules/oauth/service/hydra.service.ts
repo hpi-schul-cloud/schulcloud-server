@@ -42,7 +42,12 @@ export class HydraSsoService {
 
 	async processRedirect(dto: HydraRedirectDto): Promise<HydraRedirectDto> {
 		const localDto: HydraRedirectDto = new HydraRedirectDto(dto);
-		let location: string = localDto.response.headers.location as string;
+		let location = '';
+
+		if (typeof localDto.response.headers.location === 'string') {
+			({ location } = localDto.response.headers);
+		}
+
 		const isLocal = !location.startsWith('http');
 		const isHydra = location.startsWith(Configuration.get('HYDRA_PUBLIC_URI') as string);
 

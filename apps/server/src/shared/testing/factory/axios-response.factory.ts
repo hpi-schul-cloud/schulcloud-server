@@ -30,7 +30,7 @@ class AxiosResponseImp<T> implements AxiosResponse {
 	}
 }
 
-export const axiosResponseFactory = BaseFactory.define<AxiosResponseImp<any>, AxiosResponseProps<any>>(
+export const axiosResponseFactory = BaseFactory.define<AxiosResponseImp<unknown>, AxiosResponseProps<unknown>>(
 	AxiosResponseImp,
 	() => {
 		return {
@@ -38,7 +38,7 @@ export const axiosResponseFactory = BaseFactory.define<AxiosResponseImp<any>, Ax
 			status: 200,
 			statusText: '',
 			headers: new AxiosHeaders(),
-			config: {} as InternalAxiosRequestConfig<unknown>,
+			config: { headers: new AxiosHeaders() },
 		};
 	}
 );

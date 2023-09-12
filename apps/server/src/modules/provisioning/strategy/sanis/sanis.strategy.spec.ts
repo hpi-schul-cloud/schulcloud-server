@@ -4,8 +4,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { setupEntities } from '@shared/testing';
-import { axiosResponseFactory } from '@shared/testing/factory/axios-response.factory';
+import { axiosResponseFactory, setupEntities } from '@shared/testing';
 import { UUID } from 'bson';
 import { of } from 'rxjs';
 import {

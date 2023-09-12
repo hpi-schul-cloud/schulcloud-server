@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { axiosResponseFactory } from '@shared/testing/factory/axios-response.factory';
+import { axiosResponseFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { of, throwError } from 'rxjs';
 import { OAuthSSOError } from '../error/oauth-sso.error';

@@ -14,7 +14,7 @@ import {
 } from '@shared/infra/oauth-provider/dto';
 import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
 import { HydraAdapter } from '@shared/infra/oauth-provider/hydra/hydra.adapter';
-import { axiosResponseFactory } from '@shared/testing/factory/axios-response.factory';
+import { axiosResponseFactory } from '@shared/testing';
 import { AxiosRequestConfig, Method, RawAxiosRequestHeaders } from 'axios';
 import { of } from 'rxjs';
 import resetAllMocks = jest.resetAllMocks;

@@ -4,7 +4,7 @@ import { HttpService } from '@nestjs/axios';
 import { NotFoundException, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NextcloudClient } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.client';
-import { axiosResponseFactory } from '@shared/testing/factory/axios-response.factory';
+import { axiosResponseFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { AxiosResponse } from 'axios';
 import { Observable, of } from 'rxjs';

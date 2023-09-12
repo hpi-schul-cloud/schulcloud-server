@@ -24,38 +24,45 @@ describe('DatabaseManagementConsole (API)', () => {
 	});
 
 	afterEach(async () => {
-		await app.close();
 		logMock.mockReset();
 		consoleService.resetCli();
+		await app.close();
 	});
 
 	describe('Command "database"', () => {
-		it('should fail for unknown command', async () => {
-			const cli = consoleService.getCli('database');
-			const exitFn = (err: CommanderError) => {
-				if (err.exitCode !== 0) throw err;
+		describe('when command not exists', () => {
+			const setup = () => {
+				const cli = consoleService.getCli('database');
+				const exitFn = (err: CommanderError) => {
+					if (err.exitCode !== 0) throw err;
+				};
+				cli?.exitOverride(exitFn);
+				const rootCli = consoleService.getRootCli();
+				rootCli.exitOverride(exitFn);
 			};
-			cli?.exitOverride(exitFn);
-			const rootCli = consoleService.getRootCli();
-			rootCli.exitOverride(exitFn);
 
-			await expect(execute(bootstrap, ['database', 'not_existing_command'])).rejects.toThrow(
-				`error: unknown command 'not_existing_command'`
-			);
+			it('should fail for unknown command', async () => {
+				setup();
+				await expect(execute(bootstrap, ['database', 'not_existing_command'])).rejects.toThrow(
+					`error: unknown command 'not_existing_command'`
+				);
 
-			consoleService.resetCli();
+				consoleService.resetCli();
+			});
 		});
 
-		it('should provide command "seed"', async () => {
-			await execute(bootstrap, ['database', 'seed']);
-		});
+		describe('when command exists', () => {
+			it('should provide command "seed"', async () => {
+				await execute(bootstrap, ['database', 'seed']);
+			});
 
-		it('should provide command "export"', async () => {
-			await execute(bootstrap, ['database', 'export']);
-		});
+			it('should provide command "export"', async () => {
+				await execute(bootstrap, ['database', 'export']);
+			});
 
-		it('should provide command "sync-indexes"', async () => {
-			await execute(bootstrap, ['database', 'sync-indexes']);
+			it('should provide command "sync-indexes"', async () => {
+				await execute(bootstrap, ['database', 'sync-indexes']);
+			});
 		});
 	});
 });

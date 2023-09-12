@@ -8,7 +8,7 @@ import { LtiPrivacyPermission, LtiRoleType, OauthConfig } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { LtiToolRepo } from '@shared/repo';
-import { axiosResponseFactory } from '@shared/testing/factory/axios-response.factory';
+import { axiosResponseFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
 import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';

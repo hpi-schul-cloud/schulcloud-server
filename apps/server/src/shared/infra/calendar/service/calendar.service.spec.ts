@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CalendarEventDto, CalendarService } from '@shared/infra/calendar';
 import { ICalendarEvent } from '@shared/infra/calendar/interface/calendar-event.interface';
 import { CalendarMapper } from '@shared/infra/calendar/mapper/calendar.mapper';
-import { axiosResponseFactory } from '@shared/testing/factory/axios-response.factory';
+import { axiosResponseFactory } from '@shared/testing';
 import { AxiosResponse } from 'axios';
 import { of, throwError } from 'rxjs';
 
