@@ -168,4 +168,40 @@ describe('GroupService', () => {
 			});
 		});
 	});
+
+	describe('findByExternalSource', () => {
+		describe('when a group with the externalId exists', () => {
+			const setup = () => {
+				const group: Group = groupFactory.build();
+
+				groupRepo.findByExternalSource.mockResolvedValue(group);
+
+				return {
+					group,
+				};
+			};
+
+			it('should return the group', async () => {
+				const { group } = setup();
+
+				const result: Group | null = await service.findByExternalSource('externalId', 'systemId');
+
+				expect(result).toEqual(group);
+			});
+		});
+
+		describe('when a group with the externalId does not exists', () => {
+			const setup = () => {
+				groupRepo.findByExternalSource.mockResolvedValue(null);
+			};
+
+			it('should return null', async () => {
+				setup();
+
+				const result: Group | null = await service.findByExternalSource('externalId', 'systemId');
+
+				expect(result).toBeNull();
+			});
+		});
+	});
 });
