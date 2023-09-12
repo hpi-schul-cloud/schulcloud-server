@@ -96,11 +96,8 @@ export class DemoSchoolService {
 		// solution: store email as the name in the protocol
 
 		const teacherIds = mapUserEmailsToIds(teachers, users);
-		console.log('teacherIds', teacherIds);
 		const studentIds = mapUserEmailsToIds(students, users);
-		console.log('studentIds', studentIds);
 		const substitutionTeacherIds = mapUserEmailsToIds(substitutionTeachers, users);
-		console.log('substitutionTeacherIds', substitutionTeacherIds);
 
 		const courseDto: CourseCreateDto = {
 			name,
@@ -115,9 +112,6 @@ export class DemoSchoolService {
 		if (config.lessons) {
 			lessons = await this.createLessons(courseId, config.lessons);
 		}
-		// if (config.teams) {
-		// 	protocol.teams = await this.createTeams(schoolId, config.teams, protocol);
-		// }
 		return { id: courseId, key: name, type: 'course', children: lessons };
 	}
 
@@ -135,52 +129,6 @@ export class DemoSchoolService {
 		const id = await this.lessonService.createLesson({ name, contents, hidden, courseId });
 		return { id, key: name, type: 'lesson' };
 	}
-
-	// async createTeams(
-	// 	schoolId: string,
-	// 	configs: TeamConfig[],
-	// 	protocol: CreationProtocol
-	// ): Promise<{ id: string; name: string }[]> {
-	// 	const promises: Promise<{ id: string; name: string }>[] = [];
-	// 	for (const config of configs) {
-	// 		promises.push(this.createTeam(schoolId, config, protocol));
-	// 	}
-	// 	const lessons = await Promise.all(promises);
-	// 	return lessons;
-	// }
-
-	// async createTeam(schoolId: string, config: TeamConfig, protocol: CreationProtocol): Promise<{ id: string; name: string }> {
-	// 	const { name, teamUsers } = config;
-	// 	const userDos = protocol.users as UserDO[];
-
-	// 	const roleNames = [
-	// 		RoleName.TEAMMEMBER,
-	// 		RoleName.TEAMEXPERT,
-	// 		RoleName.TEAMLEADER,
-	// 		RoleName.TEAMADMINISTRATOR,
-	// 		RoleName.TEAMOWNER,
-	// 	];
-	// 	const roles: RoleDto[] = await this.roleService.findByNames(roleNames);
-	// 	const roleRefMap = roles.reduce((refMap: Record<string, string>, role: RoleDto): Record<string, string> => {
-	// 		if (role.id) {
-	// 			refMap[role.name] = role.id;
-	// 		}
-	// 		return refMap;
-	// 	}, {});
-
-	// 	const teamUsersWithUserIds = teamUsers.flatMap((user) => {
-	// 		const { userEmail, roleName } = user;
-	// 		const userIds = user.userEmail ? mapUserEmailsToIds([userEmail], userDos) : undefined;
-	// 		if (userIds === undefined || userIds.length !== 1) {
-	// 			throw new Error(`unknown user-email "{$user.userEmail}`);
-	// 		}
-	// 		const userId = userIds[0];
-	// 		const roleId = roleRefMap[roleName];
-	// 		return { roleId, userId, schoolId };
-	// 	});
-	// 	const id = await this.teamservice.createTeam({ name, teamUsers: teamUsersWithUserIds, filePermission });
-	// 	return { id, name };
-	// }
 
 	async createUsers(schoolId: string, config: UserConfig[]): Promise<CreationProtocol[]> {
 		const promises: Promise<CreationProtocol>[] = [];
@@ -205,22 +153,6 @@ export class DemoSchoolService {
 			roles: roleRefs,
 			schoolId,
 			forcePasswordChange: false,
-			// consent: {
-			// 	userConsent: {
-			// 	  form: "digital",
-			// 	  privacyConsent: true,
-			// 	termsOfUseConsent: true,
-			// 	  dateOfPrivacyConsent: {
-			// 		"$date": "2023-08-31T11:58:32.356Z"
-			// 	  },
-			// 	  dateOfTermsOfUseConsent: {
-			// 		"$date": "2023-08-31T11:58:32.356Z"
-			// 	  }
-			// 	}
-			//   },
-			//   birthday: {
-			// 	"$date": "2007-08-09T00:00:00.000Z"
-			//   },
 		});
 
 		const userDo = await this.userService.save(user);

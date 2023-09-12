@@ -10,7 +10,13 @@ export class LessonRepo extends BaseRepo<Lesson> {
 		return Lesson;
 	}
 
-	async createLesson(lessonCreateDto: LessonCreateDto): Promise<Lesson> {
+	async createLesson(lesson: Lesson): Promise<Lesson> {
+		const createdLesson = this.create(lesson);
+		await this.save(createdLesson);
+		return createdLesson;
+	}
+
+	async createLessonByDto(lessonCreateDto: LessonCreateDto): Promise<Lesson> {
 		const { name, courseId, hidden, contents, position } = lessonCreateDto;
 		const courseRef = this._em.getReference(Course, courseId);
 		const lesson = new Lesson({

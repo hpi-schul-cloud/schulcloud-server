@@ -12,7 +12,7 @@ export class LessonService {
 	) {}
 
 	async createLesson(lessonCreateDto: LessonCreateDto): Promise<string> {
-		const lesson = await this.lessonRepo.createLesson(lessonCreateDto);
+		const lesson = await this.lessonRepo.createLessonByDto(lessonCreateDto);
 		return lesson.id;
 	}
 

@@ -19,7 +19,7 @@ import { CopyFilesService } from '@src/modules/files-storage-client';
 import { FileUrlReplacement } from '@src/modules/files-storage-client/service/copy-files.service';
 import { TaskCopyService } from '@src/modules/task/service/task-copy.service';
 import { randomBytes } from 'crypto';
-import { LessonCopyParams, LessonCreateDto } from '../types';
+import { LessonCopyParams } from '../types';
 import { EtherpadService } from './etherpad.service';
 import { NexboardService } from './nexboard.service';
 
@@ -39,16 +39,17 @@ export class LessonCopyService {
 		const { copiedContent, contentStatus } = await this.copyLessonContent(lesson.contents, params);
 		const { copiedMaterials, materialsStatus } = this.copyLinkedMaterials(lesson);
 
-		const lessonCreateDto: LessonCreateDto = {
-			courseId: params.destinationCourse.id,
+		const lessonCopy = new Lesson({
+			course: params.destinationCourse,
 			hidden: true,
 			name: params.copyName ?? lesson.name,
 			position: lesson.position,
 			contents: copiedContent,
-			materialIds: (copiedMaterials ?? []).map((material) => material.id),
-		};
+			materials: copiedMaterials,
+		});
 
-		const lessonCopy = await this.lessonRepo.createLesson(lessonCreateDto);
+		await this.lessonRepo.createLesson(lessonCopy);
+
 		const copiedTasksStatus: CopyStatus[] = await this.copyLinkedTasks(lessonCopy, lesson, params);
 
 		const { status, elements } = this.deriveCopyStatus(
@@ -106,7 +107,7 @@ export class LessonCopyService {
 	updateCopiedEmbeddedTasks(lessonStatus: CopyStatus, copyDict: Map<EntityId, BaseEntity>): CopyStatus {
 		const copiedLesson = lessonStatus.copyEntity as Lesson;
 
-		if (copiedLesson?.contents === undefined) {
+		if (copiedLesson?.contents === undefined || !Array.isArray(copiedLesson.contents)) {
 			return lessonStatus;
 		}
 
@@ -149,6 +150,10 @@ export class LessonCopyService {
 		contents: IComponentProperties[],
 		fileUrlReplacements: FileUrlReplacement[]
 	): IComponentProperties[] {
+		// if (!Array.isArray(contents)) {
+		// 	return contents;
+		// }
+
 		contents = contents.map((item: IComponentProperties) => {
 			if (item.component === 'text' && item.content && 'text' in item.content && item.content.text) {
 				let { text } = item.content;
