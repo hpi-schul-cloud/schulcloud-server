@@ -5,6 +5,7 @@ import { cleanupCollections, courseFactory, lessonFactory, materialFactory, task
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
+import { LessonCreateDto } from '@src/modules/lesson/types';
 import { LessonRepo } from './lesson.repo';
 
 describe('LessonRepo', () => {
@@ -34,6 +35,57 @@ describe('LessonRepo', () => {
 		expect(repo.entityName).toBe(Lesson);
 	});
 
+	describe('createLessonByDto', () => {
+		const setup = async () => {
+			const course = courseFactory.build();
+			await em.persistAndFlush([course]);
+			em.clear();
+
+			return { course };
+		};
+
+		it('should return the instance of a Lesson', async () => {
+			const { course } = await setup();
+
+			const lessonCreateDto: LessonCreateDto = {
+				name: 'new lesson',
+				courseId: course.id,
+			};
+
+			const resultLesson = await repo.createLessonByDto(lessonCreateDto);
+
+			expect(resultLesson.id).toBeDefined();
+			expect(resultLesson.constructor.name).toBe('Lesson');
+		});
+
+		it('should return a lesson object with correct name', async () => {
+			const { course } = await setup();
+
+			const lessonCreateDto: LessonCreateDto = {
+				name: 'other lesson',
+				courseId: course.id,
+			};
+
+			const resultLesson = await repo.createLessonByDto(lessonCreateDto);
+
+			expect(resultLesson.name).toEqual(lessonCreateDto.name);
+			expect(resultLesson.course.id).toEqual(lessonCreateDto.courseId);
+		});
+
+		it('should return a lesson assigned to the right course', async () => {
+			const { course } = await setup();
+
+			const lessonCreateDto: LessonCreateDto = {
+				name: 'third lesson',
+				courseId: course.id,
+			};
+
+			const resultLesson = await repo.createLessonByDto(lessonCreateDto);
+
+			expect(resultLesson.course.id).toEqual(lessonCreateDto.courseId);
+		});
+	});
+
 	describe('findById', () => {
 		it('should find the lesson', async () => {
 			const course = courseFactory.build();
@@ -42,11 +94,11 @@ describe('LessonRepo', () => {
 			em.clear();
 
 			const resultLesson = await repo.findById(lesson.id);
-			// TODO for some reason, comparing the whole object does not work
-			// expect(resultLesson).toEqual(lesson);
+
 			expect(resultLesson.id).toEqual(lesson.id);
 			expect(resultLesson.name).toEqual(lesson.name);
 		});
+
 		it('should populate course', async () => {
 			const course = courseFactory.build();
 			const lesson = lessonFactory.build({ course });
@@ -54,6 +106,7 @@ describe('LessonRepo', () => {
 			em.clear();
 
 			const resultLesson = await repo.findById(lesson.id);
+
 			expect(resultLesson.course.name).toEqual(course.name);
 		});
 
@@ -65,6 +118,7 @@ describe('LessonRepo', () => {
 			em.clear();
 
 			const resultLesson = await repo.findById(lesson.id);
+
 			expect(resultLesson.tasks.isInitialized()).toEqual(true);
 			expect(resultLesson.tasks.length).toEqual(2);
 		});
@@ -76,9 +130,11 @@ describe('LessonRepo', () => {
 			em.clear();
 
 			const resultLesson = await repo.findById(lesson.id);
+
 			expect(resultLesson.materials[0]).toEqual(material);
 		});
 	});
+
 	describe('findAllByCourseIds', () => {
 		it('should find lessons by course ids', async () => {
 			const course1 = courseFactory.build();
