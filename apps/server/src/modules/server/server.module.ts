@@ -35,7 +35,7 @@ import { VideoConferenceApiModule } from '@src/modules/video-conference/video-co
 import connectRedis from 'connect-redis';
 import session from 'express-session';
 import { RedisClient } from 'redis';
-import { FederalStateApiModule } from '../federal-state';
+import { FederalStateApiModule } from '../federal-state/federal-state-api.module';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
 

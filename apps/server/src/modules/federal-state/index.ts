@@ -1,2 +1,2 @@
-export * from './federal-state-api.module';
+export * from './federal-state.module';
 export * from './service';
