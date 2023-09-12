@@ -35,9 +35,9 @@ import { VideoConferenceApiModule } from '@src/modules/video-conference/video-co
 import connectRedis from 'connect-redis';
 import session from 'express-session';
 import { RedisClient } from 'redis';
+import { TeamsApiModule } from '@src/modules/teams/teams-api.module';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
-import { TeamsApiModule } from "@src/modules/teams/teams-api.module";
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
