@@ -32,3 +32,6 @@ export * from './external-tool-pseudonym.factory';
 export * from './team.factory';
 export * from './teamuser.factory';
 export * from './group-entity.factory';
+export * from './schoolyear.factory';
+export * from './role-dto.factory';
+export * from './external-group-dto.factory';
