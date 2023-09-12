@@ -1,6 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ComponentType, Course, IComponentProperties, IComponentTextProperties, LessonEntity, Task } from '@shared/domain';
+import {
+	ComponentType,
+	Course,
+	IComponentProperties,
+	IComponentTextProperties,
+	LessonEntity,
+	Task,
+} from '@shared/domain';
 import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import { CommonCartridgeExportService } from '@src/modules/learnroom/service/common-cartridge-export.service';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
