@@ -1,4 +1,4 @@
-import { County, IFederalStateProperties } from '@src/modules/federal-state/entity/federal-state.entity';
+import { County, IFederalStateProperties } from '@src/modules/federal-state/entity';
 import { federalStateFactory } from '@shared/testing/factory/federal-state.factory';
 import { DeepPartial } from 'fishery';
 
