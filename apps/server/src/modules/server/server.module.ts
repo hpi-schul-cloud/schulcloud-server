@@ -37,6 +37,7 @@ import session from 'express-session';
 import { RedisClient } from 'redis';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
+import { TeamsApiModule } from "@src/modules/teams/teams-api.module";
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -72,6 +73,7 @@ const serverModules = [
 	UserLoginMigrationApiModule,
 	BoardApiModule,
 	GroupApiModule,
+	TeamsApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
