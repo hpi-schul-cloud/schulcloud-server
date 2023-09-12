@@ -103,6 +103,13 @@
                                 <a href="#mapSanisRoleToRoleName" >mapSanisRoleToRoleName</a>
                             </li>
                             <li>
+                                <a href="#mapToExternalGroupDtos" >mapToExternalGroupDtos</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#mapToExternalGroupUser" >mapToExternalGroupUser</a>
+                            </li>
+                            <li>
                                 <a href="#mapToExternalSchoolDto" >mapToExternalSchoolDto</a>
                             </li>
                             <li>
@@ -120,6 +127,54 @@
     </table>
 </section>
 
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:34</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
 
             <section data-compodoc="block-methods">
     
@@ -141,15 +196,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapSanisRoleToRoleName(source: <a href="../classes/SanisResponse.html" target="_self">SanisResponse</a>)</code>
+                    <code>mapSanisRoleToRoleName(source: <a href="../interfaces/SanisResponse.html" target="_self">SanisResponse</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="39"
-                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:39</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="64"
+                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:64</a></div>
                 </td>
             </tr>
 
@@ -172,7 +227,7 @@
                                 <tr>
                                     <td>source</td>
                                     <td>
-                                                <code><a href="../classes/SanisResponse.html" target="_self" >SanisResponse</a></code>
+                                                <code><a href="../interfaces/SanisResponse.html" target="_self" >SanisResponse</a></code>
                                     </td>
 
                                     <td>
@@ -201,24 +256,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapToExternalSchoolDto"></a>
+                    <a name="mapToExternalGroupDtos"></a>
                     <span class="name">
-                        <span ><b>mapToExternalSchoolDto</b></span>
-                        <a href="#mapToExternalSchoolDto"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>mapToExternalGroupDtos</b></span>
+                        <a href="#mapToExternalGroupDtos"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>mapToExternalSchoolDto(source: <a href="../classes/SanisResponse.html" target="_self">SanisResponse</a>)</code>
+<code>mapToExternalGroupDtos(source: <a href="../interfaces/SanisResponse.html" target="_self">SanisResponse</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="17"
-                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:17</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="68"
+                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:68</a></div>
                 </td>
             </tr>
 
@@ -241,7 +296,147 @@
                                 <tr>
                                     <td>source</td>
                                     <td>
-                                                <code><a href="../classes/SanisResponse.html" target="_self" >SanisResponse</a></code>
+                                                <code><a href="../interfaces/SanisResponse.html" target="_self" >SanisResponse</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>[] | undefined</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapToExternalGroupUser"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>mapToExternalGroupUser</b></span>
+                        <a href="#mapToExternalGroupUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapToExternalGroupUser(relation: <a href="../interfaces/SanisSonstigeGruppenzugehoerigeResponse.html" target="_self">SanisSonstigeGruppenzugehoerigeResponse</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="110"
+                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:110</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>relation</td>
+                                    <td>
+                                                <code><a href="../interfaces/SanisSonstigeGruppenzugehoerigeResponse.html" target="_self" >SanisSonstigeGruppenzugehoerigeResponse</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >ExternalGroupUserDto | null</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapToExternalSchoolDto"></a>
+                    <span class="name">
+                        <span ><b>mapToExternalSchoolDto</b></span>
+                        <a href="#mapToExternalSchoolDto"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>mapToExternalSchoolDto(source: <a href="../interfaces/SanisResponse.html" target="_self">SanisResponse</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="38"
+                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:38</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>source</td>
+                                    <td>
+                                                <code><a href="../interfaces/SanisResponse.html" target="_self" >SanisResponse</a></code>
                                     </td>
 
                                     <td>
@@ -279,15 +474,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>mapToExternalUserDto(source: <a href="../classes/SanisResponse.html" target="_self">SanisResponse</a>)</code>
+<code>mapToExternalUserDto(source: <a href="../interfaces/SanisResponse.html" target="_self">SanisResponse</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="29"
-                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:29</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="53"
+                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:53</a></div>
                 </td>
             </tr>
 
@@ -310,7 +505,7 @@
                                 <tr>
                                     <td>source</td>
                                     <td>
-                                                <code><a href="../classes/SanisResponse.html" target="_self" >SanisResponse</a></code>
+                                                <code><a href="../interfaces/SanisResponse.html" target="_self" >SanisResponse</a></code>
                                     </td>
 
                                     <td>
@@ -359,7 +554,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -374,44 +569,127 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { RoleName } from &#x27;@shared/domain&#x27;;
-import { ExternalSchoolDto, ExternalUserDto } from &#x27;../../dto&#x27;;
-import { SanisResponse, SanisRole } from &#x27;./sanis.response&#x27;;
+import { Logger } from &#x27;@src/core/logger&#x27;;
+import { GroupTypes } from &#x27;@src/modules/group&#x27;;
+import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from &#x27;../../dto&#x27;;
+import { GroupRoleUnknownLoggable } from &#x27;../../loggable&#x27;;
+import {
+	SanisGroupRole,
+	SanisGroupType,
+	SanisGruppenResponse,
+	SanisResponse,
+	SanisRole,
+	SanisSonstigeGruppenzugehoerigeResponse,
+} from &#x27;./response&#x27;;
 
-const RoleMapping &#x3D; {
+const RoleMapping: Record&lt;SanisRole, RoleName&gt; &#x3D; {
 	[SanisRole.LEHR]: RoleName.TEACHER,
 	[SanisRole.LERN]: RoleName.STUDENT,
 	[SanisRole.LEIT]: RoleName.ADMINISTRATOR,
 	[SanisRole.ORGADMIN]: RoleName.ADMINISTRATOR,
 };
 
+const GroupRoleMapping: Partial&lt;Record&lt;SanisGroupRole, RoleName&gt;&gt; &#x3D; {
+	[SanisGroupRole.TEACHER]: RoleName.TEACHER,
+	[SanisGroupRole.STUDENT]: RoleName.STUDENT,
+};
+
+const GroupTypeMapping: Partial&lt;Record&lt;SanisGroupType, GroupTypes&gt;&gt; &#x3D; {
+	[SanisGroupType.CLASS]: GroupTypes.CLASS,
+};
+
 @Injectable()
 export class SanisResponseMapper {
 	SCHOOLNUMBER_PREFIX_REGEX &#x3D; /^NI_/;
+
+	constructor(private readonly logger: Logger) {}
 
 	mapToExternalSchoolDto(source: SanisResponse): ExternalSchoolDto {
 		const officialSchoolNumber: string &#x3D; source.personenkontexte[0].organisation.kennung.replace(
 			this.SCHOOLNUMBER_PREFIX_REGEX,
 			&#x27;&#x27;
 		);
-		return new ExternalSchoolDto({
+
+		const mapped &#x3D; new ExternalSchoolDto({
 			name: source.personenkontexte[0].organisation.name,
 			externalId: source.personenkontexte[0].organisation.id.toString(),
 			officialSchoolNumber,
 		});
+
+		return mapped;
 	}
 
 	mapToExternalUserDto(source: SanisResponse): ExternalUserDto {
-		return new ExternalUserDto({
+		const mapped &#x3D; new ExternalUserDto({
 			firstName: source.person.name.vorname,
 			lastName: source.person.name.familienname,
-			email: source.personenkontexte[0].email,
 			roles: [this.mapSanisRoleToRoleName(source)],
 			externalId: source.pid,
 		});
+
+		return mapped;
 	}
 
 	private mapSanisRoleToRoleName(source: SanisResponse): RoleName {
 		return RoleMapping[source.personenkontexte[0].rolle];
+	}
+
+	mapToExternalGroupDtos(source: SanisResponse): ExternalGroupDto[] | undefined {
+		const groups: SanisGruppenResponse[] | undefined &#x3D; source.personenkontexte[0].gruppen;
+
+		if (!groups) {
+			return undefined;
+		}
+
+		const mapped: ExternalGroupDto[] &#x3D; groups
+			.map((group): ExternalGroupDto | null &#x3D;&gt; {
+				const groupType: GroupTypes | undefined &#x3D; GroupTypeMapping[group.gruppe.typ];
+
+				if (!groupType) {
+					return null;
+				}
+
+				const sanisGroupUsers: SanisSonstigeGruppenzugehoerigeResponse[] &#x3D; [
+					...(group.sonstige_gruppenzugehoerige ?? []),
+					{
+						ktid: source.personenkontexte[0].id,
+						rollen: group.gruppenzugehoerigkeit.rollen,
+					},
+				].sort((a, b) &#x3D;&gt; a.ktid.localeCompare(b.ktid));
+
+				const gruppenzugehoerigkeiten: ExternalGroupUserDto[] &#x3D; sanisGroupUsers
+					.map((relation): ExternalGroupUserDto | null &#x3D;&gt; this.mapToExternalGroupUser(relation))
+					.filter((user): user is ExternalGroupUserDto &#x3D;&gt; user !&#x3D;&#x3D; null);
+
+				return {
+					name: group.gruppe.bezeichnung,
+					type: groupType,
+					externalOrganizationId: group.gruppe.orgid,
+					from: group.gruppe.laufzeit?.von,
+					until: group.gruppe.laufzeit?.bis,
+					externalId: group.gruppe.id,
+					users: gruppenzugehoerigkeiten,
+				};
+			})
+			.filter((group): group is ExternalGroupDto &#x3D;&gt; group !&#x3D;&#x3D; null);
+
+		return mapped;
+	}
+
+	private mapToExternalGroupUser(relation: SanisSonstigeGruppenzugehoerigeResponse): ExternalGroupUserDto | null {
+		const userRole &#x3D; GroupRoleMapping[relation.rollen[0]];
+
+		if (!userRole) {
+			this.logger.info(new GroupRoleUnknownLoggable(relation));
+			return null;
+		}
+
+		const mapped &#x3D; new ExternalGroupUserDto({
+			roleName: userRole,
+			externalUserId: relation.ktid,
+		});
+
+		return mapped;
 	}
 }
 </code></pre>

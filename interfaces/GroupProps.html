@@ -134,12 +134,14 @@
                                         </a>
                                 </li>
                                 <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#validFrom" 
 >
                                             validFrom
                                         </a>
                                 </li>
                                 <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#validUntil" 
 >
                                             validUntil
@@ -391,6 +393,11 @@
                                         </td>
                                     </tr>
 
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
 
 
 
@@ -424,6 +431,11 @@
                                         </td>
                                     </tr>
 
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
 
 
 
@@ -447,9 +459,9 @@ export interface GroupProps extends AuthorizableObject {
 
 	type: GroupTypes;
 
-	validFrom: Date;
+	validFrom?: Date;
 
-	validUntil: Date;
+	validUntil?: Date;
 
 	externalSource?: ExternalSource;
 

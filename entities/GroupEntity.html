@@ -104,6 +104,7 @@
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
                                 <a href="#validPeriod" >validPeriod</a>
                             </li>
                         </ul>
@@ -313,6 +314,7 @@
                     <a name="validPeriod"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
                         <span ><b>validPeriod</b></span>
                         <a href="#validPeriod"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -329,7 +331,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Embedded(undefined)<br />
+                            @Embedded(undefined, {nullable: true})<br />
                         </code>
                     </td>
                 </tr>
@@ -368,7 +370,7 @@ export interface GroupEntityProps {
 
 	externalSource?: ExternalSourceEntity;
 
-	validPeriod: GroupValidPeriodEntity;
+	validPeriod?: GroupValidPeriodEntity;
 
 	users: GroupUserEntity[];
 
@@ -386,8 +388,8 @@ export class GroupEntity extends BaseEntityWithTimestamps {
 	@Embedded(() &#x3D;&gt; ExternalSourceEntity, { nullable: true })
 	externalSource?: ExternalSourceEntity;
 
-	@Embedded(() &#x3D;&gt; GroupValidPeriodEntity)
-	validPeriod: GroupValidPeriodEntity;
+	@Embedded(() &#x3D;&gt; GroupValidPeriodEntity, { nullable: true })
+	validPeriod?: GroupValidPeriodEntity;
 
 	@Embedded(() &#x3D;&gt; GroupUserEntity, { array: true })
 	users: GroupUserEntity[];

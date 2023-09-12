@@ -126,7 +126,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/oidc.strategy.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/oidc.strategy.ts:10</a></div>
                             </td>
                         </tr>
 
@@ -198,7 +198,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:14</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:15</a></code>
 </div>
                 </td>
             </tr>
@@ -378,6 +378,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
 import { UserDO } from &#x27;@shared/domain/domainobject/user.do&#x27;;
+import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
 import { OauthDataDto, ProvisioningDto } from &#x27;../../dto&#x27;;
 import { ProvisioningStrategy } from &#x27;../base.strategy&#x27;;
 import { OidcProvisioningService } from &#x27;./service/oidc-provisioning.service&#x27;;
@@ -399,6 +400,17 @@ export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
 			data.system.systemId,
 			school?.id
 		);
+
+		if (Configuration.get(&#x27;FEATURE_SANIS_GROUP_PROVISIONING_ENABLED&#x27;) &amp;&amp; data.externalGroups) {
+			// TODO: N21-1212 remove user from groups
+
+			await Promise.all(
+				data.externalGroups.map((externalGroup) &#x3D;&gt;
+					this.oidcProvisioningService.provisionExternalGroup(externalGroup, data.system.systemId)
+				)
+			);
+		}
+
 		return new ProvisioningDto({ externalUserId: user.externalId || data.externalUser.externalId });
 	}
 }

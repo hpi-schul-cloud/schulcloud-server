@@ -237,8 +237,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="38"
-                            class="link-to-prism">apps/server/src/modules/group/repo/group-domain.mapper.ts:38</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="43"
+                            class="link-to-prism">apps/server/src/modules/group/repo/group-domain.mapper.ts:43</a></div>
                 </td>
             </tr>
 
@@ -308,8 +308,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="67"
-                            class="link-to-prism">apps/server/src/modules/group/repo/group-domain.mapper.ts:67</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="72"
+                            class="link-to-prism">apps/server/src/modules/group/repo/group-domain.mapper.ts:72</a></div>
                 </td>
             </tr>
 
@@ -379,8 +379,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="55"
-                            class="link-to-prism">apps/server/src/modules/group/repo/group-domain.mapper.ts:55</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="60"
+                            class="link-to-prism">apps/server/src/modules/group/repo/group-domain.mapper.ts:60</a></div>
                 </td>
             </tr>
 
@@ -462,8 +462,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="85"
-                            class="link-to-prism">apps/server/src/modules/group/repo/group-domain.mapper.ts:85</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="90"
+                            class="link-to-prism">apps/server/src/modules/group/repo/group-domain.mapper.ts:90</a></div>
                 </td>
             </tr>
 
@@ -533,8 +533,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="76"
-                            class="link-to-prism">apps/server/src/modules/group/repo/group-domain.mapper.ts:76</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="81"
+                            class="link-to-prism">apps/server/src/modules/group/repo/group-domain.mapper.ts:81</a></div>
                 </td>
             </tr>
 
@@ -621,6 +621,14 @@ export class GroupDomainMapper {
 	static mapDomainObjectToEntityProperties(group: Group, em: EntityManager): GroupEntityProps {
 		const props: GroupProps &#x3D; group.getProps();
 
+		let validPeriod: GroupValidPeriodEntity | undefined;
+		if (props.validFrom &amp;&amp; props.validUntil) {
+			validPeriod &#x3D; new GroupValidPeriodEntity({
+				from: props.validFrom,
+				until: props.validUntil,
+			});
+		}
+
 		const mapped: GroupEntityProps &#x3D; {
 			id: props.id,
 			name: props.name,
@@ -631,10 +639,7 @@ export class GroupDomainMapper {
 			users: props.users.map(
 				(groupUser): GroupUserEntity &#x3D;&gt; GroupDomainMapper.mapGroupUserToGroupUserEntity(groupUser, em)
 			),
-			validPeriod: new GroupValidPeriodEntity({
-				until: props.validUntil,
-				from: props.validFrom,
-			}),
+			validPeriod,
 			organization: props.organizationId ? em.getReference(School, props.organizationId) : undefined,
 		};
 
@@ -645,8 +650,8 @@ export class GroupDomainMapper {
 		const mapped: GroupProps &#x3D; {
 			id: entity.id,
 			users: entity.users.map((groupUser): GroupUser &#x3D;&gt; this.mapGroupUserEntityToGroupUser(groupUser)),
-			validFrom: entity.validPeriod.from,
-			validUntil: entity.validPeriod.until,
+			validFrom: entity.validPeriod ? entity.validPeriod.from : undefined,
+			validUntil: entity.validPeriod ? entity.validPeriod.until : undefined,
 			externalSource: entity.externalSource
 				? this.mapExternalSourceEntityToExternalSource(entity.externalSource)
 				: undefined,

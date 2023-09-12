@@ -292,6 +292,9 @@
                             <a href="#execute" title="apps/server/src/console/api-test/test-bootstrap.console.ts" ><b>execute</b>&nbsp;&nbsp;&nbsp;(apps/.../test-bootstrap.console.ts)</a>
                         </li>
                         <li>
+                            <a href="#externalGroupDtoFactory" title="apps/server/src/shared/testing/factory/external-group-dto.factory.ts" ><b>externalGroupDtoFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../external-group-dto.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#externalToolEntityFactory" title="apps/server/src/shared/testing/factory/external-tool-entity.factory.ts" ><b>externalToolEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool-entity.factory.ts)</a>
                         </li>
                         <li>
@@ -356,6 +359,12 @@
                         </li>
                         <li>
                             <a href="#groupFactory" title="apps/server/src/shared/testing/factory/domainobject/groups/group.factory.ts" ><b>groupFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../group.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#GroupRoleMapping" title="apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts" ><b>GroupRoleMapping</b>&nbsp;&nbsp;&nbsp;(apps/.../sanis-response.mapper.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#GroupTypeMapping" title="apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts" ><b>GroupTypeMapping</b>&nbsp;&nbsp;&nbsp;(apps/.../sanis-response.mapper.ts)</a>
                         </li>
                         <li>
                             <a href="#GroupTypesToGroupEntityTypesMapping" title="apps/server/src/modules/group/repo/group-domain.mapper.ts" ><b>GroupTypesToGroupEntityTypesMapping</b>&nbsp;&nbsp;&nbsp;(apps/.../group-domain.mapper.ts)</a>
@@ -521,6 +530,9 @@
                         </li>
                         <li>
                             <a href="#richTextElementNodeFactory" title="apps/server/src/shared/testing/factory/boardnode/rich-text-element-node.factory.ts" ><b>richTextElementNodeFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../rich-text-element-node.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#roleDtoFactory" title="apps/server/src/shared/testing/factory/role-dto.factory.ts" ><b>roleDtoFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../role-dto.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#roleFactory" title="apps/server/src/shared/testing/factory/role.factory.ts" ><b>roleFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../role.factory.ts)</a>
@@ -4892,6 +4904,51 @@ it should ensure an empty result</p>
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/shared/testing/factory/external-group-dto.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="externalGroupDtoFactory"></a>
+                    <span class="name">
+                        <span ><b>externalGroupDtoFactory</b></span>
+                        <a href="#externalGroupDtoFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;ExternalGroupDto, ExternalGroupDto&gt;(
+	ExternalGroupDto,
+	({ sequence }) &#x3D;&gt; {
+		return {
+			externalId: new ObjectId().toHexString(),
+			name: &#x60;Group ${sequence}&#x60;,
+			type: GroupTypes.CLASS,
+			users: [
+				{
+					externalUserId: new ObjectId().toHexString(),
+					roleName: RoleName.TEACHER,
+				},
+				{
+					externalUserId: new ObjectId().toHexString(),
+					roleName: RoleName.STUDENT,
+				},
+			],
+			from: new Date(2023, 1),
+			until: new Date(2023, 6),
+			externalOrganizationId: new ObjectId().toHexString(),
+		};
+	}
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/shared/testing/factory/external-tool-pseudonym.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -5617,6 +5674,97 @@ it should ensure an empty result</p>
 		}),
 	};
 })</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="GroupRoleMapping"></a>
+                    <span class="name">
+                        <span ><b>GroupRoleMapping</b></span>
+                        <a href="#GroupRoleMapping"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/Group.html" target="_self" >Partial&lt;Record&lt;SanisGroupRole, RoleName&gt;&gt;</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+	[SanisGroupRole.TEACHER]: RoleName.TEACHER,
+	[SanisGroupRole.STUDENT]: RoleName.STUDENT,
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="GroupTypeMapping"></a>
+                    <span class="name">
+                        <span ><b>GroupTypeMapping</b></span>
+                        <a href="#GroupTypeMapping"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/Group.html" target="_self" >Partial&lt;Record&lt;SanisGroupType, GroupTypes&gt;&gt;</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+	[SanisGroupType.CLASS]: GroupTypes.CLASS,
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="RoleMapping"></a>
+                    <span class="name">
+                        <span ><b>RoleMapping</b></span>
+                        <a href="#RoleMapping"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../entitys/Role.html" target="_self" >Record&lt;SanisRole, RoleName&gt;</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+	[SanisRole.LEHR]: RoleName.TEACHER,
+	[SanisRole.LERN]: RoleName.STUDENT,
+	[SanisRole.LEIT]: RoleName.ADMINISTRATOR,
+	[SanisRole.ORGADMIN]: RoleName.ADMINISTRATOR,
+}</code>
                     </td>
                 </tr>
 
@@ -6892,6 +7040,35 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/shared/testing/factory/role-dto.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="roleDtoFactory"></a>
+                    <span class="name">
+                        <span ><b>roleDtoFactory</b></span>
+                        <a href="#roleDtoFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;RoleDto, RoleDto&gt;(RoleDto, () &#x3D;&gt; {
+	return {
+		id: new ObjectId().toHexString(),
+		name: RoleName.USER,
+		permissions: userPermissions,
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/shared/testing/factory/role.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -6912,40 +7089,6 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		name: &#x60;role${sequence}&#x60; as unknown as RoleName,
 	};
 })</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
-    <h3>apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="RoleMapping"></a>
-                    <span class="name">
-                        <span ><b>RoleMapping</b></span>
-                        <a href="#RoleMapping"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>{
-	[SanisRole.LEHR]: RoleName.TEACHER,
-	[SanisRole.LERN]: RoleName.STUDENT,
-	[SanisRole.LEIT]: RoleName.ADMINISTRATOR,
-	[SanisRole.ORGADMIN]: RoleName.ADMINISTRATOR,
-}</code>
                     </td>
                 </tr>
 

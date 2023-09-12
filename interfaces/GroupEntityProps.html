@@ -129,6 +129,7 @@
                                         </a>
                                 </li>
                                 <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#validPeriod" 
 >
                                             validPeriod
@@ -385,6 +386,11 @@
                                         </td>
                                     </tr>
 
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
 
 
 
@@ -417,7 +423,7 @@ export interface GroupEntityProps {
 
 	externalSource?: ExternalSourceEntity;
 
-	validPeriod: GroupValidPeriodEntity;
+	validPeriod?: GroupValidPeriodEntity;
 
 	users: GroupUserEntity[];
 
@@ -435,8 +441,8 @@ export class GroupEntity extends BaseEntityWithTimestamps {
 	@Embedded(() &#x3D;&gt; ExternalSourceEntity, { nullable: true })
 	externalSource?: ExternalSourceEntity;
 
-	@Embedded(() &#x3D;&gt; GroupValidPeriodEntity)
-	validPeriod: GroupValidPeriodEntity;
+	@Embedded(() &#x3D;&gt; GroupValidPeriodEntity, { nullable: true })
+	validPeriod?: GroupValidPeriodEntity;
 
 	@Embedded(() &#x3D;&gt; GroupUserEntity, { array: true })
 	users: GroupUserEntity[];

@@ -85,6 +85,15 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getFilteredGroupUsers" >getFilteredGroupUsers</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#provisionExternalGroup" >provisionExternalGroup</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#provisionExternalSchool" >provisionExternalSchool</a>
                             </li>
@@ -110,12 +119,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, roleService: <a href="../injectables/RoleService.html" target="_self">RoleService</a>, accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, schoolYearService: <a href="../injectables/SchoolYearService.html" target="_self">SchoolYearService</a>, federalStateService: <a href="../injectables/FederalStateService.html" target="_self">FederalStateService</a>)</code>
+<code>constructor(userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, groupService: <a href="../injectables/GroupService.html" target="_self">GroupService</a>, roleService: <a href="../injectables/RoleService.html" target="_self">RoleService</a>, accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, schoolYearService: <a href="../injectables/SchoolYearService.html" target="_self">SchoolYearService</a>, federalStateService: <a href="../injectables/FederalStateService.html" target="_self">FederalStateService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:21</a></div>
                             </td>
                         </tr>
 
@@ -149,6 +158,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/SchoolService.html" target="_self" >SchoolService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>groupService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/GroupService.html" target="_self" >GroupService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -204,6 +225,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -218,6 +251,173 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getFilteredGroupUsers"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>getFilteredGroupUsers</b></span>
+                        <a href="#getFilteredGroupUsers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getFilteredGroupUsers(externalGroup: <a href="../classes/ExternalGroupDto.html" target="_self">ExternalGroupDto</a>, systemId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="166"
+                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:166</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>externalGroup</td>
+                                    <td>
+                                                <code><a href="../classes/ExternalGroupDto.html" target="_self" >ExternalGroupDto</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>systemId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;GroupUser[]&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="provisionExternalGroup"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>provisionExternalGroup</b></span>
+                        <a href="#provisionExternalGroup"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>provisionExternalGroup(externalGroup: <a href="../classes/ExternalGroupDto.html" target="_self">ExternalGroupDto</a>, systemId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="122"
+                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:122</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>externalGroup</td>
+                                    <td>
+                                                <code><a href="../classes/ExternalGroupDto.html" target="_self" >ExternalGroupDto</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>systemId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -240,8 +440,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="27"
-                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:27</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="33"
+                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:33</a></div>
                 </td>
             </tr>
 
@@ -323,8 +523,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="64"
-                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:64</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="70"
+                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:70</a></div>
                 </td>
             </tr>
 
@@ -403,29 +603,35 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
-import { EntityId, FederalState, SchoolFeatures, SchoolYear } from &#x27;@shared/domain&#x27;;
+import { EntityId, ExternalSource, FederalState, SchoolFeatures, SchoolYear } from &#x27;@shared/domain&#x27;;
 import { RoleReference } from &#x27;@shared/domain/domainobject&#x27;;
 import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
 import { UserDO } from &#x27;@shared/domain/domainobject/user.do&#x27;;
+import { Logger } from &#x27;@src/core/logger&#x27;;
 import { AccountService } from &#x27;@src/modules/account/services/account.service&#x27;;
 import { AccountSaveDto } from &#x27;@src/modules/account/services/dto&#x27;;
+import { Group, GroupService, GroupUser } from &#x27;@src/modules/group&#x27;;
 import { RoleService } from &#x27;@src/modules/role&#x27;;
 import { RoleDto } from &#x27;@src/modules/role/service/dto/role.dto&#x27;;
 import { FederalStateService, SchoolService, SchoolYearService } from &#x27;@src/modules/school&#x27;;
 import { FederalStateNames } from &#x27;@src/modules/school/types&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
+import { ObjectId } from &#x27;bson&#x27;;
 import CryptoJS from &#x27;crypto-js&#x27;;
-import { ExternalSchoolDto, ExternalUserDto } from &#x27;../../../dto&#x27;;
+import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from &#x27;../../../dto&#x27;;
+import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from &#x27;../../../loggable&#x27;;
 
 @Injectable()
 export class OidcProvisioningService {
 	constructor(
 		private readonly userService: UserService,
 		private readonly schoolService: SchoolService,
+		private readonly groupService: GroupService,
 		private readonly roleService: RoleService,
 		private readonly accountService: AccountService,
 		private readonly schoolYearService: SchoolYearService,
-		private readonly federalStateService: FederalStateService
+		private readonly federalStateService: FederalStateService,
+		private readonly logger: Logger
 	) {}
 
 	async provisionExternalSchool(externalSchool: ExternalSchoolDto, systemId: EntityId): Promise&lt;SchoolDO&gt; {
@@ -515,6 +721,75 @@ export class OidcProvisioningService {
 		}
 
 		return savedUser;
+	}
+
+	async provisionExternalGroup(externalGroup: ExternalGroupDto, systemId: EntityId): Promise&lt;void&gt; {
+		if (externalGroup.users.length &#x3D;&#x3D;&#x3D; 0) {
+			return;
+		}
+
+		const existingGroup: Group | null &#x3D; await this.groupService.findByExternalSource(
+			externalGroup.externalId,
+			systemId
+		);
+
+		let organizationId: string | undefined;
+		if (externalGroup.externalOrganizationId) {
+			const existingSchool: SchoolDO | null &#x3D; await this.schoolService.getSchoolByExternalId(
+				externalGroup.externalOrganizationId,
+				systemId
+			);
+
+			if (!existingSchool || !existingSchool.id) {
+				this.logger.info(new SchoolForGroupNotFoundLoggable(externalGroup));
+				return;
+			}
+
+			organizationId &#x3D; existingSchool.id;
+		}
+
+		const users: GroupUser[] &#x3D; await this.getFilteredGroupUsers(externalGroup, systemId);
+
+		const group: Group &#x3D; new Group({
+			id: existingGroup ? existingGroup.id : new ObjectId().toHexString(),
+			name: externalGroup.name,
+			externalSource: new ExternalSource({
+				externalId: externalGroup.externalId,
+				systemId,
+			}),
+			type: externalGroup.type,
+			organizationId,
+			validFrom: externalGroup.from,
+			validUntil: externalGroup.until,
+			users,
+		});
+
+		await this.groupService.save(group);
+	}
+
+	private async getFilteredGroupUsers(externalGroup: ExternalGroupDto, systemId: string): Promise&lt;GroupUser[]&gt; {
+		const users: (GroupUser | null)[] &#x3D; await Promise.all(
+			externalGroup.users.map(async (externalGroupUser: ExternalGroupUserDto): Promise&lt;GroupUser | null&gt; &#x3D;&gt; {
+				const user: UserDO | null &#x3D; await this.userService.findByExternalId(externalGroupUser.externalUserId, systemId);
+				const roles: RoleDto[] &#x3D; await this.roleService.findByNames([externalGroupUser.roleName]);
+
+				if (!user || !user.id || roles.length !&#x3D;&#x3D; 1 || !roles[0].id) {
+					this.logger.info(new UserForGroupNotFoundLoggable(externalGroupUser));
+					return null;
+				}
+
+				const groupUser: GroupUser &#x3D; new GroupUser({
+					userId: user.id,
+					roleId: roles[0].id,
+				});
+
+				return groupUser;
+			})
+		);
+
+		const filteredUsers: GroupUser[] &#x3D; users.filter((groupUser): groupUser is GroupUser &#x3D;&gt; groupUser !&#x3D;&#x3D; null);
+
+		return filteredUsers;
 	}
 }
 </code></pre>

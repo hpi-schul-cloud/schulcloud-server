@@ -44,7 +44,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >SanisResponse</li>
+  <li class="breadcrumb-item" >SchoolForGroupNotFoundLoggable</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -68,39 +68,39 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/provisioning/strategy/sanis/sanis.response.ts</code>
+            <code>apps/server/src/modules/provisioning/loggable/school-for-group-not-found.loggable.ts</code>
         </p>
 
 
 
 
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
+            </p>
 
 
             <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+
                 <tr>
                     <td class="col-md-4">
-                        <h6><b>Properties</b></h6>
+                        <h6><b>Methods</b></h6>
                     </td>
                 </tr>
                 <tr>
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#person" >person</a>
-                            </li>
-                            <li>
-                                <a href="#personenkontexte" >personenkontexte</a>
-                            </li>
-                            <li>
-                                <a href="#pid" >pid</a>
+                                <a href="#getLogMessage" >getLogMessage</a>
                             </li>
                         </ul>
                     </td>
                 </tr>
-
 
 
 
@@ -116,12 +116,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(sanisResponse: <a href="../classes/SanisResponse.html" target="_self">SanisResponse</a>)</code>
+<code>constructor(group: <a href="../classes/ExternalGroupDto.html" target="_self">ExternalGroupDto</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="59" class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.response.ts:59</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/provisioning/loggable/school-for-group-not-found.loggable.ts:4</a></div>
                             </td>
                         </tr>
 
@@ -139,10 +139,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>sanisResponse</td>
+                                                        <td>group</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../classes/SanisResponse.html" target="_self" >SanisResponse</a></code>
+                                                                        <code><a href="../classes/ExternalGroupDto.html" target="_self" >ExternalGroupDto</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -159,92 +159,50 @@
         </table>
 </section>
 
-            <section data-compodoc="block-properties">
+
+            <section data-compodoc="block-methods">
     
-    <h3 id="inputs">
-        Properties
+    <h3 id="methods">
+        Methods
     </h3>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="person"></a>
+                    <a name="getLogMessage"></a>
                     <span class="name">
-                        <span ><b>person</b></span>
-                        <a href="#person"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getLogMessage</b></span>
+                        <a href="#getLogMessage"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>    <code>literal type</code>
-
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="68" class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.response.ts:68</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="personenkontexte"></a>
-                    <span class="name">
-                        <span ><b>personenkontexte</b></span>
-                        <a href="#personenkontexte"><span class="icon ion-ios-link"></span></a>
-                    </span>
+<code>getLogMessage()</code>
                 </td>
             </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>    <code>SanisResponsePersonenkontext[]</code>
-
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="75" class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.response.ts:75</a></div>
-                        </td>
-                    </tr>
 
 
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="pid"></a>
-                    <span class="name">
-                        <span ><b>pid</b></span>
-                        <a href="#pid"><span class="icon ion-ios-link"></span></a>
-                    </span>
+                    <div class="io-line">Defined in <a href="" data-line="7"
+                            class="link-to-prism">apps/server/src/modules/provisioning/loggable/school-for-group-not-found.loggable.ts:7</a></div>
                 </td>
             </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="66" class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.response.ts:66</a></div>
-                        </td>
-                    </tr>
 
 
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/ValidationError.html" target="_self" >LogMessage | ErrorLogMessage | ValidationErrorLogMessage</a></code>
+
+                    </div>
+                </td>
+            </tr>
         </tbody>
     </table>
 </section>
-
-
 
 
 
@@ -254,81 +212,21 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { UUID } from &#x27;bson&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
+import { ExternalGroupDto } from &#x27;../dto&#x27;;
 
-export enum SanisRole {
-	LEHR &#x3D; &#x27;Lehr&#x27;,
-	LERN &#x3D; &#x27;Lern&#x27;,
-	LEIT &#x3D; &#x27;Leit&#x27;,
-	ORGADMIN &#x3D; &#x27;OrgAdmin&#x27;,
-}
+export class SchoolForGroupNotFoundLoggable implements Loggable {
+	constructor(private readonly group: ExternalGroupDto) {}
 
-export class SanisResponseName {
-	constructor(sanisResponseName: SanisResponseName) {
-		this.familienname &#x3D; sanisResponseName.familienname;
-		this.vorname &#x3D; sanisResponseName.vorname;
+	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+		return {
+			message: &#x27;Unable to provision group, since the connected school cannot be found.&#x27;,
+			data: {
+				externalGroupId: this.group.externalId,
+				externalOrganizationId: this.group.externalOrganizationId,
+			},
+		};
 	}
-
-	familienname: string;
-
-	vorname: string;
-}
-
-export class SanisResponsePersonenkontext {
-	constructor(sanisResponsePersonenkontext: SanisResponsePersonenkontext) {
-		this.id &#x3D; sanisResponsePersonenkontext.id;
-		this.rolle &#x3D; sanisResponsePersonenkontext.rolle;
-		this.organisation &#x3D; sanisResponsePersonenkontext.organisation;
-		this.personenstatus &#x3D; sanisResponsePersonenkontext.personenstatus;
-		this.email &#x3D; sanisResponsePersonenkontext.email;
-	}
-
-	id: UUID;
-
-	rolle: SanisRole;
-
-	organisation: SanisResponseOrganisation;
-
-	personenstatus: string;
-
-	// TODO change if neccessary once we have the proper specification
-	email: string;
-}
-
-export class SanisResponseOrganisation {
-	constructor(sanisResponseOrganisation: SanisResponseOrganisation) {
-		this.id &#x3D; sanisResponseOrganisation.id;
-		this.kennung &#x3D; sanisResponseOrganisation.kennung;
-		this.name &#x3D; sanisResponseOrganisation.name;
-		this.typ &#x3D; sanisResponseOrganisation.typ;
-	}
-
-	id: UUID;
-
-	kennung: string;
-
-	name: string;
-
-	typ: string;
-}
-
-export class SanisResponse {
-	constructor(sanisResponse: SanisResponse) {
-		this.pid &#x3D; sanisResponse.pid;
-		this.person &#x3D; sanisResponse.person;
-		this.personenkontexte &#x3D; sanisResponse.personenkontexte;
-	}
-
-	pid: string;
-
-	person: {
-		name: SanisResponseName;
-		geschlecht: string;
-		lokalisierung: string;
-		vertrauensstufe: string;
-	};
-
-	personenkontexte: SanisResponsePersonenkontext[];
 }
 </code></pre>
     </div>
@@ -368,7 +266,7 @@ export class SanisResponse {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'SanisResponse.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'SchoolForGroupNotFoundLoggable.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

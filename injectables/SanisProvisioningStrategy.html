@@ -130,7 +130,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:21</a></div>
                             </td>
                         </tr>
 
@@ -219,8 +219,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="55"
-                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:55</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="69"
+                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:69</a></div>
                 </td>
             </tr>
 
@@ -297,7 +297,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:27</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:34</a></code>
 </div>
                 </td>
             </tr>
@@ -372,7 +372,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:23</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:30</a></code>
 </div>
                 </td>
             </tr>
@@ -418,7 +418,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:14</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:15</a></code>
 </div>
                 </td>
             </tr>
@@ -473,17 +473,24 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpService } from &#x27;@nestjs/axios&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
+import { HttpService } from &#x27;@nestjs/axios&#x27;;
 import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
 import { AxiosRequestConfig, AxiosResponse } from &#x27;axios&#x27;;
 import { firstValueFrom } from &#x27;rxjs&#x27;;
 import { RoleName } from &#x27;@shared/domain&#x27;;
-import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, OauthDataStrategyInputDto } from &#x27;../../dto&#x27;;
+import {
+	ExternalSchoolDto,
+	ExternalUserDto,
+	OauthDataDto,
+	OauthDataStrategyInputDto,
+	ExternalGroupDto,
+} from &#x27;../../dto&#x27;;
 import { OidcProvisioningStrategy } from &#x27;../oidc/oidc.strategy&#x27;;
 import { OidcProvisioningService } from &#x27;../oidc/service/oidc-provisioning.service&#x27;;
 import { SanisResponseMapper } from &#x27;./sanis-response.mapper&#x27;;
-import { SanisResponse } from &#x27;./sanis.response&#x27;;
+import { SanisResponse } from &#x27;./response&#x27;;
 
 @Injectable()
 export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
@@ -519,11 +526,18 @@ export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
 
 		const externalSchool: ExternalSchoolDto &#x3D; this.responseMapper.mapToExternalSchoolDto(axiosResponse.data);
 
+		let externalGroups: ExternalGroupDto[] | undefined;
+		if (Configuration.get(&#x27;FEATURE_SANIS_GROUP_PROVISIONING_ENABLED&#x27;)) {
+			externalGroups &#x3D; this.responseMapper.mapToExternalGroupDtos(axiosResponse.data);
+		}
+
 		const oauthData: OauthDataDto &#x3D; new OauthDataDto({
 			system: input.system,
 			externalSchool,
 			externalUser,
+			externalGroups,
 		});
+
 		return oauthData;
 	}
 

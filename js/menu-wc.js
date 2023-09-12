@@ -1599,13 +1599,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/ProvisioningModule.html" data-type="entity-link" >ProvisioningModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-ProvisioningModule-7f2ca33211d9ee2c41edb405fc960fe9f473d31300cad3171cf566562900141c7ce5c6ef2e166c0b27846bfa3762b5826f2d7829ba5c2d5e022a96d4084a9493"' : 'data-bs-target="#xs-injectables-links-module-ProvisioningModule-7f2ca33211d9ee2c41edb405fc960fe9f473d31300cad3171cf566562900141c7ce5c6ef2e166c0b27846bfa3762b5826f2d7829ba5c2d5e022a96d4084a9493"' }>
+                                        'data-bs-target="#injectables-links-module-ProvisioningModule-eb61748352aa16c88b6c12edeb2c79f556222d3c81400498e5703d048bb6ca20def755945599d6e94934a7c8f6ce16105b1da77d0a69948b229352f36f9728dc"' : 'data-bs-target="#xs-injectables-links-module-ProvisioningModule-eb61748352aa16c88b6c12edeb2c79f556222d3c81400498e5703d048bb6ca20def755945599d6e94934a7c8f6ce16105b1da77d0a69948b229352f36f9728dc"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ProvisioningModule-7f2ca33211d9ee2c41edb405fc960fe9f473d31300cad3171cf566562900141c7ce5c6ef2e166c0b27846bfa3762b5826f2d7829ba5c2d5e022a96d4084a9493"' :
-                                        'id="xs-injectables-links-module-ProvisioningModule-7f2ca33211d9ee2c41edb405fc960fe9f473d31300cad3171cf566562900141c7ce5c6ef2e166c0b27846bfa3762b5826f2d7829ba5c2d5e022a96d4084a9493"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ProvisioningModule-eb61748352aa16c88b6c12edeb2c79f556222d3c81400498e5703d048bb6ca20def755945599d6e94934a7c8f6ce16105b1da77d0a69948b229352f36f9728dc"' :
+                                        'id="xs-injectables-links-module-ProvisioningModule-eb61748352aa16c88b6c12edeb2c79f556222d3c81400498e5703d048bb6ca20def755945599d6e94934a7c8f6ce16105b1da77d0a69948b229352f36f9728dc"' }>
                                         <li class="link">
                                             <a href="injectables/IservProvisioningStrategy.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >IservProvisioningStrategy</a>
                                         </li>
@@ -3087,6 +3087,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ErrorUtils.html" data-type="entity-link" >ErrorUtils</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ExternalGroupDto.html" data-type="entity-link" >ExternalGroupDto</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ExternalGroupUserDto.html" data-type="entity-link" >ExternalGroupUserDto</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ExternalSchoolDto.html" data-type="entity-link" >ExternalSchoolDto</a>
                             </li>
                             <li class="link">
@@ -3274,6 +3280,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/GroupDomainMapper.html" data-type="entity-link" >GroupDomainMapper</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/GroupRoleUnknownLoggable.html" data-type="entity-link" >GroupRoleUnknownLoggable</a>
                             </li>
                             <li class="link">
                                 <a href="classes/GroupUser.html" data-type="entity-link" >GroupUser</a>
@@ -3729,18 +3738,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/RoomUrlParams.html" data-type="entity-link" >RoomUrlParams</a>
                             </li>
                             <li class="link">
-                                <a href="classes/SanisResponse.html" data-type="entity-link" >SanisResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/SanisResponseName.html" data-type="entity-link" >SanisResponseName</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/SanisResponseOrganisation.html" data-type="entity-link" >SanisResponseOrganisation</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/SanisResponsePersonenkontext.html" data-type="entity-link" >SanisResponsePersonenkontext</a>
-                            </li>
-                            <li class="link">
                                 <a href="classes/ScanResultDto.html" data-type="entity-link" >ScanResultDto</a>
                             </li>
                             <li class="link">
@@ -3790,6 +3787,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/SchoolFactory.html" data-type="entity-link" >SchoolFactory</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchoolForGroupNotFoundLoggable.html" data-type="entity-link" >SchoolForGroupNotFoundLoggable</a>
                             </li>
                             <li class="link">
                                 <a href="classes/SchoolIdDoesNotMatchWithUserSchoolId.html" data-type="entity-link" >SchoolIdDoesNotMatchWithUserSchoolId</a>
@@ -4156,6 +4156,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/UserFactory.html" data-type="entity-link" >UserFactory</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/UserForGroupNotFoundLoggable.html" data-type="entity-link" >UserForGroupNotFoundLoggable</a>
                             </li>
                             <li class="link">
                                 <a href="classes/UserInfoMapper.html" data-type="entity-link" >UserInfoMapper</a>
@@ -5430,6 +5433,36 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/S3Config-1.html" data-type="entity-link" >S3Config</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/SanisGruppenResponse.html" data-type="entity-link" >SanisGruppenResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/SanisGruppenzugehoerigkeitResponse.html" data-type="entity-link" >SanisGruppenzugehoerigkeitResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/SanisGruppeResponse.html" data-type="entity-link" >SanisGruppeResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/SanisLaufzeitResponse.html" data-type="entity-link" >SanisLaufzeitResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/SanisNameResponse.html" data-type="entity-link" >SanisNameResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/SanisOrganisationResponse.html" data-type="entity-link" >SanisOrganisationResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/SanisPersonenkontextResponse.html" data-type="entity-link" >SanisPersonenkontextResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/SanisPersonResponse.html" data-type="entity-link" >SanisPersonResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/SanisResponse.html" data-type="entity-link" >SanisResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/SanisSonstigeGruppenzugehoerigeResponse.html" data-type="entity-link" >SanisSonstigeGruppenzugehoerigeResponse</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/SchoolExternalToolProps.html" data-type="entity-link" >SchoolExternalToolProps</a>
