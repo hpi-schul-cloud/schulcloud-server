@@ -79,7 +79,7 @@ const createBBBJoinConfig = (): BBBJoinConfig => {
 };
 
 type BBBResponseType = BBBCreateResponse | BBBMeetingInfoResponse | BBBBaseResponse;
-const createAxiosResponse = (data: unknown) =>
+const createAxiosResponse = (data: BBBResponse<BBBResponseType>) =>
 	axiosResponseFactory.build({
 		data,
 	});
