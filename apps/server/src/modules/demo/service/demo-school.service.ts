@@ -160,7 +160,7 @@ export class DemoSchoolService {
 		return { id: userDo.id, type: 'user', key: email };
 	}
 
-	async createAccount(user: UserDO): Promise<AccountSaveDto> {
+	private async createAccount(user: UserDO): Promise<AccountSaveDto> {
 		const accountSaveDto: AccountSaveDto = {
 			username: user.email,
 			password: 'aDemo!School+3342',
