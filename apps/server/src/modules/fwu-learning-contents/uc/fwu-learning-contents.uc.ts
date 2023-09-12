@@ -1,10 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { LegacyLogger } from '@src/core/logger';
+import { FWU_CONTENT_S3_CONNECTION } from '../fwu-learning-contents.config';
 
 @Injectable()
 export class FwuLearningContentsUc {
-	constructor(private logger: LegacyLogger, private readonly storageClient: S3ClientAdapter) {
+	constructor(
+		private logger: LegacyLogger,
+		@Inject(FWU_CONTENT_S3_CONNECTION) private readonly storageClient: S3ClientAdapter
+	) {
 		this.logger.setContext(FwuLearningContentsUc.name);
 	}
 

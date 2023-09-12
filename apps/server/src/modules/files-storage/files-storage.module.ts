@@ -24,7 +24,7 @@ const imports = [
 		exchange: Configuration.get('ANTIVIRUS_EXCHANGE') as string,
 		routingKey: Configuration.get('ANTIVIRUS_ROUTING_KEY') as string,
 	}),
-	S3ClientModule.register(s3Config),
+	S3ClientModule.register([s3Config]),
 ];
 const providers = [FilesStorageService, PreviewService, FileRecordRepo];
 
