@@ -1,6 +1,6 @@
 import { FederalStateDO, FederalStateProps } from '@src/modules/federal-state/domainobject/federal-state.do';
+import { County } from '@src/modules/federal-state/entity';
 import { ObjectId } from 'bson';
-import { County } from '@shared/domain';
 import { DomainObjectFactory } from './domain-object.factory';
 
 export const federalStateDoFactory = DomainObjectFactory.define<FederalStateDO, FederalStateProps>(

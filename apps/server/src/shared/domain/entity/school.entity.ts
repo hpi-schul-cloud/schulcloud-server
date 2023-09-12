@@ -10,10 +10,10 @@ import {
 	Property,
 } from '@mikro-orm/core';
 import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
+import { FederalStateEntity } from '@src/modules/federal-state/entity';
 import { BaseEntity } from './base.entity';
 import { SchoolYear } from './schoolyear.entity';
 import { System } from './system.entity';
-import { FederalStateEntity } from '../../../modules/federal-state/entity/federal-state.entity';
 
 export enum SchoolFeatures {
 	ROCKET_CHAT = 'rocketChat',
