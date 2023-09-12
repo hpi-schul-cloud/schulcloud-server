@@ -130,7 +130,7 @@ describe('Lesson Controller (API) - delete', () => {
 				expect(response.body).toEqual({
 					type: 'NOT_FOUND',
 					title: 'Not Found',
-					message: `The requested Lesson: ${notExistingId} has not been found.`,
+					message: `The requested LessonEntity: ${notExistingId} has not been found.`,
 					code: 404,
 				});
 			});
