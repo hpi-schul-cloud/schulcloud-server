@@ -1,5 +1,23 @@
-import { ForbiddenException, forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { AnyBoardDo, EntityId, SubmissionContainerElement, SubmissionItem, UserRoleEnum } from '@shared/domain';
+import {
+	BadRequestException,
+	ForbiddenException,
+	forwardRef,
+	HttpException,
+	HttpStatus,
+	Inject,
+	Injectable,
+} from '@nestjs/common';
+import {
+	AnyBoardDo,
+	ContentElementType,
+	EntityId,
+	FileElement,
+	isSumbmissionItem,
+	RichTextElement,
+	SubmissionContainerElement,
+	SubmissionItem,
+	UserRoleEnum,
+} from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Action } from '@src/modules/authorization/types/action.enum';
@@ -22,14 +40,7 @@ export class SubmissionItemUc {
 		const submissionContainer = await this.getSubmissionContainer(submissionContainerId);
 		await this.checkPermission(userId, submissionContainer, Action.read);
 
-		let submissionItems = submissionContainer.children as SubmissionItem[];
-
-		if (!submissionItems.every((child) => child instanceof SubmissionItem)) {
-			throw new HttpException(
-				'Children of submission-container-element must be of type submission-item',
-				HttpStatus.UNPROCESSABLE_ENTITY
-			);
-		}
+		let submissionItems: SubmissionItem[] = submissionContainer.children.filter(isSumbmissionItem);
 
 		const isAuthorizedStudent = await this.isAuthorizedStudent(userId, submissionContainer);
 		if (isAuthorizedStudent) {
@@ -56,6 +67,25 @@ export class SubmissionItemUc {
 		return submissionItem;
 	}
 
+	async createElement(
+		userId: EntityId,
+		submissionItemId: EntityId,
+		type: ContentElementType
+	): Promise<FileElement | RichTextElement> {
+		if (type !== ContentElementType.RICH_TEXT && type !== ContentElementType.FILE) {
+			throw new BadRequestException();
+		}
+
+		const submissionItem = await this.submissionItemService.findById(submissionItemId);
+
+		// TODO
+		// await this.checkPermission(userId, submissionItem, Action.write);
+
+		const element = await this.elementService.create(submissionItem, type);
+		// TODO
+		return element as FileElement | RichTextElement;
+	}
+
 	private async isAuthorizedStudent(userId: EntityId, boardDo: AnyBoardDo): Promise<boolean> {
 		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(boardDo);
 		const userRoleEnum = boardDoAuthorizable.users.find((u) => u.userId === userId)?.userRoleEnum;
@@ -73,9 +103,7 @@ export class SubmissionItemUc {
 	}
 
 	private async getSubmissionContainer(submissionContainerId: EntityId): Promise<SubmissionContainerElement> {
-		const submissionContainer = (await this.elementService.findById(
-			submissionContainerId
-		)) as SubmissionContainerElement;
+		const submissionContainer = await this.elementService.findSubmissionContainerElement(submissionContainerId);
 
 		if (!(submissionContainer instanceof SubmissionContainerElement)) {
 			throw new HttpException('Id does not belong to a submission container', HttpStatus.UNPROCESSABLE_ENTITY);

@@ -1,8 +1,17 @@
-import { EntityId } from '@shared/domain';
+import { EntityId, FileElement, isFileElement, isRichTextElement, RichTextElement } from '@shared/domain';
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
 export class SubmissionItem extends BoardComposite<SubmissionItemProps> {
+	/* get children(): (RichTextElement | FileElement)[] {
+		const { children } = this.props;
+		if (!children) return [];
+
+		const filteredChildren = children.filter(isFileElement || isRichTextElement);
+
+		return filteredChildren;
+	} */
+
 	get completed(): boolean {
 		return this.props.completed;
 	}
@@ -22,7 +31,9 @@ export class SubmissionItem extends BoardComposite<SubmissionItemProps> {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	isAllowedAsChild(child: AnyBoardDo): boolean {
 		// Currently submission-item rejects any children, will open in the future
-		return false;
+		const allowed = child instanceof FileElement || child instanceof RichTextElement;
+
+		return allowed;
 	}
 
 	accept(visitor: BoardCompositeVisitor): void {

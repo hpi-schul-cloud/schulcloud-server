@@ -1,4 +1,15 @@
-import { SubmissionItem } from '@shared/domain';
+import {
+	FileElement,
+	isContent,
+	isFileElement,
+	isRichTextElement,
+	RichTextElement,
+	SubmissionItem,
+} from '@shared/domain';
+import { ContentElementResponseFactory } from '@src/modules/board/controller/mapper/content-element-response.factory';
+import { FileElementResponseMapper } from '@src/modules/board/controller/mapper/file-element-response.mapper';
+import { RichTextElementResponseMapper } from '@src/modules/board/controller/mapper/rich-text-element-response.mapper';
+import { UnprocessableEntityException } from '@nestjs/common';
 import { SubmissionItemResponse, TimestampsResponse, UserDataResponse } from '../dto';
 
 export class SubmissionItemResponseMapper {
@@ -13,6 +24,8 @@ export class SubmissionItemResponseMapper {
 	}
 
 	public mapToResponse(submissionItem: SubmissionItem): SubmissionItemResponse {
+		const children: (FileElement | RichTextElement)[] = submissionItem.children.filter(isContent);
+
 		const result = new SubmissionItemResponse({
 			completed: submissionItem.completed,
 			id: submissionItem.id,
@@ -25,6 +38,17 @@ export class SubmissionItemResponseMapper {
 				firstName: 'John',
 				lastName: 'Mr Doe',
 				userId: submissionItem.userId,
+			}),
+			elements: children.map((element) => {
+				if (isFileElement(element)) {
+					const mapper = FileElementResponseMapper.getInstance();
+					return mapper.mapToResponse(element);
+				}
+				if (isRichTextElement(element)) {
+					const mapper = RichTextElementResponseMapper.getInstance();
+					return mapper.mapToResponse(element);
+				}
+				throw new UnprocessableEntityException();
 			}),
 		});
 

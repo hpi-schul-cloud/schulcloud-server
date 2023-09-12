@@ -31,6 +31,7 @@ export class CardResponse {
 	@ApiProperty({
 		type: 'array',
 		items: {
+			// TODO why only RichText ?
 			oneOf: [{ $ref: getSchemaPath(RichTextElementResponse) }],
 		},
 	})

@@ -2,6 +2,7 @@ import { Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import {
 	AnyBoardDo,
+	AnyBoardNode,
 	BoardCompositeVisitor,
 	BoardNode,
 	Card,
@@ -57,8 +58,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			context: columnBoard.context,
 		});
 
-		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(columnBoard, boardNode);
+		this.saveRecursive(boardNode, columnBoard);
 	}
 
 	visitColumn(column: Column): void {
@@ -71,8 +71,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			position: parentData?.position,
 		});
 
-		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(column, boardNode);
+		this.saveRecursive(boardNode, column);
 	}
 
 	visitCard(card: Card): void {
@@ -86,8 +85,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			position: parentData?.position,
 		});
 
-		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(card, boardNode);
+		this.saveRecursive(boardNode, card);
 	}
 
 	visitFileElement(fileElement: FileElement): void {
@@ -100,8 +98,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			position: parentData?.position,
 		});
 
-		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(fileElement, boardNode);
+		this.saveRecursive(boardNode, fileElement);
 	}
 
 	visitRichTextElement(richTextElement: RichTextElement): void {
@@ -115,8 +112,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			position: parentData?.position,
 		});
 
-		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(richTextElement, boardNode);
+		this.saveRecursive(boardNode, richTextElement);
 	}
 
 	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void {
@@ -129,22 +125,20 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			position: parentData?.position,
 		});
 
-		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(submissionContainerElement, boardNode);
+		this.saveRecursive(boardNode, submissionContainerElement);
 	}
 
-	visitSubmissionItem(submission: SubmissionItem): void {
-		const parentData = this.parentsMap.get(submission.id);
+	visitSubmissionItem(submissionItem: SubmissionItem): void {
+		const parentData = this.parentsMap.get(submissionItem.id);
 		const boardNode = new SubmissionItemNode({
-			id: submission.id,
+			id: submissionItem.id,
 			parent: parentData?.boardNode,
 			position: parentData?.position,
-			completed: submission.completed,
-			userId: submission.userId,
+			completed: submissionItem.completed,
+			userId: submissionItem.userId,
 		});
 
-		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(submission, boardNode);
+		this.saveRecursive(boardNode, submissionItem);
 	}
 
 	visitChildren(parent: AnyBoardDo, parentNode: BoardNode) {
@@ -154,7 +148,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 		});
 	}
 
-	registerParentData(parent: AnyBoardDo, child: AnyBoardDo, parentNode: BoardNode) {
+	private registerParentData(parent: AnyBoardDo, child: AnyBoardDo, parentNode: BoardNode) {
 		const position = parent.children.findIndex((obj) => obj.id === child.id);
 		if (position === -1) {
 			throw new Error(`Cannot get child position. Child doesnt belong to parent`);
@@ -162,6 +156,12 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 		this.parentsMap.set(child.id, { boardNode: parentNode, position });
 	}
 
+	private saveRecursive(anyBoardNode: AnyBoardNode, anyBoardDo: AnyBoardDo): void {
+		this.createOrUpdateBoardNode(anyBoardNode);
+		this.visitChildren(anyBoardDo, anyBoardNode);
+	}
+
+	// TODO make private
 	createOrUpdateBoardNode(boardNode: BoardNode): void {
 		const existing = this.em.getUnitOfWork().getById<BoardNode>(BoardNode.name, boardNode.id);
 		if (existing) {

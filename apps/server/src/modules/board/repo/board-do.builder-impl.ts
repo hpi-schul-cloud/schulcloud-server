@@ -130,7 +130,11 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 	}
 
 	public buildSubmissionItem(boardNode: SubmissionItemNode): SubmissionItem {
-		this.ensureLeafNode(boardNode);
+		this.ensureBoardNodeType(this.getChildren(boardNode), [
+			BoardNodeType.FILE_ELEMENT,
+			BoardNodeType.RICH_TEXT_ELEMENT,
+		]);
+		const elements = this.buildChildren<RichTextElement | FileElement>(boardNode);
 
 		const element = new SubmissionItem({
 			id: boardNode.id,
@@ -138,7 +142,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			updatedAt: boardNode.updatedAt,
 			completed: boardNode.completed,
 			userId: boardNode.userId,
-			children: [],
+			children: elements,
 		});
 		return element;
 	}

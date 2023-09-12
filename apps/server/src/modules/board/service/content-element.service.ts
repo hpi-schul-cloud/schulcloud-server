@@ -6,6 +6,8 @@ import {
 	ContentElementType,
 	EntityId,
 	isAnyContentElement,
+	SubmissionContainerElement,
+	SubmissionItem,
 } from '@shared/domain';
 import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';
@@ -30,7 +32,17 @@ export class ContentElementService {
 		return element;
 	}
 
-	async create(parent: Card, type: ContentElementType): Promise<AnyContentElementDo> {
+	async findSubmissionContainerElement(elementId: EntityId): Promise<SubmissionContainerElement> {
+		const element = await this.boardDoRepo.findById(elementId);
+
+		if (!(element instanceof SubmissionContainerElement)) {
+			throw new NotFoundException(`There is no '${element.constructor.name}' with this id`);
+		}
+
+		return element;
+	}
+
+	async create(parent: Card | SubmissionItem, type: ContentElementType): Promise<AnyContentElementDo> {
 		const element = this.contentElementFactory.build(type);
 		parent.addChild(element);
 		await this.boardDoRepo.save(parent.children, parent);

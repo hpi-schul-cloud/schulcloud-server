@@ -13,3 +13,11 @@ export const isAnyContentElement = (element: AnyBoardDo): element is AnyContentE
 
 	return result;
 };
+
+export const isFileElement = (element: AnyBoardDo): element is FileElement => element instanceof FileElement;
+
+export const isRichTextElement = (element: AnyBoardDo): element is RichTextElement =>
+	element instanceof RichTextElement;
+
+export const isContent = (element: AnyBoardDo): element is RichTextElement | FileElement =>
+	element instanceof RichTextElement || element instanceof FileElement;
