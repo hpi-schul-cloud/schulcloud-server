@@ -124,6 +124,12 @@
                             <a href="#cardNodeFactory" title="apps/server/src/shared/testing/factory/boardnode/card-node.factory.ts" ><b>cardNodeFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../card-node.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#classEntityFactory" title="apps/server/src/modules/class/entity/testing/factory/class.entity.factory.ts" ><b>classEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../class.entity.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#classFactory" title="apps/server/src/modules/class/domain/testing/factory/class.factory.ts" ><b>classFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../class.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#cleanupCollections" title="apps/server/src/shared/testing/cleanup-collections.ts" ><b>cleanupCollections</b>&nbsp;&nbsp;&nbsp;(apps/.../cleanup-collections.ts)</a>
                         </li>
                         <li>
@@ -730,15 +736,6 @@
                             <a href="#" title="apps/server/src/modules/authentication/constants.ts" ><b></b>&nbsp;&nbsp;&nbsp;(apps/.../constants.ts)</a>
                         </li>
                         <li>
-                            <a href="#userPermissions" title="apps/server/src/shared/testing/user-role-permissions.ts" ><b>userPermissions</b>&nbsp;&nbsp;&nbsp;(apps/.../user-role-permissions.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#VideoConferenceSettings" title="apps/server/src/modules/video-conference/interface/video-conference-settings.interface.ts" ><b>VideoConferenceSettings</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference-settings.interface.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#" title="apps/server/src/shared/infra/file-system/file-system.adapter.ts" ><b></b>&nbsp;&nbsp;&nbsp;(apps/.../file-system.adapter.ts)</a>
-                        </li>
-                        <li>
                             <a href="#userDoFactory" title="apps/server/src/shared/testing/factory/user.do.factory.ts" ><b>userDoFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../user.do.factory.ts)</a>
                         </li>
                         <li>
@@ -751,10 +748,19 @@
                             <a href="#userLoginMigrationFactory" title="apps/server/src/shared/testing/factory/user-login-migration.factory.ts" ><b>userLoginMigrationFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../user-login-migration.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#userPermissions" title="apps/server/src/shared/testing/user-role-permissions.ts" ><b>userPermissions</b>&nbsp;&nbsp;&nbsp;(apps/.../user-role-permissions.ts)</a>
+                        </li>
+                        <li>
                             <a href="#videoConferenceDOFactory" title="apps/server/src/shared/testing/factory/video-conference.do.factory.ts" ><b>videoConferenceDOFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference.do.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#videoConferenceFactory" title="apps/server/src/shared/testing/factory/video-conference.factory.ts" ><b>videoConferenceFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#VideoConferenceSettings" title="apps/server/src/modules/video-conference/interface/video-conference-settings.interface.ts" ><b>VideoConferenceSettings</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference-settings.interface.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#" title="apps/server/src/shared/infra/file-system/file-system.adapter.ts" ><b></b>&nbsp;&nbsp;&nbsp;(apps/.../file-system.adapter.ts)</a>
                         </li>
                         <li>
                             <a href="#VideoConferencingScopeMapping" title="apps/server/src/shared/repo/videoconference/video-conference.repo.ts" ><b>VideoConferencingScopeMapping</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference.repo.ts)</a>
@@ -1374,6 +1380,7 @@
 	ColumnBoardNode,
 	ColumnBoardTarget,
 	ColumnNode,
+	ClassEntity,
 	FileElementNode,
 	RichTextElementNode,
 	SubmissionContainerElementNode,
@@ -2254,6 +2261,83 @@ This allows adding console commands to execute provider methods.</p>
 	return {
 		height: 150,
 		title: &#x60;card #${sequence}&#x60;,
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/class/entity/testing/factory/class.entity.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="classEntityFactory"></a>
+                    <span class="name">
+                        <span ><b>classEntityFactory</b></span>
+                        <a href="#classEntityFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>ClassEntityFactory.define(ClassEntity, ({ sequence }) &#x3D;&gt; {
+	return {
+		name: &#x60;name-${sequence}&#x60;,
+		schoolId: new ObjectId(),
+		userIds: new Array&lt;ObjectId&gt;(),
+		teacherIds: [new ObjectId(), new ObjectId()],
+		invitationLink: &#x60;link-${sequence}&#x60;,
+		year: new ObjectId(),
+		gradeLevel: sequence,
+		ldapDN: &#x60;dn-${sequence}&#x60;,
+		successor: new ObjectId(),
+		source: &#x60;source-${sequence}&#x60;,
+		sourceOptions: new ClassSourceOptionsEntity({ tspUid: &#x60;id-${sequence}&#x60; }),
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/class/domain/testing/factory/class.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="classFactory"></a>
+                    <span class="name">
+                        <span ><b>classFactory</b></span>
+                        <a href="#classFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>ClassFactory.define(Class, ({ sequence }) &#x3D;&gt; {
+	return {
+		id: new ObjectId().toHexString(),
+		name: &#x60;name-${sequence}&#x60;,
+		schoolId: new ObjectId().toHexString(),
+		userIds: [new ObjectId().toHexString(), new ObjectId().toHexString()],
+		teacherIds: [new ObjectId().toHexString(), new ObjectId().toHexString()],
+		invitationLink: &#x60;link-${sequence}&#x60;,
+		year: new ObjectId().toHexString(),
+		gradeLevel: sequence,
+		ldapDN: &#x60;dn-${sequence}&#x60;,
+		successor: new ObjectId().toHexString(),
+		source: &#x60;source-${sequence}&#x60;,
+		sourceOptions: new ClassSourceOptions({ tspUid: &#x60;id-${sequence}&#x60; }),
+		createdAt: new Date(),
+		updatedAt: new Date(),
 	};
 })</code>
                     </td>
@@ -9022,52 +9106,6 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
-    <h3>apps/server/src/modules/video-conference/interface/video-conference-settings.interface.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="VideoConferenceSettings"></a>
-                    <span class="name">
-                        <span ><b>VideoConferenceSettings</b></span>
-                        <a href="#VideoConferenceSettings"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>Symbol(&#x27;VideoConferenceSettings&#x27;)</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
-    <h3>apps/server/src/shared/infra/file-system/file-system.adapter.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name=""></a>
-                    <span class="name">
-                        <span ><b></b></span>
-                        <a href="#"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>fsp</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
     <h3>apps/server/src/shared/testing/factory/user.do.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -9266,6 +9304,52 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		};
 	}
 )</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/video-conference/interface/video-conference-settings.interface.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="VideoConferenceSettings"></a>
+                    <span class="name">
+                        <span ><b>VideoConferenceSettings</b></span>
+                        <a href="#VideoConferenceSettings"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Symbol(&#x27;VideoConferenceSettings&#x27;)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/infra/file-system/file-system.adapter.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name=""></a>
+                    <span class="name">
+                        <span ><b></b></span>
+                        <a href="#"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>fsp</code>
                     </td>
                 </tr>
 

@@ -522,6 +522,26 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                             </li>
                             <li class="link">
+                                <a href="modules/ClassModule.html" data-type="entity-link" >ClassModule</a>
+                                <li class="chapter inner">
+                                    <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
+                                        'data-bs-target="#injectables-links-module-ClassModule-09be39b727462af18923b33ef74057f05396b473db84f791552b03a5872cfac2d86a05b26659cae8da2363ba3f1b027bcd47ed1a31ff111dc7944fb1f8e45aee"' : 'data-bs-target="#xs-injectables-links-module-ClassModule-09be39b727462af18923b33ef74057f05396b473db84f791552b03a5872cfac2d86a05b26659cae8da2363ba3f1b027bcd47ed1a31ff111dc7944fb1f8e45aee"' }>
+                                        <span class="icon ion-md-arrow-round-down"></span>
+                                        <span>Injectables</span>
+                                        <span class="icon ion-ios-arrow-down"></span>
+                                    </div>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ClassModule-09be39b727462af18923b33ef74057f05396b473db84f791552b03a5872cfac2d86a05b26659cae8da2363ba3f1b027bcd47ed1a31ff111dc7944fb1f8e45aee"' :
+                                        'id="xs-injectables-links-module-ClassModule-09be39b727462af18923b33ef74057f05396b473db84f791552b03a5872cfac2d86a05b26659cae8da2363ba3f1b027bcd47ed1a31ff111dc7944fb1f8e45aee"' }>
+                                        <li class="link">
+                                            <a href="injectables/ClassService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ClassService</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/ClassesRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ClassesRepo</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </li>
+                            <li class="link">
                                 <a href="modules/CollaborativeStorageAdapterModule.html" data-type="entity-link" >CollaborativeStorageAdapterModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
@@ -2471,6 +2491,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="entities/CardNode.html" data-type="entity-link" >CardNode</a>
                                 </li>
                                 <li class="link">
+                                    <a href="entities/ClassEntity.html" data-type="entity-link" >ClassEntity</a>
+                                </li>
+                                <li class="link">
                                     <a href="entities/ColumnboardBoardElement.html" data-type="entity-link" >ColumnboardBoardElement</a>
                                 </li>
                                 <li class="link">
@@ -2797,6 +2820,27 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/ChangeLanguageParams.html" data-type="entity-link" >ChangeLanguageParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/Class.html" data-type="entity-link" >Class</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ClassEntity.html" data-type="entity-link" >ClassEntity</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ClassEntityFactory.html" data-type="entity-link" >ClassEntityFactory</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ClassFactory.html" data-type="entity-link" >ClassFactory</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ClassMapper.html" data-type="entity-link" >ClassMapper</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ClassSourceOptions.html" data-type="entity-link" >ClassSourceOptions</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ClassSourceOptionsEntity.html" data-type="entity-link" >ClassSourceOptionsEntity</a>
                             </li>
                             <li class="link">
                                 <a href="classes/Column.html" data-type="entity-link" >Column</a>
@@ -4357,6 +4401,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/CardUc.html" data-type="entity-link" >CardUc</a>
                                 </li>
                                 <li class="link">
+                                    <a href="injectables/ClassesRepo.html" data-type="entity-link" >ClassesRepo</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/ClassService.html" data-type="entity-link" >ClassService</a>
+                                </li>
+                                <li class="link">
                                     <a href="injectables/CloseUserLoginMigrationUc.html" data-type="entity-link" >CloseUserLoginMigrationUc</a>
                                 </li>
                                 <li class="link">
@@ -4946,6 +4996,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/CardProps.html" data-type="entity-link" >CardProps</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/ClassProps.html" data-type="entity-link" >ClassProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ClassSourceOptionsEntityProps.html" data-type="entity-link" >ClassSourceOptionsEntityProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ClassSourceOptionsProps.html" data-type="entity-link" >ClassSourceOptionsProps</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/ColumnBoardNodeProps.html" data-type="entity-link" >ColumnBoardNodeProps</a>
                             </li>
                             <li class="link">
@@ -5040,6 +5099,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/ICalendarEvent.html" data-type="entity-link" >ICalendarEvent</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/IClassEntityProps.html" data-type="entity-link" >IClassEntityProps</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/ICollaborativeStorageStrategy.html" data-type="entity-link" >ICollaborativeStorageStrategy</a>
