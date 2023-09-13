@@ -3,4 +3,4 @@
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
-      template: api-h5p-library-managament-cronjob.yml.j2
+      template: api-h5p-library-management-cronjob.yml.j2
