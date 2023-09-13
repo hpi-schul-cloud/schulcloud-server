@@ -76,107 +76,113 @@ describe(DemoSchoolService.name, () => {
 	const setupUserService = () => {
 		const fakeSchoolId = 'aFakedSchoolId';
 
-		const fakeFirstUserId = 'aFakedUserId1';
-		const firstUserConfig: UserConfig = {
+		const fakeUserId1 = 'aFakedUserId1';
+		const userConfig1: UserConfig = {
 			firstName: 'der',
 			lastName: 'peter',
 			email: 'der.peter@testen.de',
 			roleNames: [RoleName.TEACHER],
 		};
 		userService.save.mockResolvedValueOnce({
-			id: fakeFirstUserId,
-			firstName: firstUserConfig.firstName,
-			lastName: firstUserConfig.lastName,
-			email: firstUserConfig.email,
+			id: fakeUserId1,
+			firstName: userConfig1.firstName,
+			lastName: userConfig1.lastName,
+			email: userConfig1.email,
 			schoolId: fakeSchoolId,
 			roles: [],
 		});
 
-		const fakeSecondUserId = 'aFakedUserId2';
-		const secondUserConfig: UserConfig = {
+		const fakeUserId2 = 'aFakedUserId2';
+		const userConfig2: UserConfig = {
 			firstName: 'der',
 			lastName: 'peter',
 			email: 'der.peter@testen.de',
 			roleNames: [RoleName.TEACHER],
 		};
 		userService.save.mockResolvedValueOnce({
-			id: fakeSecondUserId,
-			firstName: secondUserConfig.firstName,
-			lastName: secondUserConfig.lastName,
-			email: secondUserConfig.email,
+			id: fakeUserId2,
+			firstName: userConfig2.firstName,
+			lastName: userConfig2.lastName,
+			email: userConfig2.email,
 			schoolId: fakeSchoolId,
 			roles: [],
 		});
 
 		roleService.findByNames.mockResolvedValue([{ id: 'the-teacher-roleid', name: RoleName.TEACHER }]);
 
-		return { fakeSchoolId, fakeFirstUserId, fakeSecondUserId, firstUserConfig, secondUserConfig };
+		return { fakeSchoolId, fakeUserId1, fakeUserId2, userConfig1, userConfig2 };
 	};
 
 	const setupLessonService = () => {
 		const fakeSchoolId = 'aFakedSchoolId';
 
-		const fakeFirstLessonId = 'aFakedLessonId1';
-		const firstLessonConfig: LessonConfig = {
+		const fakeLessonId1 = 'aFakedLessonId1';
+		const lessonConfig1: LessonConfig = {
 			name: 'my first lesson',
 		};
-		lessonService.createLesson.mockResolvedValueOnce(fakeFirstLessonId);
+		lessonService.createLesson.mockResolvedValueOnce(fakeLessonId1);
 
-		const fakeSecondLessonId = 'aFakedLessonId2';
-		const secondLessonConfig: LessonConfig = {
+		const fakeLessonId2 = 'aFakedLessonId2';
+		const lessonConfig2: LessonConfig = {
 			name: 'my second lesson',
 		};
-		lessonService.createLesson.mockResolvedValueOnce(fakeSecondLessonId);
+		lessonService.createLesson.mockResolvedValueOnce(fakeLessonId2);
 
 		return {
 			fakeSchoolId,
-			fakeFirstLessonId,
-			fakeSecondLessonId,
-			firstLessonConfig,
-			secondLessonConfig,
+			fakeLessonId1,
+			fakeLessonId2,
+			lessonConfig1,
+			lessonConfig2,
 		};
 	};
 
 	const setupCourseService = () => {
 		const fakeSchoolId = 'aFakedSchoolId';
 
-		const fakeFirstCourseId = 'aFakedCourseId1';
-		const firstCourseConfig: CourseConfig = {
+		const fakeCourseId1 = 'aFakedCourseId1';
+		const courseConfig1: CourseConfig = {
 			name: 'my first course',
 			teachers: [],
 			students: [],
 			substitutionTeachers: [],
 		};
-		courseService.createCourse.mockResolvedValueOnce(fakeFirstCourseId);
+		courseService.createCourse.mockResolvedValueOnce(fakeCourseId1);
 
-		const fakeSecondCourseId = 'aFakedCourseId2';
-		const secondCourseConfig: CourseConfig = {
+		const fakeCourseId2 = 'aFakedCourseId2';
+		const courseConfig2: CourseConfig = {
 			name: 'my second course',
 			teachers: [],
 			students: [],
 			substitutionTeachers: [],
 		};
-		courseService.createCourse.mockResolvedValueOnce(fakeSecondCourseId);
+		courseService.createCourse.mockResolvedValueOnce(fakeCourseId2);
+
+		const fakeProtocol = {
+			id: 'an-id',
+			type: 'none',
+		};
 
 		return {
 			fakeSchoolId,
-			fakeFirstCourseId,
-			fakeSecondCourseId,
-			firstCourseConfig,
-			secondCourseConfig,
+			fakeCourseId1,
+			fakeCourseId2,
+			courseConfig1,
+			courseConfig2,
+			fakeProtocol,
 		};
 	};
 
 	describe('createUser', () => {
 		it('should return correct creationProtocol', async () => {
-			const { fakeSchoolId, fakeFirstUserId, firstUserConfig } = setupUserService();
+			const { fakeSchoolId, fakeUserId1, userConfig1 } = setupUserService();
 
-			const creationProtocol = await service.createUser(fakeSchoolId, firstUserConfig);
+			const creationProtocol = await service.createUser(fakeSchoolId, userConfig1);
 
 			expect(creationProtocol).toEqual(
 				expect.objectContaining({
-					id: fakeFirstUserId,
-					key: firstUserConfig.email,
+					id: fakeUserId1,
+					key: userConfig1.email,
 				})
 			);
 		});
@@ -184,20 +190,20 @@ describe(DemoSchoolService.name, () => {
 
 	describe('createUsers', () => {
 		it('should return correct creationProtocol', async () => {
-			const { fakeSchoolId, fakeFirstUserId, fakeSecondUserId, firstUserConfig, secondUserConfig } = setupUserService();
+			const { fakeSchoolId, fakeUserId1, fakeUserId2, userConfig1, userConfig2 } = setupUserService();
 
-			const creationProtocol = await service.createUsers(fakeSchoolId, [firstUserConfig, secondUserConfig]);
+			const creationProtocol = await service.createUsers(fakeSchoolId, [userConfig1, userConfig2]);
 
 			expect(creationProtocol.toString()).toBe(
 				[
 					{
-						id: fakeFirstUserId,
-						key: firstUserConfig.email,
+						id: fakeUserId1,
+						key: userConfig1.email,
 						type: 'user',
 					},
 					{
-						id: fakeSecondUserId,
-						key: secondUserConfig.email,
+						id: fakeUserId2,
+						key: userConfig2.email,
 						type: 'user',
 					},
 				].toString()
@@ -207,14 +213,14 @@ describe(DemoSchoolService.name, () => {
 
 	describe('createLesson', () => {
 		it('should return correct creationProtocol', async () => {
-			const { fakeSchoolId, fakeFirstLessonId, firstLessonConfig } = setupLessonService();
+			const { fakeSchoolId, fakeLessonId1, lessonConfig1 } = setupLessonService();
 
-			const creationProtocol = await service.createLesson(fakeSchoolId, firstLessonConfig);
+			const creationProtocol = await service.createLesson(fakeSchoolId, lessonConfig1);
 
 			expect(creationProtocol).toEqual(
 				expect.objectContaining({
-					id: fakeFirstLessonId,
-					key: firstLessonConfig.name,
+					id: fakeLessonId1,
+					key: lessonConfig1.name,
 				})
 			);
 		});
@@ -222,21 +228,20 @@ describe(DemoSchoolService.name, () => {
 
 	describe('createLessons', () => {
 		it('should return correct creationProtocol', async () => {
-			const { fakeSchoolId, fakeFirstLessonId, fakeSecondLessonId, firstLessonConfig, secondLessonConfig } =
-				setupLessonService();
+			const { fakeSchoolId, fakeLessonId1, fakeLessonId2, lessonConfig1, lessonConfig2 } = setupLessonService();
 
-			const userCreationProtocol = await service.createLessons(fakeSchoolId, [firstLessonConfig, secondLessonConfig]);
+			const userCreationProtocol = await service.createLessons(fakeSchoolId, [lessonConfig1, lessonConfig2]);
 
 			expect(userCreationProtocol.toString()).toBe(
 				[
 					{
-						id: fakeFirstLessonId,
-						key: firstLessonConfig.name,
+						id: fakeLessonId1,
+						key: lessonConfig1.name,
 						type: 'user',
 					},
 					{
-						id: fakeSecondLessonId,
-						key: secondLessonConfig.name,
+						id: fakeLessonId2,
+						key: lessonConfig2.name,
 						type: 'user',
 					},
 				].toString()
@@ -246,17 +251,57 @@ describe(DemoSchoolService.name, () => {
 
 	describe('createCourse', () => {
 		it('should return correct creationProtocol', async () => {
-			const { fakeSchoolId, fakeFirstCourseId, firstCourseConfig } = setupCourseService();
+			const { fakeSchoolId, fakeCourseId1, courseConfig1, fakeProtocol } = setupCourseService();
 
-			const creationProtocol = await service.createCourse(fakeSchoolId, firstCourseConfig, {
-				id: 'an-id',
-				type: 'none',
-			});
+			const creationProtocol = await service.createCourse(fakeSchoolId, courseConfig1, fakeProtocol);
 
 			expect(creationProtocol).toEqual(
 				expect.objectContaining({
-					id: fakeFirstCourseId,
-					key: firstCourseConfig.name,
+					id: fakeCourseId1,
+					key: courseConfig1.name,
+				})
+			);
+		});
+	});
+
+	describe('createCourses', () => {
+		it('should return correct creationProtocol', async () => {
+			const { fakeSchoolId, fakeCourseId1, fakeCourseId2, courseConfig1, courseConfig2, fakeProtocol } =
+				setupCourseService();
+
+			const userCreationProtocol = await service.createCourses(
+				fakeSchoolId,
+				[courseConfig1, courseConfig2],
+				fakeProtocol
+			);
+
+			expect(userCreationProtocol.toString()).toBe(
+				[
+					{
+						id: fakeCourseId1,
+						key: courseConfig1.name,
+						type: 'course',
+					},
+					{
+						id: fakeCourseId2,
+						key: courseConfig2.name,
+						type: 'course',
+					},
+				].toString()
+			);
+		});
+	});
+
+	describe('createSchool', () => {
+		it('should return correct creationProtocol', async () => {
+			const { fakeSchoolId, fakeCourseId1, courseConfig1, fakeProtocol } = setupCourseService();
+
+			const creationProtocol = await service.createCourse(fakeSchoolId, courseConfig1, fakeProtocol);
+
+			expect(creationProtocol).toEqual(
+				expect.objectContaining({
+					id: fakeCourseId1,
+					key: courseConfig1.name,
 				})
 			);
 		});
