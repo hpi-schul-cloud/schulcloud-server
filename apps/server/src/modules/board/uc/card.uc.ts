@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
 	AnyBoardDo,
 	Card,
@@ -67,17 +67,21 @@ export class CardUc {
 		await this.checkPermission(userId, element, Action.write);
 		await this.elementService.delete(element);
 		if (element instanceof DrawingElement) {
-			await firstValueFrom(
-				this.httpService.delete(
-					`${Configuration.get('TLDRAW_URI') as string}/api/v3/tldraw-document/${element.drawingName}`,
-					{
-						headers: {
-							Accept: 'Application/json',
-							Authorization: auth,
-						},
-					}
-				)
-			);
+			try {
+				await firstValueFrom(
+					this.httpService.delete(
+						`${Configuration.get('TLDRAW_URI') as string}/api/v3/tldraw-document/${element.drawingName}`,
+						{
+							headers: {
+								Accept: 'Application/json',
+								Authorization: auth,
+							},
+						}
+					)
+				);
+			} catch (e) {
+				throw new NotFoundException(e);
+			}
 		}
 	}
 
