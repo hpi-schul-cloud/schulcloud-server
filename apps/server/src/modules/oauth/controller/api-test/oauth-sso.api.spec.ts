@@ -18,7 +18,7 @@ import { JwtTestFactory } from '@shared/testing/factory/jwt.test.factory';
 import { userLoginMigrationFactory } from '@shared/testing/factory/user-login-migration.factory';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { SanisResponse, SanisRole } from '@src/modules/provisioning';
+import { SanisResponse, SanisRole } from '@src/modules/provisioning/strategy/sanis/response';
 import { ServerTestModule } from '@src/modules/server';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -292,16 +292,15 @@ describe('OAuth SSO Controller (API)', () => {
 					},
 					personenkontexte: [
 						{
-							id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713'),
+							id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713').toString(),
 							rolle: SanisRole.LEHR,
 							organisation: {
-								id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713'),
+								id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713').toString(),
 								kennung: officialSchoolNumber,
 								name: 'schulName',
 								typ: 'not necessary',
 							},
 							personenstatus: 'not necessary',
-							email: 'email',
 						},
 					],
 				});
