@@ -11,11 +11,11 @@ const options = [
 		outdir: 'node_modules/@keycloak/keycloak-admin-client-cjs',
 	},
 	{
-		name: 'stream-mime-type-lib',
-		entryPoint: ['esbuild/content/stream-mime-type-cjs-index.ts'],
-		outdir: 'node_modules/stream-mime-type-cjs',
+		name: 'file-type-lib',
+		entryPoint: ['esbuild/content/file-type-cjs-index.ts'],
+		outdir: 'node_modules/file-type-cjs',
 		// Path to file containing the resolution-mode="require" declaration.
-		pathToResolutionModeError: 'node_modules/stream-mime-type/dist/index.d.ts',
+		pathToResolutionModeError: 'node_modules/file-type/dist/index.d.ts',
 	},
 ];
 
