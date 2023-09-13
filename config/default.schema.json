@@ -545,6 +545,11 @@
 			"description": "enables antivirus check for files",
 			"default": false
 		},
+		"FILE_SECURITY_CHECK_MAX_FILE_SIZE": {
+			"type": "integer",
+			"description": "Maximum file size for antivirus check in Byte.",
+			"default": 25000000
+		},
 		"FILE_SECURITY_CHECK_SERVICE_URI": {
 			"type": "string",
 			"description": "Antivirus file endpoint, only used for legacy file implementation",
@@ -600,6 +605,11 @@
 			"default": "604800000",
 			"description": "Grace period before school admin cannot restart oauth migration anymore. Value is given in ms and default is 7 days"
 		},
+		"FEATURE_SANIS_GROUP_PROVISIONING_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Groups of type class also gets provisioned, when provisioning a user via oauth login."
+		},
 		"SC_TITLE": {
 			"type": "string",
 			"default": "dBildungscloud",
@@ -640,7 +650,12 @@
 		"FEATURE_SCHOOL_POLICY_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "Custom School Policy can be uploaded by the school admin "
+			"description": "Enables uploading of school specific Privacy Policy on old admin page "
+		},
+		"FEATURE_SCHOOL_POLICY_ENABLED_NEW": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables uploading of school specific Privacy Policy on new admin page."
 		},
 		"ROCKETCHAT_SERVICE_ENABLED": {
 			"type": "boolean",
