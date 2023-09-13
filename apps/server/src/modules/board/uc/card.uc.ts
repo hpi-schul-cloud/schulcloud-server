@@ -80,7 +80,7 @@ export class CardUc {
 					)
 				);
 			} catch (e) {
-				throw new NotFoundException({ error: e as object, uri: Configuration.get('TLDRAW_URI') as string });
+				throw new NotFoundException({ error: e.message as string, uri: Configuration.get('TLDRAW_URI') as string });
 			}
 		}
 	}
