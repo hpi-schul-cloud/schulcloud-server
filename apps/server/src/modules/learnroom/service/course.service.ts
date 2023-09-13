@@ -17,9 +17,9 @@ export class CourseService {
 			(course: Course) =>
 				({
 					...course,
-					students: course.students.remove((u) => u.id === userId),
-					teachers: course.teachers.remove((u) => u.id === userId),
-					substitutionTeachers: course.substitutionTeachers.remove((u) => u.id === userId),
+					students: course.removeStudent(userId),
+					teachers: course.removeTeacher(userId),
+					substitutionTeachers: course.removeSubstitutionTeacher(userId),
 				} as unknown as Course)
 		);
 

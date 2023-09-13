@@ -249,4 +249,82 @@ describe('CourseEntity', () => {
 			});
 		});
 	});
+
+	describe('removeStudent is called', () => {
+		describe('when students exist', () => {
+			const setup = () => {
+				const student1 = userFactory.buildWithId();
+				const student2 = userFactory.buildWithId();
+				const students = [student1, student2];
+				const studentIds = [student1.id, student2.id];
+
+				const course = courseFactory.build({ students });
+
+				return { course, student1, studentIds };
+			};
+
+			it('should be delete the userId from the students list.', () => {
+				const { course, student1, studentIds } = setup();
+
+				course.removeStudent(student1.id);
+
+				const result = course.getStudentIds();
+
+				expect(result.length).toEqual(1);
+				expect(result).toContain(studentIds[1]);
+			});
+		});
+	});
+
+	describe('removeTeacher is called', () => {
+		describe('when teachers exist', () => {
+			const setup = () => {
+				const teacher1 = userFactory.buildWithId();
+				const teacher2 = userFactory.buildWithId();
+				const teachers = [teacher1, teacher2];
+				const teacherIds = [teacher1.id, teacher2.id];
+
+				const course = courseFactory.build({ teachers });
+
+				return { course, teacher1, teacherIds };
+			};
+
+			it('should be delete the userId from the students list.', () => {
+				const { course, teacher1, teacherIds } = setup();
+
+				course.removeTeacher(teacher1.id);
+
+				const result = course.getTeacherIds();
+
+				expect(result.length).toEqual(1);
+				expect(result).toContain(teacherIds[1]);
+			});
+		});
+	});
+
+	describe('removeSubstitutionTeacher is called', () => {
+		describe('when students exist', () => {
+			const setup = () => {
+				const substitutionTeacher1 = userFactory.buildWithId();
+				const substitutionTeacher2 = userFactory.buildWithId();
+				const substitutionTeachers = [substitutionTeacher1, substitutionTeacher2];
+				const substitutionTeacherIds = [substitutionTeacher1.id, substitutionTeacher2.id];
+
+				const course = courseFactory.build({ substitutionTeachers });
+
+				return { course, substitutionTeacher1, substitutionTeacherIds };
+			};
+
+			it('should be delete the userId from the students list.', () => {
+				const { course, substitutionTeacher1, substitutionTeacherIds } = setup();
+
+				course.removeSubstitutionTeacher(substitutionTeacher1.id);
+
+				const result = course.getSubstitutionTeacherIds();
+
+				expect(result.length).toEqual(1);
+				expect(result).toContain(substitutionTeacherIds[1]);
+			});
+		});
+	});
 });

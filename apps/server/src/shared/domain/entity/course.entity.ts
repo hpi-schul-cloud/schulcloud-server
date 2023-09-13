@@ -178,4 +178,16 @@ export class Course
 
 		return isFinished;
 	}
+
+	public removeStudent(userId: EntityId): void {
+		this.students.remove((u) => u.id === userId);
+	}
+
+	public removeTeacher(userId: EntityId): void {
+		this.teachers.remove((u) => u.id === userId);
+	}
+
+	public removeSubstitutionTeacher(userId: EntityId): void {
+		this.substitutionTeachers.remove((u) => u.id === userId);
+	}
 }

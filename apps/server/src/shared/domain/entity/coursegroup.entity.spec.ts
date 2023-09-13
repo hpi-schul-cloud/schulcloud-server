@@ -66,4 +66,30 @@ describe('CourseEntity', () => {
 			});
 		});
 	});
+
+	describe('removeStudent is called', () => {
+		describe('when students exist', () => {
+			const setup = () => {
+				const student1 = userFactory.buildWithId();
+				const student2 = userFactory.buildWithId();
+				const students = [student1, student2];
+				const studentIds = [student1.id, student2.id];
+
+				const course = courseFactory.build({ students });
+
+				return { course, student1, studentIds };
+			};
+
+			it('should be delete the userId from the students list.', () => {
+				const { course, student1, studentIds } = setup();
+
+				course.removeStudent(student1.id);
+
+				const result = course.getStudentIds();
+
+				expect(result.length).toEqual(1);
+				expect(result).toContain(studentIds[1]);
+			});
+		});
+	});
 });

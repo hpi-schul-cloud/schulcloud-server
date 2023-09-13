@@ -13,7 +13,7 @@ export class CourseGroupService {
 			(courseGroup: CourseGroup) =>
 				({
 					...courseGroup,
-					students: courseGroup.students.remove((u) => u.id === userId),
+					students: courseGroup.removeStudent(userId),
 				} as unknown as CourseGroup)
 		);
 
