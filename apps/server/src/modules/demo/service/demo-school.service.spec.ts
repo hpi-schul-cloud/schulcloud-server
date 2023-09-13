@@ -1,12 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain';
+import { RoleName, SchoolDO } from '@shared/domain';
 import { RoleService, UserService } from '@src/modules';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { CourseService } from '@src/modules/learnroom/service';
 import { LessonService } from '@src/modules/lesson/service';
 import { FederalStateService, SchoolService } from '@src/modules/school';
-import { CourseConfig, LessonConfig, UserConfig } from '../types';
+import { FederalStateNames } from '@src/modules/school/types';
+import { CourseConfig, LessonConfig, SchoolConfig, UserConfig } from '../types';
 import { DemoSchoolService } from './demo-school.service';
 
 describe(DemoSchoolService.name, () => {
@@ -17,7 +18,7 @@ describe(DemoSchoolService.name, () => {
 	// let federalStateService: DeepMocked<FederalStateService>;
 	let lessonService: DeepMocked<LessonService>;
 	let roleService: DeepMocked<RoleService>;
-	// let schoolService: DeepMocked<SchoolService>;
+	let schoolService: DeepMocked<SchoolService>;
 	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
@@ -61,7 +62,7 @@ describe(DemoSchoolService.name, () => {
 		// federalStateService = module.get(FederalStateService);
 		lessonService = module.get(LessonService);
 		roleService = module.get(RoleService);
-		// schoolService = module.get(SchoolService);
+		schoolService = module.get(SchoolService);
 		userService = module.get(UserService);
 	});
 
@@ -170,6 +171,22 @@ describe(DemoSchoolService.name, () => {
 			courseConfig1,
 			courseConfig2,
 			fakeProtocol,
+		};
+	};
+
+	const setupSchoolService = () => {
+		const fakeSchoolId = 'aFakedSchoolId';
+
+		const schoolConfig: SchoolConfig = {
+			name: 'my first school',
+			federalStateName: FederalStateNames.NIEDERSACHSEN,
+			users: [],
+		};
+		schoolService.save.mockResolvedValueOnce({ id: fakeSchoolId } as SchoolDO);
+
+		return {
+			fakeSchoolId,
+			schoolConfig,
 		};
 	};
 
@@ -294,14 +311,15 @@ describe(DemoSchoolService.name, () => {
 
 	describe('createSchool', () => {
 		it('should return correct creationProtocol', async () => {
-			const { fakeSchoolId, fakeCourseId1, courseConfig1, fakeProtocol } = setupCourseService();
+			const { fakeSchoolId, schoolConfig } = setupSchoolService();
 
-			const creationProtocol = await service.createCourse(fakeSchoolId, courseConfig1, fakeProtocol);
+			const creationProtocol = await service.createSchool(schoolConfig);
 
 			expect(creationProtocol).toEqual(
 				expect.objectContaining({
-					id: fakeCourseId1,
-					key: courseConfig1.name,
+					id: fakeSchoolId,
+					key: schoolConfig.name,
+					type: 'school',
 				})
 			);
 		});
