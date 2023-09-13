@@ -2,14 +2,29 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { Group, GroupProps } from '../domain';
-import { GroupEntity, GroupEntityProps } from '../entity';
+import { GroupEntity, GroupEntityProps, GroupEntityTypes } from '../entity';
 import { GroupDomainMapper } from './group-domain.mapper';
 
 @Injectable()
 export class GroupRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findById(id: EntityId): Promise<Group | null> {
+	public async findClassesForSchool(schoolId: EntityId): Promise<Group[]> {
+		const entities: GroupEntity[] = await this.em.find(GroupEntity, {
+			type: GroupEntityTypes.CLASS,
+			organization: schoolId,
+		});
+
+		const domainObjects = entities.map((entity) => {
+			const props: GroupProps = GroupDomainMapper.mapEntityToDomainObjectProperties(entity);
+
+			return new Group(props);
+		});
+
+		return domainObjects;
+	}
+
+	public async findById(id: EntityId): Promise<Group | null> {
 		const entity: GroupEntity | null = await this.em.findOne(GroupEntity, { id });
 
 		if (!entity) {
@@ -23,7 +38,7 @@ export class GroupRepo {
 		return domainObject;
 	}
 
-	async findByExternalSource(externalId: string, systemId: EntityId): Promise<Group | null> {
+	public async findByExternalSource(externalId: string, systemId: EntityId): Promise<Group | null> {
 		const entity: GroupEntity | null = await this.em.findOne(GroupEntity, {
 			externalSource: {
 				externalId,
@@ -42,7 +57,7 @@ export class GroupRepo {
 		return domainObject;
 	}
 
-	async save(domainObject: Group): Promise<Group> {
+	public async save(domainObject: Group): Promise<Group> {
 		const entityProps: GroupEntityProps = GroupDomainMapper.mapDomainObjectToEntityProperties(domainObject, this.em);
 
 		const newEntity: GroupEntity = new GroupEntity(entityProps);
@@ -67,7 +82,7 @@ export class GroupRepo {
 		return savedDomainObject;
 	}
 
-	async delete(domainObject: Group): Promise<boolean> {
+	public async delete(domainObject: Group): Promise<boolean> {
 		const entity: GroupEntity | null = await this.em.findOne(GroupEntity, { id: domainObject.id });
 
 		if (!entity) {

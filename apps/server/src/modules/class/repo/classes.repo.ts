@@ -1,14 +1,19 @@
-import { Injectable } from '@nestjs/common';
-
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
-import { ClassEntity } from '../entity';
 import { Class } from '../domain';
+import { ClassEntity } from '../entity';
 import { ClassMapper } from './mapper';
 
 @Injectable()
 export class ClassesRepo {
-	constructor(private readonly em: EntityManager, private readonly mapper: ClassMapper) {}
+	constructor(private readonly em: EntityManager) {}
+
+	async findAllBySchoolId(schoolId: EntityId): Promise<Class[]> {
+		const classes: ClassEntity[] = await this.em.find(ClassEntity, { schoolId: new ObjectId(schoolId) });
+
+		return ClassMapper.mapToDOs(classes);
+	}
 
 	async findAllByUserId(userId: EntityId): Promise<Class[]> {
 		const classes: ClassEntity[] = await this.em.find(ClassEntity, { userIds: new ObjectId(userId) });

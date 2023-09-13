@@ -21,4 +21,16 @@ export interface GroupProps extends AuthorizableObject {
 	organizationId?: string;
 }
 
-export class Group extends DomainObject<GroupProps> {}
+export class Group extends DomainObject<GroupProps> {
+	get name() {
+		return this.props.name;
+	}
+
+	get users() {
+		return this.props.name;
+	}
+
+	get externalSource() {
+		return this.props.externalSource;
+	}
+}
