@@ -15,6 +15,7 @@ import { AccountApiModule } from '@src/modules/account/account-api.module';
 import { AuthenticationApiModule } from '@src/modules/authentication/authentication-api.module';
 import { BoardApiModule } from '@src/modules/board/board-api.module';
 import { CollaborativeStorageModule } from '@src/modules/collaborative-storage';
+import { DemoApiModule } from '@src/modules/demo/demo-api.module';
 import { FilesStorageClientModule } from '@src/modules/files-storage-client';
 import { GroupApiModule } from '@src/modules/group/group-api.module';
 import { LearnroomApiModule } from '@src/modules/learnroom/learnroom-api.module';
@@ -27,6 +28,7 @@ import { SchoolApiModule } from '@src/modules/school/school-api.module';
 import { SharingApiModule } from '@src/modules/sharing/sharing.module';
 import { SystemApiModule } from '@src/modules/system/system-api.module';
 import { TaskApiModule } from '@src/modules/task/task-api.module';
+import { TeamsApiModule } from '@src/modules/teams/teams-api.module';
 import { ToolApiModule } from '@src/modules/tool/tool-api.module';
 import { ImportUserModule } from '@src/modules/user-import';
 import { UserLoginMigrationApiModule } from '@src/modules/user-login-migration/user-login-migration-api.module';
@@ -35,7 +37,6 @@ import { VideoConferenceApiModule } from '@src/modules/video-conference/video-co
 import connectRedis from 'connect-redis';
 import session from 'express-session';
 import { RedisClient } from 'redis';
-import { DemoApiModule } from '../demo/demo-api.module';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
 
@@ -74,6 +75,7 @@ const serverModules = [
 	BoardApiModule,
 	DemoApiModule,
 	GroupApiModule,
+	TeamsApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

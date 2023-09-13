@@ -1,15 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { RoleName } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { setupEntities } from '@shared/testing';
-import { AxiosResponse } from 'axios';
+import { axiosResponseFactory, setupEntities } from '@shared/testing';
+import { GroupTypes } from '@src/modules/group';
 import { UUID } from 'bson';
 import { of } from 'rxjs';
-import { RoleName } from '@shared/domain';
-import { GroupTypes } from '@src/modules/group';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import {
 	ExternalGroupDto,
 	ExternalSchoolDto,
@@ -19,19 +18,14 @@ import {
 	ProvisioningSystemDto,
 } from '../../dto';
 import { OidcProvisioningService } from '../oidc/service/oidc-provisioning.service';
-import { SanisResponseMapper } from './sanis-response.mapper';
 import { SanisGroupRole, SanisGroupType, SanisGruppenResponse, SanisResponse, SanisRole } from './response';
+import { SanisResponseMapper } from './sanis-response.mapper';
 import { SanisProvisioningStrategy } from './sanis.strategy';
 
-const createAxiosResponse = (data: SanisResponse): AxiosResponse<SanisResponse> => {
-	return {
-		data: data ?? {},
-		status: 0,
-		statusText: '',
-		headers: {},
-		config: {},
-	};
-};
+const createAxiosResponse = (data: SanisResponse) =>
+	axiosResponseFactory.build({
+		data,
+	});
 
 describe('SanisStrategy', () => {
 	let module: TestingModule;
