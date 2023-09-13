@@ -1,3 +1,4 @@
+import { Loaded } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId, Pseudonym } from '@shared/domain';
@@ -66,6 +67,23 @@ export class PseudonymsRepo {
 		const promise: Promise<number> = this.em.nativeDelete(PseudonymEntity, { userId: new ObjectId(userId) });
 
 		return promise;
+	}
+
+	async findPseudonymByPseudonym(pseudonym: string): Promise<Pseudonym | null> {
+		const entities: PseudonymEntity[] = await this.em.find(PseudonymEntity, { pseudonym });
+
+		if (!entities || entities.length === 0) {
+			return null;
+		}
+
+		if (entities.length > 1) {
+			// TODO: use loggable
+			throw new Error(`More than one pseudonym found for pseudonym ${pseudonym}`);
+		}
+
+		const domainObject: Pseudonym = this.mapEntityToDomainObject(entities[0]);
+
+		return domainObject;
 	}
 
 	protected mapEntityToDomainObject(entity: PseudonymEntity): Pseudonym {

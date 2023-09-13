@@ -419,4 +419,48 @@ describe('PseudonymService', () => {
 			});
 		});
 	});
+
+	describe('findPseudonymByPseudonym', () => {
+		describe('when pseudonym is missing', () => {
+			const setup = () => {
+				pseudonymRepo.findPseudonymByPseudonym.mockResolvedValue(null);
+			};
+
+			it('should return null', async () => {
+				setup();
+
+				const result: Pseudonym | null = await service.findPseudonymByPseudonym('pseudonym');
+
+				expect(result).toBeNull();
+			});
+		});
+
+		describe('when pseudonym is found', () => {
+			const setup = () => {
+				const pseudonym: Pseudonym = pseudonymFactory.build({ pseudonym: 'pseudonym' });
+
+				pseudonymRepo.findPseudonymByPseudonym.mockResolvedValue(pseudonym);
+
+				return {
+					pseudonym,
+				};
+			};
+
+			it('should call pseudonymRepo', async () => {
+				const { pseudonym } = setup();
+
+				await service.findPseudonymByPseudonym(pseudonym.pseudonym);
+
+				expect(pseudonymRepo.findPseudonymByPseudonym).toHaveBeenCalledWith(pseudonym.pseudonym);
+			});
+
+			it('should return the pseudonym', async () => {
+				const { pseudonym } = setup();
+
+				const result: Pseudonym | null = await service.findPseudonymByPseudonym(pseudonym.pseudonym);
+
+				expect(result).toBeDefined();
+			});
+		});
+	});
 });

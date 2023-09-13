@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CourseRepo } from '@shared/repo';
 import { Course, EntityId } from '@shared/domain';
+import { CourseRepo } from '@shared/repo';
 
 @Injectable()
 export class CourseService {
@@ -8,5 +8,11 @@ export class CourseService {
 
 	async findById(courseId: EntityId): Promise<Course> {
 		return this.repo.findById(courseId);
+	}
+
+	async findAllByUserId(userId: EntityId): Promise<Course[]> {
+		const [courses] = await this.repo.findAllByUserId(userId);
+
+		return courses;
 	}
 }

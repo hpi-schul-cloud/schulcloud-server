@@ -262,4 +262,55 @@ describe('PseudonymRepo', () => {
 			});
 		});
 	});
+
+	describe('findPseudonymByPseudonym', () => {
+		describe('when pseudonym is existing', () => {
+			const setup = async () => {
+				const entity: PseudonymEntity = pseudonymEntityFactory.buildWithId();
+				await em.persistAndFlush(entity);
+				em.clear();
+
+				return {
+					entity,
+				};
+			};
+
+			it('should return a pseudonym', async () => {
+				const { entity } = await setup();
+
+				const result: Pseudonym | null = await repo.findPseudonymByPseudonym(entity.pseudonym);
+
+				expect(result?.id).toEqual(entity.id);
+			});
+		});
+
+		describe('when pseudonym not exists', () => {
+			it('should return null', async () => {
+				const pseudonym: Pseudonym | null = await repo.findPseudonymByPseudonym(uuidv4());
+
+				expect(pseudonym).toBeNull();
+			});
+		});
+
+		describe('when multiple pseudonyms are existing', () => {
+			const setup = async () => {
+				const entity1: PseudonymEntity = pseudonymEntityFactory.buildWithId({ pseudonym: 'pseudonymEqual' });
+				const entity2: PseudonymEntity = pseudonymEntityFactory.buildWithId({ pseudonym: 'pseudonymEqual' });
+				await em.persistAndFlush([entity1, entity2]);
+				em.clear();
+
+				return {
+					entity1,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { entity1 } = await setup();
+
+				const func = () => repo.findPseudonymByPseudonym(entity1.pseudonym);
+
+				await expect(func).rejects.toThrow();
+			});
+		});
+	});
 });

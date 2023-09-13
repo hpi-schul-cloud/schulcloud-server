@@ -1,6 +1,6 @@
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
-
+const { Configuration } = require('@hpi-schul-cloud/commons/lib');
 const hooks = require('./hooks');
 const globalHooks = require('../../hooks');
 const oauth2 = require('../oauth2/hooks');
@@ -31,6 +31,14 @@ module.exports = function roster() {
 		async find(params) {
 			const { pseudonym } = params;
 			const userParam = params.route.user;
+
+			if (Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED')) {
+				const userMetadata = await this.app
+					.service('nest-feathers-roster-service')
+					.getUsersMetadata(userParam, pseudonym);
+
+				return userMetadata;
+			}
 
 			const pseudonyms = await app.service('pseudonym').find({
 				query: {
@@ -84,6 +92,11 @@ module.exports = function roster() {
 	 */
 	const userGroupsHandler = {
 		async find(params) {
+			if (Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED')) {
+				const userGroups = await this.app.service('nest-feathers-roster-service').getUserGroups(params.pseudonym);
+				return userGroups;
+			}
+
 			const pseudonyms = await app.service('pseudonym').find({
 				query: {
 					pseudonym: params.pseudonym,
@@ -112,11 +125,13 @@ module.exports = function roster() {
 			// all users courses with given tool enabled
 			return {
 				data: {
-					groups: courses.map((course) => ({
-						group_id: course._id.toString(),
-						name: course.name,
-						student_count: course.userIds.length,
-					})),
+					groups: courses.map((course) => {
+						return {
+							group_id: course._id.toString(),
+							name: course.name,
+							student_count: course.userIds.length,
+						};
+					}),
 				},
 			};
 		},
@@ -144,6 +159,12 @@ module.exports = function roster() {
 	 */
 	const groupsHandler = {
 		async get(id, params) {
+			if (Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED')) {
+				const group = await this.app.service('nest-feathers-roster-service').getGroup(id, params.tokenInfo.client_id);
+
+				return group;
+			}
+
 			const courseService = app.service('courses');
 			const courseId = id;
 			if (!isValidObjectId(courseId)) {
@@ -184,14 +205,18 @@ module.exports = function roster() {
 
 			return {
 				data: {
-					students: users.data.map((user) => ({
-						user_id: user.pseudonym,
-						username: oauth2.getSubject(user.pseudonym, app.settings.services.web),
-					})),
-					teachers: teachers.data.map((user) => ({
-						user_id: user.pseudonym,
-						username: oauth2.getSubject(user.pseudonym, app.settings.services.web),
-					})),
+					students: users.data.map((user) => {
+						return {
+							user_id: user.pseudonym,
+							username: oauth2.getSubject(user.pseudonym, app.settings.services.web),
+						};
+					}),
+					teachers: teachers.data.map((user) => {
+						return {
+							user_id: user.pseudonym,
+							username: oauth2.getSubject(user.pseudonym, app.settings.services.web),
+						};
+					}),
 				},
 			};
 		},

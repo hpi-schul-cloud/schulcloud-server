@@ -1,0 +1,211 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { Injectable } from '@nestjs/common';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { Course, EntityId, Pseudonym, RoleName, RoleReference, UserDO } from '@shared/domain';
+import { CourseService } from '@src/modules/learnroom/service';
+import { ToolContextType } from '@src/modules/tool/common/enum';
+import { ContextExternalTool, ContextRef } from '@src/modules/tool/context-external-tool/domain';
+import { ContextExternalToolService } from '@src/modules/tool/context-external-tool/service';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain';
+import { ExternalToolService } from '@src/modules/tool/external-tool/service';
+import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain';
+import { SchoolExternalToolService } from '@src/modules/tool/school-external-tool/service';
+import { UserService } from '@src/modules/user';
+import { PseudonymService } from './pseudonym.service';
+
+interface UserMetdata {
+	user_id: string;
+	username: string;
+	type: string;
+}
+
+interface UserGroups {
+	groups: UserGroup[];
+}
+
+interface UserGroup {
+	group_id: string;
+	name: string;
+	student_count: number;
+}
+
+interface UserData {
+	user_id: string;
+	username: string;
+}
+
+interface Group {
+	students: UserData[];
+	teachers: UserData[];
+}
+
+/**
+ * Please do not use this service in any other nest modules.
+ * This service will be called from feathers to get the roster data for ctl pseudonyms {@link ExternalToolPseudonymEntity}.
+ * These data will be used by bettermarks display the usernames.
+ */
+@Injectable()
+// TODO: test
+export class FeathersRosterService {
+	constructor(
+		private readonly userService: UserService,
+		private readonly pseudonymService: PseudonymService,
+		private readonly courseService: CourseService,
+		private readonly externalToolService: ExternalToolService,
+		private readonly schoolExternalToolService: SchoolExternalToolService,
+		private readonly contextExternalToolService: ContextExternalToolService
+	) {}
+
+	async getUsersMetadata(userId: EntityId, pseudonym: string): Promise<UserMetdata> {
+		const loadedPseudonym: Pseudonym = await this.findPseudonymByPseudonym(pseudonym);
+		const user: UserDO = await this.userService.findById(userId);
+
+		const userMetadata: UserMetdata = {
+			user_id: user.id as string,
+			username: this.getIframeSubject(loadedPseudonym.pseudonym),
+			type: this.getUserRole(user),
+		};
+
+		return userMetadata;
+	}
+
+	private getUserRole(user: UserDO): string {
+		const roleName = user.roles.some((role: RoleReference) => role.name === RoleName.TEACHER)
+			? RoleName.TEACHER
+			: RoleName.STUDENT;
+
+		return roleName;
+	}
+
+	private async findPseudonymByPseudonym(pseudonym: string): Promise<Pseudonym> {
+		const loadedPseudonym: Pseudonym | null = await this.pseudonymService.findPseudonymByPseudonym(pseudonym);
+
+		if (!loadedPseudonym) {
+			throw new NotFoundLoggableException(Pseudonym.name, 'pseudonym', pseudonym);
+		}
+
+		return loadedPseudonym;
+	}
+
+	private getIframeSubject(pseudonym: string): string {
+		const iFrameSubject = `<iframe src="${
+			Configuration.get('HOST') as string
+		}/oauth2/username/${pseudonym}" title="username" style="height: 26px; width: 180px; border: none;"></iframe>`;
+
+		return iFrameSubject;
+	}
+
+	async getUserGroups(pseudonym: string): Promise<UserGroups> {
+		const loadedPseudonym: Pseudonym = await this.findPseudonymByPseudonym(pseudonym);
+
+		let courses: Course[] = await this.getCoursesFromUsersPseudonym(loadedPseudonym);
+		courses = this.filterCoursesWithExternalTool(courses);
+
+		const userGroups: UserGroups = {
+			groups: courses.map((course) => {
+				return {
+					group_id: course.id,
+					name: course.name,
+					student_count: course.students.length,
+				};
+			}),
+		};
+
+		return userGroups;
+	}
+
+	private async getCoursesFromUsersPseudonym(pseudonym: Pseudonym): Promise<Course[]> {
+		const courses: Course[] = await this.courseService.findAllByUserId(pseudonym.userId);
+
+		return courses;
+	}
+
+	private filterCoursesWithExternalTool(courses: Course[]): Course[] {
+		const filtered: Course[] = courses.filter((course: Course) =>
+			this.contextExternalToolService.findAllByContext(new ContextRef({ id: course.id, type: ToolContextType.COURSE }))
+		);
+
+		return filtered;
+	}
+
+	async getGroup(courseId: EntityId, oauth2ClientId: string): Promise<Group> {
+		const course: Course = await this.validateAndGetCourse(courseId);
+		const externalTool: ExternalTool = await this.validateAndGetExternalTool(oauth2ClientId);
+
+		await this.validateSchoolExternalTool(course.school.id, externalTool.id as string);
+		await this.validateContextExternalTools(courseId);
+
+		const [studentEntities, teacherEntities] = await Promise.all([
+			course.students.loadItems(),
+			course.teachers.loadItems(),
+		]);
+		const [students, teachers] = await Promise.all([
+			Promise.all(studentEntities.map((user) => this.userService.findById(user.id))),
+			Promise.all(teacherEntities.map((user) => this.userService.findById(user.id))),
+		]);
+
+		const [studentPseudonyms, teacherPseudonyms] = await Promise.all([
+			Promise.all(students.map((user: UserDO) => this.pseudonymService.findByUserAndTool(user, externalTool))),
+			Promise.all(teachers.map((user: UserDO) => this.pseudonymService.findByUserAndTool(user, externalTool))),
+		]);
+
+		const group: Group = {
+			students: studentPseudonyms.map((pseudonym: Pseudonym) => this.mapPseudonymToUserData(pseudonym)),
+			teachers: teacherPseudonyms.map((pseudonym: Pseudonym) => this.mapPseudonymToUserData(pseudonym)),
+		};
+
+		return group;
+	}
+
+	private async validateAndGetCourse(courseId: EntityId): Promise<Course> {
+		const course = await this.courseService.findById(courseId);
+
+		if (!course) {
+			throw new NotFoundLoggableException(Course.name, 'id', courseId);
+		}
+
+		return course;
+	}
+
+	private async validateAndGetExternalTool(oauth2ClientId: string): Promise<ExternalTool> {
+		const externalTool: ExternalTool | null = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(
+			oauth2ClientId
+		);
+
+		if (!externalTool || !externalTool.id) {
+			throw new NotFoundLoggableException(ExternalTool.name, 'config.clientId', oauth2ClientId);
+		}
+
+		return externalTool;
+	}
+
+	private async validateSchoolExternalTool(schoolId: EntityId, toolId: string): Promise<void> {
+		const schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolService.findSchoolExternalTools({
+			schoolId,
+			toolId,
+		});
+
+		if (schoolExternalTools.length === 0) {
+			throw new NotFoundLoggableException(SchoolExternalTool.name, 'toolId', toolId);
+		}
+	}
+
+	private async validateContextExternalTools(courseId: EntityId): Promise<void> {
+		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolService.findAllByContext(
+			new ContextRef({ id: courseId, type: ToolContextType.COURSE })
+		);
+
+		if (contextExternalTools.length === 0) {
+			throw new NotFoundLoggableException(ContextExternalTool.name, 'contextRef.id', courseId);
+		}
+	}
+
+	private mapPseudonymToUserData(pseudonym: Pseudonym): UserData {
+		const userData: UserData = {
+			user_id: pseudonym.userId,
+			username: this.getIframeSubject(pseudonym.pseudonym),
+		};
+
+		return userData;
+	}
+}
