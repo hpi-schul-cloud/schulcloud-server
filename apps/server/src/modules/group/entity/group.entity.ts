@@ -19,7 +19,7 @@ export interface GroupEntityProps {
 
 	externalSource?: ExternalSourceEntity;
 
-	validPeriod: GroupValidPeriodEntity;
+	validPeriod?: GroupValidPeriodEntity;
 
 	users: GroupUserEntity[];
 
@@ -37,8 +37,8 @@ export class GroupEntity extends BaseEntityWithTimestamps {
 	@Embedded(() => ExternalSourceEntity, { nullable: true })
 	externalSource?: ExternalSourceEntity;
 
-	@Embedded(() => GroupValidPeriodEntity)
-	validPeriod: GroupValidPeriodEntity;
+	@Embedded(() => GroupValidPeriodEntity, { nullable: true })
+	validPeriod?: GroupValidPeriodEntity;
 
 	@Embedded(() => GroupUserEntity, { array: true })
 	users: GroupUserEntity[];

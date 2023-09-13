@@ -329,7 +329,7 @@ describe('PreviewService', () => {
 
 							await previewService.getPreview(fileRecord, downloadParams, previewParams);
 
-							expect(resizeMock).toHaveBeenCalledWith(previewParams.width);
+							expect(resizeMock).toHaveBeenCalledWith(previewParams.width, undefined, '>');
 							expect(resizeMock).toHaveBeenCalledTimes(1);
 						});
 
@@ -521,7 +521,7 @@ describe('PreviewService', () => {
 
 							await previewService.getPreview(fileRecord, downloadParams, previewParams);
 
-							expect(resizeMock).toHaveBeenCalledWith(previewParams.width);
+							expect(resizeMock).toHaveBeenCalledWith(previewParams.width, undefined, '>');
 							expect(resizeMock).toHaveBeenCalledTimes(1);
 						});
 
