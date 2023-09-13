@@ -29,7 +29,8 @@ const setupNestServices = async (app) => {
 				// debug: true, // use it for locally debugging of querys
 			}),
 			ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
-			AccountApiModule, TeamsApiModule
+			AccountApiModule,
+			TeamsApiModule,
 		],
 	}).compile();
 	const nestApp = await module.createNestApplication().init();
