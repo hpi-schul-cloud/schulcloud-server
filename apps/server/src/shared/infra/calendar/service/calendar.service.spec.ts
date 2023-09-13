@@ -6,6 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CalendarEventDto, CalendarService } from '@shared/infra/calendar';
 import { ICalendarEvent } from '@shared/infra/calendar/interface/calendar-event.interface';
 import { CalendarMapper } from '@shared/infra/calendar/mapper/calendar.mapper';
+import { axiosResponseFactory } from '@shared/testing';
 import { AxiosResponse } from 'axios';
 import { of, throwError } from 'rxjs';
 
@@ -65,13 +66,9 @@ describe('CalendarServiceSpec', () => {
 					},
 				],
 			};
-			const axiosResponse: AxiosResponse<ICalendarEvent> = {
+			const axiosResponse: AxiosResponse<ICalendarEvent> = axiosResponseFactory.build({
 				data: event,
-				status: 0,
-				statusText: 'statusText',
-				headers: {},
-				config: {},
-			};
+			});
 			httpService.get.mockReturnValue(of(axiosResponse));
 			calendarMapper.mapToDto.mockReturnValue({ title, teamId });
 
