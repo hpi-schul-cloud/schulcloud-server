@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable } from '@nestjs/common';
 import {
 	AnyBoardDo,
 	Card,
@@ -70,7 +70,7 @@ export class CardUc {
 			try {
 				await firstValueFrom(
 					this.httpService.delete(
-						`${Configuration.get('TLDRAW_URI') as string}/api/v3/tldraw-document/${element.drawingName}`,
+						`${Configuration.get('TLDRAW_URI') as string}/tldraw-document/${element.drawingName}`,
 						{
 							headers: {
 								Accept: 'Application/json',
@@ -80,8 +80,7 @@ export class CardUc {
 					)
 				);
 			} catch (e) {
-				const urlTldraw = Configuration.get('TLDRAW_URI') as string;
-				throw new Error(urlTldraw);
+				throw new Error('Cannot connect to tldraw-manage-service');
 			}
 		}
 	}
