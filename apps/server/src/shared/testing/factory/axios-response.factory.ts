@@ -30,7 +30,8 @@ class AxiosResponseImp<T> implements AxiosResponse {
 	}
 }
 
-export const axiosResponseFactory = BaseFactory.define<AxiosResponseImp<unknown>, AxiosResponseProps<unknown>>(
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const axiosResponseFactory = BaseFactory.define<AxiosResponseImp<any>, AxiosResponseProps<any>>(
 	AxiosResponseImp,
 	() => {
 		return {

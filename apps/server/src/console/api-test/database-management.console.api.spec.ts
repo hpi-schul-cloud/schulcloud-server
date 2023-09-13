@@ -10,7 +10,7 @@ describe('DatabaseManagementConsole (API)', () => {
 	let bootstrap: BootstrapConsole;
 	let consoleService: ConsoleService;
 	let consoleWriter: ConsoleWriterService;
-	let logMock: jest.SpyInstance;
+
 	beforeEach(async () => {
 		bootstrap = new TestBootstrapConsole({
 			module: ServerConsoleModule,
@@ -20,27 +20,26 @@ describe('DatabaseManagementConsole (API)', () => {
 		await app.init();
 		consoleService = app.get(ConsoleService);
 		consoleWriter = app.get(ConsoleWriterService);
-		logMock = jest.spyOn(consoleWriter, 'info').mockImplementation();
 	});
 
 	afterEach(async () => {
-		logMock.mockReset();
 		consoleService.resetCli();
 		await app.close();
 	});
 
 	describe('Command "database"', () => {
-		describe('when command not exists', () => {
-			const setup = () => {
-				const cli = consoleService.getCli('database');
-				const exitFn = (err: CommanderError) => {
-					if (err.exitCode !== 0) throw err;
-				};
-				cli?.exitOverride(exitFn);
-				const rootCli = consoleService.getRootCli();
-				rootCli.exitOverride(exitFn);
+		const setup = () => {
+			const cli = consoleService.getCli('database');
+			const exitFn = (err: CommanderError) => {
+				if (err.exitCode !== 0) throw err;
 			};
-
+			cli?.exitOverride(exitFn);
+			const rootCli = consoleService.getRootCli();
+			rootCli.exitOverride(exitFn);
+			const spyConsoleWriterInfo = jest.spyOn(consoleWriter, 'info');
+			return { spyConsoleWriterInfo };
+		};
+		describe('when command not exists', () => {
 			it('should fail for unknown command', async () => {
 				setup();
 				await expect(execute(bootstrap, ['database', 'not_existing_command'])).rejects.toThrow(
@@ -53,15 +52,27 @@ describe('DatabaseManagementConsole (API)', () => {
 
 		describe('when command exists', () => {
 			it('should provide command "seed"', async () => {
+				const { spyConsoleWriterInfo } = setup();
+
 				await execute(bootstrap, ['database', 'seed']);
+
+				expect(spyConsoleWriterInfo).toBeCalled();
 			});
 
 			it('should provide command "export"', async () => {
+				const { spyConsoleWriterInfo } = setup();
+
 				await execute(bootstrap, ['database', 'export']);
+
+				expect(spyConsoleWriterInfo).toBeCalled();
 			});
 
 			it('should provide command "sync-indexes"', async () => {
+				const { spyConsoleWriterInfo } = setup();
+
 				await execute(bootstrap, ['database', 'sync-indexes']);
+
+				expect(spyConsoleWriterInfo).toBeCalled();
 			});
 		});
 	});
