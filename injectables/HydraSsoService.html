@@ -244,8 +244,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="94"
-                            class="link-to-prism">apps/server/src/modules/oauth/service/hydra.service.ts:94</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="99"
+                            class="link-to-prism">apps/server/src/modules/oauth/service/hydra.service.ts:99</a></div>
                 </td>
             </tr>
 
@@ -315,8 +315,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="121"
-                            class="link-to-prism">apps/server/src/modules/oauth/service/hydra.service.ts:121</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="126"
+                            class="link-to-prism">apps/server/src/modules/oauth/service/hydra.service.ts:126</a></div>
                 </td>
             </tr>
 
@@ -481,8 +481,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="74"
-                            class="link-to-prism">apps/server/src/modules/oauth/service/hydra.service.ts:74</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="79"
+                            class="link-to-prism">apps/server/src/modules/oauth/service/hydra.service.ts:79</a></div>
                 </td>
             </tr>
 
@@ -658,22 +658,22 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
-import { OauthConfig } from &#x27;@shared/domain&#x27;;
-import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
-import { LtiToolRepo } from &#x27;@shared/repo&#x27;;
-import { LtiToolDO } from &#x27;@shared/domain/domainobject/ltitool.do&#x27;;
-import { Inject, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
-import { AuthorizationParams } from &#x27;@src/modules/oauth/controller/dto/authorization.params&#x27;;
-import { AxiosRequestConfig, AxiosResponse } from &#x27;axios&#x27;;
-import QueryString from &#x27;qs&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
 import { HttpService } from &#x27;@nestjs/axios&#x27;;
-import { nanoid } from &#x27;nanoid&#x27;;
-import { firstValueFrom, Observable } from &#x27;rxjs&#x27;;
-import { HydraRedirectDto } from &#x27;@src/modules/oauth/service/dto/hydra.redirect.dto&#x27;;
-import { CookiesDto } from &#x27;@src/modules/oauth/service/dto/cookies.dto&#x27;;
+import { Inject, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
+import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
+import { OauthConfig } from &#x27;@shared/domain&#x27;;
+import { LtiToolDO } from &#x27;@shared/domain/domainobject/ltitool.do&#x27;;
 import { DefaultEncryptionService, IEncryptionService } from &#x27;@shared/infra/encryption&#x27;;
+import { LtiToolRepo } from &#x27;@shared/repo&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
+import { AuthorizationParams } from &#x27;@src/modules/oauth/controller/dto/authorization.params&#x27;;
+import { CookiesDto } from &#x27;@src/modules/oauth/service/dto/cookies.dto&#x27;;
+import { HydraRedirectDto } from &#x27;@src/modules/oauth/service/dto/hydra.redirect.dto&#x27;;
+import { AxiosRequestConfig, AxiosResponse } from &#x27;axios&#x27;;
+import { nanoid } from &#x27;nanoid&#x27;;
+import QueryString from &#x27;qs&#x27;;
+import { Observable, firstValueFrom } from &#x27;rxjs&#x27;;
 
 @Injectable()
 export class HydraSsoService {
@@ -702,7 +702,12 @@ export class HydraSsoService {
 
 	async processRedirect(dto: HydraRedirectDto): Promise&lt;HydraRedirectDto&gt; {
 		const localDto: HydraRedirectDto &#x3D; new HydraRedirectDto(dto);
-		let { location } &#x3D; localDto.response.headers;
+		let location &#x3D; &#x27;&#x27;;
+
+		if (typeof localDto.response.headers.location &#x3D;&#x3D;&#x3D; &#x27;string&#x27;) {
+			({ location } &#x3D; localDto.response.headers);
+		}
+
 		const isLocal &#x3D; !location.startsWith(&#x27;http&#x27;);
 		const isHydra &#x3D; location.startsWith(Configuration.get(&#x27;HYDRA_PUBLIC_URI&#x27;) as string);
 

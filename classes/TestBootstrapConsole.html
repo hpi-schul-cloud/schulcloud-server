@@ -137,8 +137,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="5"
-                            class="link-to-prism">apps/server/src/console/api-test/test-bootstrap.console.ts:5</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="8"
+                            class="link-to-prism">apps/server/src/console/api-test/test-bootstrap.console.ts:8</a></div>
                 </td>
             </tr>
 
@@ -164,14 +164,22 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Test, TestingModule } from &#x27;@nestjs/testing&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { createMock } from &#x27;@golevelup/ts-jest&#x27;;
+import { Test, TestingModule } from &#x27;@nestjs/testing&#x27;;
+import { ConsoleWriterService } from &#x27;@shared/infra/console&#x27;;
+import { DatabaseManagementUc } from &#x27;@src/modules/management/uc/database-management.uc&#x27;;
 import { AbstractBootstrapConsole, BootstrapConsole } from &#x27;nestjs-console&#x27;;
 
 export class TestBootstrapConsole extends AbstractBootstrapConsole&lt;TestingModule&gt; {
 	create(): Promise&lt;TestingModule&gt; {
 		return Test.createTestingModule({
 			imports: [this.options.module],
-		}).compile();
+		})
+			.overrideProvider(DatabaseManagementUc)
+			.useValue(createMock&lt;DatabaseManagementUc&gt;())
+			.overrideProvider(ConsoleWriterService)
+			.useValue(createMock&lt;ConsoleWriterService&gt;())
+			.compile();
 	}
 }
 

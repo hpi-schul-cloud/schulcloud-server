@@ -24,127 +24,127 @@
 <title>cluster_ImportUserModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-195 1253,-195 1253,-70 8,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_ImportUserModule_providers</title>
-<polygon fill="none" stroke="black" points="536,-78 536,-130 1245,-130 1245,-78 536,-78"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_ImportUserModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 528,-130 528,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="733,-78 733,-130 1245,-130 1245,-78 733,-78"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_ImportUserModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 725,-130 725,-78 16,-78"/>
 </g>
 <!-- AccountModule -->
 <g id="node1" class="node">
 <title>AccountModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="520.48,-122 517.48,-126 496.48,-126 493.48,-122 413.52,-122 413.52,-86 520.48,-86 520.48,-122"/>
-<text text-anchor="middle" x="467" y="-99.8" font-family="Times,serif" font-size="14.00">AccountModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1237.48,-122 1234.48,-126 1213.48,-126 1210.48,-122 1130.52,-122 1130.52,-86 1237.48,-86 1237.48,-122"/>
+<text text-anchor="middle" x="1184" y="-99.8" font-family="Times,serif" font-size="14.00">AccountModule</text>
 </g>
 <!-- ImportUserModule -->
 <g id="node5" class="node">
 <title>ImportUserModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="656.08,-187 653.08,-191 632.08,-191 629.08,-187 531.92,-187 531.92,-151 656.08,-151 656.08,-187"/>
-<text text-anchor="middle" x="594" y="-164.8" font-family="Times,serif" font-size="14.00">ImportUserModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="703.08,-187 700.08,-191 679.08,-191 676.08,-187 578.92,-187 578.92,-151 703.08,-151 703.08,-187"/>
+<text text-anchor="middle" x="641" y="-164.8" font-family="Times,serif" font-size="14.00">ImportUserModule</text>
 </g>
 <!-- AccountModule&#45;&gt;ImportUserModule -->
 <g id="edge1" class="edge">
 <title>AccountModule&#45;&gt;ImportUserModule</title>
-<path fill="none" stroke="black" d="M520.57,-104C530.68,-104 538.16,-104 538.16,-104 538.16,-104 538.16,-140.89 538.16,-140.89"/>
-<polygon fill="black" stroke="black" points="534.66,-140.89 538.16,-150.89 541.66,-140.89 534.66,-140.89"/>
+<path fill="none" stroke="black" d="M1184,-122.01C1184,-144.49 1184,-180 1184,-180 1184,-180 713.29,-180 713.29,-180"/>
+<polygon fill="black" stroke="black" points="713.29,-176.5 703.29,-180 713.29,-183.5 713.29,-176.5"/>
 </g>
 <!-- AuthorizationModule -->
 <g id="node2" class="node">
 <title>AuthorizationModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="395.81,-122 392.81,-126 371.81,-126 368.81,-122 258.19,-122 258.19,-86 395.81,-86 395.81,-122"/>
-<text text-anchor="middle" x="327" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1112.81,-122 1109.81,-126 1088.81,-126 1085.81,-122 975.19,-122 975.19,-86 1112.81,-86 1112.81,-122"/>
+<text text-anchor="middle" x="1044" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
 </g>
 <!-- AuthorizationModule&#45;&gt;ImportUserModule -->
 <g id="edge2" class="edge">
 <title>AuthorizationModule&#45;&gt;ImportUserModule</title>
-<path fill="none" stroke="black" d="M327,-122.03C327,-138.4 327,-160 327,-160 327,-160 521.74,-160 521.74,-160"/>
-<polygon fill="black" stroke="black" points="521.74,-163.5 531.74,-160 521.74,-156.5 521.74,-163.5"/>
+<path fill="none" stroke="black" d="M1044,-122.13C1044,-142.57 1044,-173 1044,-173 1044,-173 713.09,-173 713.09,-173"/>
+<polygon fill="black" stroke="black" points="713.09,-169.5 703.09,-173 713.09,-176.5 713.09,-169.5"/>
 </g>
 <!-- LoggerModule -->
 <g id="node3" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="239.98,-122 236.98,-126 215.98,-126 212.98,-122 140.02,-122 140.02,-86 239.98,-86 239.98,-122"/>
-<text text-anchor="middle" x="190" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="956.98,-122 953.98,-126 932.98,-126 929.98,-122 857.02,-122 857.02,-86 956.98,-86 956.98,-122"/>
+<text text-anchor="middle" x="907" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;ImportUserModule -->
 <g id="edge3" class="edge">
 <title>LoggerModule&#45;&gt;ImportUserModule</title>
-<path fill="none" stroke="black" d="M190,-122.11C190,-141.34 190,-169 190,-169 190,-169 521.76,-169 521.76,-169"/>
-<polygon fill="black" stroke="black" points="521.76,-172.5 531.76,-169 521.76,-165.5 521.76,-172.5"/>
+<path fill="none" stroke="black" d="M907,-122.27C907,-140.56 907,-166 907,-166 907,-166 713.37,-166 713.37,-166"/>
+<polygon fill="black" stroke="black" points="713.37,-162.5 703.37,-166 713.37,-169.5 713.37,-162.5"/>
 </g>
 <!-- SchoolModule -->
 <g id="node4" class="node">
 <title>SchoolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="122.44,-122 119.44,-126 98.44,-126 95.44,-122 23.56,-122 23.56,-86 122.44,-86 122.44,-122"/>
-<text text-anchor="middle" x="73" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="839.44,-122 836.44,-126 815.44,-126 812.44,-122 740.56,-122 740.56,-86 839.44,-86 839.44,-122"/>
+<text text-anchor="middle" x="790" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolModule</text>
 </g>
 <!-- SchoolModule&#45;&gt;ImportUserModule -->
 <g id="edge4" class="edge">
 <title>SchoolModule&#45;&gt;ImportUserModule</title>
-<path fill="none" stroke="black" d="M73,-122.29C73,-144.21 73,-178 73,-178 73,-178 521.93,-178 521.93,-178"/>
-<polygon fill="black" stroke="black" points="521.93,-181.5 531.93,-178 521.93,-174.5 521.93,-181.5"/>
+<path fill="none" stroke="black" d="M790,-122.01C790,-138.05 790,-159 790,-159 790,-159 713.33,-159 713.33,-159"/>
+<polygon fill="black" stroke="black" points="713.33,-155.5 703.33,-159 713.33,-162.5 713.33,-155.5"/>
 </g>
 <!-- ImportUserRepo -->
 <g id="node6" class="node">
 <title>ImportUserRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="1161" cy="-104" rx="75.86" ry="18"/>
-<text text-anchor="middle" x="1161" y="-99.8" font-family="Times,serif" font-size="14.00">ImportUserRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="641" cy="-104" rx="75.86" ry="18"/>
+<text text-anchor="middle" x="641" y="-99.8" font-family="Times,serif" font-size="14.00">ImportUserRepo</text>
 </g>
 <!-- ImportUserRepo&#45;&gt;ImportUserModule -->
 <g id="edge5" class="edge">
 <title>ImportUserRepo&#45;&gt;ImportUserModule</title>
-<path fill="none" stroke="black" d="M1161,-122.29C1161,-144.21 1161,-178 1161,-178 1161,-178 666.3,-178 666.3,-178"/>
-<polygon fill="black" stroke="black" points="666.3,-174.5 656.3,-178 666.3,-181.5 666.3,-174.5"/>
+<path fill="none" stroke="black" d="M641,-122.11C641,-122.11 641,-140.99 641,-140.99"/>
+<polygon fill="black" stroke="black" points="637.5,-140.99 641,-150.99 644.5,-140.99 637.5,-140.99"/>
 </g>
 <!-- SchoolRepo -->
 <g id="node7" class="node">
 <title>SchoolRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="1009" cy="-104" rx="58.49" ry="18"/>
-<text text-anchor="middle" x="1009" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="489" cy="-104" rx="58.49" ry="18"/>
+<text text-anchor="middle" x="489" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolRepo</text>
 </g>
 <!-- SchoolRepo&#45;&gt;ImportUserModule -->
 <g id="edge6" class="edge">
 <title>SchoolRepo&#45;&gt;ImportUserModule</title>
-<path fill="none" stroke="black" d="M1009,-122.11C1009,-141.34 1009,-169 1009,-169 1009,-169 666.13,-169 666.13,-169"/>
-<polygon fill="black" stroke="black" points="666.13,-165.5 656.13,-169 666.13,-172.5 666.13,-165.5"/>
+<path fill="none" stroke="black" d="M489,-122.01C489,-138.05 489,-159 489,-159 489,-159 568.74,-159 568.74,-159"/>
+<polygon fill="black" stroke="black" points="568.74,-162.5 578.74,-159 568.74,-155.5 568.74,-162.5"/>
 </g>
 <!-- SystemRepo -->
 <g id="node8" class="node">
 <title>SystemRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="873" cy="-104" rx="59.71" ry="18"/>
-<text text-anchor="middle" x="873" y="-99.8" font-family="Times,serif" font-size="14.00">SystemRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="353" cy="-104" rx="59.71" ry="18"/>
+<text text-anchor="middle" x="353" y="-99.8" font-family="Times,serif" font-size="14.00">SystemRepo</text>
 </g>
 <!-- SystemRepo&#45;&gt;ImportUserModule -->
 <g id="edge7" class="edge">
 <title>SystemRepo&#45;&gt;ImportUserModule</title>
-<path fill="none" stroke="black" d="M873,-122.03C873,-138.4 873,-160 873,-160 873,-160 666.27,-160 666.27,-160"/>
-<polygon fill="black" stroke="black" points="666.27,-156.5 656.27,-160 666.27,-163.5 666.27,-156.5"/>
+<path fill="none" stroke="black" d="M353,-122.27C353,-140.56 353,-166 353,-166 353,-166 568.86,-166 568.86,-166"/>
+<polygon fill="black" stroke="black" points="568.86,-169.5 578.86,-166 568.86,-162.5 568.86,-169.5"/>
 </g>
 <!-- UserImportUc -->
 <g id="node9" class="node">
 <title>UserImportUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="728" cy="-104" rx="66.61" ry="18"/>
-<text text-anchor="middle" x="728" y="-99.8" font-family="Times,serif" font-size="14.00">UserImportUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="208" cy="-104" rx="66.61" ry="18"/>
+<text text-anchor="middle" x="208" y="-99.8" font-family="Times,serif" font-size="14.00">UserImportUc</text>
 </g>
 <!-- UserImportUc&#45;&gt;ImportUserModule -->
 <g id="edge8" class="edge">
 <title>UserImportUc&#45;&gt;ImportUserModule</title>
-<path fill="none" stroke="black" d="M661.04,-104C654.28,-104 649.84,-104 649.84,-104 649.84,-104 649.84,-140.89 649.84,-140.89"/>
-<polygon fill="black" stroke="black" points="646.34,-140.89 649.84,-150.89 653.34,-140.89 646.34,-140.89"/>
+<path fill="none" stroke="black" d="M208,-122.13C208,-142.57 208,-173 208,-173 208,-173 568.5,-173 568.5,-173"/>
+<polygon fill="black" stroke="black" points="568.5,-176.5 578.5,-173 568.5,-169.5 568.5,-176.5"/>
 </g>
 <!-- UserRepo -->
 <g id="node10" class="node">
 <title>UserRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="594" cy="-104" rx="49.8" ry="18"/>
-<text text-anchor="middle" x="594" y="-99.8" font-family="Times,serif" font-size="14.00">UserRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="74" cy="-104" rx="49.8" ry="18"/>
+<text text-anchor="middle" x="74" y="-99.8" font-family="Times,serif" font-size="14.00">UserRepo</text>
 </g>
 <!-- UserRepo&#45;&gt;ImportUserModule -->
 <g id="edge9" class="edge">
 <title>UserRepo&#45;&gt;ImportUserModule</title>
-<path fill="none" stroke="black" d="M594,-122.11C594,-122.11 594,-140.99 594,-140.99"/>
-<polygon fill="black" stroke="black" points="590.5,-140.99 594,-150.99 597.5,-140.99 590.5,-140.99"/>
+<path fill="none" stroke="black" d="M74,-122.01C74,-144.49 74,-180 74,-180 74,-180 568.7,-180 568.7,-180"/>
+<polygon fill="black" stroke="black" points="568.7,-183.5 578.7,-180 568.7,-176.5 568.7,-183.5"/>
 </g>
 </g>
 </svg>

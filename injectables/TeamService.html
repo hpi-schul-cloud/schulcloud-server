@@ -327,17 +327,13 @@ export class TeamService {
 	public async deleteUserDataFromTeams(userId: EntityId): Promise&lt;number&gt; {
 		const teams &#x3D; await this.teamsRepo.findByUserId(userId);
 
-		const updatedTeams: TeamEntity[] &#x3D; teams.map((team: TeamEntity) &#x3D;&gt; {
-			return {
-				...team,
-				userIds: team.userIds.filter((u) &#x3D;&gt; u.userId.id !&#x3D;&#x3D; userId),
-				teamUsers: team.userIds.filter((u) &#x3D;&gt; u.userId.id !&#x3D;&#x3D; userId),
-			};
+		teams.forEach((team) &#x3D;&gt; {
+			team.userIds &#x3D; team.userIds.filter((u) &#x3D;&gt; u.userId.id !&#x3D;&#x3D; userId);
 		});
 
-		await this.teamsRepo.save(updatedTeams);
+		await this.teamsRepo.save(teams);
 
-		return updatedTeams.length;
+		return teams.length;
 	}
 }
 </code></pre>

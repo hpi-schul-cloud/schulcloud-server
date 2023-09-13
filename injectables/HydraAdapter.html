@@ -1576,7 +1576,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>request(method: Method, url: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, data?, additionalHeaders: AxiosRequestHeaders)</code>
+                    <code>request(method: Method, url: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, data?, additionalHeaders: RawAxiosRequestHeaders)</code>
                 </td>
             </tr>
 
@@ -1657,7 +1657,7 @@
                                 <tr>
                                     <td>additionalHeaders</td>
                                     <td>
-                                            <code>AxiosRequestHeaders</code>
+                                            <code>RawAxiosRequestHeaders</code>
                                     </td>
 
                                     <td>
@@ -1899,12 +1899,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
 import { HttpService } from &#x27;@nestjs/axios&#x27;;
-import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
-import { AxiosRequestHeaders, AxiosResponse, Method } from &#x27;axios&#x27;;
-import { firstValueFrom, Observable } from &#x27;rxjs&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { AxiosResponse, Method, RawAxiosRequestHeaders } from &#x27;axios&#x27;;
 import QueryString from &#x27;qs&#x27;;
+import { Observable, firstValueFrom } from &#x27;rxjs&#x27;;
 import { URL } from &#x27;url&#x27;;
 import {
 	AcceptConsentRequestBody,
@@ -1916,8 +1916,8 @@ import {
 	ProviderRedirectResponse,
 	RejectRequestBody,
 } from &#x27;../dto&#x27;;
-import { OauthProviderService } from &#x27;../oauth-provider.service&#x27;;
 import { ProviderConsentSessionResponse } from &#x27;../dto/response/consent-session.response&#x27;;
+import { OauthProviderService } from &#x27;../oauth-provider.service&#x27;;
 
 @Injectable()
 export class HydraAdapter extends OauthProviderService {
@@ -2059,7 +2059,7 @@ export class HydraAdapter extends OauthProviderService {
 		method: Method,
 		url: string,
 		data?: unknown,
-		additionalHeaders: AxiosRequestHeaders &#x3D; {}
+		additionalHeaders: RawAxiosRequestHeaders &#x3D; {}
 	): Promise&lt;T&gt; {
 		const observable: Observable&lt;AxiosResponse&lt;T&gt;&gt; &#x3D; this.httpService.request({
 			url,

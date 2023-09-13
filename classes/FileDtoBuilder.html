@@ -410,7 +410,7 @@ export class FileDtoBuilder {
 	}
 
 	public static buildFromAxiosResponse(name: string, response: AxiosResponse&lt;Readable&gt;): FileDto {
-		const mimeType &#x3D; response.headers[&#x27;content-type&#x27;];
+		const mimeType &#x3D; response.headers[&#x27;Content-Type&#x27;]?.toString() || &#x27;application/octet-stream&#x27;;
 		const file &#x3D; FileDtoBuilder.build(name, response.data, mimeType);
 
 		return file;

@@ -177,8 +177,8 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
-import { CacheModule, Module } from &#x27;@nestjs/common&#x27;;
-import { CacheModuleOptions } from &#x27;@nestjs/common/cache/interfaces/cache-module.interface&#x27;;
+import { CacheModule, CacheModuleOptions } from &#x27;@nestjs/cache-manager&#x27;;
+import { Module } from &#x27;@nestjs/common&#x27;;
 import { LegacyLogger, LoggerModule } from &#x27;@src/core/logger&#x27;;
 import { create } from &#x27;cache-manager-redis-store&#x27;;
 import { RedisClient } from &#x27;redis&#x27;;
