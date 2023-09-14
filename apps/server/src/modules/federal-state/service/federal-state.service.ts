@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { FederalStateDO } from '../domainobject/federal-state.do';
+import { FederalStateDO, FederalStateProps } from '../domainobject/federal-state.do';
 import { FederalStateRepo } from '../repo';
 
 @Injectable()
@@ -15,5 +15,10 @@ export class FederalStateService {
 	async findAll() {
 		const federalStates: FederalStateDO[] = await this.federalStateRepo.findAll();
 		return federalStates;
+	}
+
+	async create(federalState: FederalStateProps) {
+		const createdFederalState = await this.federalStateRepo.save(federalState);
+		return createdFederalState;
 	}
 }

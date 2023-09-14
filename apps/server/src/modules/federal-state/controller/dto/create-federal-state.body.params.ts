@@ -1,6 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsString, ValidateNested } from 'class-validator';
 import { SanitizeHtml } from '@shared/controller';
+import { CreateCountyBodyParams } from './create-county.body.params';
+import { Type } from 'class-transformer';
 
 /**
  * DTO for creating a news document.
@@ -28,4 +30,12 @@ export class CreateFederalStateBodyParams {
 		description: 'Link to the logo of the Federal State',
 	})
 	logoUrl!: string;
+
+	@ValidateNested({ each: true })
+	@Type(() => CreateCountyBodyParams)
+	@ApiPropertyOptional({
+		description: 'Counties of the Federal State',
+		required: false,
+	})
+	counties?: CreateCountyBodyParams[];
 }

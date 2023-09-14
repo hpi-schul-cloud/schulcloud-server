@@ -1,9 +1,10 @@
-import { Controller, ForbiddenException, Get, NotFoundException } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Get, NotFoundException, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
+import { ICurrentUser } from '@src/modules/authentication';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { FederalStateUC } from '../uc';
-import { FederalStateResponse } from './dto';
+import { CreateFederalStateBodyParams, FederalStateResponse } from './dto';
 import { FederalStateMapper } from './mapper';
 
 @ApiTags('Federal-State')
@@ -20,9 +21,14 @@ export class FederalStateController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Get()
-	async findAll(): Promise<FederalStateResponse[]> {
-		const federalStates = await this.federalStateUC.findAllFederalStates();
+	async findAll(@CurrentUser() currentUser: ICurrentUser): Promise<FederalStateResponse[]> {
+		const federalStates = await this.federalStateUC.findAllFederalStates(currentUser.userId);
 		const federalStateResponse = federalStates.map((federalState) => FederalStateMapper.mapToResponse(federalState));
 		return federalStateResponse;
+	}
+
+	@Post()
+	createFederalState(@Body() createFederalStateBodyParams: CreateFederalStateBodyParams) {
+		return null;
 	}
 }

@@ -1,7 +1,7 @@
 import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { FederalStateDO } from '../domainobject';
+import { FederalStateDO, FederalStateProps } from '../domainobject';
 import { FederalStateEntity } from '../entity';
 
 @Injectable()
@@ -24,6 +24,13 @@ export class FederalStateRepo {
 			this.mapEntityToDomainObject(federalStateEntity)
 		);
 		return federalStates;
+	}
+
+	async save(federalStateProps: FederalStateProps): Promise<FederalStateDO> {
+		const federalStateEntity = new FederalStateEntity(federalStateProps);
+		await this.em.persistAndFlush(federalStateEntity);
+		const federalState = this.mapEntityToDomainObject(federalStateEntity);
+		return federalState;
 	}
 
 	mapEntityToDomainObject(entity: FederalStateEntity): FederalStateDO {
