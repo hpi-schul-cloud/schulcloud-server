@@ -17,6 +17,21 @@ const options = [
 		// Path to file containing the resolution-mode="require" declaration.
 		pathToResolutionModeError: 'node_modules/file-type/dist/index.d.ts',
 	},
+	{
+		pathToResolutionModeError: 'node_modules/peek-readable/lib/StreamReader.d.ts',
+	},
+	{
+		pathToResolutionModeError: 'node_modules/strtok3/lib/ReadStreamTokenizer.d.ts',
+	},
+	{
+		pathToResolutionModeError: 'node_modules/strtok3/lib/core.d.ts',
+	},
+	{
+		pathToResolutionModeError: 'node_modules/strtok3/lib/index.d.ts',
+	},
+	{
+		pathToResolutionModeError: 'node_modules/strtok3/lib/types.d.ts',
+	},
 ];
 
 const globalOptions = {
@@ -30,16 +45,18 @@ const globalOptions = {
 for (const option of options) {
 	const { entryPoint, outdir, pathToResolutionModeError } = option;
 	try {
-		build({
-			entryPoints: entryPoint,
-			outdir,
-			platform: globalOptions.platform,
-			format: globalOptions.format,
-			bundle: globalOptions.bundle,
-			minify: globalOptions.minify,
-			loader: globalOptions.loader,
-			plugins: [dtsPlugin()],
-		});
+		if (entryPoint && outdir) {
+			build({
+				entryPoints: entryPoint,
+				outdir,
+				platform: globalOptions.platform,
+				format: globalOptions.format,
+				bundle: globalOptions.bundle,
+				minify: globalOptions.minify,
+				loader: globalOptions.loader,
+				plugins: [dtsPlugin()],
+			});
+		}
 
 		// remove resolution-mode="require" from file because it provokes an error in the commonjs build
 		if (pathToResolutionModeError) {
