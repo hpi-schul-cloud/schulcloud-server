@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { groupFactory } from '@shared/testing';
@@ -115,6 +116,38 @@ describe('GroupService', () => {
 				const result: Group | null = await service.tryFindById(group.id);
 
 				expect(result).toBeNull();
+			});
+		});
+	});
+
+	describe('findClassesForSchool', () => {
+		describe('when the school has groups of type class', () => {
+			const setup = () => {
+				const schoolId: string = new ObjectId().toHexString();
+				const groups: Group[] = groupFactory.buildList(3);
+
+				groupRepo.findClassesForSchool.mockResolvedValue(groups);
+
+				return {
+					schoolId,
+					groups,
+				};
+			};
+
+			it('should call the repo', async () => {
+				const { schoolId } = setup();
+
+				await service.findClassesForSchool(schoolId);
+
+				expect(groupRepo.findClassesForSchool).toHaveBeenCalledWith(schoolId);
+			});
+
+			it('should return the groups', async () => {
+				const { schoolId, groups } = setup();
+
+				const result: Group[] = await service.findClassesForSchool(schoolId);
+
+				expect(result).toEqual(groups);
 			});
 		});
 	});

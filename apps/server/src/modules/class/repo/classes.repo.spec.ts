@@ -1,13 +1,14 @@
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { TestingModule } from '@nestjs/testing/testing-module';
 import { Test } from '@nestjs/testing';
-import { cleanupCollections } from '@shared/testing';
+import { TestingModule } from '@nestjs/testing/testing-module';
+import { School } from '@shared/domain';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { cleanupCollections, schoolFactory } from '@shared/testing';
 import { classEntityFactory } from '@src/modules/class/entity/testing/factory/class.entity.factory';
-import { ClassesRepo } from './classes.repo';
-import { ClassEntity } from '../entity';
-import { ClassMapper } from './mapper';
 import { Class } from '../domain';
+import { ClassEntity } from '../entity';
+import { ClassesRepo } from './classes.repo';
+import { ClassMapper } from './mapper';
 
 describe(ClassesRepo.name, () => {
 	let module: TestingModule;
@@ -32,6 +33,38 @@ describe(ClassesRepo.name, () => {
 		await cleanupCollections(em);
 	});
 
+	describe('findAllBySchoolId', () => {
+		describe('when school has no class', () => {
+			it('should return empty array', async () => {
+				const result = await repo.findAllBySchoolId(new ObjectId().toHexString());
+
+				expect(result).toEqual([]);
+			});
+		});
+
+		describe('when school has classes', () => {
+			const setup = async () => {
+				const school: School = schoolFactory.buildWithId();
+				const classes: ClassEntity[] = classEntityFactory.buildListWithId(3, { schoolId: school.id });
+
+				await em.persistAndFlush(classes);
+
+				return {
+					school,
+					classes,
+				};
+			};
+
+			it('should find classes with particular userId', async () => {
+				const { school } = await setup();
+
+				const result: Class[] = await repo.findAllBySchoolId(school.id);
+
+				expect(result.length).toEqual(3);
+			});
+		});
+	});
+
 	describe('findAllByUserId', () => {
 		describe('when user is not found in classes', () => {
 			it('should return empty array', async () => {
@@ -40,6 +73,7 @@ describe(ClassesRepo.name, () => {
 				expect(result).toEqual([]);
 			});
 		});
+
 		describe('when user is in classes', () => {
 			const setup = async () => {
 				const testUser = new ObjectId();

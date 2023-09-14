@@ -22,15 +22,19 @@ export interface GroupProps extends AuthorizableObject {
 }
 
 export class Group extends DomainObject<GroupProps> {
-	get name() {
+	get name(): string {
 		return this.props.name;
 	}
 
-	get users() {
-		return this.props.name;
+	get users(): GroupUser[] {
+		return this.props.users;
 	}
 
-	get externalSource() {
+	get externalSource(): ExternalSource | undefined {
 		return this.props.externalSource;
+	}
+
+	get organizationId(): string | undefined {
+		return this.props.organizationId;
 	}
 }

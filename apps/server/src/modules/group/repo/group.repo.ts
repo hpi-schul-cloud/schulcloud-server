@@ -9,21 +9,6 @@ import { GroupDomainMapper } from './group-domain.mapper';
 export class GroupRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	public async findClassesForSchool(schoolId: EntityId): Promise<Group[]> {
-		const entities: GroupEntity[] = await this.em.find(GroupEntity, {
-			type: GroupEntityTypes.CLASS,
-			organization: schoolId,
-		});
-
-		const domainObjects = entities.map((entity) => {
-			const props: GroupProps = GroupDomainMapper.mapEntityToDomainObjectProperties(entity);
-
-			return new Group(props);
-		});
-
-		return domainObjects;
-	}
-
 	public async findById(id: EntityId): Promise<Group | null> {
 		const entity: GroupEntity | null = await this.em.findOne(GroupEntity, { id });
 
@@ -55,6 +40,21 @@ export class GroupRepo {
 		const domainObject: Group = new Group(props);
 
 		return domainObject;
+	}
+
+	public async findClassesForSchool(schoolId: EntityId): Promise<Group[]> {
+		const entities: GroupEntity[] = await this.em.find(GroupEntity, {
+			type: GroupEntityTypes.CLASS,
+			organization: schoolId,
+		});
+
+		const domainObjects = entities.map((entity) => {
+			const props: GroupProps = GroupDomainMapper.mapEntityToDomainObjectProperties(entity);
+
+			return new Group(props);
+		});
+
+		return domainObjects;
 	}
 
 	public async save(domainObject: Group): Promise<Group> {
