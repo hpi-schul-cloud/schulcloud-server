@@ -1,7 +1,7 @@
 import { courseFactory, courseGroupFactory, setupEntities, userFactory } from '@shared/testing';
 import { CourseGroup } from './coursegroup.entity';
 
-describe('CourseEntity', () => {
+describe('CourseGroupEntity', () => {
 	beforeAll(async () => {
 		await setupEntities();
 	});
@@ -75,17 +75,17 @@ describe('CourseEntity', () => {
 				const students = [student1, student2];
 				const studentIds = [student1.id, student2.id];
 
-				const course = courseFactory.build({ students });
+				const courseGroup = courseGroupFactory.build({ students });
 
-				return { course, student1, studentIds };
+				return { courseGroup, student1, studentIds };
 			};
 
 			it('should be delete the userId from the students list.', () => {
-				const { course, student1, studentIds } = setup();
+				const { courseGroup, student1, studentIds } = setup();
 
-				course.removeStudent(student1.id);
+				courseGroup.removeStudent(student1.id);
 
-				const result = course.getStudentIds();
+				const result = courseGroup.getStudentIds();
 
 				expect(result.length).toEqual(1);
 				expect(result).toContain(studentIds[1]);

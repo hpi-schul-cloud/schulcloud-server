@@ -13,7 +13,7 @@ export class CourseService {
 	public async deleteUserDataFromCourse(userId: EntityId): Promise<number> {
 		const [courses, count] = await this.repo.findAllByUserId(userId);
 
-		courses.forEach((course) => course.removeUser(userId));
+		courses.forEach((course: Course) => course.removeUser(userId));
 
 		await this.repo.save(courses);
 
