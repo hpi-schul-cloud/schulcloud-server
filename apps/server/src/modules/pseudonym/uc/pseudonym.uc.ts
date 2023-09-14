@@ -9,6 +9,7 @@ export class PseudonymUc {
 
 	async findPseudonym(query: PseudonymSearchQuery, options: IFindOptions<Pseudonym>): Promise<Page<Pseudonym>> {
 		// todo: do we need permissions checks? @igor
+		// is user at school?
 		const pseudonymPage: Page<Pseudonym> = await this.pseudonymService.findPseudonym(query, options);
 
 		return pseudonymPage;

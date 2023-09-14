@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import {
 	ApiForbiddenResponse,
 	ApiFoundResponse,
@@ -6,13 +6,12 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { PaginationParams } from '@shared/controller';
 import { Page, Pseudonym } from '@shared/domain';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
-import { PseudonymSearchQuery } from '../domain';
 import { PseudonymMapper } from '../mapper/pseudonym.mapper';
 import { PseudonymUc } from '../uc';
-import { PseudonymResponse, PseudonymSearchListResponse, PseudonymSearchParams } from './dto';
+import { PseudonymResponse } from './dto';
+import { PseudonymParams } from './dto/pseudonym-params';
 
 // TODO: test it @igor
 @ApiTags('Pseudonym')
@@ -21,33 +20,16 @@ import { PseudonymResponse, PseudonymSearchListResponse, PseudonymSearchParams }
 export class PseudonymController {
 	constructor(private readonly pseudonymUc: PseudonymUc) {}
 
-	@Get()
-	@ApiFoundResponse({ description: 'Pseudonym has been found.', type: PseudonymSearchListResponse })
+	@Get(':pseudonym')
+	@ApiFoundResponse({ description: 'Pseudonym has been found.', type: PseudonymResponse })
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
 	@ApiOperation({ summary: 'Returns Pseudonym' })
-	async getPseudonym(
-		@Query() params: PseudonymSearchParams,
-		@Query() pagination: PaginationParams
-	): Promise<PseudonymSearchListResponse> {
-		const searchQuery: PseudonymSearchQuery = PseudonymMapper.mapSearchParamsToSearchQuery(params);
+	async getPseudonym(@Param() params: PseudonymParams): Promise<PseudonymResponse> {
+		const page: Page<Pseudonym> = await this.pseudonymUc.findPseudonym({ pseudonym: params.pseudonym }, {});
 
-		const pseudonym: Page<Pseudonym> = await this.pseudonymUc.findPseudonym(searchQuery, {
-			pagination: {
-				limit: pagination.limit,
-				skip: pagination.skip,
-			},
-		});
+		const pseudonymResponses: PseudonymResponse[] = PseudonymMapper.mapToResponseList(page.data);
 
-		const pseudonymResponses: PseudonymResponse[] = PseudonymMapper.mapToResponseList(pseudonym.data);
-
-		const response: PseudonymSearchListResponse = new PseudonymSearchListResponse(
-			pseudonymResponses,
-			pseudonymResponses.length,
-			pagination.skip,
-			pagination.limit
-		);
-
-		return response;
+		return pseudonymResponses[0];
 	}
 }
