@@ -36,8 +36,8 @@ module.exports = function roster() {
 				const userMetadata = await this.app
 					.service('nest-feathers-roster-service')
 					.getUsersMetadata(userParam, pseudonym);
-				console.error('NEST RESPONSE METADATA');
-				console.error(userMetadata);
+				console.log('NEST RESPONSE METADATA');
+				console.log(userMetadata);
 				return userMetadata;
 			}
 
@@ -59,8 +59,8 @@ module.exports = function roster() {
 			});
 
 			const user = users.data[0];
-			console.error('FEATHERS RESPONSE METADATA');
-			console.error({
+			console.log('FEATHERS RESPONSE METADATA');
+			console.log({
 				data: {
 					user_id: userParam,
 					username: oauth2.getSubject(pseudonym, app.settings.services.web),
@@ -103,8 +103,8 @@ module.exports = function roster() {
 		async find(params) {
 			if (Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED')) {
 				const userGroups = await this.app.service('nest-feathers-roster-service').getUserGroups(params.pseudonym);
-				console.error('NEST RESPONSE USERGROUPS');
-				console.error(userGroups);
+				console.log('NEST RESPONSE USERGROUPS');
+				console.log(userGroups);
 				return userGroups;
 			}
 
@@ -186,8 +186,8 @@ module.exports = function roster() {
 			if (Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED')) {
 				const group = await this.app.service('nest-feathers-roster-service').getGroup(id, params.tokenInfo.client_id);
 
-				console.error('NEST RESPONSE GROUPS');
-				console.error(group);
+				console.log('NEST RESPONSE GROUPS');
+				console.log(group);
 
 				return group;
 			}
@@ -230,8 +230,8 @@ module.exports = function roster() {
 				}),
 			]);
 
-			console.error('FEATHERS RESPONSE GROUPS');
-			console.error({
+			console.log('FEATHERS RESPONSE GROUPS');
+			console.log({
 				data: {
 					students: users.data.map((user) => {
 						return {
