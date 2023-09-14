@@ -250,7 +250,7 @@ describe('CourseEntity', () => {
 		});
 	});
 
-	describe('removeStudent is called', () => {
+	describe('removeUser is called', () => {
 		describe('when students exist', () => {
 			const setup = () => {
 				const student1 = userFactory.buildWithId();
@@ -266,7 +266,7 @@ describe('CourseEntity', () => {
 			it('should be delete the userId from the students list.', () => {
 				const { course, student1, studentIds } = setup();
 
-				course.removeStudent(student1.id);
+				course.removeUser(student1.id);
 
 				const result = course.getStudentIds();
 
@@ -274,9 +274,7 @@ describe('CourseEntity', () => {
 				expect(result).toContain(studentIds[1]);
 			});
 		});
-	});
 
-	describe('removeTeacher is called', () => {
 		describe('when teachers exist', () => {
 			const setup = () => {
 				const teacher1 = userFactory.buildWithId();
@@ -292,7 +290,7 @@ describe('CourseEntity', () => {
 			it('should be delete the userId from the students list.', () => {
 				const { course, teacher1, teacherIds } = setup();
 
-				course.removeTeacher(teacher1.id);
+				course.removeUser(teacher1.id);
 
 				const result = course.getTeacherIds();
 
@@ -300,10 +298,8 @@ describe('CourseEntity', () => {
 				expect(result).toContain(teacherIds[1]);
 			});
 		});
-	});
 
-	describe('removeSubstitutionTeacher is called', () => {
-		describe('when students exist', () => {
+		describe('when substitutionTeacher exist', () => {
 			const setup = () => {
 				const substitutionTeacher1 = userFactory.buildWithId();
 				const substitutionTeacher2 = userFactory.buildWithId();
@@ -315,10 +311,10 @@ describe('CourseEntity', () => {
 				return { course, substitutionTeacher1, substitutionTeacherIds };
 			};
 
-			it('should be delete the userId from the students list.', () => {
+			it('should be delete the userId from the substitutionTeacher list.', () => {
 				const { course, substitutionTeacher1, substitutionTeacherIds } = setup();
 
-				course.removeSubstitutionTeacher(substitutionTeacher1.id);
+				course.removeUser(substitutionTeacher1.id);
 
 				const result = course.getSubstitutionTeacherIds();
 

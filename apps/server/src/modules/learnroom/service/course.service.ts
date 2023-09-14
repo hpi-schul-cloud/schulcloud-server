@@ -13,17 +13,9 @@ export class CourseService {
 	public async deleteUserDataFromCourse(userId: EntityId): Promise<number> {
 		const [courses, count] = await this.repo.findAllByUserId(userId);
 
-		const updatedCourses = courses.map(
-			(course: Course) =>
-				({
-					...course,
-					students: course.removeStudent(userId),
-					teachers: course.removeTeacher(userId),
-					substitutionTeachers: course.removeSubstitutionTeacher(userId),
-				} as unknown as Course)
-		);
+		courses.forEach((course) => course.removeUser(userId));
 
-		await this.repo.save(updatedCourses);
+		await this.repo.save(courses);
 
 		return count;
 	}

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CourseGroup, EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain';
 import { CourseGroupRepo } from '@shared/repo';
 
 @Injectable()
@@ -9,15 +9,9 @@ export class CourseGroupService {
 	public async deleteUserDataFromCourseGroup(userId: EntityId): Promise<number> {
 		const [courseGroups, count] = await this.repo.findByUserId(userId);
 
-		const updatedCourseGroups = courseGroups.map(
-			(courseGroup: CourseGroup) =>
-				({
-					...courseGroup,
-					students: courseGroup.removeStudent(userId),
-				} as unknown as CourseGroup)
-		);
+		courseGroups.forEach((courseGroup) => courseGroup.removeStudent(userId));
 
-		await this.repo.save(updatedCourseGroups);
+		await this.repo.save(courseGroups);
 
 		return count;
 	}
