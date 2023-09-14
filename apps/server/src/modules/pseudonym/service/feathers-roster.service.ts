@@ -63,8 +63,13 @@ export class FeathersRosterService {
 	) {}
 
 	async getUsersMetadata(pseudonym: string): Promise<UserMetdata> {
+		console.log('getUsersMetadata called');
 		const loadedPseudonym: Pseudonym = await this.findPseudonymByPseudonym(pseudonym);
 		const user: UserDO = await this.userService.findById(loadedPseudonym.userId);
+
+		if (!user) {
+			console.error('user not found');
+		}
 
 		const userMetadata: UserMetdata = {
 			data: {
