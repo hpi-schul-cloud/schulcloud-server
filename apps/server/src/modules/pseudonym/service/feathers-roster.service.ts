@@ -14,13 +14,17 @@ import { UserService } from '@src/modules/user';
 import { PseudonymService } from './pseudonym.service';
 
 interface UserMetdata {
-	user_id: string;
-	username: string;
-	type: string;
+	data: {
+		user_id: string;
+		username: string;
+		type: string;
+	};
 }
 
 interface UserGroups {
-	groups: UserGroup[];
+	data: {
+		groups: UserGroup[];
+	};
 }
 
 interface UserGroup {
@@ -35,8 +39,10 @@ interface UserData {
 }
 
 interface Group {
-	students: UserData[];
-	teachers: UserData[];
+	data: {
+		students: UserData[];
+		teachers: UserData[];
+	};
 }
 
 /**
@@ -61,9 +67,11 @@ export class FeathersRosterService {
 		const user: UserDO = await this.userService.findById(loadedPseudonym.userId);
 
 		const userMetadata: UserMetdata = {
-			user_id: user.id as string,
-			username: this.getIframeSubject(loadedPseudonym.pseudonym),
-			type: this.getUserRole(user),
+			data: {
+				user_id: user.id as string,
+				username: this.getIframeSubject(loadedPseudonym.pseudonym),
+				type: this.getUserRole(user),
+			},
 		};
 
 		return userMetadata;
@@ -102,13 +110,15 @@ export class FeathersRosterService {
 		courses = this.filterCoursesWithExternalTool(courses);
 
 		const userGroups: UserGroups = {
-			groups: courses.map((course) => {
-				return {
-					group_id: course.id,
-					name: course.name,
-					student_count: course.students.length,
-				};
-			}),
+			data: {
+				groups: courses.map((course) => {
+					return {
+						group_id: course.id,
+						name: course.name,
+						student_count: course.students.length,
+					};
+				}),
+			},
 		};
 
 		return userGroups;
@@ -150,8 +160,10 @@ export class FeathersRosterService {
 		]);
 
 		const group: Group = {
-			students: studentPseudonyms.map((pseudonym: Pseudonym) => this.mapPseudonymToUserData(pseudonym)),
-			teachers: teacherPseudonyms.map((pseudonym: Pseudonym) => this.mapPseudonymToUserData(pseudonym)),
+			data: {
+				students: studentPseudonyms.map((pseudonym: Pseudonym) => this.mapPseudonymToUserData(pseudonym)),
+				teachers: teacherPseudonyms.map((pseudonym: Pseudonym) => this.mapPseudonymToUserData(pseudonym)),
+			},
 		};
 
 		return group;
