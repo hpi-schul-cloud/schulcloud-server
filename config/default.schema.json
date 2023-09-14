@@ -1325,7 +1325,7 @@
 		},
 		"TLDRAW_URI": {
 			"type": "string",
-			"default": "http://localhost:3349",
+			"default": "http://localhost:3349/api/v3",
 			"description": "Address for tldraw management app"
 		}
 	},
