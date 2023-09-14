@@ -7,16 +7,16 @@ import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq';
 
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
-import { LegacyLogger, Logger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
+import { S3ClientModule } from '@shared/infra/s3-client';
 import { UserModule } from '..';
 
-import { LibraryStorage } from '../h5p-editor/service';
-import { config, s3ConfigLibraries } from '../h5p-editor/h5p-editor.config';
+import { config, s3ConfigContent, s3ConfigLibraries } from '../h5p-editor/h5p-editor.config';
 import { LibraryRepo } from '../h5p-editor/repo';
-import { createS3ClientAdapter } from '../h5p-editor';
+import { LibraryStorage } from '../h5p-editor/service';
 
-import { H5PLibraryManagementService } from './service/h5p-library-management.service';
 import { InstalledLibrary } from '../h5p-editor/entity';
+import { H5PLibraryManagementService } from './service/h5p-library-management.service';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -39,25 +39,12 @@ const imports = [
 		entities: [User, Account, Role, School, System, SchoolYear, InstalledLibrary],
 	}),
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
+	S3ClientModule.register([s3ConfigContent, s3ConfigLibraries]),
 ];
 
 const controllers = [];
 
-const providers = [
-	Logger,
-	H5PLibraryManagementService,
-	LibraryRepo,
-	LibraryStorage,
-	{
-		provide: 'S3Config_Libraries',
-		useValue: s3ConfigLibraries,
-	},
-	{
-		provide: 'S3ClientAdapter_Libraries',
-		useFactory: createS3ClientAdapter,
-		inject: ['S3Config_Libraries', LegacyLogger],
-	},
-];
+const providers = [Logger, H5PLibraryManagementService, LibraryRepo, LibraryStorage];
 
 @Module({
 	imports,
