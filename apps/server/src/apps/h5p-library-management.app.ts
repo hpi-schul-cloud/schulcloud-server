@@ -20,7 +20,6 @@ async function bootstrap() {
 
 	await app.get(H5PLibraryManagementService).run();
 	// TODO: properly close app (there is some issue with the logger)
-	// await app.close();
-	process.exit(0);
+	await app.close();
 }
 void bootstrap();
