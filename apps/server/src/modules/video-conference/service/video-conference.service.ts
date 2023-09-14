@@ -64,6 +64,9 @@ export class VideoConferenceService {
 			case VideoConferenceScope.COURSE: {
 				const user: UserDO = await this.userService.findById(userId);
 				isExpert = this.existsExpertRole(user.roles);
+				if (isExpert && user.roles.length > 1) {
+					isExpert = false;
+				}
 				return isExpert;
 			}
 			case VideoConferenceScope.EVENT: {
