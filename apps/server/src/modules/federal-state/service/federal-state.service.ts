@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { FederalStateDO, FederalStateProps } from '../domainobject/federal-state.do';
+import { FederalStateDO } from '../domainobject/federal-state.do';
+import { IFederalStateCreate } from '../interface';
 import { FederalStateRepo } from '../repo';
 
 @Injectable()
@@ -17,8 +18,13 @@ export class FederalStateService {
 		return federalStates;
 	}
 
-	async create(federalState: FederalStateProps) {
-		const createdFederalState = await this.federalStateRepo.save(federalState);
+	async create(federalStateCreate: IFederalStateCreate) {
+		const createdFederalState = await this.federalStateRepo.createFederalState(federalStateCreate);
 		return createdFederalState;
+	}
+
+	async delete(id: string) {
+		const deletedFederalState = await this.federalStateRepo.deleteFederalState(id);
+		return deletedFederalState;
 	}
 }

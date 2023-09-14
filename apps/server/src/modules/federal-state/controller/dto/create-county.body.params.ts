@@ -14,7 +14,7 @@ export class CreateCountyBodyParams {
 
 	@IsNumber()
 	@ApiProperty({ description: 'Id of the federal state', type: Number, required: true })
-	contyId!: number;
+	countyId!: number;
 
 	@IsString()
 	@DecodeHtmlEntities()

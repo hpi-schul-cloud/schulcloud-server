@@ -1,14 +1,16 @@
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-
-export interface CountyProps extends AuthorizableObject {
+export interface CountyProps {
 	name: string;
 	countyId: number;
 	antaresKey: string;
-	createdAt: Date;
-	updatedAt: Date;
 }
 
-export class CountyDO extends DomainObject<CountyProps> {
+export class CountyDO {
+	protected props: CountyProps;
+
+	constructor(props: CountyProps) {
+		this.props = props;
+	}
+
 	get name(): string {
 		return this.props.name;
 	}
@@ -19,13 +21,5 @@ export class CountyDO extends DomainObject<CountyProps> {
 
 	get antaresKey(): string {
 		return this.props.antaresKey;
-	}
-
-	get createdAt(): Date {
-		return this.props.createdAt;
-	}
-
-	get updatedAt(): Date {
-		return this.props.updatedAt;
 	}
 }

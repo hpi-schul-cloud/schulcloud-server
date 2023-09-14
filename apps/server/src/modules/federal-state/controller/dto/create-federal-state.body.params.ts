@@ -1,9 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, ValidateNested } from 'class-validator';
 import { SanitizeHtml } from '@shared/controller';
-import { CreateCountyBodyParams } from './create-county.body.params';
 import { Type } from 'class-transformer';
-
+import { CreateCountyBodyParams } from './create-county.body.params';
 /**
  * DTO for creating a news document.
  */
