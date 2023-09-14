@@ -36,7 +36,8 @@ module.exports = function roster() {
 				const userMetadata = await this.app
 					.service('nest-feathers-roster-service')
 					.getUsersMetadata(userParam, pseudonym);
-
+				console.error('NEST RESPONSE METADATA');
+				console.error(userMetadata);
 				return userMetadata;
 			}
 
@@ -58,6 +59,14 @@ module.exports = function roster() {
 			});
 
 			const user = users.data[0];
+			console.error('FEATHERS RESPONSE METADATA');
+			console.error({
+				data: {
+					user_id: userParam,
+					username: oauth2.getSubject(pseudonym, app.settings.services.web),
+					type: user.roles.map((role) => role.name).some((roleName) => roleName === 'teacher') ? 'teacher' : 'student',
+				},
+			});
 			return {
 				data: {
 					user_id: userParam,
@@ -94,6 +103,8 @@ module.exports = function roster() {
 		async find(params) {
 			if (Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED')) {
 				const userGroups = await this.app.service('nest-feathers-roster-service').getUserGroups(params.pseudonym);
+				console.error('NEST RESPONSE USERGROUPS');
+				console.error(userGroups);
 				return userGroups;
 			}
 
@@ -120,6 +131,19 @@ module.exports = function roster() {
 				course.ltiToolIds = course.ltiToolIds || [];
 				const originalToolIds = course.ltiToolIds.map((toolId) => (toolId.originTool || '').toString());
 				return originalToolIds.includes(params.originToolId.toString());
+			});
+
+			console.error('FEATHERS RESPONSE USERGROUPS');
+			console.error({
+				data: {
+					groups: courses.map((course) => {
+						return {
+							group_id: course._id.toString(),
+							name: course.name,
+							student_count: course.userIds.length,
+						};
+					}),
+				},
 			});
 
 			// all users courses with given tool enabled
@@ -162,6 +186,9 @@ module.exports = function roster() {
 			if (Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED')) {
 				const group = await this.app.service('nest-feathers-roster-service').getGroup(id, params.tokenInfo.client_id);
 
+				console.error('NEST RESPONSE GROUPS');
+				console.error(group);
+
 				return group;
 			}
 
@@ -202,6 +229,24 @@ module.exports = function roster() {
 					},
 				}),
 			]);
+
+			console.error('FEATHERS RESPONSE GROUPS');
+			console.error({
+				data: {
+					students: users.data.map((user) => {
+						return {
+							user_id: user.pseudonym,
+							username: oauth2.getSubject(user.pseudonym, app.settings.services.web),
+						};
+					}),
+					teachers: teachers.data.map((user) => {
+						return {
+							user_id: user.pseudonym,
+							username: oauth2.getSubject(user.pseudonym, app.settings.services.web),
+						};
+					}),
+				},
+			});
 
 			return {
 				data: {
