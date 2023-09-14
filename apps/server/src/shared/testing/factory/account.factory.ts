@@ -21,6 +21,34 @@ class AccountFactory extends BaseFactory<Account, IAccountProperties> {
 
 		return this.params(params);
 	}
+
+	withAllProperties(): this {
+		return this.params({
+			userId: new ObjectId(),
+			username: 'username',
+			activated: true,
+			credentialHash: 'credentialHash',
+			expiresAt: new Date(),
+			lasttriedFailedLogin: new Date(),
+			password: 'password',
+			systemId: new ObjectId(),
+			token: 'token',
+		}).afterBuild((acc) => {
+			return {
+				...acc,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			};
+		});
+	}
+
+	withoutSystemAndUserId(): this {
+		return this.params({
+			username: 'username',
+			systemId: undefined,
+			userId: undefined,
+		});
+	}
 }
 
 export const defaultTestPassword = 'DummyPasswd!1';
