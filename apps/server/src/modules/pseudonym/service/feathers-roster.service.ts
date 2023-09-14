@@ -56,9 +56,9 @@ export class FeathersRosterService {
 		private readonly contextExternalToolService: ContextExternalToolService
 	) {}
 
-	async getUsersMetadata(userId: EntityId, pseudonym: string): Promise<UserMetdata> {
+	async getUsersMetadata(pseudonym: string): Promise<UserMetdata> {
 		const loadedPseudonym: Pseudonym = await this.findPseudonymByPseudonym(pseudonym);
-		const user: UserDO = await this.userService.findById(userId);
+		const user: UserDO = await this.userService.findById(loadedPseudonym.userId);
 
 		const userMetadata: UserMetdata = {
 			user_id: user.id as string,

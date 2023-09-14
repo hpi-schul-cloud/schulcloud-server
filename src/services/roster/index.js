@@ -30,17 +30,15 @@ module.exports = function roster() {
 	const metadataHandler = {
 		async find(params) {
 			const { pseudonym } = params;
-			const userParam = params.route.user;
 
 			if (Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED')) {
-				const userMetadata = await this.app
-					.service('nest-feathers-roster-service')
-					.getUsersMetadata(userParam, pseudonym);
+				const userMetadata = await this.app.service('nest-feathers-roster-service').getUsersMetadata(pseudonym);
 				console.log('NEST RESPONSE METADATA');
 				console.log(userMetadata);
 				return userMetadata;
 			}
 
+			const userParam = params.route.user;
 			const pseudonyms = await app.service('pseudonym').find({
 				query: {
 					pseudonym,
