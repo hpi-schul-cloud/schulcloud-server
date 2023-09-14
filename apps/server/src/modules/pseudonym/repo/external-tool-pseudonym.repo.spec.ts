@@ -2,12 +2,12 @@ import { createMock } from '@golevelup/ts-jest';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Pseudonym } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, pseudonymFactory, externalToolPseudonymEntityFactory, userFactory } from '@shared/testing';
+import { cleanupCollections, externalToolPseudonymEntityFactory, pseudonymFactory, userFactory } from '@shared/testing';
 import { pseudonymEntityFactory } from '@shared/testing/factory/pseudonym.factory';
 import { LegacyLogger } from '@src/core/logger';
 import { v4 as uuidv4 } from 'uuid';
-import { Pseudonym } from '@shared/domain';
 import { ExternalToolPseudonymEntity } from '../entity';
 import { ExternalToolPseudonymRepo } from './external-tool-pseudonym.repo';
 
@@ -277,6 +277,61 @@ describe('ExternalToolPseudonymRepo', () => {
 			it('should return empty array', async () => {
 				const result: Pseudonym[] = await repo.findByUserId(new ObjectId().toHexString());
 				expect(result).toHaveLength(0);
+			});
+		});
+	});
+
+	describe('findPseudonymByPseudonym', () => {
+		describe('when pseudonym is existing', () => {
+			const setup = async () => {
+				const entity: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.buildWithId();
+				await em.persistAndFlush(entity);
+				em.clear();
+
+				return {
+					entity,
+				};
+			};
+
+			it('should return a pseudonym', async () => {
+				const { entity } = await setup();
+
+				const result: Pseudonym | null = await repo.findPseudonymByPseudonym(entity.pseudonym);
+
+				expect(result?.id).toEqual(entity.id);
+			});
+		});
+
+		describe('when pseudonym not exists', () => {
+			it('should return null', async () => {
+				const pseudonym: Pseudonym | null = await repo.findPseudonymByPseudonym(uuidv4());
+
+				expect(pseudonym).toBeNull();
+			});
+		});
+
+		describe('when multiple pseudonyms are existing', () => {
+			const setup = async () => {
+				const entity1: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.buildWithId({
+					pseudonym: 'pseudonymEqual',
+				});
+				const entity2: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.buildWithId({
+					pseudonym: 'pseudonymEqual',
+				});
+				await em.persistAndFlush([entity1, entity2]);
+				em.clear();
+
+				return {
+					entity1,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { entity1 } = await setup();
+
+				const func = () => repo.findPseudonymByPseudonym(entity1.pseudonym);
+
+				await expect(func).rejects.toThrow();
 			});
 		});
 	});

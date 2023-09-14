@@ -116,7 +116,7 @@ export class PseudonymService {
 	}
 
 	async findPseudonymByPseudonym(pseudonym: string): Promise<Pseudonym | null> {
-		const result: Pseudonym | null = await this.pseudonymRepo.findPseudonymByPseudonym(pseudonym);
+		const result: Pseudonym | null = await this.externalToolPseudonymRepo.findPseudonymByPseudonym(pseudonym);
 
 		return result;
 	}

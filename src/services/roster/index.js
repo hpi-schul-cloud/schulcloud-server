@@ -32,7 +32,7 @@ module.exports = function roster() {
 			const { pseudonym } = params;
 
 			if (Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED')) {
-				const userMetadata = await this.app.service('nest-feathers-roster-service').getUsersMetadata(pseudonym);
+				const userMetadata = await app.service('nest-feathers-roster-service').getUsersMetadata(pseudonym);
 				return userMetadata;
 			}
 
@@ -90,7 +90,7 @@ module.exports = function roster() {
 	const userGroupsHandler = {
 		async find(params) {
 			if (Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED')) {
-				const userGroups = await this.app.service('nest-feathers-roster-service').getUserGroups(params.pseudonym);
+				const userGroups = await app.service('nest-feathers-roster-service').getUserGroups(params.pseudonym);
 				return userGroups;
 			}
 
@@ -157,7 +157,7 @@ module.exports = function roster() {
 	const groupsHandler = {
 		async get(id, params) {
 			if (Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED')) {
-				const group = await this.app.service('nest-feathers-roster-service').getGroup(id, params.tokenInfo.client_id);
+				const group = await app.service('nest-feathers-roster-service').getGroup(id, params.tokenInfo.client_id);
 				return group;
 			}
 

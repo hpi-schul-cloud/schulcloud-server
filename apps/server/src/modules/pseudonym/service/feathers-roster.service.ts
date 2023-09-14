@@ -66,6 +66,10 @@ export class FeathersRosterService {
 		const loadedPseudonym: Pseudonym = await this.findPseudonymByPseudonym(pseudonym);
 		const user: UserDO = await this.userService.findById(loadedPseudonym.userId);
 
+		if (!user) {
+			throw new NotFoundLoggableException(UserDO.name, 'id', loadedPseudonym.userId);
+		}
+
 		const userMetadata: UserMetdata = {
 			data: {
 				user_id: user.id as string,
