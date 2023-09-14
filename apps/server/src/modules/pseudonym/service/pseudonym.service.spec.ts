@@ -1,9 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LtiToolDO, Pseudonym, UserDO } from '@shared/domain';
+import { PaginationParams } from '@shared/controller';
+import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain';
 import { externalToolFactory, ltiToolDOFactory, pseudonymFactory, userDoFactory } from '@shared/testing/factory';
 import { ExternalTool } from '@src/modules/tool/external-tool/domain';
+import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 import { PseudonymService } from './pseudonym.service';
 
@@ -423,7 +425,7 @@ describe('PseudonymService', () => {
 	describe('findPseudonymByPseudonym', () => {
 		describe('when pseudonym is missing', () => {
 			const setup = () => {
-				pseudonymRepo.findPseudonymByPseudonym.mockResolvedValue(null);
+				externalToolPseudonymRepo.findPseudonymByPseudonym.mockResolvedValue(null);
 			};
 
 			it('should return null', async () => {
@@ -439,7 +441,7 @@ describe('PseudonymService', () => {
 			const setup = () => {
 				const pseudonym: Pseudonym = pseudonymFactory.build({ pseudonym: 'pseudonym' });
 
-				pseudonymRepo.findPseudonymByPseudonym.mockResolvedValue(pseudonym);
+				externalToolPseudonymRepo.findPseudonymByPseudonym.mockResolvedValue(pseudonym);
 
 				return {
 					pseudonym,
@@ -451,7 +453,7 @@ describe('PseudonymService', () => {
 
 				await service.findPseudonymByPseudonym(pseudonym.pseudonym);
 
-				expect(pseudonymRepo.findPseudonymByPseudonym).toHaveBeenCalledWith(pseudonym.pseudonym);
+				expect(externalToolPseudonymRepo.findPseudonymByPseudonym).toHaveBeenCalledWith(pseudonym.pseudonym);
 			});
 
 			it('should return the pseudonym', async () => {
@@ -460,6 +462,50 @@ describe('PseudonymService', () => {
 				const result: Pseudonym | null = await service.findPseudonymByPseudonym(pseudonym.pseudonym);
 
 				expect(result).toBeDefined();
+			});
+		});
+	});
+
+	describe('findPseudonym', () => {
+		describe('when query and params are given', () => {
+			const setup = () => {
+				const query: PseudonymSearchQuery = {
+					userId: 'userId',
+					toolId: 'toolId',
+					pseudonym: 'pseudonym',
+				};
+				const pagination: PaginationParams = {
+					limit: 10,
+					skip: 1,
+				};
+				const page: Page<Pseudonym> = new Page<Pseudonym>([pseudonymFactory.build()], 1);
+
+				externalToolPseudonymRepo.findPseudonym.mockResolvedValueOnce(page);
+
+				return {
+					query,
+					pagination,
+					page,
+				};
+			};
+
+			it('should call service with query and params', async () => {
+				const { query, pagination } = setup();
+
+				await service.findPseudonym(query, pagination);
+
+				expect(externalToolPseudonymRepo.findPseudonym).toHaveBeenCalledWith(query, pagination);
+			});
+
+			it('should return page with pseudonyms', async () => {
+				const { query, pagination, page } = setup();
+
+				const pseudonymPage: Page<Pseudonym> = await service.findPseudonym(query, pagination);
+
+				expect(pseudonymPage).toEqual<Page<Pseudonym>>({
+					data: [page.data[0]],
+					total: page.total,
+				});
 			});
 		});
 	});

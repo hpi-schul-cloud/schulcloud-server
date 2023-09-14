@@ -51,7 +51,7 @@ interface Group {
  * These data will be used by bettermarks display the usernames.
  */
 @Injectable()
-// TODO: test
+// TODO: test @arne
 export class FeathersRosterService {
 	constructor(
 		private readonly userService: UserService,

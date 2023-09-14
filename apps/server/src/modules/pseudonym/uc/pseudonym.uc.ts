@@ -1,17 +1,16 @@
-import { Pseudonym } from '@shared/domain';
-import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { Injectable } from '@nestjs/common';
+import { IFindOptions, Page, Pseudonym } from '@shared/domain';
+import { PseudonymSearchQuery } from '../domain';
 import { PseudonymService } from '../service';
 
+@Injectable()
 export class PseudonymUc {
 	constructor(private readonly pseudonymService: PseudonymService) {}
 
-	async findPseudonym(pseudonymId: string): Promise<Pseudonym> {
-		const foundPseudonym: Pseudonym | null = await this.pseudonymService.findPseudonymByPseudonym(pseudonymId);
+	async findPseudonym(query: PseudonymSearchQuery, options: IFindOptions<Pseudonym>): Promise<Page<Pseudonym>> {
+		// todo: do we need permissions checks? @igor
+		const pseudonymPage: Page<Pseudonym> = await this.pseudonymService.findPseudonym(query, options);
 
-		if (!foundPseudonym) {
-			throw new NotFoundLoggableException(Pseudonym.name, 'pseudonym', pseudonymId);
-		}
-
-		return foundPseudonym;
+		return pseudonymPage;
 	}
 }

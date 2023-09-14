@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import {
 	ApiForbiddenResponse,
 	ApiFoundResponse,
@@ -6,29 +6,47 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-
-import { Pseudonym } from '@shared/domain';
+import { PaginationParams } from '@shared/controller';
+import { Page, Pseudonym } from '@shared/domain';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
-import { PseudonymUc } from '../uc/pseudonym.uc';
-import { PseudonymResponse } from './dto/pseudonym-response';
-import { PseudonymIdParams } from './dto/pseudonym-id-params';
-import { PseudonymResponseMapper } from '../mapper/pseudonym-response.mapper';
+import { PseudonymSearchQuery } from '../domain';
+import { PseudonymMapper } from '../mapper/pseudonym.mapper';
+import { PseudonymUc } from '../uc';
+import { PseudonymResponse, PseudonymSearchListResponse, PseudonymSearchParams } from './dto';
 
+// TODO: test it @igor
 @ApiTags('Pseudonym')
 @Authenticate('jwt')
 @Controller('pseudonyms')
 export class PseudonymController {
 	constructor(private readonly pseudonymUc: PseudonymUc) {}
 
-	@Get(':pseudonymId')
-	@ApiFoundResponse({ description: 'Pseudonym has been found.', type: PseudonymResponse })
+	@Get()
+	@ApiFoundResponse({ description: 'Pseudonym has been found.', type: PseudonymSearchListResponse })
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
 	@ApiOperation({ summary: 'Returns Pseudonym' })
-	async findPseudonym(@Param() params: PseudonymIdParams): Promise<PseudonymResponse> {
-		const pseudonym: Pseudonym = await this.pseudonymUc.findPseudonym(params.pseudonymId);
+	async getPseudonym(
+		@Query() params: PseudonymSearchParams,
+		@Query() pagination: PaginationParams
+	): Promise<PseudonymSearchListResponse> {
+		const searchQuery: PseudonymSearchQuery = PseudonymMapper.mapSearchParamsToSearchQuery(params);
 
-		const response: PseudonymResponse = PseudonymResponseMapper.mapToResponse(pseudonym);
+		const pseudonym: Page<Pseudonym> = await this.pseudonymUc.findPseudonym(searchQuery, {
+			pagination: {
+				limit: pagination.limit,
+				skip: pagination.skip,
+			},
+		});
+
+		const pseudonymResponses: PseudonymResponse[] = PseudonymMapper.mapToResponseList(pseudonym.data);
+
+		const response: PseudonymSearchListResponse = new PseudonymSearchListResponse(
+			pseudonymResponses,
+			pseudonymResponses.length,
+			pagination.skip,
+			pagination.limit
+		);
 
 		return response;
 	}

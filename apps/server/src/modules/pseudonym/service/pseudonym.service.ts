@@ -1,8 +1,10 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { LtiToolDO, Pseudonym, UserDO } from '@shared/domain';
+import { PaginationParams } from '@shared/controller';
+import { IFindOptions, LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain';
 import { ExternalTool } from '@src/modules/tool/external-tool/domain';
 import { v4 as uuidv4 } from 'uuid';
+import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 
 @Injectable()
@@ -117,6 +119,12 @@ export class PseudonymService {
 
 	async findPseudonymByPseudonym(pseudonym: string): Promise<Pseudonym | null> {
 		const result: Pseudonym | null = await this.externalToolPseudonymRepo.findPseudonymByPseudonym(pseudonym);
+
+		return result;
+	}
+
+	async findPseudonym(query: PseudonymSearchQuery, options: IFindOptions<Pseudonym>): Promise<Page<Pseudonym>> {
+		const result: Page<Pseudonym> = await this.externalToolPseudonymRepo.findPseudonym(query, options);
 
 		return result;
 	}

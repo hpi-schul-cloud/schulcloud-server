@@ -1,7 +1,10 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId, Pseudonym } from '@shared/domain';
-import { ExternalToolPseudonymEntity, IExternalToolPseudonymEntityProps, PseudonymEntity } from '../entity';
+import { EntityId, IFindOptions, IPagination, Page, Pseudonym } from '@shared/domain';
+import { Scope } from '@shared/repo';
+import { PseudonymSearchQuery } from '../domain';
+import { ExternalToolPseudonymEntity, IExternalToolPseudonymEntityProps } from '../entity';
+import { PseudonymScope } from '../entity/pseudonym.scope';
 
 @Injectable()
 export class ExternalToolPseudonymRepo {
@@ -79,7 +82,7 @@ export class ExternalToolPseudonymRepo {
 		}
 
 		if (entities.length > 1) {
-			// TODO: use loggable
+			// TODO: use loggable @arne
 			throw new Error(`More than one pseudonym found for pseudonym ${pseudonym}`);
 		}
 
@@ -89,7 +92,7 @@ export class ExternalToolPseudonymRepo {
 	}
 
 	protected mapEntityToDomainObject(entity: ExternalToolPseudonymEntity): Pseudonym {
-		return new Pseudonym({
+		const pseudonym = new Pseudonym({
 			id: entity.id,
 			pseudonym: entity.pseudonym,
 			toolId: entity.toolId.toHexString(),
@@ -97,6 +100,8 @@ export class ExternalToolPseudonymRepo {
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,
 		});
+
+		return pseudonym;
 	}
 
 	protected mapDomainObjectToEntityProperties(entityDO: Pseudonym): IExternalToolPseudonymEntityProps {
@@ -105,5 +110,24 @@ export class ExternalToolPseudonymRepo {
 			toolId: new ObjectId(entityDO.toolId),
 			userId: new ObjectId(entityDO.userId),
 		};
+	}
+
+	async findPseudonym(query: PseudonymSearchQuery, options?: IFindOptions<Pseudonym>): Promise<Page<Pseudonym>> {
+		const pagination: IPagination = options?.pagination ?? {};
+		const scope: Scope<ExternalToolPseudonymEntity> = new PseudonymScope()
+			.byPseudonym(query.pseudonym)
+			.byToolId(query.toolId)
+			.byUserId(query.userId)
+			.allowEmptyQuery(true);
+
+		const [entities, total] = await this.em.findAndCount(ExternalToolPseudonymEntity, scope.query, {
+			offset: pagination?.skip,
+			limit: pagination?.limit,
+		});
+
+		const entityDos: Pseudonym[] = entities.map((entity) => this.mapEntityToDomainObject(entity));
+		const page: Page<Pseudonym> = new Page<Pseudonym>(entityDos, total);
+
+		return page;
 	}
 }
