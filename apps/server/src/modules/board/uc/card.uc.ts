@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from "@nestjs/common";
 import {
 	AnyBoardDo,
 	Card,
@@ -80,7 +80,7 @@ export class CardUc {
 					)
 				);
 			} catch (e) {
-				throw new Error('Cannot connect to tldraw-manage-service');
+				throw new NotFoundException('Cannot connect to tldraw-manage-service');
 			}
 		}
 	}
