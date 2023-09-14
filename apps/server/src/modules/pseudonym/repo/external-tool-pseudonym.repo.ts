@@ -1,7 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId, Pseudonym } from '@shared/domain';
-import { ExternalToolPseudonymEntity, IExternalToolPseudonymEntityProps } from '../entity';
+import { ExternalToolPseudonymEntity, IExternalToolPseudonymEntityProps, PseudonymEntity } from '../entity';
 
 @Injectable()
 export class ExternalToolPseudonymRepo {
@@ -69,6 +69,23 @@ export class ExternalToolPseudonymRepo {
 		});
 
 		return promise;
+	}
+
+	async findPseudonymByPseudonym(pseudonym: string): Promise<Pseudonym | null> {
+		const entities: ExternalToolPseudonymEntity[] = await this.em.find(ExternalToolPseudonymEntity, { pseudonym });
+
+		if (!entities || entities.length === 0) {
+			return null;
+		}
+
+		if (entities.length > 1) {
+			// TODO: use loggable
+			throw new Error(`More than one pseudonym found for pseudonym ${pseudonym}`);
+		}
+
+		const domainObject: Pseudonym = this.mapEntityToDomainObject(entities[0]);
+
+		return domainObject;
 	}
 
 	protected mapEntityToDomainObject(entity: ExternalToolPseudonymEntity): Pseudonym {
