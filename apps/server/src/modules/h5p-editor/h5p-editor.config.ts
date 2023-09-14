@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { S3Config } from './interface/config';
+import { S3Config } from '@shared/infra/s3-client';
 
 const h5pEditorConfig = {
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
@@ -10,7 +10,11 @@ export const translatorConfig = {
 	AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(','),
 };
 
+export const H5P_CONTENT_S3_CONNECTION = 'H5P_CONTENT_S3_CONNECTION';
+export const H5P_LIBRARIES_S3_CONNECTION = 'H5P_LIBRARIES_S3_CONNECTION';
+
 export const s3ConfigContent: S3Config = {
+	connectionName: H5P_CONTENT_S3_CONNECTION,
 	endpoint: Configuration.get('H5P_EDITOR__S3_ENDPOINT') as string,
 	region: Configuration.get('H5P_EDITOR__S3_REGION') as string,
 	bucket: Configuration.get('H5P_EDITOR__S3_BUCKET_CONTENT') as string,
@@ -19,6 +23,7 @@ export const s3ConfigContent: S3Config = {
 };
 
 export const s3ConfigLibraries: S3Config = {
+	connectionName: H5P_LIBRARIES_S3_CONNECTION,
 	endpoint: Configuration.get('H5P_EDITOR__S3_ENDPOINT') as string,
 	region: Configuration.get('H5P_EDITOR__S3_REGION') as string,
 	bucket: Configuration.get('H5P_EDITOR__S3_BUCKET_LIBRARIES') as string,

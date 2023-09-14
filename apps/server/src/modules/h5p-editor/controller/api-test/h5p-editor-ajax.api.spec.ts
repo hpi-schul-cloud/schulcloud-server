@@ -3,9 +3,10 @@ import { H5PAjaxEndpoint } from '@lumieducation/h5p-server';
 import { EntityManager } from '@mikro-orm/core';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
-import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
+import { H5P_CONTENT_S3_CONNECTION, H5P_LIBRARIES_S3_CONNECTION } from '../../h5p-editor.config';
 
 describe('H5PEditor Controller (api)', () => {
 	let app: INestApplication;
@@ -18,9 +19,9 @@ describe('H5PEditor Controller (api)', () => {
 		const module = await Test.createTestingModule({
 			imports: [H5PEditorTestModule],
 		})
-			.overrideProvider('S3ClientAdapter_Content')
+			.overrideProvider(H5P_CONTENT_S3_CONNECTION)
 			.useValue(createMock<S3ClientAdapter>())
-			.overrideProvider('S3ClientAdapter_Libraries')
+			.overrideProvider(H5P_LIBRARIES_S3_CONNECTION)
 			.useValue(createMock<S3ClientAdapter>())
 			.overrideProvider(H5PAjaxEndpoint)
 			.useValue(createMock<H5PAjaxEndpoint>())

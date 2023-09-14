@@ -15,7 +15,7 @@ import { ErrorUtils } from '@src/core/error/utils';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
 import { S3_CLIENT, S3_CONFIG } from './constants';
-import { CopyFiles, File, GetFile, S3Config } from './interface';
+import { CopyFiles, File, GetFile, ListFiles, S3Config } from './interface';
 
 @Injectable()
 export class S3ClientAdapter {
@@ -197,7 +197,7 @@ export class S3ClientAdapter {
 		}
 	}
 
-	public async list(params: IListFiles) {
+	public async list(params: ListFiles) {
 		try {
 			this.logger.log({ action: 'list', params });
 
@@ -209,7 +209,7 @@ export class S3ClientAdapter {
 		}
 	}
 
-	private async listObjectKeysRecursive(params: IListFiles) {
+	private async listObjectKeysRecursive(params: ListFiles) {
 		const { path, maxKeys, nextMarker } = params;
 		let files: string[] = params.files ? params.files : [];
 		const MaxKeys = maxKeys && maxKeys - files.length;

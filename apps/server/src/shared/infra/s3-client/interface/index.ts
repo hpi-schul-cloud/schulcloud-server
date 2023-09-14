@@ -27,3 +27,10 @@ export interface File {
 	name: string;
 	mimeType: string;
 }
+
+export interface ListFiles {
+	path: string;
+	maxKeys?: number;
+	nextMarker?: string;
+	files?: string[];
+}

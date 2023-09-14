@@ -10,12 +10,13 @@ import {
 	type ILibraryStorage,
 } from '@lumieducation/h5p-server';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { FileDto } from '@src/modules/files-storage/dto';
 import mime from 'mime';
 import path from 'node:path/posix';
 import { Readable } from 'stream';
 import { InstalledLibrary } from '../entity/library.entity';
+import { H5P_LIBRARIES_S3_CONNECTION } from '../h5p-editor.config';
 import { LibraryRepo } from '../repo/library.repo';
 
 @Injectable()
@@ -25,7 +26,7 @@ export class LibraryStorage implements ILibraryStorage {
 	 */
 	constructor(
 		private readonly libraryRepo: LibraryRepo,
-		@Inject('S3ClientAdapter_Libraries') private readonly s3Client: S3ClientAdapter
+		@Inject(H5P_LIBRARIES_S3_CONNECTION) private readonly s3Client: S3ClientAdapter
 	) {}
 
 	/**

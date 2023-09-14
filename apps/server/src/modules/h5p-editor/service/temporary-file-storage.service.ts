@@ -1,17 +1,18 @@
 import { ITemporaryFile, ITemporaryFileStorage, IUser } from '@lumieducation/h5p-server';
 import { Inject, Injectable } from '@nestjs/common';
-import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { FileDto } from '@src/modules/files-storage/dto/file.dto';
 import { ReadStream } from 'fs';
 import { Readable } from 'stream';
 import { TemporaryFile } from '../entity/temporary-file.entity';
+import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
 import { TemporaryFileRepo } from '../repo/temporary-file.repo';
 
 @Injectable()
 export class TemporaryFileStorage implements ITemporaryFileStorage {
 	constructor(
 		private readonly repo: TemporaryFileRepo,
-		@Inject('S3ClientAdapter_Content') private readonly s3Client: S3ClientAdapter
+		@Inject(H5P_CONTENT_S3_CONNECTION) private readonly s3Client: S3ClientAdapter
 	) {}
 
 	private checkFilename(filename: string): void {
