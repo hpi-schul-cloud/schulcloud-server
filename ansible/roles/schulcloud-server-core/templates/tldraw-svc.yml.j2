@@ -12,5 +12,9 @@ spec:
       targetPort: 3345
       protocol: TCP
       name: tldraw
+    - port: 3349
+      targetPort: 3349
+      protocol: TCP
+      name: tldraw-management
   selector:
     app: tldraw

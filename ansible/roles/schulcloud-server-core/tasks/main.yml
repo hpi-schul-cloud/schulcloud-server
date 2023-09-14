@@ -95,9 +95,3 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: tldraw-svc.yml.j2
-
-  - name: TlDrawServerManagementService
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: tldraw-management-svc.yml.j2
