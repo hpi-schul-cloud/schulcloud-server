@@ -1,5 +1,4 @@
-import { CountyDO } from '../../domainobject/county.do';
-import { FederalStateDO } from '../../domainobject/federal-state.do';
+import { FederalStateDO, ICounty } from '../../domainobject/federal-state.do';
 import { FederalStateResponse } from '../dto/federal-state.response';
 
 export class FederalStateMapper {
@@ -18,12 +17,12 @@ export class FederalStateMapper {
 		return dto;
 	}
 
-	static mapCountyToResponse(countyDO: CountyDO) {
-		const county = {
-			name: countyDO.name,
-			countyId: countyDO.countyId,
-			antaresKey: countyDO.antaresKey,
+	static mapCountyToResponse(county: ICounty) {
+		const countyResponse = {
+			name: county.name,
+			countyId: county.countyId,
+			antaresKey: county.antaresKey,
 		};
-		return county;
+		return countyResponse;
 	}
 }

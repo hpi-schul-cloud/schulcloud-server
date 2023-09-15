@@ -1,11 +1,15 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { CountyDO } from './county.do';
 
+export interface ICounty {
+	countyId: number;
+	name: string;
+	antaresKey: string;
+}
 export interface FederalStateProps extends AuthorizableObject {
 	name: string;
 	abbreviation: string;
 	logoUrl: string;
-	counties?: CountyDO[];
+	counties?: ICounty[];
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -23,7 +27,7 @@ export class FederalStateDO extends DomainObject<FederalStateProps> {
 		return this.props.logoUrl;
 	}
 
-	get counties(): CountyDO[] | undefined {
+	get counties(): ICounty[] | undefined {
 		return this.props.counties;
 	}
 

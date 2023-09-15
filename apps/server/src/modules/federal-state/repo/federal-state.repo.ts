@@ -2,7 +2,6 @@ import { EntityName } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { FederalStateDO } from '../domainobject';
-import { CountyDO } from '../domainobject/county.do';
 import { County, FederalStateEntity } from '../entity';
 import { IFederalStateCreate } from '../interface';
 
@@ -21,6 +20,7 @@ export class FederalStateRepo extends BaseRepo<FederalStateEntity> {
 
 	async findAll(): Promise<FederalStateDO[]> {
 		const federalStateEntities = await this._em.find(FederalStateEntity, {});
+		await this._em.populate(federalStateEntities, ['counties']);
 		const federalStates = federalStateEntities.map((federalStateEntity) =>
 			this.mapFederalStateEntityToDomainObject(federalStateEntity)
 		);
@@ -60,12 +60,13 @@ export class FederalStateRepo extends BaseRepo<FederalStateEntity> {
 		return federalStateDo;
 	}
 
-	mapCountyEntityToDomainObject(county: County): CountyDO {
-		const countyDo = new CountyDO({
-			name: county.name,
-			countyId: county.countyId,
-			antaresKey: county.antaresKey,
-		});
-		return countyDo;
+	mapCountyEntityToDomainObject(countyEntity: County) {
+		console.log('countyEntity', countyEntity);
+		const county = {
+			name: countyEntity.name,
+			countyId: countyEntity.countyId,
+			antaresKey: countyEntity.antaresKey,
+		};
+		return county;
 	}
 }
