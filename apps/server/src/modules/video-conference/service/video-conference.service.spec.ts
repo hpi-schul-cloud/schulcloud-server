@@ -203,6 +203,35 @@ describe('VideoConferenceService', () => {
 			});
 		});
 
+		describe('when user has the EXPERT role and an additional role for a course conference', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory
+					.withRoles([
+						{ id: new ObjectId().toHexString(), name: RoleName.STUDENT },
+						{ id: new ObjectId().toHexString(), name: RoleName.EXPERT },
+					])
+					.buildWithId();
+				const userId = user.id as EntityId;
+				const scopeId = new ObjectId().toHexString();
+
+				userService.findById.mockResolvedValue(user);
+
+				return {
+					userId,
+					scopeId,
+				};
+			};
+
+			it('should return false', async () => {
+				const { userId, scopeId } = setup();
+
+				const result = await service.hasExpertRole(userId, VideoConferenceScope.COURSE, scopeId);
+
+				expect(result).toBe(false);
+				expect(userService.findById).toHaveBeenCalledWith(userId);
+			});
+		});
+
 		describe('when conference scope is unknown', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory
