@@ -13,7 +13,7 @@ import { H5PLibraryManagementService } from '@src/modules/h5p-library-management
 async function bootstrap() {
 	sourceMapInstall();
 
-	const nestApp = await NestFactory.createMicroservice(H5PLibraryManagementModule);
+	const nestApp = await NestFactory.createApplicationContext(H5PLibraryManagementModule);
 
 	// WinstonLogger
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
