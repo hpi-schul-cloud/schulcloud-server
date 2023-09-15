@@ -11,6 +11,7 @@ import {
 	SubmissionItemResponse,
 	SubmissionItemUrlParams,
 	UpdateSubmissionItemBodyParams,
+	UserDataResponse,
 } from './dto';
 import { SubmissionItemResponseMapper } from './mapper';
 
@@ -29,13 +30,16 @@ export class BoardSubmissionController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@Get(':submissionContainerId')
-	async getSubmissionItems(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param() urlParams: SubmissionContainerUrlParams
-	): Promise<SubmissionItemResponse[]> {
-		const items = await this.submissionItemUc.findSubmissionItems(currentUser.userId, urlParams.submissionContainerId);
+	async getSubmissionItems(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: SubmissionContainerUrlParams) {
+		const { submissionItems, users } = await this.submissionItemUc.findSubmissionItems(
+			currentUser.userId,
+			urlParams.submissionContainerId
+		);
 		const mapper = SubmissionItemResponseMapper.getInstance();
-		return items.map((item) => mapper.mapToResponse(item));
+		const submissionItemsResponse: SubmissionItemResponse[] = submissionItems.map((item) => mapper.mapToResponse(item));
+		const usersResponse: UserDataResponse[] = users.map((user) => mapper.mapUsersToResponse(user));
+
+		return { submissionItemsResponse, users: usersResponse };
 	}
 
 	@ApiOperation({ summary: 'Update a single submission item.' })

@@ -36,6 +36,14 @@ const enum CourseFeatures {
 	VIDEOCONFERENCE = 'videoconference',
 }
 
+export class UsersList {
+	id!: string;
+
+	firstName!: string;
+
+	lastName!: string;
+}
+
 @Entity({ tableName: 'courses' })
 export class Course
 	extends BaseEntityWithTimestamps
@@ -128,6 +136,44 @@ export class Course
 		const ids = objectIds.map((id): string => id.toString());
 
 		return ids;
+	}
+
+	public getStudentsList(): UsersList[] {
+		const users = this.students.getItems();
+		if (users.length) {
+			const usersList = this.extractUserList(users);
+			return usersList;
+		}
+		return [];
+	}
+
+	public getTeachersList(): UsersList[] {
+		const users = this.teachers.getItems();
+		if (users.length) {
+			const usersList = this.extractUserList(users);
+			return usersList;
+		}
+		return [];
+	}
+
+	public getSubstitutionTeacherList(): UsersList[] {
+		const users = this.substitutionTeachers.getItems();
+		if (users.length) {
+			const usersList = this.extractUserList(users);
+			return usersList;
+		}
+		return [];
+	}
+
+	private extractUserList(users: User[]): UsersList[] {
+		const usersList: UsersList[] = users.map((user) => {
+			return {
+				id: user.id,
+				firstName: user.firstName,
+				lastName: user.lastName,
+			};
+		});
+		return usersList;
 	}
 
 	public isUserSubstitutionTeacher(user: User): boolean {

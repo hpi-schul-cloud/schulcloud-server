@@ -1,4 +1,4 @@
-import { SubmissionItem } from '@shared/domain';
+import { BoardRoles, SubmissionItem, UserBoardRoles, UserRoleEnum } from '@shared/domain';
 import { SubmissionItemResponse, TimestampsResponse, UserDataResponse } from '../dto';
 
 export class SubmissionItemResponseMapper {
@@ -20,14 +20,18 @@ export class SubmissionItemResponseMapper {
 				lastUpdatedAt: submissionItem.updatedAt,
 				createdAt: submissionItem.createdAt,
 			}),
-			userData: new UserDataResponse({
-				// TODO: put valid user info here which comes from the submission owner
-				firstName: 'John',
-				lastName: 'Mr Doe',
-				userId: submissionItem.userId,
-			}),
+			userId: submissionItem.userId,
 		});
 
+		return result;
+	}
+
+	public mapUsersToResponse(user: UserBoardRoles) {
+		const result = new UserDataResponse({
+			userId: user.userId,
+			firstName: user.firstName || '',
+			lastName: user.lastName || '',
+		});
 		return result;
 	}
 }
