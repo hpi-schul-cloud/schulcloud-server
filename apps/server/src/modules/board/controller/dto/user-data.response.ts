@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BoardRoles, UserRoleEnum } from '@shared/domain';
 
 export class UserDataResponse {
 	constructor({ userId, firstName, lastName }: UserDataResponse) {
