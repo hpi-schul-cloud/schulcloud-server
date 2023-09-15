@@ -65,10 +65,6 @@ export class FeathersRosterService {
 		const loadedPseudonym: Pseudonym = await this.findPseudonymByPseudonym(pseudonym);
 		const user: UserDO = await this.userService.findById(loadedPseudonym.userId);
 
-		if (!user) {
-			throw new NotFoundLoggableException(UserDO.name, 'id', loadedPseudonym.userId);
-		}
-
 		const userMetadata: UserMetdata = {
 			data: {
 				user_id: user.id as string,
@@ -78,24 +74,6 @@ export class FeathersRosterService {
 		};
 
 		return userMetadata;
-	}
-
-	private getUserRole(user: UserDO): string {
-		const roleName = user.roles.some((role: RoleReference) => role.name === RoleName.TEACHER)
-			? RoleName.TEACHER
-			: RoleName.STUDENT;
-
-		return roleName;
-	}
-
-	private async findPseudonymByPseudonym(pseudonym: string): Promise<Pseudonym> {
-		const loadedPseudonym: Pseudonym | null = await this.pseudonymService.findPseudonymByPseudonym(pseudonym);
-
-		if (!loadedPseudonym) {
-			throw new NotFoundLoggableException(Pseudonym.name, 'pseudonym', pseudonym);
-		}
-
-		return loadedPseudonym;
 	}
 
 	async getUserGroups(pseudonym: string): Promise<UserGroups> {
@@ -117,20 +95,6 @@ export class FeathersRosterService {
 		};
 
 		return userGroups;
-	}
-
-	private async getCoursesFromUsersPseudonym(pseudonym: Pseudonym): Promise<Course[]> {
-		const courses: Course[] = await this.courseService.findAllByUserId(pseudonym.userId);
-
-		return courses;
-	}
-
-	private filterCoursesWithExternalTool(courses: Course[]): Course[] {
-		const filtered: Course[] = courses.filter((course: Course) =>
-			this.contextExternalToolService.findAllByContext(new ContextRef({ id: course.id, type: ToolContextType.COURSE }))
-		);
-
-		return filtered;
 	}
 
 	async getGroup(courseId: EntityId, oauth2ClientId: string): Promise<Group> {
@@ -162,6 +126,38 @@ export class FeathersRosterService {
 		};
 
 		return group;
+	}
+
+	private getUserRole(user: UserDO): string {
+		const roleName = user.roles.some((role: RoleReference) => role.name === RoleName.TEACHER)
+			? RoleName.TEACHER
+			: RoleName.STUDENT;
+
+		return roleName;
+	}
+
+	private async findPseudonymByPseudonym(pseudonym: string): Promise<Pseudonym> {
+		const loadedPseudonym: Pseudonym | null = await this.pseudonymService.findPseudonymByPseudonym(pseudonym);
+
+		if (!loadedPseudonym) {
+			throw new NotFoundLoggableException(Pseudonym.name, 'pseudonym', pseudonym);
+		}
+
+		return loadedPseudonym;
+	}
+
+	private async getCoursesFromUsersPseudonym(pseudonym: Pseudonym): Promise<Course[]> {
+		const courses: Course[] = await this.courseService.findAllByUserId(pseudonym.userId);
+
+		return courses;
+	}
+
+	private filterCoursesWithExternalTool(courses: Course[]): Course[] {
+		const filtered: Course[] = courses.filter((course: Course) =>
+			this.contextExternalToolService.findAllByContext(new ContextRef({ id: course.id, type: ToolContextType.COURSE }))
+		);
+
+		return filtered;
 	}
 
 	private async validateAndGetCourse(courseId: EntityId): Promise<Course> {
