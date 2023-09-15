@@ -21,7 +21,8 @@ spec:
                 name: api-configmap
             - secretRef:
                 name: api-secret
-            command: ['/bin/sh', 'npm run nest:start:h5p:library-management']
+            command: ['/bin/sh', '-c']
+            args: ['npm run nest:start:h5p:library-management']
             resources:
               limits:
                 cpu: {{ API_H5P_LIBRARY_MANAGEMENT_CPU_LIMITS|default("2000m", true) }}
