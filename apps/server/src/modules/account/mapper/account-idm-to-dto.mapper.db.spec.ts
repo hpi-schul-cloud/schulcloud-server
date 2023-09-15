@@ -24,9 +24,9 @@ describe('AccountIdmToDtoMapperDb', () => {
 	afterAll(async () => {
 		await module.close();
 	});
-	describe('when mapping from entity to dto', () => {
-		describe('mapToDto', () => {
-			it('should map all fields', () => {
+	describe('mapToDto', () => {
+		describe('when mapping from entity to dto', () => {
+			const setup = () => {
 				const testIdmEntity: IAccount = {
 					id: 'id',
 					username: 'username',
@@ -38,6 +38,12 @@ describe('AccountIdmToDtoMapperDb', () => {
 					attRefFunctionalIntId: 'attRefFunctionalIntId',
 					attRefFunctionalExtId: 'attRefFunctionalExtId',
 				};
+				return testIdmEntity;
+			};
+
+			it('should map all fields', () => {
+				const testIdmEntity = setup();
+
 				const ret = mapper.mapToDto(testIdmEntity);
 
 				expect(ret).toEqual(
@@ -52,30 +58,42 @@ describe('AccountIdmToDtoMapperDb', () => {
 					})
 				);
 			});
+		});
 
-			describe('when date is undefined', () => {
-				it('should use actual date', () => {
-					const testIdmEntity: IAccount = {
-						id: 'id',
-					};
-					const ret = mapper.mapToDto(testIdmEntity);
+		describe('when date is undefined', () => {
+			const setup = () => {
+				const testIdmEntity: IAccount = {
+					id: 'id',
+				};
+				return testIdmEntity;
+			};
 
-					const now = new Date();
-					expect(ret.createdAt).toEqual(now);
-					expect(ret.updatedAt).toEqual(now);
-				});
+			it('should use actual date', () => {
+				const testIdmEntity = setup();
+
+				const ret = mapper.mapToDto(testIdmEntity);
+
+				const now = new Date();
+				expect(ret.createdAt).toEqual(now);
+				expect(ret.updatedAt).toEqual(now);
 			});
+		});
 
-			describe('when a fields value is missing', () => {
-				it('should fill with empty string', () => {
-					const testIdmEntity: IAccount = {
-						id: 'id',
-					};
-					const ret = mapper.mapToDto(testIdmEntity);
+		describe('when a fields value is missing', () => {
+			const setup = () => {
+				const testIdmEntity: IAccount = {
+					id: 'id',
+				};
+				return testIdmEntity;
+			};
 
-					expect(ret.id).toBe('');
-					expect(ret.username).toBe('');
-				});
+			it('should fill with empty string', () => {
+				const testIdmEntity = setup();
+
+				const ret = mapper.mapToDto(testIdmEntity);
+
+				expect(ret.id).toBe('');
+				expect(ret.username).toBe('');
 			});
 		});
 	});
