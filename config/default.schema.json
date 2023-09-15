@@ -1283,6 +1283,11 @@
 				}
 			}
 		},
+		"FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the new class list view"
+		},
 		"TSP_SCHOOL_SYNCER": {
 			"type": "object",
 			"description": "TSP School Syncer properties",
