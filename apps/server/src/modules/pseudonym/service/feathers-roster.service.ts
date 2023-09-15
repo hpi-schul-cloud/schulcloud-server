@@ -1,4 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Course, EntityId, Pseudonym, RoleName, RoleReference, UserDO } from '@shared/domain';
@@ -73,7 +72,7 @@ export class FeathersRosterService {
 		const userMetadata: UserMetdata = {
 			data: {
 				user_id: user.id as string,
-				username: this.getIframeSubject(loadedPseudonym.pseudonym),
+				username: this.pseudonymService.getIframeSubject(loadedPseudonym.pseudonym),
 				type: this.getUserRole(user),
 			},
 		};
@@ -97,14 +96,6 @@ export class FeathersRosterService {
 		}
 
 		return loadedPseudonym;
-	}
-
-	private getIframeSubject(pseudonym: string): string {
-		const iFrameSubject = `<iframe src="${
-			Configuration.get('HOST') as string
-		}/oauth2/username/${pseudonym}" title="username" style="height: 26px; width: 180px; border: none;"></iframe>`;
-
-		return iFrameSubject;
 	}
 
 	async getUserGroups(pseudonym: string): Promise<UserGroups> {
@@ -219,7 +210,7 @@ export class FeathersRosterService {
 	private mapPseudonymToUserData(pseudonym: Pseudonym): UserData {
 		const userData: UserData = {
 			user_id: pseudonym.userId,
-			username: this.getIframeSubject(pseudonym.pseudonym),
+			username: this.pseudonymService.getIframeSubject(pseudonym.pseudonym),
 		};
 
 		return userData;

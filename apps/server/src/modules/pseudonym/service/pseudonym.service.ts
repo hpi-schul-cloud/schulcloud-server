@@ -1,6 +1,6 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { PaginationParams } from '@shared/controller';
 import { IFindOptions, LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain';
 import { ExternalTool } from '@src/modules/tool/external-tool/domain';
 import { v4 as uuidv4 } from 'uuid';
@@ -127,5 +127,13 @@ export class PseudonymService {
 		const result: Page<Pseudonym> = await this.externalToolPseudonymRepo.findPseudonym(query, options);
 
 		return result;
+	}
+
+	getIframeSubject(pseudonym: string): string {
+		const iFrameSubject = `<iframe src="${
+			Configuration.get('HOST') as string
+		}/oauth2/username/${pseudonym}" title="username" style="height: 26px; width: 180px; border: none;"></iframe>`;
+
+		return iFrameSubject;
 	}
 }

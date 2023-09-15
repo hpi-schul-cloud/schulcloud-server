@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Pseudonym, TeamEntity, UserDO } from '@shared/domain';
 import { TeamsRepo } from '@shared/repo';
@@ -24,18 +23,7 @@ describe('IdTokenService', () => {
 	let teamsRepo: DeepMocked<TeamsRepo>;
 	let userService: DeepMocked<UserService>;
 
-	const hostUrl = 'https://host.de';
-
 	beforeAll(async () => {
-		jest.spyOn(Configuration, 'get').mockImplementation((key: string) => {
-			switch (key) {
-				case 'HOST':
-					return hostUrl;
-				default:
-					return null;
-			}
-		});
-
 		module = await Test.createTestingModule({
 			providers: [
 				IdTokenService,
@@ -91,23 +79,25 @@ describe('IdTokenService', () => {
 				userService.getDisplayName.mockResolvedValue(displayName);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
 				pseudonymService.findByUserAndTool.mockResolvedValue(pseudonym);
+				const iframeSubject = 'iframeSubject';
+				pseudonymService.getIframeSubject.mockReturnValueOnce(iframeSubject);
 
 				return {
 					user,
 					displayName,
 					tool,
 					pseudonym,
+					iframeSubject,
 				};
 			};
 
 			it('should return the correct id token', async () => {
-				const { user } = setup();
+				const { user, iframeSubject } = setup();
 
 				const result: IdToken = await service.createIdToken('userId', [], 'clientId');
 
 				expect(result).toEqual<IdToken>({
-					iframe:
-						'<iframe src="https://host.de/oauth2/username/pseudonym" title="username" style="height: 26px; width: 180px; border: none;"></iframe>',
+					iframe: iframeSubject,
 					schoolId: user.schoolId,
 				});
 			});
@@ -130,6 +120,8 @@ describe('IdTokenService', () => {
 				userService.getDisplayName.mockResolvedValue(displayName);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
 				pseudonymService.findByUserAndTool.mockResolvedValue(pseudonym);
+				const iframeSubject = 'iframeSubject';
+				pseudonymService.getIframeSubject.mockReturnValueOnce(iframeSubject);
 
 				return {
 					team,
@@ -137,17 +129,17 @@ describe('IdTokenService', () => {
 					displayName,
 					tool,
 					pseudonym,
+					iframeSubject,
 				};
 			};
 
 			it('should return the correct id token', async () => {
-				const { user, team } = setup();
+				const { user, team, iframeSubject } = setup();
 
 				const result: IdToken = await service.createIdToken('userId', [OauthScope.GROUPS], 'clientId');
 
 				expect(result).toEqual<IdToken>({
-					iframe:
-						'<iframe src="https://host.de/oauth2/username/pseudonym" title="username" style="height: 26px; width: 180px; border: none;"></iframe>',
+					iframe: iframeSubject,
 					schoolId: user.schoolId,
 					groups: [
 						{
@@ -173,23 +165,25 @@ describe('IdTokenService', () => {
 				userService.getDisplayName.mockResolvedValue(displayName);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
 				pseudonymService.findByUserAndTool.mockResolvedValue(pseudonym);
+				const iframeSubject = 'iframeSubject';
+				pseudonymService.getIframeSubject.mockReturnValueOnce(iframeSubject);
 
 				return {
 					user,
 					displayName,
 					tool,
 					pseudonym,
+					iframeSubject,
 				};
 			};
 
 			it('should return the correct id token', async () => {
-				const { user } = setup();
+				const { user, iframeSubject } = setup();
 
 				const result: IdToken = await service.createIdToken('userId', [OauthScope.EMAIL], 'clientId');
 
 				expect(result).toEqual<IdToken>({
-					iframe:
-						'<iframe src="https://host.de/oauth2/username/pseudonym" title="username" style="height: 26px; width: 180px; border: none;"></iframe>',
+					iframe: iframeSubject,
 					schoolId: user.schoolId,
 					email: user.email,
 				});
@@ -210,23 +204,25 @@ describe('IdTokenService', () => {
 				userService.getDisplayName.mockResolvedValue(displayName);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
 				pseudonymService.findByUserAndTool.mockResolvedValue(pseudonym);
+				const iframeSubject = 'iframeSubject';
+				pseudonymService.getIframeSubject.mockReturnValueOnce(iframeSubject);
 
 				return {
 					user,
 					displayName,
 					tool,
 					pseudonym,
+					iframeSubject,
 				};
 			};
 
 			it('should return the correct id token', async () => {
-				const { user, displayName } = setup();
+				const { user, displayName, iframeSubject } = setup();
 
 				const result: IdToken = await service.createIdToken('userId', [OauthScope.PROFILE], 'clientId');
 
 				expect(result).toEqual<IdToken>({
-					iframe:
-						'<iframe src="https://host.de/oauth2/username/pseudonym" title="username" style="height: 26px; width: 180px; border: none;"></iframe>',
+					iframe: iframeSubject,
 					schoolId: user.schoolId,
 					name: displayName,
 					userId: user.id,
