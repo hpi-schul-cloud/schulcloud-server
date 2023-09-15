@@ -39,6 +39,7 @@ export class RichTextContentBody {
 }
 
 export class RichTextElementContentBody extends ElementContentBody {
+	// Validation?
 	@ApiProperty({ type: ContentElementType.RICH_TEXT })
 	type!: ContentElementType.RICH_TEXT;
 
