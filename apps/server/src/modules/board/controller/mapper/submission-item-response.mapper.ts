@@ -1,4 +1,4 @@
-import { BoardRoles, SubmissionItem, UserBoardRoles, UserRoleEnum } from '@shared/domain';
+import { SubmissionItem, UserBoardRoles } from '@shared/domain';
 import { SubmissionItemResponse, TimestampsResponse, UserDataResponse } from '../dto';
 
 export class SubmissionItemResponseMapper {

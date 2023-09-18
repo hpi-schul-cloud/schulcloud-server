@@ -16,11 +16,6 @@ import {
 } from './dto';
 import { SubmissionItemResponseMapper } from './mapper';
 
-type subissionItemsResponse = {
-	submissionItemsResponse: SubmissionItemResponse[];
-	users: UserDataResponse[];
-};
-
 @ApiTags('Board Submission')
 @Authenticate('jwt')
 @Controller('board-submissions')
