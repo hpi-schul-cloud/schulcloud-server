@@ -132,17 +132,7 @@ When calling other internal micro service for already authorized operations plea
    // next orchestration steps
 ```
 
-### Example 2 - Execute a Single Operation with Loading Resources
-
-```javascript
-// If you don't have an entity but an entity type and id, you can check permission by reference
-await this.authorizationService.checkPermissionByReferences(userId, AllowedEntity.course, courseId, AuthorizationContextBuilder.read([]));
-// or
-await this.authorizationService.hasPermissionByReferences(userId, AllowedEntity.course, courseId, AuthorizationContextBuilder.read([]));
-// next orchestration steps
-```
-
-### Example 3 - Set Permission(s) of User as Required
+### Example 2 - Set Permission(s) of User as Required
 
 ```javascript
 // Multiple permissions can be added. For a successful authorization, the user need all of them.
@@ -177,7 +167,6 @@ async createSchoolBySuperhero(userId: EntityId, params: { name: string }) {
     this.authorizationService.hasAllPermissions(user, [Permission.SCHOOL_CREATE]);
 
     const school = new School(params);
-
     await this.schoolService.save(school);
 
     return true;
@@ -192,11 +181,11 @@ async createSchoolBySuperhero(userId: EntityId, params: { name: string }) {
 async createUserByAdmin(userId: EntityId, params: { email: string, firstName: string, lastName: string, schoolId: EntityId }) {
 
     const user = this.authorizationService.getUserWithPermissions(userId);
-
-   await this.authorizationService.checkPermissionByReferences(userId, AllowedEntity.school, schoolId, AuthorizationContextBuilder.write([Permission.INSTANCE, Permission.CREATE_USER]));
+    
+    const context = AuthorizationContextBuilder.write([Permission.INSTANCE, Permission.CREATE_USER])
+    await this.authorizationService.checkPermission(user, school, context);
 
     const newUser = new User(params)
-
     await this.userService.save(newUser);
 
     return true;
@@ -212,13 +201,12 @@ async editCourseByAdmin(userId: EntityId, params: { courseId: EntityId, descript
 
     const course = this.courseService.getCourse(params.courseId);
     const user = this.authorizationService.getUserWithPermissions(userId);
+    const school = course.school;
 
-   const school = course.school
-
-    this.authorizationService.hasPermissions(user, school, [Permission.INSTANCE, Permission.COURSE_EDIT]);
+    const context = AuthorizationContextBuilder.write([Permission.INSTANCE, Permission.CREATE_USER]);
+    this.authorizationService.hasPermissions(user, school, context);
 
     course.description = params.description;
-
     await this.courseService.save(course);
 
     return true;
@@ -231,18 +219,17 @@ async editCourseByAdmin(userId: EntityId, params: { courseId: EntityId, descript
 ```ts
 // User can create a course in scope a school, you need to check if he can it by school
 async createCourse(userId: EntityId, params: { schoolId: EntityId }) {
-   const user = this.authorizationService.getUserWithPermissions(userId);
-   const school = this.schoolService.getSchool(params.schoolId);
+    const user = this.authorizationService.getUserWithPermissions(userId);
+    const school = this.schoolService.getSchool(params.schoolId);
 
-        this.authorizationService.checkPermission(user, school
-            {
-                action: Actions.write,
-                requiredPermissions: [Permission.COURSE_CREATE],
-            }
-        );
+   this.authorizationService.checkPermission(user, school
+       {
+          action: Actions.write,
+          requiredPermissions: [Permission.COURSE_CREATE],
+       }
+    );
 
     const course = new Course({ school });
-
     await this.courseService.saveCourse(course);
 
     return course;
@@ -258,15 +245,14 @@ async createLesson(userId: EntityId, params: { courseId: EntityId }) {
     const course = this.courseService.getCourse(params.courseId);
     const user = this.authorizationService.getUserWithPermissions(userId);
          // check authorization for user and course
-        this.authorizationService.checkPermission(user, course
-            {
-                action: Actions.write,
-                requiredPermissions: [Permission.COURSE_EDIT],
-            }
-        );
+    this.authorizationService.checkPermission(user, course
+       {
+         action: Actions.write,
+         requiredPermissions: [Permission.COURSE_EDIT],
+       }
+    );
 
     const lesson = new Lesson({course});
-
     await this.lessonService.saveLesson(lesson);
 
     return true;
@@ -345,7 +331,8 @@ The authorization module is the core of authorization. It collects all needed in
 
 ### Reference.loader
 
-For situations where only the id and the domain object (string) type is known, it is possible to use the \*ByReferences methods.
+For situations where only the id and the domain object (string) type is known, it is possible to use internally in the authorization module the \*ByReferences methods.
+This is directly connected with the api endpoint that is missed for now.
 They load the reference directly.
 
 > Please keep in mind that it can have an impact on the performance if you use it wrongly.
