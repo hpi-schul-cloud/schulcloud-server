@@ -23,7 +23,7 @@ import { systemFactory } from '@shared/testing/factory/system.factory';
 import { LoggerModule } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AuthorizationService } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/school-migration';
+import { LegacySchoolService } from '@src/modules/legacy-school';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,

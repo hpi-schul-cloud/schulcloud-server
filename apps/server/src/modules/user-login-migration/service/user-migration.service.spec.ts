@@ -9,7 +9,7 @@ import { legacySchoolDoFactory, setupEntities, userDoFactory } from '@shared/tes
 import { LegacyLogger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto, AccountSaveDto } from '@src/modules/account/services/dto';
-import { LegacySchoolService } from '@src/modules/school-migration';
+import { LegacySchoolService } from '@src/modules/legacy-school';
 import { SystemService } from '@src/modules/system';
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';

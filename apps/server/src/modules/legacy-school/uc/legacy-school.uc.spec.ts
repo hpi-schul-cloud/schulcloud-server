@@ -4,8 +4,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain';
 import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@shared/testing/factory';
 import { AuthorizationService } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/school-migration/service';
-import { LegacySchoolUc } from '@src/modules/school-migration/uc';
+import { LegacySchoolService } from '@src/modules/legacy-school/service';
+import { LegacySchoolUc } from '@src/modules/legacy-school/uc';
 import {
 	SchoolMigrationService,
 	UserLoginMigrationRevertService,

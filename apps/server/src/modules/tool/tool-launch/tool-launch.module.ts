@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { LegacySchoolModule } from '@src/modules/school-migration';
+import { LegacySchoolModule } from '@src/modules/legacy-school';
 import { UserModule } from '@src/modules/user';
 import { PseudonymModule } from '@src/modules/pseudonym';
 import { CourseRepo } from '@shared/repo';

@@ -22,7 +22,7 @@ import {
 	AuthorizationService,
 } from '@src/modules/authorization';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
-import { LegacySchoolService } from '@src/modules/school-migration';
+import { LegacySchoolService } from '@src/modules/legacy-school';
 import { UserService } from '@src/modules/user';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error/error-status.enum';

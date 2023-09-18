@@ -9,7 +9,7 @@ import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { FederalStateService, LegacySchoolService, SchoolYearService } from '@src/modules/school-migration';
+import { FederalStateService, LegacySchoolService, SchoolYearService } from '@src/modules/legacy-school';
 import { UserService } from '@src/modules/user';
 import CryptoJS from 'crypto-js';
 import { ExternalSchoolDto, ExternalUserDto } from '../../../dto';
