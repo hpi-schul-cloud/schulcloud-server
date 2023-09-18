@@ -108,6 +108,7 @@ describe('PseudonymUc', () => {
 				user.school = school;
 				const pseudonym: Pseudonym = new Pseudonym(pseudonymFactory.build());
 
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				authorizationService.checkPermission.mockImplementationOnce(() => {
 					throw new ForbiddenException();
 				});
