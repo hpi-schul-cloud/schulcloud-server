@@ -361,5 +361,35 @@ describe('board copy service', () => {
 				expect(board.references).toHaveLength(0);
 			});
 		});
+
+		describe('when persist fails', () => {
+			const setup = () => {
+				const originalLesson = lessonFactory.buildWithId();
+				const lessonElement = lessonBoardElementFactory.buildWithId({ target: originalLesson });
+				const destinationCourse = courseFactory.buildWithId();
+				const originalBoard = boardFactory.buildWithId({ references: [lessonElement], course: destinationCourse });
+				const user = userFactory.buildWithId();
+				const lessonCopy = lessonFactory.buildWithId({ name: originalLesson.name });
+
+				lessonCopyService.copyLesson.mockResolvedValue({
+					title: originalLesson.name,
+					type: CopyElementType.LESSON,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: lessonCopy,
+				});
+				lessonCopyService.updateCopiedEmbeddedTasks = jest.fn().mockImplementation((status: CopyStatus) => status);
+				boardRepo.save.mockRejectedValue(new Error());
+
+				return { destinationCourse, originalBoard, user, originalLesson };
+			};
+
+			it('should return status fail', async () => {
+				const { destinationCourse, originalBoard, user } = setup();
+
+				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
+
+				expect(status.status).toEqual(CopyStatusEnum.FAIL);
+			});
+		});
 	});
 });

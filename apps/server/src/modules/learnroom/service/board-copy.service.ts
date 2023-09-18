@@ -20,7 +20,7 @@ import {
 import { BoardRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { ColumnBoardCopyService } from '@src/modules/board/service/column-board-copy.service';
-import { CopyElementType, CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { getResolvedValues } from '@src/modules/files-storage/helper';
 import { LessonCopyService } from '@src/modules/lesson/service';
 import { TaskCopyService } from '@src/modules/task';
@@ -64,7 +64,13 @@ export class BoardCopyService {
 		if (status.copyEntity) {
 			boardCopy = status.copyEntity as Board;
 		}
-		await this.boardRepo.save(boardCopy);
+
+		try {
+			await this.boardRepo.save(boardCopy);
+		} catch (err) {
+			this.logger.warn(err);
+			status.status = CopyStatusEnum.FAIL;
+		}
 
 		return status;
 	}
