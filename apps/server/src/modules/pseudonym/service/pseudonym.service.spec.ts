@@ -1,8 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PaginationParams } from '@shared/controller';
-import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain';
+import { IFindOptions, LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain';
 import { externalToolFactory, ltiToolDOFactory, pseudonymFactory, userDoFactory } from '@shared/testing/factory';
 import { ExternalTool } from '@src/modules/tool/external-tool/domain';
 import { PseudonymSearchQuery } from '../domain';
@@ -470,37 +469,32 @@ describe('PseudonymService', () => {
 		describe('when query and params are given', () => {
 			const setup = () => {
 				const query: PseudonymSearchQuery = {
-					userId: 'userId',
-					toolId: 'toolId',
 					pseudonym: 'pseudonym',
 				};
-				const pagination: PaginationParams = {
-					limit: 10,
-					skip: 1,
-				};
+				const options: IFindOptions<Pseudonym> = {};
 				const page: Page<Pseudonym> = new Page<Pseudonym>([pseudonymFactory.build()], 1);
 
 				externalToolPseudonymRepo.findPseudonym.mockResolvedValueOnce(page);
 
 				return {
 					query,
-					pagination,
+					options,
 					page,
 				};
 			};
 
 			it('should call service with query and params', async () => {
-				const { query, pagination } = setup();
+				const { query, options } = setup();
 
-				await service.findPseudonym(query, pagination);
+				await service.findPseudonym(query, options);
 
-				expect(externalToolPseudonymRepo.findPseudonym).toHaveBeenCalledWith(query, pagination);
+				expect(externalToolPseudonymRepo.findPseudonym).toHaveBeenCalledWith(query, options);
 			});
 
 			it('should return page with pseudonyms', async () => {
-				const { query, pagination, page } = setup();
+				const { query, options, page } = setup();
 
-				const pseudonymPage: Page<Pseudonym> = await service.findPseudonym(query, pagination);
+				const pseudonymPage: Page<Pseudonym> = await service.findPseudonym(query, options);
 
 				expect(pseudonymPage).toEqual<Page<Pseudonym>>({
 					data: [page.data[0]],
