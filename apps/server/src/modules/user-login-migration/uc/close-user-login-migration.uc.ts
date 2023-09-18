@@ -46,12 +46,10 @@ export class CloseUserLoginMigrationUc {
 			const hasSchoolMigratedUser: boolean = await this.schoolMigrationService.hasSchoolMigratedUser(schoolId);
 
 			if (!hasSchoolMigratedUser) {
-				const revertedUserLoginMigration: UserLoginMigrationDO =
-					await this.userLoginMigrationRevertService.revertUserLoginMigration(updatedUserLoginMigration);
-
-				return revertedUserLoginMigration;
+				await this.userLoginMigrationRevertService.revertUserLoginMigration(updatedUserLoginMigration);
+			} else {
+				await this.schoolMigrationService.markUnmigratedUsersAsOutdated(schoolId);
 			}
-			await this.schoolMigrationService.markUnmigratedUsersAsOutdated(schoolId);
 
 			return updatedUserLoginMigration;
 		}
