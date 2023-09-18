@@ -16,7 +16,7 @@ import {
 	ContentElementService,
 	SubmissionItemService,
 } from './service';
-import { BoardDoCopyService } from './service/board-do-copy.service';
+import { BoardDoCopyService } from './service/board-do-copy-service';
 import { ColumnBoardCopyService } from './service/column-board-copy.service';
 
 @Module({

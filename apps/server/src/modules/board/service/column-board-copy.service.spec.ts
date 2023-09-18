@@ -6,7 +6,7 @@ import { columnBoardFactory, courseFactory, schoolFactory, setupEntities, userFa
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { UserService } from '@src/modules/user';
 import { BoardDoRepo } from '../repo';
-import { BoardDoCopyService } from './board-do-copy.service';
+import { BoardDoCopyService } from './board-do-copy-service';
 import { ColumnBoardCopyService } from './column-board-copy.service';
 
 describe('column board copy service', () => {

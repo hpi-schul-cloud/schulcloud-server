@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import {
 	AnyBoardDo,
 	BoardCompositeVisitorAsync,
@@ -22,7 +21,7 @@ type RecursiveCopyVisitorParams = {
 	userId: EntityId;
 };
 
-class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
+export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 	resultMap = new Map<EntityId, CopyStatus>();
 
 	copyMap = new Map<EntityId, AnyBoardDo>();
@@ -211,29 +210,5 @@ class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		});
 
 		return copies;
-	}
-}
-
-export type BoardDoCopyParams = {
-	originSchoolId: EntityId;
-	targetSchoolId?: EntityId;
-	userId: EntityId;
-	original: AnyBoardDo;
-};
-
-@Injectable()
-export class BoardDoCopyService {
-	constructor(private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService) {}
-
-	public async copy(params: BoardDoCopyParams): Promise<CopyStatus> {
-		const visitor = new RecursiveCopyVisitor(this.filesStorageClientAdapterService, {
-			userId: params.userId,
-			originSchoolId: params.originSchoolId,
-			targetSchoolId: params.targetSchoolId || params.originSchoolId,
-		});
-
-		const result = await visitor.copy(params.original);
-
-		return result;
 	}
 }

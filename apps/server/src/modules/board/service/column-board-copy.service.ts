@@ -10,7 +10,7 @@ import { CourseRepo } from '@shared/repo';
 import { CopyStatus } from '@src/modules/copy-helper';
 import { UserService } from '@src/modules/user';
 import { BoardDoRepo } from '../repo';
-import { BoardDoCopyService } from './board-do-copy.service';
+import { BoardDoCopyService } from './board-do-copy-service';
 
 @Injectable()
 export class ColumnBoardCopyService {
