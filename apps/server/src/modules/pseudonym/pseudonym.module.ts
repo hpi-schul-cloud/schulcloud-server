@@ -3,9 +3,9 @@ import { LegacyLogger } from '@src/core/logger';
 import { LearnroomModule } from '@src/modules/learnroom';
 import { UserModule } from '@src/modules/user';
 import { ToolModule } from '@src/modules/tool';
+import { AuthorizationModule } from '@src/modules/authorization';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from './repo';
 import { FeathersRosterService, PseudonymService } from './service';
-import { AuthorizationModule } from '../authorization';
 
 @Module({
 	imports: [UserModule, LearnroomModule, forwardRef(() => ToolModule), forwardRef(() => AuthorizationModule)],

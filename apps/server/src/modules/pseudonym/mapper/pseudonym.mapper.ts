@@ -11,10 +11,4 @@ export class PseudonymMapper {
 
 		return response;
 	}
-
-	static mapToResponseList(pseudonyms: Pseudonym[]): PseudonymResponse[] {
-		const response: PseudonymResponse[] = pseudonyms.map((pseudonym: Pseudonym) => this.mapToResponse(pseudonym));
-
-		return response;
-	}
 }

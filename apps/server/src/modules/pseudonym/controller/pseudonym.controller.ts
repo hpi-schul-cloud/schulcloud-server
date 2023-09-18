@@ -6,15 +6,14 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { Page, Pseudonym } from '@shared/domain';
+import { Pseudonym } from '@shared/domain';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ICurrentUser } from '@src/modules/authentication';
 import { PseudonymMapper } from '../mapper/pseudonym.mapper';
 import { PseudonymUc } from '../uc';
 import { PseudonymResponse } from './dto';
 import { PseudonymParams } from './dto/pseudonym-params';
-import { ICurrentUser } from '../../authentication';
 
-// TODO: test it @igor
 @ApiTags('Pseudonym')
 @Authenticate('jwt')
 @Controller('pseudonyms')
@@ -30,14 +29,10 @@ export class PseudonymController {
 		@Param() params: PseudonymParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<PseudonymResponse> {
-		const page: Page<Pseudonym> = await this.pseudonymUc.findPseudonym(
-			currentUser,
-			{ pseudonym: params.pseudonym },
-			{}
-		);
+		const pseudonym: Pseudonym = await this.pseudonymUc.findPseudonymByPseudonym(currentUser, params.pseudonym);
 
-		const pseudonymResponses: PseudonymResponse[] = PseudonymMapper.mapToResponseList(page.data);
+		const pseudonymResponse: PseudonymResponse = PseudonymMapper.mapToResponse(pseudonym);
 
-		return pseudonymResponses[0];
+		return pseudonymResponse;
 	}
 }
