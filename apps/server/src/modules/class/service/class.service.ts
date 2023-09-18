@@ -7,6 +7,12 @@ import { Class } from '../domain';
 export class ClassService {
 	constructor(private readonly classesRepo: ClassesRepo) {}
 
+	public async findUserDataFromClasses(userId: EntityId): Promise<Class[]> {
+		const classes = await this.classesRepo.findAllByUserId(userId);
+
+		return classes;
+	}
+
 	public async deleteUserDataFromClasses(userId: EntityId): Promise<number> {
 		if (!userId) {
 			throw new InternalServerErrorException('User id is missing');
