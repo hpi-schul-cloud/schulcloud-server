@@ -92,10 +92,48 @@ describe('PseudonymController (API)', () => {
 			const setup = async () => {
 				const school: School = schoolFactory.buildWithId();
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
+				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school });
 				const pseudonymString: string = new ObjectId().toHexString();
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
 				const pseudonym: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.buildWithId({
 					pseudonym: pseudonymString,
+					toolId: externalToolEntity.id,
+					userId: teacherUser.id,
+				});
+
+				await em.persistAndFlush([
+					studentAccount,
+					studentUser,
+					teacherUser,
+					teacherAccount,
+					pseudonym,
+					externalToolEntity,
+					school,
+				]);
+				em.clear();
+
+				const loggedInClient: TestApiClient = await testApiClient.login(studentAccount);
+
+				return { loggedInClient, pseudonymString };
+			};
+
+			it('should return forbidden', async () => {
+				const { loggedInClient, pseudonymString } = await setup();
+
+				const response: Response = await loggedInClient.get(`${pseudonymString}`);
+
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+			});
+		});
+
+		describe('when pseudonym does not exist in db', () => {
+			const setup = async () => {
+				const school: School = schoolFactory.buildWithId();
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
+				const pseudonymString: string = new ObjectId().toHexString();
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
+				const pseudonym: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.buildWithId({
+					pseudonym: new ObjectId().toHexString(),
 					toolId: externalToolEntity.id,
 					userId: studentUser.id,
 				});
@@ -105,15 +143,15 @@ describe('PseudonymController (API)', () => {
 
 				const loggedInClient: TestApiClient = await testApiClient.login(studentAccount);
 
-				return { loggedInClient, pseudonym, pseudonymString };
+				return { loggedInClient, pseudonymString };
 			};
 
-			it('should return an empty pseudonymResponse', async () => {
+			it('should return not found', async () => {
 				const { loggedInClient, pseudonymString } = await setup();
 
 				const response: Response = await loggedInClient.get(`${pseudonymString}`);
 
-				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
 			});
 		});
 	});
