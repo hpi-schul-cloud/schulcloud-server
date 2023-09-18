@@ -13,7 +13,7 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { SchoolMigrationModule } from '@src/modules/school-migration';
+import { LegacySchoolModule } from '@src/modules/school-migration';
 import { ToolModule } from '@src/modules/tool';
 import { BoardModule } from '../board';
 import { AuthorizationHelper } from './authorization.helper';
@@ -27,7 +27,7 @@ import { RuleManager } from './rule-manager';
 	imports: [
 		FeathersModule,
 		LoggerModule,
-		SchoolMigrationModule,
+		LegacySchoolModule,
 		forwardRef(() => ToolModule),
 		forwardRef(() => BoardModule),
 	],
