@@ -140,7 +140,7 @@ describe(`content element update content (api)`, () => {
 			const alternativeText = '<iframe>rich text 1</iframe> some more text';
 
 			await loggedInClient.patch(`${fileElement.id}/content`, {
-				data: { content: { caption: '', alternativeText }, type: ContentElementType.FILE },
+				data: { content: { alternativeText }, type: ContentElementType.FILE },
 			});
 			const result = await em.findOneOrFail(FileElementNode, fileElement.id);
 

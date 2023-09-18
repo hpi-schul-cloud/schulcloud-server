@@ -124,9 +124,7 @@ describe(`card create (api)`, () => {
 				},
 				{
 					type: 'file',
-					content: {
-						caption: '',
-					},
+					content: {},
 				},
 			];
 

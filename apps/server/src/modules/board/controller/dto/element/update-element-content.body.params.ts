@@ -15,8 +15,9 @@ export abstract class ElementContentBody {
 
 export class FileContentBody {
 	@IsString()
-	@ApiProperty({})
-	caption!: string;
+	@ApiPropertyOptional()
+	@IsOptional()
+	caption?: string;
 
 	@IsString()
 	@ApiPropertyOptional()

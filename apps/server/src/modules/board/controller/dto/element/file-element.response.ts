@@ -9,8 +9,9 @@ export class FileElementContent {
 		this.alternativeText = alternativeText;
 	}
 
-	@ApiProperty()
-	caption: string;
+	@ApiPropertyOptional()
+	@IsOptional()
+	caption?: string;
 
 	@ApiPropertyOptional()
 	@IsOptional()

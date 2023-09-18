@@ -2,11 +2,11 @@ import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import type { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
 export class FileElement extends BoardComposite<FileElementProps> {
-	get caption(): string {
+	get caption(): string | undefined {
 		return this.props.caption;
 	}
 
-	set caption(value: string) {
+	set caption(value: string | undefined) {
 		this.props.caption = value;
 	}
 
@@ -32,6 +32,6 @@ export class FileElement extends BoardComposite<FileElementProps> {
 }
 
 export interface FileElementProps extends BoardCompositeProps {
-	caption: string;
+	caption?: string;
 	alternativeText?: string;
 }

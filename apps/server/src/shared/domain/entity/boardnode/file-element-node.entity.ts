@@ -5,8 +5,8 @@ import { BoardDoBuilder, BoardNodeType } from './types';
 
 @Entity({ discriminatorValue: BoardNodeType.FILE_ELEMENT })
 export class FileElementNode extends BoardNode {
-	@Property()
-	caption: string;
+	@Property({ nullable: true })
+	caption?: string;
 
 	@Property({ nullable: true })
 	alternativeText?: string;
@@ -26,6 +26,6 @@ export class FileElementNode extends BoardNode {
 }
 
 export interface FileElementNodeProps extends BoardNodeProps {
-	caption: string;
+	caption?: string;
 	alternativeText?: string;
 }
