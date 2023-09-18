@@ -12,4 +12,4 @@ import { MigrationMapper } from './mapper/migration.mapper';
 	controllers: [SchoolController],
 	providers: [LegacySchoolUc, MigrationMapper],
 })
-export class SchoolMigrationApiModule {}
+export class LegacySchoolApiModule {}
