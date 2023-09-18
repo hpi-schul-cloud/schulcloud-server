@@ -3,10 +3,10 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
-import { boardFactory, courseFactory, setupEntities, userFactory } from '@shared/testing';
+import { courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizableReferenceType } from '@src/modules/authorization/domain/reference/types';
-import { Action } from '@src/modules/authorization';
-import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { AuthorizationContextBuilder } from '@src/modules/authorization';
+import { AuthorizationReferenceService } from '@src/modules/authorization/domain/reference';
 import { CopyElementType, CopyStatusEnum } from '@src/modules/copy-helper';
 import { CourseCopyService } from '../service';
 import { CourseCopyUC } from './course-copy.uc';
@@ -14,7 +14,7 @@ import { CourseCopyUC } from './course-copy.uc';
 describe('course copy uc', () => {
 	let module: TestingModule;
 	let uc: CourseCopyUC;
-	let authorization: DeepMocked<AuthorizationService>;
+	let authorization: DeepMocked<AuthorizationReferenceService>;
 	let courseCopyService: DeepMocked<CourseCopyService>;
 
 	beforeAll(async () => {
@@ -23,8 +23,8 @@ describe('course copy uc', () => {
 			providers: [
 				CourseCopyUC,
 				{
-					provide: AuthorizationService,
-					useValue: createMock<AuthorizationService>(),
+					provide: AuthorizationReferenceService,
+					useValue: createMock<AuthorizationReferenceService>(),
 				},
 				{
 					provide: CourseCopyService,
@@ -34,7 +34,7 @@ describe('course copy uc', () => {
 		}).compile();
 
 		uc = module.get(CourseCopyUC);
-		authorization = module.get(AuthorizationService);
+		authorization = module.get(AuthorizationReferenceService);
 		courseCopyService = module.get(CourseCopyService);
 	});
 
@@ -46,87 +46,99 @@ describe('course copy uc', () => {
 		Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 	});
 
+	// Please be careful the Configuration.set is effects all tests !!!
+
 	describe('copy course', () => {
-		const setup = () => {
-			const user = userFactory.buildWithId();
-			const allCourses = courseFactory.buildList(3, { teachers: [user] });
-			const course = allCourses[0];
-			const originalBoard = boardFactory.build({ course });
-			const courseCopy = courseFactory.buildWithId({ teachers: [user] });
-			const boardCopy = boardFactory.build({ course: courseCopy });
+		describe('when authorization to course resolve with void and feature is deactivated', () => {
+			const setup = () => {
+				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
+				const user = userFactory.buildWithId();
+				const course = courseFactory.buildWithId({ teachers: [user] });
 
-			authorization.getUserWithPermissions.mockResolvedValue(user);
-			const status = {
-				title: 'courseCopy',
-				type: CopyElementType.COURSE,
-				status: CopyStatusEnum.SUCCESS,
-				copyEntity: courseCopy,
+				return {
+					userId: user.id,
+					courseId: course.id,
+				};
 			};
 
-			courseCopyService.copyCourse.mockResolvedValue(status);
+			it('should throw if copy feature is deactivated', async () => {
+				const { courseId, userId } = setup();
 
-			return {
-				user,
-				course,
-				originalBoard,
-				courseCopy,
-				boardCopy,
-				allCourses,
-				status,
+				await expect(uc.copyCourse(userId, courseId)).rejects.toThrowError(
+					new InternalServerErrorException('Copy Feature not enabled')
+				);
+			});
+		});
+
+		describe('when authorization to course resolve with void and feature is activated', () => {
+			const setup = () => {
+				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
+				const user = userFactory.buildWithId();
+				const course = courseFactory.buildWithId({ teachers: [user] });
+				const courseCopy = courseFactory.buildWithId({ teachers: [user] });
+
+				const status = {
+					title: 'courseCopy',
+					type: CopyElementType.COURSE,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: courseCopy,
+				};
+
+				authorization.checkPermissionByReferences.mockResolvedValueOnce();
+				courseCopyService.copyCourse.mockResolvedValueOnce(status);
+
+				return {
+					userId: user.id,
+					courseId: course.id,
+					status,
+				};
 			};
-		};
 
-		it('should throw if copy feature is deactivated', async () => {
-			Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
-			const { course, user } = setup();
-			await expect(uc.copyCourse(user.id, course.id)).rejects.toThrowError(InternalServerErrorException);
+			it('should check permission to create a course', async () => {
+				const { courseId, userId } = setup();
+
+				await uc.copyCourse(userId, courseId);
+
+				const context = AuthorizationContextBuilder.write([Permission.COURSE_CREATE]);
+				expect(authorization.checkPermissionByReferences).toBeCalledWith(
+					userId,
+					AuthorizableReferenceType.Course,
+					courseId,
+					context
+				);
+			});
+
+			it('should call course copy service', async () => {
+				const { courseId, userId } = setup();
+
+				await uc.copyCourse(userId, courseId);
+
+				expect(courseCopyService.copyCourse).toBeCalledWith({ userId, courseId });
+			});
+
+			it('should return status', async () => {
+				const { courseId, userId, status } = setup();
+
+				const result = await uc.copyCourse(userId, courseId);
+
+				expect(result).toEqual(status);
+			});
 		});
 
-		it('should check permission to create a course', async () => {
-			const { course, user } = setup();
-			await uc.copyCourse(user.id, course.id);
-			expect(authorization.checkPermissionByReferences).toBeCalledWith(
-				user.id,
-				AuthorizableReferenceType.Course,
-				course.id,
-				{
-					action: Action.write,
-					requiredPermissions: [Permission.COURSE_CREATE],
-				}
-			);
-		});
-
-		it('should call course copy service', async () => {
-			const { course, user } = setup();
-			await uc.copyCourse(user.id, course.id);
-			expect(courseCopyService.copyCourse).toBeCalledWith({ userId: user.id, courseId: course.id });
-		});
-
-		it('should return status', async () => {
-			const { course, user, status } = setup();
-			const result = await uc.copyCourse(user.id, course.id);
-			expect(result).toEqual(status);
-		});
-
-		describe('when access to course is forbidden', () => {
+		describe('when authorization to course throw a forbidden exception', () => {
 			const setupWithCourseForbidden = () => {
+				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 				const user = userFactory.buildWithId();
 				const course = courseFactory.buildWithId();
-				authorization.checkPermissionByReferences.mockImplementation(() => {
-					throw new ForbiddenException();
-				});
+				authorization.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+
 				return { user, course };
 			};
 
 			it('should throw ForbiddenException', async () => {
 				const { course, user } = setupWithCourseForbidden();
 
-				try {
-					await uc.copyCourse(user.id, course.id);
-					throw new Error('should have failed');
-				} catch (err) {
-					expect(err).toBeInstanceOf(ForbiddenException);
-				}
+				await expect(uc.copyCourse(user.id, course.id)).rejects.toThrowError(new ForbiddenException());
 			});
 		});
 	});
