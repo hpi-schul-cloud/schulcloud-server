@@ -62,7 +62,12 @@ export class SubmissionContainerElementContentBody extends ElementContentBody {
 	content!: SubmissionContainerContentBody;
 }
 
-export type AnyElementContentBody = RichTextElementContentBody | FileContentBody;
+export class ExternalToolElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: ContentElementType.EXTERNAL_TOOL })
+	type!: ContentElementType.EXTERNAL_TOOL;
+}
+
+export type AnyElementContentBody = FileContentBody | RichTextContentBody | SubmissionContainerContentBody | undefined;
 
 export class UpdateElementContentBodyParams {
 	@ValidateNested()
@@ -73,6 +78,7 @@ export class UpdateElementContentBodyParams {
 				{ value: FileElementContentBody, name: ContentElementType.FILE },
 				{ value: RichTextElementContentBody, name: ContentElementType.RICH_TEXT },
 				{ value: SubmissionContainerElementContentBody, name: ContentElementType.SUBMISSION_CONTAINER },
+				{ value: ExternalToolElementContentBody, name: ContentElementType.EXTERNAL_TOOL },
 			],
 		},
 		keepDiscriminatorProperty: true,
@@ -82,7 +88,12 @@ export class UpdateElementContentBodyParams {
 			{ $ref: getSchemaPath(FileElementContentBody) },
 			{ $ref: getSchemaPath(RichTextElementContentBody) },
 			{ $ref: getSchemaPath(SubmissionContainerElementContentBody) },
+			{ $ref: getSchemaPath(ExternalToolElementContentBody) },
 		],
 	})
-	data!: FileElementContentBody | RichTextElementContentBody | SubmissionContainerElementContentBody;
+	data!:
+		| FileElementContentBody
+		| RichTextElementContentBody
+		| SubmissionContainerElementContentBody
+		| ExternalToolElementContentBody;
 }

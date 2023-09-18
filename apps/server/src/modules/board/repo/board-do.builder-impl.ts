@@ -5,6 +5,7 @@ import type {
 	CardNode,
 	ColumnBoardNode,
 	ColumnNode,
+	ExternalToolElementNodeEntity,
 	FileElementNode,
 	RichTextElementNode,
 	SubmissionContainerElementNode,
@@ -16,6 +17,7 @@ import {
 	Card,
 	Column,
 	ColumnBoard,
+	ExternalToolElement,
 	FileElement,
 	RichTextElement,
 	SubmissionContainerElement,
@@ -140,6 +142,19 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			userId: boardNode.userId,
 			children: [],
 		});
+		return element;
+	}
+
+	buildExternalToolElement(boardNode: ExternalToolElementNodeEntity): ExternalToolElement {
+		this.ensureLeafNode(boardNode);
+
+		const element: ExternalToolElement = new ExternalToolElement({
+			id: boardNode.id,
+			children: [],
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+		});
+
 		return element;
 	}
 

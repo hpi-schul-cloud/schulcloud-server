@@ -69,7 +69,11 @@ export class ElementController {
 		@Body() bodyParams: UpdateElementContentBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		await this.elementUc.updateElementContent(currentUser.userId, urlParams.contentElementId, bodyParams.data.content);
+		await this.elementUc.updateElementContent(
+			currentUser.userId,
+			urlParams.contentElementId,
+			'content' in bodyParams.data ? bodyParams.data.content : undefined
+		);
 	}
 
 	@ApiOperation({ summary: 'Delete a single content element.' })

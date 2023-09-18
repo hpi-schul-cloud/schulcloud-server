@@ -5,19 +5,23 @@ import {
 	Card,
 	Column,
 	ColumnBoard,
+	ExternalToolElement,
 	FileElement,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain';
-import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from '../controller/dto';
-
-type ContentType = FileContentBody | RichTextContentBody | SubmissionContainerContentBody;
+import {
+	AnyElementContentBody,
+	FileContentBody,
+	RichTextContentBody,
+	SubmissionContainerContentBody,
+} from '../controller/dto';
 
 export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
-	private readonly content: ContentType;
+	private readonly content: AnyElementContentBody;
 
-	constructor(content: ContentType) {
+	constructor(content: AnyElementContentBody) {
 		this.content = content;
 	}
 
@@ -60,6 +64,10 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 
 	visitSubmissionItem(submission: SubmissionItem): void {
 		this.throwNotHandled(submission);
+	}
+
+	visitExternalToolElement(externalToolElement: ExternalToolElement): void {
+		this.throwNotHandled(externalToolElement);
 	}
 
 	private throwNotHandled(component: AnyBoardDo) {
