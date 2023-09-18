@@ -5,7 +5,7 @@ import { PseudonymService } from '@src/modules/pseudonym';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { Authorization } from 'oauth-1.0a';
-import { CourseService } from '@src/modules/learnroom/service';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { LtiRole } from '../../../common/enum';
 import { ExternalTool } from '../../../external-tool/domain';
 import { LtiRoleMapper } from '../../mapper';
