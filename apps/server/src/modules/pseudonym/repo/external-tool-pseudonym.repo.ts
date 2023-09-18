@@ -5,6 +5,7 @@ import { Scope } from '@shared/repo';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymEntity, IExternalToolPseudonymEntityProps } from '../entity';
 import { PseudonymScope } from '../entity/pseudonym.scope';
+import { TooManyPseudonymsLoggableException } from '../loggable';
 
 @Injectable()
 export class ExternalToolPseudonymRepo {
@@ -82,8 +83,7 @@ export class ExternalToolPseudonymRepo {
 		}
 
 		if (entities.length > 1) {
-			// TODO: use loggable @arne
-			throw new Error(`More than one pseudonym found for pseudonym ${pseudonym}`);
+			throw new TooManyPseudonymsLoggableException(pseudonym);
 		}
 
 		const domainObject: Pseudonym = this.mapEntityToDomainObject(entities[0]);

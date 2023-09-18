@@ -10,6 +10,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { v4 as uuidv4 } from 'uuid';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymEntity } from '../entity';
+import { TooManyPseudonymsLoggableException } from '../loggable';
 import { ExternalToolPseudonymRepo } from './external-tool-pseudonym.repo';
 
 describe('ExternalToolPseudonymRepo', () => {
@@ -332,7 +333,7 @@ describe('ExternalToolPseudonymRepo', () => {
 
 				const func = () => repo.findPseudonymByPseudonym(entity1.pseudonym);
 
-				await expect(func).rejects.toThrow();
+				await expect(func).rejects.toThrow(new TooManyPseudonymsLoggableException(entity1.pseudonym));
 			});
 		});
 	});
