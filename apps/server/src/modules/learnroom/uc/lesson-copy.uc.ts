@@ -3,12 +3,8 @@ import { ForbiddenException, Injectable, InternalServerErrorException } from '@n
 import { EntityId } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { CourseRepo, LessonRepo } from '@shared/repo';
-import {
-	Action,
-	AuthorizableReferenceType,
-	AuthorizationContextBuilder,
-	AuthorizationService,
-} from '@src/modules/authorization';
+import { AuthorizableReferenceType } from '@src/modules/authorization/domain/reference/types';
+import { Action, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
 import { LessonCopyParentParams } from '@src/modules/lesson';
 import { LessonCopyService } from '@src/modules/lesson/service';

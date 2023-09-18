@@ -18,12 +18,8 @@ import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto'
 import { TeamsRepo } from '@shared/repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import { ICurrentUser } from '@src/modules/authentication';
-import {
-	Action,
-	AuthorizableReferenceType,
-	AuthorizationContextBuilder,
-	AuthorizationService,
-} from '@src/modules/authorization';
+import { Action, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
+import { AuthorizableReferenceType } from '@src/modules/authorization/domain/reference/types';
 import { SchoolService } from '@src/modules/school/service/school.service';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { UserService } from '@src/modules/user';

@@ -1,5 +1,5 @@
 import { Permission, VideoConferenceScope } from '@shared/domain';
-import { AuthorizableReferenceType } from '@src/modules/authorization';
+import { AuthorizableReferenceType } from '@src/modules/authorization/domain/reference/types';
 import { BBBRole } from '../bbb';
 import {
 	VideoConferenceCreateParams,

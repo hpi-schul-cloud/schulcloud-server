@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Permission, SchoolDO, UserLoginMigrationDO } from '@shared/domain';
-import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
+import { Action, AuthorizationService } from '@src/modules/authorization';
+import { AuthorizableReferenceType } from '@src/modules/authorization/domain/reference/types';
 import {
 	SchoolMigrationService,
 	UserLoginMigrationRevertService,

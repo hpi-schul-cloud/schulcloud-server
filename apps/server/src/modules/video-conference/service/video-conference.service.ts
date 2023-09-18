@@ -15,12 +15,8 @@ import {
 } from '@shared/domain';
 import { CalendarEventDto, CalendarService } from '@shared/infra/calendar';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
-import {
-	Action,
-	AuthorizableReferenceType,
-	AuthorizationContextBuilder,
-	AuthorizationService,
-} from '@src/modules/authorization';
+import { Action, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
+import { AuthorizableReferenceType } from '@src/modules/authorization/domain/reference/types';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
