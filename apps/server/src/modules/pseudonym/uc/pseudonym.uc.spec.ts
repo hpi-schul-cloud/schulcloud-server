@@ -46,7 +46,7 @@ describe('PseudonymUc', () => {
 		await module.close();
 	});
 
-	describe('findPseudonym', () => {
+	describe('findPseudonymByPseudonym', () => {
 		describe('when valid user, query and params are given', () => {
 			const setup = () => {
 				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
@@ -54,21 +54,13 @@ describe('PseudonymUc', () => {
 				const school: School = schoolFactory.build();
 				user.school = school;
 				const query: PseudonymSearchQuery = {
-					userId: 'userId',
-					toolId: 'toolId',
 					pseudonym: 'pseudonym',
 				};
-				const options: IFindOptions<Pseudonym> = {
-					pagination: {
-						limit: 10,
-						skip: 1,
-					},
-					order: {},
-				};
-				const page: Page<Pseudonym> = new Page<Pseudonym>([pseudonymFactory.build()], 1);
+				const options: IFindOptions<Pseudonym> = {};
+				const pseudonym: Pseudonym = new Pseudonym(pseudonymFactory.build());
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
-				pseudonymService.findPseudonym.mockResolvedValueOnce(page);
+				pseudonymService.findPseudonym.mockResolvedValueOnce(new Page([pseudonym], 1));
 
 				return {
 					currentUser,
@@ -76,14 +68,14 @@ describe('PseudonymUc', () => {
 					school,
 					query,
 					options,
-					page,
+					pseudonym,
 				};
 			};
 
 			it('should call authorization service with query and params', async () => {
-				const { currentUser, user, school, query, options } = setup();
+				const { currentUser, user, school } = setup();
 
-				await uc.findPseudonym(currentUser, query, options);
+				await uc.findPseudonymByPseudonym(currentUser, 'pseudonym');
 
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, school, {
 					action: Action.read,
@@ -94,56 +86,42 @@ describe('PseudonymUc', () => {
 			it('should call service with query and params', async () => {
 				const { currentUser, query, options } = setup();
 
-				await uc.findPseudonym(currentUser, query, options);
+				await uc.findPseudonymByPseudonym(currentUser, 'pseudonym');
 
 				expect(pseudonymService.findPseudonym).toHaveBeenCalledWith(query, options);
 			});
 
 			it('should return page with pseudonyms', async () => {
-				const { currentUser, query, options, page } = setup();
+				const { currentUser, pseudonym } = setup();
 
-				const pseudonymPage: Page<Pseudonym> = await uc.findPseudonym(currentUser, query, options);
+				const foundPseudonym: Pseudonym = await uc.findPseudonymByPseudonym(currentUser, 'pseudonym');
 
-				expect(pseudonymPage).toEqual<Page<Pseudonym>>({
-					data: [page.data[0]],
-					total: page.total,
-				});
+				expect(foundPseudonym).toEqual(pseudonym);
 			});
 		});
 
 		describe('when checkPermission throws', () => {
 			const setup = () => {
 				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-				const query: PseudonymSearchQuery = {
-					userId: 'userId',
-					toolId: 'toolId',
-					pseudonym: 'pseudonym',
-				};
-				const options: IFindOptions<Pseudonym> = {
-					pagination: {
-						limit: 10,
-						skip: 1,
-					},
-					order: {},
-				};
-				const page: Page<Pseudonym> = new Page<Pseudonym>([pseudonymFactory.build()], 1);
+				const user: User = userFactory.build();
+				const school: School = schoolFactory.build();
+				user.school = school;
+				const pseudonym: Pseudonym = new Pseudonym(pseudonymFactory.build());
 
 				authorizationService.checkPermission.mockImplementationOnce(() => {
 					throw new ForbiddenException();
 				});
-				pseudonymService.findPseudonym.mockResolvedValueOnce(page);
+				pseudonymService.findPseudonym.mockResolvedValueOnce(new Page([pseudonym], 1));
 
 				return {
 					currentUser,
-					query,
-					options,
 				};
 			};
 
 			it('should throw same exception', async () => {
-				const { currentUser, query, options } = setup();
+				const { currentUser } = setup();
 
-				const func = async () => uc.findPseudonym(currentUser, query, options);
+				const func = async () => uc.findPseudonymByPseudonym(currentUser, 'pseudonym');
 
 				await expect(func()).rejects.toThrow(ForbiddenException);
 			});

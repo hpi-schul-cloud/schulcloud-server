@@ -1,4 +1,3 @@
-import { Loaded } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId, Pseudonym } from '@shared/domain';

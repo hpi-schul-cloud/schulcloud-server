@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { IFindOptions, Page, Pseudonym, User } from '@shared/domain';
+import { Page, Pseudonym, User } from '@shared/domain';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { PseudonymSearchQuery } from '../domain';
 import { PseudonymService } from '../service';
 import { ICurrentUser } from '../../authentication';
-import { Action, AuthorizationService } from '../../authorization';
+import { AuthorizationContextBuilder, AuthorizationService } from '../../authorization';
 
 @Injectable()
 export class PseudonymUc {
@@ -13,25 +12,23 @@ export class PseudonymUc {
 		private readonly authorizationService: AuthorizationService
 	) {}
 
-	async findPseudonym(
-		currentUser: ICurrentUser,
-		query: PseudonymSearchQuery,
-		options: IFindOptions<Pseudonym>
-	): Promise<Page<Pseudonym>> {
+	async findPseudonymByPseudonym(currentUser: ICurrentUser, pseudonym: string): Promise<Pseudonym> {
 		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
 
-		const pseudonymPage: Page<Pseudonym> = await this.pseudonymService.findPseudonym(query, options);
+		const pseudonymPage: Page<Pseudonym> = await this.pseudonymService.findPseudonym({ pseudonym }, {});
 
-		if (pseudonymPage.data.length > 0) {
-			const pseudonymUserId: string = pseudonymPage.data[0].userId;
-			const pseudonymUser: User = await this.authorizationService.getUserWithPermissions(pseudonymUserId);
-			const { school } = pseudonymUser;
-
-			const context = { action: Action.read, requiredPermissions: [] };
-			this.authorizationService.checkPermission(user, school, context);
-
-			return pseudonymPage;
+		if (pseudonymPage.data.length < 1) {
+			throw new NotFoundLoggableException(Pseudonym.name, 'pseudonym', pseudonym);
 		}
-		throw new NotFoundLoggableException(Pseudonym.name, 'pseudonym', query.pseudonym!);
+
+		const pseudonymUserId: string = pseudonymPage.data[0].userId;
+		const pseudonymUser: User = await this.authorizationService.getUserWithPermissions(pseudonymUserId);
+		const { school } = pseudonymUser;
+
+		this.authorizationService.checkPermission(user, school, AuthorizationContextBuilder.read([]));
+
+		const foundPseudonym = pseudonymPage.data[0];
+
+		return foundPseudonym;
 	}
 }
