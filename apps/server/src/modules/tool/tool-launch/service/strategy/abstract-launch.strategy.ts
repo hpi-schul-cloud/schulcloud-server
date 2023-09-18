@@ -1,27 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { Course, EntityId, SchoolDO } from '@shared/domain';
-import { CourseRepo } from '@shared/repo';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { SchoolService } from '@src/modules/school';
 import { URLSearchParams } from 'url';
+import { CustomParameter, CustomParameterEntry } from '../../../common/domain';
 import {
 	CustomParameterLocation,
 	CustomParameterScope,
 	CustomParameterType,
 	ToolContextType,
 } from '../../../common/enum';
+import { ContextExternalTool } from '../../../context-external-tool/domain';
+import { ExternalTool } from '../../../external-tool/domain';
+import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { MissingToolParameterValueLoggableException, ParameterTypeNotImplementedLoggableException } from '../../error';
 import { ToolLaunchMapper } from '../../mapper';
 import { LaunchRequestMethod, PropertyData, PropertyLocation, ToolLaunchData, ToolLaunchRequest } from '../../types';
 import { IToolLaunchParams } from './tool-launch-params.interface';
 import { IToolLaunchStrategy } from './tool-launch-strategy.interface';
-import { SchoolExternalTool } from '../../../school-external-tool/domain';
-import { CustomParameter, CustomParameterEntry } from '../../../common/domain';
-import { ContextExternalTool } from '../../../context-external-tool/domain';
-import { ExternalTool } from '../../../external-tool/domain';
 
 @Injectable()
 export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
-	constructor(private readonly schoolService: SchoolService, private readonly courseRepo: CourseRepo) {}
+	constructor(private readonly schoolService: SchoolService, private readonly courseService: CourseService) {}
 
 	public async createLaunchData(userId: EntityId, data: IToolLaunchParams): Promise<ToolLaunchData> {
 		const launchData: ToolLaunchData = this.buildToolLaunchDataFromExternalTool(data.externalTool);
@@ -216,7 +216,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 			}
 			case CustomParameterType.AUTO_CONTEXTNAME: {
 				if (contextExternalTool.contextRef.type === ToolContextType.COURSE) {
-					const course: Course = await this.courseRepo.findById(contextExternalTool.contextRef.id);
+					const course: Course = await this.courseService.findById(contextExternalTool.contextRef.id);
 
 					return course.name;
 				}
