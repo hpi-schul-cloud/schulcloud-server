@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, lessonFactory, setupEntities, shareTokenFactory, taskFactory } from '@shared/testing';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { CourseService } from '@src/modules/learnroom/service';
 import { LessonService } from '@src/modules/lesson/service';
 import { TaskService } from '@src/modules/task/service';
 import { ObjectId } from 'bson';

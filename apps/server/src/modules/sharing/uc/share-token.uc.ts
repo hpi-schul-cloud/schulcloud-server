@@ -5,7 +5,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { Action, AuthorizationService } from '@src/modules/authorization';
 import { CopyStatus } from '@src/modules/copy-helper';
 import { CourseCopyService } from '@src/modules/learnroom';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { CourseService } from '@src/modules/learnroom/service';
 import { LessonCopyService } from '@src/modules/lesson/service';
 import { TaskCopyService } from '@src/modules/task/service';
 import {

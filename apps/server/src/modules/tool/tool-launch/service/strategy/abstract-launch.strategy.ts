@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Course, EntityId, SchoolDO } from '@shared/domain';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { CourseService } from '@src/modules/learnroom/service';
 import { SchoolService } from '@src/modules/school';
 import { URLSearchParams } from 'url';
 import { CustomParameter, CustomParameterEntry } from '../../../common/domain';
