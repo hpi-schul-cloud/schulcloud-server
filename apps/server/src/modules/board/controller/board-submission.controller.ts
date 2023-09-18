@@ -7,13 +7,7 @@ import { SubmissionsResponse } from '@src/modules/board/controller/dto/submissio
 import { CardUc } from '../uc';
 import { ElementUc } from '../uc/element.uc';
 import { SubmissionItemUc } from '../uc/submission-item.uc';
-import {
-	SubmissionContainerUrlParams,
-	SubmissionItemResponse,
-	SubmissionItemUrlParams,
-	UpdateSubmissionItemBodyParams,
-	UserDataResponse,
-} from './dto';
+import { SubmissionContainerUrlParams, SubmissionItemUrlParams, UpdateSubmissionItemBodyParams } from './dto';
 import { SubmissionItemResponseMapper } from './mapper';
 
 @ApiTags('Board Submission')
