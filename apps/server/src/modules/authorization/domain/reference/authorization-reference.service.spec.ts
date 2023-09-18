@@ -160,38 +160,4 @@ describe('AuthorizationReferenceService', () => {
 			});
 		});
 	});
-
-	describe('getUserWithPermissions', () => {
-		describe('when loader can load the user', () => {
-			const setup = () => {
-				const user = userFactory.build();
-				loader.getUserWithPermissions.mockResolvedValueOnce(user);
-
-				return { user };
-			};
-
-			it('should return user received from loader', async () => {
-				const { user } = setup();
-
-				const result = await service.getUserWithPermissions(user.id);
-
-				expect(result).toEqual(user);
-			});
-		});
-
-		describe('when loader return with error', () => {
-			const setup = () => {
-				const userId = new ObjectId().toHexString();
-				loader.getUserWithPermissions.mockRejectedValueOnce(new NotFoundException());
-
-				return { userId };
-			};
-
-			it('should reject with error', async () => {
-				const { userId } = setup();
-
-				await expect(service.getUserWithPermissions(userId)).rejects.toThrowError(new NotFoundException());
-			});
-		});
-	});
 });

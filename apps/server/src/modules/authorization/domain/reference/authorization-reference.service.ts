@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, User } from '@shared/domain';
+import { EntityId } from '@shared/domain';
 import { ReferenceLoader } from './reference.loader';
 import { AuthorizationContext } from '../../types';
 import { AuthorizableReferenceType } from './types';
 import { ForbiddenLoggableException } from '../../errors';
 import { AuthorizationService } from '../../authorization.service';
 
+/**
+ * Should by use only internal in authorization module.
+ */
 @Injectable()
 export class AuthorizationReferenceService {
 	constructor(private readonly loader: ReferenceLoader, private readonly authorizationService: AuthorizationService) {}
@@ -29,7 +32,7 @@ export class AuthorizationReferenceService {
 	): Promise<boolean> {
 		try {
 			const [user, object] = await Promise.all([
-				this.getUserWithPermissions(userId),
+				this.authorizationService.getUserWithPermissions(userId),
 				this.loader.loadAuthorizableObject(entityName, entityId),
 			]);
 
@@ -39,12 +42,5 @@ export class AuthorizationReferenceService {
 		} catch (error) {
 			throw new ForbiddenLoggableException(userId, entityName, context); // TODO: cause
 		}
-	}
-
-	// think about it
-	public async getUserWithPermissions(userId: EntityId): Promise<User> {
-		const userWithPermissions = await this.authorizationService.getUserWithPermissions(userId);
-
-		return userWithPermissions;
 	}
 }
