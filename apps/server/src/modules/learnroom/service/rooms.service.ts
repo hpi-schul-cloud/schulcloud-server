@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Board, BoardExternalReferenceType, ColumnBoardTarget, EntityId } from '@shared/domain';
 import { BoardRepo, LessonRepo } from '@shared/repo';
 import { ColumnBoardService } from '@src/modules/board';
-import { TaskService } from '@src/modules/task';
+import { TaskService } from '@src/modules/task/service/task.service';
 import { ColumnBoardTargetService } from './column-board-target.service';
 
 @Injectable()
