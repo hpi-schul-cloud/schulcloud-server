@@ -199,8 +199,14 @@ describe('FeathersRosterService', () => {
 			const setup = () => {
 				const school: SchoolDO = schoolDOFactory.buildWithId();
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+				const externalToolId: string = externalTool.id as string;
+				const otherExternalTool: ExternalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: externalTool.id,
+					schoolId: school.id,
+				});
+				const otherSchoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolId: otherExternalTool.id,
 					schoolId: school.id,
 				});
 				const pseudonym: Pseudonym = pseudonymFactory.build();
@@ -212,7 +218,7 @@ describe('FeathersRosterService', () => {
 				const courseC: Course = courseFactory.buildWithId();
 				const courses: Course[] = [courseA, courseB, courseC];
 
-				const contextExternalToolA: ContextExternalTool = contextExternalToolFactory
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef(schoolExternalTool.id as string, schoolExternalTool.schoolId)
 					.buildWithId({
 						contextRef: new ContextRef({
@@ -221,97 +227,101 @@ describe('FeathersRosterService', () => {
 						}),
 					});
 
-				const contextExternalToolB: ContextExternalTool = contextExternalToolFactory.buildWithId({
-					contextRef: new ContextRef({
-						id: courseB.id,
-						type: ToolContextType.COURSE,
-					}),
-				});
-
-				const contextExternalToolB2: ContextExternalTool = contextExternalToolFactory.buildWithId({
-					contextRef: new ContextRef({
-						id: courseB.id,
-						type: ToolContextType.COURSE,
-					}),
-				});
+				const otherContextExternalTool: ContextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(otherSchoolExternalTool.id as string, otherSchoolExternalTool.schoolId)
+					.buildWithId({
+						contextRef: new ContextRef({
+							id: courseA.id,
+							type: ToolContextType.COURSE,
+						}),
+					});
 
 				pseudonymService.findPseudonymByPseudonym.mockResolvedValue(pseudonym);
 				courseService.findAllByUserId.mockResolvedValue(courses);
-				contextExternalToolService.findAllByContext.mockResolvedValueOnce([contextExternalToolA]);
 				contextExternalToolService.findAllByContext.mockResolvedValueOnce([
-					contextExternalToolB,
-					contextExternalToolB2,
+					contextExternalTool,
+					otherContextExternalTool,
 				]);
+				contextExternalToolService.findAllByContext.mockResolvedValueOnce([otherContextExternalTool]);
 				contextExternalToolService.findAllByContext.mockResolvedValueOnce([]);
+				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(schoolExternalTool);
+				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValueOnce(otherSchoolExternalTool);
+				externalToolService.findExternalToolById.mockResolvedValueOnce(externalTool);
+				externalToolService.findExternalToolById.mockResolvedValueOnce(otherExternalTool);
 
 				return {
 					pseudonym,
+					externalToolId,
 					user,
 					courses,
+					schoolExternalTool,
+					otherSchoolExternalTool,
+					otherExternalTool,
 				};
 			};
 
 			it('should call the pseudonym service to find the pseudonym', async () => {
-				const { pseudonym } = setup();
+				const { pseudonym, externalToolId } = setup();
 
-				await service.getUserGroups(pseudonym.pseudonym);
+				await service.getUserGroups(pseudonym.pseudonym, externalToolId);
 
 				expect(pseudonymService.findPseudonymByPseudonym).toHaveBeenCalledWith(pseudonym.pseudonym);
 			});
 
 			it('should call the course service to find the courses for the userId of the pseudonym', async () => {
-				const { pseudonym } = setup();
+				const { pseudonym, externalToolId } = setup();
 
-				await service.getUserGroups(pseudonym.pseudonym);
+				await service.getUserGroups(pseudonym.pseudonym, externalToolId);
 
 				expect(courseService.findAllByUserId).toHaveBeenCalledWith(pseudonym.userId);
 			});
 
 			it('should call the context external tool service to find the external tools for each course', async () => {
-				const { pseudonym, courses } = setup();
+				const { pseudonym, courses, externalToolId } = setup();
 
-				await service.getUserGroups(pseudonym.pseudonym);
+				await service.getUserGroups(pseudonym.pseudonym, externalToolId);
 
-				expect(contextExternalToolService.findAllByContext).toHaveBeenNthCalledWith(
-					courses.length,
-					new ContextRef({ id: courses[0].id, type: ToolContextType.COURSE }),
-					new ContextRef({ id: courses[1].id, type: ToolContextType.COURSE }),
-					new ContextRef({ id: courses[2].id, type: ToolContextType.COURSE })
-				);
+				expect(contextExternalToolService.findAllByContext.mock.calls).toEqual([
+					[new ContextRef({ id: courses[0].id, type: ToolContextType.COURSE })],
+					[new ContextRef({ id: courses[1].id, type: ToolContextType.COURSE })],
+					[new ContextRef({ id: courses[2].id, type: ToolContextType.COURSE })],
+				]);
+			});
+
+			it('should call school external tool service to find the school external tool for each context external tool', async () => {
+				const { pseudonym, externalToolId, schoolExternalTool, otherSchoolExternalTool } = setup();
+
+				await service.getUserGroups(pseudonym.pseudonym, externalToolId);
+
+				expect(schoolExternalToolService.getSchoolExternalToolById.mock.calls).toEqual([
+					[schoolExternalTool.id],
+					[otherSchoolExternalTool.id],
+				]);
+			});
+
+			it('should call external tool service to find the external tool for each school external tool', async () => {
+				const { pseudonym, externalToolId, otherExternalTool } = setup();
+
+				await service.getUserGroups(pseudonym.pseudonym, externalToolId);
+
+				expect(externalToolService.findExternalToolById.mock.calls).toEqual([[externalToolId], [otherExternalTool.id]]);
 			});
 
 			it('should return a group for each course where the tool of the users pseudonym is used', async () => {
-				const { pseudonym, courses } = setup();
+				const { pseudonym, externalToolId, courses } = setup();
 
-				const result = await service.getUserGroups(pseudonym.pseudonym);
+				const result = await service.getUserGroups(pseudonym.pseudonym, externalToolId);
 
 				expect(result).toEqual({
-					data: [
-						{
-							id: courses[0].id,
-							name: courses[0].name,
-							students: [
-								{
-									user_id: pseudonym.userId,
-									username: pseudonym.pseudonym,
-									type: 'student',
-								},
-							],
-							teachers: [],
-						},
-						{
-							id: courses[1].id,
-							name: courses[1].name,
-							students: [
-								{
-									user_id: pseudonym.userId,
-									username: pseudonym.pseudonym,
-									type: 'student',
-								},
-							],
-							teachers: [],
-						},
-					],
+					data: {
+						groups: [
+							{
+								group_id: courses[0].id,
+								name: courses[0].name,
+								student_count: courses[0].students.count(),
+							},
+						],
+					},
 				});
 			});
 		});
@@ -330,7 +340,7 @@ describe('FeathersRosterService', () => {
 			it('should throw an NotFoundLoggableException', async () => {
 				const { pseudonym } = setup();
 
-				const func = service.getUserGroups(pseudonym.pseudonym);
+				const func = service.getUserGroups(pseudonym.pseudonym, 'externalToolId');
 
 				await expect(func).rejects.toThrow(
 					new NotFoundLoggableException(UserDO.name, 'pseudonym', pseudonym.pseudonym)

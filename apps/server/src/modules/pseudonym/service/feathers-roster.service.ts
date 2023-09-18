@@ -76,11 +76,11 @@ export class FeathersRosterService {
 		return userMetadata;
 	}
 
-	async getUserGroups(pseudonym: string): Promise<UserGroups> {
+	async getUserGroups(pseudonym: string, externalToolId: string): Promise<UserGroups> {
 		const loadedPseudonym: Pseudonym = await this.findPseudonymByPseudonym(pseudonym);
 
 		let courses: Course[] = await this.getCoursesFromUsersPseudonym(loadedPseudonym);
-		courses = this.filterCoursesWithExternalTool(courses);
+		courses = await this.filterCoursesByToolAvailability(courses, externalToolId);
 
 		const userGroups: UserGroups = {
 			data: {
@@ -152,12 +152,36 @@ export class FeathersRosterService {
 		return courses;
 	}
 
-	private filterCoursesWithExternalTool(courses: Course[]): Course[] {
-		const filtered: Course[] = courses.filter((course: Course) =>
-			this.contextExternalToolService.findAllByContext(new ContextRef({ id: course.id, type: ToolContextType.COURSE }))
+	private async filterCoursesByToolAvailability(courses: Course[], externalToolId: string): Promise<Course[]> {
+		const validCourses: Course[] = [];
+
+		await Promise.all(
+			courses.map(async (course: Course) => {
+				const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolService.findAllByContext(
+					new ContextRef({
+						id: course.id,
+						type: ToolContextType.COURSE,
+					})
+				);
+
+				for await (const contextExternalTool of contextExternalTools) {
+					const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.getSchoolExternalToolById(
+						contextExternalTool.schoolToolRef.schoolToolId
+					);
+					const externalTool: ExternalTool = await this.externalToolService.findExternalToolById(
+						schoolExternalTool.toolId
+					);
+					const isRequiredTool: boolean = externalTool.id === externalToolId;
+
+					if (isRequiredTool) {
+						validCourses.push(course);
+						break;
+					}
+				}
+			})
 		);
 
-		return filtered;
+		return validCourses;
 	}
 
 	private async validateAndGetCourse(courseId: EntityId): Promise<Course> {
