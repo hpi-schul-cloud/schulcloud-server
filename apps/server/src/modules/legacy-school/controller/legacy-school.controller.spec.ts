@@ -8,7 +8,7 @@ import { LegacySchoolUc } from '../uc';
 import { MigrationBody, MigrationResponse, SchoolParams } from './dto';
 import { LegacySchoolController } from './legacy-school.controller';
 
-describe('School Controller', () => {
+describe('Legacy School Controller', () => {
 	let module: TestingModule;
 	let controller: LegacySchoolController;
 	let schoolUc: DeepMocked<LegacySchoolUc>;
