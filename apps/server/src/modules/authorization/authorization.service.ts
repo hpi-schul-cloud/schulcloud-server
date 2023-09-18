@@ -30,7 +30,7 @@ export class AuthorizationService {
 
 	public checkAllPermissions(user: User, requiredPermissions: string[]): void {
 		if (!this.authorizationHelper.hasAllPermissions(user, requiredPermissions)) {
-			// TODO: Should be ForbiddenException
+			// TODO: Should be ForbiddenLoggableException
 			throw new UnauthorizedException();
 		}
 	}
@@ -41,7 +41,7 @@ export class AuthorizationService {
 
 	public checkOneOfPermissions(user: User, requiredPermissions: string[]): void {
 		if (!this.authorizationHelper.hasOneOfPermissions(user, requiredPermissions)) {
-			// TODO: Should be ForbiddenException
+			// TODO: Should be ForbiddenLoggableException
 			throw new UnauthorizedException();
 		}
 	}

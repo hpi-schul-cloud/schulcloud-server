@@ -105,7 +105,7 @@ describe('AuthorizationReferenceService', () => {
 				const { entity, user, context, entityName } = setupData();
 
 				loader.loadAuthorizableObject.mockRejectedValueOnce(new NotFoundException());
-				loader.getUserWithPermissions.mockResolvedValueOnce(user);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				authorizationService.hasPermission.mockReturnValueOnce(true);
 
 				return { context, userId: user.id, entityId: entity.id, entityName };
@@ -115,7 +115,27 @@ describe('AuthorizationReferenceService', () => {
 				const { context, userId, entityId, entityName } = setup();
 
 				await expect(service.hasPermissionByReferences(userId, entityName, entityId, context)).rejects.toThrow(
-					new ForbiddenLoggableException(userId, entityName, context)
+					new NotFoundException()
+				);
+			});
+		});
+
+		describe('when authorizationService throws an error', () => {
+			const setup = () => {
+				const { entity, user, context, entityName } = setupData();
+
+				loader.loadAuthorizableObject.mockRejectedValueOnce(entity);
+				authorizationService.getUserWithPermissions.mockRejectedValueOnce(new NotFoundException());
+				authorizationService.hasPermission.mockReturnValueOnce(true);
+
+				return { context, userId: user.id, entityId: entity.id, entityName };
+			};
+
+			it('should reject with ForbiddenLoggableException', async () => {
+				const { context, userId, entityId, entityName } = setup();
+
+				await expect(service.hasPermissionByReferences(userId, entityName, entityId, context)).rejects.toThrow(
+					new NotFoundException()
 				);
 			});
 		});
@@ -125,7 +145,7 @@ describe('AuthorizationReferenceService', () => {
 				const { entity, user, context, entityName } = setupData();
 
 				loader.loadAuthorizableObject.mockResolvedValueOnce(entity);
-				loader.getUserWithPermissions.mockResolvedValueOnce(user);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				authorizationService.hasPermission.mockReturnValueOnce(true);
 
 				return { context, userId: user.id, entityId: entity.id, entityName };
@@ -145,7 +165,7 @@ describe('AuthorizationReferenceService', () => {
 				const { entity, user, context, entityName } = setupData();
 
 				loader.loadAuthorizableObject.mockResolvedValueOnce(entity);
-				loader.getUserWithPermissions.mockResolvedValueOnce(user);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				authorizationService.hasPermission.mockReturnValueOnce(false);
 
 				return { context, userId: user.id, entityId: entity.id, entityName };

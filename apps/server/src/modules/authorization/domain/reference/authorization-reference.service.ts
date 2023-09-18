@@ -30,17 +30,13 @@ export class AuthorizationReferenceService {
 		entityId: EntityId,
 		context: AuthorizationContext
 	): Promise<boolean> {
-		try {
-			const [user, object] = await Promise.all([
-				this.authorizationService.getUserWithPermissions(userId),
-				this.loader.loadAuthorizableObject(entityName, entityId),
-			]);
+		const [user, object] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.loader.loadAuthorizableObject(entityName, entityId),
+		]);
 
-			const hasPermission = this.authorizationService.hasPermission(user, object, context);
+		const hasPermission = this.authorizationService.hasPermission(user, object, context);
 
-			return hasPermission;
-		} catch (error) {
-			throw new ForbiddenLoggableException(userId, entityName, context); // TODO: cause
-		}
+		return hasPermission;
 	}
 }
