@@ -6,7 +6,7 @@ import { MigrationMapper } from '../mapper/migration.mapper';
 import { OauthMigrationDto } from '../uc/dto/oauth-migration.dto';
 import { LegacySchoolUc } from '../uc';
 import { MigrationBody, MigrationResponse, SchoolParams } from './dto';
-import { LegacySchoolController } from './school.controller';
+import { LegacySchoolController } from './legacy-school.controller';
 
 describe('School Controller', () => {
 	let module: TestingModule;
