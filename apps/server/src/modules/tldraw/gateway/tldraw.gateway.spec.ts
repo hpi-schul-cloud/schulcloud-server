@@ -1,6 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import WebSocket from 'ws';
+import { MongodbPersistence } from 'y-mongodb-provider';
 import { WsAdapter } from '@nestjs/platform-ws';
 import { CoreModule } from '@src/core';
 import { ConfigModule } from '@nestjs/config';
@@ -22,9 +23,9 @@ describe('TldrawGateway', () => {
 	const gatewayPort = 3346;
 	const wsUrl = `ws://localhost:${gatewayPort}`;
 	const testMessage =
-		'AZQBAaCbuLANBIsBeyJ0ZFVzZXIiOnsiaWQiOiJkNGIxZThmYi0yMWUwLTQ3ZDAtMDI0Y' +
-		'S0zZGEwYjMzNjQ3MjIiLCJjb2xvciI6IiNGMDRGODgiLCJwb2ludCI6WzAsMF0sInNlbGVjdGVkSWRzIjpbXSwiYWN' +
-		'0aXZlU2hhcGVzIjpbXSwic2Vzc2lvbiI6ZmFsc2V9fQ==';
+		'AZQBAaCbuLANBIsBeyJpZCI6ImU1YTYwZGVjLTJkMzktNDAxZS0xMDVhLWIwMmM0N2JkYjFhMiIsInRkVXNlciI6eyJp' +
+		'ZCI6ImU1YTYwZGVjLTJkMzktNDAxZS0xMDVhLWIwMmM0N2JkYjFhMiIsImNvbG9yIjoiI0JENTRDNiIsInBvaW50Ijpb' +
+		'ODY4LDc2OV0sInNlbGVjdGVkSWRzIjpbXSwiYWN0aXZlU2hhcGVzIjpbXSwic2Vzc2lvbiI6ZmFsc2V9fQ==';
 
 	const delay = (ms: number) =>
 		new Promise((resolve) => {
@@ -416,7 +417,7 @@ describe('TldrawGateway', () => {
 		});
 	});
 
-	describe(' awareness states size greater then one', () => {
+	describe('when awareness states size greater then one', () => {
 		const setup = async () => {
 			await app.init();
 			await setupWs('TEST');
@@ -452,6 +453,43 @@ describe('TldrawGateway', () => {
 			messageHandlerSpy.mockRestore();
 			sendSpy.mockRestore();
 			getYDocSpy.mockRestore();
+		});
+	});
+
+	describe('when document receive update', () => {
+		const setup = async () => {
+			await app.init();
+
+			const doc = new WSSharedDoc('TEST');
+			await setupWs('TEST');
+			const wsSet = new Set();
+			wsSet.add(ws);
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			doc.conns.set(ws, wsSet);
+			const mdb = {
+				getYDoc: (docName: string) => new WSSharedDoc(docName),
+				storeUpdate: () => {},
+			};
+			const storeUpdateSpy = jest.spyOn(mdb, 'storeUpdate');
+			const byteArray = new TextEncoder().encode(testMessage);
+
+			return {
+				mdb,
+				doc,
+				byteArray,
+				storeUpdateSpy,
+			};
+		};
+
+		it('should store on db', async () => {
+			const { mdb, doc, byteArray, storeUpdateSpy } = await setup();
+
+			await Utils.updateDocument(mdb as MongodbPersistence, 'TEST', doc);
+			doc.emit('update', [byteArray, undefined, doc]);
+			await delay(200);
+			expect(storeUpdateSpy).toHaveBeenCalled();
+			storeUpdateSpy.mockRestore();
 		});
 	});
 });
