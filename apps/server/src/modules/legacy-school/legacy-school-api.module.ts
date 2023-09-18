@@ -7,6 +7,9 @@ import { LegacySchoolModule } from './legacy-school.module';
 import { SchoolController } from './controller/school.controller';
 import { MigrationMapper } from './mapper/migration.mapper';
 
+/**
+ * @deprecated because it uses the deprecated LegacySchoolDo.
+ */
 @Module({
 	imports: [LegacySchoolModule, AuthorizationModule, LoggerModule, UserLoginMigrationModule],
 	controllers: [SchoolController],

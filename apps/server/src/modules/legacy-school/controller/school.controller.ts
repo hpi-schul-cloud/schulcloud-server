@@ -13,6 +13,9 @@ import { OauthMigrationDto } from '../uc/dto/oauth-migration.dto';
 import { LegacySchoolUc } from '../uc';
 import { MigrationBody, MigrationResponse, SchoolParams } from './dto';
 
+/**
+ * @deprecated because it uses the deprecated LegacySchoolDo.
+ */
 @ApiTags('School')
 @Authenticate('jwt')
 @Controller('school')

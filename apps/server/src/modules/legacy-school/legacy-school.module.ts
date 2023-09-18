@@ -4,6 +4,9 @@ import { LoggerModule } from '@src/core/logger';
 import { SchoolYearRepo } from './repo';
 import { FederalStateService, LegacySchoolService, SchoolValidationService, SchoolYearService } from './service';
 
+/**
+ * @deprecated because it uses the deprecated LegacySchoolDo.
+ */
 @Module({
 	imports: [LoggerModule],
 	providers: [

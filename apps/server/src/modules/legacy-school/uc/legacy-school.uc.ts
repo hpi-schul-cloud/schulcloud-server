@@ -10,7 +10,7 @@ import { LegacySchoolService } from '../service';
 import { OauthMigrationDto } from './dto/oauth-migration.dto';
 
 /**
- * @deprecated because it uses the deprecated LegacySchoolService.
+ * @deprecated because it uses the deprecated LegacySchoolDo.
  */
 @Injectable()
 export class LegacySchoolUc {
