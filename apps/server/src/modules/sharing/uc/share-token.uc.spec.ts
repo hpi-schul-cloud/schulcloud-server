@@ -20,7 +20,7 @@ import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-h
 import { CourseCopyService } from '@src/modules/learnroom';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { LessonCopyService } from '@src/modules/lesson/service';
-import { TaskCopyService } from '@src/modules/task';
+import { TaskCopyService } from '@src/modules/task/service';
 import { ShareTokenContextType, ShareTokenParentType, ShareTokenPayload } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { ShareTokenUC } from './share-token.uc';
