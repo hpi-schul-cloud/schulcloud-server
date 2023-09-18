@@ -11,7 +11,7 @@ const {
 
 chai.use(chaiHttp);
 
-describe('roster service', function oauth() {
+describe.only('roster service', function oauth() {
 	let app;
 	let metadataService;
 	let userGroupsService;
@@ -90,6 +90,10 @@ describe('roster service', function oauth() {
 		});
 		pseudonym1 = pseudonym.data[0].pseudonym;
 		return Promise.resolve();
+	});
+
+	afterEach(() => {
+		sinon.restore();
 	});
 
 	after(() =>
