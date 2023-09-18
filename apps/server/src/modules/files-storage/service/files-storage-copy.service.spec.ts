@@ -8,6 +8,7 @@ import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType, ScanStatus } from '../entity';
+import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { createCopyFiles } from '../helper';
 import { CopyFileResponseBuilder } from '../mapper';
 import { FileRecordRepo } from '../repo';
@@ -46,7 +47,7 @@ describe('FilesStorageService copy methods', () => {
 			providers: [
 				FilesStorageService,
 				{
-					provide: S3ClientAdapter,
+					provide: FILES_STORAGE_S3_CONNECTION,
 					useValue: createMock<S3ClientAdapter>(),
 				},
 				{
@@ -69,7 +70,7 @@ describe('FilesStorageService copy methods', () => {
 		}).compile();
 
 		service = module.get(FilesStorageService);
-		storageClient = module.get(S3ClientAdapter);
+		storageClient = module.get(FILES_STORAGE_S3_CONNECTION);
 		fileRecordRepo = module.get(FileRecordRepo);
 		antivirusService = module.get(AntivirusService);
 	});
