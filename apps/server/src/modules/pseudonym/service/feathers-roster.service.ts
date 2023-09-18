@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Course, EntityId, Pseudonym, RoleName, RoleReference, UserDO } from '@shared/domain';
-import { CourseService } from '@src/modules/learnroom/service';
+import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { ToolContextType } from '@src/modules/tool/common/enum';
 import { ContextExternalTool, ContextRef } from '@src/modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@src/modules/tool/context-external-tool/service';
