@@ -3,11 +3,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { IFindOptions, Page, Pseudonym, School, User } from '@shared/domain';
 import { pseudonymFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { ForbiddenException } from '@nestjs/common';
+import { ICurrentUser } from '@src/modules/authentication';
+import { Action, AuthorizationService } from '@src/modules/authorization';
 import { PseudonymSearchQuery } from '../domain';
 import { PseudonymService } from '../service';
 import { PseudonymUc } from './pseudonym.uc';
-import { ICurrentUser } from '../../authentication';
-import { Action, AuthorizationService } from '../../authorization';
 
 describe('PseudonymUc', () => {
 	let module: TestingModule;

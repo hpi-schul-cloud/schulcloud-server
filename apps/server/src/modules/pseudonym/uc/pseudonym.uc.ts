@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Page, Pseudonym, School, User } from '@shared/domain';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { ICurrentUser } from '@src/modules/authentication';
+import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { PseudonymService } from '../service';
-import { ICurrentUser } from '../../authentication';
-import { AuthorizationContextBuilder, AuthorizationService } from '../../authorization';
 
 @Injectable()
 export class PseudonymUc {
