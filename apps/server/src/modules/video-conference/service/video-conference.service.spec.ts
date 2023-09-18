@@ -29,7 +29,7 @@ import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception
 import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { VideoConferenceService } from './video-conference.service';
-import { ErrorStatus } from '../error/error-status.enum';
+import { ErrorStatus } from '../error';
 import { BBBRole } from '../bbb';
 import { IScopeInfo, ScopeRef, VideoConferenceState } from '../uc/dto';
 import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';
@@ -193,13 +193,20 @@ describe('VideoConferenceService', () => {
 				};
 			};
 
+			it('should call the user service to find the user by id', async () => {
+				const { userId, scopeId } = setup();
+
+				await service.hasExpertRole(userId, VideoConferenceScope.COURSE, scopeId);
+
+				expect(userService.findById).toHaveBeenCalledWith(userId);
+			});
+
 			it('should return false', async () => {
 				const { userId, scopeId } = setup();
 
 				const result = await service.hasExpertRole(userId, VideoConferenceScope.COURSE, scopeId);
 
 				expect(result).toBe(false);
-				expect(userService.findById).toHaveBeenCalledWith(userId);
 			});
 		});
 

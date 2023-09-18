@@ -25,7 +25,7 @@ import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { BBBRole } from '../bbb';
-import { ErrorStatus } from '../error/error-status.enum';
+import { ErrorStatus } from '../error';
 import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';
 import { PermissionScopeMapping } from '../mapper/video-conference.mapper';
 import { IScopeInfo, VideoConferenceState } from '../uc/dto';
@@ -63,10 +63,8 @@ export class VideoConferenceService {
 		switch (conferenceScope) {
 			case VideoConferenceScope.COURSE: {
 				const user: UserDO = await this.userService.findById(userId);
-				isExpert = this.existsExpertRole(user.roles);
-				if (isExpert && user.roles.length > 1) {
-					isExpert = false;
-				}
+				isExpert = this.existsOnlyExpertRole(user.roles);
+
 				return isExpert;
 			}
 			case VideoConferenceScope.EVENT: {
@@ -87,10 +85,14 @@ export class VideoConferenceService {
 		}
 	}
 
-	private existsExpertRole(roles: RoleReference[]): boolean {
+	private existsOnlyExpertRole(roles: RoleReference[]): boolean {
 		const roleNames: RoleName[] = roles.map((role: RoleReference) => role.name);
 
-		const isExpert: boolean = roleNames.includes(RoleName.EXPERT);
+		let isExpert: boolean = roleNames.includes(RoleName.EXPERT);
+
+		if (isExpert && roles.length > 1) {
+			isExpert = false;
+		}
 
 		return isExpert;
 	}
