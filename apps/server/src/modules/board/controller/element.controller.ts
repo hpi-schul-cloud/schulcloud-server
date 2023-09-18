@@ -19,6 +19,7 @@ import { ElementUc } from '../uc/element.uc';
 import {
 	ContentElementUrlParams,
 	CreateSubmissionItemBodyParams,
+	ExternalToolElementContentBody,
 	MoveContentElementBody,
 	SubmissionItemResponse,
 } from './dto';
@@ -57,7 +58,12 @@ export class ElementController {
 	}
 
 	@ApiOperation({ summary: 'Update a single content element.' })
-	@ApiExtraModels(FileElementContentBody, RichTextElementContentBody, SubmissionContainerElementContentBody)
+	@ApiExtraModels(
+		FileElementContentBody,
+		RichTextElementContentBody,
+		SubmissionContainerElementContentBody,
+		ExternalToolElementContentBody
+	)
 	@ApiResponse({ status: 204 })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
