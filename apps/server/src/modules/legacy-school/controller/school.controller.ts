@@ -19,7 +19,7 @@ import { MigrationBody, MigrationResponse, SchoolParams } from './dto';
 @ApiTags('School')
 @Authenticate('jwt')
 @Controller('school')
-export class SchoolController {
+export class LegacySchoolController {
 	constructor(private readonly schoolUc: LegacySchoolUc, private readonly migrationMapper: MigrationMapper) {}
 
 	@Put(':schoolId/migration')

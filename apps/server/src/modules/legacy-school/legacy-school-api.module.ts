@@ -4,7 +4,7 @@ import { LoggerModule } from '@src/core/logger';
 import { UserLoginMigrationModule } from '@src/modules/user-login-migration';
 import { LegacySchoolUc } from './uc';
 import { LegacySchoolModule } from './legacy-school.module';
-import { SchoolController } from './controller/school.controller';
+import { LegacySchoolController } from './controller/school.controller';
 import { MigrationMapper } from './mapper/migration.mapper';
 
 /**
@@ -12,7 +12,7 @@ import { MigrationMapper } from './mapper/migration.mapper';
  */
 @Module({
 	imports: [LegacySchoolModule, AuthorizationModule, LoggerModule, UserLoginMigrationModule],
-	controllers: [SchoolController],
+	controllers: [LegacySchoolController],
 	providers: [LegacySchoolUc, MigrationMapper],
 })
 export class LegacySchoolApiModule {}

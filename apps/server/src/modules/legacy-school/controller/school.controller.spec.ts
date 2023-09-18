@@ -6,17 +6,17 @@ import { MigrationMapper } from '../mapper/migration.mapper';
 import { OauthMigrationDto } from '../uc/dto/oauth-migration.dto';
 import { LegacySchoolUc } from '../uc';
 import { MigrationBody, MigrationResponse, SchoolParams } from './dto';
-import { SchoolController } from './school.controller';
+import { LegacySchoolController } from './school.controller';
 
 describe('School Controller', () => {
 	let module: TestingModule;
-	let controller: SchoolController;
+	let controller: LegacySchoolController;
 	let schoolUc: DeepMocked<LegacySchoolUc>;
 	let mapper: DeepMocked<MigrationMapper>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			controllers: [SchoolController],
+			controllers: [LegacySchoolController],
 			providers: [
 				{
 					provide: LegacySchoolUc,
@@ -28,7 +28,7 @@ describe('School Controller', () => {
 				},
 			],
 		}).compile();
-		controller = module.get(SchoolController);
+		controller = module.get(LegacySchoolController);
 		schoolUc = module.get(LegacySchoolUc);
 		mapper = module.get(MigrationMapper);
 	});
