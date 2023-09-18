@@ -3,7 +3,7 @@ import { AuthorizationModule } from '@src/modules/authorization';
 import { LoggerModule } from '@src/core/logger';
 import { UserLoginMigrationModule } from '@src/modules/user-login-migration';
 import { LegacySchoolUc } from './uc';
-import { LegacySchoolModule } from './school-migration.module';
+import { LegacySchoolModule } from './legacy-school.module';
 import { SchoolController } from './controller/school.controller';
 import { MigrationMapper } from './mapper/migration.mapper';
 

@@ -1,2 +1,2 @@
-export * from './school-migration.module';
+export * from './legacy-school.module';
 export * from './service';
