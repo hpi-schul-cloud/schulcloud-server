@@ -47,10 +47,9 @@ interface Group {
 /**
  * Please do not use this service in any other nest modules.
  * This service will be called from feathers to get the roster data for ctl pseudonyms {@link ExternalToolPseudonymEntity}.
- * These data will be used by bettermarks display the usernames.
+ * These data will be used e.g. by bettermarks to resolve and display the usernames.
  */
 @Injectable()
-// TODO: test @arne
 export class FeathersRosterService {
 	constructor(
 		private readonly userService: UserService,
@@ -98,30 +97,38 @@ export class FeathersRosterService {
 	}
 
 	async getGroup(courseId: EntityId, oauth2ClientId: string): Promise<Group> {
-		const course: Course = await this.validateAndGetCourse(courseId);
+		const course: Course = await this.courseService.findById(courseId);
 		const externalTool: ExternalTool = await this.validateAndGetExternalTool(oauth2ClientId);
 
 		await this.validateSchoolExternalTool(course.school.id, externalTool.id as string);
 		await this.validateContextExternalTools(courseId);
 
-		const [studentEntities, teacherEntities] = await Promise.all([
+		const [studentEntities, teacherEntities, substitutionTeacherEntities] = await Promise.all([
 			course.students.loadItems(),
 			course.teachers.loadItems(),
-		]);
-		const [students, teachers] = await Promise.all([
-			Promise.all(studentEntities.map((user) => this.userService.findById(user.id))),
-			Promise.all(teacherEntities.map((user) => this.userService.findById(user.id))),
+			course.substitutionTeachers.loadItems(),
 		]);
 
-		const [studentPseudonyms, teacherPseudonyms] = await Promise.all([
+		const [students, teachers, substitutionTeachers] = await Promise.all([
+			Promise.all(studentEntities.map((user) => this.userService.findById(user.id))),
+			Promise.all(teacherEntities.map((user) => this.userService.findById(user.id))),
+			Promise.all(substitutionTeacherEntities.map((user) => this.userService.findById(user.id))),
+		]);
+
+		const [studentPseudonyms, teacherPseudonyms, substitutionTeacherPseudonyms] = await Promise.all([
 			Promise.all(students.map((user: UserDO) => this.pseudonymService.findByUserAndTool(user, externalTool))),
 			Promise.all(teachers.map((user: UserDO) => this.pseudonymService.findByUserAndTool(user, externalTool))),
+			Promise.all(
+				substitutionTeachers.map((user: UserDO) => this.pseudonymService.findByUserAndTool(user, externalTool))
+			),
 		]);
+
+		const allTeacherPseudonyms = teacherPseudonyms.concat(substitutionTeacherPseudonyms);
 
 		const group: Group = {
 			data: {
 				students: studentPseudonyms.map((pseudonym: Pseudonym) => this.mapPseudonymToUserData(pseudonym)),
-				teachers: teacherPseudonyms.map((pseudonym: Pseudonym) => this.mapPseudonymToUserData(pseudonym)),
+				teachers: allTeacherPseudonyms.map((pseudonym: Pseudonym) => this.mapPseudonymToUserData(pseudonym)),
 			},
 		};
 
@@ -182,16 +189,6 @@ export class FeathersRosterService {
 		);
 
 		return validCourses;
-	}
-
-	private async validateAndGetCourse(courseId: EntityId): Promise<Course> {
-		const course = await this.courseService.findById(courseId);
-
-		if (!course) {
-			throw new NotFoundLoggableException(Course.name, 'id', courseId);
-		}
-
-		return course;
 	}
 
 	private async validateAndGetExternalTool(oauth2ClientId: string): Promise<ExternalTool> {

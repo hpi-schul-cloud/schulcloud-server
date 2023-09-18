@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DatabaseObjectNotFoundException } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Course, Pseudonym, RoleName, SchoolDO, UserDO } from '@shared/domain';
+import { Course, Pseudonym, RoleName, School, SchoolDO, UserDO } from '@shared/domain';
 import {
 	contextExternalToolFactory,
 	courseFactory,
@@ -10,19 +10,21 @@ import {
 	pseudonymFactory,
 	schoolDOFactory,
 	schoolExternalToolFactory,
+	schoolFactory,
 	setupEntities,
+	UserAndAccountTestFactory,
 	userDoFactory,
 } from '@shared/testing';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { ToolContextType } from '@src/modules/tool/common/enum';
 import { ContextExternalTool, ContextRef } from '@src/modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@src/modules/tool/context-external-tool/service';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain';
 import { ExternalToolService } from '@src/modules/tool/external-tool/service';
+import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain';
 import { SchoolExternalToolService } from '@src/modules/tool/school-external-tool/service';
 import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
-import { ExternalTool } from '../../tool/external-tool/domain';
-import { SchoolExternalTool } from '../../tool/school-external-tool/domain';
 import { FeathersRosterService } from './feathers-roster.service';
 import { PseudonymService } from './pseudonym.service';
 
@@ -349,5 +351,268 @@ describe('FeathersRosterService', () => {
 		});
 	});
 
-	describe('getGroup', () => {});
+	describe('getGroup', () => {
+		describe('when valid courseId and oauth2ClientId is given', () => {
+			const setup = () => {
+				let courseA: Course = courseFactory.buildWithId();
+				const schoolEntity: School = schoolFactory.buildWithId();
+				const school: SchoolDO = schoolDOFactory.build({ id: schoolEntity.id });
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+				const externalToolId: string = externalTool.id as string;
+				const otherExternalTool: ExternalTool = externalToolFactory.buildWithId();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolId: externalTool.id,
+					schoolId: school.id,
+				});
+				const otherSchoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolId: otherExternalTool.id,
+					schoolId: school.id,
+				});
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id as string, schoolExternalTool.schoolId)
+					.buildWithId({
+						contextRef: new ContextRef({
+							id: courseA.id,
+							type: ToolContextType.COURSE,
+						}),
+					});
+
+				const otherContextExternalTool: ContextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(otherSchoolExternalTool.id as string, otherSchoolExternalTool.schoolId)
+					.buildWithId({
+						contextRef: new ContextRef({
+							id: courseA.id,
+							type: ToolContextType.COURSE,
+						}),
+					});
+
+				const { studentUser } = UserAndAccountTestFactory.buildStudent();
+				const student1: UserDO = userDoFactory.build({ id: studentUser.id });
+				const student1Pseudonym: Pseudonym = pseudonymFactory.build({
+					userId: student1.id,
+					toolId: contextExternalTool.id,
+				});
+
+				const { studentUser: studentUser2 } = UserAndAccountTestFactory.buildStudent();
+				const student2: UserDO = userDoFactory.build({ id: studentUser2.id });
+				const student2Pseudonym: Pseudonym = pseudonymFactory.build({
+					userId: student2.id,
+					toolId: contextExternalTool.id,
+				});
+
+				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				const teacher: UserDO = userDoFactory.build({ id: teacherUser.id });
+				const teacherPseudonym: Pseudonym = pseudonymFactory.build({
+					userId: teacher.id,
+					toolId: contextExternalTool.id,
+				});
+
+				const { teacherUser: substitutionTeacherUser } = UserAndAccountTestFactory.buildTeacher();
+				const substitutionTeacher: UserDO = userDoFactory.build({ id: substitutionTeacherUser.id });
+				const substitutionTeacherPseudonym: Pseudonym = pseudonymFactory.build({
+					userId: substitutionTeacher.id,
+					toolId: contextExternalTool.id,
+				});
+
+				courseA = courseFactory.build({
+					...courseA,
+					school: schoolEntity,
+					students: [studentUser, studentUser2],
+					teachers: [teacherUser],
+					substitutionTeachers: [substitutionTeacherUser],
+				});
+
+				courseService.findById.mockResolvedValue(courseA);
+				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalTool);
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([schoolExternalTool]);
+				contextExternalToolService.findAllByContext.mockResolvedValueOnce([
+					contextExternalTool,
+					otherContextExternalTool,
+				]);
+
+				userService.findById.mockResolvedValueOnce(student1);
+				pseudonymService.findByUserAndTool.mockResolvedValueOnce(student1Pseudonym);
+				userService.findById.mockResolvedValueOnce(student2);
+				pseudonymService.findByUserAndTool.mockResolvedValueOnce(student2Pseudonym);
+				userService.findById.mockResolvedValueOnce(teacher);
+				pseudonymService.findByUserAndTool.mockResolvedValueOnce(teacherPseudonym);
+				userService.findById.mockResolvedValueOnce(substitutionTeacher);
+				pseudonymService.findByUserAndTool.mockResolvedValueOnce(substitutionTeacherPseudonym);
+
+				const mockedIframeSubject = 'mockedIframeSubject';
+				pseudonymService.getIframeSubject.mockReturnValue(mockedIframeSubject);
+
+				return {
+					externalTool,
+					externalToolId,
+					courseA,
+					schoolExternalTool,
+					mockedIframeSubject,
+					student1,
+					student2,
+					teacher,
+					substitutionTeacher,
+				};
+			};
+
+			it('should call the course service to find the course', async () => {
+				const { externalToolId, courseA } = setup();
+
+				await service.getGroup(courseA.id, externalToolId);
+
+				expect(courseService.findById).toHaveBeenCalledWith(courseA.id);
+			});
+
+			it('should call the external tool service to find the external tool', async () => {
+				const { externalToolId } = setup();
+
+				await service.getGroup('courseId', externalToolId);
+
+				expect(externalToolService.findExternalToolByOAuth2ConfigClientId).toHaveBeenCalledWith(externalToolId);
+			});
+
+			it('should call the school external tool service to find the school external tool', async () => {
+				const { externalToolId, schoolExternalTool } = setup();
+
+				await service.getGroup('courseId', externalToolId);
+
+				expect(schoolExternalToolService.findSchoolExternalTools).toHaveBeenCalledWith({
+					schoolId: schoolExternalTool.schoolId,
+					toolId: schoolExternalTool.toolId,
+				});
+			});
+
+			it('should call the context external tool service to find the context external tool', async () => {
+				const { externalToolId, courseA } = setup();
+
+				await service.getGroup(courseA.id, externalToolId);
+
+				expect(contextExternalToolService.findAllByContext).toHaveBeenCalledWith(
+					new ContextRef({ id: courseA.id, type: ToolContextType.COURSE })
+				);
+			});
+
+			it('should call the user service to find the students', async () => {
+				const { externalToolId, courseA } = setup();
+
+				await service.getGroup(courseA.id, externalToolId);
+
+				expect(userService.findById.mock.calls).toEqual([
+					[courseA.students[0].id],
+					[courseA.students[1].id],
+					[courseA.teachers[0].id],
+					[courseA.substitutionTeachers[0].id],
+				]);
+			});
+
+			it('should call the pseudonym service to find the pseudonyms', async () => {
+				const { externalToolId, externalTool, courseA, student1, student2, teacher, substitutionTeacher } = setup();
+
+				await service.getGroup(courseA.id, externalToolId);
+
+				expect(pseudonymService.findByUserAndTool.mock.calls).toEqual([
+					[student1, externalTool],
+					[student2, externalTool],
+					[teacher, externalTool],
+					[substitutionTeacher, externalTool],
+				]);
+			});
+
+			it('should return a group for the course where the tool of the users pseudonym is used', async () => {
+				const { externalToolId, courseA, mockedIframeSubject } = setup();
+
+				const result = await service.getGroup(courseA.id, externalToolId);
+
+				expect(result).toEqual({
+					data: {
+						students: [
+							{
+								user_id: courseA.students[0].id,
+								username: mockedIframeSubject,
+							},
+							{
+								user_id: courseA.students[1].id,
+								username: mockedIframeSubject,
+							},
+						],
+						teachers: [
+							{
+								user_id: courseA.teachers[0].id,
+								username: mockedIframeSubject,
+							},
+							{
+								user_id: courseA.substitutionTeachers[0].id,
+								username: mockedIframeSubject,
+							},
+						],
+					},
+				});
+			});
+		});
+
+		describe('when invalid oauth2Client was given and external tool was not found', () => {
+			const setup = () => {
+				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValueOnce(null);
+			};
+
+			it('should throw an NotFoundLoggableException', async () => {
+				setup();
+
+				const func = service.getGroup('courseId', 'oauth2ClientId');
+
+				await expect(func).rejects.toThrow(
+					new NotFoundLoggableException(ExternalTool.name, 'config.clientId', 'oauth2ClientId')
+				);
+			});
+		});
+
+		describe('when no school external tool was found which belongs to the external tool', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+				const externalToolId: string = externalTool.id as string;
+				const course: Course = courseFactory.buildWithId();
+
+				courseService.findById.mockResolvedValue(course);
+				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValueOnce(externalTool);
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([]);
+
+				return {
+					externalToolId,
+				};
+			};
+
+			it('should throw an NotFoundLoggableException', async () => {
+				const { externalToolId } = setup();
+
+				const func = service.getGroup('courseId', 'oauth2ClientId');
+
+				await expect(func).rejects.toThrow(
+					new NotFoundLoggableException(SchoolExternalTool.name, 'toolId', externalToolId)
+				);
+			});
+		});
+
+		describe('when no context external tool was found which belongs to the course', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+				const course: Course = courseFactory.buildWithId();
+
+				courseService.findById.mockResolvedValue(course);
+				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValueOnce(externalTool);
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([schoolExternalTool]);
+				contextExternalToolService.findAllByContext.mockResolvedValueOnce([]);
+			};
+
+			it('should throw an NotFoundLoggableException', async () => {
+				setup();
+
+				const func = service.getGroup('courseId', 'oauth2ClientId');
+
+				await expect(func).rejects.toThrow(
+					new NotFoundLoggableException(ContextExternalTool.name, 'contextRef.id', 'courseId')
+				);
+			});
+		});
+	});
 });
