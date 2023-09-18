@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Page, Pseudonym, User } from '@shared/domain';
+import { Page, Pseudonym, School, User } from '@shared/domain';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { PseudonymService } from '../service';
 import { ICurrentUser } from '../../authentication';
@@ -23,9 +23,9 @@ export class PseudonymUc {
 
 		const pseudonymUserId: string = pseudonymPage.data[0].userId;
 		const pseudonymUser: User = await this.authorizationService.getUserWithPermissions(pseudonymUserId);
-		const { school } = pseudonymUser;
+		const pseudonymSchool: School = pseudonymUser.school;
 
-		this.authorizationService.checkPermission(user, school, AuthorizationContextBuilder.read([]));
+		this.authorizationService.checkPermission(user, pseudonymSchool, AuthorizationContextBuilder.read([]));
 
 		const foundPseudonym = pseudonymPage.data[0];
 

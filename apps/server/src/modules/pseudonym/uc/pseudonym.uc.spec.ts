@@ -47,7 +47,7 @@ describe('PseudonymUc', () => {
 	});
 
 	describe('findPseudonymByPseudonym', () => {
-		describe('when valid user, query and params are given', () => {
+		describe('when valid user and params are given', () => {
 			const setup = () => {
 				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 				const user: User = userFactory.build();
@@ -72,7 +72,7 @@ describe('PseudonymUc', () => {
 				};
 			};
 
-			it('should call authorization service with query and params', async () => {
+			it('should call authorization service with params', async () => {
 				const { currentUser, user, school } = setup();
 
 				await uc.findPseudonymByPseudonym(currentUser, 'pseudonym');
@@ -91,7 +91,7 @@ describe('PseudonymUc', () => {
 				expect(pseudonymService.findPseudonym).toHaveBeenCalledWith(query, options);
 			});
 
-			it('should return page with pseudonyms', async () => {
+			it('should return pseudonym', async () => {
 				const { currentUser, pseudonym } = setup();
 
 				const foundPseudonym: Pseudonym = await uc.findPseudonymByPseudonym(currentUser, 'pseudonym');
@@ -100,7 +100,7 @@ describe('PseudonymUc', () => {
 			});
 		});
 
-		describe('when checkPermission throws', () => {
+		describe('when user is not authorized', () => {
 			const setup = () => {
 				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 				const user: User = userFactory.build();
@@ -118,7 +118,7 @@ describe('PseudonymUc', () => {
 				};
 			};
 
-			it('should throw same exception', async () => {
+			it('should throw forbidden exception', async () => {
 				const { currentUser } = setup();
 
 				const func = async () => uc.findPseudonymByPseudonym(currentUser, 'pseudonym');
