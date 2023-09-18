@@ -396,6 +396,27 @@ describe('course repo', () => {
 			expect(foundCourse.courseGroups.isInitialized()).toEqual(true);
 			expect(foundCourse.courseGroups[0].id).toEqual(courseGroup.id);
 		});
+
+		it('should populate course teachers, substitute teachers and students', async () => {
+			const teacher = userFactory.buildWithId();
+			const substitutionTeacher = userFactory.buildWithId();
+			const student = userFactory.buildWithId();
+
+			const course = courseFactory.buildWithId({
+				teachers: [teacher],
+				substitutionTeachers: [substitutionTeacher],
+				students: [student],
+			});
+			await em.persistAndFlush([course, teacher, substitutionTeacher, student]);
+			em.clear();
+
+			const foundCourse = await repo.findById(course.id);
+			expect(foundCourse.courseGroups.isInitialized()).toEqual(true);
+
+			expect(foundCourse.teachers[0].id).toEqual(teacher.id);
+			expect(foundCourse.substitutionTeachers[0].id).toEqual(substitutionTeacher.id);
+			expect(foundCourse.students[0].id).toEqual(student.id);
+		});
 	});
 
 	describe('unset optional property', () => {

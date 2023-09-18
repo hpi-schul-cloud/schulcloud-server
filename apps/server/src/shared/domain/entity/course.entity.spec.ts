@@ -249,4 +249,85 @@ describe('CourseEntity', () => {
 			});
 		});
 	});
+
+	describe('getStudentsList is called', () => {
+		const setup = () => {
+			const students = userFactory.buildListWithId(2);
+			const course = courseFactory.build({ students });
+			return { course, students };
+		};
+		it('should return the students of the course', () => {
+			const { course, students } = setup();
+			const [student1, student2] = students;
+
+			const result = course.getStudentsList();
+
+			expect(result.length).toEqual(2);
+			expect(result[0].id).toEqual(student1.id);
+			expect(result[0].firstName).toEqual(student1.firstName);
+			expect(result[0].lastName).toEqual(student1.lastName);
+			expect(result[1].id).toEqual(student2.id);
+		});
+		it('should return an empty array if no students are in the course', () => {
+			const course = courseFactory.build({ students: [] });
+
+			const result = course.getStudentsList();
+
+			expect(result.length).toEqual(0);
+		});
+	});
+
+	describe('getTeachersList is called', () => {
+		const setup = () => {
+			const teachers = userFactory.buildListWithId(2);
+			const course = courseFactory.build({ teachers });
+			return { course, teachers };
+		};
+		it('should return the students of the course', () => {
+			const { course, teachers } = setup();
+			const [teacher1, teacher2] = teachers;
+
+			const result = course.getTeachersList();
+
+			expect(result.length).toEqual(2);
+			expect(result[0].id).toEqual(teacher1.id);
+			expect(result[0].firstName).toEqual(teacher1.firstName);
+			expect(result[0].lastName).toEqual(teacher1.lastName);
+			expect(result[1].id).toEqual(teacher2.id);
+		});
+		it('should return an empty array if no teachers are in the course', () => {
+			const course = courseFactory.build({ teachers: [] });
+
+			const result = course.getTeachersList();
+
+			expect(result.length).toEqual(0);
+		});
+	});
+
+	describe('getSubstitutionTeacherList is called', () => {
+		const setup = () => {
+			const substitutionTeachers = userFactory.buildListWithId(2);
+			const course = courseFactory.build({ substitutionTeachers });
+			return { course, substitutionTeachers };
+		};
+		it('should return the substitutionTeachers of the course', () => {
+			const { course, substitutionTeachers } = setup();
+			const [substitutionTeacher1, substitutionTeacher2] = substitutionTeachers;
+
+			const result = course.getSubstitutionTeachersList();
+
+			expect(result.length).toEqual(2);
+			expect(result[0].id).toEqual(substitutionTeacher1.id);
+			expect(result[0].firstName).toEqual(substitutionTeacher1.firstName);
+			expect(result[0].lastName).toEqual(substitutionTeacher1.lastName);
+			expect(result[1].id).toEqual(substitutionTeacher2.id);
+		});
+		it('should return an empty array if no substitutionTeachers are in the course', () => {
+			const course = courseFactory.build({ substitutionTeachers: [] });
+
+			const result = course.getSubstitutionTeachersList();
+
+			expect(result.length).toEqual(0);
+		});
+	});
 });

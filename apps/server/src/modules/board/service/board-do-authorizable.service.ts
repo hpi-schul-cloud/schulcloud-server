@@ -58,7 +58,7 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 					userRoleEnum: UserRoleEnum.TEACHER,
 				};
 			}),
-			...course.getSubstitutionTeacherList().map((user) => {
+			...course.getSubstitutionTeachersList().map((user) => {
 				return {
 					userId: user.id,
 					firstName: user.firstName,

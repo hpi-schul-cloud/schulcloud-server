@@ -15,7 +15,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server';
-import { SubmissionItemResponse } from '../dto';
+import { SubmissionItemResponse, SubmissionsResponse } from '../dto';
 
 const baseRouteName = '/board-submissions';
 describe('submission item lookup (api)', () => {
@@ -38,7 +38,7 @@ describe('submission item lookup (api)', () => {
 		await app.close();
 	});
 
-	describe('with teacher of two submission containers filled with submission items of 2 students', () => {
+	describe('when user is teacher and we have 2 submission containers filled with submission items from 2 students', () => {
 		const setup = async () => {
 			await cleanupCollections(em);
 
@@ -110,6 +110,8 @@ describe('submission item lookup (api)', () => {
 				item12,
 				item21,
 				item22,
+				studentUser1,
+				studentUser2,
 			};
 		};
 		it('should return status 200', async () => {
@@ -123,24 +125,38 @@ describe('submission item lookup (api)', () => {
 			const { loggedInClient, submissionContainerNode1, item11, item12 } = await setup();
 
 			const response = await loggedInClient.get(`${submissionContainerNode1.id}`);
-			const body = response.body as SubmissionItemResponse[];
-			expect(body.length).toBe(2);
-			expect(body.map((item) => item.id)).toContain(item11.id);
-			expect(body.map((item) => item.id)).toContain(item12.id);
+			const body = response.body as SubmissionsResponse;
+			const { submissionItemsResponse } = body;
+			expect(submissionItemsResponse.length).toBe(2);
+			expect(submissionItemsResponse.map((item) => item.id)).toContain(item11.id);
+			expect(submissionItemsResponse.map((item) => item.id)).toContain(item12.id);
 		});
 
 		it('should return all items from container 2 as teacher', async () => {
 			const { loggedInClient, submissionContainerNode2, item21, item22 } = await setup();
 
 			const response = await loggedInClient.get(`${submissionContainerNode2.id}`);
-			const body = response.body as SubmissionItemResponse[];
-			expect(body.length).toBe(2);
-			expect(body.map((item) => item.id)).toContain(item21.id);
-			expect(body.map((item) => item.id)).toContain(item22.id);
+			const body = response.body as SubmissionsResponse;
+			const { submissionItemsResponse } = body;
+			expect(submissionItemsResponse.length).toBe(2);
+			expect(submissionItemsResponse.map((item) => item.id)).toContain(item21.id);
+			expect(submissionItemsResponse.map((item) => item.id)).toContain(item22.id);
+		});
+
+		it('should return list of students', async () => {
+			const { loggedInClient, submissionContainerNode1, studentUser1, studentUser2 } = await setup();
+
+			const response = await loggedInClient.get(`${submissionContainerNode1.id}`);
+			const body = response.body as SubmissionsResponse;
+			const { users } = body;
+			expect(users.length).toBe(2);
+			const userIds = users.map((user) => user.userId);
+			expect(userIds).toContain(studentUser1.id);
+			expect(userIds).toContain(studentUser2.id);
 		});
 	});
 
-	describe('with student of a submission container filled with 2 items', () => {
+	describe('when user is student and we have a submission container element filled with 2 submission items', () => {
 		const setup = async () => {
 			await cleanupCollections(em);
 
@@ -194,13 +210,14 @@ describe('submission item lookup (api)', () => {
 			const { loggedInClient, submissionContainerNode, item1 } = await setup();
 
 			const response = await loggedInClient.get(`${submissionContainerNode.id}`);
-			const body = response.body as SubmissionItemResponse[];
-			expect(body.length).toBe(1);
-			expect(body[0].id).toBe(item1.id);
+			const body = response.body as SubmissionsResponse;
+			const { submissionItemsResponse } = body;
+			expect(submissionItemsResponse.length).toBe(1);
+			expect(submissionItemsResponse[0].id).toBe(item1.id);
 		});
 	});
 
-	describe('with invalid user', () => {
+	describe('when user is invalid', () => {
 		const setup = async () => {
 			await cleanupCollections(em);
 

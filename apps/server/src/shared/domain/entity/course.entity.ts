@@ -156,7 +156,7 @@ export class Course
 		return [];
 	}
 
-	public getSubstitutionTeacherList(): UsersList[] {
+	public getSubstitutionTeachersList(): UsersList[] {
 		const users = this.substitutionTeachers.getItems();
 		if (users.length) {
 			const usersList = this.extractUserList(users);
