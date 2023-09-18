@@ -26,6 +26,7 @@ export class PseudonymUc {
 		const { school } = pseudonymUser;
 
 		const context = { action: Action.read, requiredPermissions: [] };
+		// TODO fix checkpermission working for different school
 		this.authorizationService.checkPermission(user, school, context);
 
 		return pseudonymPage;
