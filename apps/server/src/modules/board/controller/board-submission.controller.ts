@@ -40,10 +40,9 @@ export class BoardSubmissionController {
 			urlParams.submissionContainerId
 		);
 		const mapper = SubmissionItemResponseMapper.getInstance();
-		const submissionItemsResponse: SubmissionItemResponse[] = submissionItems.map((item) => mapper.mapToResponse(item));
-		const usersResponse: UserDataResponse[] = users.map((user) => mapper.mapUsersToResponse(user));
+		const response = mapper.mapToResponse(submissionItems, users);
 
-		return { submissionItemsResponse, users: usersResponse };
+		return response;
 	}
 
 	@ApiOperation({ summary: 'Update a single submission item.' })

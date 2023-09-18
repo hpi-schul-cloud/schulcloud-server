@@ -1,5 +1,5 @@
 import { SubmissionItem, UserBoardRoles } from '@shared/domain';
-import { SubmissionItemResponse, TimestampsResponse, UserDataResponse } from '../dto';
+import { SubmissionItemResponse, SubmissionsResponse, TimestampsResponse, UserDataResponse } from '../dto';
 
 export class SubmissionItemResponseMapper {
 	private static instance: SubmissionItemResponseMapper;
@@ -12,7 +12,18 @@ export class SubmissionItemResponseMapper {
 		return SubmissionItemResponseMapper.instance;
 	}
 
-	public mapToResponse(submissionItem: SubmissionItem): SubmissionItemResponse {
+	public mapToResponse(submissionItems: SubmissionItem[], users: UserBoardRoles[]): SubmissionsResponse {
+		const submissionItemsResponse: SubmissionItemResponse[] = submissionItems.map((item) =>
+			this.mapSubmissionsToResponse(item)
+		);
+		const usersResponse: UserDataResponse[] = users.map((user) => this.mapUsersToResponse(user));
+
+		const response = new SubmissionsResponse(submissionItemsResponse, usersResponse);
+
+		return response;
+	}
+
+	public mapSubmissionsToResponse(submissionItem: SubmissionItem): SubmissionItemResponse {
 		const result = new SubmissionItemResponse({
 			completed: submissionItem.completed,
 			id: submissionItem.id,
@@ -26,7 +37,7 @@ export class SubmissionItemResponseMapper {
 		return result;
 	}
 
-	public mapUsersToResponse(user: UserBoardRoles) {
+	private mapUsersToResponse(user: UserBoardRoles) {
 		const result = new UserDataResponse({
 			userId: user.userId,
 			firstName: user.firstName || '',
