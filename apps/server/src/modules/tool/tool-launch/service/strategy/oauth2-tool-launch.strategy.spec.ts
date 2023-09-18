@@ -2,7 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
 import { SchoolService } from '@src/modules/school';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { CourseService } from '@src/modules/learnroom/service';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { ExternalTool } from '../../../external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';

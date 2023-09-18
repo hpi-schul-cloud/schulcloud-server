@@ -12,7 +12,7 @@ import {
 	schoolExternalToolFactory,
 	setupEntities,
 } from '@shared/testing';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { CourseService } from '@src/modules/learnroom/service';
 import { SchoolService } from '@src/modules/school';
 import { CustomParameterEntry } from '../../../common/domain';
 import {
