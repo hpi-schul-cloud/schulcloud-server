@@ -415,29 +415,40 @@ describe('course repo', () => {
 	});
 
 	describe('update Courses', () => {
-		it('should update Courses without deleted user', async () => {
-			// Arrange
-			const user = userFactory.build();
-			const otherUser = userFactory.build();
-			await em.persistAndFlush([user, otherUser]);
-			const course1 = courseFactory.build({ name: 'course #1', students: [user, otherUser] });
-			const course2 = courseFactory.build({ name: 'course #2', substitutionTeachers: [user, otherUser] });
-			const course3 = courseFactory.build({ name: 'course #3', teachers: [user, otherUser] });
-			const course4 = courseFactory.build({ name: 'course #1', students: [otherUser] });
+		describe('when user is existing', () => {
+			const setup = async () => {
+				const user = userFactory.build();
+				const otherUser = userFactory.build();
+				await em.persistAndFlush([user, otherUser]);
+				const course1 = courseFactory.build({ name: 'course #1', students: [user, otherUser] });
+				const course2 = courseFactory.build({ name: 'course #2', substitutionTeachers: [user, otherUser] });
+				const course3 = courseFactory.build({ name: 'course #3', teachers: [user, otherUser] });
+				const course4 = courseFactory.build({ name: 'course #1', students: [otherUser] });
 
-			await em.persistAndFlush([course1, course2, course3, course4]);
-			em.clear();
+				await em.persistAndFlush([course1, course2, course3, course4]);
 
-			// Arrange expected Array after User deletion
-			course1.students.remove((u) => u.id === user.id);
-			course2.substitutionTeachers.remove((u) => u.id === user.id);
-			course3.teachers.remove((u) => u.id === user.id);
+				return {
+					user,
+					course1,
+					course2,
+					course3,
+				};
+			};
 
-			// Act
-			await repo.save([course1, course2, course3]);
+			it('should update Courses without deleted user', async () => {
+				const { user, course1, course2, course3 } = await setup();
 
-			const [, count] = await repo.findAllByUserId(user.id);
-			expect(count).toEqual(0);
+				// Arrange expected Array after User deletion
+				course1.students.remove((u) => u.id === user.id);
+				course2.substitutionTeachers.remove((u) => u.id === user.id);
+				course3.teachers.remove((u) => u.id === user.id);
+
+				// Act
+				await repo.save([course1, course2, course3]);
+
+				const [, count] = await repo.findAllByUserId(user.id);
+				expect(count).toEqual(0);
+			});
 		});
 	});
 });

@@ -122,42 +122,61 @@ describe('course group repo', () => {
 	});
 
 	describe('findByUserId', () => {
-		it('should return courseGroup with userId', async () => {
-			// Arrange
-			const course = courseFactory.build();
-			const courseGroup1 = courseGroupFactory.studentsWithId(3).build({ course });
-			const courseGroup2 = courseGroupFactory.build({ course });
-			const userId = courseGroup1.students[0].id;
-			await em.persistAndFlush([courseGroup1, courseGroup2]);
-			em.clear();
+		describe('when user is existing', () => {
+			const setup = async () => {
+				// Arrange
+				const course = courseFactory.build();
+				const courseGroup1 = courseGroupFactory.studentsWithId(3).build({ course });
+				const courseGroup2 = courseGroupFactory.build({ course });
+				const userId = courseGroup1.students[0].id;
+				await em.persistAndFlush([courseGroup1, courseGroup2]);
 
-			// Act
-			const [result, count] = await repo.findByUserId(userId);
+				return {
+					userId,
+				};
+			};
 
-			expect(count).toEqual(1);
-			expect(result[0].students[0].id).toEqual(userId);
+			it('should return courseGroup with userId', async () => {
+				const { userId } = await setup();
+
+				// Act
+				const [result, count] = await repo.findByUserId(userId);
+
+				expect(count).toEqual(1);
+				expect(result[0].students[0].id).toEqual(userId);
+			});
 		});
 	});
 
 	describe('update courseGroup', () => {
-		it('should update courseGroup without userId', async () => {
-			// Arrange
-			const course = courseFactory.build();
-			const courseGroup1 = courseGroupFactory.studentsWithId(3).build({ course });
-			const courseGroup2 = courseGroupFactory.build({ course });
-			const userId = courseGroup1.students[0].id;
-			await em.persistAndFlush([courseGroup1, courseGroup2]);
-			em.clear();
+		describe('when user is existing', () => {
+			const setup = async () => {
+				// Arrange
+				const course = courseFactory.build();
+				const courseGroup1 = courseGroupFactory.studentsWithId(3).build({ course });
+				const courseGroup2 = courseGroupFactory.build({ course });
+				const userId = courseGroup1.students[0].id;
+				await em.persistAndFlush([courseGroup1, courseGroup2]);
 
-			// Arrange expected Array after User deletion
-			courseGroup1.students.remove((s) => s.id === userId);
+				return {
+					userId,
+					courseGroup1,
+				};
+			};
 
-			// Act
-			await repo.save(courseGroup1);
+			it('should update courseGroup without userId', async () => {
+				const { userId, courseGroup1 } = await setup();
 
-			const [, count] = await repo.findByUserId(userId);
+				// Arrange expected Array after User deletion
+				courseGroup1.students.remove((s) => s.id === userId);
 
-			expect(count).toEqual(0);
+				// Act
+				await repo.save(courseGroup1);
+
+				const [, count] = await repo.findByUserId(userId);
+
+				expect(count).toEqual(0);
+			});
 		});
 	});
 });
