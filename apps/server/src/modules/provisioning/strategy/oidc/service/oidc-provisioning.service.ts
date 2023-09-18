@@ -1,32 +1,31 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import {
-	EntityId,
-	FederalState,
-	LegacySchoolDo,
-	RoleReference,
-	SchoolFeatures,
-	SchoolYear,
-	UserDO,
-} from '@shared/domain';
+import { EntityId, ExternalSource, FederalState, SchoolFeatures, SchoolYear } from '@shared/domain';
+import { LegacySchoolDo, RoleReference, UserDO } from '@shared/domain/domainobject';
+import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
-import { RoleService } from '@src/modules/role';
-import { RoleDto } from '@src/modules/role/service/dto/role.dto';
+import { Group, GroupService, GroupUser } from '@src/modules/group';
 import { FederalStateService, LegacySchoolService, SchoolYearService } from '@src/modules/legacy-school';
 import { FederalStateNames } from '@src/modules/legacy-school/types';
+import { RoleService } from '@src/modules/role';
+import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { UserService } from '@src/modules/user';
+import { ObjectId } from 'bson';
 import CryptoJS from 'crypto-js';
-import { ExternalSchoolDto, ExternalUserDto } from '../../../dto';
+import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from '../../../dto';
+import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
 
 @Injectable()
 export class OidcProvisioningService {
 	constructor(
 		private readonly userService: UserService,
 		private readonly schoolService: LegacySchoolService,
+		private readonly groupService: GroupService,
 		private readonly roleService: RoleService,
 		private readonly accountService: AccountService,
 		private readonly schoolYearService: SchoolYearService,
-		private readonly federalStateService: FederalStateService
+		private readonly federalStateService: FederalStateService,
+		private readonly logger: Logger
 	) {}
 
 	async provisionExternalSchool(externalSchool: ExternalSchoolDto, systemId: EntityId): Promise<LegacySchoolDo> {
@@ -116,5 +115,74 @@ export class OidcProvisioningService {
 		}
 
 		return savedUser;
+	}
+
+	async provisionExternalGroup(externalGroup: ExternalGroupDto, systemId: EntityId): Promise<void> {
+		if (externalGroup.users.length === 0) {
+			return;
+		}
+
+		const existingGroup: Group | null = await this.groupService.findByExternalSource(
+			externalGroup.externalId,
+			systemId
+		);
+
+		let organizationId: string | undefined;
+		if (externalGroup.externalOrganizationId) {
+			const existingSchool: LegacySchoolDo | null = await this.schoolService.getSchoolByExternalId(
+				externalGroup.externalOrganizationId,
+				systemId
+			);
+
+			if (!existingSchool || !existingSchool.id) {
+				this.logger.info(new SchoolForGroupNotFoundLoggable(externalGroup));
+				return;
+			}
+
+			organizationId = existingSchool.id;
+		}
+
+		const users: GroupUser[] = await this.getFilteredGroupUsers(externalGroup, systemId);
+
+		const group: Group = new Group({
+			id: existingGroup ? existingGroup.id : new ObjectId().toHexString(),
+			name: externalGroup.name,
+			externalSource: new ExternalSource({
+				externalId: externalGroup.externalId,
+				systemId,
+			}),
+			type: externalGroup.type,
+			organizationId,
+			validFrom: externalGroup.from,
+			validUntil: externalGroup.until,
+			users,
+		});
+
+		await this.groupService.save(group);
+	}
+
+	private async getFilteredGroupUsers(externalGroup: ExternalGroupDto, systemId: string): Promise<GroupUser[]> {
+		const users: (GroupUser | null)[] = await Promise.all(
+			externalGroup.users.map(async (externalGroupUser: ExternalGroupUserDto): Promise<GroupUser | null> => {
+				const user: UserDO | null = await this.userService.findByExternalId(externalGroupUser.externalUserId, systemId);
+				const roles: RoleDto[] = await this.roleService.findByNames([externalGroupUser.roleName]);
+
+				if (!user || !user.id || roles.length !== 1 || !roles[0].id) {
+					this.logger.info(new UserForGroupNotFoundLoggable(externalGroupUser));
+					return null;
+				}
+
+				const groupUser: GroupUser = new GroupUser({
+					userId: user.id,
+					roleId: roles[0].id,
+				});
+
+				return groupUser;
+			})
+		);
+
+		const filteredUsers: GroupUser[] = users.filter((groupUser): groupUser is GroupUser => groupUser !== null);
+
+		return filteredUsers;
 	}
 }

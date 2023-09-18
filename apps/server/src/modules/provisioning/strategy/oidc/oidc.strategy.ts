@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable } from '@nestjs/common';
 import { LegacySchoolDo, UserDO } from '@shared/domain';
 import { OauthDataDto, ProvisioningDto } from '../../dto';
@@ -21,6 +22,17 @@ export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
 			data.system.systemId,
 			school?.id
 		);
+
+		if (Configuration.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED') && data.externalGroups) {
+			// TODO: N21-1212 remove user from groups
+
+			await Promise.all(
+				data.externalGroups.map((externalGroup) =>
+					this.oidcProvisioningService.provisionExternalGroup(externalGroup, data.system.systemId)
+				)
+			);
+		}
+
 		return new ProvisioningDto({ externalUserId: user.externalId || data.externalUser.externalId });
 	}
 }
