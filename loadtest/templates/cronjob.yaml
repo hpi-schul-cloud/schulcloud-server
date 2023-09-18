@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: loadtest-erwin-{{ .Values.job_name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  schedule: 0 8 * * *
+  suspend: true
+  jobTemplate:
+    spec:
+      completions: 1
+      parallelism: 1
+      template:
+        metadata:
+          labels:
+            test: loadtest-erwin-server
+            pod: {{ .Values.job_name }}
+        spec:
+          containers:
+          - name: {{ .Values.job_name }}
+            image: grafana/k6:0.43.1
+            imagePullPolicy: Always
+            command:
+              - "k6"
+              - "run"
+              - "/js/server.spec.js"
+            volumeMounts:
+            - name: secret-volume
+              mountPath: /js
+              readOnly: true
+            ports:
+            - containerPort: 5656
+              name: loadtest-pod
+          volumes:
+          - name: secret-volume
+            secret:
+              secretName: server-spec
+          restartPolicy: OnFailure
