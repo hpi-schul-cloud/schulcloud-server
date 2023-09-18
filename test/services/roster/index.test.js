@@ -111,7 +111,7 @@ describe('roster service', function oauth() {
 		describe('when CTL feature is enabled', () => {
 			const setup = () => {
 				Configuration.set('FEATURE_CTL_TOOLS_TAB_ENABLED', true);
-				const nestGetUsersMetadataStub = sinon.stub(FeathersRosterService, 'getUsersMetadata');
+				const nestGetUsersMetadataStub = sinon.stub(FeathersRosterService.prototype, 'getUsersMetadata');
 
 				return {
 					nestGetUsersMetadataStub,
@@ -133,7 +133,7 @@ describe('roster service', function oauth() {
 			const setup = () => {
 				Configuration.set('FEATURE_CTL_TOOLS_TAB_ENABLED', false);
 
-				const nestGetUsersMetadataStub = sinon.stub(FeathersRosterService, 'getUsersMetadata');
+				const nestGetUsersMetadataStub = sinon.stub(FeathersRosterService.prototype, 'getUsersMetadata');
 
 				return {
 					nestGetUsersMetadataStub,
@@ -164,7 +164,7 @@ describe('roster service', function oauth() {
 			const setup = () => {
 				Configuration.set('FEATURE_CTL_TOOLS_TAB_ENABLED', true);
 
-				const nestGetUserGroupsStub = sinon.stub(FeathersRosterService, 'getUserGroups');
+				const nestGetUserGroupsStub = sinon.stub(FeathersRosterService.prototype, 'getUserGroups');
 
 				return {
 					nestGetUserGroupsStub,
@@ -189,7 +189,7 @@ describe('roster service', function oauth() {
 			const setup = () => {
 				Configuration.set('FEATURE_CTL_TOOLS_TAB_ENABLED', false);
 
-				const nestGetUserGroupsStub = sinon.stub(FeathersRosterService, 'getUserGroups');
+				const nestGetUserGroupsStub = sinon.stub(FeathersRosterService.prototype, 'getUserGroups');
 
 				return {
 					nestGetUserGroupsStub,
@@ -233,7 +233,7 @@ describe('roster service', function oauth() {
 			const setup = () => {
 				Configuration.set('FEATURE_CTL_TOOLS_TAB_ENABLED', true);
 
-				const nestGroupStub = sinon.stub(FeathersRosterService, 'getGroup');
+				const nestGroupStub = sinon.stub(FeathersRosterService.prototype, 'getGroup');
 
 				return {
 					nestGroupStub,
@@ -260,7 +260,7 @@ describe('roster service', function oauth() {
 			const setup = () => {
 				Configuration.set('FEATURE_CTL_TOOLS_TAB_ENABLED', false);
 
-				const nestGroupStub = sinon.stub(FeathersRosterService, 'getGroup');
+				const nestGroupStub = sinon.stub(FeathersRosterService.prototype, 'getGroup');
 
 				return {
 					nestGroupStub,
