@@ -75,6 +75,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			BoardNodeType.FILE_ELEMENT,
 			BoardNodeType.RICH_TEXT_ELEMENT,
 			BoardNodeType.SUBMISSION_CONTAINER_ELEMENT,
+			BoardNodeType.EXTERNAL_TOOL,
 		]);
 
 		const elements = this.buildChildren<RichTextElement | SubmissionContainerElement>(boardNode);
@@ -153,6 +154,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			children: [],
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
+			contextExternalToolId: boardNode.contextExternalTool?.id,
 		});
 
 		return element;

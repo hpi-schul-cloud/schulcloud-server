@@ -13,6 +13,7 @@ import {
 } from '@shared/domain';
 import {
 	AnyElementContentBody,
+	ExternalToolContentBody,
 	FileContentBody,
 	RichTextContentBody,
 	SubmissionContainerContentBody,
@@ -67,7 +68,12 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 	}
 
 	visitExternalToolElement(externalToolElement: ExternalToolElement): void {
-		this.throwNotHandled(externalToolElement);
+		if (this.content instanceof ExternalToolContentBody && this.content.contextExternalToolId !== undefined) {
+			// Updates should not remove an existing reference to a tool, to prevent orphan tool instances
+			externalToolElement.contextExternalToolId = this.content.contextExternalToolId;
+		} else {
+			this.throwNotHandled(externalToolElement);
+		}
 	}
 
 	private throwNotHandled(component: AnyBoardDo) {

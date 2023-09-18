@@ -20,15 +20,13 @@ import {
 	ContentElementUrlParams,
 	CreateSubmissionItemBodyParams,
 	ExternalToolElementContentBody,
-	MoveContentElementBody,
-	SubmissionItemResponse,
-} from './dto';
-import {
 	FileElementContentBody,
+	MoveContentElementBody,
 	RichTextElementContentBody,
 	SubmissionContainerElementContentBody,
+	SubmissionItemResponse,
 	UpdateElementContentBodyParams,
-} from './dto/element/update-element-content.body.params';
+} from './dto';
 import { SubmissionItemResponseMapper } from './mapper';
 
 @ApiTags('Board Element')
@@ -75,11 +73,7 @@ export class ElementController {
 		@Body() bodyParams: UpdateElementContentBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		await this.elementUc.updateElementContent(
-			currentUser.userId,
-			urlParams.contentElementId,
-			'content' in bodyParams.data ? bodyParams.data.content : undefined
-		);
+		await this.elementUc.updateElementContent(currentUser.userId, urlParams.contentElementId, bodyParams.data.content);
 	}
 
 	@ApiOperation({ summary: 'Delete a single content element.' })
