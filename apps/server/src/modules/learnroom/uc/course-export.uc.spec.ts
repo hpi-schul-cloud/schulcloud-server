@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CommonCartridgeExportService } from '@src/modules/learnroom/service/common-cartridge-export.service';
-import { AuthorizationService } from '@src/modules';
+import { AuthorizationContextBuilder } from '@src/modules/authorization';
+import { AuthorizationReferenceService, AuthorizableReferenceType } from '@src/modules/authorization/domain/reference';
 import { CourseExportUc } from './course-export.uc';
 import { CommonCartridgeVersion } from '../common-cartridge';
 
@@ -9,7 +10,7 @@ describe('CourseExportUc', () => {
 	let module: TestingModule;
 	let courseExportUc: CourseExportUc;
 	let courseExportServiceMock: DeepMocked<CommonCartridgeExportService>;
-	let authorizationServiceMock: DeepMocked<AuthorizationService>;
+	let authorizationServiceMock: DeepMocked<AuthorizationReferenceService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -20,14 +21,14 @@ describe('CourseExportUc', () => {
 					useValue: createMock<CommonCartridgeExportService>(),
 				},
 				{
-					provide: AuthorizationService,
-					useValue: createMock<AuthorizationService>(),
+					provide: AuthorizationReferenceService,
+					useValue: createMock<AuthorizationReferenceService>(),
 				},
 			],
 		}).compile();
 		courseExportUc = module.get(CourseExportUc);
 		courseExportServiceMock = module.get(CommonCartridgeExportService);
-		authorizationServiceMock = module.get(AuthorizationService);
+		authorizationServiceMock = module.get(AuthorizationReferenceService);
 	});
 
 	afterAll(async () => {
@@ -38,6 +39,7 @@ describe('CourseExportUc', () => {
 		const version: CommonCartridgeVersion = CommonCartridgeVersion.V_1_1_0;
 		it('should check for permissions', async () => {
 			authorizationServiceMock.checkPermissionByReferences.mockResolvedValueOnce();
+
 			await expect(courseExportUc.exportCourse('', '', version)).resolves.not.toThrow();
 			expect(authorizationServiceMock.checkPermissionByReferences).toBeCalledTimes(1);
 		});
