@@ -3,14 +3,14 @@ import { check } from 'k6';
 import { randomString } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 
 export const options = {
-	vus: 10,
-	duration: '5m',
+	vus: 1000,
+	duration: '2m',
 };
 
 function getAccessToken() {
 	console.info('getting access token...');
 	const response = http.post(
-		'http://api-svc.default-ew-545-load-tests.svc.cluster.local:3030/api/v3/authentication/local',
+		'https://dev.loadtest-01.dbildungscloud.dev/api/v3/authentication/local',
 		JSON.stringify({
 			username: 'superhero@schul-cloud.org',
 			password: 'Schulcloud1!',
@@ -21,7 +21,9 @@ function getAccessToken() {
 			},
 		}
 	);
-	return response.json();
+	console.info(response);
+	const result = response.json();
+	return result;
 }
 
 export function setup() {
@@ -31,7 +33,7 @@ export function setup() {
 
 export default function (data) {
 	const response = http.get(
-		`http://api-svc.default-ew-545-load-tests.svc.cluster.local:3030/api/v3/account?type=username&value=${randomString(
+		`https://dev.loadtest-01.dbildungscloud.dev/api/v3/account?type=username&value=${randomString(
 			2,
 			'abcdefghijklmnopqrstuvwxyz'
 		)}`,
