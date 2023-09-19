@@ -286,9 +286,6 @@
                             <a href="#defaultVideoConferenceOptions" title="apps/server/src/modules/video-conference/interface/video-conference-options.interface.ts" ><b>defaultVideoConferenceOptions</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference-options.interface.ts)</a>
                         </li>
                         <li>
-                            <a href="#directoryFactory" title="apps/server/src/shared/testing/factory/file.factory.ts" ><b>directoryFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../file.factory.ts)</a>
-                        </li>
-                        <li>
                             <a href="#dummyResponse" title="apps/server/src/modules/h5p-editor/controller/h5p-editor.controller.ts" ><b>dummyResponse</b>&nbsp;&nbsp;&nbsp;(apps/.../h5p-editor.controller.ts)</a>
                         </li>
                         <li>
@@ -325,7 +322,10 @@
                             <a href="#fileElementNodeFactory" title="apps/server/src/shared/testing/factory/boardnode/file-element-node.factory.ts" ><b>fileElementNodeFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../file-element-node.factory.ts)</a>
                         </li>
                         <li>
-                            <a href="#fileFactory" title="apps/server/src/shared/testing/factory/file.factory.ts" ><b>fileFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../file.factory.ts)</a>
+                            <a href="#fileEntityFactory" title="apps/server/src/modules/files/entity/testing/factory/file-entity.factory.ts" ><b>fileEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../file-entity.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#filePermissionEntityFactory" title="apps/server/src/modules/files/entity/testing/factory/file-permission-entity.factory.ts" ><b>filePermissionEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../file-permission-entity.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#fileRecordFactory" title="apps/server/src/shared/testing/factory/filerecord.factory.ts" ><b>fileRecordFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../filerecord.factory.ts)</a>
@@ -437,6 +437,9 @@
                         </li>
                         <li>
                             <a href="#LdapEncryptionService" title="apps/server/src/shared/infra/encryption/encryption.interface.ts" ><b>LdapEncryptionService</b>&nbsp;&nbsp;&nbsp;(apps/.../encryption.interface.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#legacyFileEntityMockFactory" title="apps/server/src/shared/testing/factory/legacy-file-entity-mock.factory.ts" ><b>legacyFileEntityMockFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../legacy-file-entity-mock.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#lessonBoardElementFactory" title="apps/server/src/shared/testing/factory/boardelement.factory.ts" ><b>lessonBoardElementFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../boardelement.factory.ts)</a>
@@ -1396,7 +1399,6 @@
 	DashboardModelEntity,
 	ExternalToolEntity,
 	FederalState,
-	File,
 	ImportUser,
 	Lesson,
 	LessonBoardElement,
@@ -1413,7 +1415,7 @@
 	SchoolRoles,
 	SchoolYear,
 	ShareToken,
-	StorageProvider,
+	StorageProviderEntity,
 	Submission,
 	System,
 	Task,
@@ -4868,64 +4870,6 @@ must use @ApiProperty</p>
         </tbody>
     </table>
 </section>
-    <h3>apps/server/src/shared/testing/factory/file.factory.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="directoryFactory"></a>
-                    <span class="name">
-                        <span ><b>directoryFactory</b></span>
-                        <a href="#directoryFactory"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;File, IFileProperties&gt;(File, ({ sequence }) &#x3D;&gt; {
-	return {
-		isDirectory: true,
-		creator: userFactory.build(),
-		name: &#x60;directory-${sequence}&#x60;,
-	};
-})</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="fileFactory"></a>
-                    <span class="name">
-                        <span ><b>fileFactory</b></span>
-                        <a href="#fileFactory"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;File, IFileProperties&gt;(File, ({ sequence }) &#x3D;&gt; {
-	return {
-		storageFileName: &#x60;file-${sequence}&#x60;,
-		bucket: &#x27;test-bucket&#x27;,
-		storageProvider: storageProviderFactory.build(),
-		isDirectory: false,
-		creator: userFactory.build(),
-		name: &#x60;file-${sequence}&#x60;,
-	};
-})</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
     <h3>apps/server/src/modules/h5p-editor/controller/h5p-editor.controller.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -5237,6 +5181,77 @@ it should ensure an empty result</p>
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/modules/files/entity/testing/factory/file-entity.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fileEntityFactory"></a>
+                    <span class="name">
+                        <span ><b>fileEntityFactory</b></span>
+                        <a href="#fileEntityFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;FileEntity, FileEntityProps&gt;(FileEntity, ({ sequence }) &#x3D;&gt; {
+	const userId &#x3D; new ObjectId().toHexString();
+
+	return {
+		name: &#x60;test-file-${sequence}.txt&#x60;,
+		size: Math.floor(Math.random() * 4200) + 1,
+		type: &#x27;plain/text&#x27;,
+		storageFileName: &#x60;00${sequence}-test-file-${sequence}.txt&#x60;,
+		bucket: &#x60;bucket-00${sequence}&#x60;,
+		storageProvider: storageProviderFactory.buildWithId(),
+		thumbnail: &#x27;https://example.com/thumbnail.png&#x27;,
+		ownerId: userId,
+		refOwnerModel: FileOwnerModel.USER,
+		creatorId: userId,
+		permissions: [filePermissionEntityFactory.build({ refId: userId })],
+		versionKey: 0,
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/files/entity/testing/factory/file-permission-entity.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="filePermissionEntityFactory"></a>
+                    <span class="name">
+                        <span ><b>filePermissionEntityFactory</b></span>
+                        <a href="#filePermissionEntityFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;FilePermissionEntity, FilePermissionEntityProps&gt;(
+	FilePermissionEntity,
+	() &#x3D;&gt; {
+		return {
+			refId: new ObjectId().toHexString(),
+			refPermModel: FilePermissionReferenceModel.USER,
+		};
+	}
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/shared/testing/factory/filerecord.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -5257,7 +5272,7 @@ it should ensure an empty result</p>
 		size: Math.round(Math.random() * 100000),
 		name: &#x60;file-record #${sequence}&#x60;,
 		mimeType: &#x27;application/octet-stream&#x27;,
-		securityCheck: new FileSecurityCheck({}),
+		securityCheck: new FileRecordSecurityCheck({}),
 		parentType: FileRecordParentType.Course,
 		parentId: new ObjectId().toHexString(),
 		creatorId: new ObjectId().toHexString(),
@@ -6277,6 +6292,34 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>keyPair.publicKey.export({ type: &#x27;pkcs1&#x27;, format: &#x27;pem&#x27; })</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/legacy-file-entity-mock.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="legacyFileEntityMockFactory"></a>
+                    <span class="name">
+                        <span ><b>legacyFileEntityMockFactory</b></span>
+                        <a href="#legacyFileEntityMockFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Factory.define&lt;{ id: string; name: string }&gt;(({ sequence }) &#x3D;&gt; {
+	return {
+		id: new ObjectId().toHexString(),
+		name: &#x60;file-${sequence}.jpg&#x60;,
+	};
+})</code>
                     </td>
                 </tr>
 
@@ -8612,8 +8655,8 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;StorageProvider, IStorageProviderProperties&gt;(
-	StorageProvider,
+                        <i>Default value : </i><code>BaseFactory.define&lt;StorageProviderEntity, IStorageProviderProperties&gt;(
+	StorageProviderEntity,
 	() &#x3D;&gt; {
 		return {
 			endpointUrl: &#x27;http://localhost&#x27;,

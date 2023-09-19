@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/repo/files/files.repo.ts</code>
+            <code>apps/server/src/modules/files/repo/files.repo.ts</code>
         </p>
 
 
@@ -93,7 +93,17 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#findFilesForCleanup" >findFilesForCleanup</a>
+                                <a href="#findByOwnerUserId" >findByOwnerUserId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#findByPermissionRefId" >findByPermissionRefId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#findForCleanup" >findForCleanup</a>
                             </li>
                             <li>
                                 <a href="#create" >create</a>
@@ -147,7 +157,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/shared/repo/files/files.repo.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/files/repo/files.repo.ts:10</a></div>
                             </td>
                         </tr>
 
@@ -194,27 +204,171 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="findFilesForCleanup"></a>
+                    <a name="findByOwnerUserId"></a>
                     <span class="name">
                         <span class="modifier">Public</span>
                         <span class="modifier">Async</span>
-                        <span ><b>findFilesForCleanup</b></span>
-                        <a href="#findFilesForCleanup"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>findByOwnerUserId</b></span>
+                        <a href="#findByOwnerUserId"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findFilesForCleanup(thresholdDate: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>, batchSize: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, offset: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                    <code>findByOwnerUserId(ownerUserId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="16"
-                            class="link-to-prism">apps/server/src/shared/repo/files/files.repo.ts:16</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="33"
+                            class="link-to-prism">apps/server/src/modules/files/repo/files.repo.ts:33</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>ownerUserId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;FileEntity[]&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findByPermissionRefId"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>findByPermissionRefId</b></span>
+                        <a href="#findByPermissionRefId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findByPermissionRefId(permissionRefId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="44"
+                            class="link-to-prism">apps/server/src/modules/files/repo/files.repo.ts:44</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>permissionRefId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;FileEntity[]&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findForCleanup"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>findForCleanup</b></span>
+                        <a href="#findForCleanup"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findForCleanup(thresholdDate: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>, batchSize: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, offset: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="19"
+                            class="link-to-prism">apps/server/src/modules/files/repo/files.repo.ts:19</a></div>
                 </td>
             </tr>
 
@@ -276,7 +430,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;File[]&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;FileEntity[]&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -614,7 +768,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/shared/repo/files/files.repo.ts:12</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/files/repo/files.repo.ts:15</a></div>
                                 </td>
                             </tr>
 
@@ -625,25 +779,67 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { File } from &#x27;@shared/domain&#x27;;
-import { BaseRepo } from &#x27;../base.repo&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { EntityDictionary } from &#x27;@mikro-orm/core&#x27;;
+import { EntityManager, ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+import { EntityId } from &#x27;@shared/domain&#x27;;
+import { BaseRepo } from &#x27;@shared/repo/base.repo&#x27;;
+import { FileOwnerModel } from &#x27;../domain&#x27;;
+import { FileEntity } from &#x27;../entity&#x27;;
 
 @Injectable()
-export class FilesRepo extends BaseRepo&lt;File&gt; {
+export class FilesRepo extends BaseRepo&lt;FileEntity&gt; {
 	constructor(protected readonly _em: EntityManager) {
 		super(_em);
 	}
 
 	get entityName() {
-		return File;
+		return FileEntity;
 	}
 
-	public async findFilesForCleanup(thresholdDate: Date, batchSize: number, offset: number): Promise&lt;File[]&gt; {
-		const query &#x3D; { deletedAt: { $lte: thresholdDate } };
-		const options &#x3D; { orderBy: { id: &#x27;asc&#x27; }, limit: batchSize, offset, populate: [&#x27;storageProvider&#x27;] as never[] };
-		const files &#x3D; await this._em.find(File, query, options);
+	public async findForCleanup(thresholdDate: Date, batchSize: number, offset: number): Promise&lt;FileEntity[]&gt; {
+		const filter &#x3D; { deletedAt: { $lte: thresholdDate } };
+		const options &#x3D; {
+			orderBy: { id: &#x27;asc&#x27; },
+			limit: batchSize,
+			offset,
+			populate: [&#x27;storageProvider&#x27;] as never[],
+		};
+
+		const files &#x3D; await this._em.find(FileEntity, filter, options);
+
+		return files as FileEntity[];
+	}
+
+	public async findByOwnerUserId(ownerUserId: EntityId): Promise&lt;FileEntity[]&gt; {
+		const filter &#x3D; {
+			owner: new ObjectId(ownerUserId),
+			refOwnerModel: FileOwnerModel.USER,
+		};
+
+		const files &#x3D; await this._em.find(FileEntity, filter);
+
+		return files as FileEntity[];
+	}
+
+	public async findByPermissionRefId(permissionRefId: EntityId): Promise&lt;FileEntity[]&gt; {
+		const pipeline &#x3D; [
+			{
+				$match: {
+					permissions: {
+						$elemMatch: {
+							refId: new ObjectId(permissionRefId),
+						},
+					},
+				},
+			},
+		];
+
+		const rawFilesDocuments &#x3D; await this._em.aggregate(FileEntity, pipeline);
+
+		const files &#x3D; rawFilesDocuments.map((rawFileDocument) &#x3D;&gt;
+			this._em.map(FileEntity, rawFileDocument as EntityDictionary&lt;FileEntity&gt;)
+		);
 
 		return files;
 	}

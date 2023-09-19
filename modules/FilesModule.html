@@ -207,11 +207,11 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module } from &#x27;@nestjs/common&#x27;;
-import { FilesRepo } from &#x27;@shared/repo&#x27;;
-import { StorageProviderRepo } from &#x27;@shared/repo/storageprovider/storageprovider.repo&#x27;;
+import { StorageProviderRepo } from &#x27;@shared/repo/storageprovider&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
-import { DeleteFilesConsole } from &#x27;./job/delete-files.console&#x27;;
+import { DeleteFilesConsole } from &#x27;./job&#x27;;
 import { DeleteFilesUc } from &#x27;./uc&#x27;;
+import { FilesRepo } from &#x27;./repo&#x27;;
 
 @Module({
 	imports: [LoggerModule],

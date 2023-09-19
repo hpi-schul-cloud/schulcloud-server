@@ -221,7 +221,7 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/StorageProvider.html" target="_self" >Promise&lt;StorageProvider[]&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../entitys/StorageProviderEntity.html" target="_self" >Promise&lt;StorageProviderEntity[]&gt;</a></code>
 
                     </div>
                 </td>
@@ -569,21 +569,21 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { StorageProvider } from &#x27;@shared/domain&#x27;;
+import { StorageProviderEntity } from &#x27;@shared/domain&#x27;;
 import { BaseRepo } from &#x27;../base.repo&#x27;;
 
 @Injectable()
-export class StorageProviderRepo extends BaseRepo&lt;StorageProvider&gt; {
+export class StorageProviderRepo extends BaseRepo&lt;StorageProviderEntity&gt; {
 	constructor(protected readonly _em: EntityManager) {
 		super(_em);
 	}
 
 	get entityName() {
-		return StorageProvider;
+		return StorageProviderEntity;
 	}
 
-	async findAll(): Promise&lt;StorageProvider[]&gt; {
-		const providers &#x3D; this._em.find(StorageProvider, {});
+	async findAll(): Promise&lt;StorageProviderEntity[]&gt; {
+		const providers &#x3D; this._em.find(StorageProviderEntity, {});
 
 		return providers;
 	}

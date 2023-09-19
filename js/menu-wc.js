@@ -781,13 +781,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/FilesModule.html" data-type="entity-link" >FilesModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-FilesModule-caf00e110c0a78d9be740ff9660c0326502011a8cf230682f0121d11fe2805001adfb08a1363649b74960e905f16a2d2f8d585057065168d51335d275d613346"' : 'data-bs-target="#xs-injectables-links-module-FilesModule-caf00e110c0a78d9be740ff9660c0326502011a8cf230682f0121d11fe2805001adfb08a1363649b74960e905f16a2d2f8d585057065168d51335d275d613346"' }>
+                                        'data-bs-target="#injectables-links-module-FilesModule-1531385bc36b4ce180d89ba4b77c2de1ca5ed5923bb90f42a90f51edc531d28213ae9c2593333fe4ecbf7d404477e856c4374ba61125bd30bcca328da6874ff8"' : 'data-bs-target="#xs-injectables-links-module-FilesModule-1531385bc36b4ce180d89ba4b77c2de1ca5ed5923bb90f42a90f51edc531d28213ae9c2593333fe4ecbf7d404477e856c4374ba61125bd30bcca328da6874ff8"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-FilesModule-caf00e110c0a78d9be740ff9660c0326502011a8cf230682f0121d11fe2805001adfb08a1363649b74960e905f16a2d2f8d585057065168d51335d275d613346"' :
-                                        'id="xs-injectables-links-module-FilesModule-caf00e110c0a78d9be740ff9660c0326502011a8cf230682f0121d11fe2805001adfb08a1363649b74960e905f16a2d2f8d585057065168d51335d275d613346"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-FilesModule-1531385bc36b4ce180d89ba4b77c2de1ca5ed5923bb90f42a90f51edc531d28213ae9c2593333fe4ecbf7d404477e856c4374ba61125bd30bcca328da6874ff8"' :
+                                        'id="xs-injectables-links-module-FilesModule-1531385bc36b4ce180d89ba4b77c2de1ca5ed5923bb90f42a90f51edc531d28213ae9c2593333fe4ecbf7d404477e856c4374ba61125bd30bcca328da6874ff8"' }>
                                         <li class="link">
                                             <a href="injectables/DeleteFilesUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >DeleteFilesUc</a>
                                         </li>
@@ -878,13 +878,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/FilesStorageModule.html" data-type="entity-link" >FilesStorageModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-FilesStorageModule-947a4b30a8eff77a2d3577e2604eb703467b5260c6d30cded3bb50a239ac25ec674d0610ee553a11cde9d48f8546d0352635dea97c3fbb3680658ff351cf1591"' : 'data-bs-target="#xs-injectables-links-module-FilesStorageModule-947a4b30a8eff77a2d3577e2604eb703467b5260c6d30cded3bb50a239ac25ec674d0610ee553a11cde9d48f8546d0352635dea97c3fbb3680658ff351cf1591"' }>
+                                        'data-bs-target="#injectables-links-module-FilesStorageModule-13c203dc470663a343a93f6fddc0815f6e14f2a47ddad7c3e7de7364ec151a019091e024665ff84d6c76ba4cac473bffa190325d63308d08619327b2704a0caf"' : 'data-bs-target="#xs-injectables-links-module-FilesStorageModule-13c203dc470663a343a93f6fddc0815f6e14f2a47ddad7c3e7de7364ec151a019091e024665ff84d6c76ba4cac473bffa190325d63308d08619327b2704a0caf"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-FilesStorageModule-947a4b30a8eff77a2d3577e2604eb703467b5260c6d30cded3bb50a239ac25ec674d0610ee553a11cde9d48f8546d0352635dea97c3fbb3680658ff351cf1591"' :
-                                        'id="xs-injectables-links-module-FilesStorageModule-947a4b30a8eff77a2d3577e2604eb703467b5260c6d30cded3bb50a239ac25ec674d0610ee553a11cde9d48f8546d0352635dea97c3fbb3680658ff351cf1591"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-FilesStorageModule-13c203dc470663a343a93f6fddc0815f6e14f2a47ddad7c3e7de7364ec151a019091e024665ff84d6c76ba4cac473bffa190325d63308d08619327b2704a0caf"' :
+                                        'id="xs-injectables-links-module-FilesStorageModule-13c203dc470663a343a93f6fddc0815f6e14f2a47ddad7c3e7de7364ec151a019091e024665ff84d6c76ba4cac473bffa190325d63308d08619327b2704a0caf"' }>
                                         <li class="link">
                                             <a href="injectables/FileRecordRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >FileRecordRepo</a>
                                         </li>
@@ -2533,10 +2533,10 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="entities/FederalState.html" data-type="entity-link" >FederalState</a>
                                 </li>
                                 <li class="link">
-                                    <a href="entities/File.html" data-type="entity-link" >File</a>
+                                    <a href="entities/FileElementNode.html" data-type="entity-link" >FileElementNode</a>
                                 </li>
                                 <li class="link">
-                                    <a href="entities/FileElementNode.html" data-type="entity-link" >FileElementNode</a>
+                                    <a href="entities/FileEntity.html" data-type="entity-link" >FileEntity</a>
                                 </li>
                                 <li class="link">
                                     <a href="entities/FileRecord.html" data-type="entity-link" >FileRecord</a>
@@ -2587,7 +2587,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="entities/ShareToken.html" data-type="entity-link" >ShareToken</a>
                                 </li>
                                 <li class="link">
-                                    <a href="entities/StorageProvider.html" data-type="entity-link" >StorageProvider</a>
+                                    <a href="entities/StorageProviderEntity.html" data-type="entity-link" >StorageProviderEntity</a>
                                 </li>
                                 <li class="link">
                                     <a href="entities/Submission.html" data-type="entity-link" >Submission</a>
@@ -3224,9 +3224,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ExternalUserDto.html" data-type="entity-link" >ExternalUserDto</a>
                             </li>
                             <li class="link">
-                                <a href="classes/File.html" data-type="entity-link" >File</a>
-                            </li>
-                            <li class="link">
                                 <a href="classes/FileContentBody.html" data-type="entity-link" >FileContentBody</a>
                             </li>
                             <li class="link">
@@ -3254,10 +3251,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/FileElementResponseMapper.html" data-type="entity-link" >FileElementResponseMapper</a>
                             </li>
                             <li class="link">
+                                <a href="classes/FileEntity.html" data-type="entity-link" >FileEntity</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/FileParamBuilder.html" data-type="entity-link" >FileParamBuilder</a>
                             </li>
                             <li class="link">
                                 <a href="classes/FileParams.html" data-type="entity-link" >FileParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/FilePermissionEntity.html" data-type="entity-link" >FilePermissionEntity</a>
                             </li>
                             <li class="link">
                                 <a href="classes/FileRecord.html" data-type="entity-link" >FileRecord</a>
@@ -3281,10 +3284,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/FileRecordScope.html" data-type="entity-link" >FileRecordScope</a>
                             </li>
                             <li class="link">
+                                <a href="classes/FileRecordSecurityCheck.html" data-type="entity-link" >FileRecordSecurityCheck</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/FileResponseBuilder.html" data-type="entity-link" >FileResponseBuilder</a>
                             </li>
                             <li class="link">
-                                <a href="classes/FileSecurityCheck.html" data-type="entity-link" >FileSecurityCheck</a>
+                                <a href="classes/FileSecurityCheckEntity.html" data-type="entity-link" >FileSecurityCheckEntity</a>
                             </li>
                             <li class="link">
                                 <a href="classes/FilesStorageClientMapper.html" data-type="entity-link" >FilesStorageClientMapper</a>
@@ -4563,6 +4569,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/FilesRepo.html" data-type="entity-link" >FilesRepo</a>
                                 </li>
                                 <li class="link">
+                                    <a href="injectables/FilesService.html" data-type="entity-link" >FilesService</a>
+                                </li>
+                                <li class="link">
                                     <a href="injectables/FilesStorageConsumer.html" data-type="entity-link" >FilesStorageConsumer</a>
                                 </li>
                                 <li class="link">
@@ -5059,6 +5068,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/FileElementProps.html" data-type="entity-link" >FileElementProps</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/FileEntityProps.html" data-type="entity-link" >FileEntityProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/FilePermissionEntityProps.html" data-type="entity-link" >FilePermissionEntityProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/FileSecurityCheckEntityProps.html" data-type="entity-link" >FileSecurityCheckEntityProps</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/GetFile.html" data-type="entity-link" >GetFile</a>
                             </li>
                             <li class="link">
@@ -5215,19 +5233,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/IFileDomainObjectProps.html" data-type="entity-link" >IFileDomainObjectProps</a>
                             </li>
                             <li class="link">
-                                <a href="interfaces/IFileProperties.html" data-type="entity-link" >IFileProperties</a>
-                            </li>
-                            <li class="link">
                                 <a href="interfaces/IFileRecordParams.html" data-type="entity-link" >IFileRecordParams</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/IFileRecordProperties.html" data-type="entity-link" >IFileRecordProperties</a>
                             </li>
                             <li class="link">
-                                <a href="interfaces/IFileRequestInfo.html" data-type="entity-link" >IFileRequestInfo</a>
+                                <a href="interfaces/IFileRecordSecurityCheckProperties.html" data-type="entity-link" >IFileRecordSecurityCheckProperties</a>
                             </li>
                             <li class="link">
-                                <a href="interfaces/IFileSecurityCheckProperties.html" data-type="entity-link" >IFileSecurityCheckProperties</a>
+                                <a href="interfaces/IFileRequestInfo.html" data-type="entity-link" >IFileRequestInfo</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/IFilesStorageClientConfig.html" data-type="entity-link" >IFilesStorageClientConfig</a>

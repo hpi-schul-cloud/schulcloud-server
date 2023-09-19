@@ -157,10 +157,19 @@
                             <a href="#FederalStateNames" title="apps/server/src/modules/school/types/federal-state-names.enum.ts" ><b>FederalStateNames</b>&nbsp;&nbsp;&nbsp;(apps/.../federal-state-names.enum.ts)</a>
                         </li>
                         <li>
+                            <a href="#FileOwnerModel" title="apps/server/src/modules/files/domain/types/file-owner-model.enum.ts" ><b>FileOwnerModel</b>&nbsp;&nbsp;&nbsp;(apps/.../file-owner-model.enum.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#FilePermissionReferenceModel" title="apps/server/src/modules/files/domain/types/file-permission-reference-model.enum.ts" ><b>FilePermissionReferenceModel</b>&nbsp;&nbsp;&nbsp;(apps/.../file-permission-reference-model.enum.ts)</a>
+                        </li>
+                        <li>
                             <a href="#FileRecordParentType" title="apps/server/src/modules/files-storage/entity/filerecord.entity.ts" ><b>FileRecordParentType</b>&nbsp;&nbsp;&nbsp;(apps/.../filerecord.entity.ts)</a>
                         </li>
                         <li>
                             <a href="#FileRecordParentType" title="apps/server/src/shared/infra/rabbitmq/exchange/files-storage.ts" ><b>FileRecordParentType</b>&nbsp;&nbsp;&nbsp;(apps/.../files-storage.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#FileSecurityCheckStatus" title="apps/server/src/modules/files/domain/types/file-security-check-status.enum.ts" ><b>FileSecurityCheckStatus</b>&nbsp;&nbsp;&nbsp;(apps/.../file-security-check-status.enum.ts)</a>
                         </li>
                         <li>
                             <a href="#FilesStorageEvents" title="apps/server/src/shared/infra/rabbitmq/exchange/files-storage.ts" ><b>FilesStorageEvents</b>&nbsp;&nbsp;&nbsp;(apps/.../files-storage.ts)</a>
@@ -2284,6 +2293,82 @@
             </tbody>
         </table>
 </section>
+    <h3>apps/server/src/modules/files/domain/types/file-owner-model.enum.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="FileOwnerModel"></a>
+                        <span class="name "><b>FileOwnerModel</b><a href="#FileOwnerModel"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;USER
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>user</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;COURSE
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>course</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;TEAMS
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>teams</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <h3>apps/server/src/modules/files/domain/types/file-permission-reference-model.enum.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="FilePermissionReferenceModel"></a>
+                        <span class="name "><b>FilePermissionReferenceModel</b><a href="#FilePermissionReferenceModel"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;USER
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>user</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;ROLE
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>role</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
     <h3>apps/server/src/modules/files-storage/entity/filerecord.entity.ts</h3>
     <section data-compodoc="block-enums">
         <table class="table table-sm table-bordered">
@@ -2675,6 +2760,59 @@
                         <tr>
                             <td class="col-md-4">
                                 <i>Value : </i><code>error</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <h3>apps/server/src/modules/files/domain/types/file-security-check-status.enum.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="FileSecurityCheckStatus"></a>
+                        <span class="name "><b>FileSecurityCheckStatus</b><a href="#FileSecurityCheckStatus"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;PENDING
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>pending</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;VERIFIED
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>verified</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;BLOCKED
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>blocked</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;WONT_CHECK
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>wont-check</code>
                             </td>
                         </tr>
             </tbody>

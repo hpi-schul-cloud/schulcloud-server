@@ -194,6 +194,7 @@ import { ConsoleWriterModule } from &#x27;@shared/infra/console/console-writer/c
 import { KeycloakModule } from &#x27;@shared/infra/identity-management/keycloak/keycloak.module&#x27;;
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from &#x27;@src/config&#x27;;
 import { FilesModule } from &#x27;@src/modules/files&#x27;;
+import { FileEntity } from &#x27;@src/modules/files/entity&#x27;;
 import { FileRecord } from &#x27;@src/modules/files-storage/entity&#x27;;
 import { ManagementModule } from &#x27;@src/modules/management/management.module&#x27;;
 import { serverConfig } from &#x27;@src/modules/server&#x27;;
@@ -214,7 +215,7 @@ import { ServerConsole } from &#x27;./server.console&#x27;;
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: [...ALL_ENTITIES, FileRecord],
+			entities: [...ALL_ENTITIES, FileEntity, FileRecord],
 			allowGlobalContext: true,
 			findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) &#x3D;&gt;
 				new NotFoundException(&#x60;The requested ${entityName}: ${JSON.stringify(where)} has not been found.&#x60;),

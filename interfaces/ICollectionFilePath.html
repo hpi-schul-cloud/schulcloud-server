@@ -187,7 +187,7 @@
 import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
-import { StorageProvider, System } from &#x27;@shared/domain&#x27;;
+import { StorageProviderEntity, System } from &#x27;@shared/domain&#x27;;
 import { DatabaseManagementService } from &#x27;@shared/infra/database&#x27;;
 import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from &#x27;@shared/infra/encryption&#x27;;
 import { FileSystemAdapter } from &#x27;@shared/infra/file-system&#x27;;
@@ -564,11 +564,11 @@ export class DatabaseManagementUc {
 			this.removeSecretsFromSystems(jsonDocuments as System[]);
 		}
 		if (collectionName &#x3D;&#x3D;&#x3D; storageprovidersCollectionName) {
-			this.removeSecretsFromStorageproviders(jsonDocuments as StorageProvider[]);
+			this.removeSecretsFromStorageproviders(jsonDocuments as StorageProviderEntity[]);
 		}
 	}
 
-	private removeSecretsFromStorageproviders(storageProviders: StorageProvider[]) {
+	private removeSecretsFromStorageproviders(storageProviders: StorageProviderEntity[]) {
 		storageProviders.forEach((storageProvider) &#x3D;&gt; {
 			storageProvider.accessKeyId &#x3D; defaultSecretReplacementHintText;
 			storageProvider.secretAccessKey &#x3D; defaultSecretReplacementHintText;

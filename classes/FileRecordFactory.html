@@ -233,8 +233,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="14"
-                            class="link-to-prism">apps/server/src/shared/testing/factory/filerecord.factory.ts:14</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="10"
+                            class="link-to-prism">apps/server/src/shared/testing/factory/filerecord.factory.ts:10</a></div>
                 </td>
             </tr>
 
@@ -1289,11 +1289,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { FileRecordParentType } from &#x27;@shared/infra/rabbitmq&#x27;;
-import {
-	FileRecord,
-	FileSecurityCheck,
-	IFileRecordProperties,
-} from &#x27;@src/modules/files-storage/entity/filerecord.entity&#x27;;
+import { FileRecord, FileRecordSecurityCheck, IFileRecordProperties } from &#x27;@src/modules/files-storage/entity&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
 import { BaseFactory } from &#x27;./base.factory&#x27;;
@@ -1312,7 +1308,7 @@ export const fileRecordFactory &#x3D; FileRecordFactory.define(FileRecord, ({ se
 		size: Math.round(Math.random() * 100000),
 		name: &#x60;file-record #${sequence}&#x60;,
 		mimeType: &#x27;application/octet-stream&#x27;,
-		securityCheck: new FileSecurityCheck({}),
+		securityCheck: new FileRecordSecurityCheck({}),
 		parentType: FileRecordParentType.Course,
 		parentId: new ObjectId().toHexString(),
 		creatorId: new ObjectId().toHexString(),
