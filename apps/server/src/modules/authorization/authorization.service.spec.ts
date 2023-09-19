@@ -71,7 +71,7 @@ describe('AuthorizationService', () => {
 		describe('when hasPermission returns false', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
-				const user = userFactory.build();
+				const user = userFactory.buildWithId();
 
 				const spy = jest.spyOn(service, 'hasPermission').mockReturnValueOnce(false);
 
@@ -90,7 +90,7 @@ describe('AuthorizationService', () => {
 		describe('when hasPermission returns true', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
-				const user = userFactory.build();
+				const user = userFactory.buildWithId();
 
 				const spy = jest.spyOn(service, 'hasPermission').mockReturnValueOnce(true);
 
@@ -111,7 +111,7 @@ describe('AuthorizationService', () => {
 		describe('when the selected rule returns false', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
-				const user = userFactory.build();
+				const user = userFactory.buildWithId();
 				const testRule = new TestRule(false);
 
 				ruleManager.selectRule.mockReturnValueOnce(testRule);
@@ -131,7 +131,7 @@ describe('AuthorizationService', () => {
 		describe('when the selected rule returns true', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
-				const user = userFactory.build();
+				const user = userFactory.buildWithId();
 				const testRule = new TestRule(true);
 
 				ruleManager.selectRule.mockReturnValueOnce(testRule);
@@ -152,7 +152,7 @@ describe('AuthorizationService', () => {
 	describe('checkAllPermissions', () => {
 		describe('when helper method returns false', () => {
 			const setup = () => {
-				const user = userFactory.build();
+				const user = userFactory.buildWithId();
 				const requiredPermissions = [testPermission];
 
 				authorizationHelper.hasAllPermissions.mockReturnValueOnce(false);
@@ -169,7 +169,7 @@ describe('AuthorizationService', () => {
 
 		describe('when helper method returns true', () => {
 			const setup = () => {
-				const user = userFactory.build();
+				const user = userFactory.buildWithId();
 				const requiredPermissions = [testPermission];
 
 				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true);
@@ -188,7 +188,7 @@ describe('AuthorizationService', () => {
 	describe('hasAllPermissions', () => {
 		describe('when helper method returns false', () => {
 			const setup = () => {
-				const user = userFactory.build();
+				const user = userFactory.buildWithId();
 				const requiredPermissions = [testPermission];
 
 				authorizationHelper.hasAllPermissions.mockReturnValueOnce(false);
@@ -207,7 +207,7 @@ describe('AuthorizationService', () => {
 
 		describe('when helper method returns true', () => {
 			const setup = () => {
-				const user = userFactory.build();
+				const user = userFactory.buildWithId();
 				const requiredPermissions = [testPermission];
 
 				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true);
@@ -228,7 +228,7 @@ describe('AuthorizationService', () => {
 	describe('checkOneOfPermissions', () => {
 		describe('when helper method returns false', () => {
 			const setup = () => {
-				const user = userFactory.build();
+				const user = userFactory.buildWithId();
 				const requiredPermissions = [testPermission];
 
 				authorizationHelper.hasOneOfPermissions.mockReturnValueOnce(false);
@@ -245,7 +245,7 @@ describe('AuthorizationService', () => {
 
 		describe('when helper method returns true', () => {
 			const setup = () => {
-				const user = userFactory.build();
+				const user = userFactory.buildWithId();
 				const requiredPermissions = [testPermission];
 
 				authorizationHelper.hasOneOfPermissions.mockReturnValueOnce(true);
@@ -264,7 +264,7 @@ describe('AuthorizationService', () => {
 	describe('hasOneOfPermissions', () => {
 		describe('when helper method returns false', () => {
 			const setup = () => {
-				const user = userFactory.build();
+				const user = userFactory.buildWithId();
 				const requiredPermissions = [testPermission];
 
 				authorizationHelper.hasOneOfPermissions.mockReturnValueOnce(false);
@@ -283,7 +283,7 @@ describe('AuthorizationService', () => {
 
 		describe('when helper method returns true', () => {
 			const setup = () => {
-				const user = userFactory.build();
+				const user = userFactory.buildWithId();
 				const requiredPermissions = [testPermission];
 
 				authorizationHelper.hasOneOfPermissions.mockReturnValueOnce(true);
