@@ -1,14 +1,14 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseRepo } from '@shared/repo';
 import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
 import { SchoolService } from '@src/modules/school';
+import { CourseService } from '@src/modules/learnroom/service';
+import { ContextExternalTool } from '../../../context-external-tool/domain';
+import { ExternalTool } from '../../../external-tool/domain';
+import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { LaunchRequestMethod, PropertyData } from '../../types';
 import { OAuth2ToolLaunchStrategy } from './oauth2-tool-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
-import { ExternalTool } from '../../../external-tool/domain';
-import { ContextExternalTool } from '../../../context-external-tool/domain';
-import { SchoolExternalTool } from '../../../school-external-tool/domain';
 
 describe('OAuth2ToolLaunchStrategy', () => {
 	let module: TestingModule;
@@ -23,8 +23,8 @@ describe('OAuth2ToolLaunchStrategy', () => {
 					useValue: createMock<SchoolService>(),
 				},
 				{
-					provide: CourseRepo,
-					useValue: createMock<CourseRepo>(),
+					provide: CourseService,
+					useValue: createMock<CourseService>(),
 				},
 			],
 		}).compile();
