@@ -8,9 +8,10 @@ import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { GetFileResponse } from '@src/modules/files-storage/interface';
 import { ObjectID } from 'bson';
 import { Readable } from 'stream';
-import { H5PContent } from '../entity';
+import { H5PContent, H5PContentParentType, IH5PContentProperties } from '../entity';
 import { H5PContentRepo } from '../repo';
 import { ContentStorage } from './contentStorage.service';
+import { LumiUserWithContentData } from '../types/lumi-types';
 
 const helpers = {
 	buildMetadata(
@@ -38,8 +39,15 @@ const helpers = {
 		const content = {
 			data: `Data #${n}`,
 		};
-
-		const h5pContent = new H5PContent({ metadata, content });
+		const h5pContentProperties: IH5PContentProperties = {
+			creatorId: '',
+			parentId: '',
+			schoolId: '',
+			metadata,
+			content,
+			parentType: H5PContentParentType.Lesson,
+		};
+		const h5pContent = new H5PContent(h5pContentProperties);
 
 		return {
 			withID(id?: number) {
@@ -121,7 +129,18 @@ describe('ContentStorage', () => {
 			const newContent = helpers.buildContent(0).new();
 			const existingContent = helpers.buildContent(0).withID();
 
-			const user = helpers.createUser();
+			const user: LumiUserWithContentData = {
+				contentParentType: H5PContentParentType.Lesson,
+				contentParentId: '',
+				schoolId: '',
+				canCreateRestricted: false,
+				canInstallRecommended: false,
+				canUpdateAndInstallLibraries: false,
+				email: 'example@schul-cloud.org',
+				id: '12345',
+				name: 'Example User',
+				type: 'user',
+			};
 
 			return { newContent, existingContent, user };
 		};
