@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { StorageProvider, System } from '@shared/domain';
+import { StorageProviderEntity, System } from '@shared/domain';
 import { DatabaseManagementService } from '@shared/infra/database';
 import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from '@shared/infra/encryption';
 import { FileSystemAdapter } from '@shared/infra/file-system';
@@ -379,11 +379,11 @@ export class DatabaseManagementUc {
 			this.removeSecretsFromSystems(jsonDocuments as System[]);
 		}
 		if (collectionName === storageprovidersCollectionName) {
-			this.removeSecretsFromStorageproviders(jsonDocuments as StorageProvider[]);
+			this.removeSecretsFromStorageproviders(jsonDocuments as StorageProviderEntity[]);
 		}
 	}
 
-	private removeSecretsFromStorageproviders(storageProviders: StorageProvider[]) {
+	private removeSecretsFromStorageproviders(storageProviders: StorageProviderEntity[]) {
 		storageProviders.forEach((storageProvider) => {
 			storageProvider.accessKeyId = defaultSecretReplacementHintText;
 			storageProvider.secretAccessKey = defaultSecretReplacementHintText;
