@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { CourseService } from '@src/modules/learnroom/service';
 import { LessonService } from '@src/modules/lesson/service';
 import { TaskService } from '@src/modules/task/service';
 import {
