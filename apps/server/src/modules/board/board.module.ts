@@ -16,7 +16,7 @@ import {
 	ContentElementService,
 	SubmissionItemService,
 } from './service';
-import { BoardDoCopyService } from './service/board-do-copy-service';
+import { BoardDoCopyService, SchoolSpecificFileCopyServiceFactory } from './service/board-do-copy-service';
 import { ColumnBoardCopyService } from './service/column-board-copy.service';
 
 @Module({
@@ -36,6 +36,7 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		SubmissionItemService,
 		BoardDoCopyService,
 		ColumnBoardCopyService,
+		SchoolSpecificFileCopyServiceFactory,
 	],
 	exports: [
 		BoardDoAuthorizableService,
