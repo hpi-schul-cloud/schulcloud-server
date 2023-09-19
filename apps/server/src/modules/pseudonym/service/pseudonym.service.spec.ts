@@ -103,7 +103,7 @@ describe('PseudonymService', () => {
 
 		describe('when searching by userId and toolId', () => {
 			const setup = () => {
-				const pseudonym: Pseudonym = pseudonymFactory.buildWithId();
+				const pseudonym: Pseudonym = pseudonymFactory.build();
 				const user: UserDO = userDoFactory.buildWithId();
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
@@ -218,7 +218,7 @@ describe('PseudonymService', () => {
 
 		describe('when the pseudonym exists', () => {
 			const setup = () => {
-				const pseudonym: Pseudonym = pseudonymFactory.buildWithId();
+				const pseudonym: Pseudonym = pseudonymFactory.build();
 				const user: UserDO = userDoFactory.buildWithId();
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
@@ -247,7 +247,7 @@ describe('PseudonymService', () => {
 
 		describe('when no pseudonym exists yet', () => {
 			const setup = () => {
-				const pseudonym: Pseudonym = pseudonymFactory.buildWithId();
+				const pseudonym: Pseudonym = pseudonymFactory.build();
 				const user: UserDO = userDoFactory.buildWithId();
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
@@ -304,10 +304,10 @@ describe('PseudonymService', () => {
 		describe('when searching by userId', () => {
 			const setup = () => {
 				const user1: UserDO = userDoFactory.buildWithId();
-				const pseudonym1: Pseudonym = pseudonymFactory.buildWithId({ userId: user1.id });
-				const pseudonym2: Pseudonym = pseudonymFactory.buildWithId({ userId: user1.id });
-				const pseudonym3: Pseudonym = pseudonymFactory.buildWithId({ userId: user1.id });
-				const pseudonym4: Pseudonym = pseudonymFactory.buildWithId({ userId: user1.id });
+				const pseudonym1: Pseudonym = pseudonymFactory.build({ userId: user1.id });
+				const pseudonym2: Pseudonym = pseudonymFactory.build({ userId: user1.id });
+				const pseudonym3: Pseudonym = pseudonymFactory.build({ userId: user1.id });
+				const pseudonym4: Pseudonym = pseudonymFactory.build({ userId: user1.id });
 
 				pseudonymRepo.findByUserId.mockResolvedValue([pseudonym1, pseudonym2]);
 				externalToolPseudonymRepo.findByUserId.mockResolvedValue([pseudonym3, pseudonym4]);

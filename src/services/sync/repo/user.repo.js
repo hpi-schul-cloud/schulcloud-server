@@ -139,8 +139,16 @@ const findByPreviousExternalIdAndSchool = async (previousExternalId, schoolId) =
 const findByLdapDnsAndSchool = async (ldapDns, schoolId) =>
 	userModel
 		.find({
-			schoolId,
-			ldapDn: { $in: ldapDns },
+			$or: [
+				{
+					schoolId,
+					ldapDn: { $in: ldapDns },
+				},
+				{
+					schoolId,
+					previousExternalId: { $in: ldapDns },
+				},
+			],
 		})
 		.populate('roles')
 		.lean()

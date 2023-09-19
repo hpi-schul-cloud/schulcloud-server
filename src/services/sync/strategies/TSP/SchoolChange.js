@@ -25,11 +25,11 @@ const invalidateUser = async (app, user) => {
 const deleteUser = (app, user) => {
 	const userService = app.service('usersModel');
 	const accountService = app.service('nest-account-service');
-	const teamsService = app.service('/teams');
+	const teamService = app.service('nest-team-service');
 	return Promise.all([
 		userService.remove({ _id: user._id }),
 		accountService.deleteByUserId(user._id.toString()),
-		teamsService.updateMany({ 'userIds.userId': { $in: [user._id] } }, { $pull: { userIds: { userId: user._id } } })
+		teamService.deleteUserDataFromTeams(user._id.toString()),
 	]);
 };
 
@@ -84,7 +84,7 @@ const switchSchool = async (app, currentUser, createUserMethod) => {
 		await deleteUser(app, currentUser);
 		return newUser;
 	} catch (err) {
-		logError(`Something went wrong during switching school for user: ${err}`);
+		logError(`Something went wrong during switching school for user (${currentUser.sourceOptions.tspUid})`, err);
 		return null;
 	}
 };

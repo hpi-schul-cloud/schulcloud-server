@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ContextExternalToolRepo } from '@shared/repo';
 import {
 	contextExternalToolFactory,
-	legacySchoolDoFactory,
+	schoolDOFactory,
 	schoolExternalToolFactory,
 } from '@shared/testing/factory/domainobject';
 import { AuthorizationService } from '@src/modules/authorization';
@@ -133,7 +133,7 @@ describe('ContextExternalToolService', () => {
 	describe('getContextExternalToolById', () => {
 		describe('when contextExternalToolId is given', () => {
 			const setup = () => {
-				const schoolId: string = legacySchoolDoFactory.buildWithId().id as string;
+				const schoolId: string = schoolDOFactory.buildWithId().id as string;
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					schoolId,
 				});
