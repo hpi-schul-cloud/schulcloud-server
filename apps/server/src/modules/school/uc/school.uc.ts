@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Permission, SchoolDO, UserLoginMigrationDO } from '@shared/domain';
-import { Action, AuthorizationService } from '@src/modules/authorization';
-import { AuthorizableReferenceType } from '@src/modules/authorization/domain/reference/types';
+import { Permission, SchoolDO, User, UserLoginMigrationDO } from '@shared/domain';
+import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import {
 	SchoolMigrationService,
 	UserLoginMigrationRevertService,
@@ -28,10 +27,12 @@ export class SchoolUc {
 		oauthMigrationFinished: boolean,
 		userId: string
 	): Promise<OauthMigrationDto> {
-		await this.authService.checkPermissionByReferences(userId, AuthorizableReferenceType.School, schoolId, {
-			action: Action.read,
-			requiredPermissions: [Permission.SCHOOL_EDIT],
-		});
+		const [authorizableUser, school]: [User, SchoolDO] = await Promise.all([
+			this.authService.getUserWithPermissions(userId),
+			this.schoolService.getSchoolById(schoolId),
+		]);
+
+		this.hasSchoolEditAndCanReadSchool(authorizableUser, school);
 
 		const existingUserLoginMigration: UserLoginMigrationDO | null =
 			await this.userLoginMigrationService.findMigrationBySchool(schoolId);
@@ -59,8 +60,6 @@ export class SchoolUc {
 			await this.schoolMigrationService.unmarkOutdatedUsers(schoolId);
 		}
 
-		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
-
 		const migrationDto: OauthMigrationDto = new OauthMigrationDto({
 			oauthMigrationPossible: !updatedUserLoginMigration.closedAt ? updatedUserLoginMigration.startedAt : undefined,
 			oauthMigrationMandatory: updatedUserLoginMigration.mandatorySince,
@@ -73,16 +72,16 @@ export class SchoolUc {
 	}
 
 	async getMigration(schoolId: string, userId: string): Promise<OauthMigrationDto> {
-		await this.authService.checkPermissionByReferences(userId, AuthorizableReferenceType.School, schoolId, {
-			action: Action.read,
-			requiredPermissions: [Permission.SCHOOL_EDIT],
-		});
+		const [authorizableUser, school]: [User, SchoolDO] = await Promise.all([
+			this.authService.getUserWithPermissions(userId),
+			this.schoolService.getSchoolById(schoolId),
+		]);
+
+		this.hasSchoolEditAndCanReadSchool(authorizableUser, school);
 
 		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
 			schoolId
 		);
-
-		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
 
 		const migrationDto: OauthMigrationDto = new OauthMigrationDto({
 			oauthMigrationPossible:
@@ -94,5 +93,10 @@ export class SchoolUc {
 		});
 
 		return migrationDto;
+	}
+
+	private hasSchoolEditAndCanReadSchool(authorizableUser: User, school: SchoolDO): void {
+		const context = AuthorizationContextBuilder.read([Permission.SCHOOL_EDIT]);
+		this.authService.checkPermission(authorizableUser, school, context);
 	}
 }

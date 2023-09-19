@@ -21,7 +21,7 @@ export class LessonCopyUC {
 	async copyLesson(userId: EntityId, lessonId: EntityId, parentParams: LessonCopyParentParams): Promise<CopyStatus> {
 		this.featureEnabled();
 
-		const [user, originalLesson] = await Promise.all([
+		const [user, originalLesson]: [User, Lesson] = await Promise.all([
 			this.authorisation.getUserWithPermissions(userId),
 			this.lessonRepo.findById(lessonId),
 		]);
@@ -53,7 +53,6 @@ export class LessonCopyUC {
 	}
 
 	private hasTopicCreateAndCanReadLesson(user: User, originalLesson: Lesson): void {
-		// make this authorization context sense?
 		const contextReadWithTopicCreate = AuthorizationContextBuilder.read([Permission.TOPIC_CREATE]);
 		if (!this.authorisation.hasPermission(user, originalLesson, contextReadWithTopicCreate)) {
 			// error message is not correct, switch to authorisation.checkPermission() makse sense for me

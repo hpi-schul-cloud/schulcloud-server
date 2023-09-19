@@ -192,33 +192,4 @@ describe('reference.loader', () => {
 			).rejects.toThrow(NotImplementedException);
 		});
 	});
-
-	describe('getUserWithPermissions', () => {
-		describe('when user successfully', () => {
-			const setup = () => {
-				const roles = [roleFactory.build()];
-				const user = userFactory.buildWithId({ roles });
-				userRepo.findById.mockResolvedValue(user);
-				return {
-					user,
-				};
-			};
-
-			it('should call userRepo.findById with specific arguments', async () => {
-				const { user } = setup();
-
-				await service.getUserWithPermissions(user.id);
-
-				expect(userRepo.findById).toBeCalledWith(user.id, true);
-			});
-
-			it('should return user', async () => {
-				const { user } = setup();
-
-				const result = await service.getUserWithPermissions(user.id);
-
-				expect(result).toBe(user);
-			});
-		});
-	});
 });

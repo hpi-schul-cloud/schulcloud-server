@@ -89,10 +89,4 @@ export class ReferenceLoader {
 
 		return object;
 	}
-
-	async getUserWithPermissions(userId: EntityId): Promise<User> {
-		const user = await this.userRepo.findById(userId, true);
-
-		return user;
-	}
 }
