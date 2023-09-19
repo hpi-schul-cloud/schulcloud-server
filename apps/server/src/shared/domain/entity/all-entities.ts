@@ -35,7 +35,7 @@ import { LtiTool } from './ltitool.entity';
 import { Material } from './materials.entity';
 import { CourseNews, News, SchoolNews, TeamNews } from './news.entity';
 import { Role } from './role.entity';
-import { School, SchoolRolePermission, SchoolRoles } from './school.entity';
+import { SchoolEntity, SchoolRolePermission, SchoolRoles } from './school.entity';
 import { SchoolYear } from './schoolyear.entity';
 import { StorageProvider } from './storageprovider.entity';
 import { Submission } from './submission.entity';
@@ -79,7 +79,7 @@ export const ALL_ENTITIES = [
 	PseudonymEntity,
 	ExternalToolPseudonymEntity,
 	Role,
-	School,
+	SchoolEntity,
 	SchoolExternalToolEntity,
 	SchoolNews,
 	SchoolRolePermission,
