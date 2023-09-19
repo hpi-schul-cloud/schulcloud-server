@@ -21,7 +21,7 @@ import {
 	AuthorizationContextBuilder,
 	AuthorizationService,
 } from '@src/modules/authorization';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { CourseService } from '@src/modules/learnroom/service';
 import { LegacySchoolService } from '@src/modules/legacy-school';
 import { UserService } from '@src/modules/user';
 import { BBBRole } from '../bbb';

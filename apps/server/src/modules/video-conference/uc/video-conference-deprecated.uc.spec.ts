@@ -21,7 +21,7 @@ import { roleFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { AuthorizationService, LegacySchoolService, UserService } from '@src/modules';
 import { ICurrentUser } from '@src/modules/authentication';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { CourseService } from '@src/modules/learnroom/service';
 import { IScopeInfo, VideoConference, VideoConferenceJoin, VideoConferenceState } from './dto';
 import { VideoConferenceDeprecatedUc } from './video-conference-deprecated.uc';
 import {

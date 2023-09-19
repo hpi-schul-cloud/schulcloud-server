@@ -24,10 +24,9 @@ import {
 	AuthorizationContextBuilder,
 	AuthorizationService,
 } from '@src/modules/authorization';
+import { CourseService } from '@src/modules/learnroom/service';
 import { LegacySchoolService } from '@src/modules/legacy-school';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { UserService } from '@src/modules/user';
-import { IScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from './dto';
 import {
 	BBBBaseMeetingConfig,
 	BBBBaseResponse,
@@ -40,8 +39,9 @@ import {
 	BBBService,
 	GuestPolicy,
 } from '../bbb';
-import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
 import { ErrorStatus } from '../error/error-status.enum';
+import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
+import { IScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from './dto';
 
 const PermissionMapping = {
 	[BBBRole.MODERATOR]: Permission.START_MEETING,
