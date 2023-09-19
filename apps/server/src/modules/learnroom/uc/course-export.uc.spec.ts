@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CommonCartridgeExportService } from '@src/modules/learnroom/service/common-cartridge-export.service';
 import { AuthorizationReferenceService } from '@src/modules/authorization/domain/reference';
+import { ObjectId } from 'bson';
+import { ForbiddenException } from '@nestjs/common';
 import { CourseExportUc } from './course-export.uc';
 import { CommonCartridgeVersion } from '../common-cartridge';
 
@@ -34,20 +36,72 @@ describe('CourseExportUc', () => {
 		await module.close();
 	});
 
-	describe('exportCourse', () => {
-		const version: CommonCartridgeVersion = CommonCartridgeVersion.V_1_1_0;
-		it('should check for permissions', async () => {
-			authorizationServiceMock.checkPermissionByReferences.mockResolvedValueOnce();
+	afterEach(() => {
+		// is needed to solve buffer test isolation
+		jest.resetAllMocks();
+	});
 
-			await expect(courseExportUc.exportCourse('', '', version)).resolves.not.toThrow();
-			expect(authorizationServiceMock.checkPermissionByReferences).toBeCalledTimes(1);
+	describe('exportCourse', () => {
+		const setupParams = () => {
+			const courseId = new ObjectId().toHexString();
+			const userId = new ObjectId().toHexString();
+			const version: CommonCartridgeVersion = CommonCartridgeVersion.V_1_1_0;
+
+			return { version, userId, courseId };
+		};
+
+		describe('when authorization throw a error', () => {
+			const setup = () => {
+				authorizationServiceMock.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+				courseExportServiceMock.exportCourse.mockResolvedValueOnce(Buffer.from(''));
+
+				return setupParams();
+			};
+
+			it('should pass this error', async () => {
+				const { courseId, userId, version } = setup();
+
+				await expect(courseExportUc.exportCourse(courseId, userId, version)).rejects.toThrowError(
+					new ForbiddenException()
+				);
+			});
 		});
 
-		it('should return a binary file as buffer', async () => {
-			courseExportServiceMock.exportCourse.mockResolvedValueOnce(Buffer.from(''));
-			authorizationServiceMock.checkPermissionByReferences.mockResolvedValueOnce();
+		describe('when course export service throw a error', () => {
+			const setup = () => {
+				authorizationServiceMock.checkPermissionByReferences.mockResolvedValueOnce();
+				courseExportServiceMock.exportCourse.mockRejectedValueOnce(new Error());
 
-			await expect(courseExportUc.exportCourse('', '', version)).resolves.toBeInstanceOf(Buffer);
+				return setupParams();
+			};
+
+			it('should pass this error', async () => {
+				const { courseId, userId, version } = setup();
+
+				await expect(courseExportUc.exportCourse(courseId, userId, version)).rejects.toThrowError(new Error());
+			});
+		});
+
+		describe('when authorization resolve', () => {
+			const setup = () => {
+				authorizationServiceMock.checkPermissionByReferences.mockResolvedValueOnce();
+				courseExportServiceMock.exportCourse.mockResolvedValueOnce(Buffer.from(''));
+
+				return setupParams();
+			};
+
+			it('should check for permissions', async () => {
+				const { courseId, userId, version } = setup();
+
+				await expect(courseExportUc.exportCourse(courseId, userId, version)).resolves.not.toThrow();
+				expect(authorizationServiceMock.checkPermissionByReferences).toBeCalledTimes(1);
+			});
+
+			it('should return a binary file as buffer', async () => {
+				const { courseId, userId, version } = setup();
+
+				await expect(courseExportUc.exportCourse(courseId, userId, version)).resolves.toBeInstanceOf(Buffer);
+			});
 		});
 	});
 });

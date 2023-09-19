@@ -42,10 +42,6 @@ describe('course copy uc', () => {
 		await module.close();
 	});
 
-	beforeEach(() => {
-		Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
-	});
-
 	// Please be careful the Configuration.set is effects all tests !!!
 
 	describe('copy course', () => {
