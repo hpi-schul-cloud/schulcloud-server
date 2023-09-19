@@ -84,7 +84,6 @@ describe(DeleteFilesUc.name, () => {
 				filesRepo.findForCleanup.mockResolvedValueOnce(exampleFiles);
 				filesRepo.findForCleanup.mockResolvedValueOnce([]);
 
-				const storageProvider = storageProviderFactory.build();
 				storageProviderRepo.findAll.mockResolvedValueOnce([storageProvider]);
 
 				return { thresholdDate, batchSize };
@@ -118,7 +117,6 @@ describe(DeleteFilesUc.name, () => {
 				filesRepo.findForCleanup.mockResolvedValueOnce(exampleFiles);
 				filesRepo.findForCleanup.mockResolvedValueOnce([]);
 
-				const storageProvider = storageProviderFactory.build();
 				storageProviderRepo.findAll.mockResolvedValueOnce([storageProvider]);
 
 				const spy = jest.spyOn(DeleteFilesUc.prototype as any, 'deleteFileInStorage');
