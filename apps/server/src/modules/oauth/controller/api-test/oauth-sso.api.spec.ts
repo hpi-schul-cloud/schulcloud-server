@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, EntityId, School, System, User } from '@shared/domain';
+import { Account, EntityId, SchoolEntity, System, User } from '@shared/domain';
 import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
@@ -115,7 +115,7 @@ describe('OAuth SSO Controller (API)', () => {
 	const setup = async () => {
 		const externalUserId = 'externalUserId';
 		const system: System = systemFactory.withOauthConfig().buildWithId();
-		const school: School = schoolFactory.buildWithId({ systems: [system] });
+		const school: SchoolEntity = schoolFactory.buildWithId({ systems: [system] });
 		const user: User = userFactory.buildWithId({ externalId: externalUserId, school });
 		const account: Account = accountFactory.buildWithId({ systemId: system.id, userId: user.id });
 
@@ -325,7 +325,7 @@ describe('OAuth SSO Controller (API)', () => {
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV }, new ObjectId().toHexString(), {});
 
-				const sourceSchool: School = schoolFactory.buildWithId({
+				const sourceSchool: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '11111',
 					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
@@ -404,7 +404,7 @@ describe('OAuth SSO Controller (API)', () => {
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV }, new ObjectId().toHexString(), {});
 
-				const sourceSchool: School = schoolFactory.buildWithId({
+				const sourceSchool: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '11110',
 					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
@@ -452,7 +452,7 @@ describe('OAuth SSO Controller (API)', () => {
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV }, new ObjectId().toHexString(), {});
 
-				const sourceSchool: School = schoolFactory.buildWithId({
+				const sourceSchool: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '11111',
 					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
@@ -508,7 +508,7 @@ describe('OAuth SSO Controller (API)', () => {
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV }, new ObjectId().toHexString(), {});
 
-				const sourceSchool: School = schoolFactory.buildWithId({
+				const sourceSchool: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '11111',
 					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
@@ -521,7 +521,7 @@ describe('OAuth SSO Controller (API)', () => {
 					startedAt: new Date('2022-12-17T03:24:00'),
 				});
 
-				const targetSchool: School = schoolFactory.buildWithId({
+				const targetSchool: SchoolEntity = schoolFactory.buildWithId({
 					systems: [targetSystem],
 					officialSchoolNumber: '22222',
 					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
