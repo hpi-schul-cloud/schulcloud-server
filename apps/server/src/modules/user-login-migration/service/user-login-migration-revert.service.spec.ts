@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SchoolFeatures, UserLoginMigrationDO } from '@shared/domain';
+import { SchoolFeatures } from '@shared/domain';
 import { SchoolService } from '@src/modules/school';
 import { setupEntities, userLoginMigrationDOFactory } from '@shared/testing';
 import { UserLoginMigrationRevertService } from './user-login-migration-revert.service';
@@ -70,22 +70,6 @@ describe('UserLoginMigrationRevertService', () => {
 				await service.revertUserLoginMigration(userLoginMigration);
 
 				expect(userLoginMigrationService.deleteUserLoginMigration).toHaveBeenCalledWith(userLoginMigration);
-			});
-
-			it('should return reverted user login migration', async () => {
-				const { userLoginMigration } = setup();
-
-				const result: UserLoginMigrationDO = await service.revertUserLoginMigration(userLoginMigration);
-
-				expect(result).toEqual<UserLoginMigrationDO>({
-					schoolId: userLoginMigration.schoolId,
-					targetSystemId: userLoginMigration.targetSystemId,
-					startedAt: undefined,
-					finishedAt: undefined,
-					mandatorySince: undefined,
-					closedAt: undefined,
-					sourceSystemId: undefined,
-				});
 			});
 		});
 	});

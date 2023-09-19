@@ -152,14 +152,6 @@ describe('CloseUserLoginMigrationUc', () => {
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				userLoginMigrationService.closeMigration.mockResolvedValue(closedUserLoginMigration);
 				schoolMigrationService.hasSchoolMigratedUser.mockResolvedValue(false);
-				userLoginMigrationRevertService.revertUserLoginMigration.mockResolvedValue({
-					...closedUserLoginMigration,
-					startedAt: undefined,
-					closedAt: undefined,
-					finishedAt: undefined,
-					sourceSystemId: undefined,
-					mandatorySince: undefined,
-				});
 
 				return {
 					user,
@@ -186,23 +178,6 @@ describe('CloseUserLoginMigrationUc', () => {
 				await uc.closeMigration(user.id, schoolId);
 
 				expect(userLoginMigrationRevertService.revertUserLoginMigration).toHaveBeenCalledWith(closedUserLoginMigration);
-			});
-
-			it('should return reverted user login migration', async () => {
-				const { user, schoolId, closedUserLoginMigration } = setup();
-
-				const result: UserLoginMigrationDO = await uc.closeMigration(user.id, schoolId);
-
-				expect(result).toEqual<UserLoginMigrationDO>({
-					id: closedUserLoginMigration.id,
-					schoolId: closedUserLoginMigration.schoolId,
-					targetSystemId: closedUserLoginMigration.targetSystemId,
-					startedAt: undefined,
-					finishedAt: undefined,
-					mandatorySince: undefined,
-					closedAt: undefined,
-					sourceSystemId: undefined,
-				});
 			});
 		});
 
