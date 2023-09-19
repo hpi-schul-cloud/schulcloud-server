@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Permission, SchoolDO, SortOrder, User, UserDO } from '@shared/domain';
+import { EntityId, Page, Permission, SchoolDO, SortOrder, User, UserDO } from '@shared/domain';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { ClassService } from '@src/modules/class';
 import { Class } from '@src/modules/class/domain';
@@ -33,7 +33,7 @@ export class GroupUc {
 		limit?: number,
 		sortBy: keyof ClassInfoDto = 'name',
 		sortOrder: SortOrder = SortOrder.asc
-	): Promise<ClassInfoDto[]> {
+	): Promise<Page<ClassInfoDto>> {
 		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
 
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
@@ -45,12 +45,14 @@ export class GroupUc {
 			SortHelper.genericSortFunction(a[sortBy], b[sortBy], sortOrder)
 		);
 
-		combinedClassInfo = combinedClassInfo.slice(skip, limit ? skip + limit : combinedClassInfo.length);
+		const pageContent: ClassInfoDto[] = combinedClassInfo.slice(skip, limit ? skip + limit : combinedClassInfo.length);
 
-		return combinedClassInfo;
+		const page: Page<ClassInfoDto> = new Page<ClassInfoDto>(pageContent, combinedClassInfo.length);
+
+		return page;
 	}
 
-	private async findCombinedClassListForSchool(schoolId: string) {
+	private async findCombinedClassListForSchool(schoolId: string): Promise<ClassInfoDto[]> {
 		const classes: Class[] = await this.classService.findClassesForSchool(schoolId);
 		const groupsOfTypeClass: Group[] = await this.groupService.findClassesForSchool(schoolId);
 

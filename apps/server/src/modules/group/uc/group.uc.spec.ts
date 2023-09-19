@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, Role, RoleName, SchoolDO, SortOrder, User, UserDO } from '@shared/domain';
+import { Page, Permission, Role, RoleName, SchoolDO, SortOrder, User, UserDO } from '@shared/domain';
 import {
 	groupFactory,
 	roleDtoFactory,
@@ -223,24 +223,27 @@ describe('GroupUc', () => {
 				it('should return all classes sorted by name', async () => {
 					const { teacher, clazz, group, groupWithSystem, system } = setup();
 
-					const result: ClassInfoDto[] = await uc.findClassesForSchool(teacher.id, teacher.school.id);
+					const result: Page<ClassInfoDto> = await uc.findClassesForSchool(teacher.id, teacher.school.id);
 
-					expect(result).toEqual<ClassInfoDto[]>([
-						{
-							name: clazz.name,
-							externalSourceName: clazz.source,
-							teachers: [teacher.lastName],
-						},
-						{
-							name: group.name,
-							teachers: [teacher.lastName],
-						},
-						{
-							name: groupWithSystem.name,
-							externalSourceName: system.displayName,
-							teachers: [teacher.lastName],
-						},
-					]);
+					expect(result).toEqual<Page<ClassInfoDto>>({
+						data: [
+							{
+								name: clazz.name,
+								externalSourceName: clazz.source,
+								teachers: [teacher.lastName],
+							},
+							{
+								name: group.name,
+								teachers: [teacher.lastName],
+							},
+							{
+								name: groupWithSystem.name,
+								externalSourceName: system.displayName,
+								teachers: [teacher.lastName],
+							},
+						],
+						total: 3,
+					});
 				});
 			});
 
@@ -248,7 +251,7 @@ describe('GroupUc', () => {
 				it('should return all classes sorted by external source name in descending order', async () => {
 					const { teacher, clazz, group, groupWithSystem, system } = setup();
 
-					const result: ClassInfoDto[] = await uc.findClassesForSchool(
+					const result: Page<ClassInfoDto> = await uc.findClassesForSchool(
 						teacher.id,
 						teacher.school.id,
 						undefined,
@@ -257,22 +260,25 @@ describe('GroupUc', () => {
 						SortOrder.desc
 					);
 
-					expect(result).toEqual<ClassInfoDto[]>([
-						{
-							name: clazz.name,
-							externalSourceName: clazz.source,
-							teachers: [teacher.lastName],
-						},
-						{
-							name: groupWithSystem.name,
-							externalSourceName: system.displayName,
-							teachers: [teacher.lastName],
-						},
-						{
-							name: group.name,
-							teachers: [teacher.lastName],
-						},
-					]);
+					expect(result).toEqual<Page<ClassInfoDto>>({
+						data: [
+							{
+								name: clazz.name,
+								externalSourceName: clazz.source,
+								teachers: [teacher.lastName],
+							},
+							{
+								name: groupWithSystem.name,
+								externalSourceName: system.displayName,
+								teachers: [teacher.lastName],
+							},
+							{
+								name: group.name,
+								teachers: [teacher.lastName],
+							},
+						],
+						total: 3,
+					});
 				});
 			});
 
@@ -280,7 +286,7 @@ describe('GroupUc', () => {
 				it('should return the selected page', async () => {
 					const { teacher, group } = setup();
 
-					const result: ClassInfoDto[] = await uc.findClassesForSchool(
+					const result: Page<ClassInfoDto> = await uc.findClassesForSchool(
 						teacher.id,
 						teacher.school.id,
 						1,
@@ -289,12 +295,15 @@ describe('GroupUc', () => {
 						SortOrder.asc
 					);
 
-					expect(result).toEqual<ClassInfoDto[]>([
-						{
-							name: group.name,
-							teachers: [teacher.lastName],
-						},
-					]);
+					expect(result).toEqual<Page<ClassInfoDto>>({
+						data: [
+							{
+								name: group.name,
+								teachers: [teacher.lastName],
+							},
+						],
+						total: 3,
+					});
 				});
 			});
 		});

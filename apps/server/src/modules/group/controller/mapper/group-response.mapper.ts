@@ -1,17 +1,20 @@
-import { ClassInfoDto } from '../../uc/dto/class-info.dto';
+import { Page } from '@shared/domain';
+import { ClassInfoDto } from '../../uc/dto';
 import { ClassInfoResponse, ClassInfoSearchListResponse } from '../dto';
 
 export class GroupResponseMapper {
 	static mapToClassInfosToListResponse(
-		classInfos: ClassInfoDto[],
+		classInfos: Page<ClassInfoDto>,
 		skip?: number,
 		limit?: number
 	): ClassInfoSearchListResponse {
-		const mappedData: ClassInfoResponse[] = classInfos.map((classInfo) => this.mapToClassInfoToResponse(classInfo));
+		const mappedData: ClassInfoResponse[] = classInfos.data.map((classInfo) =>
+			this.mapToClassInfoToResponse(classInfo)
+		);
 
 		const response: ClassInfoSearchListResponse = new ClassInfoSearchListResponse(
 			mappedData,
-			mappedData.length,
+			classInfos.total,
 			skip,
 			limit
 		);

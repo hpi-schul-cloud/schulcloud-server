@@ -1,6 +1,7 @@
 import { Controller, Get, HttpStatus, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller';
+import { Page } from '@shared/domain';
 import { ErrorResponse } from '@src/core/error/dto';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
@@ -25,7 +26,7 @@ export class GroupController {
 		@Query() sortingQuery: ClassSortParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ClassInfoSearchListResponse> {
-		const board: ClassInfoDto[] = await this.groupUc.findClassesForSchool(
+		const board: Page<ClassInfoDto> = await this.groupUc.findClassesForSchool(
 			currentUser.userId,
 			currentUser.schoolId,
 			pagination.skip,
