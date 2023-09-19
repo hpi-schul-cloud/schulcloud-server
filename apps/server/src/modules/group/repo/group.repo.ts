@@ -23,6 +23,25 @@ export class GroupRepo {
 		return domainObject;
 	}
 
+	async findByExternalSource(externalId: string, systemId: EntityId): Promise<Group | null> {
+		const entity: GroupEntity | null = await this.em.findOne(GroupEntity, {
+			externalSource: {
+				externalId,
+				system: systemId,
+			},
+		});
+
+		if (!entity) {
+			return null;
+		}
+
+		const props: GroupProps = GroupDomainMapper.mapEntityToDomainObjectProperties(entity);
+
+		const domainObject: Group = new Group(props);
+
+		return domainObject;
+	}
+
 	async save(domainObject: Group): Promise<Group> {
 		const entityProps: GroupEntityProps = GroupDomainMapper.mapDomainObjectToEntityProperties(domainObject, this.em);
 

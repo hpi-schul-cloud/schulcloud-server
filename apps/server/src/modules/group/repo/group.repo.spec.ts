@@ -67,8 +67,8 @@ describe('GroupRepo', () => {
 						}),
 					],
 					organizationId: group.organization?.id,
-					validFrom: group.validPeriod.from,
-					validUntil: group.validPeriod.until,
+					validFrom: group.validPeriod?.from,
+					validUntil: group.validPeriod?.until,
 				});
 			});
 		});
@@ -200,6 +200,64 @@ describe('GroupRepo', () => {
 				const result: boolean = await repo.delete(group);
 
 				expect(result).toEqual(false);
+			});
+		});
+	});
+
+	describe('findByExternalSource', () => {
+		describe('when an entity with the external source exists', () => {
+			const setup = async () => {
+				const groupEntity: GroupEntity = groupEntityFactory.buildWithId();
+
+				await em.persistAndFlush(groupEntity);
+				em.clear();
+
+				return {
+					groupEntity,
+				};
+			};
+
+			it('should return the group', async () => {
+				const { groupEntity } = await setup();
+
+				const result: Group | null = await repo.findByExternalSource(
+					groupEntity.externalSource?.externalId ?? '',
+					groupEntity.externalSource?.system.id ?? ''
+				);
+
+				expect(result?.getProps()).toEqual<GroupProps>({
+					id: groupEntity.id,
+					name: groupEntity.name,
+					type: GroupTypes.CLASS,
+					externalSource: new ExternalSource({
+						externalId: groupEntity.externalSource?.externalId ?? '',
+						systemId: groupEntity.externalSource?.system.id ?? '',
+					}),
+					users: [
+						new GroupUser({
+							userId: groupEntity.users[0].user.id,
+							roleId: groupEntity.users[0].role.id,
+						}),
+						new GroupUser({
+							userId: groupEntity.users[1].user.id,
+							roleId: groupEntity.users[1].role.id,
+						}),
+					],
+					organizationId: groupEntity.organization?.id,
+					validFrom: groupEntity.validPeriod?.from,
+					validUntil: groupEntity.validPeriod?.until,
+				});
+			});
+		});
+
+		describe('when no entity with the external source exists', () => {
+			it('should return null', async () => {
+				const result: Group | null = await repo.findByExternalSource(
+					new ObjectId().toHexString(),
+					new ObjectId().toHexString()
+				);
+
+				expect(result).toBeNull();
 			});
 		});
 	});

@@ -122,7 +122,7 @@ export class PreviewService {
 		const { width } = previewParams;
 
 		if (width) {
-			preview.resize(width);
+			preview.resize(width, undefined, '>');
 		}
 
 		const result = preview.stream(format);
