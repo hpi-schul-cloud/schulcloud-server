@@ -23,7 +23,7 @@ import { ColumnBoardCopyService } from '@src/modules/board/service/column-board-
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { getResolvedValues } from '@src/modules/files-storage/helper';
 import { LessonCopyService } from '@src/modules/lesson/service';
-import { TaskCopyService } from '@src/modules/task';
+import { TaskCopyService } from '@src/modules/task/service';
 import { sortBy } from 'lodash';
 
 type BoardCopyParams = {

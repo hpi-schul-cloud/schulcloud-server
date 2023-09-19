@@ -13,6 +13,8 @@ const {
 } = require('../../dist/apps/server/modules/account/services/account.validation.service');
 const { DB_PASSWORD, DB_URL, DB_USERNAME } = require('../../dist/apps/server/config/database.config');
 const { ALL_ENTITIES } = require('../../dist/apps/server/shared/domain/entity/all-entities');
+const { TeamService } = require('../../dist/apps/server/modules/teams/service/team.service');
+const { TeamsApiModule } = require('../../dist/apps/server/modules/teams/teams-api.module');
 
 const setupNestServices = async (app) => {
 	const module = await Test.createTestingModule({
@@ -28,6 +30,7 @@ const setupNestServices = async (app) => {
 			}),
 			ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
 			AccountApiModule,
+			TeamsApiModule,
 		],
 	}).compile();
 	const nestApp = await module.createNestApplication().init();
@@ -35,10 +38,12 @@ const setupNestServices = async (app) => {
 	const accountUc = nestApp.get(AccountUc);
 	const accountService = nestApp.get(AccountService);
 	const accountValidationService = nestApp.get(AccountValidationService);
+	const teamService = nestApp.get(TeamService);
 
 	app.services['nest-account-uc'] = accountUc;
 	app.services['nest-account-service'] = accountService;
 	app.services['nest-account-validation-service'] = accountValidationService;
+	app.services['nest-team-service'] = teamService;
 	app.services['nest-orm'] = orm;
 
 	return { nestApp, orm, accountUc, accountService };

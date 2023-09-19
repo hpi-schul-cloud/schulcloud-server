@@ -51,8 +51,6 @@ jobs:
 
       - name: test image exists
         run: |
-          mkdir -p ~/.docker 
-          echo '{"experimental": "enabled"}' >> ~/.docker/config.json
           echo "IMAGE_EXISTS=$(docker manifest inspect ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }} > /dev/null && echo 1 || echo 0)" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
@@ -61,7 +59,7 @@ jobs:
 
       - name: Build and push ${{ github.repository }}
         if: ${{ env.IMAGE_EXISTS == 0 }}
-        uses: docker/build-push-action@v4.1.1
+        uses: docker/build-push-action@v4
         with:
           context: .
           file: ./Dockerfile
@@ -83,8 +81,6 @@ jobs:
 
       - name: test image exists (file storage)
         run: |
-          mkdir -p ~/.docker 
-          echo '{"experimental": "enabled"}' >> ~/.docker/config.json
           echo "IMAGE_EXISTS=$(docker manifest inspect ghcr.io/${{ github.repository }}:file-storage-${{ needs.branch_meta.outputs.sha }} > /dev/null && echo 1 || echo 0)" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx (file storage)
@@ -93,7 +89,7 @@ jobs:
 
       - name: Build and push ${{ github.repository }} (file storage)
         if: ${{ env.IMAGE_EXISTS == 0 }}
-        uses: docker/build-push-action@v4.1.1
+        uses: docker/build-push-action@v4
         with:
           build-args: |
             BASE_IMAGE=ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }}
