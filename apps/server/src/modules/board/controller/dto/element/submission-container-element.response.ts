@@ -8,7 +8,7 @@ export class SubmissionContainerElementContent {
 	}
 
 	@ApiPropertyOptional()
-	dueDate?: Date;
+	dueDate: Date | null;
 }
 
 export class SubmissionContainerElementResponse {
