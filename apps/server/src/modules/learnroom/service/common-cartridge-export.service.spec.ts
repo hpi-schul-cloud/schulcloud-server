@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType, Course, IComponentProperties, IComponentTextProperties, Lesson, Task } from '@shared/domain';
 import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import { CommonCartridgeExportService } from '@src/modules/learnroom/service/common-cartridge-export.service';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { CourseService } from '@src/modules/learnroom/service';
 import { LessonService } from '@src/modules/lesson/service';
 import { TaskService } from '@src/modules/task/service/task.service';
 import AdmZip from 'adm-zip';

@@ -25,7 +25,7 @@ import {
 	AuthorizationService,
 } from '@src/modules/authorization';
 import { SchoolService } from '@src/modules/school/service/school.service';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { CourseService } from '@src/modules/learnroom/service';
 import { UserService } from '@src/modules/user';
 import { IScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from './dto';
 import {
