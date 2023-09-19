@@ -9,7 +9,7 @@ spec:
   jobTemplate:
     spec:
       completions: 1
-      parallelism: 1
+      parallelism: 10
       template:
         metadata:
           labels:
