@@ -38,6 +38,7 @@ import { RedisClient } from 'redis';
 import { TeamsApiModule } from '@src/modules/teams/teams-api.module';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
+import { SchoolApiModule } from '../school/school-api.module';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -74,6 +75,7 @@ const serverModules = [
 	BoardApiModule,
 	GroupApiModule,
 	TeamsApiModule,
+	SchoolApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
