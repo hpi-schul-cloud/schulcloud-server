@@ -4,8 +4,8 @@ import { IContentMetadata, ILibraryName, LibraryName } from '@lumieducation/h5p-
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IEntity } from '@shared/domain';
-import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
-import { IGetFileResponse } from '@src/modules/files-storage/interface';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
+import { GetFileResponse } from '@src/modules/files-storage/interface';
 import { ObjectID } from 'bson';
 import { Readable } from 'stream';
 import { H5PContent } from '../entity';
@@ -595,7 +595,7 @@ describe('ContentStorage', () => {
 			const filename = 'testfile.txt';
 			const fileStream = Readable.from('content');
 			const contentID = new ObjectID().toString();
-			const fileResponse = createMock<IGetFileResponse>({ data: fileStream });
+			const fileResponse = createMock<GetFileResponse>({ data: fileStream });
 			const user = helpers.createUser();
 
 			const getError = new Error('Could not get file');
