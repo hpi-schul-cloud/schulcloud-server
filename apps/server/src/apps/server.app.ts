@@ -19,7 +19,7 @@ import { join } from 'path';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
-import { FeathersRosterService } from '../modules/pseudonym/service/feathers-roster.service';
+import { FeathersRosterService } from '@src/modules/pseudonym';
 import legacyAppPromise = require('../../../../src/app');
 
 import { AppStartLoggable } from './helpers/app-start-loggable';

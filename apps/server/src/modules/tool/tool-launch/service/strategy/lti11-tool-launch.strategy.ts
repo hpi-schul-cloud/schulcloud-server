@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId, LtiPrivacyPermission, Pseudonym, RoleName, UserDO } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
-import { PseudonymService } from '@src/modules/pseudonym';
+import { PseudonymService } from '@src/modules/pseudonym/service';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { Authorization } from 'oauth-1.0a';
