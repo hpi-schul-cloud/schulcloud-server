@@ -169,7 +169,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, pseudonymService: <a href="../injectables/PseudonymService.html" target="_self">PseudonymService</a>, lti11EncryptionService: <a href="../injectables/Lti11EncryptionService.html" target="_self">Lti11EncryptionService</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>)</code>
+<code>constructor(userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, pseudonymService: <a href="../injectables/PseudonymService.html" target="_self">PseudonymService</a>, lti11EncryptionService: <a href="../injectables/Lti11EncryptionService.html" target="_self">Lti11EncryptionService</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -240,10 +240,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>courseRepo</td>
+                                                        <td>courseService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/CourseRepo.html" target="_self" >CourseRepo</a></code>
+                                                                        <code><a href="../injectables/CourseService.html" target="_self" >CourseService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -1500,11 +1500,11 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, InternalServerErrorException, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
 import { EntityId, LtiPrivacyPermission, Pseudonym, RoleName, UserDO } from &#x27;@shared/domain&#x27;;
 import { RoleReference } from &#x27;@shared/domain/domainobject&#x27;;
-import { CourseRepo } from &#x27;@shared/repo&#x27;;
 import { PseudonymService } from &#x27;@src/modules/pseudonym&#x27;;
 import { SchoolService } from &#x27;@src/modules/school&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
 import { Authorization } from &#x27;oauth-1.0a&#x27;;
+import { CourseService } from &#x27;@src/modules/learnroom/service&#x27;;
 import { LtiRole } from &#x27;../../../common/enum&#x27;;
 import { ExternalTool } from &#x27;../../../external-tool/domain&#x27;;
 import { LtiRoleMapper } from &#x27;../../mapper&#x27;;
@@ -1520,9 +1520,9 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		private readonly pseudonymService: PseudonymService,
 		private readonly lti11EncryptionService: Lti11EncryptionService,
 		schoolService: SchoolService,
-		courseRepo: CourseRepo
+		courseService: CourseService
 	) {
-		super(schoolService, courseRepo);
+		super(schoolService, courseService);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars

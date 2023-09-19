@@ -2135,18 +2135,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/ToolLaunchModule.html" data-type="entity-link" >ToolLaunchModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-ToolLaunchModule-5b8d2117d90cc61216dcd4b98d7a88369d1473035e1c98dc768294d9957cc3714a6921e081899f134f149f5ed86b0b4b8187813bc1a2262ce668188e13e25774"' : 'data-bs-target="#xs-injectables-links-module-ToolLaunchModule-5b8d2117d90cc61216dcd4b98d7a88369d1473035e1c98dc768294d9957cc3714a6921e081899f134f149f5ed86b0b4b8187813bc1a2262ce668188e13e25774"' }>
+                                        'data-bs-target="#injectables-links-module-ToolLaunchModule-b73c11ea748ff80c701394b564853dd260a424a4229b0791ec5634e40e02056fc6450d05749994a7c72970690c8c5cf6a25637dad2e2225d8620f7045f55e52d"' : 'data-bs-target="#xs-injectables-links-module-ToolLaunchModule-b73c11ea748ff80c701394b564853dd260a424a4229b0791ec5634e40e02056fc6450d05749994a7c72970690c8c5cf6a25637dad2e2225d8620f7045f55e52d"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ToolLaunchModule-5b8d2117d90cc61216dcd4b98d7a88369d1473035e1c98dc768294d9957cc3714a6921e081899f134f149f5ed86b0b4b8187813bc1a2262ce668188e13e25774"' :
-                                        'id="xs-injectables-links-module-ToolLaunchModule-5b8d2117d90cc61216dcd4b98d7a88369d1473035e1c98dc768294d9957cc3714a6921e081899f134f149f5ed86b0b4b8187813bc1a2262ce668188e13e25774"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ToolLaunchModule-b73c11ea748ff80c701394b564853dd260a424a4229b0791ec5634e40e02056fc6450d05749994a7c72970690c8c5cf6a25637dad2e2225d8620f7045f55e52d"' :
+                                        'id="xs-injectables-links-module-ToolLaunchModule-b73c11ea748ff80c701394b564853dd260a424a4229b0791ec5634e40e02056fc6450d05749994a7c72970690c8c5cf6a25637dad2e2225d8620f7045f55e52d"' }>
                                         <li class="link">
                                             <a href="injectables/BasicToolLaunchStrategy.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >BasicToolLaunchStrategy</a>
-                                        </li>
-                                        <li class="link">
-                                            <a href="injectables/CourseRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >CourseRepo</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/Lti11EncryptionService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >Lti11EncryptionService</a>
