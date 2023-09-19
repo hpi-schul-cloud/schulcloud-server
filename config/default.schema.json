@@ -605,6 +605,11 @@
 			"default": "604800000",
 			"description": "Grace period before school admin cannot restart oauth migration anymore. Value is given in ms and default is 7 days"
 		},
+		"FEATURE_SANIS_GROUP_PROVISIONING_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Groups of type class also gets provisioned, when provisioning a user via oauth login."
+		},
 		"SC_TITLE": {
 			"type": "string",
 			"default": "dBildungscloud",
@@ -651,6 +656,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables uploading of school specific Privacy Policy on new admin page."
+		},
+		"FEATURE_SCHOOL_TERMS_OF_USE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables uploading of school specific Terms of Use on new admin page."
 		},
 		"ROCKETCHAT_SERVICE_ENABLED": {
 			"type": "boolean",
