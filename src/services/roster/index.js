@@ -92,7 +92,7 @@ module.exports = function roster() {
 			if (Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED')) {
 				const userGroups = await app
 					.service('nest-feathers-roster-service')
-					.getUserGroups(params.pseudonym, params.originToolId);
+					.getUserGroups(params.pseudonym, params.tokenInfo.client_id);
 				return userGroups;
 			}
 

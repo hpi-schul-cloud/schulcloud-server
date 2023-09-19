@@ -75,11 +75,12 @@ export class FeathersRosterService {
 		return userMetadata;
 	}
 
-	async getUserGroups(pseudonym: string, externalToolId: string): Promise<UserGroups> {
+	async getUserGroups(pseudonym: string, oauth2ClientId: string): Promise<UserGroups> {
 		const loadedPseudonym: Pseudonym = await this.findPseudonymByPseudonym(pseudonym);
+		const externalTool: ExternalTool = await this.validateAndGetExternalTool(oauth2ClientId);
 
 		let courses: Course[] = await this.getCoursesFromUsersPseudonym(loadedPseudonym);
-		courses = await this.filterCoursesByToolAvailability(courses, externalToolId);
+		courses = await this.filterCoursesByToolAvailability(courses, externalTool.id as string);
 
 		const userGroups: UserGroups = {
 			data: {

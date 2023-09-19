@@ -200,8 +200,10 @@ describe('FeathersRosterService', () => {
 		describe('when pseudonym is given', () => {
 			const setup = () => {
 				const school: SchoolDO = schoolDOFactory.buildWithId();
-				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+				const clientId = 'testClientId';
+				const externalTool: ExternalTool = externalToolFactory.withOauth2Config({ clientId }).buildWithId();
 				const externalToolId: string = externalTool.id as string;
+
 				const otherExternalTool: ExternalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: externalTool.id,
@@ -239,6 +241,7 @@ describe('FeathersRosterService', () => {
 					});
 
 				pseudonymService.findPseudonymByPseudonym.mockResolvedValue(pseudonym);
+				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalTool);
 				courseService.findAllByUserId.mockResolvedValue(courses);
 				contextExternalToolService.findAllByContext.mockResolvedValueOnce([
 					contextExternalTool,
@@ -254,6 +257,7 @@ describe('FeathersRosterService', () => {
 				return {
 					pseudonym,
 					externalToolId,
+					clientId,
 					user,
 					courses,
 					schoolExternalTool,
@@ -263,25 +267,25 @@ describe('FeathersRosterService', () => {
 			};
 
 			it('should call the pseudonym service to find the pseudonym', async () => {
-				const { pseudonym, externalToolId } = setup();
+				const { pseudonym, clientId } = setup();
 
-				await service.getUserGroups(pseudonym.pseudonym, externalToolId);
+				await service.getUserGroups(pseudonym.pseudonym, clientId);
 
 				expect(pseudonymService.findPseudonymByPseudonym).toHaveBeenCalledWith(pseudonym.pseudonym);
 			});
 
 			it('should call the course service to find the courses for the userId of the pseudonym', async () => {
-				const { pseudonym, externalToolId } = setup();
+				const { pseudonym, clientId } = setup();
 
-				await service.getUserGroups(pseudonym.pseudonym, externalToolId);
+				await service.getUserGroups(pseudonym.pseudonym, clientId);
 
 				expect(courseService.findAllByUserId).toHaveBeenCalledWith(pseudonym.userId);
 			});
 
 			it('should call the context external tool service to find the external tools for each course', async () => {
-				const { pseudonym, courses, externalToolId } = setup();
+				const { pseudonym, courses, clientId } = setup();
 
-				await service.getUserGroups(pseudonym.pseudonym, externalToolId);
+				await service.getUserGroups(pseudonym.pseudonym, clientId);
 
 				expect(contextExternalToolService.findAllByContext.mock.calls).toEqual([
 					[new ContextRef({ id: courses[0].id, type: ToolContextType.COURSE })],
@@ -291,9 +295,9 @@ describe('FeathersRosterService', () => {
 			});
 
 			it('should call school external tool service to find the school external tool for each context external tool', async () => {
-				const { pseudonym, externalToolId, schoolExternalTool, otherSchoolExternalTool } = setup();
+				const { pseudonym, clientId, schoolExternalTool, otherSchoolExternalTool } = setup();
 
-				await service.getUserGroups(pseudonym.pseudonym, externalToolId);
+				await service.getUserGroups(pseudonym.pseudonym, clientId);
 
 				expect(schoolExternalToolService.getSchoolExternalToolById.mock.calls).toEqual([
 					[schoolExternalTool.id],
@@ -302,17 +306,17 @@ describe('FeathersRosterService', () => {
 			});
 
 			it('should call external tool service to find the external tool for each school external tool', async () => {
-				const { pseudonym, externalToolId, otherExternalTool } = setup();
+				const { pseudonym, clientId, otherExternalTool, externalToolId } = setup();
 
-				await service.getUserGroups(pseudonym.pseudonym, externalToolId);
+				await service.getUserGroups(pseudonym.pseudonym, clientId);
 
 				expect(externalToolService.findExternalToolById.mock.calls).toEqual([[externalToolId], [otherExternalTool.id]]);
 			});
 
 			it('should return a group for each course where the tool of the users pseudonym is used', async () => {
-				const { pseudonym, externalToolId, courses } = setup();
+				const { pseudonym, clientId, courses } = setup();
 
-				const result = await service.getUserGroups(pseudonym.pseudonym, externalToolId);
+				const result = await service.getUserGroups(pseudonym.pseudonym, clientId);
 
 				expect(result).toEqual({
 					data: {

@@ -11,7 +11,7 @@ const {
 
 chai.use(chaiHttp);
 
-describe.only('roster service', function oauth() {
+describe('roster service', function oauth() {
 	let app;
 	let metadataService;
 	let userGroupsService;
