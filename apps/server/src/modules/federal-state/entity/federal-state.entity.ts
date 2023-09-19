@@ -18,10 +18,13 @@ export class County {
 		this.antaresKey = county.antaresKey;
 	}
 
+	@Property()
 	name: string;
 
+	@Property()
 	countyId: number;
 
+	@Property()
 	antaresKey: string;
 }
 
