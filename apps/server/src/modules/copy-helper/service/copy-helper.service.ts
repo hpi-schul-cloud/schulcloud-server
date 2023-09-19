@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
-import { BaseEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { CopyDictionary, CopyStatus, CopyStatusEnum } from '../types/copy.types';
 
@@ -44,7 +43,7 @@ export class CopyHelperService {
 	}
 
 	buildCopyEntityDict(status: CopyStatus): CopyDictionary {
-		const map = this.instanciateCopyDictionary();
+		const map = new Map<EntityId, AuthorizableObject>();
 		status.elements?.forEach((elementStatus: CopyStatus) => {
 			this.buildCopyEntityDict(elementStatus).forEach((el, key) => map.set(key, el));
 		});
@@ -52,9 +51,5 @@ export class CopyHelperService {
 			map.set(status.originalEntity.id, status.copyEntity);
 		}
 		return map;
-	}
-
-	private instanciateCopyDictionary(): CopyDictionary {
-		return new Map<EntityId, BaseEntity | AuthorizableObject>();
 	}
 }
