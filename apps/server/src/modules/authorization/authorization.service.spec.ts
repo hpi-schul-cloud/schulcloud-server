@@ -3,6 +3,7 @@ import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
 import { setupEntities, userFactory } from '@shared/testing';
+import { UserRepo } from '@shared/repo';
 import { AuthorizationContextBuilder } from './authorization-context.builder';
 import { AuthorizationHelper } from './authorization.helper';
 import { AuthorizationService } from './authorization.service';
@@ -11,22 +12,23 @@ import { ReferenceLoader } from './domain/reference/reference.loader';
 import { RuleManager } from './rule-manager';
 import { Rule } from './types';
 
-describe('AuthorizationService', () => {
-	class TestRule implements Rule {
-		constructor(private returnValueOfhasPermission: boolean) {}
+class TestRule implements Rule {
+	constructor(private returnValueOfhasPermission: boolean) {}
 
-		isApplicable(): boolean {
-			return true;
-		}
-
-		hasPermission(): boolean {
-			return this.returnValueOfhasPermission;
-		}
+	isApplicable(): boolean {
+		return true;
 	}
 
+	hasPermission(): boolean {
+		return this.returnValueOfhasPermission;
+	}
+}
+
+describe('AuthorizationService', () => {
 	let service: AuthorizationService;
 	let ruleManager: DeepMocked<RuleManager>;
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
+	let userRepo: DeepMocked<UserRepo>;
 
 	const testPermission = 'CAN_TEST' as Permission;
 
@@ -48,12 +50,17 @@ describe('AuthorizationService', () => {
 					provide: AuthorizationHelper,
 					useValue: createMock<AuthorizationHelper>(),
 				},
+				{
+					provide: UserRepo,
+					useValue: createMock<UserRepo>(),
+				},
 			],
 		}).compile();
 
 		service = await module.get(AuthorizationService);
 		ruleManager = await module.get(RuleManager);
 		authorizationHelper = await module.get(AuthorizationHelper);
+		userRepo = await module.get(UserRepo);
 	});
 
 	afterEach(() => {
@@ -293,17 +300,21 @@ describe('AuthorizationService', () => {
 			});
 		});
 	});
-	/*
-	describe('getUserWithPermissions', () => {
-		it('should return user received from loader', async () => {
-			const userId = 'test';
-			const user = userFactory.build();
-			loader.getUserWithPermissions.mockResolvedValueOnce(user);
 
-			const result = await service.getUserWithPermissions(userId);
+	describe('getUserWithPermissions', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			userRepo.findById.mockResolvedValueOnce(user);
+
+			return { user };
+		};
+
+		it('should return user received from loader', async () => {
+			const { user } = setup();
+
+			const result = await service.getUserWithPermissions(user.id);
 
 			expect(result).toEqual(user);
 		});
 	});
-	*/
 });
