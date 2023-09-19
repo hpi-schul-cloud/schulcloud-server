@@ -658,7 +658,7 @@ describe('Account Controller (API)', () => {
 			});
 		});
 
-		describe('', () => {
+		describe('When using a superhero user', () => {
 			const setup = async () => {
 				const school = schoolFactory.buildWithId();
 				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
