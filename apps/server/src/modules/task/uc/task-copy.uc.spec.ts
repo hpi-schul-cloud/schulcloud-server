@@ -3,16 +3,17 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BaseDO, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { Action, AuthorizationService } from '@src/modules/authorization';
-import { AuthorizableReferenceType } from '@src/modules/authorization/domain/reference/types';
+import { Action, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@src/modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { AuthorizableObject } from '@shared/domain/domain-object';
 import { TaskCopyService } from '../service';
 import { TaskCopyUC } from './task-copy.uc';
+import { TaskCopyParentParams } from '../types';
+
+// this.courseRepo.findById(courseId); do not use findOrFail it is possible to pass courseIds in parentParams they do not exists
+// no test for it exists and maybe code can not handle it.
 
 describe('task copy uc', () => {
 	let uc: TaskCopyUC;
@@ -93,14 +94,8 @@ describe('task copy uc', () => {
 			const lesson = lessonFactory.buildWithId({ course });
 			const allTasks = taskFactory.buildList(3, { course });
 			const task = allTasks[0];
-			authorisation.getUserWithPermissions.mockResolvedValue(user);
-			taskRepo.findById.mockResolvedValue(task);
-			lessonRepo.findById.mockResolvedValue(lesson);
-			taskRepo.findBySingleParent.mockResolvedValue([allTasks, allTasks.length]);
-			courseRepo.findById.mockResolvedValue(course);
-			authorisation.hasPermission.mockReturnValue(true);
 			const copyName = 'name of the copy';
-			copyHelperService.deriveCopyName.mockReturnValue(copyName);
+
 			const copy = taskFactory.buildWithId({ creator: user, course });
 			const status = {
 				title: 'taskCopy',
@@ -109,9 +104,16 @@ describe('task copy uc', () => {
 				copyEntity: copy,
 				originalEntity: task,
 			};
-			taskCopyService.copyTask.mockResolvedValue(status);
-			taskRepo.save.mockResolvedValue(undefined);
-			const userId = user.id;
+
+			authorisation.getUserWithPermissions.mockResolvedValueOnce(user);
+			taskRepo.findById.mockResolvedValueOnce(task);
+			lessonRepo.findById.mockResolvedValueOnce(lesson);
+			taskRepo.findBySingleParent.mockResolvedValueOnce([allTasks, allTasks.length]);
+			courseRepo.findById.mockResolvedValueOnce(course);
+			authorisation.hasPermission.mockReturnValueOnce(true).mockReturnValueOnce(true);
+			copyHelperService.deriveCopyName.mockReturnValueOnce(copyName);
+			taskCopyService.copyTask.mockResolvedValueOnce(status);
+			taskRepo.save.mockResolvedValueOnce();
 
 			return {
 				user,
@@ -122,15 +124,16 @@ describe('task copy uc', () => {
 				copy,
 				allTasks,
 				status,
-				userId,
+				userId: user.id,
 			};
 		};
 
 		describe('feature is deactivated', () => {
 			it('should throw InternalServerErrorException', async () => {
+				const { course, user, task, userId } = setup();
 				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
 
-				await expect(uc.copyTask('user.id', 'task.id', { courseId: 'course.id', userId: 'test' })).rejects.toThrowError(
+				await expect(uc.copyTask(user.id, task.id, { courseId: course.id, userId })).rejects.toThrowError(
 					InternalServerErrorException
 				);
 			});
@@ -215,15 +218,9 @@ describe('task copy uc', () => {
 				const { course, user, task, userId } = setup();
 
 				await uc.copyTask(user.id, task.id, { courseId: course.id, userId });
-				expect(authorisation.checkPermissionByReferences).toBeCalledWith(
-					user.id,
-					AuthorizableReferenceType.Course,
-					course.id,
-					{
-						action: Action.write,
-						requiredPermissions: [],
-					}
-				);
+
+				const context = AuthorizationContextBuilder.write([]);
+				expect(authorisation.checkPermission).toBeCalledWith(user, course, context);
 			});
 
 			it('should pass authorisation check without destination course', async () => {
@@ -231,10 +228,8 @@ describe('task copy uc', () => {
 
 				await uc.copyTask(user.id, task.id, { userId });
 
-				expect(authorisation.hasPermission).not.toBeCalledWith(user, course, {
-					action: Action.write,
-					requiredPermissions: [],
-				});
+				const context = AuthorizationContextBuilder.write([]);
+				expect(authorisation.hasPermission).not.toBeCalledWith(user, course, context);
 			});
 
 			it('should check authorisation for destination lesson', async () => {
@@ -261,57 +256,64 @@ describe('task copy uc', () => {
 
 			describe('when access to task is forbidden', () => {
 				const setupWithTaskForbidden = () => {
+					Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
+
 					const user = userFactory.buildWithId();
 					const course = courseFactory.buildWithId();
 					const lesson = lessonFactory.buildWithId({ course });
 					const task = taskFactory.buildWithId();
-					userRepo.findById.mockResolvedValue(user);
-					taskRepo.findById.mockResolvedValue(task);
-					// authorisation should not be mocked
-					authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObject | BaseDO) => e !== task);
-					return { user, course, lesson, task };
+
+					userRepo.findById.mockResolvedValueOnce(user);
+					taskRepo.findById.mockResolvedValueOnce(task);
+					authorisation.hasPermission.mockReturnValueOnce(false);
+
+					const parentParams: TaskCopyParentParams = {
+						courseId: course.id,
+						lessonId: lesson.id,
+						userId: new ObjectId().toHexString(),
+					};
+
+					return { user, course, lesson, task, parentParams };
 				};
 
 				it('should throw NotFoundException', async () => {
-					const { course, lesson, user, task } = setupWithTaskForbidden();
+					const { user, task, parentParams } = setupWithTaskForbidden();
 
-					try {
-						await uc.copyTask(user.id, task.id, {
-							courseId: course.id,
-							lessonId: lesson.id,
-							userId: new ObjectId().toHexString(),
-						});
-						throw new Error('should have failed');
-					} catch (err) {
-						expect(err).toBeInstanceOf(NotFoundException);
-					}
+					await expect(uc.copyTask(user.id, task.id, parentParams)).rejects.toThrowError(
+						new NotFoundException('could not find task to copy')
+					);
 				});
 			});
 
 			describe('when access to course is forbidden', () => {
 				const setupWithCourseForbidden = () => {
+					Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
+
 					const user = userFactory.buildWithId();
 					const course = courseFactory.buildWithId();
 					const task = taskFactory.buildWithId();
-					userRepo.findById.mockResolvedValue(user);
-					taskRepo.findById.mockResolvedValue(task);
-					// authorisation should not be mocked
-					authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObject | BaseDO) => e !== course);
-					authorisation.checkPermissionByReferences.mockImplementation(() => {
+
+					userRepo.findById.mockResolvedValueOnce(user);
+					taskRepo.findById.mockResolvedValueOnce(task);
+					courseRepo.findById.mockResolvedValueOnce(course);
+					authorisation.hasPermission.mockReturnValueOnce(true).mockReturnValueOnce(true);
+					authorisation.checkPermission.mockImplementationOnce(() => {
 						throw new ForbiddenException();
 					});
-					return { user, course, task };
+
+					const parentParams: TaskCopyParentParams = { courseId: course.id, userId: new ObjectId().toHexString() };
+
+					return {
+						userId: user.id,
+						taskId: task.id,
+						parentParams,
+					};
 				};
 
 				it('should throw Forbidden Exception', async () => {
-					const { course, user, task } = setupWithCourseForbidden();
+					const { userId, taskId, parentParams } = setupWithCourseForbidden();
 
-					try {
-						await uc.copyTask(user.id, task.id, { courseId: course.id, userId: new ObjectId().toHexString() });
-						throw new Error('should have failed');
-					} catch (err) {
-						expect(err).toBeInstanceOf(ForbiddenException);
-					}
+					await expect(uc.copyTask(userId, taskId, parentParams)).rejects.toThrowError(new ForbiddenException());
 				});
 			});
 		});
@@ -356,32 +358,35 @@ describe('task copy uc', () => {
 
 		describe('when access to lesson is forbidden', () => {
 			const setupWithLessonForbidden = () => {
+				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
+
 				const user = userFactory.buildWithId();
 				const course = courseFactory.buildWithId();
 				const lesson = lessonFactory.buildWithId({ course });
 				const task = taskFactory.buildWithId();
-				userRepo.findById.mockResolvedValue(user);
-				taskRepo.findById.mockResolvedValue(task);
-				courseRepo.findById.mockResolvedValue(course);
-				lessonRepo.findById.mockResolvedValue(lesson);
-				// Authorisation should not be mocked
-				authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObject | BaseDO) => {
-					if (e === lesson) return false;
-					return true;
-				});
 
-				return { user, lesson, task };
+				userRepo.findById.mockResolvedValueOnce(user);
+				taskRepo.findById.mockResolvedValueOnce(task);
+				courseRepo.findById.mockResolvedValueOnce(course);
+				lessonRepo.findById.mockResolvedValueOnce(lesson);
+				// first canReadTask > second canWriteLesson
+				authorisation.hasPermission.mockReturnValueOnce(true).mockReturnValueOnce(false);
+
+				const parentParams: TaskCopyParentParams = { lessonId: lesson.id, userId: new ObjectId().toHexString() };
+
+				return {
+					userId: user.id,
+					taskId: task.id,
+					parentParams,
+				};
 			};
 
 			it('should throw Forbidden Exception', async () => {
-				const { lesson, user, task } = setupWithLessonForbidden();
+				const { userId, taskId, parentParams } = setupWithLessonForbidden();
 
-				try {
-					await uc.copyTask(user.id, task.id, { lessonId: lesson.id, userId: new ObjectId().toHexString() });
-					throw new Error('should have failed');
-				} catch (err) {
-					expect(err).toBeInstanceOf(ForbiddenException);
-				}
+				await expect(uc.copyTask(userId, taskId, parentParams)).rejects.toThrowError(
+					new ForbiddenException('you dont have permission to add to this lesson')
+				);
 			});
 		});
 	});
