@@ -1,7 +1,7 @@
-import { ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
+import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { ContentElementType, InputFormat } from '@shared/domain';
 import { Type } from 'class-transformer';
-import { IsDate, IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsDate, IsEnum, IsString, ValidateNested } from 'class-validator';
 
 export abstract class ElementContentBody {
 	@ApiProperty({
@@ -20,9 +20,8 @@ export class FileContentBody {
 	caption?: string;
 
 	@IsString()
-	@ApiPropertyOptional()
-	@IsOptional()
-	alternativeText?: string;
+	@ApiProperty({})
+	alternativeText!: string;
 }
 
 export class FileElementContentBody extends ElementContentBody {

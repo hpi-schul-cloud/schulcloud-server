@@ -1,6 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { ContentElementType } from '@shared/domain';
-import { IsOptional } from 'class-validator';
 import { TimestampsResponse } from '../timestamps.response';
 
 export class FileElementContent {
@@ -13,9 +12,8 @@ export class FileElementContent {
 	@IsOptional()
 	caption?: string;
 
-	@ApiPropertyOptional()
-	@IsOptional()
-	alternativeText?: string;
+	@ApiProperty()
+	alternativeText: string;
 }
 
 export class FileElementResponse {
