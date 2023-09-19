@@ -16,12 +16,12 @@ import {
 } from '@shared/testing';
 import { JwtTestFactory } from '@shared/testing/factory/jwt.test.factory';
 import { OauthTokenResponse } from '@src/modules/oauth/service/dto';
-import { SanisResponse, SanisRole } from '@src/modules/provisioning';
 import { ServerTestModule } from '@src/modules/server';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { UUID } from 'bson';
 import { Response } from 'supertest';
+import { SanisResponse, SanisRole } from '@src/modules/provisioning/strategy/sanis/response';
 import { UserLoginMigrationResponse } from '../dto';
 import { Oauth2MigrationParams } from '../dto/oauth2-migration.params';
 
@@ -423,16 +423,15 @@ describe('UserLoginMigrationController (API)', () => {
 					},
 					personenkontexte: [
 						{
-							id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713'),
+							id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713').toString(),
 							rolle: SanisRole.LEHR,
 							organisation: {
-								id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713'),
+								id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713').toString(),
 								kennung: officialSchoolNumber,
 								name: 'schulName',
 								typ: 'not necessary',
 							},
 							personenstatus: 'not necessary',
-							email: 'email',
 						},
 					],
 				});
