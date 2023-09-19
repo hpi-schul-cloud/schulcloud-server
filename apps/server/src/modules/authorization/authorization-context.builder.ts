@@ -1,6 +1,7 @@
 import { Permission } from '@shared/domain';
 import { AuthorizationContext, Action } from './types';
 
+// need to move to shared
 export class AuthorizationContextBuilder {
 	private static build(requiredPermissions: Permission[], action: Action): AuthorizationContext {
 		const context = { requiredPermissions, action };

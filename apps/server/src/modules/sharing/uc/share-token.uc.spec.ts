@@ -16,7 +16,7 @@ import {
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { Action, AuthorizationService } from '@src/modules/authorization';
-import { AuthorizableReferenceType } from '@src/modules/authorization/domain/reference/types';
+import { AuthorizableReferenceType, AuthorizationReferenceService } from '@src/modules/authorization/domain';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { CourseCopyService } from '@src/modules/learnroom';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
@@ -34,6 +34,7 @@ describe('ShareTokenUC', () => {
 	let lessonCopyService: DeepMocked<LessonCopyService>;
 	let taskCopyService: DeepMocked<TaskCopyService>;
 	let authorization: DeepMocked<AuthorizationService>;
+	let authorizationReferenceService: DeepMocked<AuthorizationReferenceService>;
 	let courseService: DeepMocked<CourseService>;
 	let lessonRepo: DeepMocked<LessonRepo>;
 
@@ -48,6 +49,10 @@ describe('ShareTokenUC', () => {
 				{
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
+				},
+				{
+					provide: AuthorizationReferenceService,
+					useValue: createMock<AuthorizationReferenceService>(),
 				},
 				{
 					provide: CourseCopyService,
@@ -82,8 +87,10 @@ describe('ShareTokenUC', () => {
 		lessonCopyService = module.get(LessonCopyService);
 		taskCopyService = module.get(TaskCopyService);
 		authorization = module.get(AuthorizationService);
+		authorizationReferenceService = module.get(AuthorizationReferenceService);
 		courseService = module.get(CourseService);
 		lessonRepo = module.get(LessonRepo);
+
 		await setupEntities();
 	});
 
@@ -94,6 +101,7 @@ describe('ShareTokenUC', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
 		jest.clearAllMocks();
+		// configuration sets must be part of the setup functions and part of the describe when ...and feature x is activated
 		Configuration.set('FEATURE_COURSE_SHARE_NEW', true);
 		Configuration.set('FEATURE_LESSON_SHARE', true);
 		Configuration.set('FEATURE_TASK_SHARE', true);
@@ -130,7 +138,7 @@ describe('ShareTokenUC', () => {
 					parentType: ShareTokenParentType.Course,
 				});
 
-				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
 					AuthorizableReferenceType.Course,
 					course.id,
@@ -149,7 +157,7 @@ describe('ShareTokenUC', () => {
 					parentType: ShareTokenParentType.Course,
 				});
 
-				expect(authorization.checkPermissionByReferences).toHaveBeenCalledTimes(1);
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledTimes(1);
 			});
 
 			it('should call the service', async () => {
@@ -191,7 +199,7 @@ describe('ShareTokenUC', () => {
 					parentType: ShareTokenParentType.Lesson,
 				});
 
-				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
 					AuthorizableReferenceType.Lesson,
 					lesson.id,
@@ -210,7 +218,7 @@ describe('ShareTokenUC', () => {
 					parentType: ShareTokenParentType.Lesson,
 				});
 
-				expect(authorization.checkPermissionByReferences).toHaveBeenCalledTimes(1);
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledTimes(1);
 			});
 
 			it('should call the service', async () => {
@@ -252,7 +260,7 @@ describe('ShareTokenUC', () => {
 					parentType: ShareTokenParentType.Task,
 				});
 
-				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
 					AuthorizableReferenceType.Task,
 					task.id,
@@ -271,7 +279,7 @@ describe('ShareTokenUC', () => {
 					parentType: ShareTokenParentType.Task,
 				});
 
-				expect(authorization.checkPermissionByReferences).toHaveBeenCalledTimes(1);
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledTimes(1);
 			});
 
 			it('should call the service', async () => {
@@ -310,7 +318,7 @@ describe('ShareTokenUC', () => {
 					}
 				);
 
-				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
 					AuthorizableReferenceType.Course,
 					course.id,
@@ -338,7 +346,7 @@ describe('ShareTokenUC', () => {
 					}
 				);
 
-				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
 					AuthorizableReferenceType.School,
 					school.id,
@@ -575,7 +583,7 @@ describe('ShareTokenUC', () => {
 
 				await uc.lookupShareToken(user.id, shareToken.token);
 
-				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
 					AuthorizableReferenceType.School,
 					school.id,
@@ -602,7 +610,7 @@ describe('ShareTokenUC', () => {
 
 				await uc.lookupShareToken(user.id, shareToken.token);
 
-				expect(authorization.checkPermissionByReferences).not.toHaveBeenCalled();
+				expect(authorizationReferenceService.checkPermissionByReferences).not.toHaveBeenCalled();
 			});
 		});
 	});
@@ -687,7 +695,7 @@ describe('ShareTokenUC', () => {
 
 					await uc.importShareToken(user.id, shareToken.token, 'NewName');
 
-					expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
+					expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
 						user.id,
 						AuthorizableReferenceType.School,
 						school.id,
@@ -707,7 +715,7 @@ describe('ShareTokenUC', () => {
 
 					await uc.importShareToken(user.id, shareToken.token, 'NewName');
 
-					expect(authorization.checkPermissionByReferences).not.toHaveBeenCalled();
+					expect(authorizationReferenceService.checkPermissionByReferences).not.toHaveBeenCalled();
 				});
 			});
 		});
@@ -804,7 +812,7 @@ describe('ShareTokenUC', () => {
 
 					await uc.importShareToken(user.id, shareToken.token, 'NewName');
 
-					expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
+					expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
 						user.id,
 						AuthorizableReferenceType.School,
 						school.id,
@@ -824,7 +832,7 @@ describe('ShareTokenUC', () => {
 
 					await uc.importShareToken(user.id, shareToken.token, 'NewName');
 
-					expect(authorization.checkPermissionByReferences).not.toHaveBeenCalled();
+					expect(authorizationReferenceService.checkPermissionByReferences).not.toHaveBeenCalled();
 				});
 			});
 		});
@@ -920,7 +928,7 @@ describe('ShareTokenUC', () => {
 
 					await uc.importShareToken(user.id, shareToken.token, 'NewName');
 
-					expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
+					expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
 						user.id,
 						AuthorizableReferenceType.School,
 						school.id,
@@ -940,7 +948,7 @@ describe('ShareTokenUC', () => {
 
 					await uc.importShareToken(user.id, shareToken.token, 'NewName');
 
-					expect(authorization.checkPermissionByReferences).not.toHaveBeenCalled();
+					expect(authorizationReferenceService.checkPermissionByReferences).not.toHaveBeenCalled();
 				});
 			});
 		});
@@ -963,6 +971,7 @@ describe('ShareTokenUC', () => {
 			service.lookupToken.mockResolvedValue(shareToken);
 			jest.spyOn(ShareTokenUC.prototype as any, 'checkFeatureEnabled').mockReturnValue(undefined);
 			jest.spyOn(ShareTokenUC.prototype as any, 'checkCreatePermission').mockReturnValue(undefined);
+
 			await expect(uc.importShareToken('userId', shareToken.token, 'NewName')).rejects.toThrowError(
 				NotImplementedException
 			);

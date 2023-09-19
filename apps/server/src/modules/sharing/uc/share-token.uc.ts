@@ -2,7 +2,8 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException, Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
-import { Action, AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationReferenceService } from '@src/modules/authorization/domain/reference';
 import { CopyStatus } from '@src/modules/copy-helper';
 import { CourseCopyService } from '@src/modules/learnroom';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
@@ -24,6 +25,7 @@ export class ShareTokenUC {
 	constructor(
 		private readonly shareTokenService: ShareTokenService,
 		private readonly authorizationService: AuthorizationService,
+		private readonly authorizationReferenceService: AuthorizationReferenceService,
 		private readonly courseCopyService: CourseCopyService,
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly courseService: CourseService,
@@ -177,18 +179,26 @@ export class ShareTokenUC {
 				requiredPermissions = [Permission.HOMEWORK_CREATE];
 		}
 
-		await this.authorizationService.checkPermissionByReferences(userId, allowedParentType, payload.parentId, {
-			action: Action.write,
-			requiredPermissions,
-		});
+		const authorizationContext = AuthorizationContextBuilder.write(requiredPermissions);
+
+		await this.authorizationReferenceService.checkPermissionByReferences(
+			userId,
+			allowedParentType,
+			payload.parentId,
+			authorizationContext
+		);
 	}
 
 	private async checkContextReadPermission(userId: EntityId, context: ShareTokenContext) {
 		const allowedContextType = ShareTokenContextTypeMapper.mapToAllowedAuthorizationEntityType(context.contextType);
-		await this.authorizationService.checkPermissionByReferences(userId, allowedContextType, context.contextId, {
-			action: Action.read,
-			requiredPermissions: [],
-		});
+		const authorizationContext = AuthorizationContextBuilder.read([]);
+
+		await this.authorizationReferenceService.checkPermissionByReferences(
+			userId,
+			allowedContextType,
+			context.contextId,
+			authorizationContext
+		);
 	}
 
 	private async checkCreatePermission(userId: EntityId, parentType: ShareTokenParentType) {
@@ -221,16 +231,19 @@ export class ShareTokenUC {
 	private checkFeatureEnabled(parentType: ShareTokenParentType) {
 		switch (parentType) {
 			case ShareTokenParentType.Course:
+				// Configuration.get is the deprecated way to read envirment variables
 				if (!(Configuration.get('FEATURE_COURSE_SHARE_NEW') as boolean)) {
 					throw new InternalServerErrorException('Import Course Feature not enabled');
 				}
 				break;
 			case ShareTokenParentType.Lesson:
+				// Configuration.get is the deprecated way to read envirment variables
 				if (!(Configuration.get('FEATURE_LESSON_SHARE') as boolean)) {
 					throw new InternalServerErrorException('Import Lesson Feature not enabled');
 				}
 				break;
 			case ShareTokenParentType.Task:
+				// Configuration.get is the deprecated way to read envirment variables
 				if (!(Configuration.get('FEATURE_TASK_SHARE') as boolean)) {
 					throw new InternalServerErrorException('Import Task Feature not enabled');
 				}
