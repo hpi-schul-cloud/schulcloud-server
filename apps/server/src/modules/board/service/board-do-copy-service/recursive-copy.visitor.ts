@@ -12,24 +12,15 @@ import {
 } from '@shared/domain';
 import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { ObjectId } from 'bson';
-
-type RecursiveCopyVisitorParams = {
-	originSchoolId: EntityId;
-	targetSchoolId: EntityId;
-	userId: EntityId;
-};
+import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
 
 export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 	resultMap = new Map<EntityId, CopyStatus>();
 
 	copyMap = new Map<EntityId, AnyBoardDo>();
 
-	constructor(
-		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
-		private readonly params: RecursiveCopyVisitorParams
-	) {}
+	constructor(private readonly fileCopyService: SchoolSpecificFileCopyService) {}
 
 	async copy(original: AnyBoardDo): Promise<CopyStatus> {
 		await original.acceptAsync(this);
@@ -108,18 +99,10 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		});
-		const fileCopy = await this.filesStorageClientAdapterService.copyFilesOfParent({
-			source: {
-				parentId: original.id,
-				parentType: FileRecordParentType.BoardNode,
-				schoolId: this.params.originSchoolId,
-			},
-			target: {
-				parentId: copy.id,
-				parentType: FileRecordParentType.BoardNode,
-				schoolId: this.params.targetSchoolId,
-			},
-			userId: this.params.userId,
+		const fileCopy = await this.fileCopyService.copyFilesOfParent({
+			sourceParentId: original.id,
+			targetParentId: copy.id,
+			parentType: FileRecordParentType.BoardNode,
 		});
 		const fileCopyStatus = fileCopy.map((copyFileDto) => {
 			return {

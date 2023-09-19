@@ -1,26 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { AnyBoardDo, EntityId } from '@shared/domain';
+import { AnyBoardDo } from '@shared/domain';
 import { CopyStatus } from '@src/modules/copy-helper';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { RecursiveCopyVisitor } from './recursive-copy.visitor';
+import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
 
 export type BoardDoCopyParams = {
-	originSchoolId: EntityId;
-	targetSchoolId?: EntityId;
-	userId: EntityId;
 	original: AnyBoardDo;
+	fileCopyService: SchoolSpecificFileCopyService;
 };
 
 @Injectable()
 export class BoardDoCopyService {
-	constructor(private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService) {}
-
 	public async copy(params: BoardDoCopyParams): Promise<CopyStatus> {
-		const visitor = new RecursiveCopyVisitor(this.filesStorageClientAdapterService, {
-			userId: params.userId,
-			originSchoolId: params.originSchoolId,
-			targetSchoolId: params.targetSchoolId || params.originSchoolId,
-		});
+		const visitor = new RecursiveCopyVisitor(params.fileCopyService);
 
 		const result = await visitor.copy(params.original);
 

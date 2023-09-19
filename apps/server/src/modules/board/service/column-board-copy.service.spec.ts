@@ -6,7 +6,11 @@ import { columnBoardFactory, courseFactory, schoolFactory, setupEntities, userFa
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { UserService } from '@src/modules/user';
 import { BoardDoRepo } from '../repo';
-import { BoardDoCopyService } from './board-do-copy-service';
+import {
+	BoardDoCopyService,
+	SchoolSpecificFileCopyService,
+	SchoolSpecificFileCopyServiceFactory,
+} from './board-do-copy-service';
 import { ColumnBoardCopyService } from './column-board-copy.service';
 
 describe('column board copy service', () => {
@@ -16,6 +20,7 @@ describe('column board copy service', () => {
 	let boardRepo: DeepMocked<BoardDoRepo>;
 	let userService: DeepMocked<UserService>;
 	let courseRepo: DeepMocked<CourseRepo>;
+	let fileCopyServiceFactory: DeepMocked<SchoolSpecificFileCopyServiceFactory>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -36,6 +41,10 @@ describe('column board copy service', () => {
 					provide: CourseRepo,
 					useValue: createMock<CourseRepo>(),
 				},
+				{
+					provide: SchoolSpecificFileCopyServiceFactory,
+					useValue: createMock<SchoolSpecificFileCopyServiceFactory>(),
+				},
 				ColumnBoardCopyService,
 			],
 		}).compile();
@@ -45,6 +54,7 @@ describe('column board copy service', () => {
 		boardRepo = module.get(BoardDoRepo);
 		userService = module.get(UserService);
 		courseRepo = module.get(CourseRepo);
+		fileCopyServiceFactory = module.get(SchoolSpecificFileCopyServiceFactory);
 
 		await setupEntities();
 	});
@@ -90,6 +100,9 @@ describe('column board copy service', () => {
 
 			const user = userFactory.buildWithId({ school: targetSchool });
 
+			const fileCopyServiceMock = createMock<SchoolSpecificFileCopyService>();
+			fileCopyServiceFactory.build.mockReturnValue(fileCopyServiceMock);
+
 			boardRepo.findByClassAndId.mockResolvedValue(originalBoard);
 			courseRepo.findById.mockResolvedValue(course);
 			userService.findById.mockResolvedValue({ schoolId: user.school.id } as UserDO);
@@ -104,6 +117,7 @@ describe('column board copy service', () => {
 				boardCopy,
 				expectedBoardCopy,
 				expectedCopyStatus,
+				fileCopyServiceMock,
 			};
 		};
 
@@ -119,7 +133,7 @@ describe('column board copy service', () => {
 		});
 
 		it('should call copyService with column board do', async () => {
-			const { course, originalBoard, destinationExternalReference, user } = setup();
+			const { fileCopyServiceMock, originalBoard, destinationExternalReference, user } = setup();
 			await service.copyColumnBoard({
 				originalColumnBoardId: originalBoard.id,
 				destinationExternalReference,
@@ -127,9 +141,7 @@ describe('column board copy service', () => {
 			});
 
 			expect(doCopyService.copy).toHaveBeenCalledWith({
-				originSchoolId: course.school.id,
-				targetSchoolId: user.school.id,
-				userId: user.id,
+				fileCopyService: fileCopyServiceMock,
 				original: originalBoard,
 			});
 		});
