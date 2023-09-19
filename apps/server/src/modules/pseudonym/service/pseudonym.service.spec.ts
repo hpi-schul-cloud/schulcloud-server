@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IFindOptions, LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain';
@@ -500,6 +501,31 @@ describe('PseudonymService', () => {
 					data: [page.data[0]],
 					total: page.total,
 				});
+			});
+		});
+	});
+
+	describe('getIframeSubject', () => {
+		describe('when pseudonym is given', () => {
+			const setup = () => {
+				const pseudonym = 'pseudonym';
+				const host = 'https://host.de';
+				Configuration.set('HOST', host);
+
+				return {
+					pseudonym,
+					host,
+				};
+			};
+
+			it('should return the iframeSubject', () => {
+				const { pseudonym, host } = setup();
+
+				const result: string = service.getIframeSubject(pseudonym);
+
+				expect(result).toEqual(
+					`<iframe src="${host}/oauth2/username/${pseudonym}" title="username" style="height: 26px; width: 180px; border: none;"></iframe>`
+				);
 			});
 		});
 	});
