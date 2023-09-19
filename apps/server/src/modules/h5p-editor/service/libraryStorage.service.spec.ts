@@ -6,9 +6,8 @@ import { ILibraryMetadata, ILibraryName } from '@lumieducation/h5p-server';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
-import { IGetFileResponse } from '@src/modules/files-storage/interface';
-
+import { S3ClientAdapter } from '@shared/infra/s3-client';
+import { GetFileResponse } from '@src/modules/files-storage/interface';
 import { FileMetadata, InstalledLibrary } from '../entity/library.entity';
 import { LibraryRepo } from '../repo/library.repo';
 import { LibraryStorage } from './libraryStorage.service';
@@ -169,7 +168,7 @@ describe('LibraryStorage', () => {
 					return Promise.resolve({
 						contentLength: file[1].length,
 						data: Readable.from(Buffer.from(file[1])),
-					} as IGetFileResponse);
+					} as GetFileResponse);
 				}
 			}
 			throw new Error(`S3 object under ${filepath} not found`);
@@ -184,30 +183,86 @@ describe('LibraryStorage', () => {
 				minorVersion,
 			};
 		};
-
-		const testingLib = new InstalledLibrary('testing', 1, 2, 3);
+		const testingLibMetadata: ILibraryMetadata = {
+			runnable: false,
+			title: '',
+			patchVersion: 3,
+			machineName: 'testing',
+			majorVersion: 1,
+			minorVersion: 2,
+		};
+		const testingLib = new InstalledLibrary(testingLibMetadata);
 		testingLib.files.push(
 			new FileMetadata('file1', new Date(), 2),
 			new FileMetadata('file2', new Date(), 4),
 			new FileMetadata('file3', new Date(), 6)
 		);
 
-		const addonLib = new InstalledLibrary('addon', 1, 2, 3);
+		const addonLibMetadata: ILibraryMetadata = {
+			runnable: false,
+			title: '',
+			patchVersion: 3,
+			machineName: 'addon',
+			majorVersion: 1,
+			minorVersion: 2,
+		};
+		const addonLib = new InstalledLibrary(addonLibMetadata);
 		addonLib.addTo = { player: { machineNames: [testingLib.machineName] } };
 
-		const circularA = new InstalledLibrary('circular_a', 1, 2, 3);
-		const circularB = new InstalledLibrary('circular_b', 1, 2, 3);
+		const circularALibMetadata: ILibraryMetadata = {
+			runnable: false,
+			title: '',
+			patchVersion: 3,
+			machineName: 'circular_a',
+			majorVersion: 1,
+			minorVersion: 2,
+		};
+		const circularA = new InstalledLibrary(circularALibMetadata);
+		const circularBLibMetadata: ILibraryMetadata = {
+			runnable: false,
+			title: '',
+			patchVersion: 3,
+			machineName: 'circular_b',
+			majorVersion: 1,
+			minorVersion: 2,
+		};
+		const circularB = new InstalledLibrary(circularBLibMetadata);
 		circularA.preloadedDependencies = [metadataToName(circularB)];
 		circularB.editorDependencies = [metadataToName(circularA)];
 
 		const fakeLibraryName: ILibraryName = { machineName: 'fake', majorVersion: 2, minorVersion: 3 };
 
-		const testingLibDependentA = new InstalledLibrary('first_dependent', 2, 5, 6);
+		const testingLibDependentAMetadata: ILibraryMetadata = {
+			runnable: false,
+			title: '',
+			patchVersion: 6,
+			machineName: 'first_dependent',
+			majorVersion: 2,
+			minorVersion: 5,
+		};
+		const testingLibDependentA = new InstalledLibrary(testingLibDependentAMetadata);
 		testingLibDependentA.dynamicDependencies = [metadataToName(testingLib)];
-		const testingLibDependentB = new InstalledLibrary('second_dependent', 2, 5, 6);
+
+		const testingLibDependentBMetadata: ILibraryMetadata = {
+			runnable: false,
+			title: '',
+			patchVersion: 6,
+			machineName: 'second_dependent',
+			majorVersion: 2,
+			minorVersion: 5,
+		};
+		const testingLibDependentB = new InstalledLibrary(testingLibDependentBMetadata);
 		testingLibDependentB.preloadedDependencies = [metadataToName(testingLib)];
 
-		const libWithNonExistingDependency = new InstalledLibrary('fake_dependency', 2, 5, 6);
+		const libWithNonExistingDependencyMetadata: ILibraryMetadata = {
+			runnable: false,
+			title: '',
+			patchVersion: 6,
+			machineName: 'fake_dependency',
+			majorVersion: 2,
+			minorVersion: 5,
+		};
+		const libWithNonExistingDependency = new InstalledLibrary(libWithNonExistingDependencyMetadata);
 		libWithNonExistingDependency.editorDependencies = [fakeLibraryName];
 
 		return {
@@ -308,12 +363,15 @@ describe('LibraryStorage', () => {
 			it('should update metadata', async () => {
 				const { testingLib } = await setup();
 
-				const libFromDatabase = new InstalledLibrary(
-					testingLib.machineName,
-					testingLib.majorVersion,
-					testingLib.minorVersion,
-					testingLib.patchVersion
-				);
+				const libFromDatabaseMetadata: ILibraryMetadata = {
+					runnable: false,
+					title: '',
+					patchVersion: testingLib.patchVersion,
+					machineName: testingLib.machineName,
+					majorVersion: testingLib.majorVersion,
+					minorVersion: testingLib.minorVersion,
+				};
+				const libFromDatabase = new InstalledLibrary(libFromDatabaseMetadata);
 
 				repo.findOneByNameAndVersionOrFail.mockResolvedValue(libFromDatabase);
 
