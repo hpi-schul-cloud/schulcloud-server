@@ -304,6 +304,7 @@ describe('AuthorizationService', () => {
 	describe('getUserWithPermissions', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
+
 			userRepo.findById.mockResolvedValueOnce(user);
 
 			return { user };
