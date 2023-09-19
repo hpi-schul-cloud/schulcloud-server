@@ -7,7 +7,7 @@ export class ClassInfoResponse {
 	@ApiPropertyOptional()
 	externalSourceName?: string;
 
-	@ApiProperty({ isArray: true })
+	@ApiProperty({ type: [String] })
 	teachers: string[];
 
 	constructor(props: ClassInfoResponse) {
