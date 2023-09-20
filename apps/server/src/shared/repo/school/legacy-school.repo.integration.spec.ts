@@ -5,6 +5,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	ISchoolProperties,
+	LegacySchoolDo,
 	School,
 	SchoolRolePermission,
 	SchoolRoles,
@@ -12,32 +13,34 @@ import {
 	System,
 	UserLoginMigration,
 } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { schoolFactory, systemFactory } from '@shared/testing';
-import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
-import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
+import {
+	legacySchoolDoFactory,
+	schoolFactory,
+	schoolYearFactory,
+	systemFactory,
+	userLoginMigrationFactory,
+} from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { userLoginMigrationFactory } from '@shared/testing/factory/user-login-migration.factory';
-import { SchoolRepo } from '..';
+import { LegacySchoolRepo } from '..';
 
-describe('SchoolRepo', () => {
+describe('LegacySchoolRepo', () => {
 	let module: TestingModule;
-	let repo: SchoolRepo;
+	let repo: LegacySchoolRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [
-				SchoolRepo,
+				LegacySchoolRepo,
 				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
-		repo = module.get(SchoolRepo);
+		repo = module.get(LegacySchoolRepo);
 		em = module.get(EntityManager);
 	});
 
@@ -59,7 +62,7 @@ describe('SchoolRepo', () => {
 	describe('save is called', () => {
 		describe('when saving only required fields', () => {
 			function setupDO() {
-				const domainObject: SchoolDO = schoolDOFactory.build();
+				const domainObject: LegacySchoolDo = legacySchoolDoFactory.build();
 				return {
 					domainObject,
 				};
@@ -70,7 +73,7 @@ describe('SchoolRepo', () => {
 				const { id, ...expected } = domainObject;
 				expected.systems = [];
 
-				const result: SchoolDO = await repo.save(domainObject);
+				const result: LegacySchoolDo = await repo.save(domainObject);
 
 				expect(result).toMatchObject(expected);
 				expect(result.id).toBeDefined();
@@ -117,7 +120,7 @@ describe('SchoolRepo', () => {
 
 			await em.persistAndFlush(schoolEntity);
 
-			const result: SchoolDO | null = await repo.findByExternalId(
+			const result: LegacySchoolDo | null = await repo.findByExternalId(
 				schoolEntity.externalId as string,
 				schoolEntity.systems[0].id
 			);
@@ -126,7 +129,7 @@ describe('SchoolRepo', () => {
 		});
 
 		it('should return null when no school is found', async () => {
-			const result: SchoolDO | null = await repo.findByExternalId(
+			const result: LegacySchoolDo | null = await repo.findByExternalId(
 				new ObjectId().toHexString(),
 				new ObjectId().toHexString()
 			);
@@ -141,13 +144,13 @@ describe('SchoolRepo', () => {
 
 			await em.persistAndFlush(schoolEntity);
 
-			const result: SchoolDO | null = await repo.findBySchoolNumber(schoolEntity.officialSchoolNumber as string);
+			const result: LegacySchoolDo | null = await repo.findBySchoolNumber(schoolEntity.officialSchoolNumber as string);
 
 			expect(result?.officialSchoolNumber).toEqual(schoolEntity.officialSchoolNumber);
 		});
 
 		it('should return null when no school is found', async () => {
-			const result: SchoolDO | null = await repo.findBySchoolNumber('fail');
+			const result: LegacySchoolDo | null = await repo.findBySchoolNumber('fail');
 
 			expect(result).toBeNull();
 		});
@@ -185,7 +188,7 @@ describe('SchoolRepo', () => {
 			const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.build({ school: schoolEntity });
 			schoolEntity.userLoginMigration = userLoginMigration;
 
-			const schoolDO: SchoolDO = repo.mapEntityToDO(schoolEntity);
+			const schoolDO: LegacySchoolDo = repo.mapEntityToDO(schoolEntity);
 
 			expect(schoolDO).toEqual(
 				expect.objectContaining({
@@ -223,7 +226,7 @@ describe('SchoolRepo', () => {
 
 			await em.persistAndFlush([userLoginMigration, system1, system2]);
 
-			const entityDO: SchoolDO = schoolDOFactory.build({
+			const entityDO: LegacySchoolDo = legacySchoolDoFactory.build({
 				systems: [system1.id, system2.id],
 				userLoginMigrationId: userLoginMigration.id,
 			});
@@ -262,7 +265,7 @@ describe('SchoolRepo', () => {
 
 		describe('when there are no systems', () => {
 			it('should not call the entity manager to get the system object', () => {
-				const entityDO: SchoolDO = schoolDOFactory.build({ systems: undefined });
+				const entityDO: LegacySchoolDo = legacySchoolDoFactory.build({ systems: undefined });
 				const emGetReferenceSpy = jest.spyOn(em, 'getReference');
 
 				repo.mapDOToEntityProperties(entityDO);
@@ -273,7 +276,7 @@ describe('SchoolRepo', () => {
 
 		describe('when there is no userLoginMigration', () => {
 			it('should not call the entity manager to get the user login migration reference', () => {
-				const entityDO: SchoolDO = schoolDOFactory.build({ userLoginMigrationId: undefined });
+				const entityDO: LegacySchoolDo = legacySchoolDoFactory.build({ userLoginMigrationId: undefined });
 				const emGetReferenceSpy = jest.spyOn(em, 'getReference');
 
 				repo.mapDOToEntityProperties(entityDO);
