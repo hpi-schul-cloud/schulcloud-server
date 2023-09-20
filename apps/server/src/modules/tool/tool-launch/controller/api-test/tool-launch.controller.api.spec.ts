@@ -1,7 +1,7 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, Permission, School } from '@shared/domain';
+import { Course, Permission, SchoolEntity } from '@shared/domain';
 import {
 	basicToolConfigFactory,
 	contextExternalToolFactory,
@@ -55,7 +55,7 @@ describe('ToolLaunchController (API)', () => {
 	describe('[GET] tools/context/{contextExternalToolId}/launch', () => {
 		describe('when valid data is given', () => {
 			const setup = async () => {
-				const school: School = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolFactory.buildWithId();
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
 					Permission.CONTEXT_TOOL_USER,
 				]);
@@ -111,7 +111,7 @@ describe('ToolLaunchController (API)', () => {
 
 		describe('when user wants to launch an outdated tool', () => {
 			const setup = async () => {
-				const school: School = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolFactory.buildWithId();
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
 					Permission.CONTEXT_TOOL_USER,
 				]);
@@ -162,8 +162,8 @@ describe('ToolLaunchController (API)', () => {
 
 		describe('when user wants to launch tool from another school', () => {
 			const setup = async () => {
-				const toolSchool: School = schoolFactory.buildWithId();
-				const usersSchool: School = schoolFactory.buildWithId();
+				const toolSchool: SchoolEntity = schoolFactory.buildWithId();
+				const usersSchool: SchoolEntity = schoolFactory.buildWithId();
 
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school: usersSchool }, [
 					Permission.CONTEXT_TOOL_USER,

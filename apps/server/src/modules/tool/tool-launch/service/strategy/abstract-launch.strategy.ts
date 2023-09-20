@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Course, EntityId, SchoolDO } from '@shared/domain';
+import { Course, EntityId, LegacySchoolDo } from '@shared/domain';
 import { CourseService } from '@src/modules/learnroom/service';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/legacy-school';
 import { URLSearchParams } from 'url';
 import { CustomParameter, CustomParameterEntry } from '../../../common/domain';
 import {
@@ -21,7 +21,7 @@ import { IToolLaunchStrategy } from './tool-launch-strategy.interface';
 
 @Injectable()
 export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
-	constructor(private readonly schoolService: SchoolService, private readonly courseService: CourseService) {}
+	constructor(private readonly schoolService: LegacySchoolService, private readonly courseService: CourseService) {}
 
 	public async createLaunchData(userId: EntityId, data: IToolLaunchParams): Promise<ToolLaunchData> {
 		const launchData: ToolLaunchData = this.buildToolLaunchDataFromExternalTool(data.externalTool);
@@ -226,7 +226,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 				);
 			}
 			case CustomParameterType.AUTO_SCHOOLNUMBER: {
-				const school: SchoolDO = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
+				const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
 
 				return school.officialSchoolNumber;
 			}
