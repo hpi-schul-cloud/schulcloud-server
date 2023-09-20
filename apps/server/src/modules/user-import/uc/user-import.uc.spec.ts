@@ -2,10 +2,12 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import {
 	ImportUser,
+	LegacySchoolDo,
 	MatchCreator,
 	MatchCreatorScope,
 	Permission,
@@ -14,16 +16,14 @@ import {
 	System,
 	User,
 } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { federalStateFactory, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
+import { LoggerModule } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AuthorizationService } from '@src/modules/authorization';
-import { LoggerModule } from '@src/core/logger';
-import { ConfigModule } from '@nestjs/config';
-import { SchoolService } from '../../school';
+import { LegacySchoolService } from '@src/modules/legacy-school';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,
@@ -37,7 +37,7 @@ describe('[ImportUserModule]', () => {
 		let uc: UserImportUc;
 		let accountService: DeepMocked<AccountService>;
 		let importUserRepo: DeepMocked<ImportUserRepo>;
-		let schoolService: DeepMocked<SchoolService>;
+		let schoolService: DeepMocked<LegacySchoolService>;
 		let systemRepo: DeepMocked<SystemRepo>;
 		let userRepo: DeepMocked<UserRepo>;
 		let authorizationService: DeepMocked<AuthorizationService>;
@@ -61,8 +61,8 @@ describe('[ImportUserModule]', () => {
 						useValue: createMock<ImportUserRepo>(),
 					},
 					{
-						provide: SchoolService,
-						useValue: createMock<SchoolService>(),
+						provide: LegacySchoolService,
+						useValue: createMock<LegacySchoolService>(),
 					},
 					{
 						provide: SystemRepo,
@@ -81,7 +81,7 @@ describe('[ImportUserModule]', () => {
 			uc = module.get(UserImportUc); // TODO UserRepo not available in UserUc?!
 			accountService = module.get(AccountService);
 			importUserRepo = module.get(ImportUserRepo);
-			schoolService = module.get(SchoolService);
+			schoolService = module.get(LegacySchoolService);
 			systemRepo = module.get(SystemRepo);
 			userRepo = module.get(UserRepo);
 			authorizationService = module.get(AuthorizationService);
@@ -114,7 +114,7 @@ describe('[ImportUserModule]', () => {
 			});
 		};
 
-		const createMockSchoolDo = (school?: School): SchoolDO => {
+		const createMockSchoolDo = (school?: School): LegacySchoolDo => {
 			const name = school ? school.name : 'testSchool';
 			const id = school ? school.id : 'someId';
 			const features = school ? school.features ?? [SchoolFeatures.LDAP_UNIVENTION_MIGRATION] : [];
@@ -126,7 +126,7 @@ describe('[ImportUserModule]', () => {
 				school && school.systems.isInitialized() ? school.systems.getItems().map((system: System) => system.id) : [];
 			const federalState = school ? school.federalState : federalStateFactory.build();
 
-			return new SchoolDO({
+			return new LegacySchoolDo({
 				id,
 				name,
 				features,
@@ -635,9 +635,11 @@ describe('[ImportUserModule]', () => {
 			});
 			it('Should save school params', async () => {
 				schoolServiceSaveSpy.mockRestore();
-				schoolServiceSaveSpy = schoolService.save.mockImplementation((schoolDo: SchoolDO) => Promise.resolve(schoolDo));
+				schoolServiceSaveSpy = schoolService.save.mockImplementation((schoolDo: LegacySchoolDo) =>
+					Promise.resolve(schoolDo)
+				);
 				await uc.startSchoolInUserMigration(currentUser.id);
-				const schoolParams: SchoolDO = { ...createMockSchoolDo(school) };
+				const schoolParams: LegacySchoolDo = { ...createMockSchoolDo(school) };
 				schoolParams.inUserMigration = true;
 				schoolParams.externalId = 'foo';
 				schoolParams.inMaintenanceSince = currentDate;
