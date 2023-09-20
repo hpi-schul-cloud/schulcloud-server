@@ -55,7 +55,7 @@ export class DemoSchoolService {
 			federalState,
 			features: [],
 		});
-		const password = `pswd_abc_${Math.ceil(Math.random() * 999999)}`;
+		const password = `pswd_${crypto.randomUUID()}`;
 		const passwordEntry: CreationProtocol = { key: password, type: 'password', id: '', children: [] };
 		const createdSchoolDo = await this.schoolService.save(schoolDo);
 		const protocol: CreationProtocol = { key: name, type: 'school', id: createdSchoolDo.id, children: [passwordEntry] };
