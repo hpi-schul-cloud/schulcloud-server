@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain';
 import { SchoolRepo, SCHOOL_REPO } from '../interface';
 import { School } from '../school';
 
@@ -10,5 +11,11 @@ export class SchoolService {
 		const schools = await this.schoolRepo.getAllSchools();
 
 		return schools;
+	}
+
+	public async getSchool(schoolId: EntityId): Promise<School> {
+		const school = await this.schoolRepo.getSchool(schoolId);
+
+		return school;
 	}
 }

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain';
 import { School } from '../school';
 import { SchoolService } from '../service/school.service';
 
@@ -10,5 +11,11 @@ export class SchoolUc {
 		const schools = await this.schoolService.getAllSchools();
 
 		return schools;
+	}
+
+	public async getSchool(schoolId: EntityId): Promise<School> {
+		const school = await this.schoolService.getSchool(schoolId);
+
+		return school;
 	}
 }
