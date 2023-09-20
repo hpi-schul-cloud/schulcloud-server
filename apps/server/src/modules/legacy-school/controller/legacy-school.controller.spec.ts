@@ -4,23 +4,23 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { MigrationMapper } from '../mapper/migration.mapper';
 import { OauthMigrationDto } from '../uc/dto/oauth-migration.dto';
-import { SchoolUc } from '../uc/school.uc';
+import { LegacySchoolUc } from '../uc';
 import { MigrationBody, MigrationResponse, SchoolParams } from './dto';
-import { SchoolController } from './school.controller';
+import { LegacySchoolController } from './legacy-school.controller';
 
-describe('School Controller', () => {
+describe('Legacy School Controller', () => {
 	let module: TestingModule;
-	let controller: SchoolController;
-	let schoolUc: DeepMocked<SchoolUc>;
+	let controller: LegacySchoolController;
+	let schoolUc: DeepMocked<LegacySchoolUc>;
 	let mapper: DeepMocked<MigrationMapper>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			controllers: [SchoolController],
+			controllers: [LegacySchoolController],
 			providers: [
 				{
-					provide: SchoolUc,
-					useValue: createMock<SchoolUc>(),
+					provide: LegacySchoolUc,
+					useValue: createMock<LegacySchoolUc>(),
 				},
 				{
 					provide: MigrationMapper,
@@ -28,8 +28,8 @@ describe('School Controller', () => {
 				},
 			],
 		}).compile();
-		controller = module.get(SchoolController);
-		schoolUc = module.get(SchoolUc);
+		controller = module.get(LegacySchoolController);
+		schoolUc = module.get(LegacySchoolUc);
 		mapper = module.get(MigrationMapper);
 	});
 
