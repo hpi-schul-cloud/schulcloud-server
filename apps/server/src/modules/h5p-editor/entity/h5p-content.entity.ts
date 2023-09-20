@@ -83,7 +83,6 @@ export class ContentMetadata implements IContentMetadata {
 		this.license = metadata.license;
 		this.title = metadata.title;
 		this.preloadedDependencies = metadata.preloadedDependencies;
-
 		this.dynamicDependencies = metadata.dynamicDependencies;
 		this.editorDependencies = metadata.editorDependencies;
 		this.h = metadata.h;
