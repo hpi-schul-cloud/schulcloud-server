@@ -4,7 +4,7 @@ import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import type { ILessonParent } from './lesson.entity';
-import { School } from './school.entity';
+import { SchoolEntity } from './school.entity';
 import type { ITaskParent } from './task.entity';
 import type { User } from './user.entity';
 
@@ -28,9 +28,9 @@ export class CourseGroup extends BaseEntityWithTimestamps implements IEntityWith
 	@ManyToOne('Course', { fieldName: 'courseId' })
 	course: Course;
 
-	@ManyToOne('School', { fieldName: 'schoolId' })
+	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
 	@Index()
-	school: School;
+	school: SchoolEntity;
 
 	constructor(props: ICourseGroupProperties) {
 		super();
