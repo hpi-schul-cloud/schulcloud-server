@@ -3728,6 +3728,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/PublicSystemResponse.html" data-type="entity-link" >PublicSystemResponse</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ReadableStreamWithFileTypeImp.html" data-type="entity-link" >ReadableStreamWithFileTypeImp</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/RecursiveSaveVisitor.html" data-type="entity-link" >RecursiveSaveVisitor</a>
                             </li>
                             <li class="link">

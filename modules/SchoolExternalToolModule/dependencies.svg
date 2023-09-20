@@ -24,6 +24,10 @@
 <title>cluster_SchoolExternalToolModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 925,-268 925,-70 8,-70"/>
 </g>
+<g id="clust4" class="cluster">
+<title>cluster_SchoolExternalToolModule_exports</title>
+<polygon fill="none" stroke="black" points="302,-208 302,-260 744,-260 744,-208 302,-208"/>
+</g>
 <g id="clust3" class="cluster">
 <title>cluster_SchoolExternalToolModule_imports</title>
 <polygon fill="none" stroke="black" points="611,-78 611,-130 917,-130 917,-78 611,-78"/>
@@ -31,10 +35,6 @@
 <g id="clust6" class="cluster">
 <title>cluster_SchoolExternalToolModule_providers</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 603,-130 603,-78 16,-78"/>
-</g>
-<g id="clust4" class="cluster">
-<title>cluster_SchoolExternalToolModule_exports</title>
-<polygon fill="none" stroke="black" points="302,-208 302,-260 744,-260 744,-208 302,-208"/>
 </g>
 <!-- CommonToolModule -->
 <g id="node1" class="node">

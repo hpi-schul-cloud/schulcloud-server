@@ -1055,7 +1055,7 @@ export class PreviewService {
 	): PassThrough {
 		const mimeType &#x3D; previewParams.outputFormat ?? fileRecord.mimeType;
 		const format &#x3D; this.getFormat(mimeType);
-		const im &#x3D; subClass({ imageMagick: true });
+		const im &#x3D; subClass({ imageMagick: &#x27;7+&#x27; });
 
 		const preview &#x3D; im(original.data, fileRecord.name);
 		const { width } &#x3D; previewParams;
