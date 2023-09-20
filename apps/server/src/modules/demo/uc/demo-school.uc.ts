@@ -21,8 +21,8 @@ export class DemoSchoolUc {
 	async createSchool(userId: EntityId): Promise<CreationProtocol[]> {
 		this.logger.debug(new DemoSchoolCreateLoggable(userId));
 
-		if (this.configService.get('FEATURE_CYPRESS_SETUP_ENABLED') === 'false') {
-			throw new ForbiddenException('you are not allowed to edit this');
+		if (this.configService.get('FEATURE_CYPRESS_SETUP_ENABLED') !== true) {
+			throw new ForbiddenException('you are not allowed to create demo schools');
 		}
 
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
