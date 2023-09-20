@@ -472,24 +472,65 @@ describe('TldrawGateway', () => {
 			};
 			const storeUpdateSpy = jest.spyOn(mdb, 'storeUpdate');
 			const byteArray = new TextEncoder().encode(testMessage);
-			jest.spyOn(Utils, 'calculateDiff').mockImplementation(() => 1);
+			const calculateDiffSpy = jest.spyOn(Utils, 'calculateDiff').mockImplementation(() => 1);
 
 			return {
 				mdb,
 				doc,
 				byteArray,
 				storeUpdateSpy,
+				calculateDiffSpy,
 			};
 		};
 
 		it('should store on db', async () => {
-			const { mdb, doc, byteArray, storeUpdateSpy } = await setup();
+			const { mdb, doc, byteArray, storeUpdateSpy, calculateDiffSpy } = await setup();
 
 			await Utils.updateDocument(mdb as MongodbPersistence, 'TEST', doc);
 			doc.emit('update', [byteArray, undefined, doc]);
 			await delay(200);
 			expect(storeUpdateSpy).toHaveBeenCalled();
+			expect(storeUpdateSpy).toHaveBeenCalledTimes(2);
 			storeUpdateSpy.mockRestore();
+			calculateDiffSpy.mockRestore();
+		});
+	});
+
+	describe('when document receive empty update', () => {
+		const setup = async () => {
+			await app.init();
+
+			const doc = new WSSharedDoc('TEST2');
+			await setupWs('TEST2');
+			const wsSet = new Set();
+			wsSet.add(ws);
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			doc.conns.set(ws, wsSet);
+			const mdb = {
+				getYDoc: (docName: string) => new WSSharedDoc(docName),
+				storeUpdate: () => {},
+			};
+			const storeUpdateSpy = jest.spyOn(mdb, 'storeUpdate');
+			const calculateDiffSpy = jest.spyOn(Utils, 'calculateDiff');
+
+			return {
+				mdb,
+				doc,
+				storeUpdateSpy,
+				calculateDiffSpy,
+			};
+		};
+
+		it('should not update db with diff', async () => {
+			const { mdb, doc, storeUpdateSpy, calculateDiffSpy } = await setup();
+
+			await Utils.updateDocument(mdb as MongodbPersistence, 'TEST2', doc);
+			await delay(200);
+			expect(storeUpdateSpy).toHaveBeenCalledTimes(0);
+			expect(calculateDiffSpy).toReturnWith(0);
+			storeUpdateSpy.mockRestore();
+			calculateDiffSpy.mockRestore();
 		});
 	});
 });
