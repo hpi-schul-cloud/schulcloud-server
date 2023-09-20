@@ -19,11 +19,18 @@ import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { FILES_STORAGE_S3_CONNECTION, FilesStorageTestModule } from '@src/modules/files-storage';
 import { FileRecordListResponse, FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { Request } from 'express';
+import FileType from 'file-type-cjs/file-type-cjs-index';
 import request from 'supertest';
 import { FileRecordParentType, PreviewStatus } from '../../entity';
 import { availableParentTypes } from './mocks';
 
 const baseRouteName = '/file/delete';
+
+jest.mock('file-type-cjs/file-type-cjs-index', () => {
+	return {
+		fileTypeStream: jest.fn(),
+	};
+});
 
 class API {
 	app: INestApplication;
@@ -175,6 +182,8 @@ describe(`${baseRouteName} (api)`, () => {
 
 				currentUser = mapUserToCurrentUser(user);
 				validId = user.school.id;
+
+				jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
 			});
 
 			it('should return status 200 for successful request', async () => {
