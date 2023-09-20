@@ -1,5 +1,5 @@
 import { EntityName } from '@mikro-orm/core';
-import { SchoolEntity } from '@shared/domain';
+import { EntityId, SchoolEntity } from '@shared/domain';
 import { BaseRepo } from '@shared/repo';
 import { SchoolRepo } from '../domain';
 import { School } from '../domain/school';
@@ -16,5 +16,13 @@ export class MikroOrmSchoolRepo extends BaseRepo<SchoolEntity> implements School
 		const schools = entities.map((entity) => SchoolMapper.mapToDo(entity));
 
 		return schools;
+	}
+
+	public async getSchool(schoolId: EntityId): Promise<School> {
+		const entity = await this._em.findOneOrFail(SchoolEntity, { id: schoolId });
+
+		const school = SchoolMapper.mapToDo(entity);
+
+		return school;
 	}
 }

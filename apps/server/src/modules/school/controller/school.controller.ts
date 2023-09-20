@@ -1,8 +1,9 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
 import { SchoolUc } from '../domain/uc/school.uc';
-import { SchoolListResponse } from './dto';
+import { SchoolListResponse, SchoolResponse } from './dto';
+import { SchoolUrlParams } from './dto/school-url.params';
 import { SchoolDtoMapper } from './mapper';
 
 @ApiTags('School')
@@ -16,6 +17,15 @@ export class SchoolController {
 		const schools = await this.schoolUc.getAllSchools();
 
 		const res = SchoolDtoMapper.mapToListResponse(schools);
+
+		return res;
+	}
+
+	@Get('/:schoolId')
+	public async getSchool(@Param() urlParams: SchoolUrlParams): Promise<SchoolResponse> {
+		const school = await this.schoolUc.getSchool(urlParams.schoolId);
+
+		const res = SchoolDtoMapper.mapToResponse(school);
 
 		return res;
 	}
