@@ -11,7 +11,7 @@ import {
 	MatchCreator,
 	MatchCreatorScope,
 	Permission,
-	School,
+	SchoolEntity,
 	SchoolFeatures,
 	System,
 	User,
@@ -114,7 +114,7 @@ describe('[ImportUserModule]', () => {
 			});
 		};
 
-		const createMockSchoolDo = (school?: School): LegacySchoolDo => {
+		const createMockSchoolDo = (school?: SchoolEntity): LegacySchoolDo => {
 			const name = school ? school.name : 'testSchool';
 			const id = school ? school.id : 'someId';
 			const features = school ? school.features ?? [SchoolFeatures.LDAP_UNIVENTION_MIGRATION] : [];
@@ -453,7 +453,7 @@ describe('[ImportUserModule]', () => {
 
 		describe('[saveAllUsersMatches]', () => {
 			let system: System;
-			let school: School;
+			let school: SchoolEntity;
 			let currentUser: User;
 			let userMatch1: User;
 			let userMatch2: User;
@@ -590,7 +590,7 @@ describe('[ImportUserModule]', () => {
 
 		describe('[startSchoolInUserMigration]', () => {
 			let system: System;
-			let school: School;
+			let school: SchoolEntity;
 			let currentUser: User;
 			let userRepoByIdSpy: jest.SpyInstance;
 			let permissionServiceSpy: jest.SpyInstance;
@@ -694,7 +694,7 @@ describe('[ImportUserModule]', () => {
 		});
 
 		describe('[endSchoolMaintenance]', () => {
-			let school: School;
+			let school: SchoolEntity;
 			let currentUser: User;
 			let userRepoByIdSpy: jest.SpyInstance;
 			let permissionServiceSpy: jest.SpyInstance;
