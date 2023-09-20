@@ -560,10 +560,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId, Lesson } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId, LessonEntity } from &#x27;@shared/domain&#x27;;
 import { Scope } from &#x27;../scope&#x27;;
 
-export class LessonScope extends Scope&lt;Lesson&gt; {
+export class LessonScope extends Scope&lt;LessonEntity&gt; {
 	byCourseIds(courseIds: EntityId[]): LessonScope {
 		this.addQuery({ course: { $in: courseIds } });
 		return this;

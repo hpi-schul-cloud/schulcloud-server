@@ -774,6 +774,24 @@ export class Course
 
 		return isFinished;
 	}
+
+	public removeUser(userId: EntityId): void {
+		this.removeStudent(userId);
+		this.removeTeacher(userId);
+		this.removeSubstitutionTeacher(userId);
+	}
+
+	private removeStudent(userId: EntityId): void {
+		this.students.remove((u) &#x3D;&gt; u.id &#x3D;&#x3D;&#x3D; userId);
+	}
+
+	private removeTeacher(userId: EntityId): void {
+		this.teachers.remove((u) &#x3D;&gt; u.id &#x3D;&#x3D;&#x3D; userId);
+	}
+
+	private removeSubstitutionTeacher(userId: EntityId): void {
+		this.substitutionTeachers.remove((u) &#x3D;&gt; u.id &#x3D;&#x3D;&#x3D; userId);
+	}
 }
 </code></pre>
     </div>

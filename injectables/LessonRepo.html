@@ -103,6 +103,11 @@
                                 <a href="#findById" >findById</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#findByUserId" >findByUserId</a>
+                            </li>
+                            <li>
                                 <a href="#create" >create</a>
                             </li>
                             <li>
@@ -160,15 +165,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createLesson(lesson: <a href="../entitys/Lesson.html" target="_self">Lesson</a>)</code>
+                    <code>createLesson(lesson: <a href="../entitys/LessonEntity.html" target="_self">LessonEntity</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="12"
-                            class="link-to-prism">apps/server/src/shared/repo/lesson/lesson.repo.ts:12</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="13"
+                            class="link-to-prism">apps/server/src/shared/repo/lesson/lesson.repo.ts:13</a></div>
                 </td>
             </tr>
 
@@ -191,7 +196,7 @@
                                 <tr>
                                     <td>lesson</td>
                                     <td>
-                                                <code><a href="../entitys/Lesson.html" target="_self" >Lesson</a></code>
+                                                <code><a href="../entitys/LessonEntity.html" target="_self" >LessonEntity</a></code>
                                     </td>
 
                                     <td>
@@ -238,8 +243,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="22"
-                            class="link-to-prism">apps/server/src/shared/repo/lesson/lesson.repo.ts:22</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="23"
+                            class="link-to-prism">apps/server/src/shared/repo/lesson/lesson.repo.ts:23</a></div>
                 </td>
             </tr>
 
@@ -289,7 +294,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/Lesson.html" target="_self" >Promise&lt;Counted&lt;Lesson[]&gt;&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../entitys/LessonEntity.html" target="_self" >Promise&lt;Counted&lt;LessonEntity[]&gt;&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -327,7 +332,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseRepo.html#source" target="_self" >BaseRepo:16</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseRepo.html#source" target="_self" >BaseRepo:17</a></code>
 </div>
                 </td>
             </tr>
@@ -366,7 +371,79 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/Lesson.html" target="_self" >Promise&lt;Lesson&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../entitys/LessonEntity.html" target="_self" >Promise&lt;LessonEntity&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findByUserId"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>findByUserId</b></span>
+                        <a href="#findByUserId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findByUserId(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="41"
+                            class="link-to-prism">apps/server/src/shared/repo/lesson/lesson.repo.ts:41</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../entitys/LessonEntity.html" target="_self" >Promise&lt;LessonEntity[]&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -627,7 +704,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/shared/repo/lesson/lesson.repo.ts:8</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/shared/repo/lesson/lesson.repo.ts:9</a></div>
                                 </td>
                             </tr>
 
@@ -639,27 +716,28 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Counted, EntityId, Lesson, SortOrder } from &#x27;@shared/domain&#x27;;
+import { Counted, EntityId, LessonEntity, SortOrder } from &#x27;@shared/domain&#x27;;
+import { EntityDictionary } from &#x27;@mikro-orm/core&#x27;;
 import { BaseRepo } from &#x27;../base.repo&#x27;;
 import { LessonScope } from &#x27;./lesson-scope&#x27;;
 
 @Injectable()
-export class LessonRepo extends BaseRepo&lt;Lesson&gt; {
+export class LessonRepo extends BaseRepo&lt;LessonEntity&gt; {
 	get entityName() {
-		return Lesson;
+		return LessonEntity;
 	}
 
-	async createLesson(lesson: Lesson): Promise&lt;void&gt; {
+	async createLesson(lesson: LessonEntity): Promise&lt;void&gt; {
 		return this.save(this.create(lesson));
 	}
 
-	async findById(id: EntityId): Promise&lt;Lesson&gt; {
+	async findById(id: EntityId): Promise&lt;LessonEntity&gt; {
 		const lesson &#x3D; await super.findById(id);
 		await this._em.populate(lesson, [&#x27;course&#x27;, &#x27;tasks&#x27;, &#x27;materials&#x27;, &#x27;courseGroup.course&#x27;]);
 		return lesson;
 	}
 
-	async findAllByCourseIds(courseIds: EntityId[], filters?: { hidden?: boolean }): Promise&lt;Counted&lt;Lesson[]&gt;&gt; {
+	async findAllByCourseIds(courseIds: EntityId[], filters?: { hidden?: boolean }): Promise&lt;Counted&lt;LessonEntity[]&gt;&gt; {
 		const scope &#x3D; new LessonScope();
 
 		scope.byCourseIds(courseIds);
@@ -670,11 +748,33 @@ export class LessonRepo extends BaseRepo&lt;Lesson&gt; {
 
 		const order &#x3D; { position: SortOrder.asc };
 
-		const [lessons, count] &#x3D; await this._em.findAndCount(Lesson, scope.query, { orderBy: order });
+		const [lessons, count] &#x3D; await this._em.findAndCount(LessonEntity, scope.query, { orderBy: order });
 
 		await this._em.populate(lessons, [&#x27;course&#x27;, &#x27;tasks&#x27;, &#x27;materials&#x27;]);
 
 		return [lessons, count];
+	}
+
+	public async findByUserId(userId: EntityId): Promise&lt;LessonEntity[]&gt; {
+		const pipeline &#x3D; [
+			{
+				$match: {
+					contents: {
+						$elemMatch: {
+							user: userId,
+						},
+					},
+				},
+			},
+		];
+
+		const rawLessonsDocuments &#x3D; await this._em.aggregate(LessonEntity, pipeline);
+
+		const lessons &#x3D; rawLessonsDocuments.map((rawLessonDocument) &#x3D;&gt;
+			this._em.map(LessonEntity, rawLessonDocument as EntityDictionary&lt;LessonEntity&gt;)
+		);
+
+		return lessons;
 	}
 }
 </code></pre>

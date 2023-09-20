@@ -1400,7 +1400,7 @@
 	ExternalToolEntity,
 	FederalState,
 	ImportUser,
-	Lesson,
+	LessonEntity,
 	LessonBoardElement,
 	LtiTool,
 	Material,
@@ -2486,7 +2486,7 @@ This allows adding console commands to execute provider methods.</p>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;LessonBoardElement, { target: Lesson }&gt;(
+                        <i>Default value : </i><code>BaseFactory.define&lt;LessonBoardElement, { target: LessonEntity }&gt;(
 	LessonBoardElement,
 	() &#x3D;&gt; {
 		return { target: lessonFactory.build() };
@@ -6381,31 +6381,34 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>LessonFactory.define&lt;Lesson, ILessonProperties&gt;(Lesson, ({ sequence, params }) &#x3D;&gt; {
-	let course: Course;
-	if (params.course) {
-		course &#x3D; params.course as Course;
-	} else {
-		course &#x3D; courseFactory.build();
+                        <i>Default value : </i><code>LessonFactory.define&lt;LessonEntity, ILessonProperties&gt;(
+	LessonEntity,
+	({ sequence, params }) &#x3D;&gt; {
+		let course: Course;
+		if (params.course) {
+			course &#x3D; params.course as Course;
+		} else {
+			course &#x3D; courseFactory.build();
+		}
+
+		const contents: IComponentProperties[] &#x3D; [];
+		if (params.contents) {
+			params.contents.forEach((element) &#x3D;&gt; {
+				contents.push(element);
+			});
+		}
+
+		const hidden &#x3D; params.hidden || false;
+
+		return {
+			name: &#x60;lesson #${sequence}&#x60;,
+			course,
+			contents,
+			hidden,
+			materials: [],
+		};
 	}
-
-	const contents: IComponentProperties[] &#x3D; [];
-	if (params.contents) {
-		params.contents.forEach((element) &#x3D;&gt; {
-			contents.push(element);
-		});
-	}
-
-	const hidden &#x3D; params.hidden || false;
-
-	return {
-		name: &#x60;lesson #${sequence}&#x60;,
-		course,
-		contents,
-		hidden,
-		materials: [],
-	};
-})</code>
+)</code>
                     </td>
                 </tr>
 

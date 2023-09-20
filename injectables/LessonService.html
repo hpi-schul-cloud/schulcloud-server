@@ -90,6 +90,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#deleteUserDataFromLessons" >deleteUserDataFromLessons</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findByCourseIds" >findByCourseIds</a>
                             </li>
                             <li>
@@ -189,7 +193,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteLesson(lesson: <a href="../entitys/Lesson.html" target="_self">Lesson</a>)</code>
+                    <code>deleteLesson(lesson: <a href="../entitys/LessonEntity.html" target="_self">LessonEntity</a>)</code>
                 </td>
             </tr>
 
@@ -220,7 +224,7 @@
                                 <tr>
                                     <td>lesson</td>
                                     <td>
-                                                <code><a href="../entitys/Lesson.html" target="_self" >Lesson</a></code>
+                                                <code><a href="../entitys/LessonEntity.html" target="_self" >LessonEntity</a></code>
                                     </td>
 
                                     <td>
@@ -236,6 +240,77 @@
                     </div>
                     <div class="io-description">
                         <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteUserDataFromLessons"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>deleteUserDataFromLessons</b></span>
+                        <a href="#deleteUserDataFromLessons"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteUserDataFromLessons(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="27"
+                            class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:27</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;number&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -306,7 +381,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/Lesson.html" target="_self" >Promise&lt;Counted&lt;Lesson[]&gt;&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../entitys/LessonEntity.html" target="_self" >Promise&lt;Counted&lt;LessonEntity[]&gt;&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -377,7 +452,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/Lesson.html" target="_self" >Promise&lt;Lesson&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../entitys/LessonEntity.html" target="_self" >Promise&lt;LessonEntity&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -394,7 +469,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Counted, EntityId, Lesson } from &#x27;@shared/domain&#x27;;
+import { Counted, EntityId, IComponentProperties, LessonEntity } from &#x27;@shared/domain&#x27;;
 import { LessonRepo } from &#x27;@shared/repo&#x27;;
 import { FilesStorageClientAdapterService } from &#x27;@src/modules/files-storage-client&#x27;;
 
@@ -405,18 +480,36 @@ export class LessonService {
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
 	) {}
 
-	async deleteLesson(lesson: Lesson): Promise&lt;void&gt; {
+	async deleteLesson(lesson: LessonEntity): Promise&lt;void&gt; {
 		await this.filesStorageClientAdapterService.deleteFilesOfParent(lesson.id);
 
 		await this.lessonRepo.delete(lesson);
 	}
 
-	async findById(lessonId: EntityId): Promise&lt;Lesson&gt; {
+	async findById(lessonId: EntityId): Promise&lt;LessonEntity&gt; {
 		return this.lessonRepo.findById(lessonId);
 	}
 
-	async findByCourseIds(courseIds: EntityId[]): Promise&lt;Counted&lt;Lesson[]&gt;&gt; {
+	async findByCourseIds(courseIds: EntityId[]): Promise&lt;Counted&lt;LessonEntity[]&gt;&gt; {
 		return this.lessonRepo.findAllByCourseIds(courseIds);
+	}
+
+	async deleteUserDataFromLessons(userId: EntityId): Promise&lt;number&gt; {
+		const lessons &#x3D; await this.lessonRepo.findByUserId(userId);
+
+		const updatedLessons &#x3D; lessons.map((lesson: LessonEntity) &#x3D;&gt; {
+			lesson.contents.map((c: IComponentProperties) &#x3D;&gt; {
+				if (c.user &#x3D;&#x3D;&#x3D; userId) {
+					c.user &#x3D; &#x27;&#x27;;
+				}
+				return c;
+			});
+			return lesson;
+		});
+
+		await this.lessonRepo.save(updatedLessons);
+
+		return updatedLessons.length;
 	}
 }
 </code></pre>

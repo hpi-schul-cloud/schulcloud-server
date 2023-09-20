@@ -187,11 +187,11 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, Enum } from &#x27;@mikro-orm/core&#x27;;
 import { EntityId } from &#x27;../../types&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;../base.entity&#x27;;
-import { Lesson } from &#x27;../lesson.entity&#x27;;
+import { LessonEntity } from &#x27;../lesson.entity&#x27;;
 import { Task } from &#x27;../task.entity&#x27;;
 import { ColumnBoardTarget } from &#x27;./column-board-target.entity&#x27;;
 
-export type BoardElementReference &#x3D; Task | Lesson | ColumnBoardTarget;
+export type BoardElementReference &#x3D; Task | LessonEntity | ColumnBoardTarget;
 
 export enum BoardElementType {
 	&#x27;Task&#x27; &#x3D; &#x27;task&#x27;,

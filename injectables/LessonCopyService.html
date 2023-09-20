@@ -758,7 +758,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>copyLinkedMaterials(originalLesson: <a href="../entitys/Lesson.html" target="_self">Lesson</a>)</code>
+                    <code>copyLinkedMaterials(originalLesson: <a href="../entitys/LessonEntity.html" target="_self">LessonEntity</a>)</code>
                 </td>
             </tr>
 
@@ -789,7 +789,7 @@
                                 <tr>
                                     <td>originalLesson</td>
                                     <td>
-                                                <code><a href="../entitys/Lesson.html" target="_self" >Lesson</a></code>
+                                                <code><a href="../entitys/LessonEntity.html" target="_self" >LessonEntity</a></code>
                                     </td>
 
                                     <td>
@@ -830,7 +830,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>copyLinkedTasks(destinationLesson: <a href="../entitys/Lesson.html" target="_self">Lesson</a>, lesson: <a href="../entitys/Lesson.html" target="_self">Lesson</a>, params: <a href="../undefineds/LessonCopyParams.html" target="_self">LessonCopyParams</a>)</code>
+                    <code>copyLinkedTasks(destinationLesson: <a href="../entitys/LessonEntity.html" target="_self">LessonEntity</a>, lesson: <a href="../entitys/LessonEntity.html" target="_self">LessonEntity</a>, params: <a href="../undefineds/LessonCopyParams.html" target="_self">LessonCopyParams</a>)</code>
                 </td>
             </tr>
 
@@ -861,7 +861,7 @@
                                 <tr>
                                     <td>destinationLesson</td>
                                     <td>
-                                                <code><a href="../entitys/Lesson.html" target="_self" >Lesson</a></code>
+                                                <code><a href="../entitys/LessonEntity.html" target="_self" >LessonEntity</a></code>
                                     </td>
 
                                     <td>
@@ -873,7 +873,7 @@
                                 <tr>
                                     <td>lesson</td>
                                     <td>
-                                                <code><a href="../entitys/Lesson.html" target="_self" >Lesson</a></code>
+                                                <code><a href="../entitys/LessonEntity.html" target="_self" >LessonEntity</a></code>
                                     </td>
 
                                     <td>
@@ -1080,7 +1080,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deriveCopyStatus(contentStatus: <a href="../undefineds/CopyStatus.html" target="_self">CopyStatus[]</a>, materialsStatus: <a href="../undefineds/CopyStatus.html" target="_self">CopyStatus[]</a>, copiedTasksStatus: <a href="../undefineds/CopyStatus.html" target="_self">CopyStatus[]</a>, lessonCopy: <a href="../entitys/Lesson.html" target="_self">Lesson</a>, originalLesson: <a href="../entitys/Lesson.html" target="_self">Lesson</a>)</code>
+                    <code>deriveCopyStatus(contentStatus: <a href="../undefineds/CopyStatus.html" target="_self">CopyStatus[]</a>, materialsStatus: <a href="../undefineds/CopyStatus.html" target="_self">CopyStatus[]</a>, copiedTasksStatus: <a href="../undefineds/CopyStatus.html" target="_self">CopyStatus[]</a>, lessonCopy: <a href="../entitys/LessonEntity.html" target="_self">LessonEntity</a>, originalLesson: <a href="../entitys/LessonEntity.html" target="_self">LessonEntity</a>)</code>
                 </td>
             </tr>
 
@@ -1147,7 +1147,7 @@
                                 <tr>
                                     <td>lessonCopy</td>
                                     <td>
-                                                <code><a href="../entitys/Lesson.html" target="_self" >Lesson</a></code>
+                                                <code><a href="../entitys/LessonEntity.html" target="_self" >LessonEntity</a></code>
                                     </td>
 
                                     <td>
@@ -1159,7 +1159,7 @@
                                 <tr>
                                     <td>originalLesson</td>
                                     <td>
-                                                <code><a href="../entitys/Lesson.html" target="_self" >Lesson</a></code>
+                                                <code><a href="../entitys/LessonEntity.html" target="_self" >LessonEntity</a></code>
                                     </td>
 
                                     <td>
@@ -1509,7 +1509,7 @@ import {
 	IComponentNexboardProperties,
 	IComponentProperties,
 	IComponentTextProperties,
-	Lesson,
+	LessonEntity,
 	Material,
 } from &#x27;@shared/domain&#x27;;
 import { LessonRepo } from &#x27;@shared/repo&#x27;;
@@ -1534,11 +1534,11 @@ export class LessonCopyService {
 	) {}
 
 	async copyLesson(params: LessonCopyParams): Promise&lt;CopyStatus&gt; {
-		const lesson: Lesson &#x3D; await this.lessonRepo.findById(params.originalLessonId);
+		const lesson: LessonEntity &#x3D; await this.lessonRepo.findById(params.originalLessonId);
 		const { copiedContent, contentStatus } &#x3D; await this.copyLessonContent(lesson.contents, params);
 		const { copiedMaterials, materialsStatus } &#x3D; this.copyLinkedMaterials(lesson);
 
-		const lessonCopy &#x3D; new Lesson({
+		const lessonCopy &#x3D; new LessonEntity({
 			course: params.destinationCourse,
 			hidden: true,
 			name: params.copyName ?? lesson.name,
@@ -1582,8 +1582,8 @@ export class LessonCopyService {
 		contentStatus: CopyStatus[],
 		materialsStatus: CopyStatus[],
 		copiedTasksStatus: CopyStatus[],
-		lessonCopy: Lesson,
-		originalLesson: Lesson
+		lessonCopy: LessonEntity,
+		originalLesson: LessonEntity
 	) {
 		const elements: CopyStatus[] &#x3D; [
 			...LessonCopyService.lessonStatusMetadata(),
@@ -1604,7 +1604,7 @@ export class LessonCopyService {
 	}
 
 	updateCopiedEmbeddedTasks(lessonStatus: CopyStatus, copyDict: Map&lt;EntityId, BaseEntity&gt;): CopyStatus {
-		const copiedLesson &#x3D; lessonStatus.copyEntity as Lesson;
+		const copiedLesson &#x3D; lessonStatus.copyEntity as LessonEntity;
 
 		if (copiedLesson?.contents &#x3D;&#x3D;&#x3D; undefined) {
 			return lessonStatus;
@@ -1834,7 +1834,7 @@ export class LessonCopyService {
 		return false;
 	}
 
-	private async copyLinkedTasks(destinationLesson: Lesson, lesson: Lesson, params: LessonCopyParams) {
+	private async copyLinkedTasks(destinationLesson: LessonEntity, lesson: LessonEntity, params: LessonCopyParams) {
 		const linkedTasks &#x3D; lesson.getLessonLinkedTasks();
 		if (linkedTasks.length &gt; 0) {
 			const copiedTasksStatus &#x3D; await Promise.all(
@@ -1857,7 +1857,7 @@ export class LessonCopyService {
 		return [];
 	}
 
-	private copyLinkedMaterials(originalLesson: Lesson): {
+	private copyLinkedMaterials(originalLesson: LessonEntity): {
 		copiedMaterials: Material[];
 		materialsStatus: CopyStatus[];
 	} {

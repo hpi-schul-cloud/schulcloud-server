@@ -38,7 +38,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Entities</li>
-  <li class="breadcrumb-item" >Lesson</li>
+  <li class="breadcrumb-item" >LessonEntity</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -162,7 +162,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="105" class="link-to-prism">apps/server/src/shared/domain/entity/lesson.entity.ts:105</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="104" class="link-to-prism">apps/server/src/shared/domain/entity/lesson.entity.ts:104</a></div>
                         </td>
                     </tr>
 
@@ -199,7 +199,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="96" class="link-to-prism">apps/server/src/shared/domain/entity/lesson.entity.ts:96</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="95" class="link-to-prism">apps/server/src/shared/domain/entity/lesson.entity.ts:95</a></div>
                         </td>
                     </tr>
 
@@ -236,7 +236,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="99" class="link-to-prism">apps/server/src/shared/domain/entity/lesson.entity.ts:99</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="98" class="link-to-prism">apps/server/src/shared/domain/entity/lesson.entity.ts:98</a></div>
                         </td>
                     </tr>
 
@@ -272,7 +272,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="92" class="link-to-prism">apps/server/src/shared/domain/entity/lesson.entity.ts:92</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="91" class="link-to-prism">apps/server/src/shared/domain/entity/lesson.entity.ts:91</a></div>
                         </td>
                     </tr>
 
@@ -307,7 +307,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="108" class="link-to-prism">apps/server/src/shared/domain/entity/lesson.entity.ts:108</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="107" class="link-to-prism">apps/server/src/shared/domain/entity/lesson.entity.ts:107</a></div>
                         </td>
                     </tr>
 
@@ -343,7 +343,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="88" class="link-to-prism">apps/server/src/shared/domain/entity/lesson.entity.ts:88</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="87" class="link-to-prism">apps/server/src/shared/domain/entity/lesson.entity.ts:87</a></div>
                         </td>
                     </tr>
 
@@ -379,7 +379,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="102" class="link-to-prism">apps/server/src/shared/domain/entity/lesson.entity.ts:102</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="101" class="link-to-prism">apps/server/src/shared/domain/entity/lesson.entity.ts:101</a></div>
                         </td>
                     </tr>
 
@@ -414,7 +414,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="111" class="link-to-prism">apps/server/src/shared/domain/entity/lesson.entity.ts:111</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="110" class="link-to-prism">apps/server/src/shared/domain/entity/lesson.entity.ts:110</a></div>
                         </td>
                     </tr>
 
@@ -436,7 +436,6 @@ import { CourseGroup } from &#x27;./coursegroup.entity&#x27;;
 import { Material } from &#x27;./materials.entity&#x27;;
 import { Task } from &#x27;./task.entity&#x27;;
 import type { ITaskParent } from &#x27;./task.entity&#x27;;
-import { User } from &#x27;./user.entity&#x27;;
 
 export interface ILessonProperties {
 	name: string;
@@ -496,7 +495,7 @@ export type IComponentProperties &#x3D; {
 	_id?: string;
 	title: string;
 	hidden: boolean;
-	user?: User;
+	user?: EntityId;
 } &amp; (
 	| { component: ComponentType.TEXT; content: IComponentTextProperties }
 	| { component: ComponentType.ETHERPAD; content: IComponentEtherpadProperties }
@@ -511,7 +510,7 @@ export interface ILessonParent {
 }
 
 @Entity({ tableName: &#x27;lessons&#x27; })
-export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElement, ITaskParent {
+export class LessonEntity extends BaseEntityWithTimestamps implements ILearnroomElement, ITaskParent {
 	@Property()
 	name: string;
 
@@ -622,8 +621,8 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 	}
 }
 
-export function isLesson(reference: unknown): reference is Lesson {
-	return reference instanceof Lesson;
+export function isLesson(reference: unknown): reference is LessonEntity {
+	return reference instanceof LessonEntity;
 }
 </code></pre>
     </div>
@@ -669,7 +668,7 @@ export function isLesson(reference: unknown): reference is Lesson {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'entity';
-            var COMPODOC_CURRENT_PAGE_URL = 'Lesson.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'LessonEntity.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

@@ -407,7 +407,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../entitys/Lesson.html" target="_self">Lesson</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../entitys/LessonEntity.html" target="_self">LessonEntity</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                 </td>
             </tr>
 
@@ -450,7 +450,7 @@
                                 <tr>
                                     <td>entity</td>
                                     <td>
-                                                <code><a href="../entitys/Lesson.html" target="_self" >Lesson</a></code>
+                                                <code><a href="../entitys/LessonEntity.html" target="_self" >LessonEntity</a></code>
                                     </td>
 
                                     <td>
@@ -502,7 +502,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../entitys/Lesson.html" target="_self">Lesson</a>)</code>
+                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../entitys/LessonEntity.html" target="_self">LessonEntity</a>)</code>
                 </td>
             </tr>
 
@@ -545,7 +545,7 @@
                                 <tr>
                                     <td>entity</td>
                                     <td>
-                                                <code><a href="../entitys/Lesson.html" target="_self" >Lesson</a></code>
+                                                <code><a href="../entitys/LessonEntity.html" target="_self" >LessonEntity</a></code>
                                     </td>
 
                                     <td>
@@ -585,7 +585,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>lessonReadPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../entitys/Lesson.html" target="_self">Lesson</a>)</code>
+                    <code>lessonReadPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../entitys/LessonEntity.html" target="_self">LessonEntity</a>)</code>
                 </td>
             </tr>
 
@@ -628,7 +628,7 @@
                                 <tr>
                                     <td>entity</td>
                                     <td>
-                                                <code><a href="../entitys/Lesson.html" target="_self" >Lesson</a></code>
+                                                <code><a href="../entitys/LessonEntity.html" target="_self" >LessonEntity</a></code>
                                     </td>
 
                                     <td>
@@ -668,7 +668,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>lessonWritePermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../entitys/Lesson.html" target="_self">Lesson</a>)</code>
+                    <code>lessonWritePermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../entitys/LessonEntity.html" target="_self">LessonEntity</a>)</code>
                 </td>
             </tr>
 
@@ -711,7 +711,7 @@
                                 <tr>
                                     <td>entity</td>
                                     <td>
-                                                <code><a href="../entitys/Lesson.html" target="_self" >Lesson</a></code>
+                                                <code><a href="../entitys/LessonEntity.html" target="_self" >LessonEntity</a></code>
                                     </td>
 
                                     <td>
@@ -751,7 +751,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>parentPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../entitys/Lesson.html" target="_self">Lesson</a>, action: <a href="../undefineds/Action.html" target="_self">Action</a>)</code>
+                    <code>parentPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../entitys/LessonEntity.html" target="_self">LessonEntity</a>, action: <a href="../undefineds/Action.html" target="_self">Action</a>)</code>
                 </td>
             </tr>
 
@@ -794,7 +794,7 @@
                                 <tr>
                                     <td>entity</td>
                                     <td>
-                                                <code><a href="../entitys/Lesson.html" target="_self" >Lesson</a></code>
+                                                <code><a href="../entitys/LessonEntity.html" target="_self" >LessonEntity</a></code>
                                     </td>
 
                                     <td>
@@ -838,7 +838,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Course, CourseGroup, Lesson, User } from &#x27;@shared/domain/entity&#x27;;
+import { Course, CourseGroup, LessonEntity, User } from &#x27;@shared/domain/entity&#x27;;
 import { AuthorizationHelper } from &#x27;@src/modules/authorization/authorization.helper&#x27;;
 import { Action, AuthorizationContext, Rule } from &#x27;@src/modules/authorization/types&#x27;;
 import { CourseGroupRule } from &#x27;./course-group.rule&#x27;;
@@ -852,13 +852,13 @@ export class LessonRule implements Rule {
 		private readonly courseGroupRule: CourseGroupRule
 	) {}
 
-	public isApplicable(user: User, entity: Lesson): boolean {
-		const isMatched &#x3D; entity instanceof Lesson;
+	public isApplicable(user: User, entity: LessonEntity): boolean {
+		const isMatched &#x3D; entity instanceof LessonEntity;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: Lesson, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, entity: LessonEntity, context: AuthorizationContext): boolean {
 		const { action, requiredPermissions } &#x3D; context;
 		let hasLessonPermission &#x3D; false;
 
@@ -874,7 +874,7 @@ export class LessonRule implements Rule {
 		return result;
 	}
 
-	private lessonReadPermission(user: User, entity: Lesson): boolean {
+	private lessonReadPermission(user: User, entity: LessonEntity): boolean {
 		const isVisible &#x3D; !entity.hidden;
 		let hasParentReadPermission &#x3D; false;
 
@@ -887,13 +887,13 @@ export class LessonRule implements Rule {
 		return hasParentReadPermission;
 	}
 
-	private lessonWritePermission(user: User, entity: Lesson): boolean {
+	private lessonWritePermission(user: User, entity: LessonEntity): boolean {
 		const hasParentWritePermission &#x3D; this.parentPermission(user, entity, Action.write);
 
 		return hasParentWritePermission;
 	}
 
-	private parentPermission(user: User, entity: Lesson, action: Action): boolean {
+	private parentPermission(user: User, entity: LessonEntity, action: Action): boolean {
 		let result &#x3D; false;
 
 		if (entity.courseGroup) {

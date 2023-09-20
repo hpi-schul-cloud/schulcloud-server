@@ -40,7 +40,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >RoomBoardDTOFactory</li>
+  <li class="breadcrumb-item" >CourseGroupService</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts</code>
+            <code>apps/server/src/modules/learnroom/service/coursegroup.service.ts</code>
         </p>
 
 
@@ -85,7 +85,9 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#createDTO" >createDTO</a>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteUserDataFromCourseGroup" >deleteUserDataFromCourseGroup</a>
                             </li>
                         </ul>
                     </td>
@@ -105,12 +107,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(authorisationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, roomsAuthorisationService: <a href="../injectables/RoomsAuthorisationService.html" target="_self">RoomsAuthorisationService</a>)</code>
+<code>constructor(repo: <a href="../injectables/CourseGroupRepo.html" target="_self">CourseGroupRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="187" class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:187</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/learnroom/service/coursegroup.service.ts:6</a></div>
                             </td>
                         </tr>
 
@@ -128,22 +130,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>authorisationService</td>
+                                                        <td>repo</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/AuthorizationService.html" target="_self" >AuthorizationService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>roomsAuthorisationService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/RoomsAuthorisationService.html" target="_self" >RoomsAuthorisationService</a></code>
+                                                                        <code><a href="../injectables/CourseGroupRepo.html" target="_self" >CourseGroupRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -169,24 +159,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="createDTO"></a>
+                    <a name="deleteUserDataFromCourseGroup"></a>
                     <span class="name">
-                        <span ><b>createDTO</b></span>
-                        <a href="#createDTO"><span class="icon ion-ios-link"></span></a>
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>deleteUserDataFromCourseGroup</b></span>
+                        <a href="#deleteUserDataFromCourseGroup"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>createDTO(undefined: literal type)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteUserDataFromCourseGroup(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="193"
-                            class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:193</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="9"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/coursegroup.service.ts:9</a></div>
                 </td>
             </tr>
 
@@ -207,8 +200,9 @@
                             </thead>
                             <tbody>
                                 <tr>
+                                    <td>userId</td>
                                     <td>
-                                            <code>literal type</code>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                     </td>
 
                                     <td>
@@ -223,7 +217,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#RoomBoardDTO" target="_self" >RoomBoardDTO</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;number&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -239,208 +233,22 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
-import {
-	Board,
-	BoardElement,
-	BoardElementType,
-	ColumnboardBoardElement,
-	ColumnBoardTarget,
-	Course,
-	ITaskStatus,
-	LessonEntity,
-	Permission,
-	Task,
-	TaskWithStatusVo,
-	User,
-} from &#x27;@shared/domain&#x27;;
-import { AuthorizationService } from &#x27;@src/modules/authorization/authorization.service&#x27;;
-import { Action } from &#x27;@src/modules/authorization/types/action.enum&#x27;;
-import {
-	ColumnBoardMetaData,
-	LessonMetaData,
-	RoomBoardDTO,
-	RoomBoardElementDTO,
-	RoomBoardElementTypes,
-} from &#x27;../types/room-board.types&#x27;;
-import { RoomsAuthorisationService } from &#x27;./rooms.authorisation.service&#x27;;
-
-class DtoCreator {
-	room: Course;
-
-	board: Board;
-
-	user: User;
-
-	authorisationService: AuthorizationService;
-
-	roomsAuthorisationService: RoomsAuthorisationService;
-
-	constructor({
-		room,
-		board,
-		user,
-		authorisationService,
-		roomsAuthorisationService,
-	}: {
-		room: Course;
-		board: Board;
-		user: User;
-		authorisationService: AuthorizationService;
-		roomsAuthorisationService: RoomsAuthorisationService;
-	}) {
-		this.room &#x3D; room;
-		this.board &#x3D; board;
-		this.user &#x3D; user;
-		this.authorisationService &#x3D; authorisationService;
-		this.roomsAuthorisationService &#x3D; roomsAuthorisationService;
-	}
-
-	manufacture(): RoomBoardDTO {
-		const elements &#x3D; this.board.getElements();
-		const filtered &#x3D; this.filterByPermission(elements);
-
-		const mappedElements &#x3D; this.mapToElementDTOs(filtered);
-		const dto &#x3D; this.buildDTOWithElements(mappedElements);
-		return dto;
-	}
-
-	private filterByPermission(elements: BoardElement[]) {
-		const filtered &#x3D; elements.filter((element) &#x3D;&gt; {
-			let result &#x3D; false;
-			if (element.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.Task) {
-				result &#x3D; this.roomsAuthorisationService.hasTaskReadPermission(this.user, element.target as Task);
-			}
-
-			if (element.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.Lesson) {
-				result &#x3D; this.roomsAuthorisationService.hasLessonReadPermission(this.user, element.target as LessonEntity);
-			}
-
-			if (element instanceof ColumnboardBoardElement &amp;&amp; this.isColumnBoardFeatureFlagActive()) {
-				result &#x3D; this.authorisationService.hasPermission(this.user, this.room, {
-					action: Action.read,
-					requiredPermissions: [Permission.COURSE_VIEW],
-				});
-			}
-			return result;
-		});
-		return filtered;
-	}
-
-	private isColumnBoardFeatureFlagActive() {
-		const isActive &#x3D; (Configuration.get(&#x27;FEATURE_COLUMN_BOARD_ENABLED&#x27;) as boolean) &#x3D;&#x3D;&#x3D; true;
-
-		return isActive;
-	}
-
-	private isTeacher(): boolean {
-		if (this.room.teachers.contains(this.user) || this.room.substitutionTeachers.contains(this.user)) {
-			return true;
-		}
-		return false;
-	}
-
-	private mapToElementDTOs(elements: BoardElement[]) {
-		const results: RoomBoardElementDTO[] &#x3D; [];
-		elements.forEach((element) &#x3D;&gt; {
-			if (element.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.Task) {
-				const mapped &#x3D; this.mapTaskElement(element);
-				results.push(mapped);
-			}
-			if (element.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.Lesson) {
-				const mapped &#x3D; this.mapLessonElement(element);
-				results.push(mapped);
-			}
-			if (element.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.ColumnBoard) {
-				const mapped &#x3D; this.mapColumnBoardElement(element);
-				results.push(mapped);
-			}
-		});
-		return results;
-	}
-
-	private mapTaskElement(element: BoardElement): RoomBoardElementDTO {
-		const task &#x3D; element.target as Task;
-		const status &#x3D; this.createTaskStatus(task);
-
-		const content &#x3D; new TaskWithStatusVo(task, status);
-		return { type: RoomBoardElementTypes.TASK, content };
-	}
-
-	private createTaskStatus(task: Task): ITaskStatus {
-		let status: ITaskStatus;
-		if (this.isTeacher()) {
-			status &#x3D; task.createTeacherStatusForUser(this.user);
-		} else {
-			status &#x3D; task.createStudentStatusForUser(this.user);
-		}
-		return status;
-	}
-
-	private mapLessonElement(element: BoardElement): RoomBoardElementDTO {
-		const type &#x3D; RoomBoardElementTypes.LESSON;
-		const lesson &#x3D; element.target as LessonEntity;
-		const content: LessonMetaData &#x3D; {
-			id: lesson.id,
-			name: lesson.name,
-			hidden: lesson.hidden,
-			createdAt: lesson.createdAt,
-			updatedAt: lesson.updatedAt,
-			courseName: lesson.course.name,
-			numberOfPublishedTasks: lesson.getNumberOfPublishedTasks(),
-		};
-		if (this.isTeacher()) {
-			content.numberOfDraftTasks &#x3D; lesson.getNumberOfDraftTasks();
-			content.numberOfPlannedTasks &#x3D; lesson.getNumberOfPlannedTasks();
-		}
-		return { type, content };
-	}
-
-	private mapColumnBoardElement(element: BoardElement): RoomBoardElementDTO {
-		const type &#x3D; RoomBoardElementTypes.COLUMN_BOARD;
-		const columnBoardTarget &#x3D; element.target as ColumnBoardTarget;
-		const content: ColumnBoardMetaData &#x3D; {
-			id: columnBoardTarget.id,
-			columnBoardId: columnBoardTarget.columnBoardId,
-			title: columnBoardTarget.title,
-			createdAt: columnBoardTarget.createdAt,
-			updatedAt: columnBoardTarget.updatedAt,
-			published: columnBoardTarget.published,
-		};
-
-		return { type, content };
-	}
-
-	private buildDTOWithElements(elements: RoomBoardElementDTO[]): RoomBoardDTO {
-		const dto &#x3D; {
-			roomId: this.room.id,
-			displayColor: this.room.color,
-			title: this.room.name,
-			elements,
-			isArchived: this.room.isFinished(),
-		};
-		return dto;
-	}
-}
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { EntityId } from &#x27;@shared/domain&#x27;;
+import { CourseGroupRepo } from &#x27;@shared/repo&#x27;;
 
 @Injectable()
-export class RoomBoardDTOFactory {
-	constructor(
-		private readonly authorisationService: AuthorizationService,
-		private readonly roomsAuthorisationService: RoomsAuthorisationService
-	) {}
+export class CourseGroupService {
+	constructor(private readonly repo: CourseGroupRepo) {}
 
-	createDTO({ room, board, user }: { room: Course; board: Board; user: User }): RoomBoardDTO {
-		const worker &#x3D; new DtoCreator({
-			room,
-			board,
-			user,
-			authorisationService: this.authorisationService,
-			roomsAuthorisationService: this.roomsAuthorisationService,
-		});
-		const result &#x3D; worker.manufacture();
-		return result;
+	public async deleteUserDataFromCourseGroup(userId: EntityId): Promise&lt;number&gt; {
+		const [courseGroups, count] &#x3D; await this.repo.findByUserId(userId);
+
+		courseGroups.forEach((courseGroup) &#x3D;&gt; courseGroup.removeStudent(userId));
+
+		await this.repo.save(courseGroups);
+
+		return count;
 	}
 }
 </code></pre>
@@ -486,7 +294,7 @@ export class RoomBoardDTOFactory {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'RoomBoardDTOFactory.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'CourseGroupService.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

@@ -2548,10 +2548,10 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="entities/ImportUser.html" data-type="entity-link" >ImportUser</a>
                                 </li>
                                 <li class="link">
-                                    <a href="entities/Lesson.html" data-type="entity-link" >Lesson</a>
+                                    <a href="entities/LessonBoardElement.html" data-type="entity-link" >LessonBoardElement</a>
                                 </li>
                                 <li class="link">
-                                    <a href="entities/LessonBoardElement.html" data-type="entity-link" >LessonBoardElement</a>
+                                    <a href="entities/LessonEntity.html" data-type="entity-link" >LessonEntity</a>
                                 </li>
                                 <li class="link">
                                     <a href="entities/LtiTool.html" data-type="entity-link" >LtiTool</a>
@@ -4483,6 +4483,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/CourseGroupRule.html" data-type="entity-link" >CourseGroupRule</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/CourseGroupService.html" data-type="entity-link" >CourseGroupService</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/CourseRepo.html" data-type="entity-link" >CourseRepo</a>

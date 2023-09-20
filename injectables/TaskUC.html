@@ -951,7 +951,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/Lesson.html" target="_self" >Promise&lt;Lesson[]&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../entitys/LessonEntity.html" target="_self" >Promise&lt;LessonEntity[]&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -1057,7 +1057,7 @@ import {
 	EntityId,
 	IPagination,
 	ITaskStatus,
-	Lesson,
+	LessonEntity,
 	Permission,
 	SortOrder,
 	TaskWithStatusVo,
@@ -1246,7 +1246,7 @@ export class TaskUC {
 		return permittedCourses;
 	}
 
-	private async getPermittedLessons(user: User, courses: Course[]): Promise&lt;Lesson[]&gt; {
+	private async getPermittedLessons(user: User, courses: Course[]): Promise&lt;LessonEntity[]&gt; {
 		const writeCourses &#x3D; courses.filter((c) &#x3D;&gt;
 			this.authorizationService.hasPermission(user, c, AuthorizationContextBuilder.write([]))
 		);

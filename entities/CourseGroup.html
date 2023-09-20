@@ -322,6 +322,10 @@ export class CourseGroup extends BaseEntityWithTimestamps implements IEntityWith
 
 		return studentIds;
 	}
+
+	public removeStudent(userId: EntityId): void {
+		this.students.remove((u) &#x3D;&gt; u.id &#x3D;&#x3D;&#x3D; userId);
+	}
 }
 </code></pre>
     </div>

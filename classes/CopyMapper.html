@@ -367,7 +367,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId, Lesson, Task } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId, LessonEntity, Task } from &#x27;@shared/domain&#x27;;
 import { LessonCopyApiParams } from &#x27;@src/modules/learnroom/controller/dto/lesson/lesson-copy.params&#x27;;
 import { LessonCopyParentParams } from &#x27;@src/modules/lesson/types&#x27;;
 import { TaskCopyApiParams } from &#x27;@src/modules/task/controller/dto/task-copy.params&#x27;;
@@ -384,7 +384,7 @@ export class CopyMapper {
 		});
 
 		if (copyStatus.copyEntity) {
-			const copyEntity &#x3D; copyStatus.copyEntity as Lesson | Task;
+			const copyEntity &#x3D; copyStatus.copyEntity as LessonEntity | Task;
 			dto.id &#x3D; copyEntity.id;
 			dto.destinationCourseId &#x3D; copyEntity.course?.id;
 		}

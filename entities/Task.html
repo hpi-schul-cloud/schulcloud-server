@@ -440,7 +440,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../entitys/Lesson.html" target="_self" >Lesson</a></code>
+                        <i>Type : </i>        <code><a href="../entitys/LessonEntity.html" target="_self" >LessonEntity</a></code>
 
                     </td>
                 </tr>
@@ -449,7 +449,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Index()<br />@ManyToOne(&#x27;Lesson&#x27;, {fieldName: &#x27;lessonId&#x27;, nullable: true})<br />
+                            @Index()<br />@ManyToOne(&#x27;LessonEntity&#x27;, {fieldName: &#x27;lessonId&#x27;, nullable: true})<br />
                         </code>
                     </td>
                 </tr>
@@ -694,7 +694,7 @@ import type { EntityId } from &#x27;../types/entity-id&#x27;;
 import type { ITaskProperties, ITaskStatus } from &#x27;../types/task.types&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
 import type { Course } from &#x27;./course.entity&#x27;;
-import type { Lesson } from &#x27;./lesson.entity&#x27;;
+import type { LessonEntity } from &#x27;./lesson.entity&#x27;;
 import type { Submission } from &#x27;./submission.entity&#x27;;
 import { User } from &#x27;./user.entity&#x27;;
 
@@ -765,8 +765,8 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	school: SchoolEntity;
 
 	@Index()
-	@ManyToOne(&#x27;Lesson&#x27;, { fieldName: &#x27;lessonId&#x27;, nullable: true })
-	lesson?: Lesson; // In database exist also null, but it can not set.
+	@ManyToOne(&#x27;LessonEntity&#x27;, { fieldName: &#x27;lessonId&#x27;, nullable: true })
+	lesson?: LessonEntity; // In database exist also null, but it can not set.
 
 	@OneToMany(&#x27;Submission&#x27;, &#x27;task&#x27;)
 	submissions &#x3D; new Collection&lt;Submission&gt;(this);
