@@ -117,14 +117,12 @@ export class FeathersRosterService {
 		]);
 
 		const [studentPseudonyms, teacherPseudonyms, substitutionTeacherPseudonyms] = await Promise.all([
-			Promise.all(students.map((user: UserDO) => this.pseudonymService.findByUserAndTool(user, externalTool))),
-			Promise.all(teachers.map((user: UserDO) => this.pseudonymService.findByUserAndTool(user, externalTool))),
-			Promise.all(
-				substitutionTeachers.map((user: UserDO) => this.pseudonymService.findByUserAndTool(user, externalTool))
-			),
+			this.getAndFilterPseudonyms(students, externalTool),
+			this.getAndFilterPseudonyms(teachers, externalTool),
+			this.getAndFilterPseudonyms(substitutionTeachers, externalTool),
 		]);
 
-		const allTeacherPseudonyms = teacherPseudonyms.concat(substitutionTeacherPseudonyms);
+		const allTeacherPseudonyms: Pseudonym[] = teacherPseudonyms.concat(substitutionTeacherPseudonyms);
 
 		const group: Group = {
 			data: {
@@ -134,6 +132,15 @@ export class FeathersRosterService {
 		};
 
 		return group;
+	}
+
+	private async getAndFilterPseudonyms(users: UserDO[], externalTool: ExternalTool): Promise<Pseudonym[]> {
+		const pseudonyms: (Pseudonym | null)[] = await Promise.all(
+			users.map((user: UserDO) => this.pseudonymService.findByUserAndTool(user, externalTool))
+		);
+		const filtered: Pseudonym[] = pseudonyms.filter((pseudonym): pseudonym is Pseudonym => pseudonym !== null);
+
+		return filtered;
 	}
 
 	private getUserRole(user: UserDO): string {

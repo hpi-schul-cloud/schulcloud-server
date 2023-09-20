@@ -44,6 +44,121 @@ describe('PseudonymService', () => {
 		await module.close();
 	});
 
+	describe('findByUserAndToolOrThrow', () => {
+		describe('when user or tool is missing', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.build({ id: undefined });
+				const externalTool: ExternalTool = externalToolFactory.build({ id: undefined });
+
+				return {
+					user,
+					externalTool,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { user, externalTool } = setup();
+
+				await expect(service.findByUserAndToolOrThrow(user, externalTool)).rejects.toThrowError(
+					InternalServerErrorException
+				);
+			});
+		});
+
+		describe('when tool parameter is an ExternalTool', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.buildWithId();
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+
+				return {
+					user,
+					externalTool,
+				};
+			};
+
+			it('should call externalToolPseudonymRepo', async () => {
+				const { user, externalTool } = setup();
+
+				await service.findByUserAndToolOrThrow(user, externalTool);
+
+				expect(externalToolPseudonymRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(user.id, externalTool.id);
+			});
+		});
+
+		describe('when tool parameter is an LtiTool', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.buildWithId();
+				const ltiToolDO: LtiToolDO = ltiToolDOFactory.buildWithId();
+
+				return {
+					user,
+					ltiToolDO,
+				};
+			};
+
+			it('should call pseudonymRepo', async () => {
+				const { user, ltiToolDO } = setup();
+
+				await service.findByUserAndToolOrThrow(user, ltiToolDO);
+
+				expect(pseudonymRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(user.id, ltiToolDO.id);
+			});
+		});
+
+		describe('when searching by userId and toolId', () => {
+			const setup = () => {
+				const pseudonym: Pseudonym = pseudonymFactory.build();
+				const user: UserDO = userDoFactory.buildWithId();
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+
+				externalToolPseudonymRepo.findByUserIdAndToolIdOrFail.mockResolvedValueOnce(pseudonym);
+
+				return {
+					pseudonym,
+					user,
+					externalTool,
+				};
+			};
+
+			it('should call pseudonymRepo.findByUserIdAndToolId', async () => {
+				const { user, externalTool } = setup();
+
+				await service.findByUserAndToolOrThrow(user, externalTool);
+
+				expect(externalToolPseudonymRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(user.id, externalTool.id);
+			});
+
+			it('should return a pseudonym', async () => {
+				const { pseudonym, user, externalTool } = setup();
+
+				const result: Pseudonym = await service.findByUserAndToolOrThrow(user, externalTool);
+
+				expect(result).toEqual(pseudonym);
+			});
+		});
+
+		describe('when the repo throws an error', () => {
+			const setup = () => {
+				externalToolPseudonymRepo.findByUserIdAndToolIdOrFail.mockRejectedValueOnce(new NotFoundException());
+				const user: UserDO = userDoFactory.buildWithId();
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+
+				return {
+					user,
+					externalTool,
+				};
+			};
+
+			it('should pass the error without catching', async () => {
+				const { user, externalTool } = setup();
+
+				const func = async () => service.findByUserAndToolOrThrow(user, externalTool);
+
+				await expect(func).rejects.toThrow(NotFoundException);
+			});
+		});
+	});
+
 	describe('findByUserAndTool', () => {
 		describe('when user or tool is missing', () => {
 			const setup = () => {
@@ -79,7 +194,7 @@ describe('PseudonymService', () => {
 
 				await service.findByUserAndTool(user, externalTool);
 
-				expect(externalToolPseudonymRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(user.id, externalTool.id);
+				expect(externalToolPseudonymRepo.findByUserIdAndToolId).toHaveBeenCalledWith(user.id, externalTool.id);
 			});
 		});
 
@@ -99,7 +214,7 @@ describe('PseudonymService', () => {
 
 				await service.findByUserAndTool(user, ltiToolDO);
 
-				expect(pseudonymRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(user.id, ltiToolDO.id);
+				expect(pseudonymRepo.findByUserIdAndToolId).toHaveBeenCalledWith(user.id, ltiToolDO.id);
 			});
 		});
 
@@ -109,7 +224,7 @@ describe('PseudonymService', () => {
 				const user: UserDO = userDoFactory.buildWithId();
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
-				externalToolPseudonymRepo.findByUserIdAndToolIdOrFail.mockResolvedValueOnce(pseudonym);
+				externalToolPseudonymRepo.findByUserIdAndToolId.mockResolvedValueOnce(pseudonym);
 
 				return {
 					pseudonym,
@@ -123,21 +238,21 @@ describe('PseudonymService', () => {
 
 				await service.findByUserAndTool(user, externalTool);
 
-				expect(externalToolPseudonymRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(user.id, externalTool.id);
+				expect(externalToolPseudonymRepo.findByUserIdAndToolId).toHaveBeenCalledWith(user.id, externalTool.id);
 			});
 
 			it('should return a pseudonym', async () => {
 				const { pseudonym, user, externalTool } = setup();
 
-				const result: Pseudonym = await service.findByUserAndTool(user, externalTool);
+				const result: Pseudonym | null = await service.findByUserAndTool(user, externalTool);
 
 				expect(result).toEqual(pseudonym);
 			});
 		});
 
-		describe('when the repo throws an error', () => {
+		describe('when the repo returns null', () => {
 			const setup = () => {
-				externalToolPseudonymRepo.findByUserIdAndToolIdOrFail.mockRejectedValueOnce(new NotFoundException());
+				externalToolPseudonymRepo.findByUserIdAndToolId.mockResolvedValue(null);
 				const user: UserDO = userDoFactory.buildWithId();
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
@@ -147,12 +262,12 @@ describe('PseudonymService', () => {
 				};
 			};
 
-			it('should pass the error without catching', async () => {
+			it('should return null', async () => {
 				const { user, externalTool } = setup();
 
-				const func = async () => service.findByUserAndTool(user, externalTool);
+				const result: Pseudonym | null = await service.findByUserAndTool(user, externalTool);
 
-				await expect(func).rejects.toThrow(NotFoundException);
+				expect(result).toBeNull();
 			});
 		});
 	});

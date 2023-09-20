@@ -78,7 +78,7 @@ describe('IdTokenService', () => {
 				userService.findById.mockResolvedValue(user);
 				userService.getDisplayName.mockResolvedValue(displayName);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
-				pseudonymService.findByUserAndTool.mockResolvedValue(pseudonym);
+				pseudonymService.findByUserAndToolOrThrow.mockResolvedValue(pseudonym);
 				const iframeSubject = 'iframeSubject';
 				pseudonymService.getIframeSubject.mockReturnValueOnce(iframeSubject);
 
@@ -119,7 +119,7 @@ describe('IdTokenService', () => {
 				userService.findById.mockResolvedValue(user);
 				userService.getDisplayName.mockResolvedValue(displayName);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
-				pseudonymService.findByUserAndTool.mockResolvedValue(pseudonym);
+				pseudonymService.findByUserAndToolOrThrow.mockResolvedValue(pseudonym);
 				const iframeSubject = 'iframeSubject';
 				pseudonymService.getIframeSubject.mockReturnValueOnce(iframeSubject);
 
@@ -164,7 +164,7 @@ describe('IdTokenService', () => {
 				userService.findById.mockResolvedValue(user);
 				userService.getDisplayName.mockResolvedValue(displayName);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
-				pseudonymService.findByUserAndTool.mockResolvedValue(pseudonym);
+				pseudonymService.findByUserAndToolOrThrow.mockResolvedValue(pseudonym);
 				const iframeSubject = 'iframeSubject';
 				pseudonymService.getIframeSubject.mockReturnValueOnce(iframeSubject);
 
@@ -203,7 +203,7 @@ describe('IdTokenService', () => {
 				userService.findById.mockResolvedValue(user);
 				userService.getDisplayName.mockResolvedValue(displayName);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
-				pseudonymService.findByUserAndTool.mockResolvedValue(pseudonym);
+				pseudonymService.findByUserAndToolOrThrow.mockResolvedValue(pseudonym);
 				const iframeSubject = 'iframeSubject';
 				pseudonymService.getIframeSubject.mockReturnValueOnce(iframeSubject);
 
