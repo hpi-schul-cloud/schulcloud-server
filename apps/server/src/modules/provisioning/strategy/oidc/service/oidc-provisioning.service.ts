@@ -1,16 +1,14 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId, ExternalSource, FederalState, SchoolFeatures, SchoolYear } from '@shared/domain';
-import { RoleReference } from '@shared/domain/domainobject';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { UserDO } from '@shared/domain/domainobject/user.do';
+import { LegacySchoolDo, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { Group, GroupService, GroupUser } from '@src/modules/group';
+import { FederalStateService, LegacySchoolService, SchoolYearService } from '@src/modules/legacy-school';
+import { FederalStateNames } from '@src/modules/legacy-school/types';
 import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { FederalStateService, SchoolService, SchoolYearService } from '@src/modules/school';
-import { FederalStateNames } from '@src/modules/school/types';
 import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
 import CryptoJS from 'crypto-js';
@@ -21,7 +19,7 @@ import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '..
 export class OidcProvisioningService {
 	constructor(
 		private readonly userService: UserService,
-		private readonly schoolService: SchoolService,
+		private readonly schoolService: LegacySchoolService,
 		private readonly groupService: GroupService,
 		private readonly roleService: RoleService,
 		private readonly accountService: AccountService,
@@ -30,12 +28,12 @@ export class OidcProvisioningService {
 		private readonly logger: Logger
 	) {}
 
-	async provisionExternalSchool(externalSchool: ExternalSchoolDto, systemId: EntityId): Promise<SchoolDO> {
-		const existingSchool: SchoolDO | null = await this.schoolService.getSchoolByExternalId(
+	async provisionExternalSchool(externalSchool: ExternalSchoolDto, systemId: EntityId): Promise<LegacySchoolDo> {
+		const existingSchool: LegacySchoolDo | null = await this.schoolService.getSchoolByExternalId(
 			externalSchool.externalId,
 			systemId
 		);
-		let school: SchoolDO;
+		let school: LegacySchoolDo;
 		if (existingSchool) {
 			school = existingSchool;
 			school.name = externalSchool.name;
@@ -51,7 +49,7 @@ export class OidcProvisioningService {
 				FederalStateNames.NIEDERSACHSEN
 			);
 
-			school = new SchoolDO({
+			school = new LegacySchoolDo({
 				externalId: externalSchool.externalId,
 				name: externalSchool.name,
 				officialSchoolNumber: externalSchool.officialSchoolNumber,
@@ -63,7 +61,7 @@ export class OidcProvisioningService {
 			});
 		}
 
-		const savedSchool: SchoolDO = await this.schoolService.save(school, true);
+		const savedSchool: LegacySchoolDo = await this.schoolService.save(school, true);
 		return savedSchool;
 	}
 
@@ -131,7 +129,7 @@ export class OidcProvisioningService {
 
 		let organizationId: string | undefined;
 		if (externalGroup.externalOrganizationId) {
-			const existingSchool: SchoolDO | null = await this.schoolService.getSchoolByExternalId(
+			const existingSchool: LegacySchoolDo | null = await this.schoolService.getSchoolByExternalId(
 				externalGroup.externalOrganizationId,
 				systemId
 			);
