@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import {
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
+	ApiNoContentResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
@@ -196,16 +197,19 @@ export class UserLoginMigrationController {
 	@ApiOkResponse({ description: 'User login migration closed', type: UserLoginMigrationResponse })
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
-	async closeMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse | void> {
-		const userLoginMigration: UserLoginMigrationDO = await this.closeUserLoginMigrationUc.closeMigration(
+	@ApiNoContentResponse({ description: 'User login migration was reverted' })
+	async closeMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse | undefined> {
+		const userLoginMigration: UserLoginMigrationDO | undefined = await this.closeUserLoginMigrationUc.closeMigration(
 			currentUser.userId,
 			currentUser.schoolId
 		);
 
-		const migrationResponse: UserLoginMigrationResponse =
-			UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(userLoginMigration);
-
-		return migrationResponse;
+		if (userLoginMigration) {
+			const migrationResponse: UserLoginMigrationResponse =
+				UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(userLoginMigration);
+			return migrationResponse;
+		}
+		return undefined;
 	}
 
 	@Post('migrate-to-oauth2')
