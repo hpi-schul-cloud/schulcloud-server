@@ -1,18 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { Permission, SchoolDO, UserLoginMigrationDO } from '@shared/domain';
+import { Permission, LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain';
 import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import {
 	SchoolMigrationService,
 	UserLoginMigrationRevertService,
 	UserLoginMigrationService,
 } from '@src/modules/user-login-migration';
-import { SchoolService } from '../service';
+import { LegacySchoolService } from '../service';
 import { OauthMigrationDto } from './dto/oauth-migration.dto';
 
+/**
+ * @deprecated because it uses the deprecated LegacySchoolDo.
+ */
 @Injectable()
-export class SchoolUc {
+export class LegacySchoolUc {
 	constructor(
-		private readonly schoolService: SchoolService,
+		private readonly schoolService: LegacySchoolService,
 		private readonly authService: AuthorizationService,
 		private readonly schoolMigrationService: SchoolMigrationService,
 		private readonly userLoginMigrationService: UserLoginMigrationService,
@@ -58,7 +61,7 @@ export class SchoolUc {
 			await this.schoolMigrationService.unmarkOutdatedUsers(schoolId);
 		}
 
-		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
 
 		const migrationDto: OauthMigrationDto = new OauthMigrationDto({
 			oauthMigrationPossible: !updatedUserLoginMigration.closedAt ? updatedUserLoginMigration.startedAt : undefined,
@@ -81,7 +84,7 @@ export class SchoolUc {
 			schoolId
 		);
 
-		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
 
 		const migrationDto: OauthMigrationDto = new OauthMigrationDto({
 			oauthMigrationPossible:
