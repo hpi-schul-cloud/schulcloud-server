@@ -1,7 +1,7 @@
 import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EntityId, ISchoolProperties, LegacySchoolDo, School, System, UserLoginMigration } from '@shared/domain';
+import { EntityId, ISchoolProperties, LegacySchoolDo, SchoolEntity, System, UserLoginMigration } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { BaseDORepo } from '../base.do.repo';
 
@@ -9,24 +9,24 @@ import { BaseDORepo } from '../base.do.repo';
  * @deprecated because it uses the deprecated LegacySchoolDo.
  */
 @Injectable()
-export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, School, ISchoolProperties> {
+export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity, ISchoolProperties> {
 	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
 	}
 
-	get entityName(): EntityName<School> {
-		return School;
+	get entityName(): EntityName<SchoolEntity> {
+		return SchoolEntity;
 	}
 
 	async findByExternalId(externalId: string, systemId: string): Promise<LegacySchoolDo | null> {
-		const school: School | null = await this._em.findOne(School, { externalId, systems: systemId });
+		const school: SchoolEntity | null = await this._em.findOne(SchoolEntity, { externalId, systems: systemId });
 
 		const schoolDo: LegacySchoolDo | null = school ? this.mapEntityToDO(school) : null;
 		return schoolDo;
 	}
 
 	async findBySchoolNumber(officialSchoolNumber: string): Promise<LegacySchoolDo | null> {
-		const [schools, count] = await this._em.findAndCount(School, { officialSchoolNumber });
+		const [schools, count] = await this._em.findAndCount(SchoolEntity, { officialSchoolNumber });
 		if (count > 1) {
 			throw new InternalServerErrorException(`Multiple schools found for officialSchoolNumber ${officialSchoolNumber}`);
 		}
@@ -35,11 +35,11 @@ export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, School, ISchool
 		return schoolDo;
 	}
 
-	entityFactory(props: ISchoolProperties): School {
-		return new School(props);
+	entityFactory(props: ISchoolProperties): SchoolEntity {
+		return new SchoolEntity(props);
 	}
 
-	mapEntityToDO(entity: School): LegacySchoolDo {
+	mapEntityToDO(entity: SchoolEntity): LegacySchoolDo {
 		return new LegacySchoolDo({
 			id: entity.id,
 			externalId: entity.externalId,
