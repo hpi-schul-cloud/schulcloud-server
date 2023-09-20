@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { AccountModule, LearnroomModule, LessonModule, RoleModule, UserModule } from '..';
-import { SchoolModule } from '../school';
+import { AccountModule, LearnroomModule, LegacySchoolModule, LessonModule, RoleModule, UserModule } from '..';
 import { DemoSchoolService } from './service/demo-school.service';
 
 @Module({
-	imports: [LoggerModule, SchoolModule, UserModule, RoleModule, AccountModule, LearnroomModule, LessonModule],
+	imports: [LoggerModule, LegacySchoolModule, UserModule, RoleModule, AccountModule, LearnroomModule, LessonModule],
 	providers: [DemoSchoolService],
 	exports: [DemoSchoolService],
 })
