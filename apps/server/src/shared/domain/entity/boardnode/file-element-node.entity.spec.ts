@@ -6,7 +6,7 @@ import { BoardDoBuilder, BoardNodeType } from './types';
 describe(FileElementNode.name, () => {
 	describe('when trying to create a file element', () => {
 		const setup = () => {
-			const elementProps = { caption: 'Test' };
+			const elementProps = { caption: 'Test', alternativeText: 'testAltText' };
 			const builder: DeepMocked<BoardDoBuilder> = createMock<BoardDoBuilder>();
 
 			return { elementProps, builder };
