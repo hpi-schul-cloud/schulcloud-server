@@ -2,13 +2,13 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DatabaseObjectNotFoundException } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Course, Pseudonym, RoleName, School, SchoolDO, UserDO } from '@shared/domain';
+import { Course, Pseudonym, RoleName, School, LegacySchoolDo, UserDO } from '@shared/domain';
 import {
 	contextExternalToolFactory,
 	courseFactory,
 	externalToolFactory,
 	pseudonymFactory,
-	schoolDOFactory,
+	legacySchoolDoFactory,
 	schoolExternalToolFactory,
 	schoolFactory,
 	setupEntities,
@@ -199,7 +199,7 @@ describe('FeathersRosterService', () => {
 	describe('getUserGroups', () => {
 		describe('when pseudonym is given', () => {
 			const setup = () => {
-				const school: SchoolDO = schoolDOFactory.buildWithId();
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
 				const clientId = 'testClientId';
 				const externalTool: ExternalTool = externalToolFactory.withOauth2Config({ clientId }).buildWithId();
 				const externalToolId: string = externalTool.id as string;
@@ -360,7 +360,7 @@ describe('FeathersRosterService', () => {
 			const setup = () => {
 				let courseA: Course = courseFactory.buildWithId();
 				const schoolEntity: School = schoolFactory.buildWithId();
-				const school: SchoolDO = schoolDOFactory.build({ id: schoolEntity.id });
+				const school: LegacySchoolDo = legacySchoolDoFactory.build({ id: schoolEntity.id });
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 				const externalToolId: string = externalTool.id as string;
 				const otherExternalTool: ExternalTool = externalToolFactory.buildWithId();
