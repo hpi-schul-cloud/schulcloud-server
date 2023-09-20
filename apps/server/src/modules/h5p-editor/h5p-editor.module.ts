@@ -2,10 +2,10 @@ import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ALL_ENTITIES } from '@shared/domain';
 import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq';
-
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
+import { ALL_ENTITIES } from '@shared/domain';
+import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
@@ -48,7 +48,6 @@ const imports = [
 		user: DB_USERNAME,
 		// Needs ALL_ENTITIES for authorization
 		entities: [...ALL_ENTITIES, H5PContent, TemporaryFile, InstalledLibrary],
-
 		// debug: true, // use it for locally debugging of querys
 	}),
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
