@@ -55,7 +55,7 @@ describe('LessonRepo', () => {
 			const resultLesson = await repo.createLessonByDto(lessonCreateDto);
 
 			expect(resultLesson.id).toBeDefined();
-			expect(resultLesson.constructor.name).toBe('Lesson');
+			expect(resultLesson.constructor.name).toBe('LessonEntity');
 		});
 
 		it('should return a lesson object with correct name', async () => {
