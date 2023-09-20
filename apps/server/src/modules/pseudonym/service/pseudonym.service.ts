@@ -24,19 +24,6 @@ export class PseudonymService {
 		return pseudonymPromise;
 	}
 
-	public async findByUserAndTool(user: UserDO, tool: ExternalTool | LtiToolDO): Promise<Pseudonym | null> {
-		if (!user.id || !tool.id) {
-			throw new InternalServerErrorException('User or tool id is missing');
-		}
-
-		const pseudonymPromise: Promise<Pseudonym | null> = this.getRepository(tool).findByUserIdAndToolId(
-			user.id,
-			tool.id
-		);
-
-		return pseudonymPromise;
-	}
-
 	public async findByUserId(userId: string): Promise<Pseudonym[]> {
 		if (!userId) {
 			throw new InternalServerErrorException('User id is missing');

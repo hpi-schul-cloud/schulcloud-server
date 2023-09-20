@@ -136,7 +136,7 @@ export class FeathersRosterService {
 
 	private async getAndFilterPseudonyms(users: UserDO[], externalTool: ExternalTool): Promise<Pseudonym[]> {
 		const pseudonyms: (Pseudonym | null)[] = await Promise.all(
-			users.map((user: UserDO) => this.pseudonymService.findByUserAndTool(user, externalTool))
+			users.map((user: UserDO) => this.pseudonymService.findOrCreatePseudonym(user, externalTool))
 		);
 		const filtered: Pseudonym[] = pseudonyms.filter((pseudonym): pseudonym is Pseudonym => pseudonym !== null);
 

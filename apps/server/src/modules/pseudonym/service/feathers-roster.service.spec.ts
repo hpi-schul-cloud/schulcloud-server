@@ -435,13 +435,13 @@ describe('FeathersRosterService', () => {
 				]);
 
 				userService.findById.mockResolvedValueOnce(student1);
-				pseudonymService.findByUserAndTool.mockResolvedValueOnce(student1Pseudonym);
+				pseudonymService.findOrCreatePseudonym.mockResolvedValueOnce(student1Pseudonym);
 				userService.findById.mockResolvedValueOnce(student2);
-				pseudonymService.findByUserAndTool.mockResolvedValueOnce(student2Pseudonym);
+				pseudonymService.findOrCreatePseudonym.mockResolvedValueOnce(student2Pseudonym);
 				userService.findById.mockResolvedValueOnce(teacher);
-				pseudonymService.findByUserAndTool.mockResolvedValueOnce(teacherPseudonym);
+				pseudonymService.findOrCreatePseudonym.mockResolvedValueOnce(teacherPseudonym);
 				userService.findById.mockResolvedValueOnce(substitutionTeacher);
-				pseudonymService.findByUserAndTool.mockResolvedValueOnce(substitutionTeacherPseudonym);
+				pseudonymService.findOrCreatePseudonym.mockResolvedValueOnce(substitutionTeacherPseudonym);
 
 				const mockedIframeSubject = 'mockedIframeSubject';
 				pseudonymService.getIframeSubject.mockReturnValue(mockedIframeSubject);
@@ -518,7 +518,7 @@ describe('FeathersRosterService', () => {
 
 				await service.getGroup(courseA.id, externalToolId);
 
-				expect(pseudonymService.findByUserAndTool.mock.calls).toEqual([
+				expect(pseudonymService.findOrCreatePseudonym.mock.calls).toEqual([
 					[student1, externalTool],
 					[student2, externalTool],
 					[teacher, externalTool],
