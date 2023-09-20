@@ -87,41 +87,17 @@ describe(DemoSchoolService.name, () => {
 	};
 
 	const setupUserService = (fakeSchoolId = 'aFakedSchoolId') => {
-		userService.save.mockImplementation(
-			async (user: UserDO): Promise<UserDO> =>
-				Promise.resolve({
-					id: `aFakedUserId${Math.ceil(Math.random() * 900000)}`,
-					firstName: user.firstName,
-					lastName: user.lastName,
-					email: user.email,
-					schoolId: fakeSchoolId,
-					roles: [],
-				} as UserDO)
-		);
-		// userService.save.mockResolvedValueOnce({
-		// 	id: fakeUserId1,
-		// 	firstName: userConfig1.firstName,
-		// 	lastName: userConfig1.lastName,
-		// 	email: userConfig1.email,
-		// 	schoolId: fakeSchoolId,
-		// 	roles: [],
-		// });
-
-		// const fakeUserId2 = 'aFakedUserId2';
-		// const userConfig2: UserConfig = {
-		// 	firstName: 'der',
-		// 	lastName: 'peter',
-		// 	email: 'der.peter@testen.de',
-		// 	roleNames: [RoleName.TEACHER],
-		// };
-		// userService.save.mockResolvedValueOnce({
-		// 	id: fakeUserId2,
-		// 	firstName: userConfig2.firstName,
-		// 	lastName: userConfig2.lastName,
-		// 	email: userConfig2.email,
-		// 	schoolId: fakeSchoolId,
-		// 	roles: [],
-		// });
+		userService.save.mockImplementation(async (user: UserDO): Promise<UserDO> => {
+			const userId = `id_${user.firstName.toLowerCase()}_${user.lastName.toLowerCase()}`;
+			return Promise.resolve({
+				id: userId,
+				firstName: user.firstName,
+				lastName: user.lastName,
+				email: user.email,
+				schoolId: fakeSchoolId,
+				roles: [],
+			} as UserDO);
+		});
 
 		roleService.findByNames.mockResolvedValue([{ id: 'the-teacher-roleid', name: RoleName.TEACHER }]);
 
