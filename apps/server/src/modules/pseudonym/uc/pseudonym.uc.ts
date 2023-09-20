@@ -1,15 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { Page, Pseudonym, School, User } from '@shared/domain';
+import { LegacySchoolDo, Page, Pseudonym, User } from '@shared/domain';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ICurrentUser } from '@src/modules/authentication';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { PseudonymService } from '../service';
+import { LegacySchoolService } from '../../legacy-school';
 
 @Injectable()
 export class PseudonymUc {
 	constructor(
 		private readonly pseudonymService: PseudonymService,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly schoolService: LegacySchoolService
 	) {}
 
 	async findPseudonymByPseudonym(currentUser: ICurrentUser, pseudonym: string): Promise<Pseudonym> {
@@ -23,7 +25,7 @@ export class PseudonymUc {
 
 		const pseudonymUserId: string = pseudonymPage.data[0].userId;
 		const pseudonymUser: User = await this.authorizationService.getUserWithPermissions(pseudonymUserId);
-		const pseudonymSchool: School = pseudonymUser.school;
+		const pseudonymSchool: LegacySchoolDo = await this.schoolService.getSchoolById(pseudonymUser.school.id);
 
 		this.authorizationService.checkPermission(user, pseudonymSchool, AuthorizationContextBuilder.read([]));
 
