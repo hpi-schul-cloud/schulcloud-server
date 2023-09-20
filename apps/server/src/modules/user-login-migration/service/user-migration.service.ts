@@ -1,11 +1,11 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { LegacySchoolDo } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { LegacyLogger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/legacy-school';
 import { SystemDto, SystemService } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
 import { EntityId } from '@src/shared/domain/types';
@@ -29,7 +29,7 @@ export class UserMigrationService {
 	private readonly loginUrl: string = '/login';
 
 	constructor(
-		private readonly schoolService: SchoolService,
+		private readonly schoolService: LegacySchoolService,
 		private readonly systemService: SystemService,
 		private readonly userService: UserService,
 		private readonly logger: LegacyLogger,
@@ -40,7 +40,7 @@ export class UserMigrationService {
 	}
 
 	async getMigrationConsentPageRedirect(officialSchoolNumber: string, originSystemId: string): Promise<string> {
-		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
+		const school: LegacySchoolDo | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
 
 		if (!school || !school.id) {
 			throw new NotFoundException(`School with offical school number ${officialSchoolNumber} does not exist.`);

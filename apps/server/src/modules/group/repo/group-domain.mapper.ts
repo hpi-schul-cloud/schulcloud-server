@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExternalSource, ExternalSourceEntity, Role, School, System, User } from '@shared/domain';
+import { ExternalSource, ExternalSourceEntity, Role, SchoolEntity, System, User } from '@shared/domain';
 import { Group, GroupProps, GroupTypes, GroupUser } from '../domain';
 import { GroupEntity, GroupEntityProps, GroupEntityTypes, GroupUserEntity, GroupValidPeriodEntity } from '../entity';
 
@@ -34,7 +34,7 @@ export class GroupDomainMapper {
 				(groupUser): GroupUserEntity => GroupDomainMapper.mapGroupUserToGroupUserEntity(groupUser, em)
 			),
 			validPeriod,
-			organization: props.organizationId ? em.getReference(School, props.organizationId) : undefined,
+			organization: props.organizationId ? em.getReference(SchoolEntity, props.organizationId) : undefined,
 		};
 
 		return mapped;

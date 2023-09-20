@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
-import { Account, EntityId, Permission, Role, RoleName, School, User } from '@shared/domain';
+import { Account, EntityId, Permission, Role, RoleName, SchoolEntity, User } from '@shared/domain';
 import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
@@ -25,7 +25,7 @@ describe('AccountDbService', () => {
 
 	const defaultPassword = 'DummyPasswd!1';
 
-	let mockSchool: School;
+	let mockSchool: SchoolEntity;
 
 	let mockTeacherUser: User;
 	let mockStudentUser: User;
