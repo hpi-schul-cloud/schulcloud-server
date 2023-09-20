@@ -1,19 +1,18 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { EntityId, SchoolDO, User } from '@shared/domain';
+import { Course, EntityId, SchoolDO, User } from '@shared/domain';
 import { AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
-import { AuthorizationReferenceService } from '@src/modules/authorization/domain';
-import { AuthorizableReferenceType } from '@src/modules/authorization/domain/reference/types';
 import { SchoolService } from '@src/modules/school';
+import { CourseRepo } from '@shared/repo';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ContextTypeMapper } from '../mapper';
+// import { ContextTypeMapper } from '../mapper';
 
 @Injectable()
 export class ToolPermissionHelper {
 	constructor(
-		@Inject(forwardRef(() => AuthorizationService)) private authorizationService: AuthorizationService,
-		private authorizationReferenceService: AuthorizationReferenceService,
-		private readonly schoolService: SchoolService
+		@Inject(forwardRef(() => AuthorizationService)) private readonly authorizationService: AuthorizationService,
+		private readonly schoolService: SchoolService,
+		private readonly courseRepo: CourseRepo
 	) {}
 
 	// TODO build interface to get contextDO by contextType
@@ -22,21 +21,18 @@ export class ToolPermissionHelper {
 		contextExternalTool: ContextExternalTool,
 		context: AuthorizationContext
 	): Promise<void> {
+		const [authorizableUser, course]: [User, Course] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.courseRepo.findById(contextExternalTool.contextRef.id),
+		]);
+
 		if (contextExternalTool.id) {
-			await this.authorizationReferenceService.checkPermissionByReferences(
-				userId,
-				AuthorizableReferenceType.ContextExternalToolEntity,
-				contextExternalTool.id,
-				context
-			);
+			this.authorizationService.checkPermission(authorizableUser, contextExternalTool, context);
 		}
 
-		await this.authorizationReferenceService.checkPermissionByReferences(
-			userId,
-			ContextTypeMapper.mapContextTypeToAllowedAuthorizationEntityType(contextExternalTool.contextRef.type),
-			contextExternalTool.contextRef.id,
-			context
-		);
+		// const type = ContextTypeMapper.mapContextTypeToAllowedAuthorizationEntityType(contextExternalTool.contextRef.type);
+		// no different types possible until it is fixed.
+		this.authorizationService.checkPermission(authorizableUser, course, context);
 	}
 
 	public async ensureSchoolPermissions(
@@ -44,8 +40,11 @@ export class ToolPermissionHelper {
 		schoolExternalTool: SchoolExternalTool,
 		context: AuthorizationContext
 	): Promise<void> {
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const school: SchoolDO = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
+		const [user, school]: [User, SchoolDO] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.schoolService.getSchoolById(schoolExternalTool.schoolId),
+		]);
+
 		this.authorizationService.checkPermission(user, school, context);
 	}
 }

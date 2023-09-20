@@ -1,5 +1,5 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { BaseDO, EntityId, User } from '@shared/domain';
+import { BaseDO, EntityId } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import {
 	CourseGroupRepo,
@@ -81,6 +81,7 @@ export class ReferenceLoader {
 		const repoLoader: IRepoLoader = this.resolveRepo(objectName);
 
 		let object: AuthorizableObject | BaseDO;
+		// populate need to be removed
 		if (repoLoader.populate) {
 			object = await repoLoader.repo.findById(objectId, true);
 		} else {

@@ -22,6 +22,7 @@ export class TaskCopyUC {
 		this.featureEnabled();
 
 		// i put it to promise all, it do not look like any more information can be expose over errors if it is called between the authorizations
+		// TODO: Add try catch around it with throw BadRequest invalid data
 		const [authorizableUser, originalTask, destinationCourse]: [User, Task, Course | undefined] = await Promise.all([
 			this.authorisation.getUserWithPermissions(userId),
 			this.taskRepo.findById(taskId),
@@ -84,6 +85,7 @@ export class TaskCopyUC {
 			const [existingTasks] = await this.taskRepo.findBySingleParent('', parentCourseId);
 			existingNames = existingTasks.map((t) => t.name);
 		}
+
 		return this.copyHelperService.deriveCopyName(originalTaskName, existingNames);
 	}
 
