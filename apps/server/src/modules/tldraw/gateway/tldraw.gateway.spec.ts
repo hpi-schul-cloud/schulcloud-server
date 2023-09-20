@@ -81,7 +81,6 @@ describe('TldrawGateway', () => {
 		expect(gateway).toBeDefined();
 		expect(gateway.configService).toBeDefined();
 		expect(gateway.server).toBeDefined();
-		expect(gateway.connectionString).toBeDefined();
 		expect(gateway.afterInit).toBeDefined();
 		expect(gateway.handleConnection).toBeDefined();
 	});
