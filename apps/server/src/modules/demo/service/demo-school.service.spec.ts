@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName, SchoolDO } from '@shared/domain';
+import { RoleName, SchoolDO, UserDO } from '@shared/domain';
 import { RoleService, UserService } from '@src/modules';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { CourseService } from '@src/modules/learnroom/service';
@@ -74,44 +74,58 @@ describe(DemoSchoolService.name, () => {
 		jest.resetAllMocks();
 	});
 
-	const setupUserService = () => {
-		const fakeSchoolId = 'aFakedSchoolId';
-
-		const fakeUserId1 = 'aFakedUserId1';
-		const userConfig1: UserConfig = {
-			firstName: 'der',
-			lastName: 'peter',
-			email: 'der.peter@testen.de',
-			roleNames: [RoleName.TEACHER],
+	const createUserConfig = (firstName: string, lastName: string, roleNames: RoleName[]) => {
+		const userId = `id_${firstName.toLowerCase()}_${lastName.toLowerCase()}`;
+		const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@testing.de`;
+		const userConfig: UserConfig = {
+			firstName,
+			lastName,
+			email,
+			roleNames,
 		};
-		userService.save.mockResolvedValueOnce({
-			id: fakeUserId1,
-			firstName: userConfig1.firstName,
-			lastName: userConfig1.lastName,
-			email: userConfig1.email,
-			schoolId: fakeSchoolId,
-			roles: [],
-		});
+		return { userId, userConfig };
+	};
 
-		const fakeUserId2 = 'aFakedUserId2';
-		const userConfig2: UserConfig = {
-			firstName: 'der',
-			lastName: 'peter',
-			email: 'der.peter@testen.de',
-			roleNames: [RoleName.TEACHER],
-		};
-		userService.save.mockResolvedValueOnce({
-			id: fakeUserId2,
-			firstName: userConfig2.firstName,
-			lastName: userConfig2.lastName,
-			email: userConfig2.email,
-			schoolId: fakeSchoolId,
-			roles: [],
-		});
+	const setupUserService = (fakeSchoolId = 'aFakedSchoolId') => {
+		userService.save.mockImplementation(
+			async (user: UserDO): Promise<UserDO> =>
+				Promise.resolve({
+					id: `aFakedUserId${Math.ceil(Math.random() * 900000)}`,
+					firstName: user.firstName,
+					lastName: user.lastName,
+					email: user.email,
+					schoolId: fakeSchoolId,
+					roles: [],
+				} as UserDO)
+		);
+		// userService.save.mockResolvedValueOnce({
+		// 	id: fakeUserId1,
+		// 	firstName: userConfig1.firstName,
+		// 	lastName: userConfig1.lastName,
+		// 	email: userConfig1.email,
+		// 	schoolId: fakeSchoolId,
+		// 	roles: [],
+		// });
+
+		// const fakeUserId2 = 'aFakedUserId2';
+		// const userConfig2: UserConfig = {
+		// 	firstName: 'der',
+		// 	lastName: 'peter',
+		// 	email: 'der.peter@testen.de',
+		// 	roleNames: [RoleName.TEACHER],
+		// };
+		// userService.save.mockResolvedValueOnce({
+		// 	id: fakeUserId2,
+		// 	firstName: userConfig2.firstName,
+		// 	lastName: userConfig2.lastName,
+		// 	email: userConfig2.email,
+		// 	schoolId: fakeSchoolId,
+		// 	roles: [],
+		// });
 
 		roleService.findByNames.mockResolvedValue([{ id: 'the-teacher-roleid', name: RoleName.TEACHER }]);
 
-		return { fakeSchoolId, fakeUserId1, fakeUserId2, userConfig1, userConfig2 };
+		return { fakeSchoolId };
 	};
 
 	const setupLessonService = () => {
@@ -138,13 +152,11 @@ describe(DemoSchoolService.name, () => {
 		};
 	};
 
-	const setupCourseService = () => {
-		const fakeSchoolId = 'aFakedSchoolId';
-
+	const setupCourseService = (fakeSchoolId = 'aFakedSchoolId', teacherEmailsCourse1: string[] = []) => {
 		const fakeCourseId1 = 'aFakedCourseId1';
 		const courseConfig1: CourseConfig = {
 			name: 'my first course',
-			teachers: [],
+			teachers: teacherEmailsCourse1,
 			students: [],
 			substitutionTeachers: [],
 		};
@@ -153,9 +165,9 @@ describe(DemoSchoolService.name, () => {
 		const fakeCourseId2 = 'aFakedCourseId2';
 		const courseConfig2: CourseConfig = {
 			name: 'my second course',
-			teachers: [],
-			students: [],
-			substitutionTeachers: [],
+			teachers: ['not.existing.teacher@testen.de'],
+			students: ['not.existing.student@testen.de'],
+			substitutionTeachers: ['not.existing.substitution.teacher@testen.de'],
 		};
 		courseService.createCourse.mockResolvedValueOnce(fakeCourseId2);
 
@@ -176,30 +188,39 @@ describe(DemoSchoolService.name, () => {
 
 	const setupSchoolService = () => {
 		const fakeSchoolId = 'aFakedSchoolId';
+		setupUserService(fakeSchoolId);
+		const { userId, userConfig } = createUserConfig('Karl', 'Lähranda', [RoleName.TEACHER]);
+		const teacherEmails = [userConfig.email];
+		const { courseConfig1, courseConfig2 } = setupCourseService(fakeSchoolId, teacherEmails);
 
 		const schoolConfig: SchoolConfig = {
 			name: 'my first school',
 			federalStateName: FederalStateNames.NIEDERSACHSEN,
-			users: [],
+			courses: [courseConfig1, courseConfig2],
+			users: [userConfig],
 		};
 		schoolService.save.mockResolvedValueOnce({ id: fakeSchoolId } as SchoolDO);
 
 		return {
 			fakeSchoolId,
 			schoolConfig,
+			userId,
+			userConfig,
+			courseConfig1,
 		};
 	};
 
 	describe('createUser', () => {
 		it('should return correct creationProtocol', async () => {
-			const { fakeSchoolId, fakeUserId1, userConfig1 } = setupUserService();
+			const { fakeSchoolId } = setupUserService();
+			const { userId, userConfig } = createUserConfig('edith', 'laputschek', [RoleName.TEACHER]);
 
-			const creationProtocol = await service.createUser(fakeSchoolId, userConfig1);
+			const creationProtocol = await service.createUser(fakeSchoolId, userConfig);
 
 			expect(creationProtocol).toEqual(
 				expect.objectContaining({
-					id: fakeUserId1,
-					key: userConfig1.email,
+					id: userId,
+					key: userConfig.email,
 				})
 			);
 		});
@@ -207,19 +228,21 @@ describe(DemoSchoolService.name, () => {
 
 	describe('createUsers', () => {
 		it('should return correct creationProtocol', async () => {
-			const { fakeSchoolId, fakeUserId1, fakeUserId2, userConfig1, userConfig2 } = setupUserService();
+			const { fakeSchoolId } = setupUserService();
+			const { userId: userId1, userConfig: userConfig1 } = createUserConfig('edith', 'laputschek', [RoleName.TEACHER]);
+			const { userId: userId2, userConfig: userConfig2 } = createUserConfig('pjotr', 'kawalschek', [RoleName.TEACHER]);
 
 			const creationProtocol = await service.createUsers(fakeSchoolId, [userConfig1, userConfig2]);
 
 			expect(creationProtocol.toString()).toBe(
 				[
 					{
-						id: fakeUserId1,
+						id: userId1,
 						key: userConfig1.email,
 						type: 'user',
 					},
 					{
-						id: fakeUserId2,
+						id: userId2,
 						key: userConfig2.email,
 						type: 'user',
 					},
@@ -307,21 +330,59 @@ describe(DemoSchoolService.name, () => {
 				].toString()
 			);
 		});
+
+		it('should return correct creationProtocol', async () => {
+			const { fakeSchoolId, fakeCourseId1, fakeCourseId2, courseConfig1, courseConfig2, fakeProtocol } =
+				setupCourseService();
+
+			const userCreationProtocol = await service.createCourses(
+				fakeSchoolId,
+				[courseConfig1, courseConfig2],
+				fakeProtocol
+			);
+
+			expect(userCreationProtocol.toString()).toBe(
+				[
+					{
+						id: fakeCourseId1,
+						key: courseConfig1.name,
+						type: 'course',
+					},
+					{
+						id: fakeCourseId2,
+						key: courseConfig2.name,
+						type: 'course',
+					},
+				].toString()
+			);
+		});
 	});
 
 	describe('createSchool', () => {
-		it('should return correct creationProtocol', async () => {
-			const { fakeSchoolId, schoolConfig } = setupSchoolService();
+		describe('when teacher exists', () => {
+			it('should find the user and return correct creationProtocol', async () => {
+				const { fakeSchoolId, schoolConfig } = setupSchoolService();
 
-			const creationProtocol = await service.createSchool(schoolConfig);
+				const creationProtocol = await service.createSchool(schoolConfig);
 
-			expect(creationProtocol).toEqual(
-				expect.objectContaining({
-					id: fakeSchoolId,
-					key: schoolConfig.name,
-					type: 'school',
-				})
-			);
+				expect(creationProtocol).toEqual(
+					expect.objectContaining({
+						id: fakeSchoolId,
+						key: schoolConfig.name,
+						type: 'school',
+					})
+				);
+			});
+		});
+	});
+
+	describe('createDemoSchool', () => {
+		it('should use default configuration for creating a demo school', async () => {
+			setupSchoolService();
+
+			const creationProtocol = await service.createDemoSchool();
+
+			expect(creationProtocol).toBeDefined();
 		});
 	});
 });
