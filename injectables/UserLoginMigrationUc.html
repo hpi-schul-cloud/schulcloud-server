@@ -530,7 +530,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>logMigrationInformation(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, text?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, oauthData?: <a href="../classes/OauthDataDto.html" target="_self">OauthDataDto</a>, targetSystemId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, school?: <a href="../classes/SchoolDO.html" target="_self">SchoolDO</a>)</code>
+                    <code>logMigrationInformation(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, text?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, oauthData?: <a href="../classes/OauthDataDto.html" target="_self">OauthDataDto</a>, targetSystemId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, school?: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>)</code>
                 </td>
             </tr>
 
@@ -609,7 +609,7 @@
                                 <tr>
                                     <td>school</td>
                                     <td>
-                                                <code><a href="../classes/SchoolDO.html" target="_self" >SchoolDO</a></code>
+                                                <code><a href="../classes/LegacySchoolDo.html" target="_self" >LegacySchoolDo</a></code>
                                     </td>
 
                                     <td>
@@ -761,7 +761,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ForbiddenException, Injectable } from &#x27;@nestjs/common&#x27;;
 import { NotFoundLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
-import { EntityId, Page, Permission, SchoolDO, User, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
+import { EntityId, Page, Permission, LegacySchoolDo, User, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { AuthenticationService } from &#x27;@src/modules/authentication/services/authentication.service&#x27;;
 import { Action, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
@@ -856,7 +856,7 @@ export class UserLoginMigrationUc {
 		this.logMigrationInformation(currentUserId, undefined, data, targetSystemId);
 
 		if (data.externalSchool) {
-			let schoolToMigrate: SchoolDO | null;
+			let schoolToMigrate: LegacySchoolDo | null;
 			// TODO: N21-820 after fully switching to the new client login flow, try/catch will be obsolete and schoolToMigrate should throw correct errors
 			try {
 				schoolToMigrate &#x3D; await this.schoolMigrationService.schoolToMigrate(
@@ -918,7 +918,7 @@ export class UserLoginMigrationUc {
 		text?: string,
 		oauthData?: OauthDataDto,
 		targetSystemId?: string,
-		school?: SchoolDO
+		school?: LegacySchoolDo
 	) {
 		let message &#x3D; &#x60;MIGRATION (userId: ${userId}): ${text ?? &#x27;&#x27;}&#x60;;
 		if (!school &amp;&amp; oauthData) {

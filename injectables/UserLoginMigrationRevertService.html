@@ -106,7 +106,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userLoginMigrationService: <a href="../injectables/UserLoginMigrationService.html" target="_self">UserLoginMigrationService</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>)</code>
+<code>constructor(userLoginMigrationService: <a href="../injectables/UserLoginMigrationService.html" target="_self">UserLoginMigrationService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -144,7 +144,7 @@
                                                         <td>schoolService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/SchoolService.html" target="_self" >SchoolService</a></code>
+                                                                        <code><a href="../injectables/LegacySchoolService.html" target="_self" >LegacySchoolService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -245,14 +245,14 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { SchoolFeatures, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
-import { SchoolService } from &#x27;@src/modules/school&#x27;;
+import { LegacySchoolService } from &#x27;@src/modules/legacy-school&#x27;;
 import { UserLoginMigrationService } from &#x27;./user-login-migration.service&#x27;;
 
 @Injectable()
 export class UserLoginMigrationRevertService {
 	constructor(
 		private readonly userLoginMigrationService: UserLoginMigrationService,
-		private readonly schoolService: SchoolService
+		private readonly schoolService: LegacySchoolService
 	) {}
 
 	async revertUserLoginMigration(userLoginMigration: UserLoginMigrationDO): Promise&lt;void&gt; {

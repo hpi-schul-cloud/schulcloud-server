@@ -110,7 +110,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userLoginMigrationService: <a href="../injectables/UserLoginMigrationService.html" target="_self">UserLoginMigrationService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(userLoginMigrationService: <a href="../injectables/UserLoginMigrationService.html" target="_self">UserLoginMigrationService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -160,7 +160,7 @@
                                                         <td>schoolService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/SchoolService.html" target="_self" >SchoolService</a></code>
+                                                                        <code><a href="../injectables/LegacySchoolService.html" target="_self" >LegacySchoolService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -367,10 +367,10 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
-import { Permission, SchoolDO, User, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
+import { Permission, LegacySchoolDo, User, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
-import { SchoolService } from &#x27;@src/modules/school&#x27;;
+import { LegacySchoolService } from &#x27;@src/modules/legacy-school&#x27;;
 import {
 	UserLoginMigrationGracePeriodExpiredLoggableException,
 	UserLoginMigrationNotFoundLoggableException,
@@ -383,7 +383,7 @@ export class RestartUserLoginMigrationUc {
 	constructor(
 		private readonly userLoginMigrationService: UserLoginMigrationService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly schoolService: SchoolService,
+		private readonly schoolService: LegacySchoolService,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(RestartUserLoginMigrationUc.name);
@@ -416,7 +416,7 @@ export class RestartUserLoginMigrationUc {
 
 	async checkPermission(userId: string, schoolId: string): Promise&lt;void&gt; {
 		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
-		const school: SchoolDO &#x3D; await this.schoolService.getSchoolById(schoolId);
+		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(schoolId);
 
 		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.write([Permission.USER_LOGIN_MIGRATION_ADMIN]);
 		this.authorizationService.checkPermission(user, school, context);

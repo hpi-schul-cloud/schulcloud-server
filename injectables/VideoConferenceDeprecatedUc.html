@@ -174,7 +174,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(bbbService: <a href="../injectables/BBBService.html" target="_self">BBBService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, videoConferenceRepo: <a href="../injectables/VideoConferenceRepo.html" target="_self">VideoConferenceRepo</a>, teamsRepo: <a href="../injectables/TeamsRepo.html" target="_self">TeamsRepo</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, calendarService: <a href="../injectables/CalendarService.html" target="_self">CalendarService</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>)</code>
+<code>constructor(bbbService: <a href="../injectables/BBBService.html" target="_self">BBBService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, videoConferenceRepo: <a href="../injectables/VideoConferenceRepo.html" target="_self">VideoConferenceRepo</a>, teamsRepo: <a href="../injectables/TeamsRepo.html" target="_self">TeamsRepo</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, calendarService: <a href="../injectables/CalendarService.html" target="_self">CalendarService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -284,7 +284,7 @@
                                                         <td>schoolService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/SchoolService.html" target="_self" >SchoolService</a></code>
+                                                                        <code><a href="../injectables/LegacySchoolService.html" target="_self" >LegacySchoolService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -1490,10 +1490,9 @@ import {
 	AuthorizationContextBuilder,
 	AuthorizationService,
 } from &#x27;@src/modules/authorization&#x27;;
-import { SchoolService } from &#x27;@src/modules/school/service/school.service&#x27;;
 import { CourseService } from &#x27;@src/modules/learnroom/service&#x27;;
+import { LegacySchoolService } from &#x27;@src/modules/legacy-school&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
-import { IScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from &#x27;./dto&#x27;;
 import {
 	BBBBaseMeetingConfig,
 	BBBBaseResponse,
@@ -1506,8 +1505,9 @@ import {
 	BBBService,
 	GuestPolicy,
 } from &#x27;../bbb&#x27;;
-import { defaultVideoConferenceOptions, VideoConferenceOptions } from &#x27;../interface&#x27;;
 import { ErrorStatus } from &#x27;../error/error-status.enum&#x27;;
+import { defaultVideoConferenceOptions, VideoConferenceOptions } from &#x27;../interface&#x27;;
+import { IScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from &#x27;./dto&#x27;;
 
 const PermissionMapping &#x3D; {
 	[BBBRole.MODERATOR]: Permission.START_MEETING,
@@ -1534,7 +1534,7 @@ export class VideoConferenceDeprecatedUc {
 		private readonly courseService: CourseService,
 		private readonly userService: UserService,
 		private readonly calendarService: CalendarService,
-		private readonly schoolService: SchoolService
+		private readonly schoolService: LegacySchoolService
 	) {
 		this.hostURL &#x3D; Configuration.get(&#x27;HOST&#x27;) as string;
 	}

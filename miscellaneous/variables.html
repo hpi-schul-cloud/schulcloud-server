@@ -442,6 +442,9 @@
                             <a href="#legacyFileEntityMockFactory" title="apps/server/src/shared/testing/factory/legacy-file-entity-mock.factory.ts" ><b>legacyFileEntityMockFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../legacy-file-entity-mock.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#legacySchoolDoFactory" title="apps/server/src/shared/testing/factory/domainobject/legacy-school.factory.ts" ><b>legacySchoolDoFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../legacy-school.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#lessonBoardElementFactory" title="apps/server/src/shared/testing/factory/boardelement.factory.ts" ><b>lessonBoardElementFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../boardelement.factory.ts)</a>
                         </li>
                         <li>
@@ -575,9 +578,6 @@
                         </li>
                         <li>
                             <a href="#sanitizeRichText" title="apps/server/src/shared/controller/transformer/sanitize-html.transformer.ts" ><b>sanitizeRichText</b>&nbsp;&nbsp;&nbsp;(apps/.../sanitize-html.transformer.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#schoolDOFactory" title="apps/server/src/shared/testing/factory/domainobject/school.factory.ts" ><b>schoolDOFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../school.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#schoolExternalToolEntityFactory" title="apps/server/src/shared/testing/factory/school-external-tool-entity.factory.ts" ><b>schoolExternalToolEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../school-external-tool-entity.factory.ts)</a>
@@ -1460,7 +1460,7 @@
 	LessonRule,
 	CourseRule,
 	CourseGroupRule,
-	SchoolRule,
+	LegacySchoolRule,
 	SubmissionRule,
 	TaskRule,
 	TeamRule,
@@ -4685,7 +4685,7 @@ must use @ApiProperty</p>
 		adminUser: Configuration.get(&#x27;ROCKET_CHAT_ADMIN_USER&#x27;) as string,
 		adminPassword: Configuration.get(&#x27;ROCKET_CHAT_ADMIN_PASSWORD&#x27;) as string,
 	}),
-	SchoolApiModule,
+	LegacySchoolApiModule,
 	VideoConferenceApiModule,
 	OauthProviderApiModule,
 	SharingApiModule,
@@ -6327,6 +6327,45 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/shared/testing/factory/domainobject/legacy-school.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="legacySchoolDoFactory"></a>
+                    <span class="name">
+                        <span ><b>legacySchoolDoFactory</b></span>
+                        <a href="#legacySchoolDoFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>LegacySchoolFactory.define(LegacySchoolDo, ({ sequence }) &#x3D;&gt; {
+	return {
+		name: &#x60;schoolName-${sequence}&#x60;,
+		externalId: &#x27;123&#x27;,
+		features: [],
+		inMaintenanceSince: new Date(2020, 1),
+		inUserMigration: true,
+		oauthMigrationMandatory: new Date(2020, 1),
+		oauthMigrationPossible: new Date(2020, 1),
+		oauthMigrationFinished: new Date(2020, 1),
+		previousExternalId: &#x27;456&#x27;,
+		officialSchoolNumber: &#x27;789&#x27;,
+		systems: [],
+		federalState: federalStateFactory.build(),
+		schoolYear: schoolYearFactory.build(),
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/shared/testing/factory/lesson.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -7814,45 +7853,6 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>&#x27;S3_Config&#x27;</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
-    <h3>apps/server/src/shared/testing/factory/domainobject/school.factory.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="schoolDOFactory"></a>
-                    <span class="name">
-                        <span ><b>schoolDOFactory</b></span>
-                        <a href="#schoolDOFactory"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>SchoolFactory.define(SchoolDO, ({ sequence }) &#x3D;&gt; {
-	return {
-		name: &#x60;schoolName-${sequence}&#x60;,
-		externalId: &#x27;123&#x27;,
-		features: [],
-		inMaintenanceSince: new Date(2020, 1),
-		inUserMigration: true,
-		oauthMigrationMandatory: new Date(2020, 1),
-		oauthMigrationPossible: new Date(2020, 1),
-		oauthMigrationFinished: new Date(2020, 1),
-		previousExternalId: &#x27;456&#x27;,
-		officialSchoolNumber: &#x27;789&#x27;,
-		systems: [],
-		federalState: federalStateFactory.build(),
-		schoolYear: schoolYearFactory.build(),
-	};
-})</code>
                     </td>
                 </tr>
 

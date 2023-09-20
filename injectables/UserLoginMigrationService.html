@@ -148,7 +148,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, userLoginMigrationRepo: <a href="../injectables/UserLoginMigrationRepo.html" target="_self">UserLoginMigrationRepo</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, systemService: <a href="../injectables/SystemService.html" target="_self">SystemService</a>, schoolMigrationService: <a href="../injectables/SchoolMigrationService.html" target="_self">SchoolMigrationService</a>)</code>
+<code>constructor(userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, userLoginMigrationRepo: <a href="../injectables/UserLoginMigrationRepo.html" target="_self">UserLoginMigrationRepo</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, systemService: <a href="../injectables/SystemService.html" target="_self">SystemService</a>, schoolMigrationService: <a href="../injectables/SchoolMigrationService.html" target="_self">SchoolMigrationService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -198,7 +198,7 @@
                                                         <td>schoolService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/SchoolService.html" target="_self" >SchoolService</a></code>
+                                                                        <code><a href="../injectables/LegacySchoolService.html" target="_self" >LegacySchoolService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -331,7 +331,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createNewMigration(school: <a href="../classes/SchoolDO.html" target="_self">SchoolDO</a>)</code>
+                    <code>createNewMigration(school: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>)</code>
                 </td>
             </tr>
 
@@ -362,7 +362,7 @@
                                 <tr>
                                     <td>school</td>
                                     <td>
-                                                <code><a href="../classes/SchoolDO.html" target="_self" >SchoolDO</a></code>
+                                                <code><a href="../classes/LegacySchoolDo.html" target="_self" >LegacySchoolDo</a></code>
                                     </td>
 
                                     <td>
@@ -473,7 +473,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>enableOauthMigrationFeature(schoolDo: <a href="../classes/SchoolDO.html" target="_self">SchoolDO</a>)</code>
+                    <code>enableOauthMigrationFeature(schoolDo: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>)</code>
                 </td>
             </tr>
 
@@ -504,7 +504,7 @@
                                 <tr>
                                     <td>schoolDo</td>
                                     <td>
-                                                <code><a href="../classes/SchoolDO.html" target="_self" >SchoolDO</a></code>
+                                                <code><a href="../classes/LegacySchoolDo.html" target="_self" >LegacySchoolDo</a></code>
                                     </td>
 
                                     <td>
@@ -1088,9 +1088,9 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
-import { EntityId, SchoolDO, SchoolFeatures, SystemTypeEnum, UserDO, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
+import { EntityId, LegacySchoolDo, SchoolFeatures, SystemTypeEnum, UserDO, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
 import { UserLoginMigrationRepo } from &#x27;@shared/repo&#x27;;
-import { SchoolService } from &#x27;@src/modules/school&#x27;;
+import { LegacySchoolService } from &#x27;@src/modules/legacy-school&#x27;;
 import { SystemDto, SystemService } from &#x27;@src/modules/system&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
 import { UserLoginMigrationNotFoundLoggableException } from &#x27;../error&#x27;;
@@ -1101,7 +1101,7 @@ export class UserLoginMigrationService {
 	constructor(
 		private readonly userService: UserService,
 		private readonly userLoginMigrationRepo: UserLoginMigrationRepo,
-		private readonly schoolService: SchoolService,
+		private readonly schoolService: LegacySchoolService,
 		private readonly systemService: SystemService,
 		private readonly schoolMigrationService: SchoolMigrationService
 	) {}
@@ -1120,7 +1120,7 @@ export class UserLoginMigrationService {
 		oauthMigrationMandatory?: boolean,
 		oauthMigrationFinished?: boolean
 	): Promise&lt;UserLoginMigrationDO&gt; {
-		const schoolDo: SchoolDO &#x3D; await this.schoolService.getSchoolById(schoolId);
+		const schoolDo: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(schoolId);
 
 		const existingUserLoginMigration: UserLoginMigrationDO | null &#x3D; await this.userLoginMigrationRepo.findBySchoolId(
 			schoolId
@@ -1168,7 +1168,7 @@ export class UserLoginMigrationService {
 	}
 
 	async startMigration(schoolId: string): Promise&lt;UserLoginMigrationDO&gt; {
-		const schoolDo: SchoolDO &#x3D; await this.schoolService.getSchoolById(schoolId);
+		const schoolDo: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(schoolId);
 
 		const userLoginMigrationDO: UserLoginMigrationDO &#x3D; await this.createNewMigration(schoolDo);
 
@@ -1234,7 +1234,7 @@ export class UserLoginMigrationService {
 		return userLoginMigration;
 	}
 
-	private async createNewMigration(school: SchoolDO): Promise&lt;UserLoginMigrationDO&gt; {
+	private async createNewMigration(school: LegacySchoolDo): Promise&lt;UserLoginMigrationDO&gt; {
 		const oauthSystems: SystemDto[] &#x3D; await this.systemService.findByType(SystemTypeEnum.OAUTH);
 		const sanisSystem: SystemDto | undefined &#x3D; oauthSystems.find((system: SystemDto) &#x3D;&gt; system.alias &#x3D;&#x3D;&#x3D; &#x27;SANIS&#x27;);
 
@@ -1266,7 +1266,7 @@ export class UserLoginMigrationService {
 		return userLoginMigration;
 	}
 
-	private enableOauthMigrationFeature(schoolDo: SchoolDO) {
+	private enableOauthMigrationFeature(schoolDo: LegacySchoolDo) {
 		if (schoolDo.features &amp;&amp; !schoolDo.features.includes(SchoolFeatures.OAUTH_PROVISIONING_ENABLED)) {
 			schoolDo.features.push(SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
 		} else {

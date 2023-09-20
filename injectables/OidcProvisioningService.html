@@ -119,12 +119,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, groupService: <a href="../injectables/GroupService.html" target="_self">GroupService</a>, roleService: <a href="../injectables/RoleService.html" target="_self">RoleService</a>, accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, schoolYearService: <a href="../injectables/SchoolYearService.html" target="_self">SchoolYearService</a>, federalStateService: <a href="../injectables/FederalStateService.html" target="_self">FederalStateService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, groupService: <a href="../injectables/GroupService.html" target="_self">GroupService</a>, roleService: <a href="../injectables/RoleService.html" target="_self">RoleService</a>, accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, schoolYearService: <a href="../injectables/SchoolYearService.html" target="_self">SchoolYearService</a>, federalStateService: <a href="../injectables/FederalStateService.html" target="_self">FederalStateService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:21</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:19</a></div>
                             </td>
                         </tr>
 
@@ -157,7 +157,7 @@
                                                         <td>schoolService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/SchoolService.html" target="_self" >SchoolService</a></code>
+                                                                        <code><a href="../injectables/LegacySchoolService.html" target="_self" >LegacySchoolService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -274,8 +274,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="166"
-                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:166</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="164"
+                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:164</a></div>
                 </td>
             </tr>
 
@@ -357,8 +357,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="122"
-                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:122</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="120"
+                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:120</a></div>
                 </td>
             </tr>
 
@@ -440,8 +440,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="33"
-                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:33</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="31"
+                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:31</a></div>
                 </td>
             </tr>
 
@@ -491,7 +491,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/School.html" target="_self" >Promise&lt;SchoolDO&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../entitys/School.html" target="_self" >Promise&lt;LegacySchoolDo&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -523,8 +523,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="70"
-                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:70</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="68"
+                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:68</a></div>
                 </td>
             </tr>
 
@@ -604,17 +604,15 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
 import { EntityId, ExternalSource, FederalState, SchoolFeatures, SchoolYear } from &#x27;@shared/domain&#x27;;
-import { RoleReference } from &#x27;@shared/domain/domainobject&#x27;;
-import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
-import { UserDO } from &#x27;@shared/domain/domainobject/user.do&#x27;;
+import { LegacySchoolDo, RoleReference, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { AccountService } from &#x27;@src/modules/account/services/account.service&#x27;;
 import { AccountSaveDto } from &#x27;@src/modules/account/services/dto&#x27;;
 import { Group, GroupService, GroupUser } from &#x27;@src/modules/group&#x27;;
+import { FederalStateService, LegacySchoolService, SchoolYearService } from &#x27;@src/modules/legacy-school&#x27;;
+import { FederalStateNames } from &#x27;@src/modules/legacy-school/types&#x27;;
 import { RoleService } from &#x27;@src/modules/role&#x27;;
 import { RoleDto } from &#x27;@src/modules/role/service/dto/role.dto&#x27;;
-import { FederalStateService, SchoolService, SchoolYearService } from &#x27;@src/modules/school&#x27;;
-import { FederalStateNames } from &#x27;@src/modules/school/types&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
 import CryptoJS from &#x27;crypto-js&#x27;;
@@ -625,7 +623,7 @@ import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from &#x
 export class OidcProvisioningService {
 	constructor(
 		private readonly userService: UserService,
-		private readonly schoolService: SchoolService,
+		private readonly schoolService: LegacySchoolService,
 		private readonly groupService: GroupService,
 		private readonly roleService: RoleService,
 		private readonly accountService: AccountService,
@@ -634,12 +632,12 @@ export class OidcProvisioningService {
 		private readonly logger: Logger
 	) {}
 
-	async provisionExternalSchool(externalSchool: ExternalSchoolDto, systemId: EntityId): Promise&lt;SchoolDO&gt; {
-		const existingSchool: SchoolDO | null &#x3D; await this.schoolService.getSchoolByExternalId(
+	async provisionExternalSchool(externalSchool: ExternalSchoolDto, systemId: EntityId): Promise&lt;LegacySchoolDo&gt; {
+		const existingSchool: LegacySchoolDo | null &#x3D; await this.schoolService.getSchoolByExternalId(
 			externalSchool.externalId,
 			systemId
 		);
-		let school: SchoolDO;
+		let school: LegacySchoolDo;
 		if (existingSchool) {
 			school &#x3D; existingSchool;
 			school.name &#x3D; externalSchool.name;
@@ -655,7 +653,7 @@ export class OidcProvisioningService {
 				FederalStateNames.NIEDERSACHEN
 			);
 
-			school &#x3D; new SchoolDO({
+			school &#x3D; new LegacySchoolDo({
 				externalId: externalSchool.externalId,
 				name: externalSchool.name,
 				officialSchoolNumber: externalSchool.officialSchoolNumber,
@@ -667,7 +665,7 @@ export class OidcProvisioningService {
 			});
 		}
 
-		const savedSchool: SchoolDO &#x3D; await this.schoolService.save(school, true);
+		const savedSchool: LegacySchoolDo &#x3D; await this.schoolService.save(school, true);
 		return savedSchool;
 	}
 
@@ -735,7 +733,7 @@ export class OidcProvisioningService {
 
 		let organizationId: string | undefined;
 		if (externalGroup.externalOrganizationId) {
-			const existingSchool: SchoolDO | null &#x3D; await this.schoolService.getSchoolByExternalId(
+			const existingSchool: LegacySchoolDo | null &#x3D; await this.schoolService.getSchoolByExternalId(
 				externalGroup.externalOrganizationId,
 				systemId
 			);
