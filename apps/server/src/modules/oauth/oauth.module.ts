@@ -6,7 +6,7 @@ import { LtiToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { ProvisioningModule } from '@src/modules/provisioning';
-import { SchoolModule } from '@src/modules/school';
+import { LegacySchoolModule } from '@src/modules/legacy-school';
 import { SystemModule } from '@src/modules/system';
 import { UserModule } from '@src/modules/user';
 import { UserLoginMigrationModule } from '@src/modules/user-login-migration';
@@ -25,7 +25,7 @@ import { OAuthService } from './service/oauth.service';
 		SystemModule,
 		UserLoginMigrationModule,
 		CacheWrapperModule,
-		SchoolModule,
+		LegacySchoolModule,
 	],
 	providers: [OAuthService, OauthAdapterService, HydraSsoService, LtiToolRepo],
 	exports: [OAuthService, HydraSsoService],

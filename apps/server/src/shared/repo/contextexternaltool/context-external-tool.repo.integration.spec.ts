@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { School } from '@shared/domain';
+import { SchoolEntity } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
 import {
@@ -51,7 +51,7 @@ describe('ContextExternalToolRepo', () => {
 	});
 
 	const createExternalTools = () => {
-		const school: School = schoolFactory.buildWithId();
+		const school: SchoolEntity = schoolFactory.buildWithId();
 		const schoolExternalTool1: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({ school });
 		const schoolExternalTool2: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({ school });
 		const contextExternalTool1: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({

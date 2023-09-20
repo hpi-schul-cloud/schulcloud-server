@@ -82,7 +82,7 @@ export interface ILessonParent {
 }
 
 @Entity({ tableName: 'lessons' })
-export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElement, ITaskParent {
+export class LessonEntity extends BaseEntityWithTimestamps implements ILearnroomElement, ITaskParent {
 	@Property()
 	name: string;
 
@@ -193,6 +193,6 @@ export class Lesson extends BaseEntityWithTimestamps implements ILearnroomElemen
 	}
 }
 
-export function isLesson(reference: unknown): reference is Lesson {
-	return reference instanceof Lesson;
+export function isLesson(reference: unknown): reference is LessonEntity {
+	return reference instanceof LessonEntity;
 }

@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import { AccountModule } from '@src/modules/account/account.module';
 import { RoleModule } from '@src/modules/role';
-import { SchoolModule } from '@src/modules/school/school.module';
+import { LegacySchoolModule } from '@src/modules/legacy-school';
 import { SystemModule } from '@src/modules/system/system.module';
 import { UserModule } from '@src/modules/user';
 import { GroupModule } from '@src/modules/group';
@@ -13,7 +13,16 @@ import { OidcProvisioningService } from './strategy/oidc/service/oidc-provisioni
 import { SanisResponseMapper } from './strategy/sanis/sanis-response.mapper';
 
 @Module({
-	imports: [AccountModule, SchoolModule, UserModule, RoleModule, SystemModule, HttpModule, LoggerModule, GroupModule],
+	imports: [
+		AccountModule,
+		LegacySchoolModule,
+		UserModule,
+		RoleModule,
+		SystemModule,
+		HttpModule,
+		LoggerModule,
+		GroupModule,
+	],
 	providers: [
 		ProvisioningService,
 		SanisResponseMapper,

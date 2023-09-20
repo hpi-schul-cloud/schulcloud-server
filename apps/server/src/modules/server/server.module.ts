@@ -23,7 +23,7 @@ import { NewsModule } from '@src/modules/news';
 import { OauthProviderApiModule } from '@src/modules/oauth-provider';
 import { OauthApiModule } from '@src/modules/oauth/oauth-api.module';
 import { RocketChatModule } from '@src/modules/rocketchat';
-import { SchoolApiModule } from '@src/modules/school/school-api.module';
+import { LegacySchoolApiModule } from '@src/modules/legacy-school/legacy-school-api.module';
 import { SharingApiModule } from '@src/modules/sharing/sharing.module';
 import { SystemApiModule } from '@src/modules/system/system-api.module';
 import { TaskApiModule } from '@src/modules/task/task-api.module';
@@ -35,6 +35,7 @@ import { VideoConferenceApiModule } from '@src/modules/video-conference/video-co
 import connectRedis from 'connect-redis';
 import session from 'express-session';
 import { RedisClient } from 'redis';
+import { TeamsApiModule } from '@src/modules/teams/teams-api.module';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
 
@@ -64,7 +65,7 @@ const serverModules = [
 		adminUser: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
 		adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
 	}),
-	SchoolApiModule,
+	LegacySchoolApiModule,
 	VideoConferenceApiModule,
 	OauthProviderApiModule,
 	SharingApiModule,
@@ -72,6 +73,7 @@ const serverModules = [
 	UserLoginMigrationApiModule,
 	BoardApiModule,
 	GroupApiModule,
+	TeamsApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

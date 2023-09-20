@@ -112,4 +112,43 @@ describe('LessonService', () => {
 			expect(result).toHaveLength(2);
 		});
 	});
+
+	describe('deleteUserDataFromTeams', () => {
+		describe('when deleting by userId', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const contentExample: IComponentProperties = {
+					title: 'title',
+					hidden: false,
+					user: userId,
+					component: ComponentType.TEXT,
+					content: { text: 'test of content' },
+				};
+				const lesson1 = lessonFactory.buildWithId({ contents: [contentExample] });
+				const lesson2 = lessonFactory.buildWithId({ contents: [contentExample] });
+
+				lessonRepo.findByUserId.mockResolvedValue([lesson1, lesson2]);
+
+				return {
+					userId,
+				};
+			};
+
+			it('should call lessonRepo.findByUserId', async () => {
+				const { userId } = setup();
+
+				await lessonService.deleteUserDataFromLessons(userId);
+
+				expect(lessonRepo.findByUserId).toBeCalledWith(userId);
+			});
+
+			it('should update lessons without deleted user', async () => {
+				const { userId } = setup();
+
+				const result = await lessonService.deleteUserDataFromLessons(userId);
+
+				expect(result).toEqual(2);
+			});
+		});
+	});
 });
