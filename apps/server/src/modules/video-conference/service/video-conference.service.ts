@@ -21,8 +21,8 @@ import {
 	AuthorizationContextBuilder,
 	AuthorizationService,
 } from '@src/modules/authorization';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
-import { SchoolService } from '@src/modules/school';
+import { CourseService } from '@src/modules/learnroom/service';
+import { LegacySchoolService } from '@src/modules/legacy-school';
 import { UserService } from '@src/modules/user';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error/error-status.enum';
@@ -37,7 +37,7 @@ export class VideoConferenceService {
 		private readonly courseService: CourseService,
 		private readonly calendarService: CalendarService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly schoolService: SchoolService,
+		private readonly schoolService: LegacySchoolService,
 		private readonly teamsRepo: TeamsRepo,
 		private readonly userService: UserService,
 		private readonly videoConferenceRepo: VideoConferenceRepo
