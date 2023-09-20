@@ -9,7 +9,7 @@ export class ExternalToolElementNodeEntity extends BoardNode {
 	@ManyToOne({ nullable: true })
 	contextExternalTool?: ContextExternalToolEntity;
 
-	constructor(props: ExternalToolElementNodeProps) {
+	constructor(props: ExternalToolElementNodeEntityProps) {
 		super(props);
 		this.type = BoardNodeType.EXTERNAL_TOOL;
 		this.contextExternalTool = props.contextExternalTool;
@@ -21,6 +21,6 @@ export class ExternalToolElementNodeEntity extends BoardNode {
 	}
 }
 
-export interface ExternalToolElementNodeProps extends BoardNodeProps {
+export interface ExternalToolElementNodeEntityProps extends BoardNodeProps {
 	contextExternalTool?: ContextExternalToolEntity;
 }
