@@ -11,7 +11,7 @@ import { Counted, EntityId } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { LegacyLogger } from '@src/core/logger';
-import { Readable } from 'stream';
+import { PassThrough, Readable } from 'stream';
 import StreamMimeType from 'stream-mime-type-cjs/stream-mime-type-cjs-index';
 import {
 	CopyFileResponse,
@@ -156,16 +156,22 @@ export class FilesStorageService {
 		const filePath = createPath(params.schoolId, fileRecord.id);
 
 		try {
+			const streamToAntivirus = file.data.pipe(new PassThrough());
 			const fileSizePromise = this.countFileSize(file);
 
-			await this.storageClient.create(filePath, file);
+			const [, antivirusClientResponse] = await Promise.all([
+				this.storageClient.create(filePath, file),
+				this.antivirusService.checkStream(streamToAntivirus),
+			]);
+			const { status, reason } = FileRecordMapper.mapScanResultParamsToDto(antivirusClientResponse);
+			fileRecord.updateSecurityCheckStatus(status, reason);
 
 			// The actual file size is set here because it is known only after the whole file is streamed.
 			fileRecord.size = await fileSizePromise;
 			this.throwErrorIfFileIsTooBig(fileRecord.size);
 			await this.fileRecordRepo.save(fileRecord);
 
-			await this.sendToAntivirus(fileRecord);
+			// await this.sendToAntivirus(fileRecord);
 		} catch (error) {
 			await this.storageClient.delete([filePath]);
 			await this.fileRecordRepo.delete(fileRecord);

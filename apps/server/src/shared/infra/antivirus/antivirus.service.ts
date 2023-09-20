@@ -1,7 +1,10 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ErrorUtils } from '@src/core/error/utils';
+import { ScanResultParams } from '@src/modules/files-storage/controller/dto';
 import { API_VERSION_PATH, FilesStorageInternalActions } from '@src/modules/files-storage/files-storage.const';
+import NodeClam from 'clamscan';
+import { Readable } from 'stream';
 
 interface AntivirusServiceOptions {
 	enabled: boolean;
@@ -14,8 +17,34 @@ interface AntivirusServiceOptions {
 export class AntivirusService {
 	constructor(
 		private readonly amqpConnection: AmqpConnection,
-		@Inject('ANTIVIRUS_SERVICE_OPTIONS') private readonly options: AntivirusServiceOptions
+		@Inject('ANTIVIRUS_SERVICE_OPTIONS') private readonly options: AntivirusServiceOptions,
+		private readonly clamConnection: NodeClam
 	) {}
+
+	public async checkStream(stream: Readable) {
+		const scanResult: ScanResultParams = {
+			virus_detected: undefined,
+			virus_signature: undefined,
+			error: undefined,
+		};
+		try {
+			const { isInfected, viruses } = await this.clamConnection.scanStream(stream);
+			if (isInfected === true) {
+				scanResult.virus_detected = true;
+				scanResult.virus_signature = viruses.join(',');
+			} else if (isInfected === null) {
+				scanResult.virus_detected = undefined;
+				scanResult.error = '';
+			} else {
+				scanResult.virus_detected = false;
+			}
+		} catch (error) {
+			scanResult.virus_detected = false;
+			scanResult.error = JSON.stringify(error);
+		}
+
+		return scanResult;
+	}
 
 	public async send(requestToken: string | undefined): Promise<void> {
 		try {

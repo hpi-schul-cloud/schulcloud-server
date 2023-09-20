@@ -1,4 +1,5 @@
-import { Module, DynamicModule } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
+import NodeClam from 'clamscan';
 import { AntivirusService } from './antivirus.service';
 
 interface AntivirusModuleOptions {
@@ -24,7 +25,23 @@ export class AntivirusModule {
 						routingKey: options.routingKey,
 					},
 				},
+				{
+					provide: NodeClam,
+
+					useFactory: () =>
+						new NodeClam().init({
+							debugMode: true,
+							clamdscan: {
+								// @to-do read for envs
+								host: 'clamav-svc', // localhost
+								port: 3310,
+								bypassTest: false,
+								localFallback: false,
+							},
+						}),
+				},
 			],
+
 			exports: [AntivirusService],
 		};
 	}
