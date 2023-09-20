@@ -6,8 +6,8 @@ import { CountyResponse } from './county.response';
  * DTO for returning a task document via api.
  */
 export class FederalStateResponse {
-	constructor({ id, name, abbreviation, logoUrl, counties, createdAt, updatedAt }: FederalStateResponse) {
-		this.id = id;
+	constructor({ _id, name, abbreviation, logoUrl, counties, createdAt, updatedAt }: FederalStateResponse) {
+		this._id = _id;
 		this.name = name;
 		this.abbreviation = abbreviation;
 		this.logoUrl = logoUrl;
@@ -17,7 +17,7 @@ export class FederalStateResponse {
 	}
 
 	@ApiProperty()
-	id: string;
+	_id: string;
 
 	@ApiProperty()
 	@DecodeHtmlEntities()

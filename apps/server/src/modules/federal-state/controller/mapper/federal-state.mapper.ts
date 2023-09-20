@@ -1,10 +1,11 @@
 import { FederalStateDO, ICounty } from '../../domainobject/federal-state.do';
+import { CountyResponse } from '../dto';
 import { FederalStateResponse } from '../dto/federal-state.response';
 
 export class FederalStateMapper {
 	static mapFederalStateToResponse(federalStateDO: FederalStateDO): FederalStateResponse {
 		const dto = new FederalStateResponse({
-			id: federalStateDO.id,
+			_id: federalStateDO.id,
 			name: federalStateDO.name,
 			abbreviation: federalStateDO.abbreviation,
 			counties: federalStateDO.counties
