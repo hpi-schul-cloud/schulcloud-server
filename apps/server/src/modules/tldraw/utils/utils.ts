@@ -265,8 +265,11 @@ export const getYDocFromMdb = async (mdb: MongodbPersistence, docName: string) =
 	}
 };
 
+export const calculateDiff = (diff: Uint8Array) =>
+	diff.reduce((previousValue, currentValue) => previousValue + currentValue, 0);
+
 export const updateStoredDocWithDiff = (mdb: MongodbPersistence, docName: string, diff: Uint8Array) => {
-	if (diff.reduce((previousValue, currentValue) => previousValue + currentValue, 0) > 0) {
+	if (calculateDiff(diff) > 0) {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 		mdb.storeUpdate(docName, diff);
 	}

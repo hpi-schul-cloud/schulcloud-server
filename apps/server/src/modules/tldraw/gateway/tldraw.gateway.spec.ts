@@ -8,7 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { config } from '@src/modules/tldraw/config';
 import * as Utils from '@src/modules/tldraw/utils/utils';
-import { WSSharedDoc } from '@src/modules/tldraw/utils/utils';
+import {calculateDiff, WSSharedDoc} from '@src/modules/tldraw/utils/utils';
 import { TextEncoder } from 'util';
 import * as SyncProtocols from 'y-protocols/sync';
 import * as AwarenessProtocol from 'y-protocols/awareness';
@@ -472,6 +472,7 @@ describe('TldrawGateway', () => {
 			};
 			const storeUpdateSpy = jest.spyOn(mdb, 'storeUpdate');
 			const byteArray = new TextEncoder().encode(testMessage);
+			jest.spyOn(Utils, 'calculateDiff').mockImplementation(() => 1);
 
 			return {
 				mdb,
