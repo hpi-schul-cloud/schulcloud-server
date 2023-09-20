@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, RoleReference, SchoolDO, UserDO } from '@shared/domain';
-import { CourseCreateDto, RoleService, UserService } from '@src/modules';
+import { EntityId, LegacySchoolDo, RoleReference, UserDO } from '@shared/domain';
+import { CourseCreateDto, FederalStateService, LegacySchoolService, RoleService, UserService } from '@src/modules';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { CourseService } from '@src/modules/learnroom/service';
 import { LessonService } from '@src/modules/lesson/service';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { FederalStateService, SchoolService } from '@src/modules/school';
 import demoschoolConfig from '../configurations/default-demoschool';
 import { CreationProtocol } from '../types';
 import { CourseConfig, LessonConfig, SchoolConfig, UserConfig } from '../types/demo-configuration.types';
@@ -29,7 +28,7 @@ const mapUserEmailsToIds = (emails: string[] = [], users: CreationProtocol[] = [
 export class DemoSchoolService {
 	constructor(
 		// private readonly repo: DemoSchoolRepo,
-		private readonly schoolService: SchoolService,
+		private readonly schoolService: LegacySchoolService,
 		private readonly userService: UserService,
 		private readonly accountService: AccountService,
 		private readonly roleService: RoleService,
@@ -51,7 +50,7 @@ export class DemoSchoolService {
 	async createSchool(config: SchoolConfig): Promise<CreationProtocol> {
 		const { name, federalStateName } = config;
 		const federalState = await this.federalStateService.findFederalStateByName(federalStateName);
-		const schoolDo = new SchoolDO({
+		const schoolDo = new LegacySchoolDo({
 			name,
 			federalState,
 			features: [],

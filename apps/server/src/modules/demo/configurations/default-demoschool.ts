@@ -1,12 +1,12 @@
 import { ComponentType, RoleName } from '@shared/domain';
-import { FederalStateNames as FederalStateName } from '@src/modules/school/types';
+import { FederalStateNames } from '@src/modules/legacy-school/types';
 import { DemoConfiguration } from '../types';
 
 const configuration: DemoConfiguration = {
 	schools: [
 		{
 			name: 'DEMO_Meine kleine Demoschule',
-			federalStateName: FederalStateName.NIEDERSACHSEN,
+			federalStateName: FederalStateNames.NIEDERSACHSEN,
 			users: [
 				{
 					roleNames: [RoleName.ADMINISTRATOR],

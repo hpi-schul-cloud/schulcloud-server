@@ -1,12 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName, SchoolDO, UserDO } from '@shared/domain';
-import { RoleService, UserService } from '@src/modules';
+import { LegacySchoolDo, RoleName, UserDO } from '@shared/domain';
+import { FederalStateService, LegacySchoolService, RoleService, UserService } from '@src/modules';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { CourseService } from '@src/modules/learnroom/service';
+import { FederalStateNames } from '@src/modules/legacy-school/types';
 import { LessonService } from '@src/modules/lesson/service';
-import { FederalStateService, SchoolService } from '@src/modules/school';
-import { FederalStateNames } from '@src/modules/school/types';
 import { CourseConfig, LessonConfig, SchoolConfig, UserConfig } from '../types';
 import { DemoSchoolService } from './demo-school.service';
 
@@ -18,7 +17,7 @@ describe(DemoSchoolService.name, () => {
 	// let federalStateService: DeepMocked<FederalStateService>;
 	let lessonService: DeepMocked<LessonService>;
 	let roleService: DeepMocked<RoleService>;
-	let schoolService: DeepMocked<SchoolService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
@@ -46,8 +45,8 @@ describe(DemoSchoolService.name, () => {
 					useValue: createMock<RoleService>(),
 				},
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 				{
 					provide: UserService,
@@ -62,7 +61,7 @@ describe(DemoSchoolService.name, () => {
 		// federalStateService = module.get(FederalStateService);
 		lessonService = module.get(LessonService);
 		roleService = module.get(RoleService);
-		schoolService = module.get(SchoolService);
+		schoolService = module.get(LegacySchoolService);
 		userService = module.get(UserService);
 	});
 
@@ -175,7 +174,7 @@ describe(DemoSchoolService.name, () => {
 			courses: [courseConfig1, courseConfig2],
 			users: [userConfig],
 		};
-		schoolService.save.mockResolvedValueOnce({ id: fakeSchoolId } as SchoolDO);
+		schoolService.save.mockResolvedValueOnce({ id: fakeSchoolId } as LegacySchoolDo);
 
 		return {
 			fakeSchoolId,
