@@ -1,7 +1,7 @@
 import { Embedded, Entity, Enum, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { ExternalSourceEntity } from '@shared/domain/entity/external-source.entity';
-import { School } from '@shared/domain/entity/school.entity';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { EntityId } from '@shared/domain/types';
 import { GroupUserEntity } from './group-user.entity';
 import { GroupValidPeriodEntity } from './group-valid-period.entity';
@@ -23,7 +23,7 @@ export interface GroupEntityProps {
 
 	users: GroupUserEntity[];
 
-	organization?: School;
+	organization?: SchoolEntity;
 }
 
 @Entity({ tableName: 'groups' })
@@ -43,8 +43,8 @@ export class GroupEntity extends BaseEntityWithTimestamps {
 	@Embedded(() => GroupUserEntity, { array: true })
 	users: GroupUserEntity[];
 
-	@ManyToOne(() => School, { nullable: true })
-	organization?: School;
+	@ManyToOne(() => SchoolEntity, { nullable: true })
+	organization?: SchoolEntity;
 
 	constructor(props: GroupEntityProps) {
 		super();
