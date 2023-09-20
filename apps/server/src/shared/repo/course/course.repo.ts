@@ -1,7 +1,7 @@
 import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
-import { Counted, Course, EntityId, IFindOptions, School, User } from '@shared/domain';
+import { Counted, Course, EntityId, IFindOptions, SchoolEntity, User } from '@shared/domain';
 import { CourseCreateDto } from '@src/modules/learnroom/types';
 import { BaseRepo } from '../base.repo';
 import { Scope } from '../scope';
@@ -58,7 +58,7 @@ export class CourseRepo extends BaseRepo<Course> {
 	}
 
 	async createCourse(courseDto: CourseCreateDto): Promise<Course> {
-		const schoolRef = this._em.getReference(School, courseDto.schoolId);
+		const schoolRef = this._em.getReference(SchoolEntity, courseDto.schoolId);
 
 		const getUserRef = (id: EntityId) => this._em.getReference(User, id);
 		const studentRefs = (courseDto.studentIds ?? []).map(getUserRef);
