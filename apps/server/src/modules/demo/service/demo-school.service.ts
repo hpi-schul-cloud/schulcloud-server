@@ -56,11 +56,13 @@ export class DemoSchoolService {
 			federalState,
 			features: [],
 		});
+		const password = `pswd_abc_${Math.ceil(Math.random() * 999999)}`;
+		const passwordEntry: CreationProtocol = { key: password, type: 'password', id: '', children: [] };
 		const createdSchoolDo = await this.schoolService.save(schoolDo);
-		const protocol: CreationProtocol = { key: name, type: 'school', id: createdSchoolDo.id, children: [] };
+		const protocol: CreationProtocol = { key: name, type: 'school', id: createdSchoolDo.id, children: [passwordEntry] };
 
 		if (config.users) {
-			const users = await this.createUsers(createdSchoolDo.id as string, config.users);
+			const users = await this.createUsers(createdSchoolDo.id as string, config.users, password);
 			protocol.children = [...(protocol.children ?? []), ...users];
 		}
 
@@ -120,16 +122,16 @@ export class DemoSchoolService {
 		return { id, key: name, type: 'lesson' };
 	}
 
-	async createUsers(schoolId: string, config: UserConfig[]): Promise<CreationProtocol[]> {
+	async createUsers(schoolId: string, config: UserConfig[], password: string): Promise<CreationProtocol[]> {
 		const promises: Promise<CreationProtocol>[] = [];
 		for (const user of config) {
-			promises.push(this.createUser(schoolId, user));
+			promises.push(this.createUser(schoolId, user, password));
 		}
 		const users = Promise.all(promises);
 		return users;
 	}
 
-	async createUser(schoolId: string, config: UserConfig): Promise<CreationProtocol> {
+	async createUser(schoolId: string, config: UserConfig, password: string): Promise<CreationProtocol> {
 		const { firstName, lastName, email, roleNames } = config;
 		const roles: RoleDto[] = await this.roleService.findByNames(roleNames);
 		const roleRefs = roles.map(
@@ -146,14 +148,15 @@ export class DemoSchoolService {
 		});
 
 		const userDo = await this.userService.save(user);
-		await this.createAccount(userDo);
+		await this.createAccount(userDo, password);
+
 		return { id: userDo.id, type: 'user', key: email };
 	}
 
-	private async createAccount(user: UserDO): Promise<AccountSaveDto> {
+	private async createAccount(user: UserDO, password: string): Promise<AccountSaveDto> {
 		const accountSaveDto: AccountSaveDto = {
 			username: user.email,
-			password: 'aDemo!School+3342',
+			password,
 			userId: user.id,
 		};
 
