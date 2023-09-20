@@ -150,10 +150,6 @@ export class LessonCopyService {
 		contents: IComponentProperties[],
 		fileUrlReplacements: FileUrlReplacement[]
 	): IComponentProperties[] {
-		// if (!Array.isArray(contents)) {
-		// 	return contents;
-		// }
-
 		contents = contents.map((item: IComponentProperties) => {
 			if (item.component === 'text' && item.content && 'text' in item.content && item.content.text) {
 				let { text } = item.content;
