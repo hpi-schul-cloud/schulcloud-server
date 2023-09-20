@@ -9,7 +9,7 @@ import {
 	LanguageType,
 	Role,
 	RoleName,
-	School,
+	SchoolEntity,
 	SortOrder,
 	System,
 	User,
@@ -142,7 +142,7 @@ describe('UserRepo', () => {
 	describe('findByExternalId', () => {
 		const externalId = 'externalId';
 		let system: System;
-		let school: School;
+		let school: SchoolEntity;
 		let user: User;
 
 		beforeEach(async () => {
@@ -186,7 +186,7 @@ describe('UserRepo', () => {
 	describe('findByExternalIdOrFail', () => {
 		const externalId = 'externalId';
 		let system: System;
-		let school: School;
+		let school: SchoolEntity;
 		let user: User;
 
 		beforeEach(async () => {
@@ -310,7 +310,7 @@ describe('UserRepo', () => {
 				firstName: testDO.firstName,
 				lastName: testDO.lastName,
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				school: expect.objectContaining<Partial<School>>({ id: testDO.schoolId }),
+				school: expect.objectContaining<Partial<SchoolEntity>>({ id: testDO.schoolId }),
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				roles: [expect.objectContaining<Partial<Role>>({ id: testDO.roles[0].id })],
 				ldapDn: testDO.ldapDn,
@@ -339,7 +339,7 @@ describe('UserRepo', () => {
 			const options: IFindOptions<UserDO> = {};
 
 			await em.nativeDelete(User, {});
-			await em.nativeDelete(School, {});
+			await em.nativeDelete(SchoolEntity, {});
 
 			const userA: User = userFactory.buildWithId({ firstName: 'A' });
 			const userB: User = userFactory.buildWithId({ firstName: 'B' });
@@ -463,7 +463,7 @@ describe('UserRepo', () => {
 				const options: IFindOptions<UserDO> = {};
 
 				await em.nativeDelete(User, {});
-				await em.nativeDelete(School, {});
+				await em.nativeDelete(SchoolEntity, {});
 
 				const userA: User = userFactory.buildWithId({ firstName: 'A' });
 				const userB: User = userFactory.buildWithId({ firstName: 'B' });

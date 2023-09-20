@@ -1,5 +1,5 @@
 import { Entity, ManyToOne, OneToOne, Property } from '@mikro-orm/core';
-import { School } from '@shared/domain/entity/school.entity';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { System } from '@shared/domain/entity/system.entity';
 import { BaseEntityWithTimestamps } from './base.entity';
 
@@ -7,8 +7,8 @@ export type IUserLoginMigration = Readonly<Omit<UserLoginMigration, keyof BaseEn
 
 @Entity({ tableName: 'user_login_migrations' })
 export class UserLoginMigration extends BaseEntityWithTimestamps {
-	@OneToOne(() => School, undefined, { nullable: false })
-	school: School;
+	@OneToOne(() => SchoolEntity, undefined, { nullable: false })
+	school: SchoolEntity;
 
 	// undefined, if migrating from 'local'
 	@ManyToOne(() => System, { nullable: true })
