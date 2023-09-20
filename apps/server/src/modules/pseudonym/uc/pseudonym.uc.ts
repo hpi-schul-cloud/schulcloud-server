@@ -3,8 +3,8 @@ import { LegacySchoolDo, Page, Pseudonym, User } from '@shared/domain';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ICurrentUser } from '@src/modules/authentication';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
+import { LegacySchoolService } from '@src/modules/legacy-school';
 import { PseudonymService } from '../service';
-import { LegacySchoolService } from '../../legacy-school';
 
 @Injectable()
 export class PseudonymUc {
