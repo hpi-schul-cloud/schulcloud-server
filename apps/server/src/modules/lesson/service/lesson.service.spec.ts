@@ -1,10 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ComponentType, IComponentProperties } from '@shared/domain';
 import { LessonRepo } from '@shared/repo';
 import { lessonFactory, setupEntities } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { ComponentType, IComponentProperties } from '@shared/domain';
+import { LessonCreateDto } from '../types';
 import { LessonService } from './lesson.service';
 
 describe('LessonService', () => {
@@ -46,6 +47,17 @@ describe('LessonService', () => {
 
 	it('should be defined', () => {
 		expect(lessonService).toBeDefined();
+	});
+
+	it('create lesson', async () => {
+		const lessonCreateDto: LessonCreateDto = {
+			name: 'mySampleCourse',
+			courseId: 'a_fake_course_id',
+		};
+
+		await lessonService.createLesson(lessonCreateDto);
+
+		expect(lessonRepo.createLessonByDto).toHaveBeenCalledWith(expect.objectContaining({ name: lessonCreateDto.name }));
 	});
 
 	it('delete lesson', async () => {
