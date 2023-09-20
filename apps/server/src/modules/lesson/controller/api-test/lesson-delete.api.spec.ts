@@ -2,7 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/core';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Lesson } from '@shared/domain';
+import { LessonEntity } from '@shared/domain';
 import {
 	courseFactory,
 	courseGroupFactory,
@@ -74,8 +74,8 @@ describe('Lesson Controller (API) - delete', () => {
 
 				await testApiClient.delete(lessonId);
 
-				const result = await em.findOne(Lesson, { id: lessonId });
-				expect(result).toBeInstanceOf(Lesson);
+				const result = await em.findOne(LessonEntity, { id: lessonId });
+				expect(result).toBeInstanceOf(LessonEntity);
 			});
 		});
 
@@ -130,7 +130,7 @@ describe('Lesson Controller (API) - delete', () => {
 				expect(response.body).toEqual({
 					type: 'NOT_FOUND',
 					title: 'Not Found',
-					message: `The requested Lesson: ${notExistingId} has not been found.`,
+					message: `The requested LessonEntity: ${notExistingId} has not been found.`,
 					code: 404,
 				});
 			});
@@ -167,8 +167,8 @@ describe('Lesson Controller (API) - delete', () => {
 
 					await loggedInClient.delete(lessonId);
 
-					const result = await em.findOne(Lesson, { id: lessonId });
-					expect(result).toBeInstanceOf(Lesson);
+					const result = await em.findOne(LessonEntity, { id: lessonId });
+					expect(result).toBeInstanceOf(LessonEntity);
 				});
 			});
 
@@ -200,8 +200,8 @@ describe('Lesson Controller (API) - delete', () => {
 
 					await loggedInClient.delete(lessonId);
 
-					const result = await em.findOne(Lesson, { id: lessonId });
-					expect(result).toBeInstanceOf(Lesson);
+					const result = await em.findOne(LessonEntity, { id: lessonId });
+					expect(result).toBeInstanceOf(LessonEntity);
 				});
 			});
 
@@ -233,7 +233,7 @@ describe('Lesson Controller (API) - delete', () => {
 
 					await loggedInClient.delete(lessonId);
 
-					const result = await em.findOne(Lesson, { id: lessonId });
+					const result = await em.findOne(LessonEntity, { id: lessonId });
 					expect(result).toBeNull();
 				});
 			});
@@ -266,8 +266,8 @@ describe('Lesson Controller (API) - delete', () => {
 
 					await loggedInClient.delete(lessonId);
 
-					const result = await em.findOne(Lesson, { id: lessonId });
-					expect(result).toBeInstanceOf(Lesson);
+					const result = await em.findOne(LessonEntity, { id: lessonId });
+					expect(result).toBeInstanceOf(LessonEntity);
 				});
 			});
 		});
@@ -303,7 +303,7 @@ describe('Lesson Controller (API) - delete', () => {
 
 					await loggedInClient.delete(lessonId);
 
-					const result = await em.findOne(Lesson, { id: lessonId });
+					const result = await em.findOne(LessonEntity, { id: lessonId });
 					expect(result).toBeNull();
 				});
 			});
@@ -336,8 +336,8 @@ describe('Lesson Controller (API) - delete', () => {
 
 					await loggedInClient.delete(lessonId);
 
-					const result = await em.findOne(Lesson, { id: lessonId });
-					expect(result).toBeInstanceOf(Lesson);
+					const result = await em.findOne(LessonEntity, { id: lessonId });
+					expect(result).toBeInstanceOf(LessonEntity);
 				});
 			});
 
@@ -370,7 +370,7 @@ describe('Lesson Controller (API) - delete', () => {
 
 					await loggedInClient.delete(lessonId);
 
-					const result = await em.findOne(Lesson, { id: lessonId });
+					const result = await em.findOne(LessonEntity, { id: lessonId });
 					expect(result).toBeNull();
 				});
 			});
@@ -404,7 +404,7 @@ describe('Lesson Controller (API) - delete', () => {
 
 					await loggedInClient.delete(lessonId);
 
-					const result = await em.findOne(Lesson, { id: lessonId });
+					const result = await em.findOne(LessonEntity, { id: lessonId });
 					expect(result).toBeNull();
 				});
 			});
@@ -441,7 +441,7 @@ describe('Lesson Controller (API) - delete', () => {
 
 					await loggedInClient.delete(lessonId);
 
-					const result = await em.findOne(Lesson, { id: lessonId });
+					const result = await em.findOne(LessonEntity, { id: lessonId });
 					expect(result).toBeNull();
 				});
 			});
@@ -474,8 +474,8 @@ describe('Lesson Controller (API) - delete', () => {
 
 					await loggedInClient.delete(lessonId);
 
-					const result = await em.findOne(Lesson, { id: lessonId });
-					expect(result).toBeInstanceOf(Lesson);
+					const result = await em.findOne(LessonEntity, { id: lessonId });
+					expect(result).toBeInstanceOf(LessonEntity);
 				});
 			});
 		});
