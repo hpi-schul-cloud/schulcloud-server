@@ -19,7 +19,7 @@ import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto'
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import { roleFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
-import { AuthorizationService, SchoolService, UserService } from '@src/modules';
+import { AuthorizationService, LegacySchoolService, UserService } from '@src/modules';
 import { ICurrentUser } from '@src/modules/authentication';
 import { CourseService } from '@src/modules/learnroom/service';
 import { IScopeInfo, VideoConference, VideoConferenceJoin, VideoConferenceState } from './dto';
@@ -69,7 +69,7 @@ describe('VideoConferenceUc', () => {
 	let courseService: DeepMocked<CourseService>;
 	let userService: DeepMocked<UserService>;
 	let calendarService: DeepMocked<CalendarService>;
-	let schoolService: DeepMocked<SchoolService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 
 	const hostUrl = 'https://localhost:4000';
 	const course: Course = { id: 'courseId', name: 'courseName' } as Course;
@@ -142,13 +142,13 @@ describe('VideoConferenceUc', () => {
 					useValue: createMock<CalendarService>(),
 				},
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 			],
 		}).compile();
 		useCase = module.get(VideoConferenceDeprecatedUcSpec);
-		schoolService = module.get(SchoolService);
+		schoolService = module.get(LegacySchoolService);
 		authorizationService = module.get(AuthorizationService);
 		courseService = module.get(CourseService);
 		calendarService = module.get(CalendarService);

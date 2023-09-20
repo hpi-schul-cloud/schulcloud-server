@@ -4,7 +4,7 @@ import { CalendarModule } from '@shared/infra/calendar';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { TeamsRepo } from '@shared/repo';
-import { SchoolModule } from '@src/modules/school/school.module';
+import { LegacySchoolModule } from '@src/modules/legacy-school';
 import { LoggerModule } from '@src/core/logger';
 import { ConverterUtil } from '@shared/common';
 import { UserModule } from '@src/modules/user';
@@ -21,7 +21,7 @@ import { LearnroomModule } from '../learnroom';
 		AuthorizationModule,
 		CalendarModule,
 		HttpModule,
-		SchoolModule,
+		LegacySchoolModule,
 		LoggerModule,
 		UserModule,
 		LearnroomModule,
