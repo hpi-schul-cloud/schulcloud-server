@@ -339,7 +339,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { Course, InputFormat, Lesson, School, Submission, User } from &#x27;@shared/domain/&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { Course, InputFormat, Lesson, SchoolEntity, Submission, User } from &#x27;@shared/domain/&#x27;;
 
 interface ITask {
 	name: string;
@@ -363,7 +363,7 @@ export interface ITaskProperties extends ITask {
 	course?: Course;
 	lesson?: Lesson;
 	creator: User;
-	school: School;
+	school: SchoolEntity;
 	finished?: User[];
 	private?: boolean;
 	submissions?: Submission[];

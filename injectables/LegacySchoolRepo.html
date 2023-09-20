@@ -313,7 +313,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/School.html" target="_self" >School</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/SchoolEntity.html" target="_self" >SchoolEntity</a></code>
 
                     </div>
                     <div class="io-description">
@@ -396,7 +396,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/School.html" target="_self" >Promise&lt;LegacySchoolDo | null&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/LegacySchoolDo.html" target="_self" >Promise&lt;LegacySchoolDo | null&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -467,7 +467,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/School.html" target="_self" >Promise&lt;LegacySchoolDo | null&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/LegacySchoolDo.html" target="_self" >Promise&lt;LegacySchoolDo | null&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -565,7 +565,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>mapEntityToDO(entity: <a href="../classes/School.html" target="_self">School</a>)</code>
+<code>mapEntityToDO(entity: <a href="../classes/SchoolEntity.html" target="_self">SchoolEntity</a>)</code>
                 </td>
             </tr>
 
@@ -602,7 +602,7 @@
                                 <tr>
                                     <td>entity</td>
                                     <td>
-                                                <code><a href="../classes/School.html" target="_self" >School</a></code>
+                                                <code><a href="../classes/SchoolEntity.html" target="_self" >SchoolEntity</a></code>
                                     </td>
 
                                     <td>
@@ -1441,7 +1441,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityName } from &#x27;@mikro-orm/core&#x27;;
 import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
-import { EntityId, ISchoolProperties, LegacySchoolDo, School, System, UserLoginMigration } from &#x27;@shared/domain&#x27;;
+import { EntityId, ISchoolProperties, LegacySchoolDo, SchoolEntity, System, UserLoginMigration } from &#x27;@shared/domain&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { BaseDORepo } from &#x27;../base.do.repo&#x27;;
 
@@ -1449,24 +1449,24 @@ import { BaseDORepo } from &#x27;../base.do.repo&#x27;;
  * @deprecated because it uses the deprecated LegacySchoolDo.
  */
 @Injectable()
-export class LegacySchoolRepo extends BaseDORepo&lt;LegacySchoolDo, School, ISchoolProperties&gt; {
+export class LegacySchoolRepo extends BaseDORepo&lt;LegacySchoolDo, SchoolEntity, ISchoolProperties&gt; {
 	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
 	}
 
-	get entityName(): EntityName&lt;School&gt; {
-		return School;
+	get entityName(): EntityName&lt;SchoolEntity&gt; {
+		return SchoolEntity;
 	}
 
 	async findByExternalId(externalId: string, systemId: string): Promise&lt;LegacySchoolDo | null&gt; {
-		const school: School | null &#x3D; await this._em.findOne(School, { externalId, systems: systemId });
+		const school: SchoolEntity | null &#x3D; await this._em.findOne(SchoolEntity, { externalId, systems: systemId });
 
 		const schoolDo: LegacySchoolDo | null &#x3D; school ? this.mapEntityToDO(school) : null;
 		return schoolDo;
 	}
 
 	async findBySchoolNumber(officialSchoolNumber: string): Promise&lt;LegacySchoolDo | null&gt; {
-		const [schools, count] &#x3D; await this._em.findAndCount(School, { officialSchoolNumber });
+		const [schools, count] &#x3D; await this._em.findAndCount(SchoolEntity, { officialSchoolNumber });
 		if (count &gt; 1) {
 			throw new InternalServerErrorException(&#x60;Multiple schools found for officialSchoolNumber ${officialSchoolNumber}&#x60;);
 		}
@@ -1475,11 +1475,11 @@ export class LegacySchoolRepo extends BaseDORepo&lt;LegacySchoolDo, School, ISch
 		return schoolDo;
 	}
 
-	entityFactory(props: ISchoolProperties): School {
-		return new School(props);
+	entityFactory(props: ISchoolProperties): SchoolEntity {
+		return new SchoolEntity(props);
 	}
 
-	mapEntityToDO(entity: School): LegacySchoolDo {
+	mapEntityToDO(entity: SchoolEntity): LegacySchoolDo {
 		return new LegacySchoolDo({
 			id: entity.id,
 			externalId: entity.externalId,

@@ -146,7 +146,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, Enum, Index, ManyToOne, Property } from &#x27;@mikro-orm/core&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
 import type { Course } from &#x27;./course.entity&#x27;;
-import type { School } from &#x27;./school.entity&#x27;;
+import { SchoolEntity } from &#x27;./school.entity&#x27;;
 import type { TeamEntity } from &#x27;./team.entity&#x27;;
 import type { User } from &#x27;./user.entity&#x27;;
 import { NewsTarget, NewsTargetModel } from &#x27;../types/news.types&#x27;;
@@ -156,7 +156,7 @@ export interface INewsProperties {
 	title: string;
 	content: string;
 	displayAt: Date;
-	school: EntityId | School;
+	school: EntityId | SchoolEntity;
 	creator: EntityId | User;
 	target: EntityId | NewsTarget;
 
@@ -203,8 +203,8 @@ export abstract class News extends BaseEntityWithTimestamps {
 	@Enum()
 	targetModel!: NewsTargetModel;
 
-	@ManyToOne(&#x27;School&#x27;, { fieldName: &#x27;schoolId&#x27; })
-	school!: School;
+	@ManyToOne(() &#x3D;&gt; SchoolEntity, { fieldName: &#x27;schoolId&#x27; })
+	school!: SchoolEntity;
 
 	@ManyToOne(&#x27;User&#x27;, { fieldName: &#x27;creatorId&#x27; })
 	creator!: User;
@@ -243,8 +243,8 @@ export abstract class News extends BaseEntityWithTimestamps {
 
 @Entity({ discriminatorValue: NewsTargetModel.School })
 export class SchoolNews extends News {
-	@ManyToOne(&#x27;School&#x27;)
-	target!: School;
+	@ManyToOne(() &#x3D;&gt; SchoolEntity)
+	target!: SchoolEntity;
 
 	constructor(props: INewsProperties) {
 		super(props);

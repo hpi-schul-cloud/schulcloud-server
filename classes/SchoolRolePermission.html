@@ -266,7 +266,7 @@ export class SchoolRoles {
 
 @Entity({ tableName: &#x27;schools&#x27; })
 @Index({ properties: [&#x27;externalId&#x27;, &#x27;systems&#x27;] })
-export class School extends BaseEntity {
+export class SchoolEntity extends BaseEntity {
 	@Property({ nullable: true })
 	features?: SchoolFeatures[];
 

@@ -183,8 +183,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="148"
-                            class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:148</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="158"
+                            class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:158</a></div>
                 </td>
             </tr>
 
@@ -254,8 +254,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="26"
-                            class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:26</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="36"
+                            class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:36</a></div>
                 </td>
             </tr>
 
@@ -343,7 +343,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseRepo.html#source" target="_self" >BaseRepo:15</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseRepo.html#source" target="_self" >BaseRepo:25</a></code>
 </div>
                 </td>
             </tr>
@@ -424,15 +424,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findWithoutImportUser(school: <a href="../classes/School.html" target="_self">School</a>, filters?: <a href="../interfaces/INameMatch.html" target="_self">INameMatch</a>, options?: <a href="../classes/User.html" target="_self">IFindOptions&lt;User&gt;</a>)</code>
+                    <code>findWithoutImportUser(school: <a href="../classes/SchoolEntity.html" target="_self">SchoolEntity</a>, filters?: <a href="../interfaces/INameMatch.html" target="_self">INameMatch</a>, options?: <a href="../classes/User.html" target="_self">IFindOptions&lt;User&gt;</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="38"
-                            class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:38</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="48"
+                            class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:48</a></div>
                 </td>
             </tr>
 
@@ -457,7 +457,7 @@
                                 <tr>
                                     <td>school</td>
                                     <td>
-                                                <code><a href="../classes/School.html" target="_self" >School</a></code>
+                                                <code><a href="../classes/SchoolEntity.html" target="_self" >SchoolEntity</a></code>
                                     </td>
 
                                     <td>
@@ -528,8 +528,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="172"
-                            class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:172</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="182"
+                            class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:182</a></div>
                 </td>
             </tr>
 
@@ -568,8 +568,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="156"
-                            class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:156</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="166"
+                            class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:166</a></div>
                 </td>
             </tr>
 
@@ -637,8 +637,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="168"
-                            class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:168</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="178"
+                            class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:178</a></div>
                 </td>
             </tr>
 
@@ -937,7 +937,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:11</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:21</a></div>
                                 </td>
                             </tr>
 
@@ -952,7 +952,17 @@
 import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { StringValidator } from &#x27;@shared/common&#x27;;
-import { Counted, EntityId, IFindOptions, ImportUser, INameMatch, Role, School, SortOrder, User } from &#x27;@shared/domain&#x27;;
+import {
+	Counted,
+	EntityId,
+	IFindOptions,
+	ImportUser,
+	INameMatch,
+	Role,
+	SchoolEntity,
+	SortOrder,
+	User,
+} from &#x27;@shared/domain&#x27;;
 import { BaseRepo } from &#x27;@shared/repo/base.repo&#x27;;
 import { MongoPatterns } from &#x27;../mongo.patterns&#x27;;
 
@@ -986,7 +996,7 @@ export class UserRepo extends BaseRepo&lt;User&gt; {
 	 * used for importusers module to request users not referenced in importusers
 	 */
 	async findWithoutImportUser(
-		school: School,
+		school: SchoolEntity,
 		filters?: INameMatch,
 		options?: IFindOptions&lt;User&gt;
 	): Promise&lt;Counted&lt;User[]&gt;&gt; {

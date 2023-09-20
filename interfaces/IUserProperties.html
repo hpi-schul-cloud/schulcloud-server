@@ -681,7 +681,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>school:         <code><a href="../classes/School.html" target="_self" >School</a></code>
+                                        <code>school:         <code><a href="../classes/SchoolEntity.html" target="_self" >SchoolEntity</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -689,7 +689,7 @@
 
                                     <tr>
                                         <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="../classes/School.html" target="_self" >School</a></code>
+                                            <i>Type : </i>        <code><a href="../classes/SchoolEntity.html" target="_self" >SchoolEntity</a></code>
 
                                         </td>
                                     </tr>
@@ -709,7 +709,7 @@
 import { IEntityWithSchool } from &#x27;../interface&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
 import { Role } from &#x27;./role.entity&#x27;;
-import type { School } from &#x27;./school.entity&#x27;;
+import { SchoolEntity } from &#x27;./school.entity&#x27;;
 
 export enum LanguageType {
 	DE &#x3D; &#x27;de&#x27;,
@@ -722,7 +722,7 @@ export interface IUserProperties {
 	email: string;
 	firstName: string;
 	lastName: string;
-	school: School;
+	school: SchoolEntity;
 	roles: Role[];
 	ldapDn?: string;
 	externalId?: string;
@@ -758,8 +758,8 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool 
 	roles &#x3D; new Collection&lt;Role&gt;(this);
 
 	@Index()
-	@ManyToOne(&#x27;School&#x27;, { fieldName: &#x27;schoolId&#x27; })
-	school: School;
+	@ManyToOne(() &#x3D;&gt; SchoolEntity, { fieldName: &#x27;schoolId&#x27; })
+	school: SchoolEntity;
 
 	@Property({ nullable: true })
 	@Index()

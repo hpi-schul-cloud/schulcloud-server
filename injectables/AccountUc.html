@@ -1221,7 +1221,7 @@ Callable when the current user&#39;s password was force set or this is the first
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>schoolPermissionExists(roles: string[], school: <a href="../classes/School.html" target="_self">School</a>, permissions: string[])</code>
+                    <code>schoolPermissionExists(roles: string[], school: <a href="../classes/SchoolEntity.html" target="_self">SchoolEntity</a>, permissions: string[])</code>
                 </td>
             </tr>
 
@@ -1264,7 +1264,7 @@ Callable when the current user&#39;s password was force set or this is the first
                                 <tr>
                                     <td>school</td>
                                     <td>
-                                                <code><a href="../classes/School.html" target="_self" >School</a></code>
+                                                <code><a href="../classes/SchoolEntity.html" target="_self" >SchoolEntity</a></code>
                                     </td>
 
                                     <td>
@@ -1613,7 +1613,7 @@ import {
 	ForbiddenOperationError,
 	ValidationError,
 } from &#x27;@shared/common/error&#x27;;
-import { Account, EntityId, Permission, PermissionService, Role, RoleName, School, User } from &#x27;@shared/domain&#x27;;
+import { Account, EntityId, Permission, PermissionService, Role, RoleName, SchoolEntity, User } from &#x27;@shared/domain&#x27;;
 import { UserRepo } from &#x27;@shared/repo&#x27;;
 import { AccountService } from &#x27;@src/modules/account/services/account.service&#x27;;
 import { AccountDto } from &#x27;@src/modules/account/services/dto/account.dto&#x27;;
@@ -2016,7 +2016,7 @@ export class AccountUc {
 		);
 	}
 
-	private schoolPermissionExists(roles: string[], school: School, permissions: string[]): boolean {
+	private schoolPermissionExists(roles: string[], school: SchoolEntity, permissions: string[]): boolean {
 		if (
 			roles.find((role) &#x3D;&gt; role &#x3D;&#x3D;&#x3D; RoleName.TEACHER) &amp;&amp;
 			permissions.find((permission) &#x3D;&gt; permission &#x3D;&#x3D;&#x3D; Permission.STUDENT_LIST)

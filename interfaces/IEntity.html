@@ -184,7 +184,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
-import { School } from &#x27;@shared/domain/entity/school.entity&#x27;;
+import { SchoolEntity } from &#x27;@shared/domain/entity/school.entity&#x27;;
 
 export interface IEntity {
 	_id: ObjectId;
@@ -197,7 +197,7 @@ export interface IEntityWithTimestamps extends IEntity {
 }
 
 export interface IEntityWithSchool extends IEntity {
-	school: School;
+	school: SchoolEntity;
 }
 </code></pre>
     </div>

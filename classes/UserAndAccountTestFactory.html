@@ -572,7 +572,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Account, EntityId, Permission, School, User } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Account, EntityId, Permission, SchoolEntity, User } from &#x27;@shared/domain&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
 import _ from &#x27;lodash&#x27;;
 import { accountFactory } from &#x27;./account.factory&#x27;;
@@ -582,7 +582,7 @@ interface UserParams {
 	firstName?: string;
 	lastName?: string;
 	email?: string;
-	school?: School;
+	school?: SchoolEntity;
 	externalId?: string;
 }
 

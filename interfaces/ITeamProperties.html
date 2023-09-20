@@ -192,7 +192,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Embeddable, Embedded, Entity, ManyToOne, Property } from &#x27;@mikro-orm/core&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
 import { Role } from &#x27;./role.entity&#x27;;
-import { School } from &#x27;./school.entity&#x27;;
+import { SchoolEntity } from &#x27;./school.entity&#x27;;
 import { User } from &#x27;./user.entity&#x27;;
 
 export interface ITeamProperties {
@@ -203,7 +203,7 @@ export interface ITeamProperties {
 export interface ITeamUserProperties {
 	user: User;
 	role: Role;
-	school: School;
+	school: SchoolEntity;
 }
 
 @Embeddable()
@@ -220,8 +220,8 @@ export class TeamUserEntity {
 	@ManyToOne(() &#x3D;&gt; Role)
 	role: Role;
 
-	@ManyToOne(() &#x3D;&gt; School)
-	private schoolId: School;
+	@ManyToOne(() &#x3D;&gt; SchoolEntity)
+	private schoolId: SchoolEntity;
 
 	// fieldName cannot be used in ManyToOne on Embeddable due to a mikro-orm bug (https://github.com/mikro-orm/mikro-orm/issues/2165)
 	get user(): User {
@@ -232,11 +232,11 @@ export class TeamUserEntity {
 		this.userId &#x3D; value;
 	}
 
-	get school(): School {
+	get school(): SchoolEntity {
 		return this.schoolId;
 	}
 
-	set school(value: School) {
+	set school(value: SchoolEntity) {
 		this.schoolId &#x3D; value;
 	}
 }

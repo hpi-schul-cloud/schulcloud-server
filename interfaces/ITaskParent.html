@@ -152,7 +152,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from &#x27;@mikro-orm/core&#x27;;
 import { InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
-import { School } from &#x27;@shared/domain/entity/school.entity&#x27;;
+import { SchoolEntity } from &#x27;@shared/domain/entity/school.entity&#x27;;
 import { InputFormat } from &#x27;@shared/domain/types/input-format.types&#x27;;
 import type { IEntityWithSchool } from &#x27;../interface&#x27;;
 import type { ILearnroomElement } from &#x27;../interface/learnroom&#x27;;
@@ -227,8 +227,8 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	course?: Course;
 
 	@Index()
-	@ManyToOne(&#x27;School&#x27;, { fieldName: &#x27;schoolId&#x27; })
-	school: School;
+	@ManyToOne(() &#x3D;&gt; SchoolEntity, { fieldName: &#x27;schoolId&#x27; })
+	school: SchoolEntity;
 
 	@Index()
 	@ManyToOne(&#x27;Lesson&#x27;, { fieldName: &#x27;lessonId&#x27;, nullable: true })

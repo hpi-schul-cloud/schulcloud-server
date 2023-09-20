@@ -276,7 +276,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;./entity-id&#x27;;
 import type { Course } from &#x27;../entity/course.entity&#x27;;
-import type { School } from &#x27;../entity/school.entity&#x27;;
+import type { SchoolEntity } from &#x27;../entity/school.entity&#x27;;
 import type { TeamEntity } from &#x27;../entity/team.entity&#x27;;
 
 export enum NewsTargetModel {
@@ -302,7 +302,7 @@ export interface INewsScope {
 	unpublished?: boolean;
 }
 
-export type NewsTarget &#x3D; School | TeamEntity | Course;
+export type NewsTarget &#x3D; SchoolEntity | TeamEntity | Course;
 </code></pre>
     </div>
 </div>

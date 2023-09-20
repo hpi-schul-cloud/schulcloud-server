@@ -169,7 +169,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteImportUsersBySchool(school: <a href="../classes/School.html" target="_self">School</a>)</code>
+                    <code>deleteImportUsersBySchool(school: <a href="../classes/SchoolEntity.html" target="_self">SchoolEntity</a>)</code>
                 </td>
             </tr>
 
@@ -200,7 +200,7 @@
                                 <tr>
                                     <td>school</td>
                                     <td>
-                                                <code><a href="../classes/School.html" target="_self" >School</a></code>
+                                                <code><a href="../classes/SchoolEntity.html" target="_self" >SchoolEntity</a></code>
                                     </td>
 
                                     <td>
@@ -317,7 +317,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findImportUsers(school: <a href="../classes/School.html" target="_self">School</a>, filters: <a href="../interfaces/IImportUserScope.html" target="_self">IImportUserScope</a>, options?: IFindOptions<ImportUser>)</code>
+                    <code>findImportUsers(school: <a href="../classes/SchoolEntity.html" target="_self">SchoolEntity</a>, filters: <a href="../interfaces/IImportUserScope.html" target="_self">IImportUserScope</a>, options?: IFindOptions<ImportUser>)</code>
                 </td>
             </tr>
 
@@ -349,7 +349,7 @@
                                 <tr>
                                     <td>school</td>
                                     <td>
-                                                <code><a href="../classes/School.html" target="_self" >School</a></code>
+                                                <code><a href="../classes/SchoolEntity.html" target="_self" >SchoolEntity</a></code>
                                     </td>
 
                                     <td>
@@ -828,7 +828,7 @@
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 
 import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
-import { Counted, EntityId, IFindOptions, IImportUserScope, ImportUser, School, User } from &#x27;@shared/domain&#x27;;
+import { Counted, EntityId, IFindOptions, IImportUserScope, ImportUser, SchoolEntity, User } from &#x27;@shared/domain&#x27;;
 import { BaseRepo } from &#x27;@shared/repo/base.repo&#x27;;
 import { ImportUserScope } from &#x27;./importuser.scope&#x27;;
 
@@ -858,7 +858,7 @@ export class ImportUserRepo extends BaseRepo&lt;ImportUser&gt; {
 	}
 
 	async findImportUsers(
-		school: School,
+		school: SchoolEntity,
 		filters: IImportUserScope &#x3D; {},
 		options?: IFindOptions&lt;ImportUser&gt;
 	): Promise&lt;Counted&lt;ImportUser[]&gt;&gt; {
@@ -892,7 +892,7 @@ export class ImportUserRepo extends BaseRepo&lt;ImportUser&gt; {
 		return [importUserEntities, count];
 	}
 
-	async deleteImportUsersBySchool(school: School): Promise&lt;void&gt; {
+	async deleteImportUsersBySchool(school: SchoolEntity): Promise&lt;void&gt; {
 		await this._em.nativeDelete(ImportUser, { school });
 	}
 }

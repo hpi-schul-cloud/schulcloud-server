@@ -712,7 +712,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>bySchool(school: <a href="../classes/School.html" target="_self">School</a>)</code>
+<code>bySchool(school: <a href="../classes/SchoolEntity.html" target="_self">SchoolEntity</a>)</code>
                 </td>
             </tr>
 
@@ -743,7 +743,7 @@
                                 <tr>
                                     <td>school</td>
                                     <td>
-                                                <code><a href="../classes/School.html" target="_self" >School</a></code>
+                                                <code><a href="../classes/SchoolEntity.html" target="_self" >SchoolEntity</a></code>
                                     </td>
 
                                     <td>
@@ -1069,12 +1069,12 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { FilterQuery } from &#x27;@mikro-orm/core&#x27;;
 import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { StringValidator } from &#x27;@shared/common&#x27;;
-import { ImportUser, MatchCreatorScope, RoleName, School, User } from &#x27;@shared/domain&#x27;;
+import { ImportUser, MatchCreatorScope, RoleName, SchoolEntity, User } from &#x27;@shared/domain&#x27;;
 import { MongoPatterns } from &#x27;../mongo.patterns&#x27;;
 import { Scope } from &#x27;../scope&#x27;;
 
 export class ImportUserScope extends Scope&lt;ImportUser&gt; {
-	bySchool(school: School): ImportUserScope {
+	bySchool(school: SchoolEntity): ImportUserScope {
 		const schoolId &#x3D; school._id;
 		if (!ObjectId.isValid(schoolId)) throw new Error(&#x27;invalid school id&#x27;);
 		this.addQuery({ school });

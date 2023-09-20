@@ -530,7 +530,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/School.html" target="_self" >Promise&lt;SchoolExternalTool[]&gt;</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;SchoolExternalTool[]&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -601,7 +601,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/School.html" target="_self" >Promise&lt;SchoolExternalTool[]&gt;</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;SchoolExternalTool[]&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -672,7 +672,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/School.html" target="_self" >Promise&lt;SchoolExternalTool[]&gt;</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;SchoolExternalTool[]&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -1646,7 +1646,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityName } from &#x27;@mikro-orm/core&#x27;;
 import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
-import { School } from &#x27;@shared/domain&#x27;;
+import { SchoolEntity } from &#x27;@shared/domain&#x27;;
 import { BaseDORepo } from &#x27;@shared/repo/base.do.repo&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { SchoolExternalToolQuery } from &#x27;@src/modules/tool/school-external-tool/uc/dto/school-external-tool.types&#x27;;
@@ -1728,7 +1728,7 @@ export class SchoolExternalToolRepo extends BaseDORepo&lt;
 
 	mapDOToEntityProperties(entityDO: SchoolExternalTool): ISchoolExternalToolProperties {
 		return {
-			school: this._em.getReference(School, entityDO.schoolId),
+			school: this._em.getReference(SchoolEntity, entityDO.schoolId),
 			tool: this._em.getReference(ExternalToolEntity, entityDO.toolId),
 			toolVersion: entityDO.toolVersion,
 			schoolParameters: ExternalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),
