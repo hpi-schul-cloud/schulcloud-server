@@ -1,4 +1,4 @@
-import { Embeddable } from '@mikro-orm/core';
+import { Injectable } from '@nestjs/common';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import {
 	SchoolSpecificFileCopyService,
@@ -6,7 +6,7 @@ import {
 } from './school-specific-file-copy.interface';
 import { SchoolSpecificFileCopyServiceImpl } from './school-specific-file-copy.service';
 
-@Embeddable()
+@Injectable()
 export class SchoolSpecificFileCopyServiceFactory {
 	constructor(private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService) {}
 
