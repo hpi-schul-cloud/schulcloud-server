@@ -6,6 +6,7 @@ import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { CourseService } from '@src/modules/learnroom/service';
 import { LessonService } from '@src/modules/lesson/service';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
+import crypto from 'crypto';
 import demoschoolConfig from '../configurations/default-demoschool';
 import { CreationProtocol } from '../types';
 import { CourseConfig, LessonConfig, SchoolConfig, UserConfig } from '../types/demo-configuration.types';
