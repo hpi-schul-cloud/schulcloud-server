@@ -234,7 +234,7 @@ export class FeathersRosterService {
 
 	private mapPseudonymToUserData(pseudonym: Pseudonym): UserData {
 		const userData: UserData = {
-			user_id: pseudonym.userId,
+			user_id: pseudonym.pseudonym,
 			username: this.pseudonymService.getIframeSubject(pseudonym.pseudonym),
 		};
 

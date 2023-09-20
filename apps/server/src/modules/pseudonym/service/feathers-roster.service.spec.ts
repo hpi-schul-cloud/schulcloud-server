@@ -456,6 +456,10 @@ describe('FeathersRosterService', () => {
 					student2,
 					teacher,
 					substitutionTeacher,
+					student1Pseudonym,
+					student2Pseudonym,
+					teacherPseudonym,
+					substitutionTeacherPseudonym,
 				};
 			};
 
@@ -523,7 +527,15 @@ describe('FeathersRosterService', () => {
 			});
 
 			it('should return a group for the course where the tool of the users pseudonym is used', async () => {
-				const { externalToolId, courseA, mockedIframeSubject } = setup();
+				const {
+					externalToolId,
+					courseA,
+					mockedIframeSubject,
+					student1Pseudonym,
+					student2Pseudonym,
+					teacherPseudonym,
+					substitutionTeacherPseudonym,
+				} = setup();
 
 				const result = await service.getGroup(courseA.id, externalToolId);
 
@@ -531,21 +543,21 @@ describe('FeathersRosterService', () => {
 					data: {
 						students: [
 							{
-								user_id: courseA.students[0].id,
+								user_id: student1Pseudonym.pseudonym,
 								username: mockedIframeSubject,
 							},
 							{
-								user_id: courseA.students[1].id,
+								user_id: student2Pseudonym.pseudonym,
 								username: mockedIframeSubject,
 							},
 						],
 						teachers: [
 							{
-								user_id: courseA.teachers[0].id,
+								user_id: teacherPseudonym.pseudonym,
 								username: mockedIframeSubject,
 							},
 							{
-								user_id: courseA.substitutionTeachers[0].id,
+								user_id: substitutionTeacherPseudonym.pseudonym,
 								username: mockedIframeSubject,
 							},
 						],
