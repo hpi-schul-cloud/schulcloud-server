@@ -181,4 +181,22 @@ export class Course
 
 		return isFinished;
 	}
+
+	public removeUser(userId: EntityId): void {
+		this.removeStudent(userId);
+		this.removeTeacher(userId);
+		this.removeSubstitutionTeacher(userId);
+	}
+
+	private removeStudent(userId: EntityId): void {
+		this.students.remove((u) => u.id === userId);
+	}
+
+	private removeTeacher(userId: EntityId): void {
+		this.teachers.remove((u) => u.id === userId);
+	}
+
+	private removeSubstitutionTeacher(userId: EntityId): void {
+		this.substitutionTeachers.remove((u) => u.id === userId);
+	}
 }
