@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Counted, EntityId, Lesson, SortOrder } from '@shared/domain';
 import { BaseRepo } from '../base.repo';
 import { LessonScope } from './lesson-scope';
+import { EntityDictionary } from '@mikro-orm/core';
 
 @Injectable()
 export class LessonRepo extends BaseRepo<Lesson> {
@@ -35,5 +36,27 @@ export class LessonRepo extends BaseRepo<Lesson> {
 		await this._em.populate(lessons, ['course', 'tasks', 'materials']);
 
 		return [lessons, count];
+	}
+
+	public async findByUserId(userId: EntityId): Promise<Lesson[]> {
+		const pipeline = [
+			{
+				$match: {
+					contents: {
+						$elemMatch: {
+							user: userId,
+						},
+					},
+				},
+			},
+		];
+
+		const rawLessonsDocuments = await this._em.aggregate(Lesson, pipeline);
+
+		const lessons = rawLessonsDocuments.map((rawLessonDocument) =>
+			this._em.map(Lesson, rawLessonDocument as EntityDictionary<Lesson>)
+		);
+
+		return lessons;
 	}
 }

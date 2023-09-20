@@ -8,7 +8,6 @@ import { CourseGroup } from './coursegroup.entity';
 import { Material } from './materials.entity';
 import { Task } from './task.entity';
 import type { ITaskParent } from './task.entity';
-import { User } from './user.entity';
 
 export interface ILessonProperties {
 	name: string;
@@ -68,7 +67,7 @@ export type IComponentProperties = {
 	_id?: string;
 	title: string;
 	hidden: boolean;
-	user?: User;
+	user?: EntityId;
 } & (
 	| { component: ComponentType.TEXT; content: IComponentTextProperties }
 	| { component: ComponentType.ETHERPAD; content: IComponentEtherpadProperties }
