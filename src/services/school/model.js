@@ -77,6 +77,7 @@ const schoolSchema = new Schema(
 		currentYear: { type: Schema.Types.ObjectId, ref: 'year' },
 		customYears: [{ type: customYearSchema }],
 		logo_dataUrl: { type: String },
+		logo_name: { type: String },
 		purpose: { type: String },
 		rssFeeds: [{ type: rssFeedSchema }],
 		language: { type: String },
