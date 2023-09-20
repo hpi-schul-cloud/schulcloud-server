@@ -115,16 +115,6 @@ export class Course
 		return studentIds;
 	}
 
-	public getTeacherIds(): EntityId[] {
-		const teacherIds = Course.extractIds(this.teachers);
-		return teacherIds;
-	}
-
-	public getSubstitutionTeacherIds(): EntityId[] {
-		const substitutionTeacherIds = Course.extractIds(this.substitutionTeachers);
-		return substitutionTeacherIds;
-	}
-
 	private static extractIds(users: Collection<User>): EntityId[] {
 		if (!users) {
 			throw new InternalServerErrorException(
