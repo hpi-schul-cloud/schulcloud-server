@@ -10,7 +10,7 @@ import {
 	PermissionService,
 	Role,
 	RoleName,
-	School,
+	SchoolEntity,
 	SchoolRolePermission,
 	SchoolRoles,
 	User,
@@ -42,9 +42,9 @@ describe('AccountUc', () => {
 	let accountValidationService: AccountValidationService;
 	let configService: DeepMocked<ConfigService>;
 
-	let mockSchool: School;
-	let mockOtherSchool: School;
-	let mockSchoolWithStudentVisibility: School;
+	let mockSchool: SchoolEntity;
+	let mockOtherSchool: SchoolEntity;
+	let mockSchoolWithStudentVisibility: SchoolEntity;
 
 	let mockSuperheroUser: User;
 	let mockAdminUser: User;

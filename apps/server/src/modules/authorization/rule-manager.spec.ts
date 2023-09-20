@@ -8,7 +8,7 @@ import {
 	CourseRule,
 	LessonRule,
 	SchoolExternalToolRule,
-	SchoolRule,
+	LegacySchoolRule,
 	SubmissionRule,
 	TaskRule,
 	TeamRule,
@@ -24,7 +24,7 @@ describe('RuleManager', () => {
 	let courseRule: DeepMocked<CourseRule>;
 	let courseGroupRule: DeepMocked<CourseGroupRule>;
 	let lessonRule: DeepMocked<LessonRule>;
-	let schoolRule: DeepMocked<SchoolRule>;
+	let legacySchoolRule: DeepMocked<LegacySchoolRule>;
 	let userRule: DeepMocked<UserRule>;
 	let taskRule: DeepMocked<TaskRule>;
 	let teamRule: DeepMocked<TeamRule>;
@@ -43,7 +43,7 @@ describe('RuleManager', () => {
 				{ provide: CourseRule, useValue: createMock<CourseRule>() },
 				{ provide: CourseGroupRule, useValue: createMock<CourseGroupRule>() },
 				{ provide: LessonRule, useValue: createMock<LessonRule>() },
-				{ provide: SchoolRule, useValue: createMock<SchoolRule>() },
+				{ provide: LegacySchoolRule, useValue: createMock<LegacySchoolRule>() },
 				{ provide: UserRule, useValue: createMock<UserRule>() },
 				{ provide: TaskRule, useValue: createMock<TaskRule>() },
 				{ provide: TeamRule, useValue: createMock<TeamRule>() },
@@ -59,7 +59,7 @@ describe('RuleManager', () => {
 		courseRule = await module.get(CourseRule);
 		courseGroupRule = await module.get(CourseGroupRule);
 		lessonRule = await module.get(LessonRule);
-		schoolRule = await module.get(SchoolRule);
+		legacySchoolRule = await module.get(LegacySchoolRule);
 		userRule = await module.get(UserRule);
 		taskRule = await module.get(TaskRule);
 		teamRule = await module.get(TeamRule);
@@ -89,7 +89,7 @@ describe('RuleManager', () => {
 				courseRule.isApplicable.mockReturnValueOnce(true);
 				courseGroupRule.isApplicable.mockReturnValueOnce(false);
 				lessonRule.isApplicable.mockReturnValueOnce(false);
-				schoolRule.isApplicable.mockReturnValueOnce(false);
+				legacySchoolRule.isApplicable.mockReturnValueOnce(false);
 				userRule.isApplicable.mockReturnValueOnce(false);
 				taskRule.isApplicable.mockReturnValueOnce(false);
 				teamRule.isApplicable.mockReturnValueOnce(false);
@@ -110,7 +110,7 @@ describe('RuleManager', () => {
 				expect(courseRule.isApplicable).toBeCalled();
 				expect(courseGroupRule.isApplicable).toBeCalled();
 				expect(lessonRule.isApplicable).toBeCalled();
-				expect(schoolRule.isApplicable).toBeCalled();
+				expect(legacySchoolRule.isApplicable).toBeCalled();
 				expect(userRule.isApplicable).toBeCalled();
 				expect(taskRule.isApplicable).toBeCalled();
 				expect(teamRule.isApplicable).toBeCalled();
@@ -139,7 +139,7 @@ describe('RuleManager', () => {
 				courseRule.isApplicable.mockReturnValueOnce(false);
 				courseGroupRule.isApplicable.mockReturnValueOnce(false);
 				lessonRule.isApplicable.mockReturnValueOnce(false);
-				schoolRule.isApplicable.mockReturnValueOnce(false);
+				legacySchoolRule.isApplicable.mockReturnValueOnce(false);
 				userRule.isApplicable.mockReturnValueOnce(false);
 				taskRule.isApplicable.mockReturnValueOnce(false);
 				teamRule.isApplicable.mockReturnValueOnce(false);
@@ -168,7 +168,7 @@ describe('RuleManager', () => {
 				courseRule.isApplicable.mockReturnValueOnce(true);
 				courseGroupRule.isApplicable.mockReturnValueOnce(true);
 				lessonRule.isApplicable.mockReturnValueOnce(false);
-				schoolRule.isApplicable.mockReturnValueOnce(false);
+				legacySchoolRule.isApplicable.mockReturnValueOnce(false);
 				userRule.isApplicable.mockReturnValueOnce(false);
 				taskRule.isApplicable.mockReturnValueOnce(false);
 				teamRule.isApplicable.mockReturnValueOnce(false);

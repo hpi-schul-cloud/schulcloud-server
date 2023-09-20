@@ -1,6 +1,6 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
-import { School } from '@shared/domain/entity/school.entity';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { InputFormat } from '@shared/domain/types/input-format.types';
 import type { IEntityWithSchool } from '../interface';
 import type { ILearnroomElement } from '../interface/learnroom';
@@ -75,8 +75,8 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	course?: Course;
 
 	@Index()
-	@ManyToOne('School', { fieldName: 'schoolId' })
-	school: School;
+	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
+	school: SchoolEntity;
 
 	@Index()
 	@ManyToOne('Lesson', { fieldName: 'lessonId', nullable: true })

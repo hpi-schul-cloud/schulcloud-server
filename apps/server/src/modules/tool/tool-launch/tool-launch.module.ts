@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { PseudonymModule } from '@src/modules/pseudonym';
-import { SchoolModule } from '@src/modules/school';
-import { UserModule } from '@src/modules/user';
 import { LearnroomModule } from '@src/modules/learnroom';
+import { LegacySchoolModule } from '@src/modules/legacy-school';
+import { PseudonymModule } from '@src/modules/pseudonym';
+import { UserModule } from '@src/modules/user';
 import { CommonToolModule } from '../common';
 import { ContextExternalToolModule } from '../context-external-tool';
 import { ExternalToolModule } from '../external-tool';
@@ -16,7 +16,7 @@ import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrat
 		ExternalToolModule,
 		SchoolExternalToolModule,
 		ContextExternalToolModule,
-		SchoolModule,
+		LegacySchoolModule,
 		UserModule,
 		PseudonymModule,
 		LearnroomModule,
