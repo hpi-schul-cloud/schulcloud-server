@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { StorageProvider, System } from '@shared/domain';
+import { StorageProviderEntity, System } from '@shared/domain';
 import { DatabaseManagementService } from '@shared/infra/database';
 import {
 	DefaultEncryptionService,
@@ -124,7 +124,7 @@ describe('DatabaseManagementService', () => {
 		},
 	};
 
-	const storageProviderParsed: StorageProvider[] = [
+	const storageProviderParsed: StorageProviderEntity[] = [
 		{
 			id: '62d6ca7e769952e3f6e67925',
 			_id: new ObjectId('62d6ca7e769952e3f6e67925'),
