@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, RoleName, RoleReference, SchoolDO, UserDO } from '@shared/domain';
+import { EntityId, RoleReference, SchoolDO, UserDO } from '@shared/domain';
 import { CourseCreateDto, RoleService, UserService } from '@src/modules';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
@@ -48,13 +48,6 @@ export class DemoSchoolService {
 		return schools;
 	}
 
-	async getRoleReference(roleNames: RoleName[]): Promise<RoleReference[]> {
-		const roles = await this.roleService.findByNames(roleNames);
-		return roles.map((role) => {
-			return { id: role.id as string, name: role.name };
-		});
-	}
-
 	async createSchool(config: SchoolConfig): Promise<CreationProtocol> {
 		const { name, federalStateName } = config;
 		const federalState = await this.federalStateService.findFederalStateByName(federalStateName);
@@ -91,9 +84,6 @@ export class DemoSchoolService {
 	async createCourse(schoolId: EntityId, config: CourseConfig, protocol: CreationProtocol): Promise<CreationProtocol> {
 		const { name, teachers, students, substitutionTeachers } = config;
 		const users = protocol.children?.filter((c) => c.type === 'user') as CreationProtocol[];
-
-		// problem: where to store the userDOs? if we only protocol name and user
-		// solution: store email as the name in the protocol
 
 		const teacherIds = mapUserEmailsToIds(teachers, users);
 		const studentIds = mapUserEmailsToIds(students, users);
