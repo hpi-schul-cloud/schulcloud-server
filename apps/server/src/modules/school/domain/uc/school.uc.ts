@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId, IPagination } from '@shared/domain';
 import { School } from '../school';
 import { SchoolService } from '../service/school.service';
 
@@ -7,8 +7,8 @@ import { SchoolService } from '../service/school.service';
 export class SchoolUc {
 	constructor(private readonly schoolService: SchoolService) {}
 
-	public async getAllSchools(): Promise<School[]> {
-		const schools = await this.schoolService.getAllSchools();
+	public async getAllSchools(pagination: IPagination): Promise<School[]> {
+		const schools = await this.schoolService.getAllSchools(pagination);
 
 		return schools;
 	}

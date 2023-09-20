@@ -1,5 +1,6 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { PaginationParams } from '@shared/controller';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
 import { SchoolUc } from '../domain/uc/school.uc';
 import { SchoolListResponse, SchoolResponse } from './dto';
@@ -13,8 +14,8 @@ export class SchoolController {
 	constructor(private readonly schoolUc: SchoolUc) {}
 
 	@Get('/')
-	public async getAllSchools(): Promise<SchoolListResponse> {
-		const schools = await this.schoolUc.getAllSchools();
+	public async getAllSchools(@Query() pagination: PaginationParams): Promise<SchoolListResponse> {
+		const schools = await this.schoolUc.getAllSchools(pagination);
 
 		const res = SchoolDtoMapper.mapToListResponse(schools);
 

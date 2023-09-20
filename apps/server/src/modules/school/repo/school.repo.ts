@@ -1,5 +1,5 @@
-import { EntityName } from '@mikro-orm/core';
-import { EntityId, SchoolEntity } from '@shared/domain';
+import { EntityName, FindOptions } from '@mikro-orm/core';
+import { EntityId, IFindOptions, SchoolEntity, SortOrder } from '@shared/domain';
 import { BaseRepo } from '@shared/repo';
 import { SchoolRepo } from '../domain';
 import { School } from '../domain/school';
@@ -10,8 +10,10 @@ export class MikroOrmSchoolRepo extends BaseRepo<SchoolEntity> implements School
 		return SchoolEntity;
 	}
 
-	public async getAllSchools(): Promise<School[]> {
-		const entities = await this._em.find(SchoolEntity, {});
+	public async getAllSchools(options?: IFindOptions<SchoolEntity>): Promise<School[]> {
+		const findOptions = this.mapToMikroOrmOptions(options);
+
+		const entities = await this._em.find(SchoolEntity, {}, findOptions);
 
 		const schools = entities.map((entity) => SchoolMapper.mapToDo(entity));
 
@@ -24,5 +26,23 @@ export class MikroOrmSchoolRepo extends BaseRepo<SchoolEntity> implements School
 		const school = SchoolMapper.mapToDo(entity);
 
 		return school;
+	}
+
+	// TODO: This should probably be a common mapper for all repos.
+	private mapToMikroOrmOptions(options?: IFindOptions<SchoolEntity>): FindOptions<SchoolEntity> {
+		const findOptions = {
+			offset: options?.pagination?.skip,
+			limit: options?.pagination?.limit,
+			orderBy: options?.order,
+		};
+
+		// If no order is specified, a default order is applied here, because without order pagination can be messed up.
+		if (!findOptions.orderBy) {
+			findOptions.orderBy = {
+				_id: SortOrder.asc,
+			};
+		}
+
+		return findOptions;
 	}
 }
