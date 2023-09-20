@@ -216,7 +216,7 @@
 		"urlsafe-base64": "^1.0.0",
 		"uuid": "^8.3.0",
 		"winston": "^3.8.2",
-		"y-mongodb-provider": "^0.1.6",
+		"y-mongodb-provider": "^0.1.7",
 		"y-protocols": "^1.0.5",
 		"yjs": "^13.6.7"
 	},
