@@ -276,7 +276,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityNotFoundError } from &#x27;@shared/common&#x27;;
-import { EntityId, System, SystemTypeEnum } from &#x27;@shared/domain&#x27;;
+import { EntityId, SystemEntity, SystemTypeEnum } from &#x27;@shared/domain&#x27;;
 import { SystemRepo } from &#x27;@shared/repo&#x27;;
 import { SystemOidcMapper } from &#x27;@src/modules/system/mapper/system-oidc.mapper&#x27;;
 import { OidcConfigDto } from &#x27;./dto&#x27;;
@@ -289,7 +289,7 @@ export class SystemOidcService {
 		const system &#x3D; await this.systemRepo.findById(id);
 		const mappedEntity &#x3D; SystemOidcMapper.mapFromEntityToDto(system);
 		if (!mappedEntity) {
-			throw new EntityNotFoundError(System.name, { id });
+			throw new EntityNotFoundError(SystemEntity.name, { id });
 		}
 		return mappedEntity;
 	}

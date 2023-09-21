@@ -337,7 +337,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>generateBrokerSystems(systems: <a href="../entitys/System.html" target="_self">System[]</a>)</code>
+                    <code>generateBrokerSystems(systems: <a href="../entitys/SystemEntity.html" target="_self">SystemEntity[]</a>)</code>
                 </td>
             </tr>
 
@@ -368,7 +368,7 @@
                                 <tr>
                                     <td>systems</td>
                                     <td>
-                                                <code><a href="../entitys/System.html" target="_self" >System[]</a></code>
+                                                <code><a href="../entitys/SystemEntity.html" target="_self" >SystemEntity[]</a></code>
                                     </td>
 
                                     <td>
@@ -472,7 +472,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityNotFoundError } from &#x27;@shared/common&#x27;;
-import { EntityId, System, SystemTypeEnum } from &#x27;@shared/domain&#x27;;
+import { EntityId, SystemEntity, SystemTypeEnum } from &#x27;@shared/domain&#x27;;
 import { IdentityManagementOauthService } from &#x27;@shared/infra/identity-management/identity-management-oauth.service&#x27;;
 import { SystemRepo } from &#x27;@shared/repo&#x27;;
 import { SystemMapper } from &#x27;@src/modules/system/mapper/system.mapper&#x27;;
@@ -489,13 +489,13 @@ export class SystemService {
 		let system &#x3D; await this.systemRepo.findById(id);
 		[system] &#x3D; await this.generateBrokerSystems([system]);
 		if (!system) {
-			throw new EntityNotFoundError(System.name, { id });
+			throw new EntityNotFoundError(SystemEntity.name, { id });
 		}
 		return SystemMapper.mapFromEntityToDto(system);
 	}
 
 	async findByType(type?: SystemTypeEnum): Promise&lt;SystemDto[]&gt; {
-		let systems: System[];
+		let systems: SystemEntity[];
 		if (type &amp;&amp; type &#x3D;&#x3D;&#x3D; SystemTypeEnum.OAUTH) {
 			const oauthSystems &#x3D; await this.systemRepo.findByFilter(SystemTypeEnum.OAUTH);
 			const oidcSystems &#x3D; await this.systemRepo.findByFilter(SystemTypeEnum.OIDC);
@@ -510,7 +510,7 @@ export class SystemService {
 	}
 
 	async save(systemDto: SystemDto): Promise&lt;SystemDto&gt; {
-		let system: System;
+		let system: SystemEntity;
 		if (systemDto.id) {
 			system &#x3D; await this.systemRepo.findById(systemDto.id);
 			system.type &#x3D; systemDto.type;
@@ -521,7 +521,7 @@ export class SystemService {
 			system.provisioningUrl &#x3D; systemDto.provisioningUrl;
 			system.url &#x3D; systemDto.url;
 		} else {
-			system &#x3D; new System({
+			system &#x3D; new SystemEntity({
 				type: systemDto.type,
 				alias: systemDto.alias,
 				displayName: systemDto.displayName,
@@ -535,15 +535,15 @@ export class SystemService {
 		return SystemMapper.mapFromEntityToDto(system);
 	}
 
-	private async generateBrokerSystems(systems: System[]): Promise&lt;[] | System[]&gt; {
+	private async generateBrokerSystems(systems: SystemEntity[]): Promise&lt;[] | SystemEntity[]&gt; {
 		if (!(await this.idmOauthService.isOauthConfigAvailable())) {
 			return systems.filter((system) &#x3D;&gt; !(system.oidcConfig &amp;&amp; !system.oauthConfig));
 		}
 		const brokerConfig &#x3D; await this.idmOauthService.getOauthConfig();
-		let generatedSystem: System;
+		let generatedSystem: SystemEntity;
 		return systems.map((system) &#x3D;&gt; {
 			if (system.oidcConfig &amp;&amp; !system.oauthConfig) {
-				generatedSystem &#x3D; new System({
+				generatedSystem &#x3D; new SystemEntity({
 					type: SystemTypeEnum.OAUTH,
 					alias: system.alias,
 					displayName: system.displayName ? system.displayName : system.alias,

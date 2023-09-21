@@ -181,7 +181,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/shared/repo/userloginmigration/user-login-migration.repo.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/shared/repo/userloginmigration/user-login-migration.repo.ts:14</a></div>
                             </td>
                         </tr>
 
@@ -262,7 +262,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:19</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:23</a></code>
 </div>
                 </td>
             </tr>
@@ -301,7 +301,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/UserLoginMigration.html" target="_self" >UserLoginMigration</a></code>
+                        <b>Returns : </b>        <code><a href="../entitys/UserLoginMigrationEntity.html" target="_self" >UserLoginMigrationEntity</a></code>
 
                     </div>
                     <div class="io-description">
@@ -333,8 +333,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="23"
-                            class="link-to-prism">apps/server/src/shared/repo/userloginmigration/user-login-migration.repo.ts:23</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="27"
+                            class="link-to-prism">apps/server/src/shared/repo/userloginmigration/user-login-migration.repo.ts:27</a></div>
                 </td>
             </tr>
 
@@ -408,7 +408,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:51</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:55</a></code>
 </div>
                 </td>
             </tr>
@@ -470,7 +470,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>mapEntityToDO(entity: <a href="../entitys/UserLoginMigration.html" target="_self">UserLoginMigration</a>)</code>
+<code>mapEntityToDO(entity: <a href="../entitys/UserLoginMigrationEntity.html" target="_self">UserLoginMigrationEntity</a>)</code>
                 </td>
             </tr>
 
@@ -483,7 +483,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:36</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:40</a></code>
 </div>
                 </td>
             </tr>
@@ -507,7 +507,7 @@
                                 <tr>
                                     <td>entity</td>
                                     <td>
-                                                <code><a href="../entitys/UserLoginMigration.html" target="_self" >UserLoginMigration</a></code>
+                                                <code><a href="../entitys/UserLoginMigrationEntity.html" target="_self" >UserLoginMigrationEntity</a></code>
                                     </td>
 
                                     <td>
@@ -1332,7 +1332,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/shared/repo/userloginmigration/user-login-migration.repo.ts:15</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/shared/repo/userloginmigration/user-login-migration.repo.ts:19</a></div>
                                 </td>
                             </tr>
 
@@ -1346,27 +1346,31 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityName } from &#x27;@mikro-orm/core&#x27;;
 import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId, SchoolEntity, System, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
-import { IUserLoginMigration, UserLoginMigration } from &#x27;@shared/domain/entity/user-login-migration.entity&#x27;;
+import { EntityId, SchoolEntity, SystemEntity, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
+import { IUserLoginMigration, UserLoginMigrationEntity } from &#x27;@shared/domain/entity/user-login-migration.entity&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { BaseDORepo } from &#x27;../base.do.repo&#x27;;
 
 @Injectable()
-export class UserLoginMigrationRepo extends BaseDORepo&lt;UserLoginMigrationDO, UserLoginMigration, IUserLoginMigration&gt; {
+export class UserLoginMigrationRepo extends BaseDORepo&lt;
+	UserLoginMigrationDO,
+	UserLoginMigrationEntity,
+	IUserLoginMigration
+&gt; {
 	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
 	}
 
-	get entityName(): EntityName&lt;UserLoginMigration&gt; {
-		return UserLoginMigration;
+	get entityName(): EntityName&lt;UserLoginMigrationEntity&gt; {
+		return UserLoginMigrationEntity;
 	}
 
-	entityFactory(props: IUserLoginMigration): UserLoginMigration {
-		return new UserLoginMigration(props);
+	entityFactory(props: IUserLoginMigration): UserLoginMigrationEntity {
+		return new UserLoginMigrationEntity(props);
 	}
 
 	async findBySchoolId(schoolId: EntityId): Promise&lt;UserLoginMigrationDO | null&gt; {
-		const userLoginMigration: UserLoginMigration | null &#x3D; await this._em.findOne(UserLoginMigration, {
+		const userLoginMigration: UserLoginMigrationEntity | null &#x3D; await this._em.findOne(UserLoginMigrationEntity, {
 			school: schoolId,
 		});
 
@@ -1378,7 +1382,7 @@ export class UserLoginMigrationRepo extends BaseDORepo&lt;UserLoginMigrationDO, 
 		return null;
 	}
 
-	mapEntityToDO(entity: UserLoginMigration): UserLoginMigrationDO {
+	mapEntityToDO(entity: UserLoginMigrationEntity): UserLoginMigrationDO {
 		const userLoginMigrationDO: UserLoginMigrationDO &#x3D; new UserLoginMigrationDO({
 			id: entity.id,
 			schoolId: entity.school.id,
@@ -1396,8 +1400,8 @@ export class UserLoginMigrationRepo extends BaseDORepo&lt;UserLoginMigrationDO, 
 	mapDOToEntityProperties(entityDO: UserLoginMigrationDO): IUserLoginMigration {
 		const userLoginMigrationProps: IUserLoginMigration &#x3D; {
 			school: this._em.getReference(SchoolEntity, entityDO.schoolId),
-			sourceSystem: entityDO.sourceSystemId ? this._em.getReference(System, entityDO.sourceSystemId) : undefined,
-			targetSystem: this._em.getReference(System, entityDO.targetSystemId),
+			sourceSystem: entityDO.sourceSystemId ? this._em.getReference(SystemEntity, entityDO.sourceSystemId) : undefined,
+			targetSystem: this._em.getReference(SystemEntity, entityDO.targetSystemId),
 			mandatorySince: entityDO.mandatorySince,
 			startedAt: entityDO.startedAt,
 			closedAt: entityDO.closedAt,

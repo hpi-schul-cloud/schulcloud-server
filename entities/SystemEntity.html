@@ -38,7 +38,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Entities</li>
-  <li class="breadcrumb-item" >System</li>
+  <li class="breadcrumb-item" >SystemEntity</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -671,7 +671,7 @@ export class OidcConfig {
 }
 
 @Entity({ tableName: &#x27;systems&#x27; })
-export class System extends BaseEntityWithTimestamps {
+export class SystemEntity extends BaseEntityWithTimestamps {
 	constructor(props: ISystemProperties) {
 		super();
 		this.type &#x3D; props.type;
@@ -757,7 +757,7 @@ export class System extends BaseEntityWithTimestamps {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'entity';
-            var COMPODOC_CURRENT_PAGE_URL = 'System.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'SystemEntity.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

@@ -243,7 +243,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../entitys/FederalState.html" target="_self" >FederalState</a></code>
+                        <i>Type : </i>        <code><a href="../entitys/FederalStateEntity.html" target="_self" >FederalStateEntity</a></code>
 
                     </td>
                 </tr>
@@ -258,7 +258,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="103" class="link-to-prism">apps/server/src/shared/domain/entity/school.entity.ts:103</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="107" class="link-to-prism">apps/server/src/shared/domain/entity/school.entity.ts:107</a></div>
                         </td>
                     </tr>
 
@@ -501,7 +501,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../entitys/SchoolYear.html" target="_self" >SchoolYear</a></code>
+                        <i>Type : </i>        <code><a href="../entitys/SchoolYearEntity.html" target="_self" >SchoolYearEntity</a></code>
 
                     </td>
                 </tr>
@@ -510,7 +510,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ManyToOne(&#x27;SchoolYear&#x27;, {fieldName: &#x27;currentYear&#x27;, nullable: true})<br />
+                            @ManyToOne(undefined, {fieldName: &#x27;currentYear&#x27;, nullable: true})<br />
                         </code>
                     </td>
                 </tr>
@@ -537,7 +537,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>new Collection&lt;System&gt;(this)</code>
+                        <i>Default value : </i><code>new Collection&lt;SystemEntity&gt;(this)</code>
                     </td>
                 </tr>
                 <tr>
@@ -545,7 +545,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ManyToMany(&#x27;System&#x27;, undefined, {fieldName: &#x27;systems&#x27;})<br />
+                            @ManyToMany(undefined, undefined, {fieldName: &#x27;systems&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -573,7 +573,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../entitys/UserLoginMigration.html" target="_self" >UserLoginMigration</a></code>
+                        <i>Type : </i>        <code><a href="../entitys/UserLoginMigrationEntity.html" target="_self" >UserLoginMigrationEntity</a></code>
 
                     </td>
                 </tr>
@@ -588,7 +588,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="100" class="link-to-prism">apps/server/src/shared/domain/entity/school.entity.ts:100</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="104" class="link-to-prism">apps/server/src/shared/domain/entity/school.entity.ts:104</a></div>
                         </td>
                     </tr>
 
@@ -611,11 +611,11 @@
 	OneToOne,
 	Property,
 } from &#x27;@mikro-orm/core&#x27;;
-import { UserLoginMigration } from &#x27;@shared/domain/entity/user-login-migration.entity&#x27;;
+import { UserLoginMigrationEntity } from &#x27;@shared/domain/entity/user-login-migration.entity&#x27;;
 import { BaseEntity } from &#x27;./base.entity&#x27;;
-import { SchoolYear } from &#x27;./schoolyear.entity&#x27;;
-import { System } from &#x27;./system.entity&#x27;;
-import { FederalState } from &#x27;./federal-state.entity&#x27;;
+import { SchoolYearEntity } from &#x27;./schoolyear.entity&#x27;;
+import { SystemEntity } from &#x27;./system.entity&#x27;;
+import { FederalStateEntity } from &#x27;./federal-state.entity&#x27;;
 
 export enum SchoolFeatures {
 	ROCKET_CHAT &#x3D; &#x27;rocketChat&#x27;,
@@ -636,11 +636,11 @@ export interface ISchoolProperties {
 	previousExternalId?: string;
 	name: string;
 	officialSchoolNumber?: string;
-	systems?: System[];
+	systems?: SystemEntity[];
 	features?: SchoolFeatures[];
-	schoolYear?: SchoolYear;
-	userLoginMigration?: UserLoginMigration;
-	federalState: FederalState;
+	schoolYear?: SchoolYearEntity;
+	userLoginMigration?: UserLoginMigrationEntity;
+	federalState: FederalStateEntity;
 }
 
 @Embeddable()
@@ -685,24 +685,28 @@ export class SchoolEntity extends BaseEntity {
 	@Property({ nullable: true })
 	officialSchoolNumber?: string;
 
-	@ManyToMany(&#x27;System&#x27;, undefined, { fieldName: &#x27;systems&#x27; })
-	systems &#x3D; new Collection&lt;System&gt;(this);
+	@ManyToMany(() &#x3D;&gt; SystemEntity, undefined, { fieldName: &#x27;systems&#x27; })
+	systems &#x3D; new Collection&lt;SystemEntity&gt;(this);
 
 	@Embedded(() &#x3D;&gt; SchoolRoles, { object: true, nullable: true, prefix: false })
 	permissions?: SchoolRoles;
 
-	@ManyToOne(&#x27;SchoolYear&#x27;, { fieldName: &#x27;currentYear&#x27;, nullable: true })
-	schoolYear?: SchoolYear;
+	@ManyToOne(() &#x3D;&gt; SchoolYearEntity, { fieldName: &#x27;currentYear&#x27;, nullable: true })
+	schoolYear?: SchoolYearEntity;
 
-	@OneToOne(() &#x3D;&gt; UserLoginMigration, (userLoginMigration: UserLoginMigration) &#x3D;&gt; userLoginMigration.school, {
-		orphanRemoval: true,
-		nullable: true,
-		fieldName: &#x27;userLoginMigrationId&#x27;,
-	})
-	userLoginMigration?: UserLoginMigration;
+	@OneToOne(
+		() &#x3D;&gt; UserLoginMigrationEntity,
+		(userLoginMigration: UserLoginMigrationEntity) &#x3D;&gt; userLoginMigration.school,
+		{
+			orphanRemoval: true,
+			nullable: true,
+			fieldName: &#x27;userLoginMigrationId&#x27;,
+		}
+	)
+	userLoginMigration?: UserLoginMigrationEntity;
 
-	@ManyToOne(() &#x3D;&gt; FederalState, { fieldName: &#x27;federalState&#x27;, nullable: false })
-	federalState: FederalState;
+	@ManyToOne(() &#x3D;&gt; FederalStateEntity, { fieldName: &#x27;federalState&#x27;, nullable: false })
+	federalState: FederalStateEntity;
 
 	constructor(props: ISchoolProperties) {
 		super();

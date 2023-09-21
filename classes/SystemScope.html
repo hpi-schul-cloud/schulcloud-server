@@ -536,10 +536,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { System } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SystemEntity } from &#x27;@shared/domain&#x27;;
 import { Scope } from &#x27;../scope&#x27;;
 
-export class SystemScope extends Scope&lt;System&gt; {
+export class SystemScope extends Scope&lt;SystemEntity&gt; {
 	withLdapConfig(): SystemScope {
 		this.addQuery({ ldapConfig: { $ne: null } });
 		return this;

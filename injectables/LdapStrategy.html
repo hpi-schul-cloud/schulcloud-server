@@ -248,7 +248,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkCredentials(account: <a href="../classes/AccountDto.html" target="_self">AccountDto</a>, system: <a href="../entitys/System.html" target="_self">System</a>, ldapDn: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, password: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>checkCredentials(account: <a href="../classes/AccountDto.html" target="_self">AccountDto</a>, system: <a href="../entitys/SystemEntity.html" target="_self">SystemEntity</a>, ldapDn: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, password: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -291,7 +291,7 @@
                                 <tr>
                                     <td>system</td>
                                     <td>
-                                                <code><a href="../entitys/System.html" target="_self" >System</a></code>
+                                                <code><a href="../entitys/SystemEntity.html" target="_self" >SystemEntity</a></code>
                                     </td>
 
                                     <td>
@@ -513,8 +513,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="86"
-                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:86</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="91"
+                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:91</a></div>
                 </td>
             </tr>
 
@@ -665,7 +665,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
 import { PassportStrategy } from &#x27;@nestjs/passport&#x27;;
-import { LegacySchoolDo, System, User } from &#x27;@shared/domain&#x27;;
+import { LegacySchoolDo, SystemEntity, User } from &#x27;@shared/domain&#x27;;
 import { LegacySchoolRepo, SystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
 import { ErrorLoggable } from &#x27;@src/core/error/loggable/error.loggable&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
@@ -693,7 +693,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, &#x27;ldap&#x27;) {
 	async validate(request: { body: LdapAuthorizationBodyParams }): Promise&lt;ICurrentUser&gt; {
 		const { username, password, systemId, schoolId } &#x3D; this.extractParamsFromRequest(request);
 
-		const system: System &#x3D; await this.systemRepo.findById(systemId);
+		const system: SystemEntity &#x3D; await this.systemRepo.findById(systemId);
 
 		const school: LegacySchoolDo &#x3D; await this.schoolRepo.findById(schoolId);
 
@@ -737,7 +737,12 @@ export class LdapStrategy extends PassportStrategy(Strategy, &#x27;ldap&#x27;) {
 		return value;
 	}
 
-	private async checkCredentials(account: AccountDto, system: System, ldapDn: string, password: string): Promise&lt;void&gt; {
+	private async checkCredentials(
+		account: AccountDto,
+		system: SystemEntity,
+		ldapDn: string,
+		password: string
+	): Promise&lt;void&gt; {
 		try {
 			await this.ldapService.checkLdapCredentials(system, ldapDn, password);
 		} catch (error) {

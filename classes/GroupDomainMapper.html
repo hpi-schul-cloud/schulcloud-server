@@ -605,7 +605,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
-import { ExternalSource, ExternalSourceEntity, Role, SchoolEntity, System, User } from &#x27;@shared/domain&#x27;;
+import { ExternalSource, ExternalSourceEntity, Role, SchoolEntity, SystemEntity, User } from &#x27;@shared/domain&#x27;;
 import { Group, GroupProps, GroupTypes, GroupUser } from &#x27;../domain&#x27;;
 import { GroupEntity, GroupEntityProps, GroupEntityTypes, GroupUserEntity, GroupValidPeriodEntity } from &#x27;../entity&#x27;;
 
@@ -669,7 +669,7 @@ export class GroupDomainMapper {
 	): ExternalSourceEntity {
 		const mapped &#x3D; new ExternalSourceEntity({
 			externalId: externalSource.externalId,
-			system: em.getReference(System, externalSource.systemId),
+			system: em.getReference(SystemEntity, externalSource.systemId),
 		});
 
 		return mapped;

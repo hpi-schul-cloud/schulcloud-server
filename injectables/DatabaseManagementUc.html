@@ -550,7 +550,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>encryptSecretsInSystems(systems: <a href="../entitys/System.html" target="_self">System[]</a>)</code>
+                    <code>encryptSecretsInSystems(systems: <a href="../entitys/SystemEntity.html" target="_self">SystemEntity[]</a>)</code>
                 </td>
             </tr>
 
@@ -581,7 +581,7 @@
                                 <tr>
                                     <td>systems</td>
                                     <td>
-                                                <code><a href="../entitys/System.html" target="_self" >System[]</a></code>
+                                                <code><a href="../entitys/SystemEntity.html" target="_self" >SystemEntity[]</a></code>
                                     </td>
 
                                     <td>
@@ -1307,7 +1307,7 @@ Currently this affects system and storageproviders collections.</p>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeSecretsFromSystems(systems: <a href="../entitys/System.html" target="_self">System[]</a>)</code>
+                    <code>removeSecretsFromSystems(systems: <a href="../entitys/SystemEntity.html" target="_self">SystemEntity[]</a>)</code>
                 </td>
             </tr>
 
@@ -1338,7 +1338,7 @@ Currently this affects system and storageproviders collections.</p>
                                 <tr>
                                     <td>systems</td>
                                     <td>
-                                                <code><a href="../entitys/System.html" target="_self" >System[]</a></code>
+                                                <code><a href="../entitys/SystemEntity.html" target="_self" >SystemEntity[]</a></code>
                                     </td>
 
                                     <td>
@@ -1718,7 +1718,7 @@ The behaviour should match $ mongoimport</p>
 import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
-import { StorageProviderEntity, System } from &#x27;@shared/domain&#x27;;
+import { StorageProviderEntity, SystemEntity } from &#x27;@shared/domain&#x27;;
 import { DatabaseManagementService } from &#x27;@shared/infra/database&#x27;;
 import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from &#x27;@shared/infra/encryption&#x27;;
 import { FileSystemAdapter } from &#x27;@shared/infra/file-system&#x27;;
@@ -1883,7 +1883,7 @@ export class DatabaseManagementUc {
 			})
 			.map(async ({ collectionName, data }) &#x3D;&gt; {
 				if (collectionName &#x3D;&#x3D;&#x3D; systemsCollectionName) {
-					this.encryptSecretsInSystems(data as System[]);
+					this.encryptSecretsInSystems(data as SystemEntity[]);
 				}
 				await this.dropCollectionIfExists(collectionName);
 
@@ -2064,11 +2064,11 @@ export class DatabaseManagementUc {
 
 	private encryptSecrets(collectionName: string, jsonDocuments: unknown[]) {
 		if (collectionName &#x3D;&#x3D;&#x3D; systemsCollectionName) {
-			this.encryptSecretsInSystems(jsonDocuments as System[]);
+			this.encryptSecretsInSystems(jsonDocuments as SystemEntity[]);
 		}
 	}
 
-	private encryptSecretsInSystems(systems: System[]) {
+	private encryptSecretsInSystems(systems: SystemEntity[]) {
 		systems.forEach((system) &#x3D;&gt; {
 			if (system.oauthConfig) {
 				system.oauthConfig.clientSecret &#x3D; this.defaultEncryptionService.encrypt(system.oauthConfig.clientSecret);
@@ -2092,7 +2092,7 @@ export class DatabaseManagementUc {
 	 */
 	private removeSecrets(collectionName: string, jsonDocuments: unknown[]) {
 		if (collectionName &#x3D;&#x3D;&#x3D; systemsCollectionName) {
-			this.removeSecretsFromSystems(jsonDocuments as System[]);
+			this.removeSecretsFromSystems(jsonDocuments as SystemEntity[]);
 		}
 		if (collectionName &#x3D;&#x3D;&#x3D; storageprovidersCollectionName) {
 			this.removeSecretsFromStorageproviders(jsonDocuments as StorageProviderEntity[]);
@@ -2106,7 +2106,7 @@ export class DatabaseManagementUc {
 		});
 	}
 
-	private removeSecretsFromSystems(systems: System[]) {
+	private removeSecretsFromSystems(systems: SystemEntity[]) {
 		systems.forEach((system) &#x3D;&gt; {
 			if (system.oauthConfig) {
 				system.oauthConfig.clientSecret &#x3D; defaultSecretReplacementHintText;

@@ -1384,12 +1384,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ISystemProperties, LdapConfig, OauthConfig, OidcConfig, System } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ISystemProperties, LdapConfig, OauthConfig, OidcConfig, SystemEntity } from &#x27;@shared/domain&#x27;;
 import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
 import { BaseFactory } from &#x27;./base.factory&#x27;;
 
-export class SystemFactory extends BaseFactory&lt;System, ISystemProperties&gt; {
+export class SystemFactory extends BaseFactory&lt;SystemEntity, ISystemProperties&gt; {
 	withOauthConfig(): this {
 		const params: DeepPartial&lt;ISystemProperties&gt; &#x3D; {
 			oauthConfig: new OauthConfig({
@@ -1440,7 +1440,7 @@ export class SystemFactory extends BaseFactory&lt;System, ISystemProperties&gt; 
 	}
 }
 
-export const systemFactory &#x3D; SystemFactory.define(System, ({ sequence }) &#x3D;&gt; {
+export const systemFactory &#x3D; SystemFactory.define(SystemEntity, ({ sequence }) &#x3D;&gt; {
 	return {
 		type: &#x27;oauth&#x27;,
 		url: &#x27;http://mock.de&#x27;,

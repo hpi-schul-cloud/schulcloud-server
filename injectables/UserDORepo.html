@@ -1650,7 +1650,7 @@ import {
 	SchoolEntity,
 	SortOrder,
 	SortOrderMap,
-	System,
+	SystemEntity,
 	User,
 } from &#x27;@shared/domain&#x27;;
 import { RoleReference } from &#x27;@shared/domain/domainobject&#x27;;
@@ -1720,7 +1720,7 @@ export class UserDORepo extends BaseDORepo&lt;UserDO, User, IUserProperties&gt; 
 		const userEntitys: User[] &#x3D; await this._em.find(User, { externalId }, { populate: [&#x27;school.systems&#x27;] });
 		const userEntity: User | undefined &#x3D; userEntitys.find((user: User): boolean &#x3D;&gt; {
 			const { systems } &#x3D; user.school;
-			return systems &amp;&amp; !!systems.getItems().find((system: System): boolean &#x3D;&gt; system.id &#x3D;&#x3D;&#x3D; systemId);
+			return systems &amp;&amp; !!systems.getItems().find((system: SystemEntity): boolean &#x3D;&gt; system.id &#x3D;&#x3D;&#x3D; systemId);
 		});
 
 		const userDo: UserDO | null &#x3D; userEntity ? this.mapEntityToDO(userEntity) : null;

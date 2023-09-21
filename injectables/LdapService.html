@@ -173,7 +173,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkLdapCredentials(system: <a href="../entitys/System.html" target="_self">System</a>, username: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, password: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>checkLdapCredentials(system: <a href="../entitys/SystemEntity.html" target="_self">SystemEntity</a>, username: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, password: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -204,7 +204,7 @@
                                 <tr>
                                     <td>system</td>
                                     <td>
-                                                <code><a href="../entitys/System.html" target="_self" >System</a></code>
+                                                <code><a href="../entitys/SystemEntity.html" target="_self" >SystemEntity</a></code>
                                     </td>
 
                                     <td>
@@ -268,7 +268,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>connect(system: <a href="../entitys/System.html" target="_self">System</a>, username: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, password: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>connect(system: <a href="../entitys/SystemEntity.html" target="_self">SystemEntity</a>, username: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, password: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -299,7 +299,7 @@
                                 <tr>
                                     <td>system</td>
                                     <td>
-                                                <code><a href="../entitys/System.html" target="_self" >System</a></code>
+                                                <code><a href="../entitys/SystemEntity.html" target="_self" >SystemEntity</a></code>
                                     </td>
 
                                     <td>
@@ -355,7 +355,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
-import { System } from &#x27;@shared/domain&#x27;;
+import { SystemEntity } from &#x27;@shared/domain&#x27;;
 import { ErrorUtils } from &#x27;@src/core/error/utils&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { Client, createClient } from &#x27;ldapjs&#x27;;
@@ -367,7 +367,7 @@ export class LdapService {
 		this.logger.setContext(LdapService.name);
 	}
 
-	async checkLdapCredentials(system: System, username: string, password: string): Promise&lt;void&gt; {
+	async checkLdapCredentials(system: SystemEntity, username: string, password: string): Promise&lt;void&gt; {
 		const connection &#x3D; await this.connect(system, username, password);
 		if (connection.connected) {
 			connection.unbind();
@@ -376,7 +376,7 @@ export class LdapService {
 		throw new UnauthorizedException(&#x27;User could not authenticate&#x27;);
 	}
 
-	private connect(system: System, username: string, password: string): Promise&lt;Client&gt; {
+	private connect(system: SystemEntity, username: string, password: string): Promise&lt;Client&gt; {
 		const { ldapConfig } &#x3D; system;
 		if (!ldapConfig) {
 			throw Error(&#x60;no LDAP config found in system ${system.id}&#x60;);

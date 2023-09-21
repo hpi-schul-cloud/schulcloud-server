@@ -193,7 +193,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/shared/repo/school/legacy-school.repo.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/shared/repo/school/legacy-school.repo.ts:19</a></div>
                             </td>
                         </tr>
 
@@ -274,7 +274,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:38</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:45</a></code>
 </div>
                 </td>
             </tr>
@@ -345,8 +345,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="21"
-                            class="link-to-prism">apps/server/src/shared/repo/school/legacy-school.repo.ts:21</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="28"
+                            class="link-to-prism">apps/server/src/shared/repo/school/legacy-school.repo.ts:28</a></div>
                 </td>
             </tr>
 
@@ -428,8 +428,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="28"
-                            class="link-to-prism">apps/server/src/shared/repo/school/legacy-school.repo.ts:28</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="35"
+                            class="link-to-prism">apps/server/src/shared/repo/school/legacy-school.repo.ts:35</a></div>
                 </td>
             </tr>
 
@@ -503,7 +503,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:59</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:66</a></code>
 </div>
                 </td>
             </tr>
@@ -578,7 +578,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:42</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:49</a></code>
 </div>
                 </td>
             </tr>
@@ -1427,7 +1427,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/shared/repo/school/legacy-school.repo.ts:17</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/shared/repo/school/legacy-school.repo.ts:24</a></div>
                                 </td>
                             </tr>
 
@@ -1441,7 +1441,14 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityName } from &#x27;@mikro-orm/core&#x27;;
 import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
-import { EntityId, ISchoolProperties, LegacySchoolDo, SchoolEntity, System, UserLoginMigration } from &#x27;@shared/domain&#x27;;
+import {
+	EntityId,
+	ISchoolProperties,
+	LegacySchoolDo,
+	SchoolEntity,
+	SystemEntity,
+	UserLoginMigrationEntity,
+} from &#x27;@shared/domain&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { BaseDORepo } from &#x27;../base.do.repo&#x27;;
 
@@ -1490,7 +1497,7 @@ export class LegacySchoolRepo extends BaseDORepo&lt;LegacySchoolDo, SchoolEntity
 			previousExternalId: entity.previousExternalId,
 			officialSchoolNumber: entity.officialSchoolNumber,
 			schoolYear: entity.schoolYear,
-			systems: entity.systems.isInitialized() ? entity.systems.getItems().map((system: System) &#x3D;&gt; system.id) : [],
+			systems: entity.systems.isInitialized() ? entity.systems.getItems().map((system: SystemEntity) &#x3D;&gt; system.id) : [],
 			userLoginMigrationId: entity.userLoginMigration?.id,
 			federalState: entity.federalState,
 		});
@@ -1507,10 +1514,10 @@ export class LegacySchoolRepo extends BaseDORepo&lt;LegacySchoolDo, SchoolEntity
 			officialSchoolNumber: entityDO.officialSchoolNumber,
 			schoolYear: entityDO.schoolYear,
 			systems: entityDO.systems
-				? entityDO.systems.map((systemId: EntityId) &#x3D;&gt; this._em.getReference(System, systemId))
+				? entityDO.systems.map((systemId: EntityId) &#x3D;&gt; this._em.getReference(SystemEntity, systemId))
 				: [],
 			userLoginMigration: entityDO.userLoginMigrationId
-				? this._em.getReference(UserLoginMigration, entityDO.userLoginMigrationId)
+				? this._em.getReference(UserLoginMigrationEntity, entityDO.userLoginMigrationId)
 				: undefined,
 			federalState: entityDO.federalState,
 		};

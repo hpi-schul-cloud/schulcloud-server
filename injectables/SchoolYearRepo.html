@@ -173,7 +173,7 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/SchoolYear.html" target="_self" >Promise&lt;SchoolYear&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../entitys/SchoolYearEntity.html" target="_self" >Promise&lt;SchoolYearEntity&gt;</a></code>
 
                     </div>
                 </td>
@@ -520,18 +520,18 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { SchoolYear } from &#x27;@shared/domain&#x27;;
+import { SchoolYearEntity } from &#x27;@shared/domain&#x27;;
 import { BaseRepo } from &#x27;@shared/repo/base.repo&#x27;;
 
 @Injectable()
-export class SchoolYearRepo extends BaseRepo&lt;SchoolYear&gt; {
+export class SchoolYearRepo extends BaseRepo&lt;SchoolYearEntity&gt; {
 	get entityName() {
-		return SchoolYear;
+		return SchoolYearEntity;
 	}
 
-	async findCurrentYear(): Promise&lt;SchoolYear&gt; {
+	async findCurrentYear(): Promise&lt;SchoolYearEntity&gt; {
 		const currentDate &#x3D; new Date();
-		const year: SchoolYear | null &#x3D; await this._em.findOneOrFail(SchoolYear, {
+		const year: SchoolYearEntity | null &#x3D; await this._em.findOneOrFail(SchoolYearEntity, {
 			$and: [{ startDate: { $lte: currentDate } }, { endDate: { $gte: currentDate } }],
 		});
 		return year;

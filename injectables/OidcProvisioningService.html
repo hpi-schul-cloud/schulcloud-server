@@ -603,7 +603,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
-import { EntityId, ExternalSource, FederalState, SchoolFeatures, SchoolYear } from &#x27;@shared/domain&#x27;;
+import { EntityId, ExternalSource, FederalStateEntity, SchoolFeatures, SchoolYearEntity } from &#x27;@shared/domain&#x27;;
 import { LegacySchoolDo, RoleReference, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { AccountService } from &#x27;@src/modules/account/services/account.service&#x27;;
@@ -648,8 +648,8 @@ export class OidcProvisioningService {
 				school.systems.push(systemId);
 			}
 		} else {
-			const schoolYear: SchoolYear &#x3D; await this.schoolYearService.getCurrentSchoolYear();
-			const federalState: FederalState &#x3D; await this.federalStateService.findFederalStateByName(
+			const schoolYear: SchoolYearEntity &#x3D; await this.schoolYearService.getCurrentSchoolYear();
+			const federalState: FederalStateEntity &#x3D; await this.federalStateService.findFederalStateByName(
 				FederalStateNames.NIEDERSACHEN
 			);
 

@@ -135,7 +135,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapFromEntitiesToDtos(entities: <a href="../entitys/System.html" target="_self">System[]</a>)</code>
+                    <code>mapFromEntitiesToDtos(entities: <a href="../entitys/SystemEntity.html" target="_self">SystemEntity[]</a>)</code>
                 </td>
             </tr>
 
@@ -166,7 +166,7 @@
                                 <tr>
                                     <td>entities</td>
                                     <td>
-                                                <code><a href="../entitys/System.html" target="_self" >System[]</a></code>
+                                                <code><a href="../entitys/SystemEntity.html" target="_self" >SystemEntity[]</a></code>
                                     </td>
 
                                     <td>
@@ -206,7 +206,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapFromEntityToDto(entity: <a href="../entitys/System.html" target="_self">System</a>)</code>
+                    <code>mapFromEntityToDto(entity: <a href="../entitys/SystemEntity.html" target="_self">SystemEntity</a>)</code>
                 </td>
             </tr>
 
@@ -237,7 +237,7 @@
                                 <tr>
                                     <td>entity</td>
                                     <td>
-                                                <code><a href="../entitys/System.html" target="_self" >System</a></code>
+                                                <code><a href="../entitys/SystemEntity.html" target="_self" >SystemEntity</a></code>
                                     </td>
 
                                     <td>
@@ -343,12 +343,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { OauthConfig, System } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { OauthConfig, SystemEntity } from &#x27;@shared/domain&#x27;;
 import { OauthConfigDto } from &#x27;@src/modules/system/service/dto/oauth-config.dto&#x27;;
 import { SystemDto } from &#x27;@src/modules/system/service/dto/system.dto&#x27;;
 
 export class SystemMapper {
-	static mapFromEntityToDto(entity: System): SystemDto {
+	static mapFromEntityToDto(entity: SystemEntity): SystemDto {
 		return new SystemDto({
 			id: entity.id,
 			type: entity.type,
@@ -381,7 +381,7 @@ export class SystemMapper {
 		});
 	}
 
-	static mapFromEntitiesToDtos(entities: System[]): SystemDto[] {
+	static mapFromEntitiesToDtos(entities: SystemEntity[]): SystemDto[] {
 		return entities.map((entity) &#x3D;&gt; this.mapFromEntityToDto(entity));
 	}
 }

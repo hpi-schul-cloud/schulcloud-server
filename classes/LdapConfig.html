@@ -859,7 +859,7 @@ export class OidcConfig {
 }
 
 @Entity({ tableName: &#x27;systems&#x27; })
-export class System extends BaseEntityWithTimestamps {
+export class SystemEntity extends BaseEntityWithTimestamps {
 	constructor(props: ISystemProperties) {
 		super();
 		this.type &#x3D; props.type;

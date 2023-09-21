@@ -186,7 +186,7 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/SchoolYear.html" target="_self" >Promise&lt;SchoolYear&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../entitys/SchoolYearEntity.html" target="_self" >Promise&lt;SchoolYearEntity&gt;</a></code>
 
                     </div>
                 </td>
@@ -200,7 +200,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { SchoolYear } from &#x27;@shared/domain&#x27;;
+import { SchoolYearEntity } from &#x27;@shared/domain&#x27;;
 import { SchoolYearRepo } from &#x27;../repo&#x27;;
 
 @Injectable()
@@ -208,8 +208,8 @@ export class SchoolYearService {
 	constructor(private readonly schoolYearRepo: SchoolYearRepo) {}
 
 	// TODO: N21-990 Refactoring: Create domain objects for schoolYear and federalState
-	async getCurrentSchoolYear(): Promise&lt;SchoolYear&gt; {
-		const current: SchoolYear &#x3D; await this.schoolYearRepo.findCurrentYear();
+	async getCurrentSchoolYear(): Promise&lt;SchoolYearEntity&gt; {
+		const current: SchoolYearEntity &#x3D; await this.schoolYearRepo.findCurrentYear();
 
 		return current;
 	}

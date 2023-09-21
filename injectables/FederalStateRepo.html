@@ -199,7 +199,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/FederalState.html" target="_self" >Promise&lt;FederalState&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../entitys/FederalStateEntity.html" target="_self" >Promise&lt;FederalStateEntity&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -549,18 +549,18 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { FederalState } from &#x27;@shared/domain&#x27;;
+import { FederalStateEntity } from &#x27;@shared/domain&#x27;;
 import { EntityName } from &#x27;@mikro-orm/core&#x27;;
 import { BaseRepo } from &#x27;../base.repo&#x27;;
 
 @Injectable()
-export class FederalStateRepo extends BaseRepo&lt;FederalState&gt; {
-	get entityName(): EntityName&lt;FederalState&gt; {
-		return FederalState;
+export class FederalStateRepo extends BaseRepo&lt;FederalStateEntity&gt; {
+	get entityName(): EntityName&lt;FederalStateEntity&gt; {
+		return FederalStateEntity;
 	}
 
-	findByName(name: string): Promise&lt;FederalState&gt; {
-		return this._em.findOneOrFail(FederalState, { name });
+	findByName(name: string): Promise&lt;FederalStateEntity&gt; {
+		return this._em.findOneOrFail(FederalStateEntity, { name });
 	}
 }
 </code></pre>

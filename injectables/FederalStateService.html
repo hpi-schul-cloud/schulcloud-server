@@ -215,7 +215,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/FederalState.html" target="_self" >Promise&lt;FederalState&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../entitys/FederalStateEntity.html" target="_self" >Promise&lt;FederalStateEntity&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -233,15 +233,15 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { FederalStateRepo } from &#x27;@shared/repo&#x27;;
-import { FederalState } from &#x27;@shared/domain&#x27;;
+import { FederalStateEntity } from &#x27;@shared/domain&#x27;;
 
 @Injectable()
 export class FederalStateService {
 	constructor(private readonly federalStateRepo: FederalStateRepo) {}
 
 	// TODO: N21-990 Refactoring: Create domain objects for schoolYear and federalState
-	async findFederalStateByName(name: string): Promise&lt;FederalState&gt; {
-		const federalState: FederalState &#x3D; await this.federalStateRepo.findByName(name);
+	async findFederalStateByName(name: string): Promise&lt;FederalStateEntity&gt; {
+		const federalState: FederalStateEntity &#x3D; await this.federalStateRepo.findByName(name);
 
 		return federalState;
 	}

@@ -1053,7 +1053,7 @@ The current user must have permission to read schools users and view importusers
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/System.html" target="_self" >Promise&lt;System&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../entitys/SystemEntity.html" target="_self" >Promise&lt;SystemEntity&gt;</a></code>
 
                     </div>
                 </td>
@@ -1601,7 +1601,7 @@ import {
 	MatchCreatorScope,
 	Permission,
 	SchoolFeatures,
-	System,
+	SystemEntity,
 	User,
 } from &#x27;@shared/domain&#x27;;
 import { ImportUserRepo, SystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
@@ -1879,7 +1879,7 @@ export class UserImportUc {
 		await this.importUserRepo.delete(importUser);
 	}
 
-	private async getMigrationSystem(): Promise&lt;System&gt; {
+	private async getMigrationSystem(): Promise&lt;SystemEntity&gt; {
 		const systemId &#x3D; Configuration.get(&#x27;FEATURE_USER_MIGRATION_SYSTEM_ID&#x27;) as string;
 		const system &#x3D; await this.systemRepo.findById(systemId);
 		return system;
@@ -1890,7 +1890,7 @@ export class UserImportUc {
 			for (const systemId of school.systems) {
 				// very unusual to have more than 1 system
 				// eslint-disable-next-line no-await-in-loop
-				const system: System &#x3D; await this.systemRepo.findById(systemId);
+				const system: SystemEntity &#x3D; await this.systemRepo.findById(systemId);
 				if (system.ldapConfig) {
 					throw new LdapAlreadyPersistedException();
 				}
