@@ -64,6 +64,10 @@ describe('ToolLaunchUc', () => {
 
 			const userId = 'userId';
 
+			toolPermissionHelper.ensureContextPermissions.mockResolvedValue();
+			contextExternalToolService.getContextExternalToolById.mockResolvedValue(contextExternalTool);
+			toolLaunchService.getLaunchData.mockResolvedValue(toolLaunchData);
+
 			return {
 				userId,
 				contextExternalToolId,
@@ -82,8 +86,6 @@ describe('ToolLaunchUc', () => {
 
 		it('should call service to get data', async () => {
 			const { userId, contextExternalToolId, contextExternalTool } = setup();
-			toolPermissionHelper.ensureContextPermissions.mockResolvedValue();
-			contextExternalToolService.getContextExternalToolById.mockResolvedValue(contextExternalTool);
 
 			await uc.getToolLaunchRequest(userId, contextExternalToolId);
 
@@ -91,9 +93,7 @@ describe('ToolLaunchUc', () => {
 		});
 
 		it('should call service to generate launch request', async () => {
-			const { userId, contextExternalToolId, contextExternalTool, toolLaunchData } = setup();
-			toolPermissionHelper.ensureContextPermissions.mockResolvedValue();
-			contextExternalToolService.getContextExternalToolById.mockResolvedValue(contextExternalTool);
+			const { userId, contextExternalToolId, toolLaunchData } = setup();
 
 			toolLaunchService.getLaunchData.mockResolvedValue(toolLaunchData);
 
@@ -103,10 +103,7 @@ describe('ToolLaunchUc', () => {
 		});
 
 		it('should return launch request', async () => {
-			const { userId, contextExternalToolId, toolLaunchData, contextExternalTool } = setup();
-			toolPermissionHelper.ensureContextPermissions.mockResolvedValue();
-			contextExternalToolService.getContextExternalToolById.mockResolvedValue(contextExternalTool);
-			toolLaunchService.getLaunchData.mockResolvedValue(toolLaunchData);
+			const { userId, contextExternalToolId } = setup();
 
 			const toolLaunchRequest: ToolLaunchRequest = await uc.getToolLaunchRequest(userId, contextExternalToolId);
 
