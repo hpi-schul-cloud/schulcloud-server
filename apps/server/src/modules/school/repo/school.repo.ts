@@ -40,7 +40,7 @@ export class SchoolMongoRepo extends BaseRepo<SchoolEntity> implements SchoolRep
 			orderBy: options?.order,
 		};
 
-		// If no order is specified, a default order is applied here, because without order pagination can be messed up.
+		// If no order is specified, a default order is applied here, because pagination can be messed up without order.
 		if (!findOptions.orderBy) {
 			findOptions.orderBy = {
 				_id: SortOrder.asc,
