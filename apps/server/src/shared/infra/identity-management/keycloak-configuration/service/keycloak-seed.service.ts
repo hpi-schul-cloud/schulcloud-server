@@ -1,5 +1,6 @@
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { Inject } from '@nestjs/common';
+import { LegacyLogger } from '@src/core/logger';
 import fs from 'node:fs/promises';
 import { IJsonAccount } from '../interface/json-account.interface';
 import { IJsonUser } from '../interface/json-user.interface';
@@ -12,6 +13,7 @@ import {
 export class KeycloakSeedService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
+		private readonly logger: LegacyLogger,
 		@Inject(KeycloakConfigurationInputFiles) private readonly inputFiles: IKeycloakConfigurationInputFiles
 	) {}
 
@@ -30,23 +32,33 @@ export class KeycloakSeedService {
 		return userCount;
 	}
 
-	public async clean(): Promise<number> {
-		let kc = await this.kcAdmin.callKcAdminClient();
+	public async clean(pagination = 100): Promise<number> {
+		let foundUsers = 1;
+		let deletedUsers = 0;
 		const adminUser = this.kcAdmin.getAdminUser();
-		const users = (await kc.users.find()).filter((user) => user.username !== adminUser);
-
-		// eslint-disable-next-line no-restricted-syntax
-		for (const user of users) {
-			// needs to be called once per minute. To be save we call it in the loop. Ineffcient but ok, since only used to locally revert seeding
+		let kc = await this.kcAdmin.callKcAdminClient();
+		console.log(`Starting to delete users...`);
+		while (foundUsers > 0) {
 			// eslint-disable-next-line no-await-in-loop
 			kc = await this.kcAdmin.callKcAdminClient();
 			// eslint-disable-next-line no-await-in-loop
-			await kc.users.del({
-				// can not be undefined, see filter above
-				id: user.id ?? '',
-			});
+			const users = (await kc.users.find({ max: pagination })).filter((user) => user.username !== adminUser);
+			foundUsers = users.length;
+			console.log(`Length of foundUsers: ${foundUsers}`);
+			for (const user of users) {
+				// eslint-disable-next-line no-await-in-loop
+				kc = await this.kcAdmin.callKcAdminClient();
+				console.log(`try to delete user ${user.id as string}`);
+				// eslint-disable-next-line no-await-in-loop
+				await kc.users.del({
+					// can not be undefined, see filter above
+					id: user.id ?? '',
+				});
+			}
+			deletedUsers += foundUsers;
+			console.log(`...deleted ${deletedUsers} users so far.`);
 		}
-		return users.length;
+		return deletedUsers;
 	}
 
 	private async createOrUpdateIdmAccount(account: IJsonAccount, user: IJsonUser): Promise<boolean> {

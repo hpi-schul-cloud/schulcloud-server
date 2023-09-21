@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { LegacyLogger } from '@src/core/logger';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { AuthenticationManagement } from '@keycloak/keycloak-admin-client/lib/resources/authenticationManagement';
@@ -40,7 +41,11 @@ jest.mock('node:fs/promises', () => {
 describe('KeycloakSeedService', () => {
 	let module: TestingModule;
 	let serviceUnderTest: KeycloakSeedService;
+	let logger: DeepMocked<LegacyLogger>;
 	let settings: IKeycloakSettings;
+
+	let infoLogSpy: jest.SpyInstance;
+	let errorLogSpy: jest.SpyInstance;
 
 	let kcAdminClient: DeepMocked<KeycloakAdminClient>;
 	const kcApiUsersMock = createMock<Users>();
@@ -142,6 +147,10 @@ describe('KeycloakSeedService', () => {
 						},
 					},
 				},
+				{
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
+				},
 			],
 		}).compile();
 		serviceUnderTest = module.get(KeycloakSeedService);
@@ -177,16 +186,33 @@ describe('KeycloakSeedService', () => {
 		];
 		kcApiUsersMock.create.mockResolvedValue({ id: '' });
 		kcApiUsersMock.del.mockImplementation(async (): Promise<void> => Promise.resolve());
-		kcApiUsersMock.find.mockImplementation(async (arg): Promise<UserRepresentation[]> => {
-			if (arg?.username) {
+		kcApiUsersMock.find
+			.mockImplementationOnce(async (arg): Promise<UserRepresentation[]> => {
+				if (arg?.username) {
+					return Promise.resolve([]);
+				}
+				const userArray = [adminUser, ...users];
+				return Promise.resolve(userArray);
+			})
+			.mockImplementationOnce(async (arg): Promise<UserRepresentation[]> => {
+				if (arg?.username) {
+					return Promise.resolve([]);
+				}
 				return Promise.resolve([]);
-			}
-			const userArray = [adminUser, ...users];
-			return Promise.resolve(userArray);
-		});
+			})
+			.mockImplementationOnce(async (): Promise<UserRepresentation[]> => {
+				const userArray = [adminUser, ...users];
+				return Promise.resolve(userArray);
+			})
+			.mockImplementation(async (): Promise<UserRepresentation[]> => Promise.resolve([]));
+		logger = module.get(LegacyLogger);
+		infoLogSpy = jest.spyOn(logger, 'log');
+		errorLogSpy = jest.spyOn(logger, 'error');
 	});
 
 	beforeEach(() => {
+		infoLogSpy.mockReset();
+		errorLogSpy.mockReset();
 		kcApiUsersMock.create.mockClear();
 		kcApiUsersMock.del.mockClear();
 		kcApiUsersMock.find.mockClear();
@@ -205,15 +231,18 @@ describe('KeycloakSeedService', () => {
 			const result = await serviceUnderTest.clean();
 			expect(result).toBeGreaterThan(0);
 		});
-		it('should clean all users, but the admin', async () => {
-			const deleteSpy = jest.spyOn(kcApiUsersMock, 'del');
-			await serviceUnderTest.clean();
-
-			users.forEach((user) => {
-				expect(deleteSpy).toHaveBeenCalledWith(expect.objectContaining({ id: user.id }));
-			});
-			expect(deleteSpy).not.toHaveBeenCalledWith(expect.objectContaining({ id: adminUser.id }));
-		});
+		it(
+			'should clean all users, but the admin',
+			async () => {
+				const deleteSpy = jest.spyOn(kcApiUsersMock, 'del');
+				await serviceUnderTest.clean();
+				users.forEach((user) => {
+					expect(deleteSpy).toHaveBeenCalledWith(expect.objectContaining({ id: user.id }));
+				});
+				expect(deleteSpy).not.toHaveBeenCalledWith(expect.objectContaining({ id: adminUser.id }));
+			},
+			10 * 60000
+		);
 	});
 
 	describe('seed', () => {

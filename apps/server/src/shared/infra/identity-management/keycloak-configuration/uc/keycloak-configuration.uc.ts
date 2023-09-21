@@ -17,8 +17,8 @@ export class KeycloakConfigurationUc {
 		return this.kcAdmin.testKcConnection();
 	}
 
-	public async clean(): Promise<number> {
-		return this.keycloakSeedService.clean();
+	public async clean(pagination?: number): Promise<number> {
+		return this.keycloakSeedService.clean(pagination);
 	}
 
 	public async seed(): Promise<number> {
