@@ -50,6 +50,37 @@ describe('CourseService', () => {
 		});
 	});
 
+	describe('findUserDataFromCourses', () => {
+		describe('when finding by userId', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const course1 = courseFactory.buildWithId({ students: [user] });
+				const course2 = courseFactory.buildWithId({ teachers: [user] });
+				const course3 = courseFactory.buildWithId({ substitutionTeachers: [user] });
+				const allCourses = [course1, course2, course3];
+
+				userRepo.findById.mockResolvedValue(user);
+				courseRepo.findAllByUserId.mockResolvedValue([allCourses, allCourses.length]);
+
+				return {
+					user,
+				};
+			};
+
+			it('should call courseRepo.findAllByUserId', async () => {
+				const { user } = setup();
+				await courseService.findUserDataFromCourses(user.id);
+				expect(courseRepo.findAllByUserId).toBeCalledWith(user.id);
+			});
+
+			it('should return array of courses with userId', async () => {
+				const { user } = setup();
+				const [courses] = await courseService.findUserDataFromCourses(user.id);
+				expect(courses.length).toEqual(3);
+			});
+		});
+	});
+
 	describe('when deleting by userId', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();

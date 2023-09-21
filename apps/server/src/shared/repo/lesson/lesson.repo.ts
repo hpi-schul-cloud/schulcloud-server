@@ -3,7 +3,6 @@ import { Counted, EntityId, LessonEntity, SortOrder } from '@shared/domain';
 import { EntityDictionary } from '@mikro-orm/core';
 import { BaseRepo } from '../base.repo';
 import { LessonScope } from './lesson-scope';
-import { EntityDictionary } from '@mikro-orm/core';
 
 @Injectable()
 export class LessonRepo extends BaseRepo<LessonEntity> {
