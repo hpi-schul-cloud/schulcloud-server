@@ -11,7 +11,7 @@ import {
 	isColumnBoardTarget,
 	isLesson,
 	isTask,
-	Lesson,
+	LessonEntity,
 	LessonBoardElement,
 	Task,
 	TaskBoardElement,
@@ -109,7 +109,7 @@ export class BoardCopyService {
 		return statuses;
 	}
 
-	private async copyLesson(originalLesson: Lesson, user: User, destinationCourse: Course): Promise<CopyStatus> {
+	private async copyLesson(originalLesson: LessonEntity, user: User, destinationCourse: Course): Promise<CopyStatus> {
 		return this.lessonCopyService.copyLesson({
 			originalLessonId: originalLesson.id,
 			user,
@@ -147,7 +147,7 @@ export class BoardCopyService {
 				const taskElement = new TaskBoardElement({ target: status.copyEntity });
 				references.push(taskElement);
 			}
-			if (status.copyEntity instanceof Lesson) {
+			if (status.copyEntity instanceof LessonEntity) {
 				const lessonElement = new LessonBoardElement({ target: status.copyEntity });
 				references.push(lessonElement);
 			}

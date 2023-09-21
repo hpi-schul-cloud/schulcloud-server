@@ -11,7 +11,7 @@ import {
 	IComponentNexboardProperties,
 	IComponentProperties,
 	IComponentTextProperties,
-	Lesson,
+	LessonEntity,
 	Material,
 } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object';
@@ -120,7 +120,7 @@ describe('lesson copy service', () => {
 						user,
 						copyName,
 					});
-					const lesson = response.copyEntity as Lesson;
+					const lesson = response.copyEntity as LessonEntity;
 
 					expect(lesson.name).toEqual(copyName);
 				});
@@ -133,7 +133,7 @@ describe('lesson copy service', () => {
 						destinationCourse,
 						user,
 					});
-					const lesson = response.copyEntity as Lesson;
+					const lesson = response.copyEntity as LessonEntity;
 					expect(lesson.name).toEqual(originalLesson.name);
 				});
 
@@ -145,7 +145,7 @@ describe('lesson copy service', () => {
 						destinationCourse,
 						user,
 					});
-					const lesson = response.copyEntity as Lesson;
+					const lesson = response.copyEntity as LessonEntity;
 
 					expect(lesson.course).toEqual(destinationCourse);
 				});
@@ -158,7 +158,7 @@ describe('lesson copy service', () => {
 						destinationCourse,
 						user,
 					});
-					const lesson = response.copyEntity as Lesson;
+					const lesson = response.copyEntity as LessonEntity;
 
 					expect(lesson.position).toEqual(originalLesson.position);
 				});
@@ -171,7 +171,7 @@ describe('lesson copy service', () => {
 						destinationCourse,
 						user,
 					});
-					const lesson = response.copyEntity as Lesson;
+					const lesson = response.copyEntity as LessonEntity;
 
 					expect(lesson.hidden).toEqual(true);
 				});
@@ -256,7 +256,7 @@ describe('lesson copy service', () => {
 					destinationCourse,
 					user,
 				});
-				const lesson = status.copyEntity as Lesson;
+				const lesson = status.copyEntity as LessonEntity;
 
 				expect(lesson.course).toEqual(destinationCourse);
 			});
@@ -284,7 +284,7 @@ describe('lesson copy service', () => {
 					user,
 				});
 
-				const lesson = status.copyEntity as Lesson;
+				const lesson = status.copyEntity as LessonEntity;
 
 				expect(lesson.contents.length).toEqual(0);
 			});
@@ -349,7 +349,7 @@ describe('lesson copy service', () => {
 					user,
 				});
 
-				const lesson = status.copyEntity as Lesson;
+				const lesson = status.copyEntity as LessonEntity;
 
 				expect(lesson.contents.length).toEqual(2);
 				expect(lesson.contents).toEqual(originalLesson.contents);
@@ -366,7 +366,7 @@ describe('lesson copy service', () => {
 					user,
 				});
 
-				const lesson = status.copyEntity as Lesson;
+				const lesson = status.copyEntity as LessonEntity;
 
 				expect(lesson.contents[0].hidden).toEqual(true);
 				expect(lesson.contents[1].hidden).toEqual(false);
@@ -464,7 +464,7 @@ describe('lesson copy service', () => {
 				user,
 			});
 
-			const lessonCopy = status.copyEntity as Lesson;
+			const lessonCopy = status.copyEntity as LessonEntity;
 			const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
 			expect(contentsStatus).toBeDefined();
 			expect((lessonCopy.contents[0].content as IComponentTextProperties).text).not.toContain(FILE_ID_TO_BE_REPLACED);
@@ -510,7 +510,7 @@ describe('lesson copy service', () => {
 				user,
 			});
 
-			const copiedLessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
+			const copiedLessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
 			expect(copiedLessonContents[0]).toEqual(lernStoreContent);
 		});
 
@@ -562,7 +562,7 @@ describe('lesson copy service', () => {
 				user,
 			});
 
-			const lessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
+			const lessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
 			const geoGebraContent = lessonContents[0].content as IComponentGeogebraProperties;
 
 			expect(geoGebraContent.materialId).toEqual('');
@@ -577,7 +577,7 @@ describe('lesson copy service', () => {
 				user,
 			});
 
-			const lessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
+			const lessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
 			expect(lessonContents[0].hidden).toEqual(true);
 		});
 
@@ -810,7 +810,7 @@ describe('lesson copy service', () => {
 				user,
 			});
 
-			const lessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
+			const lessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
 			expect(configurationSpy).toHaveBeenCalledWith('FEATURE_ETHERPAD_ENABLED');
 			expect(etherpadService.createEtherpad).not.toHaveBeenCalled();
 			expect(lessonContents).toEqual([]);
@@ -848,7 +848,7 @@ describe('lesson copy service', () => {
 			}
 			expect(contentStatus).toEqual(CopyStatusEnum.FAIL);
 
-			const lessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
+			const lessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
 			expect(lessonContents.length).toEqual(0);
 		});
 
@@ -862,7 +862,7 @@ describe('lesson copy service', () => {
 				destinationCourse,
 				user,
 			});
-			const copiedLessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
+			const copiedLessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
 			const copiedEtherpad = copiedLessonContents[0].content as IComponentEtherpadProperties;
 			expect(copiedEtherpad.url).toEqual('http://pad.uri/abc');
 		});
@@ -936,7 +936,7 @@ describe('lesson copy service', () => {
 				destinationCourse,
 				user,
 			});
-			const lesson = copyStatus.copyEntity as Lesson;
+			const lesson = copyStatus.copyEntity as LessonEntity;
 			const embeddedTaskLink = lesson.contents.find((el) => el.component === ComponentType.INTERNAL);
 
 			expect(embeddedTaskLink).toEqual(embeddedTaskContent);
@@ -1001,7 +1001,7 @@ describe('lesson copy service', () => {
 				user,
 			});
 
-			const lessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
+			const lessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
 			expect(configurationSpy).toHaveBeenCalledWith('FEATURE_NEXBOARD_ENABLED');
 			expect(nexboardService.createNexboard).not.toHaveBeenCalled();
 			expect(lessonContents).toEqual([]);
@@ -1039,7 +1039,7 @@ describe('lesson copy service', () => {
 			}
 			expect(contentStatus).toEqual(CopyStatusEnum.FAIL);
 
-			const lessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
+			const lessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
 			expect(lessonContents.length).toEqual(0);
 		});
 
@@ -1053,7 +1053,7 @@ describe('lesson copy service', () => {
 				destinationCourse,
 				user,
 			});
-			const copiedLessonContents = (status.copyEntity as Lesson).contents as IComponentProperties[];
+			const copiedLessonContents = (status.copyEntity as LessonEntity).contents as IComponentProperties[];
 			const copiedNexboard = copiedLessonContents[0].content as IComponentNexboardProperties;
 			expect(copiedNexboard.url).toEqual('abc');
 			expect(copiedNexboard.board).toEqual('123');
@@ -1151,7 +1151,7 @@ describe('lesson copy service', () => {
 					destinationCourse,
 					user,
 				});
-				const copiedLesson = copyStatus.copyEntity as Lesson;
+				const copiedLesson = copyStatus.copyEntity as LessonEntity;
 				const copiedMaterial = copiedLesson.materials[0];
 				expect(copiedLesson.materials.length).toEqual(1);
 				expect(copiedMaterial.title).toEqual(originalMaterial.title);
@@ -1334,7 +1334,7 @@ describe('lesson copy service', () => {
 				const { copyStatus, originalTask, copiedTask } = setup();
 				const copyDict = copyHelperService.buildCopyEntityDict(copyStatus);
 				const updatedCopyStatus = copyService.updateCopiedEmbeddedTasks(copyStatus, copyDict);
-				const lesson = updatedCopyStatus?.copyEntity as Lesson;
+				const lesson = updatedCopyStatus?.copyEntity as LessonEntity;
 				if (lesson === undefined || lesson.contents === undefined) {
 					throw new Error('lesson should be part of the copy');
 				}
@@ -1347,7 +1347,7 @@ describe('lesson copy service', () => {
 				const { copyStatus } = setup();
 				const copyDict = copyHelperService.buildCopyEntityDict(copyStatus);
 				const updatedCopyStatus = copyService.updateCopiedEmbeddedTasks(copyStatus, copyDict);
-				const lesson = updatedCopyStatus?.copyEntity as Lesson;
+				const lesson = updatedCopyStatus?.copyEntity as LessonEntity;
 				if (lesson === undefined || lesson.contents === undefined) {
 					throw new Error('lesson should be part of the copy');
 				}
@@ -1359,7 +1359,7 @@ describe('lesson copy service', () => {
 				copyHelperService.buildCopyEntityDict.mockReturnValue(new Map<EntityId, AuthorizableObject>());
 				const copyDict = copyHelperService.buildCopyEntityDict(copyStatus);
 				const updatedCopyStatus = copyService.updateCopiedEmbeddedTasks(copyStatus, copyDict);
-				const lesson = updatedCopyStatus?.copyEntity as Lesson;
+				const lesson = updatedCopyStatus?.copyEntity as LessonEntity;
 				if (lesson === undefined || lesson.contents === undefined) {
 					throw new Error('lesson should be part of the copy');
 				}
