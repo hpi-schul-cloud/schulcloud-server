@@ -16,6 +16,7 @@ const options = [
 		outdir: 'node_modules/file-type-cjs',
 	},
 	{
+		// Path to file containing the resolution-mode="require" declaration.
 		pathToResolutionModeError: 'node_modules/peek-readable/lib/StreamReader.d.ts',
 	},
 	{
