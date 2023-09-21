@@ -8,7 +8,7 @@ import {
 	MatchCreator,
 	Permission,
 	RoleName,
-	School,
+	SchoolEntity,
 	SchoolFeatures,
 	SortOrder,
 	System,
@@ -200,7 +200,7 @@ describe('ImportUser Controller (API)', () => {
 
 			describe('When school is LDAP Migration Pilot School', () => {
 				let user: User;
-				let school: School;
+				let school: SchoolEntity;
 				let system: System;
 				beforeEach(async () => {
 					({ school, system, user } = await authenticatedUser(
@@ -221,7 +221,7 @@ describe('ImportUser Controller (API)', () => {
 
 			describe('When current user has permission Permission.SCHOOL_IMPORT_USERS_VIEW', () => {
 				let user: User;
-				let school: School;
+				let school: SchoolEntity;
 				let system: System;
 				beforeEach(async () => {
 					({ school, system, user } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_VIEW]));
@@ -264,7 +264,7 @@ describe('ImportUser Controller (API)', () => {
 			});
 			describe('When current user has permission Permission.SCHOOL_IMPORT_USERS_UPDATE', () => {
 				let user: User;
-				let school: School;
+				let school: SchoolEntity;
 				let system: System;
 				beforeEach(async () => {
 					({ user, school, system } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_UPDATE]));
@@ -355,7 +355,7 @@ describe('ImportUser Controller (API)', () => {
 
 		describe('Business Errors', () => {
 			let user: User;
-			let school: School;
+			let school: SchoolEntity;
 			beforeEach(async () => {
 				({ user, school } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_UPDATE]));
 				currentUser = mapUserToCurrentUser(user);
@@ -457,7 +457,7 @@ describe('ImportUser Controller (API)', () => {
 			};
 			describe('find', () => {
 				let user: User;
-				let school: School;
+				let school: SchoolEntity;
 				beforeEach(async () => {
 					await cleanupCollections(em);
 
@@ -805,7 +805,7 @@ describe('ImportUser Controller (API)', () => {
 
 			describe('updates', () => {
 				let user: User;
-				let school: School;
+				let school: SchoolEntity;
 				beforeEach(async () => {
 					({ user, school } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_UPDATE]));
 					currentUser = mapUserToCurrentUser(user);
@@ -926,7 +926,7 @@ describe('ImportUser Controller (API)', () => {
 
 			describe('[migrate]', () => {
 				let user: User;
-				let school: School;
+				let school: SchoolEntity;
 				beforeEach(async () => {
 					({ user, school } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]));
 					school.officialSchoolNumber = 'foo';
