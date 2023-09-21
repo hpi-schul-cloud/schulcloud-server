@@ -25,6 +25,10 @@ export class FilesService {
 		return entities.length;
 	}
 
+	async findFilesOwnedByUser(userId: EntityId): Promise<FileEntity[]> {
+		return this.repo.findByOwnerUserId(userId);
+	}
+
 	async markFilesOwnedByUserForDeletion(userId: EntityId): Promise<number> {
 		const entities = await this.repo.findByOwnerUserId(userId);
 
