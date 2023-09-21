@@ -36,7 +36,7 @@ import connectRedis from 'connect-redis';
 import session from 'express-session';
 import { RedisClient } from 'redis';
 import { TeamsApiModule } from '@src/modules/teams/teams-api.module';
-import { PseudonymApiModule } from '../pseudonym/pseudonym-api.module';
+import { PseudonymApiModule } from '@src/modules/pseudonym/pseudonym-api.module';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
 

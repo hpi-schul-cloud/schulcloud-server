@@ -1,13 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IFindOptions, Page, Pseudonym, School, User } from '@shared/domain';
-import { pseudonymFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { LegacySchoolDo, Pseudonym, SchoolEntity, User } from '@shared/domain';
+import { legacySchoolDoFactory, pseudonymFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Action, AuthorizationService } from '@src/modules/authorization';
-import { PseudonymSearchQuery } from '../domain';
 import { PseudonymService } from '../service';
 import { PseudonymUc } from './pseudonym.uc';
+import { LegacySchoolService } from '../../legacy-school';
 
 describe('PseudonymUc', () => {
 	let module: TestingModule;
@@ -15,6 +15,7 @@ describe('PseudonymUc', () => {
 
 	let pseudonymService: DeepMocked<PseudonymService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -30,12 +31,17 @@ describe('PseudonymUc', () => {
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
 				},
+				{
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
+				},
 			],
 		}).compile();
 
 		uc = module.get(PseudonymUc);
 		pseudonymService = module.get(PseudonymService);
 		authorizationService = module.get(AuthorizationService);
+		schoolService = module.get(LegacySchoolService);
 	});
 
 	beforeEach(() => {
@@ -50,24 +56,21 @@ describe('PseudonymUc', () => {
 		describe('when valid user and params are given', () => {
 			const setup = () => {
 				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-				const user: User = userFactory.build();
-				const school: School = schoolFactory.build();
-				user.school = school;
-				const query: PseudonymSearchQuery = {
-					pseudonym: 'pseudonym',
-				};
-				const options: IFindOptions<Pseudonym> = {};
-				const pseudonym: Pseudonym = new Pseudonym(pseudonymFactory.build());
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const schoolEntity: SchoolEntity = schoolFactory.buildWithId();
+				const user: User = userFactory.buildWithId({ school: schoolEntity });
+				user.school = schoolEntity;
+				const pseudonym: Pseudonym = new Pseudonym(pseudonymFactory.build({ userId: user.id }));
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
-				pseudonymService.findPseudonym.mockResolvedValueOnce(new Page([pseudonym], 1));
+				pseudonymService.findPseudonymByPseudonym.mockResolvedValueOnce(pseudonym);
+				schoolService.getSchoolById.mockResolvedValue(school);
 
 				return {
 					currentUser,
 					user,
 					school,
-					query,
-					options,
+					schoolEntity,
 					pseudonym,
 				};
 			};
@@ -83,12 +86,20 @@ describe('PseudonymUc', () => {
 				});
 			});
 
-			it('should call service with query and params', async () => {
-				const { currentUser, query, options } = setup();
+			it('should call service with pseudonym', async () => {
+				const { currentUser } = setup();
 
 				await uc.findPseudonymByPseudonym(currentUser, 'pseudonym');
 
-				expect(pseudonymService.findPseudonym).toHaveBeenCalledWith(query, options);
+				expect(pseudonymService.findPseudonymByPseudonym).toHaveBeenCalledWith('pseudonym');
+			});
+
+			it('should call school service with school id from pseudonym user', async () => {
+				const { currentUser, schoolEntity } = setup();
+
+				await uc.findPseudonymByPseudonym(currentUser, 'pseudonym');
+
+				expect(schoolService.getSchoolById).toHaveBeenCalledWith(schoolEntity.id);
 			});
 
 			it('should return pseudonym', async () => {
@@ -104,7 +115,7 @@ describe('PseudonymUc', () => {
 			const setup = () => {
 				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 				const user: User = userFactory.build();
-				const school: School = schoolFactory.build();
+				const school: SchoolEntity = schoolFactory.build();
 				user.school = school;
 				const pseudonym: Pseudonym = new Pseudonym(pseudonymFactory.build());
 
@@ -112,7 +123,7 @@ describe('PseudonymUc', () => {
 				authorizationService.checkPermission.mockImplementationOnce(() => {
 					throw new ForbiddenException();
 				});
-				pseudonymService.findPseudonym.mockResolvedValueOnce(new Page([pseudonym], 1));
+				pseudonymService.findPseudonymByPseudonym.mockResolvedValueOnce(pseudonym);
 
 				return {
 					currentUser,

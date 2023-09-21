@@ -10,10 +10,11 @@ import {
 } from '@shared/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Response } from 'supertest';
-import { School } from '@shared/domain';
-import { ServerTestModule } from '../../../server';
+import { SchoolEntity } from '@shared/domain';
+import { ServerTestModule } from '@src/modules/server';
+import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
+import { UUID } from 'bson';
 import { ExternalToolPseudonymEntity } from '../../entity';
-import { ExternalToolEntity } from '../../../tool/external-tool/entity';
 import { PseudonymResponse } from '../dto';
 
 describe('PseudonymController (API)', () => {
@@ -46,7 +47,7 @@ describe('PseudonymController (API)', () => {
 	describe('[GET] pseudonyms/:pseudonym', () => {
 		describe('when user is not authenticated', () => {
 			it('should return unauthorized', async () => {
-				const response: Response = await testApiClient.get(`${new ObjectId().toHexString()}`);
+				const response: Response = await testApiClient.get(new ObjectId().toHexString());
 
 				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -54,7 +55,7 @@ describe('PseudonymController (API)', () => {
 
 		describe('when valid params are given', () => {
 			const setup = async () => {
-				const school: School = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolFactory.buildWithId();
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school }, []);
 				const pseudonymString: string = new ObjectId().toHexString();
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
@@ -75,22 +76,20 @@ describe('PseudonymController (API)', () => {
 			it('should return a pseudonymResponse', async () => {
 				const { loggedInClient, pseudonymString, pseudonym } = await setup();
 
-				const response: Response = await loggedInClient.get(`${pseudonymString}`);
+				const response: Response = await loggedInClient.get(pseudonymString);
 
 				expect(response.status).toEqual(HttpStatus.OK);
-				expect(response.body).toEqual<PseudonymResponse>(
-					expect.objectContaining<Partial<PseudonymResponse>>({
-						id: pseudonym.id,
-						userId: pseudonym.userId.toString(),
-						toolId: pseudonym.toolId.toString(),
-					}) as PseudonymResponse
-				);
+				expect(response.body).toEqual<PseudonymResponse>({
+					id: pseudonym.id,
+					userId: pseudonym.userId.toString(),
+					toolId: pseudonym.toolId.toString(),
+				});
 			});
 		});
 
 		describe('when pseudonym is not connected to the users school', () => {
 			const setup = async () => {
-				const school: School = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolFactory.buildWithId();
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school });
 				const pseudonymString: string = new ObjectId().toHexString();
@@ -120,7 +119,7 @@ describe('PseudonymController (API)', () => {
 			it('should return forbidden', async () => {
 				const { loggedInClient, pseudonymString } = await setup();
 
-				const response: Response = await loggedInClient.get(`${pseudonymString}`);
+				const response: Response = await loggedInClient.get(pseudonymString);
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 			});
@@ -128,12 +127,12 @@ describe('PseudonymController (API)', () => {
 
 		describe('when pseudonym does not exist in db', () => {
 			const setup = async () => {
-				const school: School = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolFactory.buildWithId();
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
 				const pseudonymString: string = new ObjectId().toHexString();
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
 				const pseudonym: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.buildWithId({
-					pseudonym: new ObjectId().toHexString(),
+					pseudonym: new UUID().toString(),
 					toolId: externalToolEntity.id,
 					userId: studentUser.id,
 				});
@@ -149,7 +148,7 @@ describe('PseudonymController (API)', () => {
 			it('should return not found', async () => {
 				const { loggedInClient, pseudonymString } = await setup();
 
-				const response: Response = await loggedInClient.get(`${pseudonymString}`);
+				const response: Response = await loggedInClient.get(pseudonymString);
 
 				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
 			});

@@ -5,7 +5,6 @@ import { Scope } from '@shared/repo';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymEntity, IExternalToolPseudonymEntityProps } from '../entity';
 import { PseudonymScope } from '../entity/pseudonym.scope';
-import { TooManyPseudonymsLoggableException } from '../loggable';
 
 @Injectable()
 export class ExternalToolPseudonymRepo {
@@ -76,17 +75,15 @@ export class ExternalToolPseudonymRepo {
 	}
 
 	async findPseudonymByPseudonym(pseudonym: string): Promise<Pseudonym | null> {
-		const entities: ExternalToolPseudonymEntity[] = await this.em.find(ExternalToolPseudonymEntity, { pseudonym });
+		const entities: ExternalToolPseudonymEntity | null = await this.em.findOne(ExternalToolPseudonymEntity, {
+			pseudonym,
+		});
 
-		if (!entities || entities.length === 0) {
+		if (!entities) {
 			return null;
 		}
 
-		if (entities.length > 1) {
-			throw new TooManyPseudonymsLoggableException(pseudonym);
-		}
-
-		const domainObject: Pseudonym = this.mapEntityToDomainObject(entities[0]);
+		const domainObject: Pseudonym = this.mapEntityToDomainObject(entities);
 
 		return domainObject;
 	}

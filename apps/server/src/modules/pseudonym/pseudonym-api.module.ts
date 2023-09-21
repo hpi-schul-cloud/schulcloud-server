@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AuthorizationModule } from '@src/modules/authorization';
+import { LegacySchoolModule } from '@src/modules/legacy-school';
 import { PseudonymModule } from './pseudonym.module';
 import { PseudonymController } from './controller/pseudonym.controller';
 import { PseudonymUc } from './uc';
-import { LegacySchoolModule } from '../legacy-school';
 
 @Module({
 	imports: [PseudonymModule, AuthorizationModule, LegacySchoolModule],
