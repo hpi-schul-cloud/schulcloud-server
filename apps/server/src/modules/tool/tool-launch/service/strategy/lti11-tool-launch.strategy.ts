@@ -9,7 +9,7 @@ import { Authorization } from 'oauth-1.0a';
 import { LtiRole } from '../../../common/enum';
 import { ExternalTool } from '../../../external-tool/domain';
 import { LtiRoleMapper } from '../../mapper';
-import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
+import { LaunchRequestMethod, PropertyData, PropertyLocation, AuthenticationValues } from '../../types';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
@@ -129,6 +129,19 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			payload[property.name] = property.value;
 		}
 
+		const authentication: AuthenticationValues = this.getAuthenticationValues(properties);
+
+		const signedPayload: Authorization = this.lti11EncryptionService.sign(
+			authentication.keyValue,
+			authentication.secretValue,
+			url,
+			payload
+		);
+
+		return JSON.stringify(signedPayload);
+	}
+
+	private getAuthenticationValues(properties: PropertyData[]): AuthenticationValues {
 		const key: PropertyData | undefined = properties.find((property: PropertyData) => property.name === 'key');
 		const secret: PropertyData | undefined = properties.find((property: PropertyData) => property.name === 'secret');
 
@@ -137,10 +150,12 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 				'Unable to build LTI 1.1 launch payload. "key" or "secret" is undefined in PropertyData'
 			);
 		}
+		const keyValue = key.value;
+		const secretValue = secret.value;
 
-		const signedPayload: Authorization = this.lti11EncryptionService.sign(key.value, secret.value, url, payload);
+		const authentication = { keyValue, secretValue };
 
-		return JSON.stringify(signedPayload);
+		return authentication;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
