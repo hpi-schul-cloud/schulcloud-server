@@ -9,7 +9,7 @@ import {
 	MatchCreator,
 	MatchCreatorScope,
 	RoleName,
-	School,
+	SchoolEntity,
 	User,
 } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -132,16 +132,16 @@ describe('ImportUserRepo', () => {
 				const importUser = importUserFactory.build({ school });
 				const otherSchoolsImportUser = importUserFactory.build();
 				await em.persistAndFlush([school, importUser, otherSchoolsImportUser]);
-				await expect(async () => repo.findImportUsers({ _id: 'invalid_id' } as unknown as School)).rejects.toThrowError(
-					'invalid school id'
-				);
+				await expect(async () =>
+					repo.findImportUsers({ _id: 'invalid_id' } as unknown as SchoolEntity)
+				).rejects.toThrowError('invalid school id');
 			});
 			it('should not respond with any school for wrong id given', async () => {
 				const school = schoolFactory.build();
 				const importUser = importUserFactory.build({ school });
 				const otherSchoolsImportUser = importUserFactory.build();
 				await em.persistAndFlush([school, importUser, otherSchoolsImportUser]);
-				await expect(async () => repo.findImportUsers({} as unknown as School)).rejects.toThrowError(
+				await expect(async () => repo.findImportUsers({} as unknown as SchoolEntity)).rejects.toThrowError(
 					'invalid school id'
 				);
 			});
