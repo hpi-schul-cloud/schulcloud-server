@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import {
-	FederalState,
+	FederalStateEntity,
 	ISchoolProperties,
 	SchoolFeatures,
 	SchoolRoles,
@@ -273,7 +273,7 @@ const seedSchools: SeedSchoolProperties[] = [
 export function generateSchools(entities: {
 	systems: SystemEntity[];
 	schoolYears: SchoolYearEntity[];
-	federalStates: FederalState[];
+	federalStates: FederalStateEntity[];
 }) {
 	return seedSchools.map((partial) => {
 		const schoolYear = entities.schoolYears.find((sy) => partial.currentYear && sy.name === partial.currentYear);

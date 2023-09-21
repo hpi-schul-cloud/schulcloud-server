@@ -1,5 +1,5 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, ExternalSource, FederalState, SchoolFeatures, SchoolYearEntity } from '@shared/domain';
+import { EntityId, ExternalSource, FederalStateEntity, SchoolFeatures, SchoolYearEntity } from '@shared/domain';
 import { LegacySchoolDo, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
@@ -45,7 +45,7 @@ export class OidcProvisioningService {
 			}
 		} else {
 			const schoolYear: SchoolYearEntity = await this.schoolYearService.getCurrentSchoolYear();
-			const federalState: FederalState = await this.federalStateService.findFederalStateByName(
+			const federalState: FederalStateEntity = await this.federalStateService.findFederalStateByName(
 				FederalStateNames.NIEDERSACHEN
 			);
 
