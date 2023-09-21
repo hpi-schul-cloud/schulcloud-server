@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { System } from '@shared/domain';
+import { SystemEntity } from '@shared/domain';
 import { systemFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { LdapService } from './ldap.service';
@@ -59,7 +59,7 @@ describe('LdapService', () => {
 	describe('checkLdapCredentials', () => {
 		describe('when credentials are correct', () => {
 			it('should login successfully', async () => {
-				const system: System = systemFactory.withLdapConfig().buildWithId();
+				const system: SystemEntity = systemFactory.withLdapConfig().buildWithId();
 				await expect(
 					ldapService.checkLdapCredentials(system, 'connectSucceeds', 'mockPassword')
 				).resolves.not.toThrow();
@@ -68,7 +68,7 @@ describe('LdapService', () => {
 
 		describe('when no ldap config is provided', () => {
 			it('should throw error', async () => {
-				const system: System = systemFactory.buildWithId();
+				const system: SystemEntity = systemFactory.buildWithId();
 				await expect(ldapService.checkLdapCredentials(system, 'mockUsername', 'mockPassword')).rejects.toThrow(
 					new Error(`no LDAP config found in system ${system.id}`)
 				);
@@ -77,7 +77,7 @@ describe('LdapService', () => {
 
 		describe('when user is not authorized', () => {
 			it('should throw unauthorized error', async () => {
-				const system: System = systemFactory.withLdapConfig().buildWithId();
+				const system: SystemEntity = systemFactory.withLdapConfig().buildWithId();
 				await expect(ldapService.checkLdapCredentials(system, 'mockUsername', 'mockPassword')).rejects.toThrow(
 					new UnauthorizedException('User could not authenticate')
 				);
@@ -86,7 +86,7 @@ describe('LdapService', () => {
 
 		describe('when connected flag is not set', () => {
 			it('should throw unauthorized error', async () => {
-				const system: System = systemFactory.withLdapConfig().buildWithId();
+				const system: SystemEntity = systemFactory.withLdapConfig().buildWithId();
 				await expect(ldapService.checkLdapCredentials(system, 'connectWithoutFlag', 'mockPassword')).rejects.toThrow(
 					new UnauthorizedException('User could not authenticate')
 				);
