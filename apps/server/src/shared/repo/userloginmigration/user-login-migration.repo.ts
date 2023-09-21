@@ -1,7 +1,7 @@
 import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId, School, System, UserLoginMigrationDO } from '@shared/domain';
+import { EntityId, SchoolEntity, System, UserLoginMigrationDO } from '@shared/domain';
 import { IUserLoginMigration, UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
 import { LegacyLogger } from '@src/core/logger';
 import { BaseDORepo } from '../base.do.repo';
@@ -50,7 +50,7 @@ export class UserLoginMigrationRepo extends BaseDORepo<UserLoginMigrationDO, Use
 
 	mapDOToEntityProperties(entityDO: UserLoginMigrationDO): IUserLoginMigration {
 		const userLoginMigrationProps: IUserLoginMigration = {
-			school: this._em.getReference(School, entityDO.schoolId),
+			school: this._em.getReference(SchoolEntity, entityDO.schoolId),
 			sourceSystem: entityDO.sourceSystemId ? this._em.getReference(System, entityDO.sourceSystemId) : undefined,
 			targetSystem: this._em.getReference(System, entityDO.targetSystemId),
 			mandatorySince: entityDO.mandatorySince,

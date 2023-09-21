@@ -5,14 +5,14 @@ import { EntityId, LearnroomMetadata, LearnroomTypes } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { CourseGroup } from './coursegroup.entity';
 import type { ILessonParent } from './lesson.entity';
-import type { School } from './school.entity';
+import { SchoolEntity } from './school.entity';
 import type { ITaskParent } from './task.entity';
 import type { User } from './user.entity';
 
 export interface ICourseProperties {
 	name?: string;
 	description?: string;
-	school: School;
+	school: SchoolEntity;
 	students?: User[];
 	teachers?: User[];
 	substitutionTeachers?: User[];
@@ -48,8 +48,8 @@ export class Course
 	description: string = DEFAULT.description;
 
 	@Index()
-	@ManyToOne('School', { fieldName: 'schoolId' })
-	school: School;
+	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
+	school: SchoolEntity;
 
 	@Index()
 	@ManyToMany('User', undefined, { fieldName: 'userIds' })
@@ -177,5 +177,23 @@ export class Course
 		const isFinished = this.untilDate < new Date();
 
 		return isFinished;
+	}
+
+	public removeUser(userId: EntityId): void {
+		this.removeStudent(userId);
+		this.removeTeacher(userId);
+		this.removeSubstitutionTeacher(userId);
+	}
+
+	private removeStudent(userId: EntityId): void {
+		this.students.remove((u) => u.id === userId);
+	}
+
+	private removeTeacher(userId: EntityId): void {
+		this.teachers.remove((u) => u.id === userId);
+	}
+
+	private removeSubstitutionTeacher(userId: EntityId): void {
+		this.substitutionTeachers.remove((u) => u.id === userId);
 	}
 }

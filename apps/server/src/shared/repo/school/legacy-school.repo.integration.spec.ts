@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
 	ISchoolProperties,
 	LegacySchoolDo,
-	School,
+	SchoolEntity,
 	SchoolRolePermission,
 	SchoolRoles,
 	SchoolYear,
@@ -45,7 +45,7 @@ describe('LegacySchoolRepo', () => {
 	});
 
 	beforeEach(async () => {
-		await em.nativeDelete(School, {});
+		await em.nativeDelete(SchoolEntity, {});
 		await em.nativeDelete(SchoolYear, {});
 		em.clear();
 		jest.resetAllMocks();
@@ -56,7 +56,7 @@ describe('LegacySchoolRepo', () => {
 	});
 
 	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(School);
+		expect(repo.entityName).toBe(SchoolEntity);
 	});
 
 	describe('save is called', () => {
@@ -99,7 +99,7 @@ describe('LegacySchoolRepo', () => {
 		expect(storedSchoolYears).toHaveLength(1);
 		expect(storedSchoolYears[0]).toEqual(schoolYear);
 
-		const storedSchools = await em.find(School, {});
+		const storedSchools = await em.find(SchoolEntity, {});
 		expect(storedSchools).toHaveLength(1);
 
 		const storedSchool = storedSchools[0];
@@ -115,7 +115,7 @@ describe('LegacySchoolRepo', () => {
 	describe('findByExternalId', () => {
 		it('should find school by external ID', async () => {
 			const system: System = systemFactory.buildWithId();
-			const schoolEntity: School = schoolFactory.build({ externalId: 'externalId' });
+			const schoolEntity: SchoolEntity = schoolFactory.build({ externalId: 'externalId' });
 			schoolEntity.systems.add(system);
 
 			await em.persistAndFlush(schoolEntity);
@@ -140,7 +140,7 @@ describe('LegacySchoolRepo', () => {
 
 	describe('findBySchoolNumber', () => {
 		it('should find school by schoolnumber', async () => {
-			const schoolEntity: School = schoolFactory.build({ officialSchoolNumber: '12345' });
+			const schoolEntity: SchoolEntity = schoolFactory.build({ officialSchoolNumber: '12345' });
 
 			await em.persistAndFlush(schoolEntity);
 
@@ -158,8 +158,8 @@ describe('LegacySchoolRepo', () => {
 		describe('when there is more than school with the same officialSchoolNumber', () => {
 			const setup = async () => {
 				const officialSchoolNumber = '12345';
-				const schoolEntity: School = schoolFactory.build({ officialSchoolNumber });
-				const schoolEntity2: School = schoolFactory.build({ officialSchoolNumber });
+				const schoolEntity: SchoolEntity = schoolFactory.build({ officialSchoolNumber });
+				const schoolEntity2: SchoolEntity = schoolFactory.build({ officialSchoolNumber });
 
 				await em.persistAndFlush([schoolEntity, schoolEntity2]);
 
@@ -184,7 +184,7 @@ describe('LegacySchoolRepo', () => {
 		it('should map school entity to school domain object', () => {
 			const system: System = systemFactory.buildWithId();
 			const schoolYear: SchoolYear = schoolYearFactory.buildWithId();
-			const schoolEntity: School = schoolFactory.buildWithId({ systems: [system], features: [], schoolYear });
+			const schoolEntity: SchoolEntity = schoolFactory.buildWithId({ systems: [system], features: [], schoolYear });
 			const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.build({ school: schoolEntity });
 			schoolEntity.userLoginMigration = userLoginMigration;
 
@@ -209,7 +209,7 @@ describe('LegacySchoolRepo', () => {
 		});
 
 		it('should return an empty array for systems when entity systems is not initialized', () => {
-			const schoolEntity: School = schoolFactory.buildWithId({ systems: undefined });
+			const schoolEntity: SchoolEntity = schoolFactory.buildWithId({ systems: undefined });
 
 			const schoolDO = repo.mapEntityToDO(schoolEntity);
 
