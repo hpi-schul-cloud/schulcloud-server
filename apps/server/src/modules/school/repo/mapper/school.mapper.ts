@@ -13,4 +13,10 @@ export class SchoolMapper {
 
 		return school;
 	}
+
+	public static mapToDos(schoolEntities: SchoolEntity[]): School[] {
+		const schools = schoolEntities.map((entity) => this.mapToDo(entity));
+
+		return schools;
+	}
 }

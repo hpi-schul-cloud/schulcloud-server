@@ -19,7 +19,7 @@ export class SchoolMongoRepo extends BaseRepo<SchoolEntity> implements SchoolRep
 
 		const entities = await this._em.find(SchoolEntity, {}, findOptions);
 
-		const schools = entities.map((entity) => SchoolMapper.mapToDo(entity));
+		const schools = SchoolMapper.mapToDos(entities);
 
 		return schools;
 	}
