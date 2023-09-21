@@ -8,10 +8,14 @@ export class FileElementNode extends BoardNode {
 	@Property()
 	caption: string;
 
+	@Property()
+	alternativeText: string;
+
 	constructor(props: FileElementNodeProps) {
 		super(props);
 		this.type = BoardNodeType.FILE_ELEMENT;
 		this.caption = props.caption;
+		this.alternativeText = props.alternativeText;
 	}
 
 	useDoBuilder(builder: BoardDoBuilder): AnyBoardDo {
@@ -23,4 +27,5 @@ export class FileElementNode extends BoardNode {
 
 export interface FileElementNodeProps extends BoardNodeProps {
 	caption: string;
+	alternativeText: string;
 }
