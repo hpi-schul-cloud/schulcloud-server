@@ -8,7 +8,7 @@ import type { EntityId } from '../types/entity-id';
 import type { ITaskProperties, ITaskStatus } from '../types/task.types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
-import type { Lesson } from './lesson.entity';
+import type { LessonEntity } from './lesson.entity';
 import type { Submission } from './submission.entity';
 import { User } from './user.entity';
 
@@ -79,8 +79,8 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	school: SchoolEntity;
 
 	@Index()
-	@ManyToOne('Lesson', { fieldName: 'lessonId', nullable: true })
-	lesson?: Lesson; // In database exist also null, but it can not set.
+	@ManyToOne('LessonEntity', { fieldName: 'lessonId', nullable: true })
+	lesson?: LessonEntity; // In database exist also null, but it can not set.
 
 	@OneToMany('Submission', 'task')
 	submissions = new Collection<Submission>(this);

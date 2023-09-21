@@ -40,6 +40,7 @@ export class ContentElementFactory {
 		const element = new FileElement({
 			id: new ObjectId().toHexString(),
 			caption: '',
+			alternativeText: '',
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),

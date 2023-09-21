@@ -99,6 +99,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 		const boardNode = new FileElementNode({
 			id: fileElement.id,
 			caption: fileElement.caption,
+			alternativeText: fileElement.alternativeText,
 			parent: parentData?.boardNode,
 			position: parentData?.position,
 		});

@@ -131,6 +131,7 @@ describe(RecursiveSaveVisitor.name, () => {
 				id: fileElement.id,
 				type: BoardNodeType.FILE_ELEMENT,
 				caption: fileElement.caption,
+				alternativeText: fileElement.alternativeText,
 			};
 			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
 		});
