@@ -11,7 +11,7 @@ import {
 } from '@mikro-orm/core';
 import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
 import { BaseEntity } from './base.entity';
-import { SchoolYear } from './schoolyear.entity';
+import { SchoolYearEntity } from './schoolyear.entity';
 import { SystemEntity } from './system.entity';
 import { FederalState } from './federal-state.entity';
 
@@ -36,7 +36,7 @@ export interface ISchoolProperties {
 	officialSchoolNumber?: string;
 	systems?: SystemEntity[];
 	features?: SchoolFeatures[];
-	schoolYear?: SchoolYear;
+	schoolYear?: SchoolYearEntity;
 	userLoginMigration?: UserLoginMigration;
 	federalState: FederalState;
 }
@@ -90,7 +90,7 @@ export class SchoolEntity extends BaseEntity {
 	permissions?: SchoolRoles;
 
 	@ManyToOne('SchoolYear', { fieldName: 'currentYear', nullable: true })
-	schoolYear?: SchoolYear;
+	schoolYear?: SchoolYearEntity;
 
 	@OneToOne(() => UserLoginMigration, (userLoginMigration: UserLoginMigration) => userLoginMigration.school, {
 		orphanRemoval: true,

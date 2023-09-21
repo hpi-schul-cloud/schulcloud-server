@@ -9,7 +9,7 @@ import {
 	SchoolEntity,
 	SchoolRolePermission,
 	SchoolRoles,
-	SchoolYear,
+	SchoolYearEntity,
 	SystemEntity,
 	UserLoginMigration,
 } from '@shared/domain';
@@ -46,7 +46,7 @@ describe('LegacySchoolRepo', () => {
 
 	beforeEach(async () => {
 		await em.nativeDelete(SchoolEntity, {});
-		await em.nativeDelete(SchoolYear, {});
+		await em.nativeDelete(SchoolYearEntity, {});
 		em.clear();
 		jest.resetAllMocks();
 	});
@@ -95,7 +95,7 @@ describe('LegacySchoolRepo', () => {
 
 		await em.persistAndFlush([school]);
 
-		const storedSchoolYears = await em.find(SchoolYear, {});
+		const storedSchoolYears = await em.find(SchoolYearEntity, {});
 		expect(storedSchoolYears).toHaveLength(1);
 		expect(storedSchoolYears[0]).toEqual(schoolYear);
 
@@ -183,7 +183,7 @@ describe('LegacySchoolRepo', () => {
 	describe('mapEntityToDO is called', () => {
 		it('should map school entity to school domain object', () => {
 			const system: SystemEntity = systemFactory.buildWithId();
-			const schoolYear: SchoolYear = schoolYearFactory.buildWithId();
+			const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
 			const schoolEntity: SchoolEntity = schoolFactory.buildWithId({ systems: [system], features: [], schoolYear });
 			const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.build({ school: schoolEntity });
 			schoolEntity.userLoginMigration = userLoginMigration;

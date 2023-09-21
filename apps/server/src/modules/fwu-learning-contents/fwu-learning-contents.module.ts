@@ -3,7 +3,7 @@ import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { HttpModule } from '@nestjs/axios';
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { Account, Role, SchoolEntity, SchoolYear, SystemEntity, User } from '@shared/domain';
+import { Account, Role, SchoolEntity, SchoolYearEntity, SystemEntity, User } from '@shared/domain';
 import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq';
 import { S3ClientModule } from '@shared/infra/s3-client';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
@@ -36,7 +36,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: [User, Account, Role, SchoolEntity, SystemEntity, SchoolYear],
+			entities: [User, Account, Role, SchoolEntity, SystemEntity, SchoolYearEntity],
 
 			// debug: true, // use it for locally debugging of querys
 		}),

@@ -1,7 +1,7 @@
 import { HttpModule } from '@nestjs/axios';
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { Account, Role, SchoolEntity, SchoolYear, SystemEntity, User } from '@shared/domain';
+import { Account, Role, SchoolEntity, SchoolYearEntity, SystemEntity, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
 import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
@@ -16,7 +16,7 @@ import { config, s3Config } from './fwu-learning-contents.config';
 import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';
 
 const imports = [
-	MongoMemoryDatabaseModule.forRoot({ entities: [User, Account, Role, SchoolEntity, SystemEntity, SchoolYear] }),
+	MongoMemoryDatabaseModule.forRoot({ entities: [User, Account, Role, SchoolEntity, SystemEntity, SchoolYearEntity] }),
 	AuthorizationModule,
 	AuthenticationModule,
 	ConfigModule.forRoot(createConfigModuleOptions(config)),

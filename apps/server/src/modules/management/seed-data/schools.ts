@@ -1,5 +1,12 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-import { FederalState, ISchoolProperties, SchoolFeatures, SchoolRoles, SchoolYear, SystemEntity } from '@shared/domain';
+import {
+	FederalState,
+	ISchoolProperties,
+	SchoolFeatures,
+	SchoolRoles,
+	SchoolYearEntity,
+	SystemEntity,
+} from '@shared/domain';
 import { federalStateFactory, schoolFactory } from '@shared/testing';
 import { DeepPartial } from 'fishery';
 import { EFederalState } from './federalstates';
@@ -265,7 +272,7 @@ const seedSchools: SeedSchoolProperties[] = [
 
 export function generateSchools(entities: {
 	systems: SystemEntity[];
-	schoolYears: SchoolYear[];
+	schoolYears: SchoolYearEntity[];
 	federalStates: FederalState[];
 }) {
 	return seedSchools.map((partial) => {
