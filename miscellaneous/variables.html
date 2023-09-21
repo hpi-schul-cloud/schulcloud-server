@@ -5143,6 +5143,7 @@ it should ensure an empty result</p>
 		id: new ObjectId().toHexString(),
 		children: [],
 		caption: &#x60;&lt;p&gt;caption #${sequence}&lt;/p&gt;&#x60;,
+		alternativeText: &#x60;alternativeText #${sequence}&#x60;,
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	};
@@ -5174,6 +5175,7 @@ it should ensure an empty result</p>
 	({ sequence }) &#x3D;&gt; {
 		return {
 			caption: &#x60;caption #${sequence}&#x60;,
+			alternativeText: &#x60;alternativeText #${sequence}&#x60;,
 		};
 	}
 )</code>

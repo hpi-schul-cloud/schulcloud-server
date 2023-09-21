@@ -152,6 +152,9 @@
                                 <li>
                                     <a href="#caption" >caption</a>
                                 </li>
+                                <li>
+                                    <a href="#alternativeText" >alternativeText</a>
+                                </li>
                             </ul>
                         </td>
                     </tr>
@@ -232,7 +235,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:17</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:25</a></code>
 </div>
                 </td>
             </tr>
@@ -309,7 +312,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:21</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:29</a></code>
 </div>
                 </td>
             </tr>
@@ -384,7 +387,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:13</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:21</a></code>
 </div>
                 </td>
             </tr>
@@ -762,6 +765,75 @@
                     </tr>
             </tbody>
         </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="alternativeText"></a>
+                        <span class="name"><b>alternativeText</b><a href="#alternativeText"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>alternativeText()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/file-element.do.ts:13</a></div>
+                                </td>
+                            </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>set</b><code>alternativeText(value: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/file-element.do.ts:17</a></div>
+                                </td>
+                            </tr>
+                    <tr>
+                        <td class="col-md-4">
+
+                                <div class="io-description">
+                                        <b>Parameters :</b>
+                                        <table class="params">
+                                            <thead>
+                                                <tr>
+                                                    <td>Name</td>
+                                                        <td>Type</td>
+                                                    <td>Optional</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    <tr>
+                                                            <td>value</td>
+                                                    
+                                                            <td>
+                                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                            </td>
+                                                    
+                                                        <td>
+                                                                No
+                                                        </td>
+                                                        
+                                                    </tr>
+                                            </tbody>
+                                        </table>
+                                </div>
+                                <div>
+                                </div>
+                                <div class="io-description">
+                                    <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                                </div>
+                        </td>
+                    </tr>
+            </tbody>
+        </table>
 </section>
     </div>
 
@@ -779,6 +851,14 @@ export class FileElement extends BoardComposite&lt;FileElementProps&gt; {
 		this.props.caption &#x3D; value;
 	}
 
+	get alternativeText(): string {
+		return this.props.alternativeText;
+	}
+
+	set alternativeText(value: string) {
+		this.props.alternativeText &#x3D; value;
+	}
+
 	isAllowedAsChild(): boolean {
 		return false;
 	}
@@ -794,6 +874,7 @@ export class FileElement extends BoardComposite&lt;FileElementProps&gt; {
 
 export interface FileElementProps extends BoardCompositeProps {
 	caption: string;
+	alternativeText: string;
 }
 </code></pre>
     </div>

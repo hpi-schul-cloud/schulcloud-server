@@ -152,7 +152,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="62" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/update-element-content.body.params.ts:62</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="66" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/update-element-content.body.params.ts:66</a></div>
                         </td>
                     </tr>
 
@@ -194,7 +194,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/ElementContentBody.html#source" target="_self" >ElementContentBody:58</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/ElementContentBody.html#source" target="_self" >ElementContentBody:62</a></code>
 </div>
                         </td>
                     </tr>
@@ -233,6 +233,10 @@ export class FileContentBody {
 	@IsString()
 	@ApiProperty({})
 	caption!: string;
+
+	@IsString()
+	@ApiProperty({})
+	alternativeText!: string;
 }
 
 export class FileElementContentBody extends ElementContentBody {

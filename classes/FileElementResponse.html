@@ -128,7 +128,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/file-element.response.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/file-element.response.ts:18</a></div>
                             </td>
                         </tr>
 
@@ -199,7 +199,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/file-element.response.ts:29</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/file-element.response.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -235,7 +235,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/file-element.response.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/file-element.response.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -271,7 +271,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/file-element.response.ts:32</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/file-element.response.ts:36</a></div>
                         </td>
                     </tr>
 
@@ -307,7 +307,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/file-element.response.ts:26</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/file-element.response.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -331,12 +331,16 @@ import { ContentElementType } from &#x27;@shared/domain&#x27;;
 import { TimestampsResponse } from &#x27;../timestamps.response&#x27;;
 
 export class FileElementContent {
-	constructor({ caption }: FileElementContent) {
+	constructor({ caption, alternativeText }: FileElementContent) {
 		this.caption &#x3D; caption;
+		this.alternativeText &#x3D; alternativeText;
 	}
 
 	@ApiProperty()
 	caption: string;
+
+	@ApiProperty()
+	alternativeText: string;
 }
 
 export class FileElementResponse {
