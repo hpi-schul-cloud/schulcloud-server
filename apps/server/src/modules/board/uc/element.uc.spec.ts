@@ -98,7 +98,7 @@ describe(ElementUc.name, () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const fileElement = fileElementFactory.build();
-				const content = { caption: 'this has been updated' };
+				const content = { caption: 'this has been updated', alternativeText: 'this altText has been updated' };
 
 				const elementSpy = elementService.findById.mockResolvedValue(fileElement);
 
