@@ -57,7 +57,7 @@ describe(FilesService.name, () => {
 			};
 
 			describe("doesn't have an access to any files", () => {
-				it('should return empty array', async () => {
+				it('should return an empty array', async () => {
 					const { userId } = setup();
 
 					repo.findByPermissionRefId.mockResolvedValueOnce([]);
@@ -70,7 +70,7 @@ describe(FilesService.name, () => {
 			});
 
 			describe('does have an access to some files', () => {
-				it('should return proper file entities', async () => {
+				it('should return an array containing proper file entities', async () => {
 					const { userId, accessibleFiles } = setup();
 
 					repo.findByPermissionRefId.mockResolvedValueOnce(accessibleFiles);
