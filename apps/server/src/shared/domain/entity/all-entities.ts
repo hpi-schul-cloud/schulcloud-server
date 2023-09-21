@@ -20,7 +20,6 @@ import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
 import { FederalState } from './federal-state.entity';
-import { File } from './file.entity';
 import { ImportUser } from './import-user.entity';
 import {
 	Board,
@@ -30,14 +29,14 @@ import {
 	LessonBoardElement,
 	TaskBoardElement,
 } from './legacy-board';
-import { Lesson } from './lesson.entity';
+import { LessonEntity } from './lesson.entity';
 import { LtiTool } from './ltitool.entity';
 import { Material } from './materials.entity';
 import { CourseNews, News, SchoolNews, TeamNews } from './news.entity';
 import { Role } from './role.entity';
-import { School, SchoolRolePermission, SchoolRoles } from './school.entity';
+import { SchoolEntity, SchoolRolePermission, SchoolRoles } from './school.entity';
 import { SchoolYear } from './schoolyear.entity';
-import { StorageProvider } from './storageprovider.entity';
+import { StorageProviderEntity } from './storageprovider.entity';
 import { Submission } from './submission.entity';
 import { System } from './system.entity';
 import { Task } from './task.entity';
@@ -69,9 +68,8 @@ export const ALL_ENTITIES = [
 	DashboardModelEntity,
 	ExternalToolEntity,
 	FederalState,
-	File,
 	ImportUser,
-	Lesson,
+	LessonEntity,
 	LessonBoardElement,
 	LtiTool,
 	Material,
@@ -79,14 +77,14 @@ export const ALL_ENTITIES = [
 	PseudonymEntity,
 	ExternalToolPseudonymEntity,
 	Role,
-	School,
+	SchoolEntity,
 	SchoolExternalToolEntity,
 	SchoolNews,
 	SchoolRolePermission,
 	SchoolRoles,
 	SchoolYear,
 	ShareToken,
-	StorageProvider,
+	StorageProviderEntity,
 	Submission,
 	System,
 	Task,

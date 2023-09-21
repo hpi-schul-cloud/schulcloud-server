@@ -2,7 +2,17 @@ import { QueryOrderMap, QueryOrderNumeric } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
-import { Counted, EntityId, IFindOptions, ImportUser, INameMatch, Role, School, SortOrder, User } from '@shared/domain';
+import {
+	Counted,
+	EntityId,
+	IFindOptions,
+	ImportUser,
+	INameMatch,
+	Role,
+	SchoolEntity,
+	SortOrder,
+	User,
+} from '@shared/domain';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { MongoPatterns } from '../mongo.patterns';
 
@@ -36,7 +46,7 @@ export class UserRepo extends BaseRepo<User> {
 	 * used for importusers module to request users not referenced in importusers
 	 */
 	async findWithoutImportUser(
-		school: School,
+		school: SchoolEntity,
 		filters?: INameMatch,
 		options?: IFindOptions<User>
 	): Promise<Counted<User[]>> {
