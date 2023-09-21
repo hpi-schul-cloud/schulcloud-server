@@ -53,7 +53,7 @@ export class ImportUser extends BaseEntityWithTimestamps implements IEntityWithS
 	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId', wrappedReference: true, eager: true })
 	school: IdentifiedReference<SchoolEntity>;
 
-	@ManyToOne(() => 'System', { wrappedReference: true })
+	@ManyToOne(() => SystemEntity, { wrappedReference: true })
 	system: IdentifiedReference<SystemEntity, BaseEntityReference>;
 
 	@Property()
