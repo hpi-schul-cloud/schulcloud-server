@@ -11,8 +11,8 @@ import { Counted, EntityId } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { LegacyLogger } from '@src/core/logger';
+import FileType from 'file-type-cjs/file-type-cjs-index';
 import { Readable } from 'stream';
-import StreamMimeType from 'stream-mime-type-cjs/stream-mime-type-cjs-index';
 import {
 	CopyFileResponse,
 	CopyFilesOfParentParams,
@@ -129,12 +129,9 @@ export class FilesStorageService {
 	}
 
 	private async detectMimeTypeByStream(file: Readable): Promise<{ mime?: string; stream: Readable }> {
-		const { stream, mime } = await StreamMimeType.getMimeType(file, {
-			strict: true,
-		});
-		const readable = new Readable().wrap(stream);
+		const stream = await FileType.fileTypeStream(file);
 
-		return { mime, stream: readable };
+		return { mime: stream.fileType?.mime, stream };
 	}
 
 	private async resolveFileName(file: FileDto, params: FileRecordParams): Promise<string> {
