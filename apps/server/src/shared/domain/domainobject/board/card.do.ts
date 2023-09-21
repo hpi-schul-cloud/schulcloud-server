@@ -42,3 +42,7 @@ export interface CardProps extends BoardCompositeProps {
 	title: string;
 	height: number;
 }
+
+export function isCard(reference: unknown): reference is Card {
+	return reference instanceof Card;
+}
