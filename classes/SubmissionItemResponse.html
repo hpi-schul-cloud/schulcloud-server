@@ -102,7 +102,7 @@
                             </li>
                             <li>
                                     <span class="modifier"></span>
-                                <a href="#userData" >userData</a>
+                                <a href="#userId" >userId</a>
                             </li>
                         </ul>
                     </td>
@@ -128,7 +128,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submission-item.response.ts:5</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submission-item.response.ts:4</a></div>
                             </td>
                         </tr>
 
@@ -199,7 +199,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submission-item.response.ts:20</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submission-item.response.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -235,7 +235,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submission-item.response.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submission-item.response.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -271,7 +271,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submission-item.response.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submission-item.response.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -282,17 +282,17 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="userData"></a>
+                    <a name="userId"></a>
                     <span class="name">
                             <span class="modifier"></span>
-                        <span ><b>userData</b></span>
-                        <a href="#userData"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>userId</b></span>
+                        <a href="#userId"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../classes/UserDataResponse.html" target="_self" >UserDataResponse</a></code>
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 
                     </td>
                 </tr>
@@ -301,13 +301,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @ApiProperty({pattern: &#x27;[a-f0-9]{24}&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submission-item.response.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submission-item.response.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -328,14 +328,13 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
 import { TimestampsResponse } from &#x27;../timestamps.response&#x27;;
-import { UserDataResponse } from &#x27;../user-data.response&#x27;;
 
 export class SubmissionItemResponse {
-	constructor({ id, timestamps, completed, userData }: SubmissionItemResponse) {
+	constructor({ id, timestamps, completed, userId }: SubmissionItemResponse) {
 		this.id &#x3D; id;
 		this.timestamps &#x3D; timestamps;
 		this.completed &#x3D; completed;
-		this.userData &#x3D; userData;
+		this.userId &#x3D; userId;
 	}
 
 	@ApiProperty({ pattern: &#x27;[a-f0-9]{24}&#x27; })
@@ -347,8 +346,8 @@ export class SubmissionItemResponse {
 	@ApiProperty()
 	completed: boolean;
 
-	@ApiProperty()
-	userData: UserDataResponse;
+	@ApiProperty({ pattern: &#x27;[a-f0-9]{24}&#x27; })
+	userId: string;
 }
 </code></pre>
     </div>

@@ -689,7 +689,7 @@ export class ElementController {
 			bodyParams.completed
 		);
 		const mapper &#x3D; SubmissionItemResponseMapper.getInstance();
-		const response &#x3D; mapper.mapToResponse(submissionItem);
+		const response &#x3D; mapper.mapSubmissionsToResponse(submissionItem);
 
 		return response;
 	}

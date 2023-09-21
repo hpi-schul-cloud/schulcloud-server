@@ -809,7 +809,7 @@ export class CourseRepo extends BaseRepo&lt;Course&gt; {
 	async findById(id: EntityId, populate &#x3D; true): Promise&lt;Course&gt; {
 		const course &#x3D; await super.findById(id);
 		if (populate) {
-			await this._em.populate(course, [&#x27;courseGroups&#x27;, &#x27;teachers&#x27;]);
+			await this._em.populate(course, [&#x27;courseGroups&#x27;, &#x27;teachers&#x27;, &#x27;substitutionTeachers&#x27;, &#x27;students&#x27;]);
 		}
 		return course;
 	}

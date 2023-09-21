@@ -130,7 +130,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/board/uc/submission-item.uc.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/board/uc/submission-item.uc.ts:16</a></div>
                             </td>
                         </tr>
 
@@ -244,8 +244,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="87"
-                            class="link-to-prism">apps/server/src/modules/board/uc/submission-item.uc.ts:87</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="101"
+                            class="link-to-prism">apps/server/src/modules/board/uc/submission-item.uc.ts:101</a></div>
                 </td>
             </tr>
 
@@ -351,8 +351,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="21"
-                            class="link-to-prism">apps/server/src/modules/board/uc/submission-item.uc.ts:21</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="28"
+                            class="link-to-prism">apps/server/src/modules/board/uc/submission-item.uc.ts:28</a></div>
                 </td>
             </tr>
 
@@ -402,7 +402,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/Submission.html" target="_self" >Promise&lt;SubmissionItem[]&gt;</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;literal type&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -435,8 +435,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="75"
-                            class="link-to-prism">apps/server/src/modules/board/uc/submission-item.uc.ts:75</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="89"
+                            class="link-to-prism">apps/server/src/modules/board/uc/submission-item.uc.ts:89</a></div>
                 </td>
             </tr>
 
@@ -507,8 +507,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="59"
-                            class="link-to-prism">apps/server/src/modules/board/uc/submission-item.uc.ts:59</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="73"
+                            class="link-to-prism">apps/server/src/modules/board/uc/submission-item.uc.ts:73</a></div>
                 </td>
             </tr>
 
@@ -590,8 +590,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="42"
-                            class="link-to-prism">apps/server/src/modules/board/uc/submission-item.uc.ts:42</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="56"
+                            class="link-to-prism">apps/server/src/modules/board/uc/submission-item.uc.ts:56</a></div>
                 </td>
             </tr>
 
@@ -670,7 +670,14 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ForbiddenException, forwardRef, HttpException, HttpStatus, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
-import { AnyBoardDo, EntityId, SubmissionContainerElement, SubmissionItem, UserRoleEnum } from &#x27;@shared/domain&#x27;;
+import {
+	AnyBoardDo,
+	EntityId,
+	SubmissionContainerElement,
+	SubmissionItem,
+	UserBoardRoles,
+	UserRoleEnum,
+} from &#x27;@shared/domain&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
 import { Action } from &#x27;@src/modules/authorization/types/action.enum&#x27;;
@@ -689,7 +696,10 @@ export class SubmissionItemUc {
 		this.logger.setContext(SubmissionItemUc.name);
 	}
 
-	async findSubmissionItems(userId: EntityId, submissionContainerId: EntityId): Promise&lt;SubmissionItem[]&gt; {
+	async findSubmissionItems(
+		userId: EntityId,
+		submissionContainerId: EntityId
+	): Promise&lt;{ submissionItems: SubmissionItem[]; users: UserBoardRoles[] }&gt; {
 		const submissionContainer &#x3D; await this.getSubmissionContainer(submissionContainerId);
 		await this.checkPermission(userId, submissionContainer, Action.read);
 
@@ -702,12 +712,16 @@ export class SubmissionItemUc {
 			);
 		}
 
+		const boardAuthorizable &#x3D; await this.boardDoAuthorizableService.getBoardAuthorizable(submissionContainer);
+		let users &#x3D; boardAuthorizable.users.filter((user) &#x3D;&gt; user.userRoleEnum &#x3D;&#x3D;&#x3D; UserRoleEnum.STUDENT);
+
 		const isAuthorizedStudent &#x3D; await this.isAuthorizedStudent(userId, submissionContainer);
 		if (isAuthorizedStudent) {
 			submissionItems &#x3D; submissionItems.filter((item) &#x3D;&gt; item.userId &#x3D;&#x3D;&#x3D; userId);
+			users &#x3D; [];
 		}
 
-		return submissionItems;
+		return { submissionItems, users };
 	}
 
 	async updateSubmissionItem(

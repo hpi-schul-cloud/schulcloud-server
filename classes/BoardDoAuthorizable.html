@@ -261,7 +261,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts:30</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts:32</a></div>
                                 </td>
                             </tr>
 
@@ -283,7 +283,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts:34</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts:36</a></div>
                                 </td>
                             </tr>
 
@@ -294,7 +294,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts:38</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-do-authorizable.ts:40</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -358,6 +358,8 @@ export enum UserRoleEnum {
 }
 
 export interface UserBoardRoles {
+	firstName?: string;
+	lastName?: string;
 	roles: BoardRoles[];
 	userId: EntityId;
 	userRoleEnum: UserRoleEnum;

@@ -632,6 +632,14 @@ const enum CourseFeatures {
 	VIDEOCONFERENCE &#x3D; &#x27;videoconference&#x27;,
 }
 
+export class UsersList {
+	id!: string;
+
+	firstName!: string;
+
+	lastName!: string;
+}
+
 @Entity({ tableName: &#x27;courses&#x27; })
 export class Course
 	extends BaseEntityWithTimestamps
@@ -699,21 +707,21 @@ export class Course
 	}
 
 	public getStudentIds(): EntityId[] {
-		const studentIds &#x3D; this.extractIds(this.students);
+		const studentIds &#x3D; Course.extractIds(this.students);
 		return studentIds;
 	}
 
 	public getTeacherIds(): EntityId[] {
-		const teacherIds &#x3D; this.extractIds(this.teachers);
+		const teacherIds &#x3D; Course.extractIds(this.teachers);
 		return teacherIds;
 	}
 
 	public getSubstitutionTeacherIds(): EntityId[] {
-		const substitutionTeacherIds &#x3D; this.extractIds(this.substitutionTeachers);
+		const substitutionTeacherIds &#x3D; Course.extractIds(this.substitutionTeachers);
 		return substitutionTeacherIds;
 	}
 
-	private extractIds(users: Collection&lt;User&gt;): EntityId[] {
+	private static extractIds(users: Collection&lt;User&gt;): EntityId[] {
 		if (!users) {
 			throw new InternalServerErrorException(
 				&#x60;Students, teachers or stubstitution is undefined. The course needs to be populated&#x60;
@@ -724,6 +732,44 @@ export class Course
 		const ids &#x3D; objectIds.map((id): string &#x3D;&gt; id.toString());
 
 		return ids;
+	}
+
+	public getStudentsList(): UsersList[] {
+		const users &#x3D; this.students.getItems();
+		if (users.length) {
+			const usersList &#x3D; Course.extractUserList(users);
+			return usersList;
+		}
+		return [];
+	}
+
+	public getTeachersList(): UsersList[] {
+		const users &#x3D; this.teachers.getItems();
+		if (users.length) {
+			const usersList &#x3D; Course.extractUserList(users);
+			return usersList;
+		}
+		return [];
+	}
+
+	public getSubstitutionTeachersList(): UsersList[] {
+		const users &#x3D; this.substitutionTeachers.getItems();
+		if (users.length) {
+			const usersList &#x3D; Course.extractUserList(users);
+			return usersList;
+		}
+		return [];
+	}
+
+	private static extractUserList(users: User[]): UsersList[] {
+		const usersList: UsersList[] &#x3D; users.map((user) &#x3D;&gt; {
+			return {
+				id: user.id,
+				firstName: user.firstName,
+				lastName: user.lastName,
+			};
+		});
+		return usersList;
 	}
 
 	public isUserSubstitutionTeacher(user: User): boolean {

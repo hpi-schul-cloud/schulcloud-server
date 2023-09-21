@@ -111,7 +111,15 @@
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
+                                <a href="#mapSubmissionsToResponse" >mapSubmissionsToResponse</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#mapToResponse" >mapToResponse</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#mapUsersToResponse" >mapUsersToResponse</a>
                             </li>
                         </ul>
                     </td>
@@ -209,26 +217,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapToResponse"></a>
+                    <a name="mapSubmissionsToResponse"></a>
                     <span class="name">
                         <span class="modifier">Public</span>
-                        <span ><b>mapToResponse</b></span>
-                        <a href="#mapToResponse"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>mapSubmissionsToResponse</b></span>
+                        <a href="#mapSubmissionsToResponse"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToResponse(submissionItem: <a href="../classes/SubmissionItem.html" target="_self">SubmissionItem</a>)</code>
+                    <code>mapSubmissionsToResponse(submissionItem: <a href="../classes/SubmissionItem.html" target="_self">SubmissionItem</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="15"
-                            class="link-to-prism">apps/server/src/modules/board/controller/mapper/submission-item-response.mapper.ts:15</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="26"
+                            class="link-to-prism">apps/server/src/modules/board/controller/mapper/submission-item-response.mapper.ts:26</a></div>
                 </td>
             </tr>
 
@@ -276,6 +284,160 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapToResponse"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>mapToResponse</b></span>
+                        <a href="#mapToResponse"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapToResponse(submissionItems: <a href="../entitys/Submission.html" target="_self">SubmissionItem[]</a>, users: <a href="../classes/User.html" target="_self">UserBoardRoles[]</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="15"
+                            class="link-to-prism">apps/server/src/modules/board/controller/mapper/submission-item-response.mapper.ts:15</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>submissionItems</td>
+                                    <td>
+                                                <code><a href="../entitys/Submission.html" target="_self" >SubmissionItem[]</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>users</td>
+                                    <td>
+                                                <code><a href="../classes/User.html" target="_self" >UserBoardRoles[]</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/SubmissionsResponse.html" target="_self" >SubmissionsResponse</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapUsersToResponse"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>mapUsersToResponse</b></span>
+                        <a href="#mapUsersToResponse"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapUsersToResponse(user: <a href="../interfaces/UserBoardRoles.html" target="_self">UserBoardRoles</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="40"
+                            class="link-to-prism">apps/server/src/modules/board/controller/mapper/submission-item-response.mapper.ts:40</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>user</td>
+                                    <td>
+                                                <code><a href="../interfaces/UserBoardRoles.html" target="_self" >UserBoardRoles</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
 
@@ -286,8 +448,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SubmissionItem } from &#x27;@shared/domain&#x27;;
-import { SubmissionItemResponse, TimestampsResponse, UserDataResponse } from &#x27;../dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SubmissionItem, UserBoardRoles } from &#x27;@shared/domain&#x27;;
+import { SubmissionItemResponse, SubmissionsResponse, TimestampsResponse, UserDataResponse } from &#x27;../dto&#x27;;
 
 export class SubmissionItemResponseMapper {
 	private static instance: SubmissionItemResponseMapper;
@@ -300,7 +462,18 @@ export class SubmissionItemResponseMapper {
 		return SubmissionItemResponseMapper.instance;
 	}
 
-	public mapToResponse(submissionItem: SubmissionItem): SubmissionItemResponse {
+	public mapToResponse(submissionItems: SubmissionItem[], users: UserBoardRoles[]): SubmissionsResponse {
+		const submissionItemsResponse: SubmissionItemResponse[] &#x3D; submissionItems.map((item) &#x3D;&gt;
+			this.mapSubmissionsToResponse(item)
+		);
+		const usersResponse: UserDataResponse[] &#x3D; users.map((user) &#x3D;&gt; this.mapUsersToResponse(user));
+
+		const response &#x3D; new SubmissionsResponse(submissionItemsResponse, usersResponse);
+
+		return response;
+	}
+
+	public mapSubmissionsToResponse(submissionItem: SubmissionItem): SubmissionItemResponse {
 		const result &#x3D; new SubmissionItemResponse({
 			completed: submissionItem.completed,
 			id: submissionItem.id,
@@ -308,14 +481,18 @@ export class SubmissionItemResponseMapper {
 				lastUpdatedAt: submissionItem.updatedAt,
 				createdAt: submissionItem.createdAt,
 			}),
-			userData: new UserDataResponse({
-				// TODO: put valid user info here which comes from the submission owner
-				firstName: &#x27;John&#x27;,
-				lastName: &#x27;Mr Doe&#x27;,
-				userId: submissionItem.userId,
-			}),
+			userId: submissionItem.userId,
 		});
 
+		return result;
+	}
+
+	private mapUsersToResponse(user: UserBoardRoles) {
+		const result &#x3D; new UserDataResponse({
+			userId: user.userId,
+			firstName: user.firstName || &#x27;&#x27;,
+			lastName: user.lastName || &#x27;&#x27;,
+		});
 		return result;
 	}
 }
