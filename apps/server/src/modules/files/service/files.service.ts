@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { FilesRepo } from '../repo';
+import { FileEntity } from '../entity';
 
 @Injectable()
 export class FilesService {
 	constructor(private readonly repo: FilesRepo) {}
+
+	async findFilesAccessibleByUser(userId: EntityId): Promise<FileEntity[]> {
+		return this.repo.findByPermissionRefId(userId);
+	}
 
 	async removeUserPermissionsToAnyFiles(userId: EntityId): Promise<number> {
 		const entities = await this.repo.findByPermissionRefId(userId);

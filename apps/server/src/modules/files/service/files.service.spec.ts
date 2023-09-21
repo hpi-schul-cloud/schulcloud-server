@@ -39,6 +39,51 @@ describe(FilesService.name, () => {
 		await module.close();
 	});
 
+	describe('findFilesAccessibleByUser', () => {
+		describe('when called with a userId of a user that', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const accessibleFiles: FileEntity[] = [];
+
+				for (let i = 0; i < 5; i += 1) {
+					accessibleFiles.push(
+						fileEntityFactory.build({
+							permissions: [filePermissionEntityFactory.build({ refId: userId })],
+						})
+					);
+				}
+
+				return { userId, accessibleFiles };
+			};
+
+			describe("doesn't have an access to any files", () => {
+				it('should return empty array', async () => {
+					const { userId } = setup();
+
+					repo.findByPermissionRefId.mockResolvedValueOnce([]);
+
+					const result = await service.findFilesAccessibleByUser(userId);
+
+					expect(repo.findByPermissionRefId).toBeCalledWith(userId);
+					expect(result).toEqual([]);
+				});
+			});
+
+			describe('does have an access to some files', () => {
+				it('should return proper file entities', async () => {
+					const { userId, accessibleFiles } = setup();
+
+					repo.findByPermissionRefId.mockResolvedValueOnce(accessibleFiles);
+
+					const result = await service.findFilesAccessibleByUser(userId);
+
+					expect(repo.findByPermissionRefId).toBeCalledWith(userId);
+					expect(result).toEqual(accessibleFiles);
+				});
+			});
+		});
+	});
+
 	describe('removeUserPermissionsToAnyFiles', () => {
 		it('should not modify any files if there are none that user has permission to access', async () => {
 			const userId = new ObjectId().toHexString();
