@@ -8,6 +8,7 @@ import {
 	FileElementNode,
 	InputFormat,
 	RichTextElementNode,
+	SubmissionContainerElementNode,
 } from '@shared/domain';
 import {
 	TestApiClient,
@@ -19,6 +20,7 @@ import {
 	courseFactory,
 	fileElementNodeFactory,
 	richTextElementNodeFactory,
+	submissionContainerElementNodeFactory,
 } from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server/server.module';
 
@@ -61,6 +63,7 @@ describe(`content element update content (api)`, () => {
 			const parentCard = cardNodeFactory.buildWithId({ parent: column });
 			const richTextelement = richTextElementNodeFactory.buildWithId({ parent: parentCard });
 			const fileElement = fileElementNodeFactory.buildWithId({ parent: parentCard });
+			const submission = submissionContainerElementNodeFactory.buildWithId({ parent: parentCard });
 
 			await em.persistAndFlush([
 				teacherAccount,
@@ -70,12 +73,13 @@ describe(`content element update content (api)`, () => {
 				columnBoardNode,
 				richTextelement,
 				fileElement,
+				submission,
 			]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 
-			return { loggedInClient, richTextelement, fileElement };
+			return { loggedInClient, richTextelement, fileElement, submission };
 		};
 
 		it('should return status 204', async () => {
@@ -145,6 +149,29 @@ describe(`content element update content (api)`, () => {
 			const result = await em.findOneOrFail(FileElementNode, fileElement.id);
 
 			expect(result.alternativeText).toEqual('rich text 1 some more text');
+		});
+
+		it('should be able to set valid dueDate on submissionContainer ', async () => {
+			const { loggedInClient, submission } = await setup();
+			const tomorrow = new Date(Date.now() + 86400000);
+			const response = await loggedInClient.patch(`${submission.id}/content`, {
+				data: { content: { dueDate: tomorrow }, type: ContentElementType.SUBMISSION_CONTAINER },
+			});
+			const result = await em.findOneOrFail(SubmissionContainerElementNode, submission.id);
+			expect(response.status).toEqual(204);
+
+			expect(result.dueDate).toEqual(tomorrow);
+		});
+
+		it('should reject invalid dates on submissionContainer ', async () => {
+			const { loggedInClient, submission } = await setup();
+			const date = 12; //'2030/12/11';
+			const response = await loggedInClient.patch(`${submission.id}/content`, {
+				data: { content: { dueDate: date }, type: ContentElementType.SUBMISSION_CONTAINER },
+			});
+			const result = await em.findOneOrFail(SubmissionContainerElementNode, submission.id);
+			expect(response.status).toEqual(400);
+			expect(result.dueDate).not.toEqual(date);
 		});
 	});
 
