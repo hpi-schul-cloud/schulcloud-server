@@ -476,6 +476,15 @@ describe('recursive board copy visitor', () => {
 			expect(copy.caption).toEqual(original.caption);
 		});
 
+		it('should copy alternative text', async () => {
+			const { original, fileCopyService } = setup();
+
+			const result = await service.copy({ original, fileCopyService });
+			const copy = getFileElementFromStatus(result);
+
+			expect(copy.alternativeText).toEqual(original.alternativeText);
+		});
+
 		it('should call fileCopy Service', async () => {
 			const { original, fileCopyService } = setup();
 

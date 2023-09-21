@@ -95,6 +95,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		const copy = new FileElement({
 			id: new ObjectId().toHexString(),
 			caption: original.caption,
+			alternativeText: original.alternativeText,
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),
