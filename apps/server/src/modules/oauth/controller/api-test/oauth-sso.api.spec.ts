@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, EntityId, SchoolEntity, System, User } from '@shared/domain';
+import { Account, EntityId, SchoolEntity, SystemEntity, User } from '@shared/domain';
 import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
@@ -114,7 +114,7 @@ describe('OAuth SSO Controller (API)', () => {
 
 	const setup = async () => {
 		const externalUserId = 'externalUserId';
-		const system: System = systemFactory.withOauthConfig().buildWithId();
+		const system: SystemEntity = systemFactory.withOauthConfig().buildWithId();
 		const school: SchoolEntity = schoolFactory.buildWithId({ systems: [system] });
 		const user: User = userFactory.buildWithId({ externalId: externalUserId, school });
 		const account: Account = accountFactory.buildWithId({ systemId: system.id, userId: user.id });
@@ -266,7 +266,7 @@ describe('OAuth SSO Controller (API)', () => {
 	describe('[GET]  sso/oauth/migration', () => {
 		const mockPostOauthTokenEndpoint = (
 			idToken: string,
-			targetSystem: System,
+			targetSystem: SystemEntity,
 			targetUserId: string,
 			schoolExternalId: string,
 			officialSchoolNumber: string
@@ -318,10 +318,10 @@ describe('OAuth SSO Controller (API)', () => {
 			const setupMigration = async () => {
 				const { externalUserId, query } = await setup();
 
-				const targetSystem: System = systemFactory
+				const targetSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS }, new ObjectId().toHexString(), {});
-				const sourceSystem: System = systemFactory
+				const sourceSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV }, new ObjectId().toHexString(), {});
 
@@ -397,10 +397,10 @@ describe('OAuth SSO Controller (API)', () => {
 			const setupMigration = async () => {
 				const { externalUserId, query } = await setup();
 
-				const targetSystem: System = systemFactory
+				const targetSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS }, new ObjectId().toHexString(), {});
-				const sourceSystem: System = systemFactory
+				const sourceSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV }, new ObjectId().toHexString(), {});
 
@@ -445,10 +445,10 @@ describe('OAuth SSO Controller (API)', () => {
 			const setupMigration = async () => {
 				const { externalUserId, query } = await setup();
 
-				const targetSystem: System = systemFactory
+				const targetSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS }, new ObjectId().toHexString(), {});
-				const sourceSystem: System = systemFactory
+				const sourceSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV }, new ObjectId().toHexString(), {});
 
@@ -501,10 +501,10 @@ describe('OAuth SSO Controller (API)', () => {
 			const setupMigration = async () => {
 				const { externalUserId, query } = await setup();
 
-				const targetSystem: System = systemFactory
+				const targetSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS }, new ObjectId().toHexString(), {});
-				const sourceSystem: System = systemFactory
+				const sourceSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV }, new ObjectId().toHexString(), {});
 

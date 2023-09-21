@@ -1,7 +1,14 @@
 import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EntityId, ISchoolProperties, LegacySchoolDo, SchoolEntity, System, UserLoginMigration } from '@shared/domain';
+import {
+	EntityId,
+	ISchoolProperties,
+	LegacySchoolDo,
+	SchoolEntity,
+	SystemEntity,
+	UserLoginMigration,
+} from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { BaseDORepo } from '../base.do.repo';
 
@@ -50,7 +57,7 @@ export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity, I
 			previousExternalId: entity.previousExternalId,
 			officialSchoolNumber: entity.officialSchoolNumber,
 			schoolYear: entity.schoolYear,
-			systems: entity.systems.isInitialized() ? entity.systems.getItems().map((system: System) => system.id) : [],
+			systems: entity.systems.isInitialized() ? entity.systems.getItems().map((system: SystemEntity) => system.id) : [],
 			userLoginMigrationId: entity.userLoginMigration?.id,
 			federalState: entity.federalState,
 		});
@@ -67,7 +74,7 @@ export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity, I
 			officialSchoolNumber: entityDO.officialSchoolNumber,
 			schoolYear: entityDO.schoolYear,
 			systems: entityDO.systems
-				? entityDO.systems.map((systemId: EntityId) => this._em.getReference(System, systemId))
+				? entityDO.systems.map((systemId: EntityId) => this._em.getReference(SystemEntity, systemId))
 				: [],
 			userLoginMigration: entityDO.userLoginMigrationId
 				? this._em.getReference(UserLoginMigration, entityDO.userLoginMigrationId)

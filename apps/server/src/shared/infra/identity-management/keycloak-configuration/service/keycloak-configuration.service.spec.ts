@@ -9,7 +9,7 @@ import { Realms } from '@keycloak/keycloak-admin-client/lib/resources/realms';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { System, SystemTypeEnum } from '@shared/domain';
+import { SystemEntity, SystemTypeEnum } from '@shared/domain';
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { systemFactory } from '@shared/testing';
 import { SystemOidcMapper } from '@src/modules/system/mapper/system-oidc.mapper';
@@ -63,7 +63,7 @@ describe('KeycloakConfigurationService Unit', () => {
 		};
 	};
 
-	const systems: System[] = systemFactory.withOidcConfig().buildListWithId(1, { type: SystemTypeEnum.OIDC });
+	const systems: SystemEntity[] = systemFactory.withOidcConfig().buildListWithId(1, { type: SystemTypeEnum.OIDC });
 	const oidcSystems = SystemOidcMapper.mapFromEntitiesToDtos(systems);
 	const idps: IdentityProviderRepresentation[] = [
 		{

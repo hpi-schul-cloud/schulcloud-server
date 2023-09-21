@@ -38,7 +38,7 @@ import { SchoolEntity, SchoolRolePermission, SchoolRoles } from './school.entity
 import { SchoolYear } from './schoolyear.entity';
 import { StorageProviderEntity } from './storageprovider.entity';
 import { Submission } from './submission.entity';
-import { System } from './system.entity';
+import { SystemEntity } from './system.entity';
 import { Task } from './task.entity';
 import { TeamEntity, TeamUserEntity } from './team.entity';
 import { UserLoginMigration } from './user-login-migration.entity';
@@ -86,7 +86,7 @@ export const ALL_ENTITIES = [
 	ShareToken,
 	StorageProviderEntity,
 	Submission,
-	System,
+	SystemEntity,
 	Task,
 	TaskBoardElement,
 	TeamEntity,

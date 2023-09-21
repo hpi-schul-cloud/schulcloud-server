@@ -10,7 +10,7 @@ import {
 	SchoolRolePermission,
 	SchoolRoles,
 	SchoolYear,
-	System,
+	SystemEntity,
 	UserLoginMigration,
 } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -114,7 +114,7 @@ describe('LegacySchoolRepo', () => {
 
 	describe('findByExternalId', () => {
 		it('should find school by external ID', async () => {
-			const system: System = systemFactory.buildWithId();
+			const system: SystemEntity = systemFactory.buildWithId();
 			const schoolEntity: SchoolEntity = schoolFactory.build({ externalId: 'externalId' });
 			schoolEntity.systems.add(system);
 
@@ -182,7 +182,7 @@ describe('LegacySchoolRepo', () => {
 
 	describe('mapEntityToDO is called', () => {
 		it('should map school entity to school domain object', () => {
-			const system: System = systemFactory.buildWithId();
+			const system: SystemEntity = systemFactory.buildWithId();
 			const schoolYear: SchoolYear = schoolYearFactory.buildWithId();
 			const schoolEntity: SchoolEntity = schoolFactory.buildWithId({ systems: [system], features: [], schoolYear });
 			const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.build({ school: schoolEntity });
@@ -219,8 +219,8 @@ describe('LegacySchoolRepo', () => {
 
 	describe('mapDOToEntityProperties is called', () => {
 		const setup = async () => {
-			const system1: System = systemFactory.buildWithId();
-			const system2: System = systemFactory.buildWithId();
+			const system1: SystemEntity = systemFactory.buildWithId();
+			const system2: SystemEntity = systemFactory.buildWithId();
 
 			const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId();
 
@@ -258,8 +258,8 @@ describe('LegacySchoolRepo', () => {
 			expect(result.federalState).toEqual(entityDO.federalState);
 
 			expect(emGetReferenceSpy).toHaveBeenCalledTimes(3);
-			expect(emGetReferenceSpy).toHaveBeenNthCalledWith(1, System, system1.id);
-			expect(emGetReferenceSpy).toHaveBeenNthCalledWith(2, System, system2.id);
+			expect(emGetReferenceSpy).toHaveBeenNthCalledWith(1, SystemEntity, system1.id);
+			expect(emGetReferenceSpy).toHaveBeenNthCalledWith(2, SystemEntity, system2.id);
 			expect(emGetReferenceSpy).toHaveBeenNthCalledWith(3, UserLoginMigration, userLoginMigration.id);
 		});
 

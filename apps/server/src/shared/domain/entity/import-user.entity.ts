@@ -2,7 +2,7 @@ import { Entity, Enum, IdentifiedReference, ManyToOne, Property, Unique, wrap } 
 import { IEntityWithSchool, RoleName } from '../interface';
 import { BaseEntityReference, BaseEntityWithTimestamps } from './base.entity';
 import { SchoolEntity } from './school.entity';
-import { System } from './system.entity';
+import { SystemEntity } from './system.entity';
 import type { User } from './user.entity';
 
 export type IImportUserRoleName = RoleName.ADMINISTRATOR | RoleName.TEACHER | RoleName.STUDENT;
@@ -10,7 +10,7 @@ export type IImportUserRoleName = RoleName.ADMINISTRATOR | RoleName.TEACHER | Ro
 export interface IImportUserProperties {
 	// references
 	school: SchoolEntity;
-	system: System;
+	system: SystemEntity;
 	// external identifiers
 	ldapDn: string;
 	externalId: string;
@@ -54,7 +54,7 @@ export class ImportUser extends BaseEntityWithTimestamps implements IEntityWithS
 	school: IdentifiedReference<SchoolEntity>;
 
 	@ManyToOne(() => 'System', { wrappedReference: true })
-	system: IdentifiedReference<System, BaseEntityReference>;
+	system: IdentifiedReference<SystemEntity, BaseEntityReference>;
 
 	@Property()
 	ldapDn: string;

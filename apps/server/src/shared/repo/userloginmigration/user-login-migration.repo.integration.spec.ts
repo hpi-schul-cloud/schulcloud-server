@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, System, UserLoginMigrationDO } from '@shared/domain';
+import { SchoolEntity, SystemEntity, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, schoolFactory, systemFactory } from '@shared/testing';
@@ -42,8 +42,8 @@ describe('UserLoginMigrationRepo', () => {
 		describe('when saving a UserLoginMigrationDO', () => {
 			const setup = async () => {
 				const school: SchoolEntity = schoolFactory.buildWithId();
-				const sourceSystem: System = systemFactory.buildWithId();
-				const targetSystem: System = systemFactory.buildWithId();
+				const sourceSystem: SystemEntity = systemFactory.buildWithId();
+				const targetSystem: SystemEntity = systemFactory.buildWithId();
 
 				const domainObject: UserLoginMigrationDO = new UserLoginMigrationDO({
 					schoolId: school.id,

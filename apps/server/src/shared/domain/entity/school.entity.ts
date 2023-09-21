@@ -12,7 +12,7 @@ import {
 import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
 import { BaseEntity } from './base.entity';
 import { SchoolYear } from './schoolyear.entity';
-import { System } from './system.entity';
+import { SystemEntity } from './system.entity';
 import { FederalState } from './federal-state.entity';
 
 export enum SchoolFeatures {
@@ -34,7 +34,7 @@ export interface ISchoolProperties {
 	previousExternalId?: string;
 	name: string;
 	officialSchoolNumber?: string;
-	systems?: System[];
+	systems?: SystemEntity[];
 	features?: SchoolFeatures[];
 	schoolYear?: SchoolYear;
 	userLoginMigration?: UserLoginMigration;
@@ -84,7 +84,7 @@ export class SchoolEntity extends BaseEntity {
 	officialSchoolNumber?: string;
 
 	@ManyToMany('System', undefined, { fieldName: 'systems' })
-	systems = new Collection<System>(this);
+	systems = new Collection<SystemEntity>(this);
 
 	@Embedded(() => SchoolRoles, { object: true, nullable: true, prefix: false })
 	permissions?: SchoolRoles;
