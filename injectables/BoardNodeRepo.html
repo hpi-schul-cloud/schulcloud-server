@@ -255,8 +255,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="14"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.repo.ts:14</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="19"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.repo.ts:19</a></div>
                 </td>
             </tr>
 
@@ -338,8 +338,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="25"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.repo.ts:25</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="30"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.repo.ts:30</a></div>
                 </td>
             </tr>
 
@@ -402,7 +402,12 @@ export class BoardNodeRepo {
 	constructor(private readonly em: EntityManager) {}
 
 	async findById(id: EntityId): Promise&lt;BoardNode&gt; {
-		const entity &#x3D; await this.em.findOneOrFail(BoardNode, id);
+		let entity &#x3D; this.em.getUnitOfWork().getById&lt;BoardNode&gt;(BoardNode.name, id);
+		if (entity) {
+			return entity;
+		}
+
+		entity &#x3D; await this.em.findOneOrFail(BoardNode, id);
 		return entity;
 	}
 
