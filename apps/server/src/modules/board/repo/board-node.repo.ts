@@ -7,7 +7,12 @@ export class BoardNodeRepo {
 	constructor(private readonly em: EntityManager) {}
 
 	async findById(id: EntityId): Promise<BoardNode> {
-		const entity = await this.em.findOneOrFail(BoardNode, id);
+		let entity = this.em.getUnitOfWork().getById<BoardNode>(BoardNode.name, id);
+		if (entity) {
+			return entity;
+		}
+
+		entity = await this.em.findOneOrFail(BoardNode, id);
 		return entity;
 	}
 
