@@ -4,7 +4,7 @@ import { ILearnroomElement } from '../../interface';
 import { EntityId } from '../../types';
 import { BaseEntityWithTimestamps } from '../base.entity';
 import type { Course } from '../course.entity';
-import { Lesson } from '../lesson.entity';
+import { LessonEntity } from '../lesson.entity';
 import { Task } from '../task.entity';
 import { BoardElement, BoardElementReference } from './boardelement.entity';
 import { ColumnboardBoardElement } from './column-board-boardelement';
@@ -95,7 +95,7 @@ export class Board extends BaseEntityWithTimestamps {
 		if (boardElementTarget instanceof Task) {
 			return new TaskBoardElement({ target: boardElementTarget });
 		}
-		if (boardElementTarget instanceof Lesson) {
+		if (boardElementTarget instanceof LessonEntity) {
 			return new LessonBoardElement({ target: boardElementTarget });
 		}
 		if (boardElementTarget instanceof ColumnBoardTarget) {

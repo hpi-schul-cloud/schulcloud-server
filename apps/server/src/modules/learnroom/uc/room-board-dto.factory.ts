@@ -8,7 +8,7 @@ import {
 	ColumnBoardTarget,
 	Course,
 	ITaskStatus,
-	Lesson,
+	LessonEntity,
 	Permission,
 	Task,
 	TaskWithStatusVo,
@@ -73,7 +73,7 @@ class DtoCreator {
 			}
 
 			if (element.boardElementType === BoardElementType.Lesson) {
-				result = this.roomsAuthorisationService.hasLessonReadPermission(this.user, element.target as Lesson);
+				result = this.roomsAuthorisationService.hasLessonReadPermission(this.user, element.target as LessonEntity);
 			}
 
 			if (element instanceof ColumnboardBoardElement && this.isColumnBoardFeatureFlagActive()) {
@@ -139,7 +139,7 @@ class DtoCreator {
 
 	private mapLessonElement(element: BoardElement): RoomBoardElementDTO {
 		const type = RoomBoardElementTypes.LESSON;
-		const lesson = element.target as Lesson;
+		const lesson = element.target as LessonEntity;
 		const content: LessonMetaData = {
 			id: lesson.id,
 			name: lesson.name,
