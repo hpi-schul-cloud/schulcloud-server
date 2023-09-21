@@ -12,12 +12,17 @@ export class ClassesRepo {
 	async findAllBySchoolId(schoolId: EntityId): Promise<Class[]> {
 		const classes: ClassEntity[] = await this.em.find(ClassEntity, { schoolId: new ObjectId(schoolId) });
 
-		return ClassMapper.mapToDOs(classes);
+		const mapped: Class[] = ClassMapper.mapToDOs(classes);
+
+		return mapped;
 	}
 
 	async findAllByUserId(userId: EntityId): Promise<Class[]> {
 		const classes: ClassEntity[] = await this.em.find(ClassEntity, { userIds: new ObjectId(userId) });
-		return ClassMapper.mapToDOs(classes);
+
+		const mapped: Class[] = ClassMapper.mapToDOs(classes);
+
+		return mapped;
 	}
 
 	async updateMany(classes: Class[]): Promise<void> {

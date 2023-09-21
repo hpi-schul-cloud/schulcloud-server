@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Page, Permission, SchoolDO, SortOrder, User, UserDO } from '@shared/domain';
+import { EntityId, LegacySchoolDo, Page, Permission, SortOrder, User, UserDO } from '@shared/domain';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { ClassService } from '@src/modules/class';
 import { Class } from '@src/modules/class/domain';
+import { LegacySchoolService } from '@src/modules/legacy-school';
 import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { SchoolService } from '@src/modules/school';
 import { SystemDto, SystemService } from '@src/modules/system';
 import { UserService } from '@src/modules/user';
 import { Group, GroupUser } from '../domain';
@@ -22,11 +22,11 @@ export class GroupUc {
 		private readonly systemService: SystemService,
 		private readonly userService: UserService,
 		private readonly roleService: RoleService,
-		private readonly schoolService: SchoolService,
+		private readonly schoolService: LegacySchoolService,
 		private readonly authorizationService: AuthorizationService
 	) {}
 
-	public async findClassesForSchool(
+	public async findAllClassesForSchool(
 		userId: EntityId,
 		schoolId: EntityId,
 		skip = 0,
@@ -34,7 +34,7 @@ export class GroupUc {
 		sortBy: keyof ClassInfoDto = 'name',
 		sortOrder: SortOrder = SortOrder.asc
 	): Promise<Page<ClassInfoDto>> {
-		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
 
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkPermission(user, school, AuthorizationContextBuilder.read([Permission.CLASS_LIST]));
@@ -53,7 +53,35 @@ export class GroupUc {
 	}
 
 	private async findCombinedClassListForSchool(schoolId: string): Promise<ClassInfoDto[]> {
+		const [classInfosFromClasses, classInfosFromGroups] = await Promise.all([
+			await this.findClassesForSchool(schoolId),
+			await this.findGroupsOfTypeClassForSchool(schoolId),
+		]);
+
+		const combinedClassInfo: ClassInfoDto[] = [...classInfosFromClasses, ...classInfosFromGroups];
+
+		return combinedClassInfo;
+	}
+
+	private async findClassesForSchool(schoolId: EntityId): Promise<ClassInfoDto[]> {
 		const classes: Class[] = await this.classService.findClassesForSchool(schoolId);
+
+		const classInfosFromClasses: ClassInfoDto[] = await Promise.all(
+			classes.map(async (clazz: Class): Promise<ClassInfoDto> => {
+				const teachers: UserDO[] = await Promise.all(
+					clazz.teacherIds.map((teacherId: EntityId) => this.userService.findById(teacherId))
+				);
+
+				const mapped: ClassInfoDto = GroupUcMapper.mapClassToClassInfoDto(clazz, teachers);
+
+				return mapped;
+			})
+		);
+
+		return classInfosFromClasses;
+	}
+
+	private async findGroupsOfTypeClassForSchool(schoolId: EntityId): Promise<ClassInfoDto[]> {
 		const groupsOfTypeClass: Group[] = await this.groupService.findClassesForSchool(schoolId);
 
 		const systemMap: Map<EntityId, SystemDto> = await this.findSystemNamesForGroups(groupsOfTypeClass);
@@ -73,21 +101,7 @@ export class GroupUc {
 			})
 		);
 
-		const classInfosFromClasses: ClassInfoDto[] = await Promise.all(
-			classes.map(async (clazz: Class): Promise<ClassInfoDto> => {
-				const teachers: UserDO[] = await Promise.all(
-					clazz.teacherIds.map((teacherId: EntityId) => this.userService.findById(teacherId))
-				);
-
-				const mapped: ClassInfoDto = GroupUcMapper.mapClassToClassInfoDto(clazz, teachers);
-
-				return mapped;
-			})
-		);
-
-		const combinedClassInfo: ClassInfoDto[] = [...classInfosFromGroups, ...classInfosFromClasses];
-
-		return combinedClassInfo;
+		return classInfosFromGroups;
 	}
 
 	private async findSystemNamesForGroups(groups: Group[]): Promise<Map<EntityId, SystemDto>> {
@@ -116,10 +130,12 @@ export class GroupUc {
 				const user: UserDO = await this.userService.findById(groupUser.userId);
 				const role: RoleDto = await this.roleService.findById(groupUser.roleId);
 
-				return new ResolvedGroupUser({
+				const resolvedGroups = new ResolvedGroupUser({
 					user,
 					role,
 				});
+
+				return resolvedGroups;
 			})
 		);
 

@@ -1,6 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalSource, School } from '@shared/domain';
+import { ExternalSource, SchoolEntity } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, groupEntityFactory, groupFactory, schoolFactory } from '@shared/testing';
 import { Group, GroupProps, GroupTypes, GroupUser } from '../domain';
@@ -85,13 +85,13 @@ describe('GroupRepo', () => {
 	describe('findClassesForSchool', () => {
 		describe('when groups of type class for the school exist', () => {
 			const setup = async () => {
-				const school: School = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolFactory.buildWithId();
 				const groups: GroupEntity[] = groupEntityFactory.buildListWithId(3, {
 					type: GroupEntityTypes.CLASS,
 					organization: school,
 				});
 
-				const otherSchool: School = schoolFactory.buildWithId();
+				const otherSchool: SchoolEntity = schoolFactory.buildWithId();
 				const otherGroups: GroupEntity[] = groupEntityFactory.buildListWithId(2, {
 					type: GroupEntityTypes.CLASS,
 					organization: otherSchool,
@@ -108,11 +108,11 @@ describe('GroupRepo', () => {
 			};
 
 			it('should return the group', async () => {
-				const { school } = await setup();
+				const { school, groups } = await setup();
 
 				const result: Group[] = await repo.findClassesForSchool(school.id);
 
-				expect(result).toHaveLength(3);
+				expect(result).toHaveLength(groups.length);
 			});
 
 			it('should not return groups from another school', async () => {
@@ -126,7 +126,7 @@ describe('GroupRepo', () => {
 
 		describe('when no group exists', () => {
 			const setup = async () => {
-				const school: School = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolFactory.buildWithId();
 
 				await em.persistAndFlush(school);
 				em.clear();
