@@ -3,7 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, EntityId, SchoolEntity, SystemEntity, User } from '@shared/domain';
-import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
+import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import {
@@ -330,7 +330,7 @@ describe('OAuth SSO Controller (API)', () => {
 					officialSchoolNumber: '11111',
 					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
 				});
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school: sourceSchool,
 					targetSystem,
 					sourceSystem,
@@ -410,7 +410,7 @@ describe('OAuth SSO Controller (API)', () => {
 					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
 				});
 
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school: sourceSchool,
 					targetSystem,
 					sourceSystem,
@@ -458,7 +458,7 @@ describe('OAuth SSO Controller (API)', () => {
 					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
 				});
 
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school: sourceSchool,
 					targetSystem,
 					sourceSystem,
@@ -514,7 +514,7 @@ describe('OAuth SSO Controller (API)', () => {
 					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
 				});
 
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school: sourceSchool,
 					targetSystem,
 					sourceSystem,

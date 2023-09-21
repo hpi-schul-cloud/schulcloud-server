@@ -3,10 +3,10 @@ import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { SystemEntity } from '@shared/domain/entity/system.entity';
 import { BaseEntityWithTimestamps } from './base.entity';
 
-export type IUserLoginMigration = Readonly<Omit<UserLoginMigration, keyof BaseEntityWithTimestamps>>;
+export type IUserLoginMigration = Readonly<Omit<UserLoginMigrationEntity, keyof BaseEntityWithTimestamps>>;
 
 @Entity({ tableName: 'user_login_migrations' })
-export class UserLoginMigration extends BaseEntityWithTimestamps {
+export class UserLoginMigrationEntity extends BaseEntityWithTimestamps {
 	@OneToOne(() => SchoolEntity, undefined, { nullable: false })
 	school: SchoolEntity;
 

@@ -3,7 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, SchoolEntity, SystemEntity, User } from '@shared/domain';
-import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
+import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
 	cleanupCollections,
@@ -74,7 +74,7 @@ describe('UserLoginMigrationController (API)', () => {
 				const school: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 				});
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school,
 					targetSystem,
 					sourceSystem,
@@ -138,7 +138,7 @@ describe('UserLoginMigrationController (API)', () => {
 				const school: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 				});
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school,
 					targetSystem,
 					sourceSystem,
@@ -288,7 +288,7 @@ describe('UserLoginMigrationController (API)', () => {
 					officialSchoolNumber: '12345',
 				});
 
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school,
 					targetSystem,
 					sourceSystem,
@@ -329,7 +329,7 @@ describe('UserLoginMigrationController (API)', () => {
 					officialSchoolNumber: '12345',
 				});
 
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school,
 					targetSystem,
 					sourceSystem,
@@ -459,7 +459,7 @@ describe('UserLoginMigrationController (API)', () => {
 					externalId,
 				});
 
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school,
 					targetSystem,
 					sourceSystem,
@@ -526,7 +526,7 @@ describe('UserLoginMigrationController (API)', () => {
 					externalId,
 				});
 
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school,
 					targetSystem,
 					sourceSystem,
@@ -600,7 +600,7 @@ describe('UserLoginMigrationController (API)', () => {
 					officialSchoolNumber: '12345',
 				});
 
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school,
 					targetSystem,
 					sourceSystem,
@@ -684,7 +684,7 @@ describe('UserLoginMigrationController (API)', () => {
 					officialSchoolNumber: '12345',
 				});
 
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school,
 					targetSystem,
 					sourceSystem,
@@ -724,7 +724,7 @@ describe('UserLoginMigrationController (API)', () => {
 					officialSchoolNumber: '12345',
 				});
 
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school,
 					targetSystem,
 					sourceSystem,
@@ -769,7 +769,7 @@ describe('UserLoginMigrationController (API)', () => {
 					officialSchoolNumber: '12345',
 				});
 
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school,
 					targetSystem,
 					sourceSystem,
@@ -812,7 +812,7 @@ describe('UserLoginMigrationController (API)', () => {
 					officialSchoolNumber: '12345',
 				});
 
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school,
 					targetSystem,
 					sourceSystem,
@@ -888,7 +888,7 @@ describe('UserLoginMigrationController (API)', () => {
 					officialSchoolNumber: '12345',
 				});
 
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school,
 					targetSystem,
 					sourceSystem,
@@ -938,7 +938,7 @@ describe('UserLoginMigrationController (API)', () => {
 					officialSchoolNumber: '12345',
 				});
 
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school,
 					targetSystem,
 					sourceSystem,
@@ -979,7 +979,7 @@ describe('UserLoginMigrationController (API)', () => {
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
 				});
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school,
 					targetSystem,
 					sourceSystem,
@@ -1077,7 +1077,7 @@ describe('UserLoginMigrationController (API)', () => {
 					officialSchoolNumber: '12345',
 				});
 
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school,
 					targetSystem,
 					sourceSystem,
@@ -1123,7 +1123,7 @@ describe('UserLoginMigrationController (API)', () => {
 					officialSchoolNumber: '12345',
 				});
 
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school,
 					targetSystem,
 					sourceSystem,
@@ -1173,7 +1173,7 @@ describe('UserLoginMigrationController (API)', () => {
 					officialSchoolNumber: '12345',
 				});
 
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school,
 					targetSystem,
 					sourceSystem,

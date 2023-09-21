@@ -9,7 +9,7 @@ import {
 	OneToOne,
 	Property,
 } from '@mikro-orm/core';
-import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
+import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { BaseEntity } from './base.entity';
 import { SchoolYearEntity } from './schoolyear.entity';
 import { SystemEntity } from './system.entity';
@@ -37,7 +37,7 @@ export interface ISchoolProperties {
 	systems?: SystemEntity[];
 	features?: SchoolFeatures[];
 	schoolYear?: SchoolYearEntity;
-	userLoginMigration?: UserLoginMigration;
+	userLoginMigration?: UserLoginMigrationEntity;
 	federalState: FederalState;
 }
 
@@ -92,12 +92,16 @@ export class SchoolEntity extends BaseEntity {
 	@ManyToOne('SchoolYear', { fieldName: 'currentYear', nullable: true })
 	schoolYear?: SchoolYearEntity;
 
-	@OneToOne(() => UserLoginMigration, (userLoginMigration: UserLoginMigration) => userLoginMigration.school, {
-		orphanRemoval: true,
-		nullable: true,
-		fieldName: 'userLoginMigrationId',
-	})
-	userLoginMigration?: UserLoginMigration;
+	@OneToOne(
+		() => UserLoginMigrationEntity,
+		(userLoginMigration: UserLoginMigrationEntity) => userLoginMigration.school,
+		{
+			orphanRemoval: true,
+			nullable: true,
+			fieldName: 'userLoginMigrationId',
+		}
+	)
+	userLoginMigration?: UserLoginMigrationEntity;
 
 	@ManyToOne(() => FederalState, { fieldName: 'federalState', nullable: false })
 	federalState: FederalState;

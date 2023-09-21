@@ -41,7 +41,7 @@ import { Submission } from './submission.entity';
 import { SystemEntity } from './system.entity';
 import { Task } from './task.entity';
 import { TeamEntity, TeamUserEntity } from './team.entity';
-import { UserLoginMigration } from './user-login-migration.entity';
+import { UserLoginMigrationEntity } from './user-login-migration.entity';
 import { User } from './user.entity';
 import { VideoConference } from './video-conference.entity';
 
@@ -93,7 +93,7 @@ export const ALL_ENTITIES = [
 	TeamNews,
 	TeamUserEntity,
 	User,
-	UserLoginMigration,
+	UserLoginMigrationEntity,
 	VideoConference,
 	GroupEntity,
 ];

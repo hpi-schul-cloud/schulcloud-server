@@ -7,7 +7,7 @@ import {
 	LegacySchoolDo,
 	SchoolEntity,
 	SystemEntity,
-	UserLoginMigration,
+	UserLoginMigrationEntity,
 } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { BaseDORepo } from '../base.do.repo';
@@ -77,7 +77,7 @@ export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity, I
 				? entityDO.systems.map((systemId: EntityId) => this._em.getReference(SystemEntity, systemId))
 				: [],
 			userLoginMigration: entityDO.userLoginMigrationId
-				? this._em.getReference(UserLoginMigration, entityDO.userLoginMigrationId)
+				? this._em.getReference(UserLoginMigrationEntity, entityDO.userLoginMigrationId)
 				: undefined,
 			federalState: entityDO.federalState,
 		};

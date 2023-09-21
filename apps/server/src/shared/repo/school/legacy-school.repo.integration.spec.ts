@@ -11,7 +11,7 @@ import {
 	SchoolRoles,
 	SchoolYearEntity,
 	SystemEntity,
-	UserLoginMigration,
+	UserLoginMigrationEntity,
 } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
@@ -185,7 +185,7 @@ describe('LegacySchoolRepo', () => {
 			const system: SystemEntity = systemFactory.buildWithId();
 			const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
 			const schoolEntity: SchoolEntity = schoolFactory.buildWithId({ systems: [system], features: [], schoolYear });
-			const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.build({ school: schoolEntity });
+			const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.build({ school: schoolEntity });
 			schoolEntity.userLoginMigration = userLoginMigration;
 
 			const schoolDO: LegacySchoolDo = repo.mapEntityToDO(schoolEntity);
@@ -222,7 +222,7 @@ describe('LegacySchoolRepo', () => {
 			const system1: SystemEntity = systemFactory.buildWithId();
 			const system2: SystemEntity = systemFactory.buildWithId();
 
-			const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId();
+			const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId();
 
 			await em.persistAndFlush([userLoginMigration, system1, system2]);
 
@@ -260,7 +260,7 @@ describe('LegacySchoolRepo', () => {
 			expect(emGetReferenceSpy).toHaveBeenCalledTimes(3);
 			expect(emGetReferenceSpy).toHaveBeenNthCalledWith(1, SystemEntity, system1.id);
 			expect(emGetReferenceSpy).toHaveBeenNthCalledWith(2, SystemEntity, system2.id);
-			expect(emGetReferenceSpy).toHaveBeenNthCalledWith(3, UserLoginMigration, userLoginMigration.id);
+			expect(emGetReferenceSpy).toHaveBeenNthCalledWith(3, UserLoginMigrationEntity, userLoginMigration.id);
 		});
 
 		describe('when there are no systems', () => {
