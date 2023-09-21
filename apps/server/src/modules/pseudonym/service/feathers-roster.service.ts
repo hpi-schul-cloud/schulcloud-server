@@ -117,9 +117,9 @@ export class FeathersRosterService {
 		]);
 
 		const [studentPseudonyms, teacherPseudonyms, substitutionTeacherPseudonyms] = await Promise.all([
-			this.getAndFilterPseudonyms(students, externalTool),
-			this.getAndFilterPseudonyms(teachers, externalTool),
-			this.getAndFilterPseudonyms(substitutionTeachers, externalTool),
+			this.getAndPseudonyms(students, externalTool),
+			this.getAndPseudonyms(teachers, externalTool),
+			this.getAndPseudonyms(substitutionTeachers, externalTool),
 		]);
 
 		const allTeacherPseudonyms: Pseudonym[] = teacherPseudonyms.concat(substitutionTeacherPseudonyms);
@@ -134,13 +134,12 @@ export class FeathersRosterService {
 		return group;
 	}
 
-	private async getAndFilterPseudonyms(users: UserDO[], externalTool: ExternalTool): Promise<Pseudonym[]> {
-		const pseudonyms: (Pseudonym | null)[] = await Promise.all(
+	private async getAndPseudonyms(users: UserDO[], externalTool: ExternalTool): Promise<Pseudonym[]> {
+		const pseudonyms: Pseudonym[] = await Promise.all(
 			users.map((user: UserDO) => this.pseudonymService.findOrCreatePseudonym(user, externalTool))
 		);
-		const filtered: Pseudonym[] = pseudonyms.filter((pseudonym): pseudonym is Pseudonym => pseudonym !== null);
 
-		return filtered;
+		return pseudonyms;
 	}
 
 	private getUserRole(user: UserDO): string {

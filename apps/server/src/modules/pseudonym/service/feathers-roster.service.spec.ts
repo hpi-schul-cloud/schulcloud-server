@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DatabaseObjectNotFoundException } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Course, Pseudonym, RoleName, School, LegacySchoolDo, UserDO } from '@shared/domain';
+import { Course, Pseudonym, RoleName, LegacySchoolDo, UserDO, SchoolEntity } from '@shared/domain';
 import {
 	contextExternalToolFactory,
 	courseFactory,
@@ -359,7 +359,7 @@ describe('FeathersRosterService', () => {
 		describe('when valid courseId and oauth2ClientId is given', () => {
 			const setup = () => {
 				let courseA: Course = courseFactory.buildWithId();
-				const schoolEntity: School = schoolFactory.buildWithId();
+				const schoolEntity: SchoolEntity = schoolFactory.buildWithId();
 				const school: LegacySchoolDo = legacySchoolDoFactory.build({ id: schoolEntity.id });
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 				const externalToolId: string = externalTool.id as string;
