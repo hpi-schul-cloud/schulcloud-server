@@ -170,7 +170,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/BaseEntity.html" target="_self" >Map&lt;EntityId, BaseEntity&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CopyDictionary" target="_self" >CopyDictionary</a></code>
 
                     </div>
                     <div class="io-description">
@@ -343,9 +343,9 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { BaseEntity } from &#x27;@shared/domain/entity&#x27;;
+import { AuthorizableObject } from &#x27;@shared/domain/domain-object&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { CopyStatus, CopyStatusEnum } from &#x27;../types/copy.types&#x27;;
+import { CopyDictionary, CopyStatus, CopyStatusEnum } from &#x27;../types/copy.types&#x27;;
 
 const isAtLeastPartialSuccessfull &#x3D; (status) &#x3D;&gt; status &#x3D;&#x3D;&#x3D; CopyStatusEnum.PARTIAL || status &#x3D;&#x3D;&#x3D; CopyStatusEnum.SUCCESS;
 
@@ -376,7 +376,7 @@ export class CopyHelperService {
 		let num &#x3D; 1;
 		const matches &#x3D; name.match(/^(?&lt;name&gt;.*) \((?&lt;number&gt;\d+)\)$/);
 		if (matches &amp;&amp; matches.groups) {
-			name &#x3D; matches.groups.name;
+			({ name } &#x3D; matches.groups);
 			num &#x3D; Number(matches.groups.number) + 1;
 		}
 		const composedName &#x3D; &#x60;${name} (${num})&#x60;;
@@ -386,8 +386,8 @@ export class CopyHelperService {
 		return composedName;
 	}
 
-	buildCopyEntityDict(status: CopyStatus): Map&lt;EntityId, BaseEntity&gt; {
-		const map &#x3D; new Map&lt;EntityId, BaseEntity&gt;();
+	buildCopyEntityDict(status: CopyStatus): CopyDictionary {
+		const map &#x3D; new Map&lt;EntityId, AuthorizableObject&gt;();
 		status.elements?.forEach((elementStatus: CopyStatus) &#x3D;&gt; {
 			this.buildCopyEntityDict(elementStatus).forEach((el, key) &#x3D;&gt; map.set(key, el));
 		});

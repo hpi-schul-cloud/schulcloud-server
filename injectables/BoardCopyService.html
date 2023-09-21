@@ -96,6 +96,11 @@
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
+                                <a href="#copyColumnBoard" >copyColumnBoard</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#copyLesson" >copyLesson</a>
                             </li>
                             <li>
@@ -133,12 +138,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, boardRepo: <a href="../injectables/BoardRepo.html" target="_self">BoardRepo</a>, taskCopyService: <a href="../injectables/TaskCopyService.html" target="_self">TaskCopyService</a>, lessonCopyService: <a href="../injectables/LessonCopyService.html" target="_self">LessonCopyService</a>, copyHelperService: <a href="../injectables/CopyHelperService.html" target="_self">CopyHelperService</a>)</code>
+<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, boardRepo: <a href="../injectables/BoardRepo.html" target="_self">BoardRepo</a>, taskCopyService: <a href="../injectables/TaskCopyService.html" target="_self">TaskCopyService</a>, lessonCopyService: <a href="../injectables/LessonCopyService.html" target="_self">LessonCopyService</a>, columnBoardCopyService: <a href="../injectables/ColumnBoardCopyService.html" target="_self">ColumnBoardCopyService</a>, copyHelperService: <a href="../injectables/CopyHelperService.html" target="_self">CopyHelperService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:30</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:36</a></div>
                             </td>
                         </tr>
 
@@ -204,6 +209,18 @@
                                                     
                                                 </tr>
                                                 <tr>
+                                                        <td>columnBoardCopyService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ColumnBoardCopyService.html" target="_self" >ColumnBoardCopyService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
                                                         <td>copyHelperService</td>
                                                   
                                                         <td>
@@ -251,8 +268,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="39"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:39</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="46"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:46</a></div>
                 </td>
             </tr>
 
@@ -323,8 +340,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="65"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:65</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="78"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:78</a></div>
                 </td>
             </tr>
 
@@ -400,6 +417,102 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="copyColumnBoard"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>copyColumnBoard</b></span>
+                        <a href="#copyColumnBoard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>copyColumnBoard(columnBoardTarget: <a href="../entitys/ColumnBoardTarget.html" target="_self">ColumnBoardTarget</a>, user: <a href="../interfaces/User.html" target="_self">User</a>, destinationCourse: <a href="../entitys/Course.html" target="_self">Course</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="128"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:128</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>columnBoardTarget</td>
+                                    <td>
+                                                <code><a href="../entitys/ColumnBoardTarget.html" target="_self" >ColumnBoardTarget</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>user</td>
+                                    <td>
+                                                <code><a href="../interfaces/User.html" target="_self" >User</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>destinationCourse</td>
+                                    <td>
+                                                <code><a href="../entitys/Course.html" target="_self" >Course</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CopyStatus" target="_self" >Promise&lt;CopyStatus&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="copyLesson"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
@@ -419,8 +532,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="95"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:95</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="112"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:112</a></div>
                 </td>
             </tr>
 
@@ -515,8 +628,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="103"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:103</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="120"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:120</a></div>
                 </td>
             </tr>
 
@@ -610,8 +723,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="111"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:111</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="143"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:143</a></div>
                 </td>
             </tr>
 
@@ -681,8 +794,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="139"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:139</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="177"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:177</a></div>
                 </td>
             </tr>
 
@@ -752,8 +865,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="126"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:126</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="164"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:164</a></div>
                 </td>
             </tr>
 
@@ -812,7 +925,12 @@ import {
 	Board,
 	BoardElement,
 	BoardElementType,
+	BoardExternalReferenceType,
+	ColumnBoard,
+	ColumnboardBoardElement,
+	ColumnBoardTarget,
 	Course,
+	isColumnBoardTarget,
 	isLesson,
 	isTask,
 	LessonEntity,
@@ -823,7 +941,8 @@ import {
 } from &#x27;@shared/domain&#x27;;
 import { BoardRepo } from &#x27;@shared/repo&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { CopyElementType, CopyHelperService, CopyStatus } from &#x27;@src/modules/copy-helper&#x27;;
+import { ColumnBoardCopyService } from &#x27;@src/modules/board/service/column-board-copy.service&#x27;;
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from &#x27;@src/modules/copy-helper&#x27;;
 import { getResolvedValues } from &#x27;@src/modules/files-storage/helper&#x27;;
 import { LessonCopyService } from &#x27;@src/modules/lesson/service&#x27;;
 import { TaskCopyService } from &#x27;@src/modules/task/service&#x27;;
@@ -842,6 +961,7 @@ export class BoardCopyService {
 		private readonly boardRepo: BoardRepo,
 		private readonly taskCopyService: TaskCopyService,
 		private readonly lessonCopyService: LessonCopyService,
+		private readonly columnBoardCopyService: ColumnBoardCopyService,
 		private readonly copyHelperService: CopyHelperService
 	) {}
 
@@ -866,7 +986,13 @@ export class BoardCopyService {
 		if (status.copyEntity) {
 			boardCopy &#x3D; status.copyEntity as Board;
 		}
-		await this.boardRepo.save(boardCopy);
+
+		try {
+			await this.boardRepo.save(boardCopy);
+		} catch (err) {
+			this.logger.warn(err);
+			status.status &#x3D; CopyStatusEnum.FAIL;
+		}
 
 		return status;
 	}
@@ -887,6 +1013,10 @@ export class BoardCopyService {
 
 			if (element.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.Lesson &amp;&amp; isLesson(element.target)) {
 				return this.copyLesson(element.target, user, destinationCourse).then((status) &#x3D;&gt; [pos, status]);
+			}
+
+			if (element.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.ColumnBoard &amp;&amp; isColumnBoardTarget(element.target)) {
+				return this.copyColumnBoard(element.target, user, destinationCourse).then((status) &#x3D;&gt; [pos, status]);
 			}
 
 			/* istanbul ignore next */
@@ -917,6 +1047,21 @@ export class BoardCopyService {
 		});
 	}
 
+	private async copyColumnBoard(
+		columnBoardTarget: ColumnBoardTarget,
+		user: User,
+		destinationCourse: Course
+	): Promise&lt;CopyStatus&gt; {
+		return this.columnBoardCopyService.copyColumnBoard({
+			originalColumnBoardId: columnBoardTarget.columnBoardId,
+			userId: user.id,
+			destinationExternalReference: {
+				id: destinationCourse.id,
+				type: BoardExternalReferenceType.Course,
+			},
+		});
+	}
+
 	private extractReferences(statuses: CopyStatus[]): BoardElement[] {
 		const references: BoardElement[] &#x3D; [];
 		statuses.forEach((status) &#x3D;&gt; {
@@ -927,6 +1072,12 @@ export class BoardCopyService {
 			if (status.copyEntity instanceof LessonEntity) {
 				const lessonElement &#x3D; new LessonBoardElement({ target: status.copyEntity });
 				references.push(lessonElement);
+			}
+			if (status.copyEntity instanceof ColumnBoard) {
+				const columnBoardElement &#x3D; new ColumnboardBoardElement({
+					target: new ColumnBoardTarget({ columnBoardId: status.copyEntity.id, title: status.copyEntity.title }),
+				});
+				references.push(columnBoardElement);
 			}
 		});
 		return references;
