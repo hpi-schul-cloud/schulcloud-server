@@ -10,7 +10,7 @@ import {
 	IComponentNexboardProperties,
 	IComponentProperties,
 	IComponentTextProperties,
-	Lesson,
+	LessonEntity,
 	Material,
 } from '@shared/domain';
 import { LessonRepo } from '@shared/repo';
@@ -35,11 +35,11 @@ export class LessonCopyService {
 	) {}
 
 	async copyLesson(params: LessonCopyParams): Promise<CopyStatus> {
-		const lesson: Lesson = await this.lessonRepo.findById(params.originalLessonId);
+		const lesson: LessonEntity = await this.lessonRepo.findById(params.originalLessonId);
 		const { copiedContent, contentStatus } = await this.copyLessonContent(lesson.contents, params);
 		const { copiedMaterials, materialsStatus } = this.copyLinkedMaterials(lesson);
 
-		const lessonCopy = new Lesson({
+		const lessonCopy = new LessonEntity({
 			course: params.destinationCourse,
 			hidden: true,
 			name: params.copyName ?? lesson.name,
@@ -83,8 +83,8 @@ export class LessonCopyService {
 		contentStatus: CopyStatus[],
 		materialsStatus: CopyStatus[],
 		copiedTasksStatus: CopyStatus[],
-		lessonCopy: Lesson,
-		originalLesson: Lesson
+		lessonCopy: LessonEntity,
+		originalLesson: LessonEntity
 	) {
 		const elements: CopyStatus[] = [
 			...LessonCopyService.lessonStatusMetadata(),
@@ -105,7 +105,7 @@ export class LessonCopyService {
 	}
 
 	updateCopiedEmbeddedTasks(lessonStatus: CopyStatus, copyDict: Map<EntityId, BaseEntity>): CopyStatus {
-		const copiedLesson = lessonStatus.copyEntity as Lesson;
+		const copiedLesson = lessonStatus.copyEntity as LessonEntity;
 
 		if (copiedLesson?.contents === undefined) {
 			return lessonStatus;
@@ -335,7 +335,7 @@ export class LessonCopyService {
 		return false;
 	}
 
-	private async copyLinkedTasks(destinationLesson: Lesson, lesson: Lesson, params: LessonCopyParams) {
+	private async copyLinkedTasks(destinationLesson: LessonEntity, lesson: LessonEntity, params: LessonCopyParams) {
 		const linkedTasks = lesson.getLessonLinkedTasks();
 		if (linkedTasks.length > 0) {
 			const copiedTasksStatus = await Promise.all(
@@ -358,7 +358,7 @@ export class LessonCopyService {
 		return [];
 	}
 
-	private copyLinkedMaterials(originalLesson: Lesson): {
+	private copyLinkedMaterials(originalLesson: LessonEntity): {
 		copiedMaterials: Material[];
 		materialsStatus: CopyStatus[];
 	} {
