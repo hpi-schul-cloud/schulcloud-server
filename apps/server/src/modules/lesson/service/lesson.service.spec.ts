@@ -78,38 +78,40 @@ describe('LessonService', () => {
 	});
 
 	describe('findUserDataFromLessons', () => {
-		const setup = () => {
-			const userId = new ObjectId().toHexString();
-			const contentExample: IComponentProperties = {
-				title: 'title',
-				hidden: false,
-				user: userId,
-				component: ComponentType.TEXT,
-				content: { text: 'test of content' },
+		describe('when finding by userId', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const contentExample: IComponentProperties = {
+					title: 'title',
+					hidden: false,
+					user: userId,
+					component: ComponentType.TEXT,
+					content: { text: 'test of content' },
+				};
+				const lesson1 = lessonFactory.buildWithId({ contents: [contentExample] });
+				const lesson2 = lessonFactory.buildWithId({ contents: [contentExample] });
+
+				lessonRepo.findByUserId.mockResolvedValue([lesson1, lesson2]);
+
+				return {
+					userId,
+				};
 			};
-			const lesson1 = lessonFactory.buildWithId({ contents: [contentExample] });
-			const lesson2 = lessonFactory.buildWithId({ contents: [contentExample] });
 
-			lessonRepo.findByUserId.mockResolvedValue([lesson1, lesson2]);
+			it('should call findByCourseIds from lesson repo', async () => {
+				const { userId } = setup();
 
-			return {
-				userId,
-			};
-		};
+				await expect(lessonService.findUserDataFromLessons(userId)).resolves.not.toThrow();
+				expect(lessonRepo.findByUserId).toBeCalledWith(userId);
+			});
 
-		it('should call findByCourseIds from lesson repo', async () => {
-			const { userId } = setup();
+			it('should return array of lessons with userId', async () => {
+				const { userId } = setup();
 
-			await expect(lessonService.findUserDataFromLessons(userId)).resolves.not.toThrow();
-			expect(lessonRepo.findByUserId).toBeCalledWith(userId);
-		});
+				const result = await lessonService.findUserDataFromLessons(userId);
 
-		it('should return array of lessons with userId', async () => {
-			const { userId } = setup();
-
-			const result = await lessonService.findUserDataFromLessons(userId);
-
-			expect(result).toHaveLength(2);
+				expect(result).toHaveLength(2);
+			});
 		});
 	});
 
