@@ -22,12 +22,7 @@ export class MigrationCheckService {
 
 			const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
 
-			if (
-				user?.lastLoginSystemChange &&
-				userLoginMigration &&
-				!userLoginMigration.closedAt &&
-				userLoginMigration.startedAt
-			) {
+			if (user?.lastLoginSystemChange && userLoginMigration && !userLoginMigration.closedAt) {
 				const hasMigrated: boolean = user.lastLoginSystemChange > userLoginMigration.startedAt;
 				return !hasMigrated;
 			}

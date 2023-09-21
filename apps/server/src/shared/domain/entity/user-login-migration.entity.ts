@@ -21,7 +21,7 @@ export class UserLoginMigration extends BaseEntityWithTimestamps {
 	mandatorySince?: Date;
 
 	@Property()
-	startedAt?: Date;
+	startedAt: Date;
 
 	@Property({ nullable: true })
 	closedAt?: Date;

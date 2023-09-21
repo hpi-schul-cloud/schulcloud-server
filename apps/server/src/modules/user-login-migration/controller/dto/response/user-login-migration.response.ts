@@ -19,7 +19,7 @@ export class UserLoginMigrationResponse {
 	@ApiProperty({
 		description: 'Date when the migration was started',
 	})
-	startedAt?: Date;
+	startedAt: Date;
 
 	@ApiPropertyOptional({
 		description: 'Date when the migration was completed',
