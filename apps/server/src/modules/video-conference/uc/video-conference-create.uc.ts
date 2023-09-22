@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { EntityId, Permission, UserDO, VideoConferenceScope } from '@shared/domain';
+import { EntityId, UserDO } from '@shared/domain';
 import { UserService } from '@src/modules/user';
 import {
 	BBBBaseMeetingConfig,
@@ -41,7 +41,7 @@ export class VideoConferenceCreateUc {
 		/* need to be replace with
 		const [authorizableUser, scopeRessource]: [User, TeamEntity | Course] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
-			this.loadScopeRessources(scopeId, scope),
+			this.videoConferenceService.loadScopeRessources(scopeId, scope),
 		]);
 		*/
 		const user: UserDO = await this.userService.findById(currentUserId);

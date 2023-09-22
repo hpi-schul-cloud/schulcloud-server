@@ -20,7 +20,7 @@ export class VideoConferenceInfoUc {
 		/* need to be replace with
 		const [authorizableUser, scopeRessource]: [User, TeamEntity | Course] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
-			this.loadScopeRessources(scopeId, scope),
+			this.videoConferenceService.loadScopeRessources(scopeId, scope),
 		]);
 		*/
 		const user: UserDO = await this.userService.findById(currentUserId);
