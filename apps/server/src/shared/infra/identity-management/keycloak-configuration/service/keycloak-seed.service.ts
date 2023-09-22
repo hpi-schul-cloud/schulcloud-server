@@ -48,7 +48,7 @@ export class KeycloakSeedService {
 			for (const user of users) {
 				// eslint-disable-next-line no-await-in-loop
 				kc = await this.kcAdmin.callKcAdminClient();
-				console.log(`try to delete user ${user.id as string}`);
+				// console.log(`try to delete user ${user.id as string}`);
 				// eslint-disable-next-line no-await-in-loop
 				await kc.users.del({
 					// can not be undefined, see filter above

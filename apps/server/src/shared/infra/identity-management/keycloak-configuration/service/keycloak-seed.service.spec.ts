@@ -231,18 +231,14 @@ describe('KeycloakSeedService', () => {
 			const result = await serviceUnderTest.clean();
 			expect(result).toBeGreaterThan(0);
 		});
-		it(
-			'should clean all users, but the admin',
-			async () => {
-				const deleteSpy = jest.spyOn(kcApiUsersMock, 'del');
-				await serviceUnderTest.clean();
-				users.forEach((user) => {
-					expect(deleteSpy).toHaveBeenCalledWith(expect.objectContaining({ id: user.id }));
-				});
-				expect(deleteSpy).not.toHaveBeenCalledWith(expect.objectContaining({ id: adminUser.id }));
-			},
-			10 * 60000
-		);
+		it('should clean all users, but the admin', async () => {
+			const deleteSpy = jest.spyOn(kcApiUsersMock, 'del');
+			await serviceUnderTest.clean();
+			users.forEach((user) => {
+				expect(deleteSpy).toHaveBeenCalledWith(expect.objectContaining({ id: user.id }));
+			});
+			expect(deleteSpy).not.toHaveBeenCalledWith(expect.objectContaining({ id: adminUser.id }));
+		});
 	});
 
 	describe('seed', () => {
