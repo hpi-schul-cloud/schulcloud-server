@@ -105,6 +105,14 @@
                                 <a href="#findByUserIdAndToolIdOrFail" >findByUserIdAndToolIdOrFail</a>
                             </li>
                             <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findPseudonym" >findPseudonym</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findPseudonymByPseudonym" >findPseudonymByPseudonym</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Protected</span>
                                 <a href="#mapDomainObjectToEntityProperties" >mapDomainObjectToEntityProperties</a>
                             </li>
@@ -135,7 +143,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:10</a></div>
                             </td>
                         </tr>
 
@@ -200,8 +208,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="45"
-                            class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:45</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="48"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:48</a></div>
                 </td>
             </tr>
 
@@ -271,8 +279,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="66"
-                            class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:66</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="69"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:69</a></div>
                 </td>
             </tr>
 
@@ -342,8 +350,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="36"
-                            class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:36</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:39</a></div>
                 </td>
             </tr>
 
@@ -413,8 +421,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="21"
-                            class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:21</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="24"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:24</a></div>
                 </td>
             </tr>
 
@@ -496,8 +504,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="10"
-                            class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:10</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="13"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:13</a></div>
                 </td>
             </tr>
 
@@ -561,6 +569,160 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findPseudonym"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>findPseudonym</b></span>
+                        <a href="#findPseudonym"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findPseudonym(query: <a href="../interfaces/PseudonymSearchQuery.html" target="_self">PseudonymSearchQuery</a>, options?: <a href="../classes/Pseudonym.html" target="_self">IFindOptions&lt;Pseudonym&gt;</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="112"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:112</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>query</td>
+                                    <td>
+                                                <code><a href="../interfaces/PseudonymSearchQuery.html" target="_self" >PseudonymSearchQuery</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>options</td>
+                                    <td>
+                                                <code><a href="../classes/Pseudonym.html" target="_self" >IFindOptions&lt;Pseudonym&gt;</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;Page&lt;Pseudonym&gt;&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findPseudonymByPseudonym"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>findPseudonymByPseudonym</b></span>
+                        <a href="#findPseudonymByPseudonym"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findPseudonymByPseudonym(pseudonym: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="77"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:77</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>pseudonym</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/Pseudonym.html" target="_self" >Promise&lt;Pseudonym | null&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="mapDomainObjectToEntityProperties"></a>
                     <span class="name">
                         <span class="modifier">Protected</span>
@@ -579,8 +741,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="85"
-                            class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:85</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="104"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:104</a></div>
                 </td>
             </tr>
 
@@ -650,8 +812,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="74"
-                            class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:74</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="91"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:91</a></div>
                 </td>
             </tr>
 
@@ -707,8 +869,11 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager, ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId, Pseudonym } from &#x27;@shared/domain&#x27;;
+import { EntityId, IFindOptions, IPagination, Page, Pseudonym } from &#x27;@shared/domain&#x27;;
+import { Scope } from &#x27;@shared/repo&#x27;;
+import { PseudonymSearchQuery } from &#x27;../domain&#x27;;
 import { ExternalToolPseudonymEntity, IExternalToolPseudonymEntityProps } from &#x27;../entity&#x27;;
+import { PseudonymScope } from &#x27;../entity/pseudonym.scope&#x27;;
 
 @Injectable()
 export class ExternalToolPseudonymRepo {
@@ -778,8 +943,22 @@ export class ExternalToolPseudonymRepo {
 		return promise;
 	}
 
+	async findPseudonymByPseudonym(pseudonym: string): Promise&lt;Pseudonym | null&gt; {
+		const entities: ExternalToolPseudonymEntity | null &#x3D; await this.em.findOne(ExternalToolPseudonymEntity, {
+			pseudonym,
+		});
+
+		if (!entities) {
+			return null;
+		}
+
+		const domainObject: Pseudonym &#x3D; this.mapEntityToDomainObject(entities);
+
+		return domainObject;
+	}
+
 	protected mapEntityToDomainObject(entity: ExternalToolPseudonymEntity): Pseudonym {
-		return new Pseudonym({
+		const pseudonym &#x3D; new Pseudonym({
 			id: entity.id,
 			pseudonym: entity.pseudonym,
 			toolId: entity.toolId.toHexString(),
@@ -787,6 +966,8 @@ export class ExternalToolPseudonymRepo {
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,
 		});
+
+		return pseudonym;
 	}
 
 	protected mapDomainObjectToEntityProperties(entityDO: Pseudonym): IExternalToolPseudonymEntityProps {
@@ -795,6 +976,25 @@ export class ExternalToolPseudonymRepo {
 			toolId: new ObjectId(entityDO.toolId),
 			userId: new ObjectId(entityDO.userId),
 		};
+	}
+
+	async findPseudonym(query: PseudonymSearchQuery, options?: IFindOptions&lt;Pseudonym&gt;): Promise&lt;Page&lt;Pseudonym&gt;&gt; {
+		const pagination: IPagination &#x3D; options?.pagination ?? {};
+		const scope: Scope&lt;ExternalToolPseudonymEntity&gt; &#x3D; new PseudonymScope()
+			.byPseudonym(query.pseudonym)
+			.byToolId(query.toolId)
+			.byUserId(query.userId)
+			.allowEmptyQuery(true);
+
+		const [entities, total] &#x3D; await this.em.findAndCount(ExternalToolPseudonymEntity, scope.query, {
+			offset: pagination?.skip,
+			limit: pagination?.limit,
+		});
+
+		const entityDos: Pseudonym[] &#x3D; entities.map((entity) &#x3D;&gt; this.mapEntityToDomainObject(entity));
+		const page: Page&lt;Pseudonym&gt; &#x3D; new Page&lt;Pseudonym&gt;(entityDos, total);
+
+		return page;
 	}
 }
 </code></pre>

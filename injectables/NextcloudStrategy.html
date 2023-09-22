@@ -1057,7 +1057,7 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 			teamUsers.map(async (teamUser: TeamUserDto): Promise&lt;string&gt; &#x3D;&gt; {
 				const user: UserDO &#x3D; await this.userService.findById(teamUser.userId);
 				const userId &#x3D; await this.pseudonymService
-					.findByUserAndTool(user, nextcloudTool)
+					.findByUserAndToolOrThrow(user, nextcloudTool)
 					.then((pseudonymDO: Pseudonym) &#x3D;&gt; this.client.getNameWithPrefix(pseudonymDO.pseudonym))
 					.catch(() &#x3D;&gt; &#x27;&#x27;);
 

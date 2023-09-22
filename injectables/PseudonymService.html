@@ -102,7 +102,7 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#findByUserAndTool" >findByUserAndTool</a>
+                                <a href="#findByUserAndToolOrThrow" >findByUserAndToolOrThrow</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -120,9 +120,20 @@
                                 <a href="#findOrCreatePseudonym" >findOrCreatePseudonym</a>
                             </li>
                             <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findPseudonym" >findPseudonym</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findPseudonymByPseudonym" >findPseudonymByPseudonym</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findPseudonymsByUserId" >findPseudonymsByUserId</a>
+                            </li>
+                            <li>
+                                <a href="#getIframeSubject" >getIframeSubject</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -151,7 +162,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -229,8 +240,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="72"
-                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:72</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="74"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:74</a></div>
                 </td>
             </tr>
 
@@ -301,8 +312,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="103"
-                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:103</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="105"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:105</a></div>
                 </td>
             </tr>
 
@@ -373,8 +384,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="97"
-                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:97</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="99"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:99</a></div>
                 </td>
             </tr>
 
@@ -426,27 +437,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="findByUserAndTool"></a>
+                    <a name="findByUserAndToolOrThrow"></a>
                     <span class="name">
                         <span class="modifier">Public</span>
                         <span class="modifier">Async</span>
-                        <span ><b>findByUserAndTool</b></span>
-                        <a href="#findByUserAndTool"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>findByUserAndToolOrThrow</b></span>
+                        <a href="#findByUserAndToolOrThrow"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findByUserAndTool(user: <a href="../classes/UserDO.html" target="_self">UserDO</a>, tool: <a href="../entitys/LtiTool.html" target="_self">ExternalTool | LtiToolDO</a>)</code>
+                    <code>findByUserAndToolOrThrow(user: <a href="../classes/UserDO.html" target="_self">UserDO</a>, tool: <a href="../entitys/LtiTool.html" target="_self">ExternalTool | LtiToolDO</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="15"
-                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:15</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="17"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:17</a></div>
                 </td>
             </tr>
 
@@ -529,8 +540,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="25"
-                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:25</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="27"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:27</a></div>
                 </td>
             </tr>
 
@@ -601,8 +612,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="91"
-                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:91</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="93"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:93</a></div>
                 </td>
             </tr>
 
@@ -673,8 +684,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="48"
-                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:48</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="50"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:50</a></div>
                 </td>
             </tr>
 
@@ -738,6 +749,160 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findPseudonym"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>findPseudonym</b></span>
+                        <a href="#findPseudonym"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findPseudonym(query: <a href="../interfaces/PseudonymSearchQuery.html" target="_self">PseudonymSearchQuery</a>, options: <a href="../classes/Pseudonym.html" target="_self">IFindOptions&lt;Pseudonym&gt;</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="126"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:126</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>query</td>
+                                    <td>
+                                                <code><a href="../interfaces/PseudonymSearchQuery.html" target="_self" >PseudonymSearchQuery</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>options</td>
+                                    <td>
+                                                <code><a href="../classes/Pseudonym.html" target="_self" >IFindOptions&lt;Pseudonym&gt;</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;Page&lt;Pseudonym&gt;&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findPseudonymByPseudonym"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>findPseudonymByPseudonym</b></span>
+                        <a href="#findPseudonymByPseudonym"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findPseudonymByPseudonym(pseudonym: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="120"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:120</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>pseudonym</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/Pseudonym.html" target="_self" >Promise&lt;Pseudonym | null&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findPseudonymsByUserId"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
@@ -757,8 +922,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="85"
-                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:85</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="87"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:87</a></div>
                 </td>
             </tr>
 
@@ -810,6 +975,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getIframeSubject"></a>
+                    <span class="name">
+                        <span ><b>getIframeSubject</b></span>
+                        <a href="#getIframeSubject"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getIframeSubject(pseudonym: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="132"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:132</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>pseudonym</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getRepository"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
@@ -828,8 +1062,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="110"
-                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:110</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="112"
+                            class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:112</a></div>
                 </td>
             </tr>
 
@@ -883,11 +1117,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
+import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
-import { LtiToolDO, Pseudonym, UserDO } from &#x27;@shared/domain&#x27;;
+import { IFindOptions, LtiToolDO, Page, Pseudonym, UserDO } from &#x27;@shared/domain&#x27;;
 import { ExternalTool } from &#x27;@src/modules/tool/external-tool/domain&#x27;;
 import { v4 as uuidv4 } from &#x27;uuid&#x27;;
+import { PseudonymSearchQuery } from &#x27;../domain&#x27;;
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from &#x27;../repo&#x27;;
 
 @Injectable()
@@ -897,7 +1133,7 @@ export class PseudonymService {
 		private readonly externalToolPseudonymRepo: ExternalToolPseudonymRepo
 	) {}
 
-	public async findByUserAndTool(user: UserDO, tool: ExternalTool | LtiToolDO): Promise&lt;Pseudonym&gt; {
+	public async findByUserAndToolOrThrow(user: UserDO, tool: ExternalTool | LtiToolDO): Promise&lt;Pseudonym&gt; {
 		if (!user.id || !tool.id) {
 			throw new InternalServerErrorException(&#x27;User or tool id is missing&#x27;);
 		}
@@ -998,6 +1234,26 @@ export class PseudonymService {
 		}
 
 		return this.pseudonymRepo;
+	}
+
+	async findPseudonymByPseudonym(pseudonym: string): Promise&lt;Pseudonym | null&gt; {
+		const result: Pseudonym | null &#x3D; await this.externalToolPseudonymRepo.findPseudonymByPseudonym(pseudonym);
+
+		return result;
+	}
+
+	async findPseudonym(query: PseudonymSearchQuery, options: IFindOptions&lt;Pseudonym&gt;): Promise&lt;Page&lt;Pseudonym&gt;&gt; {
+		const result: Page&lt;Pseudonym&gt; &#x3D; await this.externalToolPseudonymRepo.findPseudonym(query, options);
+
+		return result;
+	}
+
+	getIframeSubject(pseudonym: string): string {
+		const iFrameSubject &#x3D; &#x60;&lt;iframe src&#x3D;&quot;${
+			Configuration.get(&#x27;HOST&#x27;) as string
+		}/oauth2/username/${pseudonym}&quot; title&#x3D;&quot;username&quot; style&#x3D;&quot;height: 26px; width: 180px; border: none;&quot;&gt;&lt;/iframe&gt;&#x60;;
+
+		return iFrameSubject;
 	}
 }
 </code></pre>
