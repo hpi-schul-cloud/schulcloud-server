@@ -86,6 +86,14 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#findFilesAccessibleByUser" >findFilesAccessibleByUser</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findFilesOwnedByUser" >findFilesOwnedByUser</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#markFilesOwnedByUserForDeletion" >markFilesOwnedByUserForDeletion</a>
                             </li>
                             <li>
@@ -115,7 +123,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:6</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:7</a></div>
                             </td>
                         </tr>
 
@@ -162,6 +170,148 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findFilesAccessibleByUser"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>findFilesAccessibleByUser</b></span>
+                        <a href="#findFilesAccessibleByUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findFilesAccessibleByUser(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="10"
+                            class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:10</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;FileEntity[]&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findFilesOwnedByUser"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>findFilesOwnedByUser</b></span>
+                        <a href="#findFilesOwnedByUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findFilesOwnedByUser(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="28"
+                            class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:28</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;FileEntity[]&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="markFilesOwnedByUserForDeletion"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -180,8 +330,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="23"
-                            class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:23</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="32"
+                            class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:32</a></div>
                 </td>
             </tr>
 
@@ -251,8 +401,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="9"
-                            class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:9</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="14"
+                            class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:14</a></div>
                 </td>
             </tr>
 
@@ -309,10 +459,15 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain&#x27;;
 import { FilesRepo } from &#x27;../repo&#x27;;
+import { FileEntity } from &#x27;../entity&#x27;;
 
 @Injectable()
 export class FilesService {
 	constructor(private readonly repo: FilesRepo) {}
+
+	async findFilesAccessibleByUser(userId: EntityId): Promise&lt;FileEntity[]&gt; {
+		return this.repo.findByPermissionRefId(userId);
+	}
 
 	async removeUserPermissionsToAnyFiles(userId: EntityId): Promise&lt;number&gt; {
 		const entities &#x3D; await this.repo.findByPermissionRefId(userId);
@@ -326,6 +481,10 @@ export class FilesService {
 		await this.repo.save(entities);
 
 		return entities.length;
+	}
+
+	async findFilesOwnedByUser(userId: EntityId): Promise&lt;FileEntity[]&gt; {
+		return this.repo.findByOwnerUserId(userId);
 	}
 
 	async markFilesOwnedByUserForDeletion(userId: EntityId): Promise&lt;number&gt; {
