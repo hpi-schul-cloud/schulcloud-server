@@ -35,3 +35,7 @@ export interface FileElementProps extends BoardCompositeProps {
 	caption: string;
 	alternativeText: string;
 }
+
+export function isFileElement(reference: unknown): reference is FileElement {
+	return reference instanceof FileElement;
+}

@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExternalSource, ExternalSourceEntity, Role, SchoolEntity, System, User } from '@shared/domain';
+import { ExternalSource, ExternalSourceEntity, Role, SchoolEntity, SystemEntity, User } from '@shared/domain';
 import { Group, GroupProps, GroupTypes, GroupUser } from '../domain';
 import { GroupEntity, GroupEntityProps, GroupEntityTypes, GroupUserEntity, GroupValidPeriodEntity } from '../entity';
 
@@ -63,7 +63,7 @@ export class GroupDomainMapper {
 	): ExternalSourceEntity {
 		const mapped = new ExternalSourceEntity({
 			externalId: externalSource.externalId,
-			system: em.getReference(System, externalSource.systemId),
+			system: em.getReference(SystemEntity, externalSource.systemId),
 		});
 
 		return mapped;
