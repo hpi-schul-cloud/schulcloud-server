@@ -50,7 +50,7 @@ describe('CourseService', () => {
 		});
 	});
 
-	describe('findUserDataFromCourses', () => {
+	describe('findAllCoursesByUserId', () => {
 		describe('when finding by userId', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
@@ -71,7 +71,7 @@ describe('CourseService', () => {
 			it('should call courseRepo.findAllByUserId', async () => {
 				const { user } = setup();
 
-				await courseService.findUserDataFromCourses(user.id);
+				await courseService.findAllCoursesByUserId(user.id);
 
 				expect(courseRepo.findAllByUserId).toBeCalledWith(user.id);
 			});
@@ -79,7 +79,7 @@ describe('CourseService', () => {
 			it('should return array of courses with userId', async () => {
 				const { user, allCourses } = setup();
 
-				const [courses] = await courseService.findUserDataFromCourses(user.id);
+				const [courses] = await courseService.findAllCoursesByUserId(user.id);
 
 				expect(courses.length).toEqual(3);
 				expect(courses).toEqual(allCourses);

@@ -6,7 +6,7 @@ import { CourseGroupRepo } from '@shared/repo';
 export class CourseGroupService {
 	constructor(private readonly repo: CourseGroupRepo) {}
 
-	public async finUserDataFromCourseGroup(userId: EntityId): Promise<Counted<CourseGroup[]>> {
+	public async findAllCourseGroupsByUserId(userId: EntityId): Promise<Counted<CourseGroup[]>> {
 		const [courseGroups, count] = await this.repo.findByUserId(userId);
 
 		return [courseGroups, count];

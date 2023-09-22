@@ -38,7 +38,7 @@ describe('CourseGroupService', () => {
 		jest.clearAllMocks();
 	});
 
-	describe('finUserDataFromCourseGroup', () => {
+	describe('findAllCourseGroupsByUserId', () => {
 		describe('when finding by userId', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
@@ -58,7 +58,7 @@ describe('CourseGroupService', () => {
 			it('should call courseGroupRepo.findByUserId', async () => {
 				const { user } = setup();
 
-				await courseGroupService.finUserDataFromCourseGroup(user.id);
+				await courseGroupService.findAllCourseGroupsByUserId(user.id);
 
 				expect(courseGroupRepo.findByUserId).toBeCalledWith(user.id);
 			});
@@ -66,7 +66,7 @@ describe('CourseGroupService', () => {
 			it('should return array with coursesGroup with userId', async () => {
 				const { user, courseGroups } = setup();
 
-				const [courseGroup] = await courseGroupService.finUserDataFromCourseGroup(user.id);
+				const [courseGroup] = await courseGroupService.findAllCourseGroupsByUserId(user.id);
 
 				expect(courseGroup.length).toEqual(2);
 				expect(courseGroup).toEqual(courseGroups);

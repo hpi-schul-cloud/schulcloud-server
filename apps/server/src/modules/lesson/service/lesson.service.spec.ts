@@ -77,7 +77,7 @@ describe('LessonService', () => {
 		});
 	});
 
-	describe('findUserDataFromLessons', () => {
+	describe('findAllLessonsByUserId', () => {
 		describe('when finding by userId', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
@@ -103,14 +103,14 @@ describe('LessonService', () => {
 			it('should call findByCourseIds from lesson repo', async () => {
 				const { userId } = setup();
 
-				await expect(lessonService.findUserDataFromLessons(userId)).resolves.not.toThrow();
+				await expect(lessonService.findAllLessonsByUserId(userId)).resolves.not.toThrow();
 				expect(lessonRepo.findByUserId).toBeCalledWith(userId);
 			});
 
 			it('should return array of lessons with userId', async () => {
 				const { userId, lessons } = setup();
 
-				const result = await lessonService.findUserDataFromLessons(userId);
+				const result = await lessonService.findAllLessonsByUserId(userId);
 
 				expect(result).toHaveLength(2);
 				expect(result).toEqual(lessons);

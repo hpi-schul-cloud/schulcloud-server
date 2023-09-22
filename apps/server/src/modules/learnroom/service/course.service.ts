@@ -10,7 +10,7 @@ export class CourseService {
 		return this.repo.findById(courseId);
 	}
 
-	public async findUserDataFromCourses(userId: EntityId): Promise<Counted<Course[]>> {
+	public async findAllCoursesByUserId(userId: EntityId): Promise<Counted<Course[]>> {
 		const [courses, count] = await this.repo.findAllByUserId(userId);
 
 		return [courses, count];

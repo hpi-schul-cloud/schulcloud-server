@@ -24,7 +24,7 @@ export class LessonService {
 		return this.lessonRepo.findAllByCourseIds(courseIds);
 	}
 
-	async findUserDataFromLessons(userId: EntityId): Promise<LessonEntity[]> {
+	async findAllLessonsByUserId(userId: EntityId): Promise<LessonEntity[]> {
 		const lessons = await this.lessonRepo.findByUserId(userId);
 
 		return lessons;
