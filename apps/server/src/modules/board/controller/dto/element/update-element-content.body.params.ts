@@ -17,6 +17,10 @@ export class FileContentBody {
 	@IsString()
 	@ApiProperty({})
 	caption!: string;
+
+	@IsString()
+	@ApiProperty({})
+	alternativeText!: string;
 }
 
 export class FileElementContentBody extends ElementContentBody {
