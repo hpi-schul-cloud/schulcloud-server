@@ -37,3 +37,7 @@ export interface ColumnBoardProps extends BoardCompositeProps {
 	title: string;
 	context: BoardExternalReference;
 }
+
+export function isColumnBoard(reference: unknown): reference is ColumnBoard {
+	return reference instanceof ColumnBoard;
+}

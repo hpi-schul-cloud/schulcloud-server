@@ -28,3 +28,7 @@ export class Column extends BoardComposite<ColumnProps> {
 export interface ColumnProps extends BoardCompositeProps {
 	title: string;
 }
+
+export function isColumn(reference: unknown): reference is Column {
+	return reference instanceof Column;
+}
