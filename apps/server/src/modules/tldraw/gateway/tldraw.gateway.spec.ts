@@ -384,7 +384,7 @@ describe('TldrawGateway', () => {
 		});
 	});
 
-	describe('when pin failed', () => {
+	describe('when ping failed', () => {
 		const setup = async () => {
 			await app.init();
 			await setupWs('TEST');
