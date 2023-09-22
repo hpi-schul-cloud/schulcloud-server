@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-// import { ColumnBoardNode } from '@shared/domain';
+import { ColumnBoardNode } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cardNodeFactory,
@@ -208,7 +208,7 @@ describe('BoardNodeRepo', () => {
 			});
 		});
 	});
-	/* BC-5162 - avoid race condition due to unit of work
+
 	describe('findById', () => {
 		describe('when boardNode exists in the database but NOT in the unit-of-work', () => {
 			it('should return an equal object', async () => {
@@ -236,5 +236,4 @@ describe('BoardNodeRepo', () => {
 			});
 		});
 	});
-	*/
 });

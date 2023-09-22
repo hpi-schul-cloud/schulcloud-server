@@ -18,7 +18,7 @@ export class FileElementResponseMapper implements BaseResponseMapper {
 			id: element.id,
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
 			type: ContentElementType.FILE,
-			content: new FileElementContent({ caption: element.caption }),
+			content: new FileElementContent({ caption: element.caption, alternativeText: element.alternativeText }),
 		});
 
 		return result;
