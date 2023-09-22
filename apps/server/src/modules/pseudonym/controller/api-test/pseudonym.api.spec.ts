@@ -57,7 +57,7 @@ describe('PseudonymController (API)', () => {
 			const setup = async () => {
 				const school: SchoolEntity = schoolFactory.buildWithId();
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school }, []);
-				const pseudonymString: string = new ObjectId().toHexString();
+				const pseudonymString: string = new UUID().toString();
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
 				const pseudonym: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.buildWithId({
 					pseudonym: pseudonymString,
@@ -92,7 +92,7 @@ describe('PseudonymController (API)', () => {
 				const school: SchoolEntity = schoolFactory.buildWithId();
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school });
-				const pseudonymString: string = new ObjectId().toHexString();
+				const pseudonymString: string = new UUID().toString();
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
 				const pseudonym: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.buildWithId({
 					pseudonym: pseudonymString,
@@ -129,7 +129,7 @@ describe('PseudonymController (API)', () => {
 			const setup = async () => {
 				const school: SchoolEntity = schoolFactory.buildWithId();
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
-				const pseudonymString: string = new ObjectId().toHexString();
+				const pseudonymString: string = new UUID().toString();
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
 				const pseudonym: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.buildWithId({
 					pseudonym: new UUID().toString(),

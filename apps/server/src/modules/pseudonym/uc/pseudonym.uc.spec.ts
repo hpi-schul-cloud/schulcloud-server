@@ -1,13 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, LegacySchoolDo, Pseudonym, SchoolEntity, User } from '@shared/domain';
+import { LegacySchoolDo, Pseudonym, SchoolEntity, User } from '@shared/domain';
 import { legacySchoolDoFactory, pseudonymFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { ForbiddenException } from '@nestjs/common';
-import { ICurrentUser } from '@src/modules/authentication';
 import { Action, AuthorizationService } from '@src/modules/authorization';
+import { LegacySchoolService } from '@src/modules/legacy-school';
 import { PseudonymService } from '../service';
 import { PseudonymUc } from './pseudonym.uc';
-import { LegacySchoolService } from '../../legacy-school';
 
 describe('PseudonymUc', () => {
 	let module: TestingModule;
@@ -55,8 +54,7 @@ describe('PseudonymUc', () => {
 	describe('findPseudonymByPseudonym', () => {
 		describe('when valid user and params are given', () => {
 			const setup = () => {
-				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-				const userId: EntityId = currentUser.userId;
+				const userId = 'userId';
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
 				const schoolEntity: SchoolEntity = schoolFactory.buildWithId();
 				const user: User = userFactory.buildWithId({ school: schoolEntity });
@@ -114,8 +112,7 @@ describe('PseudonymUc', () => {
 
 		describe('when user is not authorized', () => {
 			const setup = () => {
-				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
-				const userId: EntityId = currentUser.userId;
+				const userId = 'userId';
 				const user: User = userFactory.buildWithId();
 				const school: SchoolEntity = schoolFactory.buildWithId();
 				user.school = school;
