@@ -9,6 +9,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { GetFileResponse } from '@src/modules/files-storage/interface';
 import { FileMetadata, InstalledLibrary } from '../entity/library.entity';
+import { H5P_LIBRARIES_S3_CONNECTION } from '../h5p-editor.config';
 import { LibraryRepo } from '../repo/library.repo';
 import { LibraryStorage } from './libraryStorage.service';
 
@@ -40,6 +41,7 @@ describe('LibraryStorage', () => {
 					provide: 'S3ClientAdapter_Libraries',
 					useValue: createMock<S3ClientAdapter>(),
 				},
+				{ provide: H5P_LIBRARIES_S3_CONNECTION, useValue: createMock<S3ClientAdapter>() },
 			],
 		}).compile();
 

@@ -9,6 +9,7 @@ import { ReadStream } from 'fs';
 import { join } from 'node:path';
 import { Readable } from 'node:stream';
 import { TemporaryFile } from '../entity/temporary-file.entity';
+import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
 import { TemporaryFileRepo } from '../repo/temporary-file.repo';
 import { TemporaryFileStorage } from './temporary-file-storage.service';
 
@@ -29,6 +30,7 @@ describe('TemporaryFileStorage', () => {
 					provide: TemporaryFileRepo,
 					useValue: createMock<TemporaryFileRepo>(),
 				},
+				{ provide: H5P_CONTENT_S3_CONNECTION, useValue: createMock<S3ClientAdapter>() },
 				{
 					provide: 'S3ClientAdapter_Content',
 					useValue: createMock<S3ClientAdapter>(),

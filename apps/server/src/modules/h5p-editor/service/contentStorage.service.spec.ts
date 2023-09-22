@@ -9,9 +9,10 @@ import { GetFileResponse } from '@src/modules/files-storage/interface';
 import { ObjectID } from 'bson';
 import { Readable } from 'stream';
 import { H5PContent, H5PContentParentType, IH5PContentProperties } from '../entity';
+import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
 import { H5PContentRepo } from '../repo';
-import { ContentStorage } from './contentStorage.service';
 import { LumiUserWithContentData } from '../types/lumi-types';
+import { ContentStorage } from './contentStorage.service';
 
 const helpers = {
 	buildMetadata(
@@ -40,9 +41,9 @@ const helpers = {
 			data: `Data #${n}`,
 		};
 		const h5pContentProperties: IH5PContentProperties = {
-			creatorId: '',
-			parentId: '',
-			schoolId: '',
+			creatorId: new ObjectID().toString(),
+			parentId: new ObjectID().toString(),
+			schoolId: new ObjectID().toString(),
 			metadata,
 			content,
 			parentType: H5PContentParentType.Lesson,
@@ -104,6 +105,7 @@ describe('ContentStorage', () => {
 				ContentStorage,
 				{ provide: 'S3ClientAdapter_Content', useValue: createMock<S3ClientAdapter>() },
 				{ provide: H5PContentRepo, useValue: createMock<H5PContentRepo>() },
+				{ provide: H5P_CONTENT_S3_CONNECTION, useValue: createMock<S3ClientAdapter>() },
 			],
 		}).compile();
 
