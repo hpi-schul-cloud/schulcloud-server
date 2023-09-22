@@ -11,7 +11,7 @@ export class FileElement extends BoardComposite<FileElementProps> {
 	}
 
 	get alternativeText(): string {
-		return this.props.alternativeText;
+		return this.props.alternativeText || '';
 	}
 
 	set alternativeText(value: string) {
