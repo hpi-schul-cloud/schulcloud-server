@@ -14,6 +14,7 @@ import {
 	LessonEntity,
 	Material,
 } from '@shared/domain';
+import { AuthorizableObject } from '@shared/domain/domain-object';
 import { LessonRepo } from '@shared/repo';
 import {
 	courseFactory,
@@ -85,7 +86,7 @@ describe('lesson copy service', () => {
 			fileCopyStatus: { type: CopyElementType.FILE_GROUP, status: CopyStatusEnum.SUCCESS },
 		});
 		copyHelperService = module.get(CopyHelperService);
-		const map: Map<EntityId, BaseEntity> = new Map();
+		const map: Map<EntityId, AuthorizableObject> = new Map();
 		copyHelperService.buildCopyEntityDict.mockReturnValue(map);
 		etherpadService = module.get(EtherpadService);
 		nexboardService = module.get(NexboardService);
@@ -1355,7 +1356,7 @@ describe('lesson copy service', () => {
 
 			it('should keep original url when task is not in dictionary (has not been copied)', () => {
 				const { copyStatus, originalTask } = setup();
-				copyHelperService.buildCopyEntityDict.mockReturnValue(new Map<EntityId, BaseEntity>());
+				copyHelperService.buildCopyEntityDict.mockReturnValue(new Map<EntityId, AuthorizableObject>());
 				const copyDict = copyHelperService.buildCopyEntityDict(copyStatus);
 				const updatedCopyStatus = copyService.updateCopiedEmbeddedTasks(copyStatus, copyDict);
 				const lesson = updatedCopyStatus?.copyEntity as LessonEntity;
