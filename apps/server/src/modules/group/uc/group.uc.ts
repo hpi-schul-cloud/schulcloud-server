@@ -39,13 +39,13 @@ export class GroupUc {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkPermission(user, school, AuthorizationContextBuilder.read([Permission.CLASS_LIST]));
 
-		let combinedClassInfo: ClassInfoDto[] = await this.findCombinedClassListForSchool(schoolId);
+		const combinedClassInfo: ClassInfoDto[] = await this.findCombinedClassListForSchool(schoolId);
 
-		combinedClassInfo = combinedClassInfo.sort((a: ClassInfoDto, b: ClassInfoDto): number =>
+		combinedClassInfo.sort((a: ClassInfoDto, b: ClassInfoDto): number =>
 			SortHelper.genericSortFunction(a[sortBy], b[sortBy], sortOrder)
 		);
 
-		const pageContent: ClassInfoDto[] = combinedClassInfo.slice(skip, limit ? skip + limit : combinedClassInfo.length);
+		const pageContent: ClassInfoDto[] = this.applyPagination(combinedClassInfo, skip, limit);
 
 		const page: Page<ClassInfoDto> = new Page<ClassInfoDto>(pageContent, combinedClassInfo.length);
 
@@ -140,5 +140,11 @@ export class GroupUc {
 		);
 
 		return resolvedGroupUsers;
+	}
+
+	private applyPagination(combinedClassInfo: ClassInfoDto[], skip: number, limit: number | undefined) {
+		const page: ClassInfoDto[] = combinedClassInfo.slice(skip, limit ? skip + limit : combinedClassInfo.length);
+
+		return page;
 	}
 }
