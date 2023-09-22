@@ -14,11 +14,11 @@ const toolConfigTypeToToolLaunchDataTypeMapping: Record<ToolConfigType, ToolLaun
 	[ToolConfigType.OAUTH2]: ToolLaunchDataType.OAUTH2,
 };
 
-const toolLaunchDataTypeToToolConfigTypeMapping: Record<ToolLaunchDataType, ToolConfigType> = Object.entries(
-	toolConfigTypeToToolLaunchDataTypeMapping
-).reduce((acc: Record<ToolLaunchDataType, ToolConfigType>, [key, value]) => {
-	return { ...acc, [value]: key as ToolConfigType };
-}, {} as Record<ToolLaunchDataType, ToolConfigType>);
+const toolLaunchDataTypeToToolConfigTypeMapping: Record<ToolLaunchDataType, ToolConfigType> = {
+	[ToolLaunchDataType.BASIC]: ToolConfigType.BASIC,
+	[ToolLaunchDataType.LTI11]: ToolConfigType.LTI11,
+	[ToolLaunchDataType.OAUTH2]: ToolConfigType.OAUTH2,
+};
 
 export class ToolLaunchMapper {
 	static mapToParameterLocation(location: CustomParameterLocation): PropertyLocation {

@@ -150,10 +150,8 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 				'Unable to build LTI 1.1 launch payload. "key" or "secret" is undefined in PropertyData'
 			);
 		}
-		const keyValue = key.value;
-		const secretValue = secret.value;
 
-		const authentication = { keyValue, secretValue };
+		const authentication = { keyValue: key.value, secretValue: secret.value };
 
 		return authentication;
 	}

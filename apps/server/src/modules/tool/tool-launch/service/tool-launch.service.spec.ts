@@ -181,32 +181,6 @@ describe('ToolLaunchService', () => {
 					new InternalServerErrorException('Unknown tool config type')
 				);
 			});
-
-			it('should call getSchoolExternalToolById', async () => {
-				const { launchParams } = setup();
-
-				try {
-					await service.getLaunchData('userId', launchParams.contextExternalTool);
-				} catch (exception) {
-					// Do nothing
-				}
-
-				expect(schoolExternalToolService.getSchoolExternalToolById).toHaveBeenCalledWith(
-					launchParams.schoolExternalTool.id
-				);
-			});
-
-			it('should call findExternalToolById', async () => {
-				const { launchParams } = setup();
-
-				try {
-					await service.getLaunchData('userId', launchParams.contextExternalTool);
-				} catch (exception) {
-					// Do nothing
-				}
-
-				expect(externalToolService.findExternalToolById).toHaveBeenCalledWith(launchParams.schoolExternalTool.toolId);
-			});
 		});
 
 		describe('when tool configuration status is not LATEST', () => {

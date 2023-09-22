@@ -33,7 +33,7 @@ describe('OAuth2ToolLaunchStrategy', () => {
 	});
 
 	describe('buildToolLaunchRequestPayload', () => {
-		describe('when always', () => {
+		describe('whenever it is called', () => {
 			it('should return undefined', () => {
 				const payload: string | null = strategy.buildToolLaunchRequestPayload('url', []);
 
@@ -43,7 +43,7 @@ describe('OAuth2ToolLaunchStrategy', () => {
 	});
 
 	describe('buildToolLaunchDataFromConcreteConfig', () => {
-		describe('when always', () => {
+		describe('whenever it is called', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.build();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
@@ -69,7 +69,7 @@ describe('OAuth2ToolLaunchStrategy', () => {
 	});
 
 	describe('determineLaunchRequestMethod', () => {
-		describe('when always', () => {
+		describe('whenever it is called', () => {
 			it('should return GET', () => {
 				const result: LaunchRequestMethod = strategy.determineLaunchRequestMethod([]);
 
