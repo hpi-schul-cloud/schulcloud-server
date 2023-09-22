@@ -1,51 +1,22 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ALL_RULES } from '@shared/domain/rules';
-import { FeathersModule } from '@shared/infra/feathers';
-import {
-	CourseGroupRepo,
-	CourseRepo,
-	LessonRepo,
-	SchoolExternalToolRepo,
-	LegacySchoolRepo,
-	SubmissionRepo,
-	TaskRepo,
-	TeamsRepo,
-	UserRepo,
-} from '@shared/repo';
+import { UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { LegacySchoolModule } from '@src/modules/legacy-school';
-import { ToolModule } from '@src/modules/tool';
-import { BoardModule } from '../board';
+import { FeathersModule } from '@shared/infra/feathers';
 import { AuthorizationHelper } from './authorization.helper';
 import { AuthorizationService } from './authorization.service';
 import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
-import { ReferenceLoader } from './domain/reference/reference.loader';
 import { RuleManager } from './rule-manager';
 
 @Module({
 	// TODO: remove forwardRef to TooModule N21-1055
-	imports: [
-		FeathersModule,
-		LoggerModule,
-		LegacySchoolModule,
-		forwardRef(() => ToolModule),
-		forwardRef(() => BoardModule),
-	],
+	imports: [FeathersModule, LoggerModule],
 	providers: [
 		FeathersAuthorizationService,
 		FeathersAuthProvider,
 		AuthorizationService,
 		...ALL_RULES,
-		ReferenceLoader,
 		UserRepo,
-		CourseRepo,
-		CourseGroupRepo,
-		TaskRepo,
-		LegacySchoolRepo,
-		LessonRepo,
-		TeamsRepo,
-		SubmissionRepo,
-		SchoolExternalToolRepo,
 		RuleManager,
 		AuthorizationHelper,
 	],
