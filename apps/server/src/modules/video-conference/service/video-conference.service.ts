@@ -100,11 +100,13 @@ export class VideoConferenceService {
 			scopeRessource = await this.teamsRepo.findById(scopeId);
 		}
 
+		// Need to be solve the null with throw by it self.
+
 		return scopeRessource;
 	}
 
-	private isNull(value: unknown): value is null {
-		return value === null;
+	private isNullOrUndefined(value: unknown): value is null {
+		return !value;
 	}
 
 	private hasStartMeetingAndCanRead(authorizableUser: User, entity: Course | TeamEntity): boolean {
@@ -122,13 +124,13 @@ export class VideoConferenceService {
 	}
 
 	async determineBbbRole(userId: EntityId, scopeId: EntityId, scope: VideoConferenceScope): Promise<BBBRole> {
-		// need move to uc
+		// ressource loading need to be move to uc
 		const [authorizableUser, scopeRessource]: [User, TeamEntity | Course | null] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
 			this.loadScopeRessources(scopeId, scope),
 		]);
 
-		if (!this.isNull(scopeRessource)) {
+		if (!this.isNullOrUndefined(scopeRessource)) {
 			if (this.hasStartMeetingAndCanRead(authorizableUser, scopeRessource)) {
 				return BBBRole.MODERATOR;
 			}

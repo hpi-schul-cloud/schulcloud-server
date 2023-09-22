@@ -38,7 +38,12 @@ export class VideoConferenceCreateUc {
 	}
 
 	private async create(currentUserId: EntityId, scope: ScopeRef, options: VideoConferenceOptions): Promise<void> {
-		// need to replace with authorizableUser
+		/* need to be replace with
+		const [authorizableUser, scopeRessource]: [User, TeamEntity | Course] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.loadScopeRessources(scopeId, scope),
+		]);
+		*/
 		const user: UserDO = await this.userService.findById(currentUserId);
 
 		await this.verifyFeaturesEnabled(user.schoolId);

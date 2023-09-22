@@ -16,6 +16,12 @@ export class VideoConferenceEndUc {
 	) {}
 
 	async end(currentUserId: EntityId, scope: ScopeRef): Promise<VideoConference<BBBBaseResponse>> {
+		/* need to be replace with
+		const [authorizableUser, scopeRessource]: [User, TeamEntity | Course] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.loadScopeRessources(scopeId, scope),
+		]);
+		*/
 		const user: UserDO = await this.userService.findById(currentUserId);
 		const userId: string = user.id as string;
 
