@@ -4,6 +4,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { sanitizeRichText } from '@shared/controller';
 import {
 	BoardExternalReferenceType,
+	ContentElementType,
+	FileElementNode,
 	InputFormat,
 	RichTextElementNode,
 	SubmissionContainerElementNode,
@@ -14,6 +16,7 @@ import {
 	columnBoardNodeFactory,
 	columnNodeFactory,
 	courseFactory,
+	fileElementNodeFactory,
 	richTextElementNodeFactory,
 	submissionContainerElementNodeFactory,
 	TestApiClient,
@@ -59,6 +62,7 @@ describe(`content element update content (api)`, () => {
 			const column = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 			const parentCard = cardNodeFactory.buildWithId({ parent: column });
 			const richTextElement = richTextElementNodeFactory.buildWithId({ parent: parentCard });
+			const fileElement = fileElementNodeFactory.buildWithId({ parent: parentCard });
 			const submissionContainerElement = submissionContainerElementNodeFactory.buildWithId({ parent: parentCard });
 
 			const tomorrow = new Date(Date.now() + 86400000);
@@ -81,14 +85,23 @@ describe(`content element update content (api)`, () => {
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 
-			return { loggedInClient, richTextElement, submissionContainerElement, submissionContainerElementWithDueDate };
+			return {
+				loggedInClient,
+				richTextElement,
+				fileElement,
+				submissionContainerElement,
+				submissionContainerElementWithDueDate,
+			};
 		};
 
-		it('should return status 204 for rich text element', async () => {
+		it('should return status 204', async () => {
 			const { loggedInClient, richTextElement } = await setup();
 
 			const response = await loggedInClient.patch(`${richTextElement.id}/content`, {
-				data: { content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' },
+				data: {
+					content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 },
+					type: ContentElementType.RICH_TEXT,
+				},
 			});
 
 			expect(response.statusCode).toEqual(204);
@@ -98,7 +111,10 @@ describe(`content element update content (api)`, () => {
 			const { loggedInClient, richTextElement } = await setup();
 
 			await loggedInClient.patch(`${richTextElement.id}/content`, {
-				data: { content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' },
+				data: {
+					content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 },
+					type: ContentElementType.RICH_TEXT,
+				},
 			});
 			const result = await em.findOneOrFail(RichTextElementNode, richTextElement.id);
 
@@ -113,7 +129,7 @@ describe(`content element update content (api)`, () => {
 			const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
 
 			await loggedInClient.patch(`${richTextElement.id}/content`, {
-				data: { content: { text, inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' },
+				data: { content: { text, inputFormat: InputFormat.RICH_TEXT_CK5 }, type: ContentElementType.RICH_TEXT },
 			});
 			const result = await em.findOneOrFail(RichTextElementNode, richTextElement.id);
 
@@ -188,6 +204,19 @@ describe(`content element update content (api)`, () => {
 			});
 
 			expect(response.statusCode).toEqual(400);
+		});
+
+		it('should sanitize alternativeText parameter before changing caption of the element', async () => {
+			const { loggedInClient, fileElement } = await setup();
+
+			const alternativeText = '<iframe>rich text 1</iframe> some more text';
+
+			await loggedInClient.patch(`${fileElement.id}/content`, {
+				data: { content: { caption: '', alternativeText }, type: ContentElementType.FILE },
+			});
+			const result = await em.findOneOrFail(FileElementNode, fileElement.id);
+
+			expect(result.alternativeText).toEqual('rich text 1 some more text');
 		});
 	});
 

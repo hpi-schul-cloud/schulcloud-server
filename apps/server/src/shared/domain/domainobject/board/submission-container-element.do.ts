@@ -28,3 +28,7 @@ export class SubmissionContainerElement extends BoardComposite<SubmissionContain
 export interface SubmissionContainerElementProps extends BoardCompositeProps {
 	dueDate?: Date;
 }
+
+export function isSubmissionContainerElement(reference: unknown): reference is SubmissionContainerElement {
+	return reference instanceof SubmissionContainerElement;
+}

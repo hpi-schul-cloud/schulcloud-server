@@ -1,6 +1,6 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
-import { School } from '@shared/domain/entity/school.entity';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { InputFormat } from '@shared/domain/types/input-format.types';
 import type { IEntityWithSchool } from '../interface';
 import type { ILearnroomElement } from '../interface/learnroom';
@@ -8,7 +8,7 @@ import type { EntityId } from '../types/entity-id';
 import type { ITaskProperties, ITaskStatus } from '../types/task.types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
-import type { Lesson } from './lesson.entity';
+import type { LessonEntity } from './lesson.entity';
 import type { Submission } from './submission.entity';
 import { User } from './user.entity';
 
@@ -75,12 +75,12 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	course?: Course;
 
 	@Index()
-	@ManyToOne('School', { fieldName: 'schoolId' })
-	school: School;
+	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
+	school: SchoolEntity;
 
 	@Index()
-	@ManyToOne('Lesson', { fieldName: 'lessonId', nullable: true })
-	lesson?: Lesson; // In database exist also null, but it can not set.
+	@ManyToOne('LessonEntity', { fieldName: 'lessonId', nullable: true })
+	lesson?: LessonEntity; // In database exist also null, but it can not set.
 
 	@OneToMany('Submission', 'task')
 	submissions = new Collection<Submission>(this);
