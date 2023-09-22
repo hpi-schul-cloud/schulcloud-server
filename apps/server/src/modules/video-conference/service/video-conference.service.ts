@@ -8,6 +8,7 @@ import {
 	SchoolFeatures,
 	TeamEntity,
 	TeamUserEntity,
+	User,
 	UserDO,
 	VideoConferenceDO,
 	VideoConferenceOptionsDO,
@@ -15,15 +16,13 @@ import {
 } from '@shared/domain';
 import { CalendarEventDto, CalendarService } from '@shared/infra/calendar';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
-import { Action, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { AuthorizableReferenceType } from '@src/modules/authorization/domain/reference/types';
+import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error/error-status.enum';
 import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';
-import { PermissionScopeMapping } from '../mapper/video-conference.mapper';
 import { IScopeInfo, VideoConferenceState } from '../uc/dto';
 
 @Injectable()
@@ -88,39 +87,57 @@ export class VideoConferenceService {
 		return isExpert;
 	}
 
-	async determineBbbRole(userId: EntityId, scopeId: EntityId, scope: VideoConferenceScope): Promise<BBBRole> {
-		const permissionMap: Map<Permission, Promise<boolean>> = this.hasPermissions(
-			userId,
-			PermissionScopeMapping[scope],
-			scopeId,
-			[Permission.START_MEETING, Permission.JOIN_MEETING],
-			Action.read
-		);
+	// should be public to expose ressources to UC for passing it to authrisation and improve performance
+	private async loadScopeRessources(
+		scopeId: EntityId,
+		scope: VideoConferenceScope
+	): Promise<Course | TeamEntity | null> {
+		let scopeRessource: Course | TeamEntity | null = null;
 
-		if (await permissionMap.get(Permission.START_MEETING)) {
-			return BBBRole.MODERATOR;
+		if (scope === VideoConferenceScope.COURSE) {
+			scopeRessource = await this.courseService.findById(scopeId);
+		} else if (scope === VideoConferenceScope.EVENT) {
+			scopeRessource = await this.teamsRepo.findById(scopeId);
 		}
-		if (await permissionMap.get(Permission.JOIN_MEETING)) {
-			return BBBRole.VIEWER;
-		}
-		throw new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION);
+
+		return scopeRessource;
 	}
 
-	private hasPermissions(
-		userId: EntityId,
-		entityName: AuthorizableReferenceType,
-		entityId: EntityId,
-		permissions: Permission[],
-		action: Action
-	): Map<Permission, Promise<boolean>> {
-		const returnMap: Map<Permission, Promise<boolean>> = new Map();
-		permissions.forEach((perm) => {
-			const context =
-				action === Action.read ? AuthorizationContextBuilder.read([perm]) : AuthorizationContextBuilder.write([perm]);
-			const ret = this.authorizationService.hasPermissionByReferences(userId, entityName, entityId, context);
-			returnMap.set(perm, ret);
-		});
-		return returnMap;
+	private isNull(value: unknown): value is null {
+		return value === null;
+	}
+
+	private hasStartMeetingAndCanRead(authorizableUser: User, entity: Course | TeamEntity): boolean {
+		const context = AuthorizationContextBuilder.read([Permission.START_MEETING]);
+		const hasPermission = this.authorizationService.hasPermission(authorizableUser, entity, context);
+
+		return hasPermission;
+	}
+
+	private hasJoinMeetingAndCanRead(authorizableUser: User, entity: Course | TeamEntity): boolean {
+		const context = AuthorizationContextBuilder.read([Permission.JOIN_MEETING]);
+		const hasPermission = this.authorizationService.hasPermission(authorizableUser, entity, context);
+
+		return hasPermission;
+	}
+
+	async determineBbbRole(userId: EntityId, scopeId: EntityId, scope: VideoConferenceScope): Promise<BBBRole> {
+		// need move to uc
+		const [authorizableUser, scopeRessource]: [User, TeamEntity | Course | null] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.loadScopeRessources(scopeId, scope),
+		]);
+
+		if (!this.isNull(scopeRessource)) {
+			if (this.hasStartMeetingAndCanRead(authorizableUser, scopeRessource)) {
+				return BBBRole.MODERATOR;
+			}
+			if (this.hasJoinMeetingAndCanRead(authorizableUser, scopeRessource)) {
+				return BBBRole.VIEWER;
+			}
+		}
+
+		throw new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION);
 	}
 
 	async throwOnFeaturesDisabled(schoolId: EntityId): Promise<void> {

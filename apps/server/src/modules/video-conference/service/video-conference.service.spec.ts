@@ -13,12 +13,11 @@ import {
 	VideoConferenceScope,
 } from '@shared/domain';
 import { CalendarEventDto, CalendarService } from '@shared/infra/calendar';
-import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
+import { CourseRepo, TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { AuthorizableReferenceType } from '@src/modules/authorization/domain/reference/types';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
-import { courseFactory, roleFactory, setupEntities, userDoFactory } from '@shared/testing';
+import { courseFactory, roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
 import { ObjectId } from 'bson';
 import { teamFactory } from '@shared/testing/factory/team.factory';
@@ -293,64 +292,160 @@ describe('VideoConferenceService', () => {
 	});
 
 	describe('checkPermission', () => {
-		const setup = () => {
-			const userId = 'user-id';
-			const conferenceScope = VideoConferenceScope.COURSE;
-			const entityId = 'entity-id';
+		describe('when user has START_MEETING permission and is in course scope', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const entity = courseFactory.buildWithId();
+				const conferenceScope = VideoConferenceScope.COURSE;
 
-			return {
-				userId,
-				conferenceScope,
-				entityId,
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				authorizationService.hasPermission.mockReturnValueOnce(true).mockReturnValueOnce(false);
+				courseService.findById.mockResolvedValueOnce(entity);
+
+				return {
+					user,
+					userId: user.id,
+					entity,
+					entityId: entity.id,
+					conferenceScope,
+				};
 			};
-		};
 
-		describe('when user has START_MEETING permission', () => {
+			it('should call the correct authorisation order', async () => {
+				const { user, entity, userId, conferenceScope, entityId } = setup();
+
+				await service.determineBbbRole(userId, entityId, conferenceScope);
+
+				expect(authorizationService.hasPermission).toHaveBeenCalledWith(
+					user,
+					entity,
+					AuthorizationContextBuilder.read([Permission.START_MEETING])
+				);
+			});
+
 			it('should return BBBRole.MODERATOR', async () => {
 				const { userId, conferenceScope, entityId } = setup();
 
-				authorizationService.hasPermissionByReferences.mockResolvedValueOnce(true);
-				authorizationService.hasPermissionByReferences.mockResolvedValueOnce(false);
-
-				const result: BBBRole = await service.determineBbbRole(userId, entityId, conferenceScope);
+				const result = await service.determineBbbRole(userId, entityId, conferenceScope);
 
 				expect(result).toBe(BBBRole.MODERATOR);
-				expect(authorizationService.hasPermissionByReferences).toHaveBeenCalledWith(
-					userId,
-					AuthorizableReferenceType.Course,
-					entityId,
+			});
+		});
+
+		// can be removed when team / course / user is passed from UC
+		// missing when course / team loading throw an error, but also not nessasary if it is passed to UC.
+		describe('when user has START_MEETING permission and is in team(event) scope', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const entity = teamFactory.buildWithId();
+				const conferenceScope = VideoConferenceScope.EVENT;
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				authorizationService.hasPermission.mockReturnValueOnce(true).mockReturnValueOnce(false);
+				teamsRepo.findById.mockResolvedValueOnce(entity);
+
+				return {
+					user,
+					userId: user.id,
+					entity,
+					entityId: entity.id,
+					conferenceScope,
+				};
+			};
+
+			it('should call the correct authorisation order', async () => {
+				const { user, entity, userId, conferenceScope, entityId } = setup();
+
+				await service.determineBbbRole(userId, entityId, conferenceScope);
+
+				expect(authorizationService.hasPermission).toHaveBeenCalledWith(
+					user,
+					entity,
 					AuthorizationContextBuilder.read([Permission.START_MEETING])
 				);
+			});
+
+			it('should return BBBRole.MODERATOR', async () => {
+				const { userId, conferenceScope, entityId } = setup();
+
+				const result = await service.determineBbbRole(userId, entityId, conferenceScope);
+
+				expect(result).toBe(BBBRole.MODERATOR);
 			});
 		});
 
 		describe('when user has JOIN_MEETING permission', () => {
-			it('should return BBBRole.VIEWER', async () => {
-				const { userId, conferenceScope, entityId } = setup();
-				authorizationService.hasPermissionByReferences.mockResolvedValueOnce(false);
-				authorizationService.hasPermissionByReferences.mockResolvedValueOnce(true);
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const entity = courseFactory.buildWithId();
+				const conferenceScope = VideoConferenceScope.COURSE;
 
-				const result: BBBRole = await service.determineBbbRole(userId, entityId, conferenceScope);
+				authorizationService.hasPermission.mockReturnValueOnce(false).mockReturnValueOnce(true);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				courseService.findById.mockResolvedValueOnce(entity);
 
-				expect(result).toBe(BBBRole.VIEWER);
-				expect(authorizationService.hasPermissionByReferences).toHaveBeenCalledWith(
-					userId,
-					AuthorizableReferenceType.Course,
-					entityId,
+				return {
+					user,
+					userId: user.id,
+					entity,
+					entityId: entity.id,
+					conferenceScope,
+				};
+			};
+
+			it('should call the correct authorisation order', async () => {
+				const { user, entity, userId, conferenceScope, entityId } = setup();
+
+				await service.determineBbbRole(userId, entityId, conferenceScope);
+
+				expect(authorizationService.hasPermission).toHaveBeenNthCalledWith(
+					1,
+					user,
+					entity,
+					AuthorizationContextBuilder.read([Permission.START_MEETING])
+				);
+				expect(authorizationService.hasPermission).toHaveBeenNthCalledWith(
+					2,
+					user,
+					entity,
 					AuthorizationContextBuilder.read([Permission.JOIN_MEETING])
 				);
+			});
+
+			it('should return BBBRole.VIEWER', async () => {
+				const { userId, conferenceScope, entityId } = setup();
+
+				const result = await service.determineBbbRole(userId, entityId, conferenceScope);
+
+				expect(result).toBe(BBBRole.VIEWER);
 			});
 		});
 
 		describe('when user has neither START_MEETING nor JOIN_MEETING permission', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const entity = courseFactory.buildWithId();
+				const conferenceScope = VideoConferenceScope.COURSE;
+
+				authorizationService.hasPermission.mockReturnValueOnce(false).mockReturnValueOnce(false);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				courseService.findById.mockResolvedValueOnce(entity);
+
+				return {
+					user,
+					userId: user.id,
+					entity,
+					entityId: entity.id,
+					conferenceScope,
+				};
+			};
+
 			it('should throw a ForbiddenException', async () => {
 				const { userId, conferenceScope, entityId } = setup();
-				authorizationService.hasPermissionByReferences.mockResolvedValueOnce(false);
-				authorizationService.hasPermissionByReferences.mockResolvedValueOnce(false);
 
-				const func = () => service.determineBbbRole(userId, entityId, conferenceScope);
-
-				await expect(func).rejects.toThrow(new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION));
+				await expect(service.determineBbbRole(userId, entityId, conferenceScope)).rejects.toThrow(
+					new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION)
+				);
 			});
 		});
 	});

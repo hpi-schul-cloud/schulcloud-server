@@ -1,5 +1,4 @@
-import { Permission, VideoConferenceScope } from '@shared/domain';
-import { AuthorizableReferenceType } from '@src/modules/authorization/domain/reference/types';
+import { Permission } from '@shared/domain';
 import { BBBRole } from '../bbb';
 import {
 	VideoConferenceCreateParams,
@@ -14,11 +13,6 @@ import { VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '
 export const PermissionMapping = {
 	[BBBRole.MODERATOR]: Permission.START_MEETING,
 	[BBBRole.VIEWER]: Permission.JOIN_MEETING,
-};
-
-export const PermissionScopeMapping = {
-	[VideoConferenceScope.COURSE]: AuthorizableReferenceType.Course,
-	[VideoConferenceScope.EVENT]: AuthorizableReferenceType.Team,
 };
 
 const stateMapping = {

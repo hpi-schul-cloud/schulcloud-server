@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { EntityId, UserDO } from '@shared/domain';
+import { EntityId, Permission, UserDO, VideoConferenceScope } from '@shared/domain';
 import { UserService } from '@src/modules/user';
 import {
 	BBBBaseMeetingConfig,
@@ -38,6 +38,7 @@ export class VideoConferenceCreateUc {
 	}
 
 	private async create(currentUserId: EntityId, scope: ScopeRef, options: VideoConferenceOptions): Promise<void> {
+		// need to replace with authorizableUser
 		const user: UserDO = await this.userService.findById(currentUserId);
 
 		await this.verifyFeaturesEnabled(user.schoolId);
