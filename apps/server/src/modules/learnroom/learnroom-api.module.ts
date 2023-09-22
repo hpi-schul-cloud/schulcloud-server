@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { BoardRepo, CourseRepo, DashboardModelMapper, DashboardRepo, LessonRepo, UserRepo } from '@shared/repo';
 import { AuthorizationModule } from '@src/modules/authorization';
+import { AuthorizationReferenceModule } from '@src/modules/authorization/authorization-reference.module';
 import { CopyHelperModule } from '@src/modules/copy-helper';
 import { LessonModule } from '@src/modules/lesson';
 import { CourseController } from './controller/course.controller';
@@ -20,7 +21,7 @@ import {
 } from './uc';
 
 @Module({
-	imports: [AuthorizationModule, LessonModule, CopyHelperModule, LearnroomModule],
+	imports: [AuthorizationModule, LessonModule, CopyHelperModule, LearnroomModule, AuthorizationReferenceModule],
 	controllers: [DashboardController, CourseController, RoomsController],
 	providers: [
 		DashboardUc,
