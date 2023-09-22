@@ -14,7 +14,7 @@ import {
 	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
-import { roleFactory, setupEntities, userFactory } from '@shared/testing';
+import { setupEntities, userFactory } from '@shared/testing';
 import { BoardDoAuthorizableService } from '@src/modules/board';
 import { ContextExternalToolAuthorizableService } from '@src/modules/tool/context-external-tool/service/context-external-tool-authorizable.service';
 import { ReferenceLoader } from './reference.loader';
@@ -138,7 +138,7 @@ describe('reference.loader', () => {
 		it('should call userRepo.findById', async () => {
 			await service.loadAuthorizableObject(AuthorizableReferenceType.User, entityId);
 
-			expect(userRepo.findById).toBeCalledWith(entityId, true);
+			expect(userRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should call lessonRepo.findById', async () => {
