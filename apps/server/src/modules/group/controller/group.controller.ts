@@ -26,7 +26,7 @@ export class GroupController {
 		@Query() sortingQuery: ClassSortParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ClassInfoSearchListResponse> {
-		const board: Page<ClassInfoDto> = await this.groupUc.findClassesForSchool(
+		const board: Page<ClassInfoDto> = await this.groupUc.findAllClassesForSchool(
 			currentUser.userId,
 			currentUser.schoolId,
 			pagination.skip,
