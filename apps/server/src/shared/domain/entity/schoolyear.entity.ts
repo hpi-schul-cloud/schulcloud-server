@@ -8,7 +8,7 @@ export interface ISchoolYearProperties {
 }
 
 @Entity({ tableName: 'years' })
-export class SchoolYear extends BaseEntity implements ISchoolYearProperties {
+export class SchoolYearEntity extends BaseEntity implements ISchoolYearProperties {
 	@Property()
 	name: string;
 

@@ -11,7 +11,7 @@ export class FileElement extends BoardComposite<FileElementProps> {
 	}
 
 	get alternativeText(): string {
-		return this.props.alternativeText;
+		return this.props.alternativeText || '';
 	}
 
 	set alternativeText(value: string) {
@@ -34,4 +34,8 @@ export class FileElement extends BoardComposite<FileElementProps> {
 export interface FileElementProps extends BoardCompositeProps {
 	caption: string;
 	alternativeText: string;
+}
+
+export function isFileElement(reference: unknown): reference is FileElement {
+	return reference instanceof FileElement;
 }

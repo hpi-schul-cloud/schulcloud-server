@@ -19,4 +19,10 @@ export class CourseService {
 
 		return count;
 	}
+
+	async findAllByUserId(userId: EntityId): Promise<Course[]> {
+		const [courses] = await this.repo.findAllByUserId(userId);
+
+		return courses;
+	}
 }

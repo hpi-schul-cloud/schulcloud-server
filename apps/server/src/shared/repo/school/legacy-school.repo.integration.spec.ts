@@ -9,9 +9,9 @@ import {
 	SchoolEntity,
 	SchoolRolePermission,
 	SchoolRoles,
-	SchoolYear,
-	System,
-	UserLoginMigration,
+	SchoolYearEntity,
+	SystemEntity,
+	UserLoginMigrationEntity,
 } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
@@ -46,7 +46,7 @@ describe('LegacySchoolRepo', () => {
 
 	beforeEach(async () => {
 		await em.nativeDelete(SchoolEntity, {});
-		await em.nativeDelete(SchoolYear, {});
+		await em.nativeDelete(SchoolYearEntity, {});
 		em.clear();
 		jest.resetAllMocks();
 	});
@@ -95,7 +95,7 @@ describe('LegacySchoolRepo', () => {
 
 		await em.persistAndFlush([school]);
 
-		const storedSchoolYears = await em.find(SchoolYear, {});
+		const storedSchoolYears = await em.find(SchoolYearEntity, {});
 		expect(storedSchoolYears).toHaveLength(1);
 		expect(storedSchoolYears[0]).toEqual(schoolYear);
 
@@ -114,7 +114,7 @@ describe('LegacySchoolRepo', () => {
 
 	describe('findByExternalId', () => {
 		it('should find school by external ID', async () => {
-			const system: System = systemFactory.buildWithId();
+			const system: SystemEntity = systemFactory.buildWithId();
 			const schoolEntity: SchoolEntity = schoolFactory.build({ externalId: 'externalId' });
 			schoolEntity.systems.add(system);
 
@@ -182,10 +182,10 @@ describe('LegacySchoolRepo', () => {
 
 	describe('mapEntityToDO is called', () => {
 		it('should map school entity to school domain object', () => {
-			const system: System = systemFactory.buildWithId();
-			const schoolYear: SchoolYear = schoolYearFactory.buildWithId();
+			const system: SystemEntity = systemFactory.buildWithId();
+			const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
 			const schoolEntity: SchoolEntity = schoolFactory.buildWithId({ systems: [system], features: [], schoolYear });
-			const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.build({ school: schoolEntity });
+			const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.build({ school: schoolEntity });
 			schoolEntity.userLoginMigration = userLoginMigration;
 
 			const schoolDO: LegacySchoolDo = repo.mapEntityToDO(schoolEntity);
@@ -219,10 +219,10 @@ describe('LegacySchoolRepo', () => {
 
 	describe('mapDOToEntityProperties is called', () => {
 		const setup = async () => {
-			const system1: System = systemFactory.buildWithId();
-			const system2: System = systemFactory.buildWithId();
+			const system1: SystemEntity = systemFactory.buildWithId();
+			const system2: SystemEntity = systemFactory.buildWithId();
 
-			const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId();
+			const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId();
 
 			await em.persistAndFlush([userLoginMigration, system1, system2]);
 
@@ -258,9 +258,9 @@ describe('LegacySchoolRepo', () => {
 			expect(result.federalState).toEqual(entityDO.federalState);
 
 			expect(emGetReferenceSpy).toHaveBeenCalledTimes(3);
-			expect(emGetReferenceSpy).toHaveBeenNthCalledWith(1, System, system1.id);
-			expect(emGetReferenceSpy).toHaveBeenNthCalledWith(2, System, system2.id);
-			expect(emGetReferenceSpy).toHaveBeenNthCalledWith(3, UserLoginMigration, userLoginMigration.id);
+			expect(emGetReferenceSpy).toHaveBeenNthCalledWith(1, SystemEntity, system1.id);
+			expect(emGetReferenceSpy).toHaveBeenNthCalledWith(2, SystemEntity, system2.id);
+			expect(emGetReferenceSpy).toHaveBeenNthCalledWith(3, UserLoginMigrationEntity, userLoginMigration.id);
 		});
 
 		describe('when there are no systems', () => {

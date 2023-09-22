@@ -1,7 +1,7 @@
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { setupEntities } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
-import { System } from './system.entity';
+import { SystemEntity } from './system.entity';
 
 describe('System Entity', () => {
 	beforeAll(async () => {
@@ -11,14 +11,14 @@ describe('System Entity', () => {
 	describe('constructor', () => {
 		it('should throw an error by empty constructor', () => {
 			// @ts-expect-error: Test case
-			const test = () => new System();
+			const test = () => new SystemEntity();
 			expect(test).toThrow();
 		});
 
 		it('should create a system by passing required properties', () => {
 			const system = systemFactory.build();
 
-			expect(system instanceof System).toEqual(true);
+			expect(system instanceof SystemEntity).toEqual(true);
 		});
 
 		it('should create a system by passing required and optional properties', () => {
@@ -26,7 +26,7 @@ describe('System Entity', () => {
 				.withOauthConfig()
 				.build({ url: 'SAMPLE_URL', alias: 'SAMPLE_ALIAS', displayName: 'SAMPLE_NAME' });
 
-			expect(system instanceof System).toEqual(true);
+			expect(system instanceof SystemEntity).toEqual(true);
 			expect(system).toEqual(
 				expect.objectContaining({
 					type: 'oauth',

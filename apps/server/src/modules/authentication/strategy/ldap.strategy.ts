@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { LegacySchoolDo, System, User } from '@shared/domain';
+import { LegacySchoolDo, SystemEntity, User } from '@shared/domain';
 import { LegacySchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { ErrorLoggable } from '@src/core/error/loggable/error.loggable';
 import { Logger } from '@src/core/logger';
@@ -28,7 +28,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 	async validate(request: { body: LdapAuthorizationBodyParams }): Promise<ICurrentUser> {
 		const { username, password, systemId, schoolId } = this.extractParamsFromRequest(request);
 
-		const system: System = await this.systemRepo.findById(systemId);
+		const system: SystemEntity = await this.systemRepo.findById(systemId);
 
 		const school: LegacySchoolDo = await this.schoolRepo.findById(schoolId);
 
@@ -72,7 +72,12 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 		return value;
 	}
 
-	private async checkCredentials(account: AccountDto, system: System, ldapDn: string, password: string): Promise<void> {
+	private async checkCredentials(
+		account: AccountDto,
+		system: SystemEntity,
+		ldapDn: string,
+		password: string
+	): Promise<void> {
 		try {
 			await this.ldapService.checkLdapCredentials(system, ldapDn, password);
 		} catch (error) {
