@@ -90,11 +90,13 @@ describe('LessonService', () => {
 				};
 				const lesson1 = lessonFactory.buildWithId({ contents: [contentExample] });
 				const lesson2 = lessonFactory.buildWithId({ contents: [contentExample] });
+				const lessons = [lesson1, lesson2];
 
-				lessonRepo.findByUserId.mockResolvedValue([lesson1, lesson2]);
+				lessonRepo.findByUserId.mockResolvedValue(lessons);
 
 				return {
 					userId,
+					lessons,
 				};
 			};
 
@@ -106,11 +108,12 @@ describe('LessonService', () => {
 			});
 
 			it('should return array of lessons with userId', async () => {
-				const { userId } = setup();
+				const { userId, lessons } = setup();
 
 				const result = await lessonService.findUserDataFromLessons(userId);
 
 				expect(result).toHaveLength(2);
+				expect(result).toEqual(lessons);
 			});
 		});
 	});

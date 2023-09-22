@@ -64,19 +64,25 @@ describe('CourseService', () => {
 
 				return {
 					user,
+					allCourses,
 				};
 			};
 
 			it('should call courseRepo.findAllByUserId', async () => {
 				const { user } = setup();
+
 				await courseService.findUserDataFromCourses(user.id);
+
 				expect(courseRepo.findAllByUserId).toBeCalledWith(user.id);
 			});
 
 			it('should return array of courses with userId', async () => {
-				const { user } = setup();
+				const { user, allCourses } = setup();
+
 				const [courses] = await courseService.findUserDataFromCourses(user.id);
+
 				expect(courses.length).toEqual(3);
+				expect(courses).toEqual(allCourses);
 			});
 		});
 	});

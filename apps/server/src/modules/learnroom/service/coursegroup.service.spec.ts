@@ -44,12 +44,14 @@ describe('CourseGroupService', () => {
 				const user = userFactory.buildWithId();
 				const courseGroup1 = courseGroupFactory.buildWithId({ students: [user] });
 				const courseGroup2 = courseGroupFactory.buildWithId({ students: [user] });
+				const courseGroups = [courseGroup1, courseGroup2];
 
 				userRepo.findById.mockResolvedValue(user);
-				courseGroupRepo.findByUserId.mockResolvedValue([[courseGroup1, courseGroup2], 2]);
+				courseGroupRepo.findByUserId.mockResolvedValue([courseGroups, courseGroups.length]);
 
 				return {
 					user,
+					courseGroups,
 				};
 			};
 
@@ -62,11 +64,12 @@ describe('CourseGroupService', () => {
 			});
 
 			it('should return array with coursesGroup with userId', async () => {
-				const { user } = setup();
+				const { user, courseGroups } = setup();
 
 				const [courseGroup] = await courseGroupService.finUserDataFromCourseGroup(user.id);
 
 				expect(courseGroup.length).toEqual(2);
+				expect(courseGroup).toEqual(courseGroups);
 			});
 		});
 	});
