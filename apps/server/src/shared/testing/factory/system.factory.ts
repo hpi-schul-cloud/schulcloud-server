@@ -1,9 +1,9 @@
-import { ISystemProperties, LdapConfig, OauthConfig, OidcConfig, System } from '@shared/domain';
+import { ISystemProperties, LdapConfig, OauthConfig, OidcConfig, SystemEntity } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 
-export class SystemFactory extends BaseFactory<System, ISystemProperties> {
+export class SystemFactory extends BaseFactory<SystemEntity, ISystemProperties> {
 	withOauthConfig(): this {
 		const params: DeepPartial<ISystemProperties> = {
 			oauthConfig: new OauthConfig({
@@ -54,7 +54,7 @@ export class SystemFactory extends BaseFactory<System, ISystemProperties> {
 	}
 }
 
-export const systemFactory = SystemFactory.define(System, ({ sequence }) => {
+export const systemFactory = SystemFactory.define(SystemEntity, ({ sequence }) => {
 	return {
 		type: 'oauth',
 		url: 'http://mock.de',

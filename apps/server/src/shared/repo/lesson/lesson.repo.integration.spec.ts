@@ -1,6 +1,6 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Lesson } from '@shared/domain';
+import { ComponentType, IComponentProperties, LessonEntity } from '@shared/domain';
 import { cleanupCollections, courseFactory, lessonFactory, materialFactory, taskFactory } from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -27,11 +27,11 @@ describe('LessonRepo', () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
-		await em.nativeDelete(Lesson, {});
+		await em.nativeDelete(LessonEntity, {});
 	});
 
 	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(Lesson);
+		expect(repo.entityName).toBe(LessonEntity);
 	});
 
 	describe('findById', () => {
@@ -40,7 +40,6 @@ describe('LessonRepo', () => {
 			const lesson = lessonFactory.build({ course });
 			await em.persistAndFlush([course, lesson]);
 			em.clear();
-
 			const resultLesson = await repo.findById(lesson.id);
 			// TODO for some reason, comparing the whole object does not work
 			// expect(resultLesson).toEqual(lesson);
@@ -52,7 +51,6 @@ describe('LessonRepo', () => {
 			const lesson = lessonFactory.build({ course });
 			await em.persistAndFlush([course, lesson]);
 			em.clear();
-
 			const resultLesson = await repo.findById(lesson.id);
 			expect(resultLesson.course.name).toEqual(course.name);
 		});
@@ -74,7 +72,6 @@ describe('LessonRepo', () => {
 			const lesson = lessonFactory.build({ materials: [material] });
 			await em.persistAndFlush([lesson, material]);
 			em.clear();
-
 			const resultLesson = await repo.findById(lesson.id);
 			expect(resultLesson.materials[0]).toEqual(material);
 		});
@@ -88,7 +85,6 @@ describe('LessonRepo', () => {
 
 			await em.persistAndFlush([lesson1, lesson2]);
 			em.clear();
-
 			const [result, total] = await repo.findAllByCourseIds([course2.id]);
 			expect(total).toEqual(1);
 			expect(result[0].name).toEqual(lesson2.name);
@@ -101,7 +97,6 @@ describe('LessonRepo', () => {
 
 			await em.persistAndFlush([lesson1, lesson2]);
 			em.clear();
-
 			const [result, total] = await repo.findAllByCourseIds([course.id]);
 			expect(total).toEqual(1);
 			expect(result[0].name).toEqual(lesson1.name);
@@ -113,7 +108,6 @@ describe('LessonRepo', () => {
 
 			await em.persistAndFlush([lesson]);
 			em.clear();
-
 			const [result, total] = await repo.findAllByCourseIds([course.id], { hidden: false });
 			expect(total).toBe(0);
 			expect(result).toHaveLength(0);
@@ -125,7 +119,6 @@ describe('LessonRepo', () => {
 
 			await em.persistAndFlush([lesson]);
 			em.clear();
-
 			const [result, total] = await repo.findAllByCourseIds([course.id]);
 			expect(total).toBe(1);
 			expect(result).toHaveLength(1);
@@ -140,7 +133,6 @@ describe('LessonRepo', () => {
 			];
 			await em.persistAndFlush(lessons);
 			em.clear();
-
 			const expectedOrder = [lessons[1], lessons[2], lessons[0]].map((lesson) => lesson.id);
 			const [results] = await repo.findAllByCourseIds([course.id]);
 			expect(results.map((lesson) => lesson.id)).toEqual(expectedOrder);
@@ -152,7 +144,6 @@ describe('LessonRepo', () => {
 			const tasks = [taskFactory.build({ course, lesson }), taskFactory.draft().build({ course, lesson })];
 			await em.persistAndFlush([course, lesson, ...tasks]);
 			em.clear();
-
 			const [[resultLesson]] = await repo.findAllByCourseIds([course.id]);
 			expect(resultLesson.tasks.isInitialized()).toEqual(true);
 			expect(resultLesson.tasks.length).toEqual(2);
@@ -167,6 +158,68 @@ describe('LessonRepo', () => {
 
 			const [[resultLesson]] = await repo.findAllByCourseIds([course.id]);
 			expect(resultLesson.materials[0]).toEqual(material);
+		});
+	});
+
+	describe('findByUserId', () => {
+		it('should return lessons which contains a specific userId', async () => {
+			// Arrange
+			const userId = new ObjectId().toHexString();
+			const contentExample: IComponentProperties = {
+				title: 'title',
+				hidden: false,
+				user: userId,
+				component: ComponentType.TEXT,
+				content: { text: 'test of content' },
+			};
+			const lesson1 = lessonFactory.buildWithId({ contents: [contentExample, contentExample] });
+			const lesson2 = lessonFactory.buildWithId({ contents: [contentExample] });
+			const lesson3 = lessonFactory.buildWithId();
+			await em.persistAndFlush([lesson1, lesson2, lesson3]);
+			em.clear();
+
+			// Act
+			const result = await repo.findByUserId(userId);
+
+			// Assert
+			expect(result).toHaveLength(2);
+			expect(result.some((lesson: LessonEntity) => lesson.id === lesson3.id)).toBeFalsy();
+			const receivedContents = result.flatMap((o) => o.contents);
+			receivedContents.forEach((content) => {
+				expect(content.user).toEqual(userId);
+			});
+		});
+	});
+
+	describe('updateLessons', () => {
+		it('should update Lessons without deleted user', async () => {
+			// Arrange
+			const userId = new ObjectId().toHexString();
+			const contentExample: IComponentProperties = {
+				title: 'title',
+				hidden: false,
+				user: userId,
+				component: ComponentType.TEXT,
+				content: { text: 'test of content' },
+			};
+			const lesson1 = lessonFactory.buildWithId({ contents: [contentExample, contentExample] });
+			await em.persistAndFlush([lesson1]);
+			em.clear();
+
+			// Arrange expected Array after User deletion
+			lesson1.contents[0].user = '';
+
+			// Act
+			await repo.save([lesson1]);
+
+			const result1 = await repo.findByUserId(userId);
+			expect(result1).toHaveLength(0);
+
+			const result2 = await repo.findById(lesson1.id);
+			const receivedContents = result2.contents;
+			receivedContents.forEach((content) => {
+				expect(content.user).toEqual('');
+			});
 		});
 	});
 });

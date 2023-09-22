@@ -1,4 +1,4 @@
-import { EntityId, Lesson, Task } from '@shared/domain';
+import { EntityId, LessonEntity, Task } from '@shared/domain';
 import { LessonCopyApiParams } from '@src/modules/learnroom/controller/dto/lesson/lesson-copy.params';
 import { LessonCopyParentParams } from '@src/modules/lesson/types';
 import { TaskCopyApiParams } from '@src/modules/task/controller/dto/task-copy.params';
@@ -15,7 +15,7 @@ export class CopyMapper {
 		});
 
 		if (copyStatus.copyEntity) {
-			const copyEntity = copyStatus.copyEntity as Lesson | Task;
+			const copyEntity = copyStatus.copyEntity as LessonEntity | Task;
 			dto.id = copyEntity.id;
 			dto.destinationCourseId = copyEntity.course?.id;
 		}
