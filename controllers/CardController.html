@@ -200,14 +200,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@ApiOperation({summary: &#x27;Create a new element on a card.&#x27;})<br />@ApiExtraModels(RichTextElementResponse, FileElementResponse, SubmissionContainerElementResponse)<br />@ApiResponse({status: 201, schema: undefined})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@Post(&#x27;:cardId/elements&#x27;)<br /></code>
+                    <code>@ApiOperation({summary: &#x27;Create a new element on a card.&#x27;})<br />@ApiExtraModels(RichTextElementResponse, FileElementResponse, SubmissionContainerElementResponse, ExternalToolElementResponse)<br />@ApiResponse({status: 201, schema: undefined})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@Post(&#x27;:cardId/elements&#x27;)<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="132"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:132</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="139"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:139</a></div>
                 </td>
             </tr>
 
@@ -315,8 +315,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="112"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:112</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="113"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:113</a></div>
                 </td>
             </tr>
 
@@ -410,8 +410,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="46"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:46</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="47"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:47</a></div>
                 </td>
             </tr>
 
@@ -507,8 +507,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="67"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:67</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="68"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:68</a></div>
                 </td>
             </tr>
 
@@ -616,8 +616,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="82"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:82</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="83"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:83</a></div>
                 </td>
             </tr>
 
@@ -725,8 +725,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="97"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:97</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="98"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:98</a></div>
                 </td>
             </tr>
 
@@ -827,13 +827,14 @@ import {
 	CardListResponse,
 	CardUrlParams,
 	CreateContentElementBodyParams,
+	ExternalToolElementResponse,
 	FileElementResponse,
 	MoveCardBodyParams,
 	RenameBodyParams,
+	RichTextElementResponse,
 	SubmissionContainerElementResponse,
 } from &#x27;./dto&#x27;;
 import { SetHeightBodyParams } from &#x27;./dto/board/set-height.body.params&#x27;;
-import { RichTextElementResponse } from &#x27;./dto/element/rich-text-element.response&#x27;;
 import { CardResponseMapper, ContentElementResponseFactory } from &#x27;./mapper&#x27;;
 
 @ApiTags(&#x27;Board Card&#x27;)
@@ -918,7 +919,12 @@ export class CardController {
 	}
 
 	@ApiOperation({ summary: &#x27;Create a new element on a card.&#x27; })
-	@ApiExtraModels(RichTextElementResponse, FileElementResponse, SubmissionContainerElementResponse)
+	@ApiExtraModels(
+		RichTextElementResponse,
+		FileElementResponse,
+		SubmissionContainerElementResponse,
+		ExternalToolElementResponse
+	)
 	@ApiResponse({
 		status: 201,
 		schema: {
@@ -926,6 +932,7 @@ export class CardController {
 				{ $ref: getSchemaPath(RichTextElementResponse) },
 				{ $ref: getSchemaPath(FileElementResponse) },
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
+				{ $ref: getSchemaPath(ExternalToolElementResponse) },
 			],
 		},
 	})

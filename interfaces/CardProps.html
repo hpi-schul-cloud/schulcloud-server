@@ -190,6 +190,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BoardComposite, BoardCompositeProps } from &#x27;./board-composite.do&#x27;;
+import { ExternalToolElement } from &#x27;./external-tool-element.do&#x27;;
 import { FileElement } from &#x27;./file-element.do&#x27;;
 import { RichTextElement } from &#x27;./rich-text-element.do&#x27;;
 import { SubmissionContainerElement } from &#x27;./submission-container-element.do&#x27;;
@@ -216,7 +217,8 @@ export class Card extends BoardComposite&lt;CardProps&gt; {
 		const allowed &#x3D;
 			domainObject instanceof FileElement ||
 			domainObject instanceof RichTextElement ||
-			domainObject instanceof SubmissionContainerElement;
+			domainObject instanceof SubmissionContainerElement ||
+			domainObject instanceof ExternalToolElement;
 		return allowed;
 	}
 

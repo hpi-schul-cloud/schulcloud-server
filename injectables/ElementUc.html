@@ -234,8 +234,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="71"
-                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:71</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="67"
+                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:67</a></div>
                 </td>
             </tr>
 
@@ -341,8 +341,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="35"
-                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:35</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="31"
+                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:31</a></div>
                 </td>
             </tr>
 
@@ -429,7 +429,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateElementContent(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, elementId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, content: <a href="../interfaces/File.html" target="_self">FileContentBody | RichTextContentBody | SubmissionContainerContentBody</a>)</code>
+                    <code>updateElementContent(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, elementId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, content: <a href="../undefineds/AnyElementContentBody.html" target="_self">AnyElementContentBody</a>)</code>
                 </td>
             </tr>
 
@@ -484,7 +484,7 @@
                                 <tr>
                                     <td>content</td>
                                     <td>
-                                                <code><a href="../interfaces/File.html" target="_self" >FileContentBody | RichTextContentBody | SubmissionContainerContentBody</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#AnyElementContentBody" target="_self" >AnyElementContentBody</a></code>
                                     </td>
 
                                     <td>
@@ -520,7 +520,7 @@ import { AnyBoardDo, EntityId, SubmissionContainerElement, SubmissionItem, UserR
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
 import { Action } from &#x27;@src/modules/authorization/types/action.enum&#x27;;
-import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from &#x27;../controller/dto&#x27;;
+import { AnyElementContentBody } from &#x27;../controller/dto&#x27;;
 import { BoardDoAuthorizableService, ContentElementService } from &#x27;../service&#x27;;
 import { SubmissionItemService } from &#x27;../service/submission-item.service&#x27;;
 
@@ -537,11 +537,7 @@ export class ElementUc {
 		this.logger.setContext(ElementUc.name);
 	}
 
-	async updateElementContent(
-		userId: EntityId,
-		elementId: EntityId,
-		content: FileContentBody | RichTextContentBody | SubmissionContainerContentBody
-	) {
+	async updateElementContent(userId: EntityId, elementId: EntityId, content: AnyElementContentBody) {
 		const element &#x3D; await this.elementService.findById(elementId);
 
 		await this.checkPermission(userId, element, Action.write);

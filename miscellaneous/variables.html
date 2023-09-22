@@ -301,6 +301,12 @@
                             <a href="#externalGroupDtoFactory" title="apps/server/src/shared/testing/factory/external-group-dto.factory.ts" ><b>externalGroupDtoFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../external-group-dto.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#externalToolElementFactory" title="apps/server/src/shared/testing/factory/domainobject/board/external-tool.do.factory.ts" ><b>externalToolElementFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool.do.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#externalToolElementNodeFactory" title="apps/server/src/shared/testing/factory/boardnode/external-tool-element-node.factory.ts" ><b>externalToolElementNodeFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool-element-node.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#externalToolEntityFactory" title="apps/server/src/shared/testing/factory/external-tool-entity.factory.ts" ><b>externalToolEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool-entity.factory.ts)</a>
                         </li>
                         <li>
@@ -1394,6 +1400,7 @@
 	RichTextElementNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
+	ExternalToolElementNodeEntity,
 	Course,
 	ContextExternalToolEntity,
 	CourseGroup,
@@ -5019,6 +5026,67 @@ it should ensure an empty result</p>
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/shared/testing/factory/domainobject/board/external-tool.do.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="externalToolElementFactory"></a>
+                    <span class="name">
+                        <span ><b>externalToolElementFactory</b></span>
+                        <a href="#externalToolElementFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;ExternalToolElement, ExternalToolElementProps&gt;(
+	ExternalToolElement,
+	() &#x3D;&gt; {
+		return {
+			id: new ObjectId().toHexString(),
+			children: [],
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		};
+	}
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/boardnode/external-tool-element-node.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="externalToolElementNodeFactory"></a>
+                    <span class="name">
+                        <span ><b>externalToolElementNodeFactory</b></span>
+                        <a href="#externalToolElementNodeFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;
+	ExternalToolElementNodeEntity,
+	ExternalToolElementNodeEntityProps
+&gt;(ExternalToolElementNodeEntity, () &#x3D;&gt; {
+	return {};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/shared/testing/factory/external-tool-pseudonym.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -6095,7 +6163,8 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	const result &#x3D;
 		element instanceof FileElement ||
 		element instanceof RichTextElement ||
-		element instanceof SubmissionContainerElement;
+		element instanceof SubmissionContainerElement ||
+		element instanceof ExternalToolElement;
 
 	return result;
 }</code>

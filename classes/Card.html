@@ -235,7 +235,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:32</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:34</a></code>
 </div>
                 </td>
             </tr>
@@ -312,7 +312,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:36</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:38</a></code>
 </div>
                 </td>
             </tr>
@@ -387,7 +387,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:24</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:25</a></code>
 </div>
                 </td>
             </tr>
@@ -744,7 +744,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/card.do.ts:8</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/card.do.ts:9</a></div>
                                 </td>
                             </tr>
 
@@ -755,7 +755,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/card.do.ts:12</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/card.do.ts:13</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -813,7 +813,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/card.do.ts:16</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/card.do.ts:17</a></div>
                                 </td>
                             </tr>
 
@@ -824,7 +824,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/card.do.ts:20</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/card.do.ts:21</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -872,6 +872,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BoardComposite, BoardCompositeProps } from &#x27;./board-composite.do&#x27;;
+import { ExternalToolElement } from &#x27;./external-tool-element.do&#x27;;
 import { FileElement } from &#x27;./file-element.do&#x27;;
 import { RichTextElement } from &#x27;./rich-text-element.do&#x27;;
 import { SubmissionContainerElement } from &#x27;./submission-container-element.do&#x27;;
@@ -898,7 +899,8 @@ export class Card extends BoardComposite&lt;CardProps&gt; {
 		const allowed &#x3D;
 			domainObject instanceof FileElement ||
 			domainObject instanceof RichTextElement ||
-			domainObject instanceof SubmissionContainerElement;
+			domainObject instanceof SubmissionContainerElement ||
+			domainObject instanceof ExternalToolElement;
 		return allowed;
 	}
 

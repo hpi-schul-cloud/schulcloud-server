@@ -133,7 +133,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -247,8 +247,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="84"
-                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:84</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="76"
+                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:76</a></div>
                 </td>
             </tr>
 
@@ -342,8 +342,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="39"
-                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:39</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="31"
+                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:31</a></div>
                 </td>
             </tr>
 
@@ -417,7 +417,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;FileElement | RichTextElement | SubmissionContainerElement&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#AnyContentElementDo" target="_self" >Promise&lt;AnyContentElementDo&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -449,8 +449,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="58"
-                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:58</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="50"
+                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:50</a></div>
                 </td>
             </tr>
 
@@ -533,8 +533,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="92"
-                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:92</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="84"
+                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:84</a></div>
                 </td>
             </tr>
 
@@ -636,8 +636,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="28"
-                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:28</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="20"
+                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:20</a></div>
                 </td>
             </tr>
 
@@ -719,8 +719,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="67"
-                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:67</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="59"
+                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:59</a></div>
                 </td>
             </tr>
 
@@ -811,15 +811,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import {
-	AnyBoardDo,
-	Card,
-	ContentElementType,
-	EntityId,
-	FileElement,
-	RichTextElement,
-	SubmissionContainerElement,
-} from &#x27;@shared/domain&#x27;;
+import { AnyBoardDo, AnyContentElementDo, Card, ContentElementType, EntityId } from &#x27;@shared/domain&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { AuthorizationService } from &#x27;@src/modules/authorization/authorization.service&#x27;;
 import { Action } from &#x27;@src/modules/authorization/types/action.enum&#x27;;
@@ -853,7 +845,7 @@ export class CardUc {
 		cardId: EntityId,
 		type: ContentElementType,
 		toPosition?: number
-	): Promise&lt;FileElement | RichTextElement | SubmissionContainerElement&gt; {
+	): Promise&lt;AnyContentElementDo&gt; {
 		this.logger.debug({ action: &#x27;createElement&#x27;, userId, cardId, type });
 
 		const card &#x3D; await this.cardService.findById(cardId);

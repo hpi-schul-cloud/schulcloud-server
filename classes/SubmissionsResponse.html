@@ -120,7 +120,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submissions.response.ts:4</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submissions.response.ts:5</a></div>
                             </td>
                         </tr>
 
@@ -204,7 +204,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submissions.response.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submissions.response.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -240,7 +240,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submissions.response.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/board/controller/dto/submission-item/submissions.response.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -259,8 +259,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SubmissionItemResponse, UserDataResponse } from &#x27;@src/modules/board/controller/dto&#x27;;
-import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
+import { UserDataResponse } from &#x27;../user-data.response&#x27;;
+import { SubmissionItemResponse } from &#x27;./submission-item.response&#x27;;
 
 export class SubmissionsResponse {
 	constructor(submissionItemsResponse: SubmissionItemResponse[], users: UserDataResponse[]) {
