@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Course, EntityId, Lesson, User } from '@shared/domain';
+import { Course, EntityId, LessonEntity, User } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { CourseRepo, LessonRepo } from '@shared/repo';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
@@ -21,7 +21,7 @@ export class LessonCopyUC {
 	async copyLesson(userId: EntityId, lessonId: EntityId, parentParams: LessonCopyParentParams): Promise<CopyStatus> {
 		this.featureEnabled();
 
-		const [user, originalLesson]: [User, Lesson] = await Promise.all([
+		const [user, originalLesson]: [User, LessonEntity] = await Promise.all([
 			this.authorisation.getUserWithPermissions(userId),
 			this.lessonRepo.findById(lessonId),
 		]);
@@ -52,7 +52,7 @@ export class LessonCopyUC {
 		return copyStatus;
 	}
 
-	private hasTopicCreateAndCanReadLesson(user: User, originalLesson: Lesson): void {
+	private hasTopicCreateAndCanReadLesson(user: User, originalLesson: LessonEntity): void {
 		const contextReadWithTopicCreate = AuthorizationContextBuilder.read([Permission.TOPIC_CREATE]);
 		if (!this.authorisation.hasPermission(user, originalLesson, contextReadWithTopicCreate)) {
 			// error message is not correct, switch to authorisation.checkPermission() makse sense for me
