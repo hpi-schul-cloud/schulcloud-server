@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, IPagination } from '@shared/domain';
-import { School } from '../school';
+import { School } from '../do/school';
 import { SchoolService } from '../service/school.service';
 
 @Injectable()
