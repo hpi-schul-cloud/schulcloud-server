@@ -202,7 +202,7 @@ export class FileElement extends BoardComposite&lt;FileElementProps&gt; {
 	}
 
 	get alternativeText(): string {
-		return this.props.alternativeText;
+		return this.props.alternativeText || &#x27;&#x27;;
 	}
 
 	set alternativeText(value: string) {

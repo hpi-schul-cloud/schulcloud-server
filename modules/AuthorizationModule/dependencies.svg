@@ -24,6 +24,10 @@
 <title>cluster_AuthorizationModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 5054,-268 5054,-70 8,-70"/>
 </g>
+<g id="clust4" class="cluster">
+<title>cluster_AuthorizationModule_exports</title>
+<polygon fill="none" stroke="black" points="2179,-208 2179,-260 2539,-260 2539,-208 2179,-208"/>
+</g>
 <g id="clust3" class="cluster">
 <title>cluster_AuthorizationModule_imports</title>
 <polygon fill="none" stroke="black" points="4648,-78 4648,-130 5046,-130 5046,-78 4648,-78"/>
@@ -31,10 +35,6 @@
 <g id="clust6" class="cluster">
 <title>cluster_AuthorizationModule_providers</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 4640,-130 4640,-78 16,-78"/>
-</g>
-<g id="clust4" class="cluster">
-<title>cluster_AuthorizationModule_exports</title>
-<polygon fill="none" stroke="black" points="2179,-208 2179,-260 2539,-260 2539,-208 2179,-208"/>
 </g>
 <!-- FeathersModule -->
 <g id="node1" class="node">
