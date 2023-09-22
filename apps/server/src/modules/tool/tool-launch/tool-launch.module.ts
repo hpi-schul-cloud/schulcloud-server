@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { LearnroomModule } from '@src/modules/learnroom';
 import { LegacySchoolModule } from '@src/modules/legacy-school';
 import { PseudonymModule } from '@src/modules/pseudonym';
@@ -18,7 +18,7 @@ import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrat
 		ContextExternalToolModule,
 		LegacySchoolModule,
 		UserModule,
-		PseudonymModule,
+		forwardRef(() => PseudonymModule), // i do not like this solution, the root problem is on other place but not detectable for me
 		LearnroomModule,
 	],
 	providers: [
