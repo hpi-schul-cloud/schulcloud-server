@@ -1,10 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ExternalToolElement } from '@shared/domain/domainobject';
-import { contextExternalToolEntityFactory, externalToolElementFactory } from '@shared/testing';
+import { contextExternalToolEntityFactory, externalToolElementFactory, setupEntities } from '@shared/testing';
 import { ExternalToolElementNodeEntity, ExternalToolElementNodeEntityProps } from './external-tool-element-node.entity';
 import { BoardDoBuilder, BoardNodeType } from './types';
 
 describe(ExternalToolElementNodeEntity.name, () => {
+	beforeAll(async () => {
+		await setupEntities();
+	});
+
 	describe('when trying to create a external tool element', () => {
 		const setup = () => {
 			const elementProps: ExternalToolElementNodeEntityProps = {

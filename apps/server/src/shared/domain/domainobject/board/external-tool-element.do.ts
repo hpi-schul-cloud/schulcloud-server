@@ -26,3 +26,7 @@ export class ExternalToolElement extends BoardComposite<ExternalToolElementProps
 export interface ExternalToolElementProps extends BoardCompositeProps {
 	contextExternalToolId?: string;
 }
+
+export function isExternalToolElement(reference: unknown): reference is ExternalToolElement {
+	return reference instanceof ExternalToolElement;
+}
