@@ -1,4 +1,3 @@
-import { ObjectId } from 'bson';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardDoAuthorizable, BoardRoles, UserRoleEnum } from '@shared/domain';
@@ -54,9 +53,6 @@ describe(SubmissionItemUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		authorizationService.checkPermission.mockImplementation(() => {});
 		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
-		boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-			new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
-		);
 		elementService = module.get(ContentElementService);
 		submissionItemService = module.get(SubmissionItemService);
 		await setupEntities();
@@ -102,9 +98,14 @@ describe(SubmissionItemUc.name, () => {
 
 			it('student1 should only get their own submission item', async () => {
 				const { user1, submissionContainerEl, submissionItem1 } = setup();
-				const items = await uc.findSubmissionItems(user1.id, submissionContainerEl.id);
-				expect(items.length).toBe(1);
-				expect(items[0]).toStrictEqual(submissionItem1);
+				const { submissionItems } = await uc.findSubmissionItems(user1.id, submissionContainerEl.id);
+				expect(submissionItems.length).toBe(1);
+				expect(submissionItems[0]).toStrictEqual(submissionItem1);
+			});
+			it('student should not get a list of users', async () => {
+				const { user1, submissionContainerEl } = setup();
+				const { users } = await uc.findSubmissionItems(user1.id, submissionContainerEl.id);
+				expect(users.length).toBe(0);
 			});
 		});
 		describe('when user is a teacher', () => {
@@ -140,10 +141,15 @@ describe(SubmissionItemUc.name, () => {
 
 			it('teacher should get all submission items', async () => {
 				const { teacher, submissionContainerEl, submissionItem1, submissionItem2 } = setup();
-				const items = await uc.findSubmissionItems(teacher.id, submissionContainerEl.id);
-				expect(items.length).toBe(2);
-				expect(items.map((item) => item.id)).toContain(submissionItem1.id);
-				expect(items.map((item) => item.id)).toContain(submissionItem2.id);
+				const { submissionItems } = await uc.findSubmissionItems(teacher.id, submissionContainerEl.id);
+				expect(submissionItems.length).toBe(2);
+				expect(submissionItems.map((item) => item.id)).toContain(submissionItem1.id);
+				expect(submissionItems.map((item) => item.id)).toContain(submissionItem2.id);
+			});
+			it('teacher should get list of students', async () => {
+				const { teacher, submissionContainerEl } = setup();
+				const { users } = await uc.findSubmissionItems(teacher.id, submissionContainerEl.id);
+				expect(users.length).toBe(2);
 			});
 		});
 		describe('when user has not an authorized role', () => {
