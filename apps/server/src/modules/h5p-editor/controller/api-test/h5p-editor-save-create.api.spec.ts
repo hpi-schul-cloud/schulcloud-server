@@ -4,13 +4,14 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
-import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { TestApiClient, UserAndAccountTestFactory, mapUserToCurrentUser } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { Request } from 'express';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 import { H5P_CONTENT_S3_CONNECTION, H5P_LIBRARIES_S3_CONNECTION } from '../../h5p-editor.config';
 import { H5PEditorUc } from '../../uc/h5p.uc';
+import { H5PContentParentType } from '../../entity';
 
 describe('H5PEditor Controller (api)', () => {
 	let app: INestApplication;
@@ -75,7 +76,10 @@ describe('H5PEditor Controller (api)', () => {
 				const { id, metadata, loggedInClient } = await setup();
 				const result1 = { id, metadata };
 				h5PEditorUc.createH5pContentGetMetadata.mockResolvedValueOnce(result1);
-				const response = await loggedInClient.post('/h5p-editor/edit/');
+				const response = await loggedInClient.post(`/edit`, {
+					parentType: H5PContentParentType.Lesson,
+					parentId: '123',
+				});
 
 				expect(response.status).toEqual(201);
 			});
@@ -107,7 +111,7 @@ describe('H5PEditor Controller (api)', () => {
 				const { contentId, id, metadata, loggedInClient } = await setup();
 				const result1 = { id, metadata };
 				h5PEditorUc.saveH5pContentGetMetadata.mockResolvedValueOnce(result1);
-				const response = await loggedInClient.post(`/h5p-editor/edit/${contentId.toString()}`);
+				const response = await loggedInClient.post(`/edit/${contentId.toString()}`);
 
 				expect(response.status).toEqual(201);
 			});
@@ -126,7 +130,7 @@ describe('H5PEditor Controller (api)', () => {
 			it('should return 500 status', async () => {
 				const { notExistingContentId, loggedInClient } = await setup();
 				h5PEditorUc.saveH5pContentGetMetadata.mockRejectedValueOnce(new Error('Could not save H5P content'));
-				const response = await loggedInClient.post(`/h5p-editor/edit/${notExistingContentId.toString()}`);
+				const response = await loggedInClient.post(`/edit/${notExistingContentId.toString()}`);
 
 				expect(response.status).toEqual(500);
 			});
