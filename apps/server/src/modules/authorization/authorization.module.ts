@@ -9,7 +9,6 @@ import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 import { RuleManager } from './rule-manager';
 
 @Module({
-	// TODO: remove forwardRef to TooModule N21-1055
 	imports: [FeathersModule, LoggerModule],
 	providers: [
 		FeathersAuthorizationService,

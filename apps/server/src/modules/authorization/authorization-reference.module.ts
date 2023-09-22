@@ -1,5 +1,3 @@
-// need to be renamed is not deprecated, only internal
-
 import { forwardRef, Module } from '@nestjs/common';
 import {
 	CourseGroupRepo,
