@@ -1,6 +1,6 @@
 import { DeepPartial } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Lesson, User } from '@shared/domain/entity';
+import { LessonEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import {
 	courseFactory,
@@ -21,7 +21,7 @@ describe('LessonRule', () => {
 	let courseRule: DeepPartial<CourseRule>;
 	let courseGroupRule: DeepPartial<CourseGroupRule>;
 	let user: User;
-	let entity: Lesson;
+	let entity: LessonEntity;
 	const permissionA = 'a' as Permission;
 	const permissionB = 'b' as Permission;
 	const permissionC = 'c' as Permission;

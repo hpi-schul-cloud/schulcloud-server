@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { Course, EntityId, SchoolDO, User } from '@shared/domain';
+import { Course, EntityId, LegacySchoolDo, User } from '@shared/domain';
 import { AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/legacy-school';
 import { CourseRepo } from '@shared/repo';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
@@ -11,7 +11,7 @@ import { SchoolExternalTool } from '../../school-external-tool/domain';
 export class ToolPermissionHelper {
 	constructor(
 		@Inject(forwardRef(() => AuthorizationService)) private readonly authorizationService: AuthorizationService,
-		private readonly schoolService: SchoolService,
+		private readonly schoolService: LegacySchoolService,
 		private readonly courseRepo: CourseRepo
 	) {}
 
@@ -40,7 +40,7 @@ export class ToolPermissionHelper {
 		schoolExternalTool: SchoolExternalTool,
 		context: AuthorizationContext
 	): Promise<void> {
-		const [user, school]: [User, SchoolDO] = await Promise.all([
+		const [user, school]: [User, LegacySchoolDo] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
 			this.schoolService.getSchoolById(schoolExternalTool.schoolId),
 		]);

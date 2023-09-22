@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Course, EntityId, Lesson, Task, User } from '@shared/domain';
+import { Course, EntityId, Task, LessonEntity, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
@@ -38,7 +38,7 @@ export class TaskCopyUC {
 		// i think getDestinationLesson can also to a promise.all on top
 		// then getCopyName can be put into if (destinationCourse) {
 		// but then the test need to cleanup
-		const [destinationLesson, copyName]: [Lesson | undefined, string | undefined] = await Promise.all([
+		const [destinationLesson, copyName]: [LessonEntity | undefined, string | undefined] = await Promise.all([
 			this.getDestinationLesson(parentParams.lessonId),
 			this.getCopyName(originalTask.name, parentParams.courseId),
 		]);
@@ -71,7 +71,7 @@ export class TaskCopyUC {
 		this.authorisation.checkPermission(authorizableUser, destinationCourse, context);
 	}
 
-	private canWriteLesson(authorizableUser: User, destinationLesson: Lesson): void {
+	private canWriteLesson(authorizableUser: User, destinationLesson: LessonEntity): void {
 		const context = AuthorizationContextBuilder.write([]);
 		if (!this.authorisation.hasPermission(authorizableUser, destinationLesson, context)) {
 			throw new ForbiddenException('you dont have permission to add to this lesson');
@@ -99,7 +99,7 @@ export class TaskCopyUC {
 		return destinationCourse;
 	}
 
-	private async getDestinationLesson(lessonId: string | undefined): Promise<Lesson | undefined> {
+	private async getDestinationLesson(lessonId: string | undefined): Promise<LessonEntity | undefined> {
 		if (lessonId === undefined) {
 			return undefined;
 		}

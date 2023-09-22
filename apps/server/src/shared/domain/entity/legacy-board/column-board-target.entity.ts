@@ -38,3 +38,7 @@ export class ColumnBoardTarget extends BaseEntityWithTimestamps implements ILear
 		return this._columnBoardId.toHexString();
 	}
 }
+
+export function isColumnBoardTarget(reference: unknown): reference is ColumnBoardTarget {
+	return reference instanceof ColumnBoardTarget;
+}

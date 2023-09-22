@@ -18,10 +18,10 @@ import { CalendarEventDto, CalendarService } from '@shared/infra/calendar';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/legacy-school';
 import { UserService } from '@src/modules/user';
 import { BBBRole } from '../bbb';
-import { ErrorStatus } from '../error/error-status.enum';
+import { ErrorStatus } from '../error';
 import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';
 import { IScopeInfo, VideoConferenceState } from '../uc/dto';
 
@@ -32,7 +32,7 @@ export class VideoConferenceService {
 		private readonly courseService: CourseService,
 		private readonly calendarService: CalendarService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly schoolService: SchoolService,
+		private readonly schoolService: LegacySchoolService,
 		private readonly teamsRepo: TeamsRepo,
 		private readonly userService: UserService,
 		private readonly videoConferenceRepo: VideoConferenceRepo
@@ -58,7 +58,8 @@ export class VideoConferenceService {
 		switch (conferenceScope) {
 			case VideoConferenceScope.COURSE: {
 				const user: UserDO = await this.userService.findById(userId);
-				isExpert = this.existsExpertRole(user.roles);
+				isExpert = this.existsOnlyExpertRole(user.roles);
+
 				return isExpert;
 			}
 			case VideoConferenceScope.EVENT: {
@@ -79,10 +80,14 @@ export class VideoConferenceService {
 		}
 	}
 
-	private existsExpertRole(roles: RoleReference[]): boolean {
+	private existsOnlyExpertRole(roles: RoleReference[]): boolean {
 		const roleNames: RoleName[] = roles.map((role: RoleReference) => role.name);
 
-		const isExpert: boolean = roleNames.includes(RoleName.EXPERT);
+		let isExpert: boolean = roleNames.includes(RoleName.EXPERT);
+
+		if (isExpert && roles.length > 1) {
+			isExpert = false;
+		}
 
 		return isExpert;
 	}

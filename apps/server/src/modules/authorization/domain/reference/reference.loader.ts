@@ -6,7 +6,7 @@ import {
 	CourseRepo,
 	LessonRepo,
 	SchoolExternalToolRepo,
-	SchoolRepo,
+	LegacySchoolRepo,
 	SubmissionRepo,
 	TaskRepo,
 	TeamsRepo,
@@ -20,7 +20,7 @@ type RepoType =
 	| TaskRepo
 	| CourseRepo
 	| UserRepo
-	| SchoolRepo
+	| LegacySchoolRepo
 	| LessonRepo
 	| TeamsRepo
 	| CourseGroupRepo
@@ -43,7 +43,7 @@ export class ReferenceLoader {
 		private readonly courseRepo: CourseRepo,
 		private readonly courseGroupRepo: CourseGroupRepo,
 		private readonly taskRepo: TaskRepo,
-		private readonly schoolRepo: SchoolRepo,
+		private readonly schoolRepo: LegacySchoolRepo,
 		private readonly lessonRepo: LessonRepo,
 		private readonly teamsRepo: TeamsRepo,
 		private readonly submissionRepo: SubmissionRepo,

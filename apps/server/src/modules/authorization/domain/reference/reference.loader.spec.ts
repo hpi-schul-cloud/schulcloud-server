@@ -8,7 +8,7 @@ import {
 	CourseRepo,
 	LessonRepo,
 	SchoolExternalToolRepo,
-	SchoolRepo,
+	LegacySchoolRepo,
 	SubmissionRepo,
 	TaskRepo,
 	TeamsRepo,
@@ -26,7 +26,7 @@ describe('reference.loader', () => {
 	let courseRepo: DeepMocked<CourseRepo>;
 	let courseGroupRepo: DeepMocked<CourseGroupRepo>;
 	let taskRepo: DeepMocked<TaskRepo>;
-	let schoolRepo: DeepMocked<SchoolRepo>;
+	let schoolRepo: DeepMocked<LegacySchoolRepo>;
 	let lessonRepo: DeepMocked<LessonRepo>;
 	let teamsRepo: DeepMocked<TeamsRepo>;
 	let submissionRepo: DeepMocked<SubmissionRepo>;
@@ -58,8 +58,8 @@ describe('reference.loader', () => {
 					useValue: createMock<TaskRepo>(),
 				},
 				{
-					provide: SchoolRepo,
-					useValue: createMock<SchoolRepo>(),
+					provide: LegacySchoolRepo,
+					useValue: createMock<LegacySchoolRepo>(),
 				},
 				{
 					provide: LessonRepo,
@@ -93,7 +93,7 @@ describe('reference.loader', () => {
 		courseRepo = await module.get(CourseRepo);
 		courseGroupRepo = await module.get(CourseGroupRepo);
 		taskRepo = await module.get(TaskRepo);
-		schoolRepo = await module.get(SchoolRepo);
+		schoolRepo = await module.get(LegacySchoolRepo);
 		lessonRepo = await module.get(LessonRepo);
 		teamsRepo = await module.get(TeamsRepo);
 		submissionRepo = await module.get(SubmissionRepo);

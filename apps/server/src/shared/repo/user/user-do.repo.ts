@@ -7,10 +7,10 @@ import {
 	IPagination,
 	IUserProperties,
 	Role,
-	School,
+	SchoolEntity,
 	SortOrder,
 	SortOrderMap,
-	System,
+	SystemEntity,
 	User,
 } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
@@ -80,7 +80,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 		const userEntitys: User[] = await this._em.find(User, { externalId }, { populate: ['school.systems'] });
 		const userEntity: User | undefined = userEntitys.find((user: User): boolean => {
 			const { systems } = user.school;
-			return systems && !!systems.getItems().find((system: System): boolean => system.id === systemId);
+			return systems && !!systems.getItems().find((system: SystemEntity): boolean => system.id === systemId);
 		});
 
 		const userDo: UserDO | null = userEntity ? this.mapEntityToDO(userEntity) : null;
@@ -125,7 +125,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 			email: entityDO.email,
 			firstName: entityDO.firstName,
 			lastName: entityDO.lastName,
-			school: this._em.getReference(School, entityDO.schoolId),
+			school: this._em.getReference(SchoolEntity, entityDO.schoolId),
 			roles: entityDO.roles.map((roleRef: RoleReference) => this._em.getReference(Role, roleRef.id)),
 			ldapDn: entityDO.ldapDn,
 			externalId: entityDO.externalId,

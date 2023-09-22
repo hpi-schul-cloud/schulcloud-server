@@ -2,10 +2,10 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Page, Permission, SchoolDO, System, User, UserLoginMigrationDO } from '@shared/domain';
+import { Page, Permission, LegacySchoolDo, SystemEntity, User, UserLoginMigrationDO } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
-	schoolDOFactory,
+	legacySchoolDoFactory,
 	setupEntities,
 	systemFactory,
 	userFactory,
@@ -18,7 +18,7 @@ import { OAuthTokenDto } from '@src/modules/oauth';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/legacy-school';
 import { Oauth2MigrationParams } from '../controller/dto/oauth2-migration.params';
 import { OAuthMigrationError, SchoolMigrationError, UserLoginMigrationError } from '../error';
 import { PageTypes } from '../interface/page-types.enum';
@@ -74,8 +74,8 @@ describe('UserLoginMigrationUc', () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 				{
 					provide: LegacyLogger,
@@ -300,11 +300,11 @@ describe('UserLoginMigrationUc', () => {
 				query.systemId = 'systemId';
 				query.redirectUri = 'redirectUri';
 
-				const sourceSystem: System = systemFactory
+				const sourceSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
-				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					systems: [sourceSystem.id],
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'oldSchoolExternalId',
@@ -415,11 +415,11 @@ describe('UserLoginMigrationUc', () => {
 				query.systemId = 'systemId';
 				query.redirectUri = 'redirectUri';
 
-				const sourceSystem: System = systemFactory
+				const sourceSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
-				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					systems: [sourceSystem.id],
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'oldSchoolExternalId',
@@ -479,11 +479,11 @@ describe('UserLoginMigrationUc', () => {
 				query.systemId = 'systemId';
 				query.redirectUri = 'redirectUri';
 
-				const sourceSystem: System = systemFactory
+				const sourceSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
-				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					systems: [sourceSystem.id],
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'oldSchoolExternalId',
@@ -615,11 +615,11 @@ describe('UserLoginMigrationUc', () => {
 				query.systemId = 'systemId';
 				query.redirectUri = 'redirectUri';
 
-				const sourceSystem: System = systemFactory
+				const sourceSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
-				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					systems: [sourceSystem.id],
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'oldSchoolExternalId',

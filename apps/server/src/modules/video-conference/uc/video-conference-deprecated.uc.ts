@@ -20,10 +20,9 @@ import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conferen
 import { ICurrentUser } from '@src/modules/authentication';
 import { Action, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { AuthorizableReferenceType } from '@src/modules/authorization/domain/reference/types';
-import { SchoolService } from '@src/modules/school/service/school.service';
+import { LegacySchoolService } from '@src/modules/legacy-school';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { UserService } from '@src/modules/user';
-import { IScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from './dto';
 import {
 	BBBBaseMeetingConfig,
 	BBBBaseResponse,
@@ -36,8 +35,9 @@ import {
 	BBBService,
 	GuestPolicy,
 } from '../bbb';
-import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
 import { ErrorStatus } from '../error/error-status.enum';
+import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
+import { IScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from './dto';
 
 const PermissionMapping = {
 	[BBBRole.MODERATOR]: Permission.START_MEETING,
@@ -64,7 +64,7 @@ export class VideoConferenceDeprecatedUc {
 		private readonly courseService: CourseService,
 		private readonly userService: UserService,
 		private readonly calendarService: CalendarService,
-		private readonly schoolService: SchoolService
+		private readonly schoolService: LegacySchoolService
 	) {
 		this.hostURL = Configuration.get('HOST') as string;
 	}

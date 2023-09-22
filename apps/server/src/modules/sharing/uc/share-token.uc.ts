@@ -6,9 +6,9 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/
 import { AuthorizationReferenceService } from '@src/modules/authorization/domain/reference';
 import { CopyStatus } from '@src/modules/copy-helper';
 import { CourseCopyService } from '@src/modules/learnroom';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { CourseService } from '@src/modules/learnroom/service';
 import { LessonCopyService } from '@src/modules/lesson/service';
-import { TaskCopyService } from '@src/modules/task';
+import { TaskCopyService } from '@src/modules/task/service';
 import {
 	ShareTokenContext,
 	ShareTokenContextType,
