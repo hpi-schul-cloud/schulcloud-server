@@ -42,9 +42,7 @@ describe('CourseGroupService', () => {
 		describe('when finding by userId', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const courseGroup1 = courseGroupFactory.buildWithId({ students: [user] });
-				const courseGroup2 = courseGroupFactory.buildWithId({ students: [user] });
-				const courseGroups = [courseGroup1, courseGroup2];
+				const courseGroups = courseGroupFactory.buildListWithId(2, { students: [user] });
 
 				userRepo.findById.mockResolvedValue(user);
 				courseGroupRepo.findByUserId.mockResolvedValue([courseGroups, courseGroups.length]);
