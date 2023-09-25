@@ -12,7 +12,11 @@ import { CreationProtocol } from '../types';
 import { CourseConfig, LessonConfig, SchoolConfig, UserConfig } from '../types/demo-configuration.types';
 
 const getUserIdByEmail = (email: string, userDos: CreationProtocol[] = []) => {
-	const user = userDos.find((u) => u.key === email);
+	const user = userDos.find((u) => {
+		const emailWithoutPostfix = u.key?.replace(/_[^_]*?@/, '@');
+		console.log(`${emailWithoutPostfix ?? ''} === ${email}`);
+		return emailWithoutPostfix === email;
+	});
 	if (user) {
 		return user.id;
 	}
@@ -38,14 +42,10 @@ export class DemoSchoolService {
 		private readonly lessonService: LessonService // private readonly teamservice: TeamService
 	) {}
 
-	async createDemoSchool(): Promise<CreationProtocol[]> {
-		const promises: Promise<CreationProtocol>[] = [];
-		for (const school of demoschoolConfig.schools) {
-			promises.push(this.createSchool(school));
-		}
-		const schools = await Promise.all(promises);
+	async createDemoSchool(): Promise<CreationProtocol> {
+		const schoolCreationProtocol = await this.createSchool(demoschoolConfig.school);
 
-		return schools;
+		return schoolCreationProtocol;
 	}
 
 	async createSchool(config: SchoolConfig): Promise<CreationProtocol> {
@@ -58,11 +58,18 @@ export class DemoSchoolService {
 		});
 		const password = `pswd_${crypto.randomUUID()}`;
 		const passwordEntry: CreationProtocol = { key: password, type: 'password', id: '', children: [] };
+		const postfix = `_${crypto.randomUUID()}`;
+		const postfixEntry: CreationProtocol = { key: postfix, type: 'postfix', id: '', children: [] };
 		const createdSchoolDo = await this.schoolService.save(schoolDo);
-		const protocol: CreationProtocol = { key: name, type: 'school', id: createdSchoolDo.id, children: [passwordEntry] };
+		const protocol: CreationProtocol = {
+			key: name,
+			type: 'school',
+			id: createdSchoolDo.id,
+			children: [passwordEntry, postfixEntry],
+		};
 
 		if (config.users) {
-			const users = await this.createUsers(createdSchoolDo.id as string, config.users, password);
+			const users = await this.createUsers(createdSchoolDo.id as string, config.users, postfix, password);
 			protocol.children = [...(protocol.children ?? []), ...users];
 		}
 
@@ -122,26 +129,32 @@ export class DemoSchoolService {
 		return { id, key: name, type: 'lesson' };
 	}
 
-	async createUsers(schoolId: string, config: UserConfig[], password: string): Promise<CreationProtocol[]> {
+	async createUsers(
+		schoolId: string,
+		config: UserConfig[],
+		postfix: string,
+		password: string
+	): Promise<CreationProtocol[]> {
 		const promises: Promise<CreationProtocol>[] = [];
 		for (const user of config) {
-			promises.push(this.createUser(schoolId, user, password));
+			promises.push(this.createUser(schoolId, user, postfix, password));
 		}
 		const users = Promise.all(promises);
 		return users;
 	}
 
-	async createUser(schoolId: string, config: UserConfig, password: string): Promise<CreationProtocol> {
+	async createUser(schoolId: string, config: UserConfig, postfix: string, password: string): Promise<CreationProtocol> {
 		const { firstName, lastName, email, roleNames } = config;
 		const roles: RoleDto[] = await this.roleService.findByNames(roleNames);
 		const roleRefs = roles.map(
 			(role: RoleDto): RoleReference => new RoleReference({ id: role.id || '', name: role.name })
 		);
+		const extendedEmail = email?.replace('@', `${postfix}@`);
 
 		const user = new UserDO({
 			firstName: firstName ?? '',
 			lastName: lastName ?? '',
-			email: email ?? '',
+			email: extendedEmail ?? '',
 			roles: roleRefs,
 			schoolId,
 			forcePasswordChange: false,
@@ -150,7 +163,7 @@ export class DemoSchoolService {
 		const userDo = await this.userService.save(user);
 		await this.createAccount(userDo, password);
 
-		return { id: userDo.id, type: 'user', key: email };
+		return { id: userDo.id, type: 'user', key: extendedEmail };
 	}
 
 	private async createAccount(user: UserDO, password: string): Promise<AccountSaveDto> {
