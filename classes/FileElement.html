@@ -844,7 +844,7 @@ import type { BoardCompositeVisitor, BoardCompositeVisitorAsync } from &#x27;./t
 
 export class FileElement extends BoardComposite&lt;FileElementProps&gt; {
 	get caption(): string {
-		return this.props.caption;
+		return this.props.caption || &#x27;&#x27;;
 	}
 
 	set caption(value: string) {
