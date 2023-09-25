@@ -8,7 +8,6 @@ import {
 	Role,
 	RoleName,
 	SchoolEntity,
-	SchoolFeatures,
 	TargetModels,
 	User,
 	VideoConference,
@@ -25,6 +24,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
+import { SchoolFeatures } from '@src/modules/school/domain';
 import { ServerTestModule } from '@src/modules/server';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';

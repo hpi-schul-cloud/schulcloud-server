@@ -5,7 +5,6 @@ import {
 	EntityId,
 	Permission,
 	RoleName,
-	SchoolFeatures,
 	TeamEntity,
 	TeamUserEntity,
 	UserDO,
@@ -26,6 +25,7 @@ import {
 } from '@src/modules/authorization';
 import { CourseService } from '@src/modules/learnroom/service';
 import { LegacySchoolService } from '@src/modules/legacy-school';
+import { SchoolFeatures } from '@src/modules/school/domain';
 import { UserService } from '@src/modules/user';
 import {
 	BBBBaseMeetingConfig,

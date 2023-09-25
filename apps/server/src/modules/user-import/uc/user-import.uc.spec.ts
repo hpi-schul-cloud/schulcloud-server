@@ -12,7 +12,6 @@ import {
 	MatchCreatorScope,
 	Permission,
 	SchoolEntity,
-	SchoolFeatures,
 	SystemEntity,
 	User,
 } from '@shared/domain';
@@ -24,6 +23,7 @@ import { LoggerModule } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AuthorizationService } from '@src/modules/authorization';
 import { LegacySchoolService } from '@src/modules/legacy-school';
+import { SchoolFeatures } from '@src/modules/school/domain';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,

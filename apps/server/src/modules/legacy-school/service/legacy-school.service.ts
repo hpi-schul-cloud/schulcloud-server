@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, LegacySchoolDo, SchoolFeatures } from '@shared/domain';
+import { EntityId, LegacySchoolDo } from '@shared/domain';
 import { LegacySchoolRepo } from '@shared/repo';
+import { SchoolFeatures } from '@src/modules/school/domain';
 import { SchoolValidationService } from './validation';
 
 /**

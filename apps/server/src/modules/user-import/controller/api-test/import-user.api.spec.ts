@@ -9,7 +9,6 @@ import {
 	Permission,
 	RoleName,
 	SchoolEntity,
-	SchoolFeatures,
 	SortOrder,
 	SystemEntity,
 	User,
@@ -44,6 +43,7 @@ import {
 } from '@src/modules/user-import/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
+import { SchoolFeatures } from '@src/modules/school/domain';
 
 describe('ImportUser Controller (API)', () => {
 	let app: INestApplication;

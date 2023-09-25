@@ -10,22 +10,11 @@ import {
 	Property,
 } from '@mikro-orm/core';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
-import { SchoolPurpose } from '@src/modules/school/domain';
+import { SchoolFeatures, SchoolPurpose } from '@src/modules/school/domain';
 import { BaseEntity } from './base.entity';
 import { FederalStateEntity } from './federal-state.entity';
 import { SchoolYearEntity } from './schoolyear.entity';
 import { SystemEntity } from './system.entity';
-
-export enum SchoolFeatures {
-	ROCKET_CHAT = 'rocketChat',
-	VIDEOCONFERENCE = 'videoconference',
-	NEXTCLOUD = 'nextcloud',
-	STUDENTVISIBILITY = 'studentVisibility', // deprecated
-	LDAP_UNIVENTION_MIGRATION = 'ldapUniventionMigrationSchool',
-	OAUTH_PROVISIONING_ENABLED = 'oauthProvisioningEnabled',
-	SHOW_OUTDATED_USERS = 'showOutdatedUsers',
-	ENABLE_LDAP_SYNC_DURING_MIGRATION = 'enableLdapSyncDuringMigration',
-}
 
 export interface ISchoolProperties {
 	_id?: string;

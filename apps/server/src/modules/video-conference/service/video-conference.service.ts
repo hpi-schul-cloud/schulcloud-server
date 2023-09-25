@@ -5,7 +5,6 @@ import {
 	Permission,
 	RoleName,
 	RoleReference,
-	SchoolFeatures,
 	TeamEntity,
 	TeamUserEntity,
 	UserDO,
@@ -23,6 +22,7 @@ import {
 } from '@src/modules/authorization';
 import { CourseService } from '@src/modules/learnroom/service';
 import { LegacySchoolService } from '@src/modules/legacy-school';
+import { SchoolFeatures } from '@src/modules/school/domain';
 import { UserService } from '@src/modules/user';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';

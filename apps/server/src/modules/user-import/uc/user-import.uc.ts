@@ -13,7 +13,6 @@ import {
 	MatchCreator,
 	MatchCreatorScope,
 	Permission,
-	SchoolFeatures,
 	SystemEntity,
 	User,
 } from '@shared/domain';
@@ -23,6 +22,7 @@ import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import { AuthorizationService } from '@src/modules/authorization';
 import { LegacySchoolService } from '@src/modules/legacy-school';
+import { SchoolFeatures } from '@src/modules/school/domain';
 import {
 	MigrationMayBeCompleted,
 	MigrationMayNotBeCompleted,

@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
+import { Test, TestingModule } from '@nestjs/testing';
 import {
 	Course,
 	EntityId,
 	Permission,
 	RoleName,
-	SchoolFeatures,
 	TeamUserEntity,
 	UserDO,
 	VideoConferenceDO,
@@ -14,25 +14,25 @@ import {
 } from '@shared/domain';
 import { CalendarEventDto, CalendarService } from '@shared/infra/calendar';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
+import { courseFactory, roleFactory, setupEntities, userDoFactory } from '@shared/testing';
+import { teamFactory } from '@shared/testing/factory/team.factory';
+import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
+import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
 import {
 	AuthorizableReferenceType,
 	AuthorizationContextBuilder,
 	AuthorizationService,
 } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { UserService } from '@src/modules/user';
-import { courseFactory, roleFactory, setupEntities, userDoFactory } from '@shared/testing';
-import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
-import { ObjectId } from 'bson';
-import { teamFactory } from '@shared/testing/factory/team.factory';
-import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
 import { CourseService } from '@src/modules/learnroom/service';
-import { VideoConferenceService } from './video-conference.service';
-import { ErrorStatus } from '../error';
+import { LegacySchoolService } from '@src/modules/legacy-school';
+import { SchoolFeatures } from '@src/modules/school/domain';
+import { UserService } from '@src/modules/user';
+import { ObjectId } from 'bson';
 import { BBBRole } from '../bbb';
-import { IScopeInfo, ScopeRef, VideoConferenceState } from '../uc/dto';
+import { ErrorStatus } from '../error';
 import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';
+import { IScopeInfo, ScopeRef, VideoConferenceState } from '../uc/dto';
+import { VideoConferenceService } from './video-conference.service';
 
 describe('VideoConferenceService', () => {
 	let service: DeepMocked<VideoConferenceService>;

@@ -1,14 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, RoleName, SchoolFeatures } from '@shared/domain';
+import { LegacySchoolDo, RoleName } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import {
 	externalGroupDtoFactory,
 	federalStateFactory,
 	groupFactory,
-	roleDtoFactory,
 	legacySchoolDoFactory,
+	roleDtoFactory,
 	schoolYearFactory,
 	userDoFactory,
 } from '@shared/testing';
@@ -16,9 +16,10 @@ import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { Group, GroupService } from '@src/modules/group';
+import { FederalStateService, LegacySchoolService, SchoolYearService } from '@src/modules/legacy-school';
 import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { FederalStateService, LegacySchoolService, SchoolYearService } from '@src/modules/legacy-school';
+import { SchoolFeatures } from '@src/modules/school/domain';
 import { UserService } from '@src/modules/user';
 import CryptoJS from 'crypto-js';
 import { ExternalGroupDto, ExternalSchoolDto, ExternalUserDto } from '../../../dto';
