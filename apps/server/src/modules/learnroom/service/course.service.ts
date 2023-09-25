@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CourseRepo } from '@shared/repo';
-import { Course, EntityId } from '@shared/domain';
+import { Counted, Course, EntityId } from '@shared/domain';
 
 @Injectable()
 export class CourseService {
@@ -8,6 +8,12 @@ export class CourseService {
 
 	async findById(courseId: EntityId): Promise<Course> {
 		return this.repo.findById(courseId);
+	}
+
+	public async findAllCoursesByUserId(userId: EntityId): Promise<Counted<Course[]>> {
+		const [courses, count] = await this.repo.findAllByUserId(userId);
+
+		return [courses, count];
 	}
 
 	public async deleteUserDataFromCourse(userId: EntityId): Promise<number> {

@@ -38,6 +38,40 @@ describe('CourseGroupService', () => {
 		jest.clearAllMocks();
 	});
 
+	describe('findAllCourseGroupsByUserId', () => {
+		describe('when finding by userId', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const courseGroups = courseGroupFactory.buildListWithId(2, { students: [user] });
+
+				userRepo.findById.mockResolvedValue(user);
+				courseGroupRepo.findByUserId.mockResolvedValue([courseGroups, courseGroups.length]);
+
+				return {
+					user,
+					courseGroups,
+				};
+			};
+
+			it('should call courseGroupRepo.findByUserId', async () => {
+				const { user } = setup();
+
+				await courseGroupService.findAllCourseGroupsByUserId(user.id);
+
+				expect(courseGroupRepo.findByUserId).toBeCalledWith(user.id);
+			});
+
+			it('should return array with coursesGroup with userId', async () => {
+				const { user, courseGroups } = setup();
+
+				const [courseGroup] = await courseGroupService.findAllCourseGroupsByUserId(user.id);
+
+				expect(courseGroup.length).toEqual(2);
+				expect(courseGroup).toEqual(courseGroups);
+			});
+		});
+	});
+
 	describe('when deleting by userId', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
