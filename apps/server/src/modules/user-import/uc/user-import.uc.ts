@@ -1,11 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import {
-	BadRequestException,
-	ForbiddenException,
-	Injectable,
-	InternalServerErrorException,
-	NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import {
 	Account,
@@ -309,12 +303,9 @@ export class UserImportUc {
 			});
 
 			await this.accountService.saveWithValidation(newAccount);
-			account = await this.accountService.findByUserId(user.id);
+			account = await this.accountService.findByUserIdOrFail(user.id);
 		}
-		if (account) {
-			return account;
-		}
-		throw new NotFoundException(account);
+		return account;
 	}
 
 	private async getMigrationSystem(): Promise<SystemEntity> {
