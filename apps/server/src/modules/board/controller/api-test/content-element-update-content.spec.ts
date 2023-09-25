@@ -61,7 +61,7 @@ describe(`content element update content (api)`, () => {
 
 			const column = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 			const parentCard = cardNodeFactory.buildWithId({ parent: column });
-			const richTextelement = richTextElementNodeFactory.buildWithId({ parent: parentCard });
+			const richTextElement = richTextElementNodeFactory.buildWithId({ parent: parentCard });
 			const fileElement = fileElementNodeFactory.buildWithId({ parent: parentCard });
 			const submissionContainerElement = submissionContainerElementNodeFactory.buildWithId({ parent: parentCard });
 
@@ -96,9 +96,9 @@ describe(`content element update content (api)`, () => {
 		};
 
 		it('should return status 204', async () => {
-			const { loggedInClient, richTextelement } = await setup();
+			const { loggedInClient, richTextElement } = await setup();
 
-			const response = await loggedInClient.patch(`${richTextelement.id}/content`, {
+			const response = await loggedInClient.patch(`${richTextElement.id}/content`, {
 				data: {
 					content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 },
 					type: ContentElementType.RICH_TEXT,
@@ -108,47 +108,103 @@ describe(`content element update content (api)`, () => {
 			expect(response.statusCode).toEqual(204);
 		});
 
-		it('should actually change content of the element', async () => {
-			const { loggedInClient, richTextelement } = await setup();
+		it('should actually change content of the rich text element', async () => {
+			const { loggedInClient, richTextElement } = await setup();
 
-			await loggedInClient.patch(`${richTextelement.id}/content`, {
+			await loggedInClient.patch(`${richTextElement.id}/content`, {
 				data: {
 					content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 },
 					type: ContentElementType.RICH_TEXT,
 				},
 			});
-			const result = await em.findOneOrFail(RichTextElementNode, richTextelement.id);
+			const result = await em.findOneOrFail(RichTextElementNode, richTextElement.id);
 
 			expect(result.text).toEqual('hello world');
 		});
 
-		it('should sanitize rich text before changing content of the element', async () => {
-			const { loggedInClient, richTextelement } = await setup();
+		it('should sanitize rich text before changing content of the rich text element', async () => {
+			const { loggedInClient, richTextElement } = await setup();
 
 			const text = '<iframe>rich text 1</iframe> some more text';
 
 			const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
 
-			await loggedInClient.patch(`${richTextelement.id}/content`, {
+			await loggedInClient.patch(`${richTextElement.id}/content`, {
 				data: { content: { text, inputFormat: InputFormat.RICH_TEXT_CK5 }, type: ContentElementType.RICH_TEXT },
 			});
-			const result = await em.findOneOrFail(RichTextElementNode, richTextelement.id);
+			const result = await em.findOneOrFail(RichTextElementNode, richTextElement.id);
 
 			expect(result.text).toEqual(sanitizedText);
 		});
 
-		it('should sanitize caption parameter before changing caption of the element', async () => {
-			const { loggedInClient, fileElement } = await setup();
+		it('should return status 204 (nothing changed) without dueDate parameter for submission container element', async () => {
+			const { loggedInClient, submissionContainerElement } = await setup();
 
-			const caption = '<iframe>rich text 1</iframe> some more text';
-
-			await loggedInClient.patch(`${fileElement.id}/content`, {
-				data: { content: { caption, alternativeText: '' }, type: ContentElementType.FILE },
+			const response = await loggedInClient.patch(`${submissionContainerElement.id}/content`, {
+				data: {
+					content: {},
+					type: 'submissionContainer',
+				},
 			});
 
-			const result = await em.findOneOrFail(FileElementNode, fileElement.id);
+			expect(response.statusCode).toEqual(204);
+		});
 
-			expect(result.caption).toEqual('rich text 1 some more text');
+		it('should not change dueDate value without dueDate parameter for submission container element', async () => {
+			const { loggedInClient, submissionContainerElement } = await setup();
+
+			await loggedInClient.patch(`${submissionContainerElement.id}/content`, {
+				data: {
+					content: {},
+					type: 'submissionContainer',
+				},
+			});
+			const result = await em.findOneOrFail(SubmissionContainerElementNode, submissionContainerElement.id);
+
+			expect(result.dueDate).toBeUndefined();
+		});
+
+		it('should set dueDate value when dueDate parameter is provided for submission container element', async () => {
+			const { loggedInClient, submissionContainerElement } = await setup();
+
+			const inThreeDays = new Date(Date.now() + 259200000);
+
+			await loggedInClient.patch(`${submissionContainerElement.id}/content`, {
+				data: {
+					content: { dueDate: inThreeDays },
+					type: 'submissionContainer',
+				},
+			});
+			const result = await em.findOneOrFail(SubmissionContainerElementNode, submissionContainerElement.id);
+
+			expect(result.dueDate).toEqual(inThreeDays);
+		});
+
+		it('should unset dueDate value when dueDate parameter is not provided for submission container element', async () => {
+			const { loggedInClient, submissionContainerElementWithDueDate } = await setup();
+
+			await loggedInClient.patch(`${submissionContainerElementWithDueDate.id}/content`, {
+				data: {
+					content: {},
+					type: 'submissionContainer',
+				},
+			});
+			const result = await em.findOneOrFail(SubmissionContainerElementNode, submissionContainerElementWithDueDate.id);
+
+			expect(result.dueDate).toBeUndefined();
+		});
+
+		it('should return status 400 for wrong date format for submission container element', async () => {
+			const { loggedInClient, submissionContainerElement } = await setup();
+
+			const response = await loggedInClient.patch(`${submissionContainerElement.id}/content`, {
+				data: {
+					content: { dueDate: 'hello world' },
+					type: 'submissionContainer',
+				},
+			});
+
+			expect(response.statusCode).toEqual(400);
 		});
 
 		it('should sanitize alternativeText parameter before changing caption of the element', async () => {
