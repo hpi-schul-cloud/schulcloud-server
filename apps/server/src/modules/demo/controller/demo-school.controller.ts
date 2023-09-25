@@ -2,7 +2,6 @@ import { Controller, ForbiddenException, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { CreationProtocol } from '../types';
 import { DemoSchoolUc } from '../uc';
 import { DemoSchoolResponse } from './dto';
 
@@ -16,10 +15,10 @@ export class DemoSchoolController {
 	@ApiResponse({ status: 200, type: DemoSchoolResponse })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@Post()
-	async createDemoSchool(@CurrentUser() currentUser: ICurrentUser): Promise<CreationProtocol[]> {
+	async createDemoSchool(@CurrentUser() currentUser: ICurrentUser): Promise<DemoSchoolResponse> {
 		const protocol = await this.demoSchoolUc.createSchool(currentUser.userId);
-		// const response = new DemoSchoolResponse(school); // WIP: do a proper mapping
+		const response = new DemoSchoolResponse(protocol);
 
-		return protocol;
+		return response;
 	}
 }

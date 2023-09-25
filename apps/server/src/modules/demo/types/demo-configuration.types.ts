@@ -38,5 +38,5 @@ export type TeamUserConfig = {
 };
 
 export type DemoConfiguration = {
-	schools: SchoolConfig[];
+	school: SchoolConfig;
 };

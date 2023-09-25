@@ -1,6 +1,6 @@
 export type CreationProtocol = {
-	id: string | undefined;
-	key?: string;
+	id?: string | undefined;
+	key?: string | undefined;
 	type: string;
-	children?: CreationProtocol[];
+	children?: CreationProtocol[] | undefined;
 };
