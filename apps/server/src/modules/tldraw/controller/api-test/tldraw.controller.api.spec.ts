@@ -67,7 +67,7 @@ describe('WebSocketController (WsAdapter)', () => {
 	describe('when tldraw is correctly setup', () => {
 		const setup = async () => {
 			const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
-			jest.spyOn(Uint8Array.prototype, 'reduce').mockReturnValue(1);
+			jest.spyOn(Uint8Array.prototype, 'reduce').mockReturnValueOnce(1);
 
 			await setupWs('TEST');
 
@@ -137,7 +137,7 @@ describe('WebSocketController (WsAdapter)', () => {
 	describe('when tldraw is not correctly setup', () => {
 		const setup = async () => {
 			const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
-			const utilsSpy = jest.spyOn(Utils, 'messageHandler').mockReturnValue();
+			const utilsSpy = jest.spyOn(Utils, 'messageHandler').mockReturnValueOnce();
 
 			await setupWs();
 
