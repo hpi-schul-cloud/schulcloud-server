@@ -18,6 +18,7 @@ export class SchoolMapper {
 			inUserMigration: entity.inUserMigration,
 			schoolYear,
 			federalState,
+			purpose: entity.purpose,
 		});
 
 		return school;

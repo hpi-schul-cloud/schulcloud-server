@@ -10,10 +10,11 @@ import {
 	Property,
 } from '@mikro-orm/core';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
+import { SchoolPurpose } from '@src/modules/school/domain';
 import { BaseEntity } from './base.entity';
+import { FederalStateEntity } from './federal-state.entity';
 import { SchoolYearEntity } from './schoolyear.entity';
 import { SystemEntity } from './system.entity';
-import { FederalStateEntity } from './federal-state.entity';
 
 export enum SchoolFeatures {
 	ROCKET_CHAT = 'rocketChat',
@@ -39,6 +40,7 @@ export interface ISchoolProperties {
 	schoolYear?: SchoolYearEntity;
 	userLoginMigration?: UserLoginMigrationEntity;
 	federalState: FederalStateEntity;
+	purpose?: SchoolPurpose;
 }
 
 @Embeddable()
@@ -106,6 +108,9 @@ export class SchoolEntity extends BaseEntity {
 	@ManyToOne(() => FederalStateEntity, { fieldName: 'federalState', nullable: false })
 	federalState: FederalStateEntity;
 
+	@Property({ nullable: true })
+	purpose?: SchoolPurpose;
+
 	constructor(props: ISchoolProperties) {
 		super();
 		if (props.externalId) {
@@ -135,5 +140,9 @@ export class SchoolEntity extends BaseEntity {
 			this.userLoginMigration = props.userLoginMigration;
 		}
 		this.federalState = props.federalState;
+		// TODO: General question: Why the if-checks around the optional props?
+		if (props.purpose) {
+			this.purpose = props.purpose;
+		}
 	}
 }

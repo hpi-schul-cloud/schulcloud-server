@@ -8,6 +8,7 @@ import {
 	SystemEntity,
 } from '@shared/domain';
 import { federalStateFactory, schoolFactory } from '@shared/testing';
+import { SchoolPurpose } from '@src/modules/school/domain';
 import { DeepPartial } from 'fishery';
 import { EFederalState } from './federalstates';
 import { SeedSchoolYearEnum } from './schoolyears';
@@ -53,7 +54,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		systems: [],
 		fileStorageType: 'awsS3',
 		currentYear: SeedSchoolYearEnum['2022/23'],
-		purpose: 'demo',
+		purpose: SchoolPurpose.DEMO,
 		permissions: {
 			teacher: {
 				STUDENT_LIST: true,
@@ -69,7 +70,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		systems: [],
 		fileStorageType: 'awsS3',
 		currentYear: SeedSchoolYearEnum['2022/23'],
-		purpose: 'demo',
+		purpose: SchoolPurpose.DEMO,
 		permissions: {
 			teacher: {
 				STUDENT_LIST: true,
@@ -92,7 +93,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		systems: [],
 		fileStorageType: 'awsS3',
 		currentYear: SeedSchoolYearEnum['2022/23'],
-		purpose: 'demo',
+		purpose: SchoolPurpose.DEMO,
 		permissions: {
 			teacher: {
 				STUDENT_LIST: true,
@@ -121,7 +122,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		systems: [],
 		fileStorageType: 'awsS3',
 		currentYear: SeedSchoolYearEnum['2022/23'],
-		purpose: 'expert',
+		purpose: SchoolPurpose.EXPERT,
 		features: [SchoolFeatures.ROCKET_CHAT, SchoolFeatures.VIDEOCONFERENCE, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
 	},
 	{
@@ -139,7 +140,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		systems: [],
 		fileStorageType: 'awsS3',
 		currentYear: SeedSchoolYearEnum['2022/23'],
-		purpose: 'demo',
+		purpose: SchoolPurpose.DEMO,
 		permissions: {
 			student: {
 				LERNSTORE_VIEW: true,
@@ -168,7 +169,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		systems: [],
 		fileStorageType: 'awsS3',
 		currentYear: SeedSchoolYearEnum['2022/23'],
-		purpose: 'demo',
+		purpose: SchoolPurpose.DEMO,
 		permissions: {
 			student: {
 				LERNSTORE_VIEW: true,
@@ -191,7 +192,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		systems: [],
 		fileStorageType: 'awsS3',
 		currentYear: SeedSchoolYearEnum['2022/23'],
-		purpose: 'demo',
+		purpose: SchoolPurpose.DEMO,
 		permissions: {
 			student: {
 				LERNSTORE_VIEW: true,
@@ -232,7 +233,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		name: 'graveyard school (tombstone users only)',
 		createdAt: '2020-12-16T12:47:27.338Z',
 		systems: [],
-		purpose: 'tombstone',
+		purpose: SchoolPurpose.TOMBSTONE,
 		features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: '',
 		experimental: false,
@@ -253,7 +254,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		systems: ['62c7f233f35a554ba3ed42f1'],
 		fileStorageType: 'awsS3',
 		currentYear: SeedSchoolYearEnum['2022/23'],
-		purpose: 'demo',
+		purpose: SchoolPurpose.DEMO,
 		permissions: {
 			teacher: {
 				STUDENT_LIST: true,

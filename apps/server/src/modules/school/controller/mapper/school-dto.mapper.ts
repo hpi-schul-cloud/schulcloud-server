@@ -9,12 +9,17 @@ export class SchoolDtoMapper {
 		const federalState = this.mapToFederalStateResponse(school.federalState);
 		const schoolYear = school.schoolYear && this.mapToSchoolYearResponse(school.schoolYear);
 
+		// TODO: Do we want to access the props via getProps() here or do we want getters?
+		// I added getters for federalState and schoolYear because there are conditions with them below
+		// and then the code is a easier to read. But I wasn't really sure.
+		// Do we want to fix any criteria for when to add getters?
 		const res = new SchoolResponse({
 			id: school.id,
 			name: school.getProps().name,
 			officialSchoolNumber: school.getProps().officialSchoolNumber,
 			federalState,
 			schoolYear,
+			purpose: school.getProps().purpose,
 		});
 
 		return res;
