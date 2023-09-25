@@ -1282,6 +1282,11 @@
 			"default": false,
 			"description": "Enables the configuration of custom parameters for context external tools"
 		},
+		"FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables external tools on the column board"
+		},
 		"CTL_TOOLS": {
 			"type": "object",
 			"description": "CTL Tools properties",
