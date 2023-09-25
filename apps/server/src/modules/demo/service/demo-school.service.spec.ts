@@ -190,7 +190,7 @@ describe(DemoSchoolService.name, () => {
 			const { fakeSchoolId } = setupUserService();
 			const { userId, userConfig } = createUserConfig('edith', 'laputschek', [RoleName.TEACHER]);
 
-			const creationProtocol = await service.createUser(fakeSchoolId, userConfig, 'fakePassword');
+			const creationProtocol = await service.createUser(fakeSchoolId, userConfig, '_fakePostfix', 'fakePassword');
 
 			expect(creationProtocol).toEqual(
 				expect.objectContaining({
@@ -207,7 +207,12 @@ describe(DemoSchoolService.name, () => {
 			const { userId: userId1, userConfig: userConfig1 } = createUserConfig('edith', 'laputschek', [RoleName.TEACHER]);
 			const { userId: userId2, userConfig: userConfig2 } = createUserConfig('pjotr', 'kawalschek', [RoleName.TEACHER]);
 
-			const creationProtocol = await service.createUsers(fakeSchoolId, [userConfig1, userConfig2], 'fakePassword');
+			const creationProtocol = await service.createUsers(
+				fakeSchoolId,
+				[userConfig1, userConfig2],
+				'_fakePostfix',
+				'fakePassword'
+			);
 
 			expect(creationProtocol.toString()).toBe(
 				[
