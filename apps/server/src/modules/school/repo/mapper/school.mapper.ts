@@ -18,6 +18,7 @@ export class SchoolMapper {
 			inUserMigration: entity.inUserMigration,
 			schoolYear,
 			federalState,
+			county: entity.county,
 			purpose: entity.purpose,
 			features: entity.features,
 		});

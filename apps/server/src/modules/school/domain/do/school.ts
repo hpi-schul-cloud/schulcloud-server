@@ -1,5 +1,5 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { SchoolFeatures, SchoolPurpose } from '../type';
+import { County, SchoolFeatures, SchoolPurpose } from '../type';
 import { FederalState } from './federal-state';
 import { SchoolYear } from './school-year';
 
@@ -22,6 +22,7 @@ interface SchoolProps extends AuthorizableObject {
 	inUserMigration?: boolean;
 	schoolYear?: SchoolYear;
 	federalState: FederalState;
+	county?: County;
 	purpose?: SchoolPurpose;
 	features?: SchoolFeatures[];
 	// userLoginMigration?: UserLoginMigration;

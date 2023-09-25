@@ -18,8 +18,9 @@ export class SchoolDtoMapper {
 			id: school.id,
 			name: school.getProps().name,
 			officialSchoolNumber: school.getProps().officialSchoolNumber,
-			federalState,
 			schoolYear,
+			federalState,
+			county: school.getProps().county,
 			purpose: school.getProps().purpose,
 			features: school.getProps().features,
 		});

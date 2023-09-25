@@ -12,7 +12,7 @@ import {
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { SchoolFeatures, SchoolPurpose } from '@src/modules/school/domain';
 import { BaseEntity } from './base.entity';
-import { FederalStateEntity } from './federal-state.entity';
+import { County, FederalStateEntity } from './federal-state.entity';
 import { SchoolYearEntity } from './schoolyear.entity';
 import { SystemEntity } from './system.entity';
 
@@ -29,6 +29,7 @@ export interface ISchoolProperties {
 	schoolYear?: SchoolYearEntity;
 	userLoginMigration?: UserLoginMigrationEntity;
 	federalState: FederalStateEntity;
+	county?: County;
 	purpose?: SchoolPurpose;
 }
 
@@ -96,6 +97,9 @@ export class SchoolEntity extends BaseEntity {
 
 	@ManyToOne(() => FederalStateEntity, { fieldName: 'federalState', nullable: false })
 	federalState: FederalStateEntity;
+
+	@Property({ nullable: true })
+	county?: County;
 
 	@Property({ nullable: true })
 	purpose?: SchoolPurpose;
