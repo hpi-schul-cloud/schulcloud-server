@@ -36,3 +36,7 @@ export interface RichTextElementProps extends BoardCompositeProps {
 	text: string;
 	inputFormat: InputFormat;
 }
+
+export function isRichTextElement(reference: unknown): reference is RichTextElement {
+	return reference instanceof RichTextElement;
+}

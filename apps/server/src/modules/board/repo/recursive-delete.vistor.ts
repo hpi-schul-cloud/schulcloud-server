@@ -7,6 +7,7 @@ import {
 	Card,
 	Column,
 	ColumnBoard,
+	ExternalToolElement,
 	FileElement,
 	RichTextElement,
 	SubmissionContainerElement,
@@ -56,6 +57,13 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 	async visitSubmissionItemAsync(submission: SubmissionItem): Promise<void> {
 		this.deleteNode(submission);
 		await this.visitChildrenAsync(submission);
+	}
+
+	async visitExternalToolElementAsync(externalToolElement: ExternalToolElement): Promise<void> {
+		// TODO N21-1296: Delete linked ContextExternalTool
+		this.deleteNode(externalToolElement);
+
+		await this.visitChildrenAsync(externalToolElement);
 	}
 
 	deleteNode(domainObject: AnyBoardDo): void {

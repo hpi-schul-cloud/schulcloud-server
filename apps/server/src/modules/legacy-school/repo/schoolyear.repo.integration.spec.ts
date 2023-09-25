@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolYear } from '@shared/domain';
+import { SchoolYearEntity } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections } from '@shared/testing';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
@@ -29,14 +29,14 @@ describe('schoolyear repo', () => {
 	});
 
 	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(SchoolYear);
+		expect(repo.entityName).toBe(SchoolYearEntity);
 	});
 
 	it('should create a schoolyear', async () => {
 		const schoolYear = schoolYearFactory.build();
 		await repo.save(schoolYear);
 		em.clear();
-		const storedSchoolYears = await em.find(SchoolYear, {});
+		const storedSchoolYears = await em.find(SchoolYearEntity, {});
 		expect(storedSchoolYears).toHaveLength(1);
 		const storedSchoolYear = storedSchoolYears[0];
 		expect(storedSchoolYear).toEqual(schoolYear);
@@ -48,7 +48,7 @@ describe('schoolyear repo', () => {
 	describe('findCurrentYear', () => {
 		describe('when date is between schoolyears start and end date', () => {
 			const setup = async () => {
-				const schoolYear: SchoolYear = schoolYearFactory.build({
+				const schoolYear: SchoolYearEntity = schoolYearFactory.build({
 					startDate: new Date('2020-08-01'),
 					endDate: new Date('9999-07-31'),
 				});
@@ -70,7 +70,7 @@ describe('schoolyear repo', () => {
 
 		describe('when date is not between schoolyears start and end date', () => {
 			const setup = async () => {
-				const schoolYear: SchoolYear = schoolYearFactory.build({
+				const schoolYear: SchoolYearEntity = schoolYearFactory.build({
 					startDate: new Date('2020-08-01'),
 					endDate: new Date('2021-07-31'),
 				});

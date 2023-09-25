@@ -1,13 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TimestampsResponse } from '../timestamps.response';
-import { UserDataResponse } from '../user-data.response';
 
 export class SubmissionItemResponse {
-	constructor({ id, timestamps, completed, userData }: SubmissionItemResponse) {
+	constructor({ id, timestamps, completed, userId }: SubmissionItemResponse) {
 		this.id = id;
 		this.timestamps = timestamps;
 		this.completed = completed;
-		this.userData = userData;
+		this.userId = userId;
 	}
 
 	@ApiProperty({ pattern: '[a-f0-9]{24}' })
@@ -19,6 +18,6 @@ export class SubmissionItemResponse {
 	@ApiProperty()
 	completed: boolean;
 
-	@ApiProperty()
-	userData: UserDataResponse;
+	@ApiProperty({ pattern: '[a-f0-9]{24}' })
+	userId: string;
 }

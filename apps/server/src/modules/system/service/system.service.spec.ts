@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
-import { OauthConfig, System, SystemTypeEnum } from '@shared/domain';
+import { OauthConfig, SystemEntity, SystemTypeEnum } from '@shared/domain';
 import { IdentityManagementOauthService } from '@shared/infra/identity-management';
 import { SystemRepo } from '@shared/repo';
 import { systemFactory } from '@shared/testing';
@@ -46,7 +46,7 @@ describe('SystemService', () => {
 			const standaloneSystem = systemFactory.buildWithId({ alias: 'standaloneSystem' });
 			const oidcSystem = systemFactory.withOidcConfig().buildWithId({ alias: 'oidcSystem' });
 			const oauthSystem = systemFactory.withOauthConfig().buildWithId({ alias: 'oauthSystem' });
-			const setup = (system: System) => {
+			const setup = (system: SystemEntity) => {
 				systemRepoMock.findById.mockResolvedValue(system);
 				kcIdmOauthServiceMock.isOauthConfigAvailable.mockResolvedValue(true);
 				kcIdmOauthServiceMock.getOauthConfig.mockResolvedValue(oauthSystem.oauthConfig as OauthConfig);
@@ -97,7 +97,7 @@ describe('SystemService', () => {
 		describe('when identity management is not available', () => {
 			const standaloneSystem = systemFactory.buildWithId();
 			const oidcSystem = systemFactory.withOidcConfig().buildWithId();
-			const setup = (system: System) => {
+			const setup = (system: SystemEntity) => {
 				systemRepoMock.findById.mockResolvedValue(system);
 				kcIdmOauthServiceMock.isOauthConfigAvailable.mockResolvedValue(false);
 			};

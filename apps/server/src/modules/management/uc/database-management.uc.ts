@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { StorageProviderEntity, System } from '@shared/domain';
+import { StorageProviderEntity, SystemEntity } from '@shared/domain';
 import { DatabaseManagementService } from '@shared/infra/database';
 import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from '@shared/infra/encryption';
 import { FileSystemAdapter } from '@shared/infra/file-system';
@@ -167,7 +167,7 @@ export class DatabaseManagementUc {
 			})
 			.map(async ({ collectionName, data }) => {
 				if (collectionName === systemsCollectionName) {
-					this.encryptSecretsInSystems(data as System[]);
+					this.encryptSecretsInSystems(data as SystemEntity[]);
 				}
 				await this.dropCollectionIfExists(collectionName);
 
@@ -348,11 +348,11 @@ export class DatabaseManagementUc {
 
 	private encryptSecrets(collectionName: string, jsonDocuments: unknown[]) {
 		if (collectionName === systemsCollectionName) {
-			this.encryptSecretsInSystems(jsonDocuments as System[]);
+			this.encryptSecretsInSystems(jsonDocuments as SystemEntity[]);
 		}
 	}
 
-	private encryptSecretsInSystems(systems: System[]) {
+	private encryptSecretsInSystems(systems: SystemEntity[]) {
 		systems.forEach((system) => {
 			if (system.oauthConfig) {
 				system.oauthConfig.clientSecret = this.defaultEncryptionService.encrypt(system.oauthConfig.clientSecret);
@@ -376,7 +376,7 @@ export class DatabaseManagementUc {
 	 */
 	private removeSecrets(collectionName: string, jsonDocuments: unknown[]) {
 		if (collectionName === systemsCollectionName) {
-			this.removeSecretsFromSystems(jsonDocuments as System[]);
+			this.removeSecretsFromSystems(jsonDocuments as SystemEntity[]);
 		}
 		if (collectionName === storageprovidersCollectionName) {
 			this.removeSecretsFromStorageproviders(jsonDocuments as StorageProviderEntity[]);
@@ -390,7 +390,7 @@ export class DatabaseManagementUc {
 		});
 	}
 
-	private removeSecretsFromSystems(systems: System[]) {
+	private removeSecretsFromSystems(systems: SystemEntity[]) {
 		systems.forEach((system) => {
 			if (system.oauthConfig) {
 				system.oauthConfig.clientSecret = defaultSecretReplacementHintText;

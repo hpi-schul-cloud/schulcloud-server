@@ -3,7 +3,12 @@ import {
 	Board,
 	BoardElement,
 	BoardElementType,
+	BoardExternalReferenceType,
+	ColumnBoard,
+	ColumnboardBoardElement,
+	ColumnBoardTarget,
 	Course,
+	isColumnBoardTarget,
 	isLesson,
 	isTask,
 	LessonEntity,
@@ -14,7 +19,8 @@ import {
 } from '@shared/domain';
 import { BoardRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { CopyElementType, CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
+import { ColumnBoardCopyService } from '@src/modules/board/service/column-board-copy.service';
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { getResolvedValues } from '@src/modules/files-storage/helper';
 import { LessonCopyService } from '@src/modules/lesson/service';
 import { TaskCopyService } from '@src/modules/task/service';
@@ -33,6 +39,7 @@ export class BoardCopyService {
 		private readonly boardRepo: BoardRepo,
 		private readonly taskCopyService: TaskCopyService,
 		private readonly lessonCopyService: LessonCopyService,
+		private readonly columnBoardCopyService: ColumnBoardCopyService,
 		private readonly copyHelperService: CopyHelperService
 	) {}
 
@@ -57,7 +64,13 @@ export class BoardCopyService {
 		if (status.copyEntity) {
 			boardCopy = status.copyEntity as Board;
 		}
-		await this.boardRepo.save(boardCopy);
+
+		try {
+			await this.boardRepo.save(boardCopy);
+		} catch (err) {
+			this.logger.warn(err);
+			status.status = CopyStatusEnum.FAIL;
+		}
 
 		return status;
 	}
@@ -78,6 +91,10 @@ export class BoardCopyService {
 
 			if (element.boardElementType === BoardElementType.Lesson && isLesson(element.target)) {
 				return this.copyLesson(element.target, user, destinationCourse).then((status) => [pos, status]);
+			}
+
+			if (element.boardElementType === BoardElementType.ColumnBoard && isColumnBoardTarget(element.target)) {
+				return this.copyColumnBoard(element.target, user, destinationCourse).then((status) => [pos, status]);
 			}
 
 			/* istanbul ignore next */
@@ -108,6 +125,21 @@ export class BoardCopyService {
 		});
 	}
 
+	private async copyColumnBoard(
+		columnBoardTarget: ColumnBoardTarget,
+		user: User,
+		destinationCourse: Course
+	): Promise<CopyStatus> {
+		return this.columnBoardCopyService.copyColumnBoard({
+			originalColumnBoardId: columnBoardTarget.columnBoardId,
+			userId: user.id,
+			destinationExternalReference: {
+				id: destinationCourse.id,
+				type: BoardExternalReferenceType.Course,
+			},
+		});
+	}
+
 	private extractReferences(statuses: CopyStatus[]): BoardElement[] {
 		const references: BoardElement[] = [];
 		statuses.forEach((status) => {
@@ -118,6 +150,12 @@ export class BoardCopyService {
 			if (status.copyEntity instanceof LessonEntity) {
 				const lessonElement = new LessonBoardElement({ target: status.copyEntity });
 				references.push(lessonElement);
+			}
+			if (status.copyEntity instanceof ColumnBoard) {
+				const columnBoardElement = new ColumnboardBoardElement({
+					target: new ColumnBoardTarget({ columnBoardId: status.copyEntity.id, title: status.copyEntity.title }),
+				});
+				references.push(columnBoardElement);
 			}
 		});
 		return references;
