@@ -1,11 +1,11 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { InputFormat } from '@shared/domain/types';
 import { ObjectId } from 'bson';
+import { ExternalToolElement } from './external-tool-element.do';
 import { FileElement } from './file-element.do';
 import { RichTextElement } from './rich-text-element.do';
 import { SubmissionContainerElement } from './submission-container-element.do';
-import { AnyContentElementDo } from './types/any-content-element-do';
-import { ContentElementType } from './types/content-elements.enum';
+import { AnyContentElementDo, ContentElementType } from './types';
 
 @Injectable()
 export class ContentElementFactory {
@@ -21,6 +21,9 @@ export class ContentElementFactory {
 				break;
 			case ContentElementType.SUBMISSION_CONTAINER:
 				element = this.buildSubmissionContainer();
+				break;
+			case ContentElementType.EXTERNAL_TOOL:
+				element = this.buildExternalTool();
 				break;
 			default:
 				break;
@@ -61,6 +64,17 @@ export class ContentElementFactory {
 
 	private buildSubmissionContainer() {
 		const element = new SubmissionContainerElement({
+			id: new ObjectId().toHexString(),
+			children: [],
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
+
+		return element;
+	}
+
+	private buildExternalTool() {
+		const element = new ExternalToolElement({
 			id: new ObjectId().toHexString(),
 			children: [],
 			createdAt: new Date(),

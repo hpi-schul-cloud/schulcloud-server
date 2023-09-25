@@ -11,6 +11,8 @@ import {
 	ColumnBoardNode,
 	ColumnNode,
 	EntityId,
+	ExternalToolElement,
+	ExternalToolElementNodeEntity,
 	FileElement,
 	FileElementNode,
 	RichTextElement,
@@ -20,6 +22,7 @@ import {
 	SubmissionItem,
 	SubmissionItemNode,
 } from '@shared/domain';
+import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity';
 import { BoardNodeRepo } from './board-node.repo';
 
 type ParentData = {
@@ -149,6 +152,22 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 
 		this.createOrUpdateBoardNode(boardNode);
 		this.visitChildren(submission, boardNode);
+	}
+
+	visitExternalToolElement(externalToolElement: ExternalToolElement): void {
+		const parentData: ParentData | undefined = this.parentsMap.get(externalToolElement.id);
+
+		const boardNode: ExternalToolElementNodeEntity = new ExternalToolElementNodeEntity({
+			id: externalToolElement.id,
+			contextExternalTool: externalToolElement.contextExternalToolId
+				? this.em.getReference(ContextExternalToolEntity, externalToolElement.contextExternalToolId)
+				: undefined,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+		});
+
+		this.createOrUpdateBoardNode(boardNode);
+		this.visitChildren(externalToolElement, boardNode);
 	}
 
 	visitChildren(parent: AnyBoardDo, parentNode: BoardNode) {

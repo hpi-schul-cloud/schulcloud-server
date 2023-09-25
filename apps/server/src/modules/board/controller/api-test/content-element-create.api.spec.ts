@@ -83,6 +83,14 @@ describe(`content element create (api)`, () => {
 			expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.FILE);
 		});
 
+		it('should return the created content element of type EXTERNAL_TOOL', async () => {
+			const { loggedInClient, cardNode } = await setup();
+
+			const response = await loggedInClient.post(`${cardNode.id}/elements`, { type: ContentElementType.EXTERNAL_TOOL });
+
+			expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.EXTERNAL_TOOL);
+		});
+
 		it('should return the created content element of type SUBMISSION_CONTAINER with dueDate set to null', async () => {
 			const { loggedInClient, cardNode } = await setup();
 
