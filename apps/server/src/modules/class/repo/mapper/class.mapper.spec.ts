@@ -1,10 +1,10 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ClassEntity } from '../../entity';
-import { ClassMapper } from './class.mapper';
 import { Class } from '../../domain';
 import { ClassSourceOptions } from '../../domain/class-source-options.do';
 import { classFactory } from '../../domain/testing/factory/class.factory';
+import { ClassEntity } from '../../entity';
 import { classEntityFactory } from '../../entity/testing/factory/class.entity.factory';
+import { ClassMapper } from './class.mapper';
 
 describe(ClassMapper.name, () => {
 	describe('mapToDOs', () => {
@@ -58,28 +58,39 @@ describe(ClassMapper.name, () => {
 			});
 		});
 		describe('When domainObjects array is mapped for entities array', () => {
+			beforeAll(() => {
+				jest.useFakeTimers();
+				jest.setSystemTime(new Date());
+			});
+
+			afterAll(() => {
+				jest.useRealTimers();
+			});
+
 			it('should properly map the domainObjects to the entities', () => {
 				const domainObjects = [classFactory.build()];
 
 				const entities = ClassMapper.mapToEntities(domainObjects);
 
-				const expectedEntities = domainObjects.map(
-					(domainObject) =>
-						new ClassEntity({
-							id: domainObject.id,
-							name: domainObject.name,
-							schoolId: new ObjectId(domainObject.schoolId),
-							teacherIds: domainObject.teacherIds.map((teacherId) => new ObjectId(teacherId)),
-							invitationLink: domainObject.invitationLink,
-							ldapDN: domainObject.ldapDN,
-							source: domainObject.source,
-							gradeLevel: domainObject.gradeLevel,
-							sourceOptions: domainObject.sourceOptions,
-							successor: new ObjectId(domainObject.successor),
-							userIds: domainObject.userIds?.map((userId) => new ObjectId(userId)),
-							year: new ObjectId(domainObject.year),
-						})
-				);
+				const expectedEntities = domainObjects.map((domainObject) => {
+					const entity = new ClassEntity({
+						id: domainObject.id,
+						name: domainObject.name,
+						schoolId: new ObjectId(domainObject.schoolId),
+						teacherIds: domainObject.teacherIds.map((teacherId) => new ObjectId(teacherId)),
+						invitationLink: domainObject.invitationLink,
+						ldapDN: domainObject.ldapDN,
+						source: domainObject.source,
+						gradeLevel: domainObject.gradeLevel,
+						sourceOptions: domainObject.sourceOptions,
+						successor: new ObjectId(domainObject.successor),
+						userIds: domainObject.userIds?.map((userId) => new ObjectId(userId)),
+						year: new ObjectId(domainObject.year),
+					});
+
+					return entity;
+				});
+
 				expect(entities).toEqual(expectedEntities);
 			});
 		});
