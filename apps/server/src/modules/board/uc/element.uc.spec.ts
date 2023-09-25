@@ -205,7 +205,7 @@ describe(ElementUc.name, () => {
 
 			it('should throw', async () => {
 				const { drawingElement, user } = setup();
-				elementService.findByDrawingNameOrFail.mockResolvedValue(drawingElement);
+				elementService.findByDrawingNameOrFail.mockRejectedValue(new Error());
 				await expect(uc.checkDrawingPermission(drawingElement.drawingName, user.id)).rejects.toThrow();
 			});
 		});
