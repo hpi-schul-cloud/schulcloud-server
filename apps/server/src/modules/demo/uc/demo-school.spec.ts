@@ -73,7 +73,7 @@ describe(DemoSchoolUc.name, () => {
 		describe('when feature is enabled', () => {
 			it('should call the service', async () => {
 				const { user } = await setup();
-				configService.get.mockReturnValue(true);
+				configService.get.mockReturnValue('true');
 
 				const schoolId = await uc.createSchool(user.id);
 
@@ -82,7 +82,7 @@ describe(DemoSchoolUc.name, () => {
 
 			it('should check for CREATE_DEMO_SCHOOL permission', async () => {
 				const { user } = await setup();
-				configService.get.mockReturnValue(true);
+				configService.get.mockReturnValue('true');
 
 				await uc.createSchool(user.id);
 
@@ -94,7 +94,7 @@ describe(DemoSchoolUc.name, () => {
 			describe('when user does not exist', () => {
 				it('should write an error message if courseId is not valid', async () => {
 					const fakeId = new ObjectId().toHexString();
-					configService.get.mockReturnValue(false);
+					configService.get.mockReturnValue('false');
 
 					await expect(uc.createSchool(fakeId)).rejects.toThrow(ForbiddenException);
 				});
