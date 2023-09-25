@@ -3,9 +3,20 @@ import { SchoolFeatures, SchoolPurpose } from '../../domain';
 import { CountyResponse } from './county.response';
 import { FederalStateResponse } from './federal-state.response';
 import { SchoolYearResponse } from './school-year.response';
+import { SystemResponse } from './system.response';
 
 export class SchoolResponse {
-	constructor({ id, name, officialSchoolNumber, federalState, schoolYear, purpose, features, county }: SchoolResponse) {
+	constructor({
+		id,
+		name,
+		officialSchoolNumber,
+		federalState,
+		schoolYear,
+		purpose,
+		features,
+		county,
+		systems,
+	}: SchoolResponse) {
 		this.id = id;
 		this.name = name;
 		this.officialSchoolNumber = officialSchoolNumber;
@@ -14,6 +25,7 @@ export class SchoolResponse {
 		this.purpose = purpose;
 		this.features = features;
 		this.county = county;
+		this.systems = systems;
 	}
 
 	@ApiProperty()
@@ -39,4 +51,7 @@ export class SchoolResponse {
 
 	@ApiPropertyOptional()
 	features?: SchoolFeatures[];
+
+	@ApiPropertyOptional({ type: () => [SystemResponse] })
+	systems?: SystemResponse[];
 }

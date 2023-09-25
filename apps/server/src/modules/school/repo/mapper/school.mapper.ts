@@ -2,11 +2,13 @@ import { SchoolEntity } from '@shared/domain';
 import { School } from '../../domain/do/school';
 import { FederalStateMapper } from './federal-state.mapper';
 import { SchoolYearMapper } from './school-year.mapper';
+import { SystemMapper } from './system.mapper';
 
 export class SchoolMapper {
 	public static mapToDo(entity: SchoolEntity): School {
 		const schoolYear = entity.schoolYear && SchoolYearMapper.mapToDo(entity.schoolYear);
 		const federalState = FederalStateMapper.mapToDo(entity.federalState);
+		const systems = entity.systems.getItems().map((system) => SystemMapper.mapToDo(system));
 
 		const school = new School({
 			id: entity.id,
@@ -21,6 +23,7 @@ export class SchoolMapper {
 			county: entity.county,
 			purpose: entity.purpose,
 			features: entity.features,
+			systems,
 		});
 
 		return school;
