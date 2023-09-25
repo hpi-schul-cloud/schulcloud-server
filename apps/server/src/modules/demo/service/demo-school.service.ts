@@ -12,11 +12,7 @@ import { CreationProtocol } from '../types';
 import { CourseConfig, LessonConfig, SchoolConfig, UserConfig } from '../types/demo-configuration.types';
 
 const getUserIdByEmail = (email: string, userDos: CreationProtocol[] = []) => {
-	const user = userDos.find((u) => {
-		const emailWithoutPostfix = u.key?.replace(/_[^_]*?@/, '@');
-		console.log(`${emailWithoutPostfix ?? ''} === ${email}`);
-		return emailWithoutPostfix === email;
-	});
+	const user = userDos.find((u) => u.key?.replace(/_[^_]*?@/, '@') === email);
 	if (user) {
 		return user.id;
 	}
