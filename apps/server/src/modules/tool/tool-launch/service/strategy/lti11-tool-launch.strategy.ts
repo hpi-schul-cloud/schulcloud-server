@@ -151,7 +151,10 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			);
 		}
 
-		const authentication = { keyValue: key.value, secretValue: secret.value };
+		const authentication: AuthenticationValues = new AuthenticationValues({
+			keyValue: key.value,
+			secretValue: secret.value,
+		});
 
 		return authentication;
 	}
