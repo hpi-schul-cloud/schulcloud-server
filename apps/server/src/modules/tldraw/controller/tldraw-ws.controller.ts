@@ -7,7 +7,7 @@ import { WsCloseCodeEnum } from '@src/modules/tldraw/types/ws-close-code-enum';
 import { setupWSConnection, setPersistence, updateDocument } from '../utils';
 
 @WebSocketGateway(SOCKET_PORT)
-export class TldrawController implements OnGatewayInit, OnGatewayConnection {
+export class TldrawWsController implements OnGatewayInit, OnGatewayConnection {
 	@WebSocketServer()
 	server!: Server;
 
