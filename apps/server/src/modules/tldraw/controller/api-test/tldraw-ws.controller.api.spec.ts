@@ -8,7 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { config } from '@src/modules/tldraw/config';
 import { TldrawWsService } from '@src/modules/tldraw/service/tldraw-ws.service';
-import { HttpService } from '@nestjs/axios';
+import { HttpModule, HttpService } from "@nestjs/axios";
 import * as Utils from '../../utils/utils';
 import { TldrawWsController } from '../tldraw-ws.controller';
 
@@ -43,7 +43,7 @@ describe('WebSocketController (WsAdapter)', () => {
 	const getMessage = () => new TextEncoder().encode(testMessage);
 
 	beforeAll(async () => {
-		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
+		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config)), HttpModule];
 		const testingModule = await Test.createTestingModule({
 			imports,
 			providers: [TldrawWsController, TldrawWsService, HttpService],
