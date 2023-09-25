@@ -166,7 +166,7 @@ describe('SanisResponseMapper', () => {
 				expect(result![0]).toEqual<ExternalGroupDto>({
 					name: group.gruppe.bezeichnung,
 					type: GroupTypes.CLASS,
-					externalOrganizationId: group.gruppe.orgid,
+					externalOrganizationId: personenkontext.organisation.id,
 					from: group.gruppe.laufzeit.von,
 					until: group.gruppe.laufzeit.bis,
 					externalId: group.gruppe.id,

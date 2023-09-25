@@ -92,15 +92,17 @@ export class SanisResponseMapper {
 					.map((relation): ExternalGroupUserDto | null => this.mapToExternalGroupUser(relation))
 					.filter((user): user is ExternalGroupUserDto => user !== null);
 
-				return {
+				const externalOrganizationId = source.personenkontexte[0].organisation.id;
+
+				return new ExternalGroupDto({
 					name: group.gruppe.bezeichnung,
 					type: groupType,
-					externalOrganizationId: group.gruppe.orgid,
+					externalOrganizationId,
 					from: group.gruppe.laufzeit?.von,
 					until: group.gruppe.laufzeit?.bis,
 					externalId: group.gruppe.id,
 					users: gruppenzugehoerigkeiten,
-				};
+				});
 			})
 			.filter((group): group is ExternalGroupDto => group !== null);
 
