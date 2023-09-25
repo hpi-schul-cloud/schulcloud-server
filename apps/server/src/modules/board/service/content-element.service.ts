@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
+	AnyBoardDo,
 	AnyContentElementDo,
 	Card,
 	ContentElementFactory,
@@ -53,5 +54,10 @@ export class ContentElementService {
 		const parent = await this.boardDoRepo.findParentOfId(element.id);
 
 		await this.boardDoRepo.save(element, parent);
+	}
+
+	async findByDrawingNameOrFail(drawingName: string): Promise<AnyBoardDo> {
+		const element = await this.boardDoRepo.findByDrawingNameOrFail(drawingName);
+		return element;
 	}
 }

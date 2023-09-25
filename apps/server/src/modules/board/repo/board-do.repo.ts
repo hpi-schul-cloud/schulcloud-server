@@ -1,7 +1,14 @@
 import { Utils } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { AnyBoardDo, BoardExternalReference, BoardNode, ColumnBoardNode, EntityId } from '@shared/domain';
+import {
+	AnyBoardDo,
+	BoardExternalReference,
+	BoardNode,
+	BoardNodeType,
+	ColumnBoardNode,
+	EntityId,
+} from '@shared/domain';
 import { BoardDoBuilderImpl } from './board-do.builder-impl';
 import { BoardNodeRepo } from './board-node.repo';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
@@ -76,6 +83,19 @@ export class BoardDoRepo {
 		const boardNode = await this.boardNodeRepo.findById(childId);
 		const domainObject = boardNode.parentId ? this.findById(boardNode.parentId) : undefined;
 
+		return domainObject;
+	}
+
+	async findDescendantsWithType(parentId: EntityId, type: BoardNodeType): Promise<BoardNode[]> {
+		const boardNode = await this.boardNodeRepo.findById(parentId);
+		const descendants = await this.boardNodeRepo.findDescendants(boardNode);
+
+		return descendants.filter((descendant) => descendant.type === type);
+	}
+
+	async findByDrawingNameOrFail(docName: string): Promise<AnyBoardDo> {
+		const boardNode = await this.boardNodeRepo.findByDrawingNameOrFail(docName);
+		const domainObject = new BoardDoBuilderImpl().buildDomainObject(boardNode);
 		return domainObject;
 	}
 

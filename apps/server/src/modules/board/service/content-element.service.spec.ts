@@ -9,6 +9,7 @@ import {
 	richTextElementFactory,
 	submissionContainerElementFactory,
 } from '@shared/testing/factory/domainobject';
+import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 import {
 	DrawingContentBody,
 	FileContentBody,
@@ -291,6 +292,25 @@ describe(ContentElementService.name, () => {
 				await service.update(submissionContainerElement, content);
 
 				expect(boardDoRepo.save).toHaveBeenCalledWith(submissionContainerElement, card);
+			});
+		});
+	});
+
+	describe('findByDrawingNameOrFail', () => {
+		describe('when trying get DrawingElement by drawingName', () => {
+			const setup = () => {
+				const drawingElement = drawingElementFactory.build();
+				boardDoRepo.findByDrawingNameOrFail.mockResolvedValue(drawingElement);
+
+				return { drawingElement };
+			};
+
+			it('should return instance of RichTextElement', async () => {
+				const { drawingElement } = setup();
+
+				const result = await service.findByDrawingNameOrFail(drawingElement.drawingName);
+
+				expect(result).toBeInstanceOf(DrawingElement);
 			});
 		});
 	});

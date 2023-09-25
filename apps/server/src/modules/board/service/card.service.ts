@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Card, Column, ContentElementType, EntityId } from '@shared/domain';
+import { BoardNode, BoardNodeType, Card, Column, ContentElementType, EntityId } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
@@ -24,6 +24,11 @@ export class CardService {
 			return cards as Card[];
 		}
 		throw new NotFoundException('some ids do not belong to a card');
+	}
+
+	async findDescendantsWithType(parentId: EntityId, type: BoardNodeType): Promise<BoardNode[]> {
+		const card = await this.boardDoRepo.findDescendantsWithType(parentId, type);
+		return card;
 	}
 
 	async create(parent: Column, requiredEmptyElements?: ContentElementType[]): Promise<Card> {

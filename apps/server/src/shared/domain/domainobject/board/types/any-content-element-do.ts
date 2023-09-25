@@ -12,7 +12,7 @@ export const isAnyContentElement = (element: AnyBoardDo): element is AnyContentE
 		element instanceof FileElement ||
 		element instanceof RichTextElement ||
 		element instanceof SubmissionContainerElement ||
-		element instanceof ExternalToolElement;
+		element instanceof ExternalToolElement ||
 		element instanceof DrawingElement;
 
 	return result;

@@ -11,6 +11,7 @@ export interface TldrawConfig {
 	TLDRAW_DB_MULTIPLE_COLLECTIONS: boolean;
 	CONNECTION_STRING: string;
 	FEATURE_TLDRAW_ENABLED: boolean;
+	API_HOST: string;
 }
 
 const tldrawConfig = {
@@ -22,6 +23,7 @@ const tldrawConfig = {
 	TLDRAW_DB_MULTIPLE_COLLECTIONS: Configuration.get('TLDRAW__DB_MULTIPLE_COLLECTIONS') as boolean,
 	FEATURE_TLDRAW_ENABLED: Configuration.get('FEATURE_TLDRAW_ENABLED') as boolean,
 	CONNECTION_STRING: TLDRAW_DB_URL,
+	API_HOST: Configuration.get('API_HOST') as string,
 };
 
 export const SOCKET_PORT = Configuration.get('TLDRAW__SOCKET_PORT') as number;

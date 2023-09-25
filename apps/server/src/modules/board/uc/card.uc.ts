@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AnyBoardDo, AnyContentElementDo, Card, ContentElementType, EntityId } from '@shared/domain';
+import { AnyBoardDo, AnyContentElementDo, BoardNodeType, Card, ContentElementType, EntityId } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { Action } from '@src/modules/authorization/types/action.enum';
@@ -8,6 +8,7 @@ import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { BoardDoAuthorizableService, CardService, ContentElementService } from '../service';
+import { BadRequest } from '../../../../../../src/errors';
 
 @Injectable()
 export class CardUc {
@@ -40,6 +41,13 @@ export class CardUc {
 		toPosition?: number
 	): Promise<AnyContentElementDo> {
 		this.logger.debug({ action: 'createElement', userId, cardId, type });
+
+		if (type === 'drawing') {
+			const drawingElements = await this.cardService.findDescendantsWithType(cardId, BoardNodeType.DRAWING_ELEMENT);
+			if (drawingElements.length) {
+				throw new BadRequest('In card there is already existing drawing tool.');
+			}
+		}
 
 		const card = await this.cardService.findById(cardId);
 		await this.checkPermission(userId, card, Action.write);

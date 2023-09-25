@@ -42,6 +42,15 @@ export class RichTextContentBody {
 	inputFormat!: InputFormat;
 }
 
+export class RichTextElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: ContentElementType.RICH_TEXT })
+	type!: ContentElementType.RICH_TEXT;
+
+	@ValidateNested()
+	@ApiProperty()
+	content!: RichTextContentBody;
+}
+
 export class DrawingContentBody {
 	@IsString()
 	@ApiProperty()
@@ -52,13 +61,13 @@ export class DrawingContentBody {
 	description!: string;
 }
 
-export class RichTextElementContentBody extends ElementContentBody {
-	@ApiProperty({ type: ContentElementType.RICH_TEXT })
-	type!: ContentElementType.RICH_TEXT;
+export class DrawingElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: ContentElementType.DRAWING })
+	type!: ContentElementType.DRAWING;
 
 	@ValidateNested()
 	@ApiProperty()
-	content!: RichTextContentBody;
+	content!: DrawingContentBody;
 }
 
 export class SubmissionContainerContentBody {
@@ -96,6 +105,7 @@ export type AnyElementContentBody =
 	| FileContentBody
 	| RichTextContentBody
 	| SubmissionContainerContentBody
+	| DrawingContentBody
 	| ExternalToolContentBody;
 
 export class UpdateElementContentBodyParams {
@@ -107,6 +117,7 @@ export class UpdateElementContentBodyParams {
 				{ value: FileElementContentBody, name: ContentElementType.FILE },
 				{ value: RichTextElementContentBody, name: ContentElementType.RICH_TEXT },
 				{ value: SubmissionContainerElementContentBody, name: ContentElementType.SUBMISSION_CONTAINER },
+				{ value: DrawingElementContentBody, name: ContentElementType.DRAWING },
 				{ value: ExternalToolElementContentBody, name: ContentElementType.EXTERNAL_TOOL },
 			],
 		},
@@ -117,6 +128,7 @@ export class UpdateElementContentBodyParams {
 			{ $ref: getSchemaPath(FileElementContentBody) },
 			{ $ref: getSchemaPath(RichTextElementContentBody) },
 			{ $ref: getSchemaPath(SubmissionContainerElementContentBody) },
+			{ $ref: getSchemaPath(DrawingElementContentBody) },
 			{ $ref: getSchemaPath(ExternalToolElementContentBody) },
 		],
 	})
@@ -124,5 +136,6 @@ export class UpdateElementContentBodyParams {
 		| FileElementContentBody
 		| RichTextElementContentBody
 		| SubmissionContainerElementContentBody
+		| DrawingElementContentBody
 		| ExternalToolElementContentBody;
 }

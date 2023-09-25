@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardDoAuthorizable, InputFormat } from '@shared/domain';
 import {
+	drawingElementFactory,
 	fileElementFactory,
 	richTextElementFactory,
 	setupEntities,
@@ -182,6 +183,30 @@ describe(ElementUc.name, () => {
 				await expect(uc.createSubmissionItem(user.id, submissionContainer.id, true)).rejects.toThrowError(
 					'User is not allowed to have multiple submission-items per submission-container-element'
 				);
+			});
+		});
+	});
+
+	describe('checkDrawingPermission', () => {
+		describe('', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const drawingElement = drawingElementFactory.build();
+
+				return { drawingElement, user };
+			};
+
+			it('should execute properly', async () => {
+				const { drawingElement, user } = setup();
+				elementService.findByDrawingNameOrFail.mockResolvedValue(drawingElement);
+				await uc.checkDrawingPermission(drawingElement.drawingName, user.id);
+				expect(elementService.findByDrawingNameOrFail).toHaveBeenCalledWith(drawingElement.drawingName);
+			});
+
+			it('should throw', async () => {
+				const { drawingElement, user } = setup();
+				elementService.findByDrawingNameOrFail.mockResolvedValue(drawingElement);
+				await expect(uc.checkDrawingPermission(drawingElement.drawingName, user.id)).rejects.toThrow();
 			});
 		});
 	});

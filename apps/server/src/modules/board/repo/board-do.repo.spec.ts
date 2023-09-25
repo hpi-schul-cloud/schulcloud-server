@@ -6,6 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
 	AnyBoardDo,
 	BoardExternalReferenceType,
+	BoardNodeType,
 	Card,
 	CardNode,
 	Column,
@@ -27,6 +28,8 @@ import {
 	richTextElementNodeFactory,
 } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { drawingElementNodeFactory } from '@shared/testing/factory/boardnode/drawing-element-node.factory';
+import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 import { BoardDoRepo } from './board-do.repo';
 import { BoardNodeRepo } from './board-node.repo';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
@@ -266,6 +269,59 @@ describe(BoardDoRepo.name, () => {
 				const parent = await repo.findParentOfId(cardId);
 
 				expect(parent).toBeUndefined();
+			});
+		});
+	});
+
+	describe('findDescendantsWithType', () => {
+		describe('when fetching a descedants', () => {
+			const setup = async () => {
+				const cardNode = cardNodeFactory.buildWithId();
+				const [richTextElement1, richTextElement2] = richTextElementNodeFactory.buildList(3, { parent: cardNode });
+
+				await em.persistAndFlush([cardNode, richTextElement1, richTextElement2]);
+
+				return { cardId: cardNode.id };
+			};
+
+			it('should return empty array for not existing certain type descendants', async () => {
+				const { cardId } = await setup();
+
+				const descendantsResponse = await repo.findDescendantsWithType(cardId, BoardNodeType.FILE_ELEMENT);
+				expect(descendantsResponse.length).toEqual(0);
+			});
+
+			it('should return proper amount of children', async () => {
+				const { cardId } = await setup();
+
+				const descendantsResponse = await repo.findDescendantsWithType(cardId, BoardNodeType.RICH_TEXT_ELEMENT);
+				expect(descendantsResponse.length).toEqual(2);
+			});
+		});
+	});
+
+	describe('findByDrawingNameOrFail', () => {
+		describe('when fetching a drawing element by its name', () => {
+			const setup = async () => {
+				const cardNode = cardNodeFactory.buildWithId();
+				const drawingElement = drawingElementNodeFactory.build();
+
+				await em.persistAndFlush([cardNode, drawingElement]);
+
+				return { drawingName: drawingElement.drawingName };
+			};
+
+			it('should return instance of drawing element', async () => {
+				const { drawingName } = await setup();
+
+				const descendantsResponse = await repo.findByDrawingNameOrFail(drawingName);
+				expect(descendantsResponse).toBeInstanceOf(DrawingElement);
+			});
+
+			it('should not find drawing element and throw error', async () => {
+				await setup();
+
+				await expect(repo.findByDrawingNameOrFail('wrong-name')).rejects.toThrow();
 			});
 		});
 	});

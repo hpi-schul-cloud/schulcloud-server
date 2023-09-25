@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Card, ContentElementType } from '@shared/domain';
-import { setupEntities } from '@shared/testing';
+import { BoardNodeType, Card, ContentElementType } from '@shared/domain';
+import { cardNodeFactory, richTextElementNodeFactory, setupEntities } from '@shared/testing';
 import {
 	cardFactory,
 	columnBoardFactory,
@@ -110,6 +110,39 @@ describe(CardService.name, () => {
 				boardDoRepo.findByIds.mockResolvedValue(richTextElements);
 
 				await expect(service.findByIds(richTextElementIds)).rejects.toThrow();
+			});
+		});
+	});
+
+	describe('findDescendantsWithType', () => {
+		describe('when finding many elements', () => {
+			const setup = () => {
+				const cardNode = cardNodeFactory.buildWithId();
+				const [richTextElement1, richTextElement2] = richTextElementNodeFactory.buildList(3, { parent: cardNode });
+
+				// await em.persistAndFlush([cardNode, richTextElement1, richTextElement2]);
+
+				return { cardId: cardNode.id, richTextElement1, richTextElement2 };
+			};
+
+			it('should call the board do repository and return empty array', async () => {
+				const { cardId } = setup();
+
+				boardDoRepo.findDescendantsWithType.mockResolvedValueOnce([]);
+				const descendantsResponse = await service.findDescendantsWithType(cardId, BoardNodeType.FILE_ELEMENT);
+
+				expect(descendantsResponse.length).toEqual(0);
+				expect(boardDoRepo.findDescendantsWithType).toHaveBeenCalledWith(cardId, BoardNodeType.FILE_ELEMENT);
+			});
+
+			it('should call the board do repository and return array', async () => {
+				const { cardId, richTextElement1, richTextElement2 } = setup();
+
+				boardDoRepo.findDescendantsWithType.mockResolvedValueOnce([richTextElement1, richTextElement2]);
+				const descendantsResponse = await service.findDescendantsWithType(cardId, BoardNodeType.RICH_TEXT_ELEMENT);
+
+				expect(descendantsResponse.length).toEqual(2);
+				expect(boardDoRepo.findDescendantsWithType).toHaveBeenCalledWith(cardId, BoardNodeType.RICH_TEXT_ELEMENT);
 			});
 		});
 	});

@@ -9,6 +9,7 @@ import {
 	FileElement,
 	InputFormat,
 	RichTextElement,
+	DrawingElement,
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain';

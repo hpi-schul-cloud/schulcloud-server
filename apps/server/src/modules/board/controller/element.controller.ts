@@ -3,6 +3,7 @@ import {
 	Controller,
 	Delete,
 	ForbiddenException,
+	Get,
 	Headers,
 	HttpCode,
 	NotFoundException,
@@ -23,6 +24,7 @@ import {
 	ExternalToolElementContentBody,
 	FileElementContentBody,
 	MoveContentElementBody,
+	DrawingPermissionUrlParams,
 	RichTextElementContentBody,
 	SubmissionContainerElementContentBody,
 	SubmissionItemResponse,
@@ -114,5 +116,19 @@ export class ElementController {
 		const response = mapper.mapSubmissionsToResponse(submissionItem);
 
 		return response;
+	}
+
+	@ApiOperation({ summary: 'Check permission for a drawing element.' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Get(':drawingName/permission')
+	async checkDrawingPermission(
+		@Param() urlParams: DrawingPermissionUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.elementUc.checkDrawingPermission(urlParams.drawingName, currentUser.userId);
 	}
 }

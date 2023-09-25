@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BoardNode, EntityId } from '@shared/domain';
+import { BoardNode, DrawingElementNode, EntityId } from '@shared/domain';
 
 @Injectable()
 export class BoardNodeRepo {
@@ -57,5 +57,10 @@ export class BoardNodeRepo {
 			});
 		}
 		return map;
+	}
+
+	async findByDrawingNameOrFail(drawingName: string): Promise<BoardNode> {
+		const nodes = await this.em.findOneOrFail(DrawingElementNode, { drawingName });
+		return nodes;
 	}
 }

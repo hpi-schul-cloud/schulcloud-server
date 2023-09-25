@@ -10,3 +10,13 @@ export class ContentElementUrlParams {
 	})
 	contentElementId!: string;
 }
+
+export class DrawingPermissionUrlParams {
+	@IsMongoId()
+	@ApiProperty({
+		description: 'The name of a drawing.',
+		required: true,
+		nullable: false,
+	})
+	drawingName!: string;
+}

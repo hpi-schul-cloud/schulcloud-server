@@ -1,13 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardDoAuthorizable, BoardRoles, ContentElementType, UserRoleEnum } from '@shared/domain';
-import { drawingElementFactory, setupEntities, userFactory } from '@shared/testing';
+import { axiosResponseFactory, drawingElementFactory, setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { ObjectId } from 'bson';
 import { HttpService } from '@nestjs/axios';
-import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { CardService } from '../service/card.service';
@@ -196,13 +195,11 @@ describe(CardUc.name, () => {
 			it('should call external controller via delete method to clear drawing bin data', async () => {
 				const { user, drawing } = setup();
 				elementService.findById.mockResolvedValueOnce(drawing);
-				const axiosResponse: AxiosResponse<string> = {
-					data: '',
-					status: 0,
-					statusText: 'statusText',
-					headers: {},
-					config: {},
-				};
+
+				const axiosResponse = axiosResponseFactory.build({
+					status: 204,
+				});
+
 				httpService.delete.mockReturnValue(of(axiosResponse));
 
 				await uc.deleteElement(user.id, drawing.id, 'auth');

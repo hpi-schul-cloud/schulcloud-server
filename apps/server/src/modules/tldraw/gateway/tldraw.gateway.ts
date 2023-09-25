@@ -1,8 +1,11 @@
 import { WebSocketGateway, WebSocketServer, OnGatewayInit, OnGatewayConnection } from '@nestjs/websockets';
 import { Server, WebSocket } from 'ws';
+import { Request } from 'express';
 import { MongodbPersistence } from 'y-mongodb-provider';
 import { ConfigService } from '@nestjs/config';
 import { TldrawConfig, SOCKET_PORT } from '@src/modules/tldraw/config';
+import cookie from 'cookie';
+import { TldrawWsService } from '@src/modules/tldraw/service/tldraw-ws.service';
 import { setupWSConnection, setPersistence, updateDocument } from '../utils';
 
 @WebSocketGateway(SOCKET_PORT)
@@ -12,13 +15,24 @@ export class TldrawGateway implements OnGatewayInit, OnGatewayConnection {
 
 	connectionString: string;
 
-	constructor(readonly configService: ConfigService<TldrawConfig, true>) {
+	constructor(
+		readonly configService: ConfigService<TldrawConfig, true>,
+		private readonly tldrawWsService: TldrawWsService
+	) {
 		this.connectionString = this.configService.get<string>('CONNECTION_STRING');
 	}
 
-	handleConnection(client: WebSocket, request: Request) {
+	async handleConnection(client: WebSocket, request: Request) {
 		const docName = this.getDocNameFromRequest(request);
-
+		const cookies = cookie.parse(request.headers.cookie || '');
+		if (!cookies?.jwt) {
+			client.close(4401, 'Unauthorised connection.');
+		}
+		try {
+			await this.tldrawWsService.authorizeConnection(docName, cookies.jwt);
+		} catch (e) {
+			client.close(4403, "Unauthorised connection - you don't have permission to this drawing.");
+		}
 		if (docName.length > 0 && this.configService.get<string>('FEATURE_TLDRAW_ENABLED')) {
 			setupWSConnection(client, docName);
 		} else {

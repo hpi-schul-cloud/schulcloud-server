@@ -5,6 +5,7 @@
 	"SC_DOMAIN": "localhost",
 	"PUBLIC_BACKEND_URL": "http://localhost:3030/api",
 	"DB_URL": "mongodb://127.0.0.1:27017/schulcloud-test",
+	"TLDRAW_DB_URL": "mongodb://127.0.0.1:27017/tldraw",
 	"public": "../public/",
 	"services": {
 		"calendar": "https://schul.tech:3000",

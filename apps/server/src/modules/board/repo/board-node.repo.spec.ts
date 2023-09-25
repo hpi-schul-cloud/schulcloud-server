@@ -9,6 +9,7 @@ import {
 	columnNodeFactory,
 	richTextElementNodeFactory,
 } from '@shared/testing';
+import { drawingElementNodeFactory } from '@shared/testing/factory/boardnode/drawing-element-node.factory';
 import { BoardNodeRepo } from './board-node.repo';
 
 describe('BoardNodeRepo', () => {
@@ -233,6 +234,21 @@ describe('BoardNodeRepo', () => {
 				const boardNode = await repo.findById(columnBoard.id);
 
 				expect(columnBoard === boardNode).toBe(true);
+			});
+		});
+	});
+
+	describe('findByDrawingNameOrFail', () => {
+		describe('when boardNode exists in the database but NOT in the unit-of-work', () => {
+			it('should return an equal object', async () => {
+				const drawingElement = drawingElementNodeFactory.build();
+				await em.persistAndFlush(drawingElement);
+
+				em.clear();
+
+				const boardNode = await repo.findByDrawingNameOrFail(drawingElement.drawingName);
+
+				expect(drawingElement).toEqual(boardNode);
 			});
 		});
 	});

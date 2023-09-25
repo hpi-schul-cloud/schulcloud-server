@@ -64,6 +64,11 @@ export class ElementUc {
 		return submissionItem;
 	}
 
+	async checkDrawingPermission(drawingName: string, userId: EntityId): Promise<void> {
+		const nodeElement = await this.elementService.findByDrawingNameOrFail(drawingName);
+		await this.checkPermission(userId, nodeElement, Action.read);
+	}
+
 	private async checkPermission(
 		userId: EntityId,
 		boardDo: AnyBoardDo,
