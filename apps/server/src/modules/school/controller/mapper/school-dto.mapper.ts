@@ -2,6 +2,7 @@ import { County, FederalState, School, SchoolYear } from '../../domain';
 import { SchoolListResponse, SchoolResponse } from '../dto';
 import { CountyResponse } from '../dto/county.response';
 import { FederalStateResponse } from '../dto/federal-state.response';
+import { SchoolReducedResponse } from '../dto/school-reduced.response';
 import { SchoolYearResponse } from '../dto/school-year.response';
 
 export class SchoolDtoMapper {
@@ -12,7 +13,7 @@ export class SchoolDtoMapper {
 		// TODO: Do we want to access the props via getProps() here or do we want getters?
 		// I added getters for federalState and schoolYear because there are conditions with them below
 		// and then the code is a easier to read. But I wasn't really sure.
-		// Do we want to fix any criteria for when to add getters?
+		// Do we want any fixed criteria for when to add getters?
 		const res = new SchoolResponse({
 			id: school.id,
 			name: school.getProps().name,
@@ -26,11 +27,21 @@ export class SchoolDtoMapper {
 	}
 
 	public static mapToListResponse(schools: School[]): SchoolListResponse {
-		const dtos = schools.map((school) => this.mapToResponse(school));
+		const dtos = schools.map((school) => this.mapToReducedResponse(school));
 
 		const list = new SchoolListResponse(dtos, dtos.length);
 
 		return list;
+	}
+
+	private static mapToReducedResponse(school: School): SchoolReducedResponse {
+		const res = new SchoolReducedResponse({
+			id: school.id,
+			name: school.getProps().name,
+			purpose: school.getProps().purpose,
+		});
+
+		return res;
 	}
 
 	private static mapToFederalStateResponse(federalState: FederalState): FederalStateResponse {

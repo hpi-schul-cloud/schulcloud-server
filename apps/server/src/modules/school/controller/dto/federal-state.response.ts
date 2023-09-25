@@ -22,6 +22,6 @@ export class FederalStateResponse {
 	@ApiProperty()
 	logoUrl: string;
 
-	@ApiProperty({ type: () => CountyResponse, isArray: true })
+	@ApiProperty({ type: () => [CountyResponse] })
 	counties?: CountyResponse[];
 }
