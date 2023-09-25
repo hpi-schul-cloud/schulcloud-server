@@ -90,7 +90,10 @@ class ClassAction extends BaseConsumerAction {
 		const teachers = [];
 		const ldapDns = !Array.isArray(uniqueMembers) ? [uniqueMembers] : uniqueMembers;
 
-		const users = await UserRepo.findByLdapDnsAndSchool(ldapDns, schoolId);
+		let users = [];
+		if (ldapDns) {
+			const users = await UserRepo.findByLdapDnsAndSchool(ldapDns, schoolId);
+		}
 
 		users.forEach((user) => {
 			user.roles.forEach((role) => {
