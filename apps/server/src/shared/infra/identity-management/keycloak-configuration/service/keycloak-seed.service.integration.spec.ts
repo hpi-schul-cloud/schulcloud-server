@@ -15,7 +15,7 @@ describe('KeycloakSeedService Integration', () => {
 	let keycloakSeedService: KeycloakSeedService;
 	let keycloakAdministrationService: KeycloakAdministrationService;
 	let isKeycloakAvailable = false;
-	let numberOfIdmUsers = 1009;
+	const numberOfIdmUsers = 1009;
 
 	const testRealm = `test-realm-${v1().toString()}`;
 
