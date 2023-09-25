@@ -10,6 +10,7 @@ export interface IFederalStateProperties {
 	updatedAt: Date;
 }
 
+// TODO: Do we also want to rename embedded types, e.g. to "CountyEmbeddable", to avoid naming conflicts with the domain types.
 @Embeddable()
 export class County {
 	constructor(county: County) {
