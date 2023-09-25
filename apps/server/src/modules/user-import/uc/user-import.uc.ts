@@ -6,7 +6,7 @@ import {
 	InternalServerErrorException,
 	NotFoundException,
 } from '@nestjs/common';
-import { EntityNotFoundError, UserAlreadyAssignedToImportUserError } from '@shared/common';
+import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import {
 	Account,
 	Counted,
