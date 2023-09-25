@@ -14,6 +14,7 @@ import { TextEncoder } from 'util';
 import * as SyncProtocols from 'y-protocols/sync';
 import * as AwarenessProtocol from 'y-protocols/awareness';
 import { encoding } from 'lib0';
+import { TldrawWsService } from '@src/modules/tldraw/service/tldraw-ws.service';
 import { TldrawWsController } from '.';
 
 describe('TldrawWSConytoller', () => {
@@ -39,7 +40,7 @@ describe('TldrawWSConytoller', () => {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
 		const testingModule = await Test.createTestingModule({
 			imports,
-			providers: [TldrawWsController],
+			providers: [TldrawWsController, TldrawWsService],
 		}).compile();
 
 		gateway = testingModule.get<TldrawWsController>(TldrawWsController);
