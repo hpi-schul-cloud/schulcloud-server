@@ -5,20 +5,25 @@ import {
 	Card,
 	Column,
 	ColumnBoard,
+	ExternalToolElement,
 	FileElement,
 	InputFormat,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain';
-import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from '../controller/dto';
-
-type ContentType = FileContentBody | RichTextContentBody | SubmissionContainerContentBody;
+import {
+	AnyElementContentBody,
+	ExternalToolContentBody,
+	FileContentBody,
+	RichTextContentBody,
+	SubmissionContainerContentBody,
+} from '../controller/dto';
 
 export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
-	private readonly content: ContentType;
+	private readonly content: AnyElementContentBody;
 
-	constructor(content: ContentType) {
+	constructor(content: AnyElementContentBody) {
 		this.content = content;
 	}
 
@@ -62,6 +67,15 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 
 	visitSubmissionItem(submission: SubmissionItem): void {
 		this.throwNotHandled(submission);
+	}
+
+	visitExternalToolElement(externalToolElement: ExternalToolElement): void {
+		if (this.content instanceof ExternalToolContentBody && this.content.contextExternalToolId !== undefined) {
+			// Updates should not remove an existing reference to a tool, to prevent orphan tool instances
+			externalToolElement.contextExternalToolId = this.content.contextExternalToolId;
+		} else {
+			this.throwNotHandled(externalToolElement);
+		}
 	}
 
 	private throwNotHandled(component: AnyBoardDo) {

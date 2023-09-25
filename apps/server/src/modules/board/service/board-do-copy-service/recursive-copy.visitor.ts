@@ -5,6 +5,7 @@ import {
 	Column,
 	ColumnBoard,
 	EntityId,
+	ExternalToolElement,
 	FileElement,
 	RichTextElement,
 	SubmissionContainerElement,
@@ -163,6 +164,24 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 			type: CopyElementType.SUBMISSION_ITEM,
 			status: CopyStatusEnum.NOT_DOING,
 		});
+
+		return Promise.resolve();
+	}
+
+	visitExternalToolElementAsync(original: ExternalToolElement): Promise<void> {
+		const copy = new ExternalToolElement({
+			id: new ObjectId().toHexString(),
+			contextExternalToolId: undefined,
+			children: [],
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
+		this.resultMap.set(original.id, {
+			copyEntity: copy,
+			type: CopyElementType.EXTERNAL_TOOL_ELEMENT,
+			status: CopyStatusEnum.SUCCESS,
+		});
+		this.copyMap.set(original.id, copy);
 
 		return Promise.resolve();
 	}
