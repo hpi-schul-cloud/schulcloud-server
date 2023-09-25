@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IFindOptions, LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain';
@@ -43,7 +44,7 @@ describe('PseudonymService', () => {
 		await module.close();
 	});
 
-	describe('findByUserAndTool', () => {
+	describe('findByUserAndToolOrThrow', () => {
 		describe('when user or tool is missing', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.build({ id: undefined });
@@ -58,7 +59,9 @@ describe('PseudonymService', () => {
 			it('should throw an error', async () => {
 				const { user, externalTool } = setup();
 
-				await expect(service.findByUserAndTool(user, externalTool)).rejects.toThrowError(InternalServerErrorException);
+				await expect(service.findByUserAndToolOrThrow(user, externalTool)).rejects.toThrowError(
+					InternalServerErrorException
+				);
 			});
 		});
 
@@ -76,7 +79,7 @@ describe('PseudonymService', () => {
 			it('should call externalToolPseudonymRepo', async () => {
 				const { user, externalTool } = setup();
 
-				await service.findByUserAndTool(user, externalTool);
+				await service.findByUserAndToolOrThrow(user, externalTool);
 
 				expect(externalToolPseudonymRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(user.id, externalTool.id);
 			});
@@ -96,7 +99,7 @@ describe('PseudonymService', () => {
 			it('should call pseudonymRepo', async () => {
 				const { user, ltiToolDO } = setup();
 
-				await service.findByUserAndTool(user, ltiToolDO);
+				await service.findByUserAndToolOrThrow(user, ltiToolDO);
 
 				expect(pseudonymRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(user.id, ltiToolDO.id);
 			});
@@ -120,7 +123,7 @@ describe('PseudonymService', () => {
 			it('should call pseudonymRepo.findByUserIdAndToolId', async () => {
 				const { user, externalTool } = setup();
 
-				await service.findByUserAndTool(user, externalTool);
+				await service.findByUserAndToolOrThrow(user, externalTool);
 
 				expect(externalToolPseudonymRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(user.id, externalTool.id);
 			});
@@ -128,7 +131,7 @@ describe('PseudonymService', () => {
 			it('should return a pseudonym', async () => {
 				const { pseudonym, user, externalTool } = setup();
 
-				const result: Pseudonym = await service.findByUserAndTool(user, externalTool);
+				const result: Pseudonym = await service.findByUserAndToolOrThrow(user, externalTool);
 
 				expect(result).toEqual(pseudonym);
 			});
@@ -149,7 +152,7 @@ describe('PseudonymService', () => {
 			it('should pass the error without catching', async () => {
 				const { user, externalTool } = setup();
 
-				const func = async () => service.findByUserAndTool(user, externalTool);
+				const func = async () => service.findByUserAndToolOrThrow(user, externalTool);
 
 				await expect(func).rejects.toThrow(NotFoundException);
 			});
@@ -500,6 +503,31 @@ describe('PseudonymService', () => {
 					data: [page.data[0]],
 					total: page.total,
 				});
+			});
+		});
+	});
+
+	describe('getIframeSubject', () => {
+		describe('when pseudonym is given', () => {
+			const setup = () => {
+				const pseudonym = 'pseudonym';
+				const host = 'https://host.de';
+				Configuration.set('HOST', host);
+
+				return {
+					pseudonym,
+					host,
+				};
+			};
+
+			it('should return the iframeSubject', () => {
+				const { pseudonym, host } = setup();
+
+				const result: string = service.getIframeSubject(pseudonym);
+
+				expect(result).toEqual(
+					`<iframe src="${host}/oauth2/username/${pseudonym}" title="username" style="height: 26px; width: 180px; border: none;"></iframe>`
+				);
 			});
 		});
 	});

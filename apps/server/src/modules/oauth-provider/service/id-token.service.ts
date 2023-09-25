@@ -55,7 +55,7 @@ export class IdTokenService {
 			throw new IdTokenCreationLoggableException(clientId, user.id);
 		}
 
-		const pseudonym: Pseudonym = await this.pseudonymService.findByUserAndTool(user, tool);
+		const pseudonym: Pseudonym = await this.pseudonymService.findByUserAndToolOrThrow(user, tool);
 
 		const iframeSubject: string = this.pseudonymService.getIframeSubject(pseudonym.pseudonym);
 

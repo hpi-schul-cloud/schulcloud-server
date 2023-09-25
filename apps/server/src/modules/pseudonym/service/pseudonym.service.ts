@@ -14,7 +14,7 @@ export class PseudonymService {
 		private readonly externalToolPseudonymRepo: ExternalToolPseudonymRepo
 	) {}
 
-	public async findByUserAndTool(user: UserDO, tool: ExternalTool | LtiToolDO): Promise<Pseudonym> {
+	public async findByUserAndToolOrThrow(user: UserDO, tool: ExternalTool | LtiToolDO): Promise<Pseudonym> {
 		if (!user.id || !tool.id) {
 			throw new InternalServerErrorException('User or tool id is missing');
 		}

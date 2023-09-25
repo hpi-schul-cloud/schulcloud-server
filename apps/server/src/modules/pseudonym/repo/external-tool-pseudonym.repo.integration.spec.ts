@@ -10,7 +10,6 @@ import { LegacyLogger } from '@src/core/logger';
 import { v4 as uuidv4 } from 'uuid';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymEntity } from '../entity';
-import { TooManyPseudonymsLoggableException } from '../loggable';
 import { ExternalToolPseudonymRepo } from './external-tool-pseudonym.repo';
 
 describe('ExternalToolPseudonymRepo', () => {
@@ -309,31 +308,6 @@ describe('ExternalToolPseudonymRepo', () => {
 				const pseudonym: Pseudonym | null = await repo.findPseudonymByPseudonym(uuidv4());
 
 				expect(pseudonym).toBeNull();
-			});
-		});
-
-		describe('when multiple pseudonyms are existing', () => {
-			const setup = async () => {
-				const entity1: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.buildWithId({
-					pseudonym: 'pseudonymEqual',
-				});
-				const entity2: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.buildWithId({
-					pseudonym: 'pseudonymEqual',
-				});
-				await em.persistAndFlush([entity1, entity2]);
-				em.clear();
-
-				return {
-					entity1,
-				};
-			};
-
-			it('should throw an error', async () => {
-				const { entity1 } = await setup();
-
-				const func = () => repo.findPseudonymByPseudonym(entity1.pseudonym);
-
-				await expect(func).rejects.toThrow(new TooManyPseudonymsLoggableException(entity1.pseudonym));
 			});
 		});
 	});

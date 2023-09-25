@@ -75,11 +75,12 @@ export class FeathersRosterService {
 		return userMetadata;
 	}
 
-	async getUserGroups(pseudonym: string, externalToolId: string): Promise<UserGroups> {
+	async getUserGroups(pseudonym: string, oauth2ClientId: string): Promise<UserGroups> {
 		const loadedPseudonym: Pseudonym = await this.findPseudonymByPseudonym(pseudonym);
+		const externalTool: ExternalTool = await this.validateAndGetExternalTool(oauth2ClientId);
 
 		let courses: Course[] = await this.getCoursesFromUsersPseudonym(loadedPseudonym);
-		courses = await this.filterCoursesByToolAvailability(courses, externalToolId);
+		courses = await this.filterCoursesByToolAvailability(courses, externalTool.id as string);
 
 		const userGroups: UserGroups = {
 			data: {
@@ -116,14 +117,12 @@ export class FeathersRosterService {
 		]);
 
 		const [studentPseudonyms, teacherPseudonyms, substitutionTeacherPseudonyms] = await Promise.all([
-			Promise.all(students.map((user: UserDO) => this.pseudonymService.findByUserAndTool(user, externalTool))),
-			Promise.all(teachers.map((user: UserDO) => this.pseudonymService.findByUserAndTool(user, externalTool))),
-			Promise.all(
-				substitutionTeachers.map((user: UserDO) => this.pseudonymService.findByUserAndTool(user, externalTool))
-			),
+			this.getAndPseudonyms(students, externalTool),
+			this.getAndPseudonyms(teachers, externalTool),
+			this.getAndPseudonyms(substitutionTeachers, externalTool),
 		]);
 
-		const allTeacherPseudonyms = teacherPseudonyms.concat(substitutionTeacherPseudonyms);
+		const allTeacherPseudonyms: Pseudonym[] = teacherPseudonyms.concat(substitutionTeacherPseudonyms);
 
 		const group: Group = {
 			data: {
@@ -133,6 +132,14 @@ export class FeathersRosterService {
 		};
 
 		return group;
+	}
+
+	private async getAndPseudonyms(users: UserDO[], externalTool: ExternalTool): Promise<Pseudonym[]> {
+		const pseudonyms: Pseudonym[] = await Promise.all(
+			users.map((user: UserDO) => this.pseudonymService.findOrCreatePseudonym(user, externalTool))
+		);
+
+		return pseudonyms;
 	}
 
 	private getUserRole(user: UserDO): string {
@@ -226,7 +233,7 @@ export class FeathersRosterService {
 
 	private mapPseudonymToUserData(pseudonym: Pseudonym): UserData {
 		const userData: UserData = {
-			user_id: pseudonym.userId,
+			user_id: pseudonym.pseudonym,
 			username: this.pseudonymService.getIframeSubject(pseudonym.pseudonym),
 		};
 
