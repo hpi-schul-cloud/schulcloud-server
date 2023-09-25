@@ -1,9 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Injectable } from '@nestjs/common';
 import {
-	BaseEntity,
 	ComponentType,
-	EntityId,
 	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
 	IComponentLernstoreProperties,
@@ -14,7 +12,13 @@ import {
 	Material,
 } from '@shared/domain';
 import { LessonRepo } from '@shared/repo';
-import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
+import {
+	CopyDictionary,
+	CopyElementType,
+	CopyHelperService,
+	CopyStatus,
+	CopyStatusEnum,
+} from '@src/modules/copy-helper';
 import { CopyFilesService } from '@src/modules/files-storage-client';
 import { FileUrlReplacement } from '@src/modules/files-storage-client/service/copy-files.service';
 import { TaskCopyService } from '@src/modules/task/service/task-copy.service';
@@ -104,7 +108,7 @@ export class LessonCopyService {
 		return { status, elements };
 	}
 
-	updateCopiedEmbeddedTasks(lessonStatus: CopyStatus, copyDict: Map<EntityId, BaseEntity>): CopyStatus {
+	updateCopiedEmbeddedTasks(lessonStatus: CopyStatus, copyDict: CopyDictionary): CopyStatus {
 		const copiedLesson = lessonStatus.copyEntity as LessonEntity;
 
 		if (copiedLesson?.contents === undefined || !Array.isArray(copiedLesson.contents)) {
@@ -122,7 +126,7 @@ export class LessonCopyService {
 
 	private updateCopiedEmbeddedTaskId = (
 		value: IComponentProperties,
-		copyDict: Map<EntityId, BaseEntity>
+		copyDict: CopyDictionary
 	): IComponentProperties => {
 		if (value.component !== ComponentType.INTERNAL || value.content === undefined || value.content.url === undefined) {
 			return value;

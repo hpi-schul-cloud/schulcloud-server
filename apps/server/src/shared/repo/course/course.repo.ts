@@ -88,7 +88,7 @@ export class CourseRepo extends BaseRepo<Course> {
 	async findById(id: EntityId, populate = true): Promise<Course> {
 		const course = await super.findById(id);
 		if (populate) {
-			await this._em.populate(course, ['courseGroups', 'teachers']);
+			await this._em.populate(course, ['courseGroups', 'teachers', 'substitutionTeachers', 'students']);
 		}
 		return course;
 	}

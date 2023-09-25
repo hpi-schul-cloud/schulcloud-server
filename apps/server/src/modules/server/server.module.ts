@@ -19,12 +19,13 @@ import { DemoApiModule } from '@src/modules/demo/demo-api.module';
 import { FilesStorageClientModule } from '@src/modules/files-storage-client';
 import { GroupApiModule } from '@src/modules/group/group-api.module';
 import { LearnroomApiModule } from '@src/modules/learnroom/learnroom-api.module';
+import { LegacySchoolApiModule } from '@src/modules/legacy-school/legacy-school-api.module';
 import { LessonApiModule } from '@src/modules/lesson/lesson-api.module';
 import { NewsModule } from '@src/modules/news';
 import { OauthProviderApiModule } from '@src/modules/oauth-provider';
 import { OauthApiModule } from '@src/modules/oauth/oauth-api.module';
+import { PseudonymApiModule } from '@src/modules/pseudonym/pseudonym-api.module';
 import { RocketChatModule } from '@src/modules/rocketchat';
-import { LegacySchoolApiModule } from '@src/modules/legacy-school/legacy-school-api.module';
 import { SharingApiModule } from '@src/modules/sharing/sharing.module';
 import { SystemApiModule } from '@src/modules/system/system-api.module';
 import { TaskApiModule } from '@src/modules/task/task-api.module';
@@ -76,6 +77,7 @@ const serverModules = [
 	DemoApiModule,
 	GroupApiModule,
 	TeamsApiModule,
+	PseudonymApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

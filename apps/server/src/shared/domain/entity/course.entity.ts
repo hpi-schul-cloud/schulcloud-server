@@ -39,6 +39,14 @@ export const enum CourseFeature {
 	MESSENGER = 'messenger',
 }
 
+export class UsersList {
+	id!: string;
+
+	firstName!: string;
+
+	lastName!: string;
+}
+
 @Entity({ tableName: 'courses' })
 export class Course
 	extends BaseEntityWithTimestamps
@@ -106,21 +114,21 @@ export class Course
 	}
 
 	public getStudentIds(): EntityId[] {
-		const studentIds = this.extractIds(this.students);
+		const studentIds = Course.extractIds(this.students);
 		return studentIds;
 	}
 
 	public getTeacherIds(): EntityId[] {
-		const teacherIds = this.extractIds(this.teachers);
+		const teacherIds = Course.extractIds(this.teachers);
 		return teacherIds;
 	}
 
 	public getSubstitutionTeacherIds(): EntityId[] {
-		const substitutionTeacherIds = this.extractIds(this.substitutionTeachers);
+		const substitutionTeacherIds = Course.extractIds(this.substitutionTeachers);
 		return substitutionTeacherIds;
 	}
 
-	private extractIds(users: Collection<User>): EntityId[] {
+	private static extractIds(users: Collection<User>): EntityId[] {
 		if (!users) {
 			throw new InternalServerErrorException(
 				`Students, teachers or stubstitution is undefined. The course needs to be populated`
@@ -131,6 +139,44 @@ export class Course
 		const ids = objectIds.map((id): string => id.toString());
 
 		return ids;
+	}
+
+	public getStudentsList(): UsersList[] {
+		const users = this.students.getItems();
+		if (users.length) {
+			const usersList = Course.extractUserList(users);
+			return usersList;
+		}
+		return [];
+	}
+
+	public getTeachersList(): UsersList[] {
+		const users = this.teachers.getItems();
+		if (users.length) {
+			const usersList = Course.extractUserList(users);
+			return usersList;
+		}
+		return [];
+	}
+
+	public getSubstitutionTeachersList(): UsersList[] {
+		const users = this.substitutionTeachers.getItems();
+		if (users.length) {
+			const usersList = Course.extractUserList(users);
+			return usersList;
+		}
+		return [];
+	}
+
+	private static extractUserList(users: User[]): UsersList[] {
+		const usersList: UsersList[] = users.map((user) => {
+			return {
+				id: user.id,
+				firstName: user.firstName,
+				lastName: user.lastName,
+			};
+		});
+		return usersList;
 	}
 
 	public isUserSubstitutionTeacher(user: User): boolean {
