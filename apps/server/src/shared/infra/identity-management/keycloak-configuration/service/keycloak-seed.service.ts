@@ -37,26 +37,24 @@ export class KeycloakSeedService {
 		let deletedUsers = 0;
 		const adminUser = this.kcAdmin.getAdminUser();
 		let kc = await this.kcAdmin.callKcAdminClient();
-		console.log(`Starting to delete users...`);
+		this.logger.log(`Starting to delete users...`);
 		while (foundUsers > 0) {
 			// eslint-disable-next-line no-await-in-loop
 			kc = await this.kcAdmin.callKcAdminClient();
 			// eslint-disable-next-line no-await-in-loop
 			const users = (await kc.users.find({ max: pagination })).filter((user) => user.username !== adminUser);
 			foundUsers = users.length;
-			console.log(`Length of foundUsers: ${foundUsers}`);
+			this.logger.log(`Length of foundUsers: ${foundUsers}`);
 			for (const user of users) {
 				// eslint-disable-next-line no-await-in-loop
 				kc = await this.kcAdmin.callKcAdminClient();
-				// console.log(`try to delete user ${user.id as string}`);
 				// eslint-disable-next-line no-await-in-loop
 				await kc.users.del({
-					// can not be undefined, see filter above
 					id: user.id ?? '',
 				});
 			}
 			deletedUsers += foundUsers;
-			console.log(`...deleted ${deletedUsers} users so far.`);
+			this.logger.log(`...deleted ${deletedUsers} users so far.`);
 		}
 		return deletedUsers;
 	}

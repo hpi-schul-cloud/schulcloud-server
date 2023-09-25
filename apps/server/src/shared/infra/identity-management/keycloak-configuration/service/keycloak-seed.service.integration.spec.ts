@@ -81,7 +81,7 @@ describe('KeycloakSeedService Integration', () => {
 
 	// Execute this test for a test run against a running Keycloak instance
 	describe('clean', () => {
-		describe('Given all users except admin user are able to delete', () => {
+		describe('Given all users are able to delete', () => {
 			it('should delete all users in the IDM', async () => {
 				if (!isKeycloakAvailable) return;
 				const deletedUsers = await keycloakSeedService.clean(500);
