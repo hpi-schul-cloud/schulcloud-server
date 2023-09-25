@@ -209,7 +209,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">apps/server/src/modules/board/controller/dto/card/card.response.ts:37</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">apps/server/src/modules/board/controller/dto/card/card.response.ts:41</a></div>
                         </td>
                     </tr>
 
@@ -317,7 +317,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">apps/server/src/modules/board/controller/dto/card/card.response.ts:43</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">apps/server/src/modules/board/controller/dto/card/card.response.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -391,7 +391,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">apps/server/src/modules/board/controller/dto/card/card.response.ts:40</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">apps/server/src/modules/board/controller/dto/card/card.response.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -412,7 +412,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from &#x27;@nestjs/swagger&#x27;;
 import { DecodeHtmlEntities } from &#x27;@shared/controller&#x27;;
-import { AnyContentElementResponse } from &#x27;../element&#x27;;
+import { AnyContentElementResponse, FileElementResponse, SubmissionContainerElementResponse } from &#x27;../element&#x27;;
 import { RichTextElementResponse } from &#x27;../element/rich-text-element.response&#x27;;
 import { TimestampsResponse } from &#x27;../timestamps.response&#x27;;
 import { VisibilitySettingsResponse } from &#x27;./visibility-settings.response&#x27;;
@@ -443,7 +443,11 @@ export class CardResponse {
 	@ApiProperty({
 		type: &#x27;array&#x27;,
 		items: {
-			oneOf: [{ $ref: getSchemaPath(RichTextElementResponse) }],
+			oneOf: [
+				{ $ref: getSchemaPath(RichTextElementResponse) },
+				{ $ref: getSchemaPath(FileElementResponse) },
+				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
+			],
 		},
 	})
 	elements: AnyContentElementResponse[];

@@ -212,8 +212,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="78"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:78</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="76"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:76</a></div>
                 </td>
             </tr>
 
@@ -417,10 +417,8 @@ export class ContentElementFactory {
 	}
 
 	private buildSubmissionContainer() {
-		const tomorrow &#x3D; new Date(Date.now() + 86400000);
 		const element &#x3D; new SubmissionContainerElement({
 			id: new ObjectId().toHexString(),
-			dueDate: tomorrow,
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),

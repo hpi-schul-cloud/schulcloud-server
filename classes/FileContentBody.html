@@ -258,8 +258,12 @@ export class RichTextElementContentBody extends ElementContentBody {
 
 export class SubmissionContainerContentBody {
 	@IsDate()
-	@ApiProperty()
-	dueDate!: Date;
+	@IsOptional()
+	@ApiPropertyOptional({
+		required: false,
+		description: &#x27;The point in time until when a submission can be handed in.&#x27;,
+	})
+	dueDate?: Date;
 }
 
 export class SubmissionContainerElementContentBody extends ElementContentBody {

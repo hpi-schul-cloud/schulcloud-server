@@ -91,6 +91,8 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
                                 <a href="#dueDate" >dueDate</a>
                             </li>
                         </ul>
@@ -120,6 +122,8 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
                         <span ><b>dueDate</b></span>
                         <a href="#dueDate"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -136,13 +140,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsDate()<br />@ApiProperty()<br />
+                            @IsDate()<br />@IsOptional()<br />@ApiPropertyOptional({required: false, description: &#x27;The point in time until when a submission can be handed in.&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="57" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/update-element-content.body.params.ts:57</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="61" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/update-element-content.body.params.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -216,8 +220,12 @@ export class RichTextElementContentBody extends ElementContentBody {
 
 export class SubmissionContainerContentBody {
 	@IsDate()
-	@ApiProperty()
-	dueDate!: Date;
+	@IsOptional()
+	@ApiPropertyOptional({
+		required: false,
+		description: &#x27;The point in time until when a submission can be handed in.&#x27;,
+	})
+	dueDate?: Date;
 }
 
 export class SubmissionContainerElementContentBody extends ElementContentBody {

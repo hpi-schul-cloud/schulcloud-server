@@ -82,6 +82,7 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
                                 <a href="#dueDate" >dueDate</a>
                             </li>
                         </ul>
@@ -109,6 +110,7 @@
                     <a name="dueDate"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
                         <span ><b>dueDate</b></span>
                         <a href="#dueDate"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -125,7 +127,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Property()<br />
+                            @Property({nullable: true})<br />
                         </code>
                     </td>
                 </tr>
@@ -150,8 +152,8 @@ import { BoardDoBuilder, BoardNodeType } from &#x27;./types&#x27;;
 
 @Entity({ discriminatorValue: BoardNodeType.SUBMISSION_CONTAINER_ELEMENT })
 export class SubmissionContainerElementNode extends BoardNode {
-	@Property()
-	dueDate: Date;
+	@Property({ nullable: true })
+	dueDate?: Date;
 
 	constructor(props: SubmissionContainerNodeProps) {
 		super(props);
@@ -167,7 +169,7 @@ export class SubmissionContainerElementNode extends BoardNode {
 }
 
 export interface SubmissionContainerNodeProps extends BoardNodeProps {
-	dueDate: Date;
+	dueDate?: Date;
 }
 </code></pre>
     </div>

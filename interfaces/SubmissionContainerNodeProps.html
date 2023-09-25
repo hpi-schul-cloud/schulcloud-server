@@ -96,6 +96,7 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#dueDate" 
 >
                                             dueDate
@@ -139,6 +140,11 @@
                                         </td>
                                     </tr>
 
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
 
 
 
@@ -157,8 +163,8 @@ import { BoardDoBuilder, BoardNodeType } from &#x27;./types&#x27;;
 
 @Entity({ discriminatorValue: BoardNodeType.SUBMISSION_CONTAINER_ELEMENT })
 export class SubmissionContainerElementNode extends BoardNode {
-	@Property()
-	dueDate: Date;
+	@Property({ nullable: true })
+	dueDate?: Date;
 
 	constructor(props: SubmissionContainerNodeProps) {
 		super(props);
@@ -174,7 +180,7 @@ export class SubmissionContainerElementNode extends BoardNode {
 }
 
 export interface SubmissionContainerNodeProps extends BoardNodeProps {
-	dueDate: Date;
+	dueDate?: Date;
 }
 </code></pre>
     </div>

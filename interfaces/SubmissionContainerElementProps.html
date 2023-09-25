@@ -96,6 +96,7 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#dueDate" 
 >
                                             dueDate
@@ -139,6 +140,11 @@
                                         </td>
                                     </tr>
 
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
 
 
 
@@ -155,11 +161,11 @@ import { SubmissionItem } from &#x27;./submission-item.do&#x27;;
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from &#x27;./types&#x27;;
 
 export class SubmissionContainerElement extends BoardComposite&lt;SubmissionContainerElementProps&gt; {
-	get dueDate(): Date {
+	get dueDate(): Date | undefined {
 		return this.props.dueDate;
 	}
 
-	set dueDate(value: Date) {
+	set dueDate(value: Date | undefined) {
 		this.props.dueDate &#x3D; value;
 	}
 
@@ -178,7 +184,7 @@ export class SubmissionContainerElement extends BoardComposite&lt;SubmissionCont
 }
 
 export interface SubmissionContainerElementProps extends BoardCompositeProps {
-	dueDate: Date;
+	dueDate?: Date;
 }
 
 export function isSubmissionContainerElement(reference: unknown): reference is SubmissionContainerElement {

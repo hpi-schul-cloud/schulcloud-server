@@ -128,7 +128,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/submission-container-element.response.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/submission-container-element.response.ts:18</a></div>
                             </td>
                         </tr>
 
@@ -199,7 +199,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/submission-container-element.response.ts:29</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/submission-container-element.response.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -235,7 +235,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/submission-container-element.response.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/submission-container-element.response.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -271,7 +271,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/submission-container-element.response.ts:32</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/submission-container-element.response.ts:36</a></div>
                         </td>
                     </tr>
 
@@ -307,7 +307,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/submission-container-element.response.ts:26</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/submission-container-element.response.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -335,8 +335,12 @@ export class SubmissionContainerElementContent {
 		this.dueDate &#x3D; dueDate;
 	}
 
-	@ApiProperty()
-	dueDate: Date;
+	@ApiProperty({
+		type: Date,
+		description: &#x27;The dueDate as date string or null of not set&#x27;,
+		example: &#x27;2023-08-17T14:17:51.958+00:00&#x27;,
+	})
+	dueDate: Date | null;
 }
 
 export class SubmissionContainerElementResponse {
