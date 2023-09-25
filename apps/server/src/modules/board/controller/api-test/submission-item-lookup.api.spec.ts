@@ -15,7 +15,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server';
-import { SubmissionsResponse } from '../dto';
+import { SubmissionsResponse } from '../dto/submission-item/submissions.response';
 
 const baseRouteName = '/board-submissions';
 describe('submission item lookup (api)', () => {
