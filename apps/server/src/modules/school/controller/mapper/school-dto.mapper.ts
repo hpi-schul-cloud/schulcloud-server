@@ -21,6 +21,7 @@ export class SchoolDtoMapper {
 			federalState,
 			schoolYear,
 			purpose: school.getProps().purpose,
+			features: school.getProps().features,
 		});
 
 		return res;

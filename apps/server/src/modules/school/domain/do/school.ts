@@ -1,5 +1,5 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { SchoolPurpose } from '../type';
+import { SchoolFeatures, SchoolPurpose } from '../type';
 import { FederalState } from './federal-state';
 import { SchoolYear } from './school-year';
 
@@ -17,13 +17,13 @@ interface SchoolProps extends AuthorizableObject {
 	name: string;
 	officialSchoolNumber?: string;
 	externalId?: string;
+	previousExternalId?: string;
 	inMaintenanceSince?: Date;
 	inUserMigration?: boolean;
-	previousExternalId?: string;
-	// systems?: System[];
-	// features?: SchoolFeatures[];
 	schoolYear?: SchoolYear;
-	// userLoginMigration?: UserLoginMigration;
 	federalState: FederalState;
 	purpose?: SchoolPurpose;
+	features?: SchoolFeatures[];
+	// userLoginMigration?: UserLoginMigration;
+	// systems?: System[];
 }

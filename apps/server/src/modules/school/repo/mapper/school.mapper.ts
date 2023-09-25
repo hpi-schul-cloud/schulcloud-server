@@ -19,6 +19,7 @@ export class SchoolMapper {
 			schoolYear,
 			federalState,
 			purpose: entity.purpose,
+			features: entity.features,
 		});
 
 		return school;
