@@ -70,155 +70,203 @@ describe('AccountIdmService', () => {
 	});
 
 	describe('save', () => {
-		const setup = () => {
-			idmServiceMock.createAccount.mockResolvedValue(mockIdmAccount.id);
-			idmServiceMock.updateAccount.mockResolvedValue(mockIdmAccount.id);
-			idmServiceMock.updateAccountPassword.mockResolvedValue(mockIdmAccount.id);
-			idmServiceMock.findAccountById.mockResolvedValue(mockIdmAccount);
-		};
+		describe('when save an existing account', () => {
+			const setup = () => {
+				idmServiceMock.createAccount.mockResolvedValue(mockIdmAccount.id);
+				idmServiceMock.updateAccount.mockResolvedValue(mockIdmAccount.id);
+				idmServiceMock.updateAccountPassword.mockResolvedValue(mockIdmAccount.id);
+				idmServiceMock.findAccountById.mockResolvedValue(mockIdmAccount);
+				const updateSpy = jest.spyOn(idmServiceMock, 'updateAccount');
+				const createSpy = jest.spyOn(idmServiceMock, 'createAccount');
 
-		it('should update an existing account', async () => {
-			setup();
-			const updateSpy = jest.spyOn(idmServiceMock, 'updateAccount');
-			const createSpy = jest.spyOn(idmServiceMock, 'createAccount');
-
-			const mockAccountDto = {
-				id: mockIdmAccountRefId,
-				username: 'testUserName',
-				userId: 'userId',
-				systemId: 'systemId',
+				const mockAccountDto = {
+					id: mockIdmAccountRefId,
+					username: 'testUserName',
+					userId: 'userId',
+					systemId: 'systemId',
+				};
+				return { updateSpy, createSpy, mockAccountDto };
 			};
-			const ret = await accountIdmService.save(mockAccountDto);
 
-			expect(updateSpy).toHaveBeenCalled();
-			expect(createSpy).not.toHaveBeenCalled();
+			it('should update account information', async () => {
+				const { updateSpy, createSpy, mockAccountDto } = setup();
 
-			expect(ret).toBeDefined();
-			expect(ret).toMatchObject<Partial<AccountDto>>({
-				id: mockIdmAccount.attRefTechnicalId,
-				idmReferenceId: mockIdmAccount.id,
-				createdAt: mockIdmAccount.createdDate,
-				updatedAt: mockIdmAccount.createdDate,
-				username: mockIdmAccount.username,
+				const ret = await accountIdmService.save(mockAccountDto);
+
+				expect(updateSpy).toHaveBeenCalled();
+				expect(createSpy).not.toHaveBeenCalled();
+
+				expect(ret).toBeDefined();
+				expect(ret).toMatchObject<Partial<AccountDto>>({
+					id: mockIdmAccount.attRefTechnicalId,
+					idmReferenceId: mockIdmAccount.id,
+					createdAt: mockIdmAccount.createdDate,
+					updatedAt: mockIdmAccount.createdDate,
+					username: mockIdmAccount.username,
+				});
 			});
 		});
 
-		it('should update an existing accounts password', async () => {
-			setup();
-			const updateSpy = jest.spyOn(idmServiceMock, 'updateAccount');
-			const updatePasswordSpy = jest.spyOn(idmServiceMock, 'updateAccountPassword');
+		describe('when save an existing account', () => {
+			const setup = () => {
+				idmServiceMock.createAccount.mockResolvedValue(mockIdmAccount.id);
+				idmServiceMock.updateAccount.mockResolvedValue(mockIdmAccount.id);
+				idmServiceMock.updateAccountPassword.mockResolvedValue(mockIdmAccount.id);
+				idmServiceMock.findAccountById.mockResolvedValue(mockIdmAccount);
+				const updateSpy = jest.spyOn(idmServiceMock, 'updateAccount');
+				const updatePasswordSpy = jest.spyOn(idmServiceMock, 'updateAccountPassword');
 
-			const mockAccountDto: AccountSaveDto = {
-				id: mockIdmAccountRefId,
-				username: 'testUserName',
-				userId: 'userId',
-				systemId: 'systemId',
-				password: 'password',
+				const mockAccountDto: AccountSaveDto = {
+					id: mockIdmAccountRefId,
+					username: 'testUserName',
+					userId: 'userId',
+					systemId: 'systemId',
+					password: 'password',
+				};
+				return { updateSpy, updatePasswordSpy, mockAccountDto };
 			};
-			const ret = await accountIdmService.save(mockAccountDto);
+			it('should update account password', async () => {
+				const { updateSpy, updatePasswordSpy, mockAccountDto } = setup();
 
-			expect(updateSpy).toHaveBeenCalled();
-			expect(updatePasswordSpy).toHaveBeenCalled();
-			expect(ret).toBeDefined();
-		});
+				const ret = await accountIdmService.save(mockAccountDto);
 
-		it('should create a new account', async () => {
-			setup();
-			const updateSpy = jest.spyOn(idmServiceMock, 'updateAccount');
-			const createSpy = jest.spyOn(idmServiceMock, 'createAccount');
-
-			const mockAccountDto = { username: 'testUserName', id: undefined, userId: 'userId', systemId: 'systemId' };
-			const ret = await accountIdmService.save(mockAccountDto);
-
-			expect(updateSpy).not.toHaveBeenCalled();
-			expect(createSpy).toHaveBeenCalled();
-
-			expect(ret).toBeDefined();
-			expect(ret).toMatchObject<Partial<AccountDto>>({
-				id: mockIdmAccount.attRefTechnicalId,
-				idmReferenceId: mockIdmAccount.id,
-				createdAt: mockIdmAccount.createdDate,
-				updatedAt: mockIdmAccount.createdDate,
-				username: mockIdmAccount.username,
+				expect(updateSpy).toHaveBeenCalled();
+				expect(updatePasswordSpy).toHaveBeenCalled();
+				expect(ret).toBeDefined();
 			});
 		});
-		it('should create a new account on update error', async () => {
-			setup();
-			accountLookupServiceMock.getExternalId.mockResolvedValue(null);
-			const mockAccountDto = {
-				id: mockIdmAccountRefId,
-				username: 'testUserName',
-				userId: 'userId',
-				systemId: 'systemId',
+
+		describe('when save not existing account', () => {
+			const setup = () => {
+				idmServiceMock.createAccount.mockResolvedValue(mockIdmAccount.id);
+				idmServiceMock.updateAccount.mockResolvedValue(mockIdmAccount.id);
+				idmServiceMock.updateAccountPassword.mockResolvedValue(mockIdmAccount.id);
+				idmServiceMock.findAccountById.mockResolvedValue(mockIdmAccount);
+				const updateSpy = jest.spyOn(idmServiceMock, 'updateAccount');
+				const createSpy = jest.spyOn(idmServiceMock, 'createAccount');
+
+				const mockAccountDto = { username: 'testUserName', id: undefined, userId: 'userId', systemId: 'systemId' };
+
+				return { updateSpy, createSpy, mockAccountDto };
 			};
+			it('should create a new account', async () => {
+				const { updateSpy, createSpy, mockAccountDto } = setup();
 
-			const ret = await accountIdmService.save(mockAccountDto);
+				const ret = await accountIdmService.save(mockAccountDto);
 
-			expect(idmServiceMock.createAccount).toHaveBeenCalled();
-			expect(ret).toBeDefined();
-			expect(ret).toMatchObject<Partial<AccountDto>>({
-				id: mockIdmAccount.attRefTechnicalId,
-				idmReferenceId: mockIdmAccount.id,
-				createdAt: mockIdmAccount.createdDate,
-				updatedAt: mockIdmAccount.createdDate,
-				username: mockIdmAccount.username,
+				expect(updateSpy).not.toHaveBeenCalled();
+				expect(createSpy).toHaveBeenCalled();
+
+				expect(ret).toBeDefined();
+				expect(ret).toMatchObject<Partial<AccountDto>>({
+					id: mockIdmAccount.attRefTechnicalId,
+					idmReferenceId: mockIdmAccount.id,
+					createdAt: mockIdmAccount.createdDate,
+					updatedAt: mockIdmAccount.createdDate,
+					username: mockIdmAccount.username,
+				});
+			});
+		});
+
+		describe('when save not existing account', () => {
+			const setup = () => {
+				idmServiceMock.createAccount.mockResolvedValue(mockIdmAccount.id);
+				idmServiceMock.updateAccount.mockResolvedValue(mockIdmAccount.id);
+				idmServiceMock.updateAccountPassword.mockResolvedValue(mockIdmAccount.id);
+				idmServiceMock.findAccountById.mockResolvedValue(mockIdmAccount);
+				accountLookupServiceMock.getExternalId.mockResolvedValue(null);
+				const mockAccountDto = {
+					id: mockIdmAccountRefId,
+					username: 'testUserName',
+					userId: 'userId',
+					systemId: 'systemId',
+				};
+
+				return { mockAccountDto };
+			};
+			it('should create a new account on update error', async () => {
+				const { mockAccountDto } = setup();
+
+				const ret = await accountIdmService.save(mockAccountDto);
+
+				expect(idmServiceMock.createAccount).toHaveBeenCalled();
+				expect(ret).toBeDefined();
+				expect(ret).toMatchObject<Partial<AccountDto>>({
+					id: mockIdmAccount.attRefTechnicalId,
+					idmReferenceId: mockIdmAccount.id,
+					createdAt: mockIdmAccount.createdDate,
+					updatedAt: mockIdmAccount.createdDate,
+					username: mockIdmAccount.username,
+				});
 			});
 		});
 	});
 
 	describe('updateUsername', () => {
-		it('should map result correctly', async () => {
-			accountLookupServiceMock.getExternalId.mockResolvedValue(mockIdmAccount.id);
-			const ret = await accountIdmService.updateUsername(mockIdmAccountRefId, 'any');
+		describe('when update Username', () => {
+			const setup = () => {
+				accountLookupServiceMock.getExternalId.mockResolvedValue(mockIdmAccount.id);
+			};
+			it('should map result correctly', async () => {
+				setup();
+				const ret = await accountIdmService.updateUsername(mockIdmAccountRefId, 'any');
 
-			expect(ret).toBeDefined();
-			expect(ret).toMatchObject<Partial<AccountDto>>({
-				id: mockIdmAccount.attRefTechnicalId,
-				idmReferenceId: mockIdmAccount.id,
-				createdAt: mockIdmAccount.createdDate,
-				updatedAt: mockIdmAccount.createdDate,
-				username: mockIdmAccount.username,
+				expect(ret).toBeDefined();
+				expect(ret).toMatchObject<Partial<AccountDto>>({
+					id: mockIdmAccount.attRefTechnicalId,
+					idmReferenceId: mockIdmAccount.id,
+					createdAt: mockIdmAccount.createdDate,
+					updatedAt: mockIdmAccount.createdDate,
+					username: mockIdmAccount.username,
+				});
 			});
 		});
 	});
 
 	describe('updatePassword', () => {
-		it('should map result correctly', async () => {
-			accountLookupServiceMock.getExternalId.mockResolvedValue(mockIdmAccount.id);
-			const ret = await accountIdmService.updatePassword(mockIdmAccountRefId, 'any');
+		describe('when update password', () => {
+			const setup = () => {
+				accountLookupServiceMock.getExternalId.mockResolvedValue(mockIdmAccount.id);
+			};
+			it('should map result correctly', async () => {
+				setup();
+				const ret = await accountIdmService.updatePassword(mockIdmAccountRefId, 'any');
 
-			expect(ret).toBeDefined();
-			expect(ret).toMatchObject<Partial<AccountDto>>({
-				id: mockIdmAccount.attRefTechnicalId,
-				idmReferenceId: mockIdmAccount.id,
-				createdAt: mockIdmAccount.createdDate,
-				updatedAt: mockIdmAccount.createdDate,
-				username: mockIdmAccount.username,
+				expect(ret).toBeDefined();
+				expect(ret).toMatchObject<Partial<AccountDto>>({
+					id: mockIdmAccount.attRefTechnicalId,
+					idmReferenceId: mockIdmAccount.id,
+					createdAt: mockIdmAccount.createdDate,
+					updatedAt: mockIdmAccount.createdDate,
+					username: mockIdmAccount.username,
+				});
 			});
 		});
 	});
 
 	describe('validatePassword', () => {
-		const setup = (acceptPassword: boolean) => {
-			idmOauthServiceMock.resourceOwnerPasswordGrant.mockResolvedValue(
-				acceptPassword ? '{ "alg": "HS256", "typ": "JWT" }' : undefined
-			);
-		};
-		it('should validate password by checking JWT', async () => {
-			setup(true);
-			const ret = await accountIdmService.validatePassword(
-				{ username: 'username' } as unknown as AccountDto,
-				'password'
-			);
-			expect(ret).toBe(true);
-		});
-		it('should report wrong password, i. e. non successful JWT creation', async () => {
-			setup(false);
-			const ret = await accountIdmService.validatePassword(
-				{ username: 'username' } as unknown as AccountDto,
-				'password'
-			);
-			expect(ret).toBe(false);
+		describe('when validate password', () => {
+			const setup = (acceptPassword: boolean) => {
+				idmOauthServiceMock.resourceOwnerPasswordGrant.mockResolvedValue(
+					acceptPassword ? '{ "alg": "HS256", "typ": "JWT" }' : undefined
+				);
+			};
+			it('should validate password by checking JWT', async () => {
+				setup(true);
+				const ret = await accountIdmService.validatePassword(
+					{ username: 'username' } as unknown as AccountDto,
+					'password'
+				);
+				expect(ret).toBe(true);
+			});
+			it('should report wrong password, i. e. non successful JWT creation', async () => {
+				setup(false);
+				const ret = await accountIdmService.validatePassword(
+					{ username: 'username' } as unknown as AccountDto,
+					'password'
+				);
+				expect(ret).toBe(false);
+			});
 		});
 	});
 
@@ -252,11 +300,12 @@ describe('AccountIdmService', () => {
 	describe('deleteByUserId', () => {
 		const setup = () => {
 			idmServiceMock.findAccountByFctIntId.mockResolvedValue(mockIdmAccount);
+			const deleteSpy = jest.spyOn(idmServiceMock, 'deleteAccountById');
+			return { deleteSpy };
 		};
 
 		it('should delete the account with given user id via repo', async () => {
-			setup();
-			const deleteSpy = jest.spyOn(idmServiceMock, 'deleteAccountById');
+			const { deleteSpy } = setup();
 
 			await accountIdmService.deleteByUserId(mockIdmAccount.attRefFunctionalIntId ?? '');
 			expect(deleteSpy).toHaveBeenCalledWith(mockIdmAccount.id);
