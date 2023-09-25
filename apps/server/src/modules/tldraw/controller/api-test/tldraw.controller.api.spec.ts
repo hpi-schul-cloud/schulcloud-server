@@ -8,11 +8,11 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { config } from '@src/modules/tldraw/config';
 import * as Utils from '../../utils/utils';
-import { TldrawGateway } from '../tldraw.gateway';
+import { TldrawWsController } from '../tldraw-ws.controller';
 
-describe('WebSocketGateway (WsAdapter)', () => {
+describe('WebSocketController (WsAdapter)', () => {
 	let app: INestApplication;
-	let gateway: TldrawGateway;
+	let gateway: TldrawWsController;
 	let ws: WebSocket;
 
 	const gatewayPort = 3346;
@@ -44,9 +44,9 @@ describe('WebSocketGateway (WsAdapter)', () => {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
 		const testingModule = await Test.createTestingModule({
 			imports,
-			providers: [TldrawGateway],
+			providers: [TldrawWsController],
 		}).compile();
-		gateway = testingModule.get<TldrawGateway>(TldrawGateway);
+		gateway = testingModule.get<TldrawWsController>(TldrawWsController);
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
 		await app.init();
@@ -67,7 +67,7 @@ describe('WebSocketGateway (WsAdapter)', () => {
 	describe('when tldraw is correctly setup', () => {
 		const setup = async () => {
 			const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
-			jest.spyOn(Uint8Array.prototype, 'reduce').mockReturnValue(1);
+			jest.spyOn(Uint8Array.prototype, 'reduce').mockReturnValueOnce(1);
 
 			await setupWs('TEST');
 
@@ -137,7 +137,7 @@ describe('WebSocketGateway (WsAdapter)', () => {
 	describe('when tldraw is not correctly setup', () => {
 		const setup = async () => {
 			const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
-			const utilsSpy = jest.spyOn(Utils, 'messageHandler').mockReturnValue();
+			const utilsSpy = jest.spyOn(Utils, 'messageHandler').mockReturnValueOnce();
 
 			await setupWs();
 

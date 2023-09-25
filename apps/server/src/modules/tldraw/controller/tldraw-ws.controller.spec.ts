@@ -8,16 +8,17 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { config } from '@src/modules/tldraw/config';
 import * as Utils from '@src/modules/tldraw/utils/utils';
-import { WSSharedDoc } from '@src/modules/tldraw/utils/utils';
+import * as YjsUtils from '@src/modules/tldraw/utils/ydoc-utils';
+import { WSSharedDoc } from '@src/modules/tldraw/types';
 import { TextEncoder } from 'util';
 import * as SyncProtocols from 'y-protocols/sync';
 import * as AwarenessProtocol from 'y-protocols/awareness';
 import { encoding } from 'lib0';
-import { TldrawGateway } from '.';
+import { TldrawWsController } from '.';
 
-describe('TldrawGateway', () => {
+describe('TldrawWSConytoller', () => {
 	let app: INestApplication;
-	let gateway: TldrawGateway;
+	let gateway: TldrawWsController;
 	let ws: WebSocket;
 
 	const gatewayPort = 3346;
@@ -34,20 +35,21 @@ describe('TldrawGateway', () => {
 
 	jest.useFakeTimers();
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
 		const testingModule = await Test.createTestingModule({
 			imports,
-			providers: [TldrawGateway],
+			providers: [TldrawWsController],
 		}).compile();
 
-		gateway = testingModule.get<TldrawGateway>(TldrawGateway);
+		gateway = testingModule.get<TldrawWsController>(TldrawWsController);
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
 		jest.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] });
+		await app.init();
 	});
 
-	afterEach(async () => {
+	afterAll(async () => {
 		await app.close();
 	});
 
@@ -75,9 +77,7 @@ describe('TldrawGateway', () => {
 		};
 	};
 
-	it('should gateway properties be defined', async () => {
-		await app.init();
-
+	it('should controller properties be defined', () => {
 		expect(gateway).toBeDefined();
 		expect(gateway.configService).toBeDefined();
 		expect(gateway.server).toBeDefined();
@@ -87,7 +87,6 @@ describe('TldrawGateway', () => {
 
 	describe('when client is not connected to WS', () => {
 		const setup = async () => {
-			await app.init();
 			await setupWs();
 
 			const closeConSpy = jest.spyOn(Utils, 'closeConn').mockImplementationOnce(() => {});
@@ -118,9 +117,7 @@ describe('TldrawGateway', () => {
 	});
 
 	describe('when websocket has ready state different than 0 or 1', () => {
-		const setup = async () => {
-			await app.init();
-
+		const setup = () => {
 			const closeConSpy = jest.spyOn(Utils, 'closeConn');
 			const sendSpy = jest.spyOn(Utils, 'send');
 			const doc: { conns: Map<WebSocket, Set<number>> } = { conns: new Map() };
@@ -136,8 +133,8 @@ describe('TldrawGateway', () => {
 			};
 		};
 
-		it('should close connection if websocket has ready state different than 0 or 1', async () => {
-			const { closeConSpy, sendSpy, doc, socketMock, byteArray } = await setup();
+		it('should close connection if websocket has ready state different than 0 or 1', () => {
+			const { closeConSpy, sendSpy, doc, socketMock, byteArray } = setup();
 
 			Utils.send(doc as WSSharedDoc, socketMock as WebSocket, byteArray);
 
@@ -152,7 +149,6 @@ describe('TldrawGateway', () => {
 
 	describe('when websocket has ready state 0', () => {
 		const setup = async () => {
-			await app.init();
 			await setupWs();
 
 			const sendSpy = jest.spyOn(Utils, 'send');
@@ -185,7 +181,6 @@ describe('TldrawGateway', () => {
 
 	describe('when awareness change was called', () => {
 		const setup = async () => {
-			await app.init();
 			await setupWs();
 
 			class MockAwareness {
@@ -204,7 +199,7 @@ describe('TldrawGateway', () => {
 			doc.awareness.states = states;
 			doc.awareness.meta = mockMeta;
 
-			const sendSpy = jest.spyOn(Utils, 'send').mockReturnValue();
+			const sendSpy = jest.spyOn(Utils, 'send').mockReturnValueOnce();
 
 			const mockIDs = new Set<number>();
 			const mockConns = new Map<WebSocket, Set<number>>();
@@ -225,7 +220,7 @@ describe('TldrawGateway', () => {
 			};
 		};
 
-		it('should correctly update awwereness', async () => {
+		it('should correctly update awareness', async () => {
 			const { sendSpy, doc, mockIDs, awarenessUpdate } = await setup();
 
 			doc.awarenessChangeHandler(awarenessUpdate, ws);
@@ -243,12 +238,11 @@ describe('TldrawGateway', () => {
 
 	describe('when received message of specific type', () => {
 		const setup = async (messageValues: number[]) => {
-			await app.init();
 			await setupWs('TEST');
 
 			const sendSpy = jest.spyOn(Utils, 'send');
 			const applyAwarenessUpdateSpy = jest.spyOn(AwarenessProtocol, 'applyAwarenessUpdate');
-			jest.spyOn(SyncProtocols, 'readSyncMessage').mockImplementation((dec, enc) => {
+			jest.spyOn(SyncProtocols, 'readSyncMessage').mockImplementationOnce((dec, enc) => {
 				enc.bufs = [new Uint8Array(2), new Uint8Array(2)];
 				return 1;
 			});
@@ -301,11 +295,10 @@ describe('TldrawGateway', () => {
 
 	describe('when message is sent', () => {
 		const setup = async (messageValues: number[]) => {
-			await app.init();
 			await setupWs('TEST');
 
 			const messageHandlerSpy = jest.spyOn(Utils, 'messageHandler');
-			jest.spyOn(SyncProtocols, 'readSyncMessage').mockImplementation((dec, enc) => {
+			jest.spyOn(SyncProtocols, 'readSyncMessage').mockImplementationOnce((dec, enc) => {
 				enc.bufs = [new Uint8Array(2), new Uint8Array(2)];
 				return 1;
 			});
@@ -332,11 +325,10 @@ describe('TldrawGateway', () => {
 
 	describe('when error is thrown', () => {
 		const setup = async () => {
-			await app.init();
 			await setupWs();
 
 			const sendSpy = jest.spyOn(Utils, 'send');
-			jest.spyOn(SyncProtocols, 'readSyncMessage').mockImplementation(() => {
+			jest.spyOn(SyncProtocols, 'readSyncMessage').mockImplementationOnce(() => {
 				throw new Error('error');
 			});
 			const doc = new WSSharedDoc('TEST');
@@ -363,7 +355,6 @@ describe('TldrawGateway', () => {
 
 	describe('when trying to close already closed connection', () => {
 		const setup = async () => {
-			await app.init();
 			await setupWs();
 
 			jest.spyOn(ws, 'close').mockImplementationOnce(() => {
@@ -386,12 +377,11 @@ describe('TldrawGateway', () => {
 
 	describe('when ping failed', () => {
 		const setup = async () => {
-			await app.init();
 			await setupWs('TEST');
 
-			const messageHandlerSpy = jest.spyOn(Utils, 'messageHandler').mockImplementation(() => {});
+			const messageHandlerSpy = jest.spyOn(Utils, 'messageHandler').mockImplementationOnce(() => {});
 			const closeConnSpy = jest.spyOn(Utils, 'closeConn');
-			jest.spyOn(ws, 'ping').mockImplementation(() => {
+			jest.spyOn(ws, 'ping').mockImplementationOnce(() => {
 				throw new Error('error');
 			});
 
@@ -418,7 +408,6 @@ describe('TldrawGateway', () => {
 
 	describe('when awareness states size greater then one', () => {
 		const setup = async () => {
-			await app.init();
 			await setupWs('TEST');
 
 			const doc = new WSSharedDoc('TEST');
@@ -426,11 +415,11 @@ describe('TldrawGateway', () => {
 			doc.awareness.states.set(1, ['test1']);
 			doc.awareness.states.set(2, ['test2']);
 
-			const messageHandlerSpy = jest.spyOn(Utils, 'messageHandler').mockImplementation(() => {});
+			const messageHandlerSpy = jest.spyOn(Utils, 'messageHandler').mockImplementationOnce(() => {});
 			const sendSpy = jest.spyOn(Utils, 'send');
-			const getYDocSpy = jest.spyOn(Utils, 'getYDoc').mockImplementation(() => doc);
+			const getYDocSpy = jest.spyOn(Utils, 'getYDoc').mockImplementationOnce(() => doc);
 			const { msg } = createMessage([0, 1]);
-			jest.spyOn(AwarenessProtocol, 'encodeAwarenessUpdate').mockImplementation(() => msg);
+			jest.spyOn(AwarenessProtocol, 'encodeAwarenessUpdate').mockImplementationOnce(() => msg);
 
 			return {
 				messageHandlerSpy,
@@ -446,7 +435,7 @@ describe('TldrawGateway', () => {
 
 			await delay(200);
 
-			expect(sendSpy).toHaveBeenCalledTimes(2);
+			expect(sendSpy).toHaveBeenCalledTimes(3);
 
 			ws.close();
 			messageHandlerSpy.mockRestore();
@@ -457,8 +446,6 @@ describe('TldrawGateway', () => {
 
 	describe('when document receive update', () => {
 		const setup = async () => {
-			await app.init();
-
 			const doc = new WSSharedDoc('TEST');
 			await setupWs('TEST');
 			const wsSet = new Set();
@@ -472,7 +459,7 @@ describe('TldrawGateway', () => {
 			};
 			const storeUpdateSpy = jest.spyOn(mdb, 'storeUpdate');
 			const byteArray = new TextEncoder().encode(testMessage);
-			const calculateDiffSpy = jest.spyOn(Utils, 'calculateDiff').mockImplementation(() => 1);
+			const calculateDiffSpy = jest.spyOn(YjsUtils, 'calculateDiff').mockImplementationOnce(() => 1);
 
 			return {
 				mdb,
@@ -486,7 +473,7 @@ describe('TldrawGateway', () => {
 		it('should store on db', async () => {
 			const { mdb, doc, byteArray, storeUpdateSpy, calculateDiffSpy } = await setup();
 
-			await Utils.updateDocument(mdb as MongodbPersistence, 'TEST', doc);
+			await YjsUtils.updateDocument(mdb as MongodbPersistence, 'TEST', doc);
 			doc.emit('update', [byteArray, undefined, doc]);
 			await delay(200);
 			expect(storeUpdateSpy).toHaveBeenCalled();
@@ -498,8 +485,6 @@ describe('TldrawGateway', () => {
 
 	describe('when document receive empty update', () => {
 		const setup = async () => {
-			await app.init();
-
 			const doc = new WSSharedDoc('TEST2');
 			await setupWs('TEST2');
 			const wsSet = new Set();
@@ -512,7 +497,7 @@ describe('TldrawGateway', () => {
 				storeUpdate: () => {},
 			};
 			const storeUpdateSpy = jest.spyOn(mdb, 'storeUpdate');
-			const calculateDiffSpy = jest.spyOn(Utils, 'calculateDiff');
+			const calculateDiffSpy = jest.spyOn(YjsUtils, 'calculateDiff');
 
 			return {
 				mdb,
@@ -525,7 +510,7 @@ describe('TldrawGateway', () => {
 		it('should not update db with diff', async () => {
 			const { mdb, doc, storeUpdateSpy, calculateDiffSpy } = await setup();
 
-			await Utils.updateDocument(mdb as MongodbPersistence, 'TEST2', doc);
+			await YjsUtils.updateDocument(mdb as MongodbPersistence, 'TEST2', doc);
 			await delay(200);
 			expect(storeUpdateSpy).toHaveBeenCalledTimes(0);
 			expect(calculateDiffSpy).toReturnWith(0);
