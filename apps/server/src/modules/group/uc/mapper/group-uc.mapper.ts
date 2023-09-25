@@ -22,8 +22,10 @@ export class GroupUcMapper {
 	}
 
 	public static mapClassToClassInfoDto(clazz: Class, teachers: UserDO[]): ClassInfoDto {
+		const name = clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name;
+
 		const mapped: ClassInfoDto = new ClassInfoDto({
-			name: clazz.name,
+			name,
 			externalSourceName: clazz.source,
 			teachers: teachers.map((user: UserDO) => user.lastName),
 		});
