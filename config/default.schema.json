@@ -564,6 +564,16 @@
 			"type": "string",
 			"description": "Password for the antivirus service, only used for legacy file implementation"
 		},
+		"CLAMAV_SERVICE_HOSTNAME": {
+			"type": "string",
+			"description": "Antivirus(ClamAV) IP of host to connect to TCP interface",
+			"default": "localhost"
+		},
+		"CLAMAV_SERVICE_PORT": {
+			"type": "number",
+			"description": "Antivirus(ClamAV) Port of host to use when connecting via TCP interface",
+			"default": 3310
+		},
 		"ANTIVIRUS_EXCHANGE": {
 			"type": "string",
 			"default": "antivirus",

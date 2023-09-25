@@ -7,6 +7,8 @@ interface AntivirusModuleOptions {
 	filesServiceBaseUrl: string;
 	exchange: string;
 	routingKey: string;
+	hostname: string;
+	port: number;
 }
 
 @Module({})
@@ -32,10 +34,9 @@ export class AntivirusModule {
 						new NodeClam().init({
 							debugMode: true,
 							clamdscan: {
-								// @to-do read for envs
-								host: 'clamav-svc', // localhost
-								port: 3310,
-								bypassTest: false,
+								host: options.hostname,
+								port: options.port,
+								bypassTest: options.hostname === 'localhost',
 								localFallback: false,
 							},
 						}),
