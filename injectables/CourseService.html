@@ -94,6 +94,11 @@
                                 <a href="#findAllByUserId" >findAllByUserId</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#findAllCoursesByUserId" >findAllCoursesByUserId</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#findById" >findById</a>
                             </li>
@@ -186,8 +191,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="13"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:13</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="19"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:19</a></div>
                 </td>
             </tr>
 
@@ -257,8 +262,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="23"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:23</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="29"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:29</a></div>
                 </td>
             </tr>
 
@@ -297,6 +302,78 @@
                     </div>
                     <div class="io-description">
                         <b>Returns : </b>        <code><a href="../entitys/Course.html" target="_self" >Promise&lt;Course[]&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findAllCoursesByUserId"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>findAllCoursesByUserId</b></span>
+                        <a href="#findAllCoursesByUserId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findAllCoursesByUserId(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="13"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:13</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../entitys/Course.html" target="_self" >Promise&lt;Counted&lt;Course[]&gt;&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -385,7 +462,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { CourseRepo } from &#x27;@shared/repo&#x27;;
-import { Course, EntityId } from &#x27;@shared/domain&#x27;;
+import { Counted, Course, EntityId } from &#x27;@shared/domain&#x27;;
 
 @Injectable()
 export class CourseService {
@@ -393,6 +470,12 @@ export class CourseService {
 
 	async findById(courseId: EntityId): Promise&lt;Course&gt; {
 		return this.repo.findById(courseId);
+	}
+
+	public async findAllCoursesByUserId(userId: EntityId): Promise&lt;Counted&lt;Course[]&gt;&gt; {
+		const [courses, count] &#x3D; await this.repo.findAllByUserId(userId);
+
+		return [courses, count];
 	}
 
 	public async deleteUserDataFromCourse(userId: EntityId): Promise&lt;number&gt; {

@@ -94,6 +94,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#findAllLessonsByUserId" >findAllLessonsByUserId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findByCourseIds" >findByCourseIds</a>
                             </li>
                             <li>
@@ -271,6 +275,77 @@
 
             <tr>
                 <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="33"
+                            class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:33</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;number&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findAllLessonsByUserId"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>findAllLessonsByUserId</b></span>
+                        <a href="#findAllLessonsByUserId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findAllLessonsByUserId(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="27"
                             class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:27</a></div>
                 </td>
@@ -310,7 +385,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;number&gt;</code>
+                        <b>Returns : </b>        <code><a href="../entitys/LessonEntity.html" target="_self" >Promise&lt;LessonEntity[]&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -492,6 +567,12 @@ export class LessonService {
 
 	async findByCourseIds(courseIds: EntityId[]): Promise&lt;Counted&lt;LessonEntity[]&gt;&gt; {
 		return this.lessonRepo.findAllByCourseIds(courseIds);
+	}
+
+	async findAllLessonsByUserId(userId: EntityId): Promise&lt;LessonEntity[]&gt; {
+		const lessons &#x3D; await this.lessonRepo.findByUserId(userId);
+
+		return lessons;
 	}
 
 	async deleteUserDataFromLessons(userId: EntityId): Promise&lt;number&gt; {

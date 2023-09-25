@@ -24,103 +24,103 @@
 <title>cluster_SharingApiModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-195 945,-195 945,-70 8,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_SharingApiModule_providers</title>
-<polygon fill="none" stroke="black" points="779,-78 779,-130 937,-130 937,-78 779,-78"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_SharingApiModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 771,-130 771,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="182,-78 182,-130 937,-130 937,-78 182,-78"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_SharingApiModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 174,-130 174,-78 16,-78"/>
 </g>
 <!-- AuthorizationModule -->
 <g id="node1" class="node">
 <title>AuthorizationModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="762.81,-122 759.81,-126 738.81,-126 735.81,-122 625.19,-122 625.19,-86 762.81,-86 762.81,-122"/>
-<text text-anchor="middle" x="694" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="928.81,-122 925.81,-126 904.81,-126 901.81,-122 791.19,-122 791.19,-86 928.81,-86 928.81,-122"/>
+<text text-anchor="middle" x="860" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
 </g>
 <!-- SharingApiModule -->
 <g id="node7" class="node">
 <title>SharingApiModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="480.1,-187 477.1,-191 456.1,-191 453.1,-187 355.9,-187 355.9,-151 480.1,-151 480.1,-187"/>
-<text text-anchor="middle" x="418" y="-164.8" font-family="Times,serif" font-size="14.00">SharingApiModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="528.1,-187 525.1,-191 504.1,-191 501.1,-187 403.9,-187 403.9,-151 528.1,-151 528.1,-187"/>
+<text text-anchor="middle" x="466" y="-164.8" font-family="Times,serif" font-size="14.00">SharingApiModule</text>
 </g>
 <!-- AuthorizationModule&#45;&gt;SharingApiModule -->
 <g id="edge1" class="edge">
 <title>AuthorizationModule&#45;&gt;SharingApiModule</title>
-<path fill="none" stroke="black" d="M694,-122.02C694,-139.37 694,-163 694,-163 694,-163 490.28,-163 490.28,-163"/>
-<polygon fill="black" stroke="black" points="490.28,-159.5 480.28,-163 490.28,-166.5 490.28,-159.5"/>
+<path fill="none" stroke="black" d="M860,-122.28C860,-143.32 860,-175 860,-175 860,-175 538.43,-175 538.43,-175"/>
+<polygon fill="black" stroke="black" points="538.43,-171.5 528.43,-175 538.43,-178.5 538.43,-171.5"/>
 </g>
 <!-- LearnroomModule -->
 <g id="node2" class="node">
 <title>LearnroomModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="606.74,-122 603.74,-126 582.74,-126 579.74,-122 485.26,-122 485.26,-86 606.74,-86 606.74,-122"/>
-<text text-anchor="middle" x="546" y="-99.8" font-family="Times,serif" font-size="14.00">LearnroomModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="772.74,-122 769.74,-126 748.74,-126 745.74,-122 651.26,-122 651.26,-86 772.74,-86 772.74,-122"/>
+<text text-anchor="middle" x="712" y="-99.8" font-family="Times,serif" font-size="14.00">LearnroomModule</text>
 </g>
 <!-- LearnroomModule&#45;&gt;SharingApiModule -->
 <g id="edge2" class="edge">
 <title>LearnroomModule&#45;&gt;SharingApiModule</title>
-<path fill="none" stroke="black" d="M485.1,-104C478.34,-104 473.83,-104 473.83,-104 473.83,-104 473.83,-140.89 473.83,-140.89"/>
-<polygon fill="black" stroke="black" points="470.33,-140.89 473.83,-150.89 477.33,-140.89 470.33,-140.89"/>
+<path fill="none" stroke="black" d="M712,-122.02C712,-139.37 712,-163 712,-163 712,-163 538.08,-163 538.08,-163"/>
+<polygon fill="black" stroke="black" points="538.08,-159.5 528.08,-163 538.08,-166.5 538.08,-159.5"/>
 </g>
 <!-- LessonModule -->
 <g id="node3" class="node">
 <title>LessonModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="467.71,-122 464.71,-126 443.71,-126 440.71,-122 368.29,-122 368.29,-86 467.71,-86 467.71,-122"/>
-<text text-anchor="middle" x="418" y="-99.8" font-family="Times,serif" font-size="14.00">LessonModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="633.71,-122 630.71,-126 609.71,-126 606.71,-122 534.29,-122 534.29,-86 633.71,-86 633.71,-122"/>
+<text text-anchor="middle" x="584" y="-99.8" font-family="Times,serif" font-size="14.00">LessonModule</text>
 </g>
 <!-- LessonModule&#45;&gt;SharingApiModule -->
 <g id="edge3" class="edge">
 <title>LessonModule&#45;&gt;SharingApiModule</title>
-<path fill="none" stroke="black" d="M418,-122.11C418,-122.11 418,-140.99 418,-140.99"/>
-<polygon fill="black" stroke="black" points="414.5,-140.99 418,-150.99 421.5,-140.99 414.5,-140.99"/>
+<path fill="none" stroke="black" d="M534.26,-104C527.06,-104 522.02,-104 522.02,-104 522.02,-104 522.02,-140.89 522.02,-140.89"/>
+<polygon fill="black" stroke="black" points="518.52,-140.89 522.02,-150.89 525.52,-140.89 518.52,-140.89"/>
 </g>
 <!-- LoggerModule -->
 <g id="node4" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="349.98,-122 346.98,-126 325.98,-126 322.98,-122 250.02,-122 250.02,-86 349.98,-86 349.98,-122"/>
-<text text-anchor="middle" x="300" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="515.98,-122 512.98,-126 491.98,-126 488.98,-122 416.02,-122 416.02,-86 515.98,-86 515.98,-122"/>
+<text text-anchor="middle" x="466" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;SharingApiModule -->
 <g id="edge4" class="edge">
 <title>LoggerModule&#45;&gt;SharingApiModule</title>
-<path fill="none" stroke="black" d="M350.19,-104C357.26,-104 362.17,-104 362.17,-104 362.17,-104 362.17,-140.89 362.17,-140.89"/>
-<polygon fill="black" stroke="black" points="358.67,-140.89 362.17,-150.89 365.67,-140.89 358.67,-140.89"/>
+<path fill="none" stroke="black" d="M466,-122.11C466,-122.11 466,-140.99 466,-140.99"/>
+<polygon fill="black" stroke="black" points="462.5,-140.99 466,-150.99 469.5,-140.99 462.5,-140.99"/>
 </g>
 <!-- SharingModule -->
 <g id="node5" class="node">
 <title>SharingModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="231.6,-122 228.6,-126 207.6,-126 204.6,-122 128.4,-122 128.4,-86 231.6,-86 231.6,-122"/>
-<text text-anchor="middle" x="180" y="-99.8" font-family="Times,serif" font-size="14.00">SharingModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="397.6,-122 394.6,-126 373.6,-126 370.6,-122 294.4,-122 294.4,-86 397.6,-86 397.6,-122"/>
+<text text-anchor="middle" x="346" y="-99.8" font-family="Times,serif" font-size="14.00">SharingModule</text>
 </g>
 <!-- SharingModule&#45;&gt;SharingApiModule -->
 <g id="edge5" class="edge">
 <title>SharingModule&#45;&gt;SharingApiModule</title>
-<path fill="none" stroke="black" d="M180,-122.02C180,-139.37 180,-163 180,-163 180,-163 345.78,-163 345.78,-163"/>
-<polygon fill="black" stroke="black" points="345.78,-166.5 355.78,-163 345.78,-159.5 345.78,-166.5"/>
+<path fill="none" stroke="black" d="M397.65,-104C404.92,-104 409.98,-104 409.98,-104 409.98,-104 409.98,-140.89 409.98,-140.89"/>
+<polygon fill="black" stroke="black" points="406.48,-140.89 409.98,-150.89 413.48,-140.89 406.48,-140.89"/>
 </g>
 <!-- TaskModule -->
 <g id="node6" class="node">
 <title>TaskModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="110.26,-122 107.26,-126 86.26,-126 83.26,-122 23.74,-122 23.74,-86 110.26,-86 110.26,-122"/>
-<text text-anchor="middle" x="67" y="-99.8" font-family="Times,serif" font-size="14.00">TaskModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="276.26,-122 273.26,-126 252.26,-126 249.26,-122 189.74,-122 189.74,-86 276.26,-86 276.26,-122"/>
+<text text-anchor="middle" x="233" y="-99.8" font-family="Times,serif" font-size="14.00">TaskModule</text>
 </g>
 <!-- TaskModule&#45;&gt;SharingApiModule -->
 <g id="edge6" class="edge">
 <title>TaskModule&#45;&gt;SharingApiModule</title>
-<path fill="none" stroke="black" d="M67,-122.28C67,-143.32 67,-175 67,-175 67,-175 345.65,-175 345.65,-175"/>
-<polygon fill="black" stroke="black" points="345.65,-178.5 355.65,-175 345.65,-171.5 345.65,-178.5"/>
+<path fill="none" stroke="black" d="M233,-122.02C233,-139.37 233,-163 233,-163 233,-163 393.87,-163 393.87,-163"/>
+<polygon fill="black" stroke="black" points="393.87,-166.5 403.87,-163 393.87,-159.5 393.87,-166.5"/>
 </g>
 <!-- ShareTokenUC -->
 <g id="node8" class="node">
 <title>ShareTokenUC</title>
-<ellipse fill="#fdb462" stroke="black" cx="858" cy="-104" rx="71.21" ry="18"/>
-<text text-anchor="middle" x="858" y="-99.8" font-family="Times,serif" font-size="14.00">ShareTokenUC</text>
+<ellipse fill="#fdb462" stroke="black" cx="95" cy="-104" rx="71.21" ry="18"/>
+<text text-anchor="middle" x="95" y="-99.8" font-family="Times,serif" font-size="14.00">ShareTokenUC</text>
 </g>
 <!-- ShareTokenUC&#45;&gt;SharingApiModule -->
 <g id="edge7" class="edge">
 <title>ShareTokenUC&#45;&gt;SharingApiModule</title>
-<path fill="none" stroke="black" d="M858,-122.28C858,-143.32 858,-175 858,-175 858,-175 490.11,-175 490.11,-175"/>
-<polygon fill="black" stroke="black" points="490.11,-171.5 480.11,-175 490.11,-178.5 490.11,-171.5"/>
+<path fill="none" stroke="black" d="M95,-122.28C95,-143.32 95,-175 95,-175 95,-175 393.9,-175 393.9,-175"/>
+<polygon fill="black" stroke="black" points="393.9,-178.5 403.9,-175 393.9,-171.5 393.9,-178.5"/>
 </g>
 </g>
 </svg>
