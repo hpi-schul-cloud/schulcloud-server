@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiPrivacyPermission, LtiRoleType, Pseudonym, RoleName, User, UserDO } from '@shared/domain';
+import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { TeamRolePermissionsDto } from '@shared/infra/collaborative-storage/dto/team-role-permissions.dto';
 import { NextcloudClient } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.client';
 import { NextcloudStrategy } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.strategy';
@@ -10,8 +10,8 @@ import { LtiToolRepo } from '@shared/repo';
 import { ltiToolDOFactory, pseudonymFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { TeamDto, TeamUserDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
-import { ExternalToolService } from '@src/modules/tool/external-tool/service';
 import { PseudonymService } from '@src/modules/pseudonym';
+import { ExternalToolService } from '@src/modules/tool/external-tool/service';
 import { UserService } from '@src/modules/user';
 
 class NextcloudStrategySpec extends NextcloudStrategy {
@@ -241,7 +241,7 @@ describe('NextCloudStrategy', () => {
 
 			ltiToolRepo.findByName.mockResolvedValue([nextcloudTool]);
 			client.getNameWithPrefix.mockReturnValue(groupId);
-			pseudonymService.findByUserAndTool.mockRejectedValueOnce(undefined);
+			pseudonymService.findByUserAndToolOrThrow.mockRejectedValueOnce(undefined);
 			client.findGroupFolderIdForGroupId.mockResolvedValue(folderId);
 			client.getGroupUsers.mockResolvedValue([userId]);
 
@@ -306,7 +306,7 @@ describe('NextCloudStrategy', () => {
 				ltiToolRepo.findByName.mockResolvedValue([nextcloudTool]);
 				client.getNameWithPrefix.mockReturnValue(groupId);
 				client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
-				pseudonymService.findByUserAndTool.mockRejectedValueOnce(undefined);
+				pseudonymService.findByUserAndToolOrThrow.mockRejectedValueOnce(undefined);
 				client.findGroupFolderIdForGroupId.mockResolvedValueOnce(folderId);
 
 				const expectedFolderName: string = NextcloudStrategySpec.specGenerateGroupFolderName(teamDto.id, teamDto.name);
@@ -385,7 +385,7 @@ describe('NextCloudStrategy', () => {
 				const userDo: UserDO = userDoFactory.build({ id: user.id });
 				const teamUsers: TeamUserDto[] = [{ userId: user.id, schoolId: user.school.id, roleId: user.roles[0].id }];
 
-				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({
+				const pseudonym: Pseudonym = pseudonymFactory.build({
 					userId: user.id,
 					toolId: nextcloudTool.id as string,
 					pseudonym: `ps${user.id}`,
@@ -396,7 +396,7 @@ describe('NextCloudStrategy', () => {
 
 				ltiToolRepo.findByName.mockResolvedValue([nextcloudTool]);
 				client.getGroupUsers.mockResolvedValue([]);
-				pseudonymService.findByUserAndTool.mockResolvedValue(pseudonym);
+				pseudonymService.findByUserAndToolOrThrow.mockResolvedValue(pseudonym);
 				client.getNameWithPrefix.mockReturnValue(nextCloudUserId);
 				userService.findById.mockResolvedValue(userDo);
 
@@ -424,7 +424,7 @@ describe('NextCloudStrategy', () => {
 
 				await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
 
-				expect(pseudonymService.findByUserAndTool).toHaveBeenCalledWith(userDo, nextcloudTool);
+				expect(pseudonymService.findByUserAndToolOrThrow).toHaveBeenCalledWith(userDo, nextcloudTool);
 			});
 
 			it('should call userService.findById', async () => {
@@ -465,7 +465,7 @@ describe('NextCloudStrategy', () => {
 				const user: User = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
 				const teamUsers: TeamUserDto[] = [];
 
-				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({
+				const pseudonym: Pseudonym = pseudonymFactory.build({
 					userId: user.id,
 					toolId: nextcloudTool.id as string,
 					pseudonym: `ps${user.id}`,
@@ -476,7 +476,7 @@ describe('NextCloudStrategy', () => {
 
 				ltiToolRepo.findByName.mockResolvedValue([nextcloudTool]);
 				client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
-				pseudonymService.findByUserAndTool.mockResolvedValue(pseudonym);
+				pseudonymService.findByUserAndToolOrThrow.mockResolvedValue(pseudonym);
 				client.getNameWithPrefix.mockReturnValue(nextCloudUserId);
 
 				return { teamUsers, nextCloudUserId, groupId };
@@ -495,7 +495,7 @@ describe('NextCloudStrategy', () => {
 
 				await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
 
-				expect(pseudonymService.findByUserAndTool).not.toHaveBeenCalled();
+				expect(pseudonymService.findByUserAndToolOrThrow).not.toHaveBeenCalled();
 			});
 
 			it('should not call clients getNameWithPrefix', async () => {
@@ -531,7 +531,7 @@ describe('NextCloudStrategy', () => {
 					{ userId: 'invalidId', schoolId: 'someSchool', roleId: 'someRole' },
 				];
 
-				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({
+				const pseudonym: Pseudonym = pseudonymFactory.build({
 					userId: user.id,
 					toolId: nextcloudTool.id as string,
 					pseudonym: `ps${user.id}`,
@@ -542,7 +542,7 @@ describe('NextCloudStrategy', () => {
 
 				ltiToolRepo.findByName.mockResolvedValue([nextcloudTool]);
 				client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
-				pseudonymService.findByUserAndTool.mockResolvedValueOnce(pseudonym).mockRejectedValueOnce(undefined);
+				pseudonymService.findByUserAndToolOrThrow.mockResolvedValueOnce(pseudonym).mockRejectedValueOnce(undefined);
 				client.getNameWithPrefix.mockReturnValue(nextCloudUserId);
 
 				return { teamUsers, groupId };
@@ -570,7 +570,7 @@ describe('NextCloudStrategy', () => {
 				const user: User = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
 				const teamUsers: TeamUserDto[] = [{ userId: user.id, schoolId: user.school.id, roleId: user.roles[0].id }];
 
-				const pseudonym: Pseudonym = pseudonymFactory.buildWithId({
+				const pseudonym: Pseudonym = pseudonymFactory.build({
 					userId: user.id,
 					toolId: nextcloudTool.id as string,
 					pseudonym: `ps${user.id}`,
@@ -582,7 +582,7 @@ describe('NextCloudStrategy', () => {
 
 				client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
 				ltiToolRepo.findByName.mockResolvedValue([nextcloudTool, nextcloudTool2]);
-				pseudonymService.findByUserAndTool.mockResolvedValue(pseudonym);
+				pseudonymService.findByUserAndToolOrThrow.mockResolvedValue(pseudonym);
 
 				return { user, teamUsers, pseudonym, nextCloudUserId, groupId };
 			};

@@ -1,6 +1,7 @@
 export enum ContentElementType {
-	'FILE' = 'file',
-	'RICH_TEXT' = 'richText',
-	'DRAWING' = 'drawing',
-	'SUBMISSION_CONTAINER' = 'submissionContainer',
+	FILE = 'file',
+	RICH_TEXT = 'richText',
+	SUBMISSION_CONTAINER = 'submissionContainer',
+	EXTERNAL_TOOL = 'externalTool',
+	DRAWING = 'drawing',
 }

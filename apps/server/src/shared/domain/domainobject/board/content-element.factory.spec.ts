@@ -1,10 +1,11 @@
 import { NotImplementedException } from '@nestjs/common';
 import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 import { ContentElementFactory } from './content-element.factory';
+import { ExternalToolElement } from './external-tool-element.do';
 import { FileElement } from './file-element.do';
 import { RichTextElement } from './rich-text-element.do';
 import { SubmissionContainerElement } from './submission-container-element.do';
-import { ContentElementType } from './types/content-elements.enum';
+import { ContentElementType } from './types';
 
 describe(ContentElementFactory.name, () => {
 	describe('build', () => {
@@ -44,6 +45,14 @@ describe(ContentElementFactory.name, () => {
 			const element = contentElementFactory.build(ContentElementType.SUBMISSION_CONTAINER);
 
 			expect(element).toBeInstanceOf(SubmissionContainerElement);
+		});
+
+		it('should return element of EXTERNAL_TOOL', () => {
+			const { contentElementFactory } = setup();
+
+			const element = contentElementFactory.build(ContentElementType.EXTERNAL_TOOL);
+
+			expect(element).toBeInstanceOf(ExternalToolElement);
 		});
 
 		it('should throw NotImplementedException', () => {

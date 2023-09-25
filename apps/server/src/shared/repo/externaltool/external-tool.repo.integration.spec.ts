@@ -236,7 +236,7 @@ describe('ExternalToolRepo', () => {
 		};
 
 		describe('pagination', () => {
-			it('should return all ltiTools when options with pagination is set to undefined', async () => {
+			it('should return all external tools when options with pagination is set to undefined', async () => {
 				const { queryExternalToolDO, ltiTools } = await setupFind();
 
 				const page: Page<ExternalTool> = await repo.find(queryExternalToolDO, undefined);
@@ -244,7 +244,7 @@ describe('ExternalToolRepo', () => {
 				expect(page.data.length).toBe(ltiTools.length);
 			});
 
-			it('should return one ltiTool when pagination has a limit of 1', async () => {
+			it('should return one external tools when pagination has a limit of 1', async () => {
 				const { queryExternalToolDO, options } = await setupFind();
 				options.pagination = { limit: 1 };
 
@@ -253,7 +253,7 @@ describe('ExternalToolRepo', () => {
 				expect(page.data.length).toBe(1);
 			});
 
-			it('should return no ltiTool when pagination has a limit of 1 and skip is set to 2', async () => {
+			it('should return no external tools when pagination has a limit of 1 and skip is set to 2', async () => {
 				const { queryExternalToolDO, options } = await setupFind();
 				options.pagination = { limit: 1, skip: 3 };
 
@@ -264,7 +264,7 @@ describe('ExternalToolRepo', () => {
 		});
 
 		describe('order', () => {
-			it('should return ltiTools ordered by default _id when no order is specified', async () => {
+			it('should return external tools ordered by default _id when no order is specified', async () => {
 				const { queryExternalToolDO, options, ltiTools } = await setupFind();
 
 				const page: Page<ExternalTool> = await repo.find(queryExternalToolDO, options);
@@ -274,7 +274,7 @@ describe('ExternalToolRepo', () => {
 				expect(page.data[2].name).toEqual(ltiTools[2].name);
 			});
 
-			it('should return ltiTools ordered by name ascending', async () => {
+			it('should return external tools ordered by name ascending', async () => {
 				const { queryExternalToolDO, options, ltiTools } = await setupFind();
 
 				options.order = {

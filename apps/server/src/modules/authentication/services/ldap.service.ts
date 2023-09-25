@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { System } from '@shared/domain';
+import { SystemEntity } from '@shared/domain';
 import { ErrorUtils } from '@src/core/error/utils';
 import { LegacyLogger } from '@src/core/logger';
 import { Client, createClient } from 'ldapjs';
@@ -11,7 +11,7 @@ export class LdapService {
 		this.logger.setContext(LdapService.name);
 	}
 
-	async checkLdapCredentials(system: System, username: string, password: string): Promise<void> {
+	async checkLdapCredentials(system: SystemEntity, username: string, password: string): Promise<void> {
 		const connection = await this.connect(system, username, password);
 		if (connection.connected) {
 			connection.unbind();
@@ -20,7 +20,7 @@ export class LdapService {
 		throw new UnauthorizedException('User could not authenticate');
 	}
 
-	private connect(system: System, username: string, password: string): Promise<Client> {
+	private connect(system: SystemEntity, username: string, password: string): Promise<Client> {
 		const { ldapConfig } = system;
 		if (!ldapConfig) {
 			throw Error(`no LDAP config found in system ${system.id}`);

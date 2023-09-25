@@ -4,7 +4,7 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
+import { AuthenticationModule } from '@src/modules/authentication';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { AuthenticationApiModule } from '../authentication/authentication-api.module';
 import { TldrawWsModule } from './tldraw-ws.module';
@@ -12,7 +12,6 @@ import { TldrawWsModule } from './tldraw-ws.module';
 const imports = [
 	TldrawWsModule,
 	MongoMemoryDatabaseModule.forRoot({ entities: [User, Course] }),
-	AuthenticationApiModule,
 	AuthorizationModule,
 	AuthenticationModule,
 	CoreModule,

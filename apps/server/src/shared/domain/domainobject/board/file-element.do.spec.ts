@@ -23,6 +23,16 @@ describe(FileElement.name, () => {
 		});
 	});
 
+	describe('update alternative text', () => {
+		it('should be able to update alternative text', () => {
+			const fileElement = fileElementFactory.build();
+			const text = 'this is the titanic movie from 1997 in Blue-Ray Quality';
+			fileElement.alternativeText = text;
+
+			expect(fileElement.alternativeText).toEqual(text);
+		});
+	});
+
 	describe('accept', () => {
 		it('should call the right visitor method', () => {
 			const visitor = createMock<BoardCompositeVisitor>();

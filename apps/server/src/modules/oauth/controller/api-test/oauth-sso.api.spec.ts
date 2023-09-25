@@ -2,8 +2,8 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, EntityId, School, System, User } from '@shared/domain';
-import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
+import { Account, EntityId, SchoolEntity, SystemEntity, User } from '@shared/domain';
+import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import {
@@ -18,7 +18,7 @@ import { JwtTestFactory } from '@shared/testing/factory/jwt.test.factory';
 import { userLoginMigrationFactory } from '@shared/testing/factory/user-login-migration.factory';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { SanisResponse, SanisRole } from '@src/modules/provisioning';
+import { SanisResponse, SanisRole } from '@src/modules/provisioning/strategy/sanis/response';
 import { ServerTestModule } from '@src/modules/server';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -114,8 +114,8 @@ describe('OAuth SSO Controller (API)', () => {
 
 	const setup = async () => {
 		const externalUserId = 'externalUserId';
-		const system: System = systemFactory.withOauthConfig().buildWithId();
-		const school: School = schoolFactory.buildWithId({ systems: [system] });
+		const system: SystemEntity = systemFactory.withOauthConfig().buildWithId();
+		const school: SchoolEntity = schoolFactory.buildWithId({ systems: [system] });
 		const user: User = userFactory.buildWithId({ externalId: externalUserId, school });
 		const account: Account = accountFactory.buildWithId({ systemId: system.id, userId: user.id });
 
@@ -266,7 +266,7 @@ describe('OAuth SSO Controller (API)', () => {
 	describe('[GET]  sso/oauth/migration', () => {
 		const mockPostOauthTokenEndpoint = (
 			idToken: string,
-			targetSystem: System,
+			targetSystem: SystemEntity,
 			targetUserId: string,
 			schoolExternalId: string,
 			officialSchoolNumber: string
@@ -292,16 +292,15 @@ describe('OAuth SSO Controller (API)', () => {
 					},
 					personenkontexte: [
 						{
-							id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713'),
+							id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713').toString(),
 							rolle: SanisRole.LEHR,
 							organisation: {
-								id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713'),
+								id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713').toString(),
 								kennung: officialSchoolNumber,
 								name: 'schulName',
 								typ: 'not necessary',
 							},
 							personenstatus: 'not necessary',
-							email: 'email',
 						},
 					],
 				});
@@ -319,19 +318,19 @@ describe('OAuth SSO Controller (API)', () => {
 			const setupMigration = async () => {
 				const { externalUserId, query } = await setup();
 
-				const targetSystem: System = systemFactory
+				const targetSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS }, new ObjectId().toHexString(), {});
-				const sourceSystem: System = systemFactory
+				const sourceSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV }, new ObjectId().toHexString(), {});
 
-				const sourceSchool: School = schoolFactory.buildWithId({
+				const sourceSchool: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '11111',
 					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
 				});
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school: sourceSchool,
 					targetSystem,
 					sourceSystem,
@@ -398,20 +397,20 @@ describe('OAuth SSO Controller (API)', () => {
 			const setupMigration = async () => {
 				const { externalUserId, query } = await setup();
 
-				const targetSystem: System = systemFactory
+				const targetSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS }, new ObjectId().toHexString(), {});
-				const sourceSystem: System = systemFactory
+				const sourceSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV }, new ObjectId().toHexString(), {});
 
-				const sourceSchool: School = schoolFactory.buildWithId({
+				const sourceSchool: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '11110',
 					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
 				});
 
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school: sourceSchool,
 					targetSystem,
 					sourceSystem,
@@ -446,20 +445,20 @@ describe('OAuth SSO Controller (API)', () => {
 			const setupMigration = async () => {
 				const { externalUserId, query } = await setup();
 
-				const targetSystem: System = systemFactory
+				const targetSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS }, new ObjectId().toHexString(), {});
-				const sourceSystem: System = systemFactory
+				const sourceSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV }, new ObjectId().toHexString(), {});
 
-				const sourceSchool: School = schoolFactory.buildWithId({
+				const sourceSchool: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '11111',
 					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
 				});
 
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school: sourceSchool,
 					targetSystem,
 					sourceSystem,
@@ -502,27 +501,27 @@ describe('OAuth SSO Controller (API)', () => {
 			const setupMigration = async () => {
 				const { externalUserId, query } = await setup();
 
-				const targetSystem: System = systemFactory
+				const targetSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS }, new ObjectId().toHexString(), {});
-				const sourceSystem: System = systemFactory
+				const sourceSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV }, new ObjectId().toHexString(), {});
 
-				const sourceSchool: School = schoolFactory.buildWithId({
+				const sourceSchool: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '11111',
 					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
 				});
 
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
 					school: sourceSchool,
 					targetSystem,
 					sourceSystem,
 					startedAt: new Date('2022-12-17T03:24:00'),
 				});
 
-				const targetSchool: School = schoolFactory.buildWithId({
+				const targetSchool: SchoolEntity = schoolFactory.buildWithId({
 					systems: [targetSystem],
 					officialSchoolNumber: '22222',
 					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',

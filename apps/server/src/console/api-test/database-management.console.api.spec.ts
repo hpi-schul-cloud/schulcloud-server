@@ -1,29 +1,34 @@
 import { INestApplicationContext } from '@nestjs/common';
-import { BootstrapConsole, ConsoleService } from 'nestjs-console';
+import { ConsoleWriterService } from '@shared/infra/console';
 import { ServerConsoleModule } from '@src/console/console.module';
 import { CommanderError } from 'commander';
-import { execute, TestBootstrapConsole } from './test-bootstrap.console';
+import { BootstrapConsole, ConsoleService } from 'nestjs-console';
+import { TestBootstrapConsole, execute } from './test-bootstrap.console';
 
 describe('DatabaseManagementConsole (API)', () => {
 	let app: INestApplicationContext;
-	let console: BootstrapConsole;
+	let bootstrap: BootstrapConsole;
 	let consoleService: ConsoleService;
-	beforeAll(async () => {
-		console = new TestBootstrapConsole({
+	let consoleWriter: ConsoleWriterService;
+
+	beforeEach(async () => {
+		bootstrap = new TestBootstrapConsole({
 			module: ServerConsoleModule,
 			useDecorators: true,
 		});
-		app = await console.init();
+		app = await bootstrap.init();
 		await app.init();
 		consoleService = app.get(ConsoleService);
+		consoleWriter = app.get(ConsoleWriterService);
 	});
 
-	afterAll(async () => {
+	afterEach(async () => {
+		consoleService.resetCli();
 		await app.close();
 	});
 
 	describe('Command "database"', () => {
-		beforeEach(() => {
+		const setup = () => {
 			const cli = consoleService.getCli('database');
 			const exitFn = (err: CommanderError) => {
 				if (err.exitCode !== 0) throw err;
@@ -31,22 +36,44 @@ describe('DatabaseManagementConsole (API)', () => {
 			cli?.exitOverride(exitFn);
 			const rootCli = consoleService.getRootCli();
 			rootCli.exitOverride(exitFn);
+			const spyConsoleWriterInfo = jest.spyOn(consoleWriter, 'info');
+			return { spyConsoleWriterInfo };
+		};
+		describe('when command not exists', () => {
+			it('should fail for unknown command', async () => {
+				setup();
+				await expect(execute(bootstrap, ['database', 'not_existing_command'])).rejects.toThrow(
+					`error: unknown command 'not_existing_command'`
+				);
+
+				consoleService.resetCli();
+			});
 		});
 
-		afterEach(() => {
-			consoleService.resetCli();
-		});
+		describe('when command exists', () => {
+			it('should provide command "seed"', async () => {
+				const { spyConsoleWriterInfo } = setup();
 
-		it('should fail for unknown command', async () => {
-			await expect(execute(console, ['database', 'not_existing_command'])).rejects.toThrow(
-				`error: unknown command 'not_existing_command'`
-			);
-		});
-		it('should provide command "seed"', async () => {
-			await execute(console, ['database', 'seed']);
-		});
-		it('should provide command "export"', async () => {
-			await execute(console, ['database', 'export']);
+				await execute(bootstrap, ['database', 'seed']);
+
+				expect(spyConsoleWriterInfo).toBeCalled();
+			});
+
+			it('should provide command "export"', async () => {
+				const { spyConsoleWriterInfo } = setup();
+
+				await execute(bootstrap, ['database', 'export']);
+
+				expect(spyConsoleWriterInfo).toBeCalled();
+			});
+
+			it('should provide command "sync-indexes"', async () => {
+				const { spyConsoleWriterInfo } = setup();
+
+				await execute(bootstrap, ['database', 'sync-indexes']);
+
+				expect(spyConsoleWriterInfo).toBeCalled();
+			});
 		});
 	});
 });

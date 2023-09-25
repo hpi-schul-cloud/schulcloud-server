@@ -5,7 +5,7 @@ import {
 	EntityId,
 	IPagination,
 	ITaskStatus,
-	Lesson,
+	LessonEntity,
 	Permission,
 	SortOrder,
 	TaskWithStatusVo,
@@ -194,7 +194,7 @@ export class TaskUC {
 		return permittedCourses;
 	}
 
-	private async getPermittedLessons(user: User, courses: Course[]): Promise<Lesson[]> {
+	private async getPermittedLessons(user: User, courses: Course[]): Promise<LessonEntity[]> {
 		const writeCourses = courses.filter((c) =>
 			this.authorizationService.hasPermission(user, c, AuthorizationContextBuilder.write([]))
 		);

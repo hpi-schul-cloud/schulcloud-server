@@ -2,8 +2,12 @@ const assert = require('assert');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 
+const { Configuration } = require('@hpi-schul-cloud/commons/lib');
+const sinon = require('sinon');
 const appPromise = require('../../../src/app');
-
+const {
+	FeathersRosterService,
+} = require('../../../dist/apps/server/modules/pseudonym/service/feathers-roster.service');
 
 chai.use(chaiHttp);
 
@@ -88,6 +92,10 @@ describe('roster service', function oauth() {
 		return Promise.resolve();
 	});
 
+	afterEach(() => {
+		sinon.restore();
+	});
+
 	after(() =>
 		Promise.all([
 			pseudonymService.remove(null, { query: {} }),
@@ -103,41 +111,199 @@ describe('roster service', function oauth() {
 		assert.ok(groupsService);
 	});
 
-	it('GET metadata', () =>
-		metadataService.find({ route: { user: pseudonym1 } }).then((metadata) => {
-			assert.strictEqual(pseudonym1, metadata.data.user_id);
-			assert.strictEqual('teacher', metadata.data.type);
-		}));
+	describe('GET metadata', () => {
+		describe('when CTL feature is enabled', () => {
+			const setup = () => {
+				Configuration.set('FEATURE_CTL_TOOLS_TAB_ENABLED', true);
+				const nestGetUsersMetadataStub = sinon.stub(FeathersRosterService.prototype, 'getUsersMetadata');
 
-	it('GET user groups', (done) => {
-		userGroupsService
-			.find({
-				route: { user: pseudonym1 },
-				tokenInfo: { client_id: testToolTemplate.oAuthClientId },
-			})
-			.then((groups) => {
-				const group1 = groups.data.groups[0];
-				assert.strictEqual(testCourse._id, group1.group_id);
-				assert.strictEqual(testCourse.name, group1.name);
-				assert.strictEqual(testCourse.userIds.length, group1.student_count);
-				done();
+				return {
+					nestGetUsersMetadataStub,
+				};
+			};
+
+			it('should call nest feathers roster service', () => {
+				const { nestGetUsersMetadataStub } = setup();
+
+				metadataService.find({ route: { user: pseudonym1 } }).then((metadata) => {
+					assert.strictEqual(pseudonym1, metadata.data.user_id);
+					assert.strictEqual('teacher', metadata.data.type);
+					assert.ok(nestGetUsersMetadataStub.calledOnce);
+				});
 			});
+		});
+
+		describe('when CTL feature is not enabled', () => {
+			const setup = () => {
+				Configuration.set('FEATURE_CTL_TOOLS_TAB_ENABLED', false);
+
+				const nestGetUsersMetadataStub = sinon.stub(FeathersRosterService.prototype, 'getUsersMetadata');
+
+				return {
+					nestGetUsersMetadataStub,
+				};
+			};
+
+			it('should not call nest feathers roster service', () => {
+				const { nestGetUsersMetadataStub } = setup();
+
+				metadataService.find({ route: { user: pseudonym1 } }).then(() => {
+					assert.ok(nestGetUsersMetadataStub.notCalled);
+				});
+			});
+
+			it('GET metadata', () => {
+				setup();
+
+				metadataService.find({ route: { user: pseudonym1 } }).then((metadata) => {
+					assert.strictEqual(pseudonym1, metadata.data.user_id);
+					assert.strictEqual('teacher', metadata.data.type);
+				});
+			});
+		});
 	});
 
-	it('GET group', (done) => {
-		groupsService
-			.get(testCourse._id, {
-				tokenInfo: {
-					client_id: testToolTemplate.oAuthClientId,
-					obfuscated_subject: pseudonym1,
-				},
-			})
-			.then((group) => {
-				assert.strictEqual(pseudonym1, group.data.teachers[0].user_id);
-				const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';
-				const iframe = `<iframe src="http://localhost:3100/oauth2/username/${pseudonym1}" ${properties}></iframe>`;
-				assert.strictEqual(iframe, group.data.teachers[0].username);
-				done();
+	describe('GET user groups', () => {
+		describe('when CTL feature is enabled', () => {
+			const setup = () => {
+				Configuration.set('FEATURE_CTL_TOOLS_TAB_ENABLED', true);
+
+				const nestGetUserGroupsStub = sinon.stub(FeathersRosterService.prototype, 'getUserGroups');
+
+				return {
+					nestGetUserGroupsStub,
+				};
+			};
+
+			it('should call nest feathers roster service', () => {
+				const { nestGetUserGroupsStub } = setup();
+
+				userGroupsService
+					.find({
+						route: { user: pseudonym1 },
+						tokenInfo: { client_id: testToolTemplate.oAuthClientId },
+					})
+					.then(() => {
+						assert.ok(nestGetUserGroupsStub.calledOnce);
+					});
 			});
+		});
+
+		describe('when CTL feature is not enabled', () => {
+			const setup = () => {
+				Configuration.set('FEATURE_CTL_TOOLS_TAB_ENABLED', false);
+
+				const nestGetUserGroupsStub = sinon.stub(FeathersRosterService.prototype, 'getUserGroups');
+
+				return {
+					nestGetUserGroupsStub,
+				};
+			};
+
+			it('should not call nest feathers roster service', () => {
+				const { nestGetUserGroupsStub } = setup();
+
+				userGroupsService
+					.find({
+						route: { user: pseudonym1 },
+						tokenInfo: { client_id: testToolTemplate.oAuthClientId },
+					})
+					.then(() => {
+						assert.ok(nestGetUserGroupsStub.notCalled);
+					});
+			});
+
+			it('GET user groups', (done) => {
+				setup();
+
+				userGroupsService
+					.find({
+						route: { user: pseudonym1 },
+						tokenInfo: { client_id: testToolTemplate.oAuthClientId },
+					})
+					.then((groups) => {
+						const group1 = groups.data.groups[0];
+						assert.strictEqual(testCourse._id, group1.group_id);
+						assert.strictEqual(testCourse.name, group1.name);
+						assert.strictEqual(testCourse.userIds.length, group1.student_count);
+						done();
+					});
+			});
+		});
+	});
+
+	describe('GET group', () => {
+		describe('when CTL feature is enabled', () => {
+			const setup = () => {
+				Configuration.set('FEATURE_CTL_TOOLS_TAB_ENABLED', true);
+
+				const nestGroupStub = sinon.stub(FeathersRosterService.prototype, 'getGroup');
+
+				return {
+					nestGroupStub,
+				};
+			};
+
+			it('should call nest feathers roster service', () => {
+				const { nestGroupStub } = setup();
+
+				groupsService
+					.get(testCourse._id, {
+						tokenInfo: {
+							client_id: testToolTemplate.oAuthClientId,
+							obfuscated_subject: pseudonym1,
+						},
+					})
+					.then(() => {
+						assert.ok(nestGroupStub.calledOnce);
+					});
+			});
+		});
+
+		describe('when CTL feature is not enabled', () => {
+			const setup = () => {
+				Configuration.set('FEATURE_CTL_TOOLS_TAB_ENABLED', false);
+
+				const nestGroupStub = sinon.stub(FeathersRosterService.prototype, 'getGroup');
+
+				return {
+					nestGroupStub,
+				};
+			};
+
+			it('should not call nest feathers roster service', () => {
+				const { nestGroupStub } = setup();
+
+				groupsService
+					.get(testCourse._id, {
+						tokenInfo: {
+							client_id: testToolTemplate.oAuthClientId,
+							obfuscated_subject: pseudonym1,
+						},
+					})
+					.then(() => {
+						assert.ok(nestGroupStub.notCalled);
+					});
+			});
+
+			it('GET group', (done) => {
+				setup();
+
+				groupsService
+					.get(testCourse._id, {
+						tokenInfo: {
+							client_id: testToolTemplate.oAuthClientId,
+							obfuscated_subject: pseudonym1,
+						},
+					})
+					.then((group) => {
+						assert.strictEqual(pseudonym1, group.data.teachers[0].user_id);
+						const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';
+						const iframe = `<iframe src="http://localhost:3100/oauth2/username/${pseudonym1}" ${properties}></iframe>`;
+						assert.strictEqual(iframe, group.data.teachers[0].username);
+						done();
+					});
+			});
+		});
 	});
 });

@@ -7,4 +7,5 @@ export enum BoardNodeType {
 	DRAWING_ELEMENT = 'drawing-element',
 	SUBMISSION_CONTAINER_ELEMENT = 'submission-container-element',
 	SUBMISSION_ITEM = 'submission-item',
+	EXTERNAL_TOOL = 'external-tool',
 }

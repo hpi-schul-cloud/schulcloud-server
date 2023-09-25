@@ -5,6 +5,7 @@ import {
 	CardNode,
 	ColumnBoardNode,
 	ColumnNode,
+	ExternalToolElementNodeEntity,
 	FileElementNode,
 	RichTextElementNode,
 	DrawingElementNode,
@@ -16,8 +17,11 @@ import {
 	columnBoardFactory,
 	columnBoardNodeFactory,
 	columnFactory,
+	contextExternalToolEntityFactory,
+	externalToolElementFactory,
 	fileElementFactory,
 	richTextElementFactory,
+	setupEntities,
 	drawingElementFactory,
 	submissionContainerElementFactory,
 	submissionItemFactory,
@@ -30,9 +34,11 @@ describe(RecursiveSaveVisitor.name, () => {
 	let em: DeepMocked<EntityManager>;
 	let boardNodeRepo: DeepMocked<BoardNodeRepo>;
 
-	beforeAll(() => {
+	beforeAll(async () => {
 		em = createMock<EntityManager>();
 		boardNodeRepo = createMock<BoardNodeRepo>();
+
+		await setupEntities();
 
 		visitor = new RecursiveSaveVisitor(em, boardNodeRepo);
 	});
@@ -137,6 +143,7 @@ describe(RecursiveSaveVisitor.name, () => {
 				id: fileElement.id,
 				type: BoardNodeType.FILE_ELEMENT,
 				caption: fileElement.caption,
+				alternativeText: fileElement.alternativeText,
 			};
 			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
 		});
@@ -200,6 +207,25 @@ describe(RecursiveSaveVisitor.name, () => {
 				id: submissionItem.id,
 				type: BoardNodeType.SUBMISSION_ITEM,
 				completed: submissionItem.completed,
+			};
+			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
+		});
+	});
+
+	describe('when visiting a external tool element', () => {
+		it('should create or update the node', () => {
+			const contextExternalTool = contextExternalToolEntityFactory.buildWithId();
+			const externalToolElement = externalToolElementFactory.build({
+				contextExternalToolId: contextExternalTool.id,
+			});
+			jest.spyOn(visitor, 'createOrUpdateBoardNode');
+
+			visitor.visitExternalToolElement(externalToolElement);
+
+			const expectedNode: Partial<ExternalToolElementNodeEntity> = {
+				id: externalToolElement.id,
+				type: BoardNodeType.EXTERNAL_TOOL,
+				contextExternalTool,
 			};
 			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
 		});

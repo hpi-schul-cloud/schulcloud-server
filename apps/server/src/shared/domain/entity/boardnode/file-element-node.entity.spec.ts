@@ -6,7 +6,7 @@ import { BoardDoBuilder, BoardNodeType } from './types';
 describe(FileElementNode.name, () => {
 	describe('when trying to create a file element', () => {
 		const setup = () => {
-			const elementProps = { caption: 'Test' };
+			const elementProps = { caption: 'Test', alternativeText: 'testAltText' };
 			const builder: DeepMocked<BoardDoBuilder> = createMock<BoardDoBuilder>();
 
 			return { elementProps, builder };
@@ -23,7 +23,7 @@ describe(FileElementNode.name, () => {
 
 	describe('useDoBuilder()', () => {
 		const setup = () => {
-			const element = new FileElementNode({ caption: 'Test' });
+			const element = new FileElementNode({ caption: 'Test', alternativeText: 'altTest' });
 			const builder: DeepMocked<BoardDoBuilder> = createMock<BoardDoBuilder>();
 			const elementDo = fileElementFactory.build();
 
@@ -31,14 +31,6 @@ describe(FileElementNode.name, () => {
 
 			return { element, builder, elementDo };
 		};
-
-		it('should call the specific builder method', () => {
-			const { element, builder } = setup();
-
-			element.useDoBuilder(builder);
-
-			expect(builder.buildFileElement).toHaveBeenCalledWith(element);
-		});
 
 		it('should call the specific builder method', () => {
 			const { element, builder } = setup();

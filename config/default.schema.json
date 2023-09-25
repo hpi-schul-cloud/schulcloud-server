@@ -605,6 +605,11 @@
 			"default": "604800000",
 			"description": "Grace period before school admin cannot restart oauth migration anymore. Value is given in ms and default is 7 days"
 		},
+		"FEATURE_SANIS_GROUP_PROVISIONING_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Groups of type class also gets provisioned, when provisioning a user via oauth login."
+		},
 		"SC_TITLE": {
 			"type": "string",
 			"default": "dBildungscloud",
@@ -645,7 +650,17 @@
 		"FEATURE_SCHOOL_POLICY_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "Custom School Policy can be uploaded by the school admin "
+			"description": "Enables uploading of school specific Privacy Policy on old admin page "
+		},
+		"FEATURE_SCHOOL_POLICY_ENABLED_NEW": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables uploading of school specific Privacy Policy on new admin page."
+		},
+		"FEATURE_SCHOOL_TERMS_OF_USE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables uploading of school specific Terms of Use on new admin page."
 		},
 		"ROCKETCHAT_SERVICE_ENABLED": {
 			"type": "boolean",
@@ -1257,6 +1272,11 @@
 			"default": false,
 			"description": "Enables the configuration of custom parameters for context external tools"
 		},
+		"FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables external tools on the column board"
+		},
 		"CTL_TOOLS": {
 			"type": "object",
 			"description": "CTL Tools properties",
@@ -1287,8 +1307,12 @@
 		"TLDRAW": {
 			"type": "object",
 			"description": "Tldraw managing variables.",
-			"required": ["PING_TIMEOUT", "GC_ENABLED", "DB_COLLECTION_NAME", "DB_FLUSH_SIZE", "DB_MULTIPLE_COLLECTIONS"],
+			"required": ["PING_TIMEOUT", "SOCKET_PORT","GC_ENABLED", "DB_COLLECTION_NAME", "DB_FLUSH_SIZE", "DB_MULTIPLE_COLLECTIONS"],
 			"properties": {
+				"SOCKET_PORT": {
+					"type": "number",
+					"description": "Web socket port for tldraw"
+				},
 				"PING_TIMEOUT": {
 					"type": "number",
 					"description": "Max time for waiting between calls for tldraw"
@@ -1311,6 +1335,7 @@
 				}
 			},
 			"default": {
+				"SOCKET_PORT": 3345,
 				"PING_TIMEOUT": 30000,
 				"GC_ENABLED": true,
 				"DB_COLLECTION_NAME": "drawing",

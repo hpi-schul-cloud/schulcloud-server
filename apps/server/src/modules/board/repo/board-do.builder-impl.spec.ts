@@ -1,12 +1,13 @@
-import { BoardNodeType } from '@shared/domain';
+import { BoardNodeType, ExternalToolElement } from '@shared/domain';
 import {
 	cardNodeFactory,
 	columnBoardNodeFactory,
 	columnNodeFactory,
+	externalToolElementNodeFactory,
 	fileElementNodeFactory,
 	richTextElementNodeFactory,
-	submissionContainerElementNodeFactory,
 	setupEntities,
+	submissionContainerElementNodeFactory,
 } from '@shared/testing';
 import { drawingElementNodeFactory } from '@shared/testing/factory/boardnode/drawing-element-node.factory';
 import { BoardDoBuilderImpl } from './board-do.builder-impl';
@@ -201,6 +202,25 @@ describe(BoardDoBuilderImpl.name, () => {
 
 			expect(() => {
 				new BoardDoBuilderImpl([columnNode]).buildSubmissionContainerElement(submissionContainerElementNode);
+			}).toThrowError();
+		});
+	});
+
+	describe('when building a external tool element', () => {
+		it('should work without descendants', () => {
+			const externalToolElementNode = externalToolElementNodeFactory.build();
+
+			const domainObject = new BoardDoBuilderImpl().buildExternalToolElement(externalToolElementNode);
+
+			expect(domainObject.constructor.name).toBe(ExternalToolElement.name);
+		});
+
+		it('should throw error if submissionContainerElement is not a leaf', () => {
+			const externalToolElementNode = externalToolElementNodeFactory.buildWithId();
+			const columnNode = columnNodeFactory.buildWithId({ parent: externalToolElementNode });
+
+			expect(() => {
+				new BoardDoBuilderImpl([columnNode]).buildExternalToolElement(externalToolElementNode);
 			}).toThrowError();
 		});
 	});

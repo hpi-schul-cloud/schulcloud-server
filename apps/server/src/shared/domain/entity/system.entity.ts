@@ -188,7 +188,7 @@ export class OidcConfig {
 }
 
 @Entity({ tableName: 'systems' })
-export class System extends BaseEntityWithTimestamps {
+export class SystemEntity extends BaseEntityWithTimestamps {
 	constructor(props: ISystemProperties) {
 		super();
 		this.type = props.type;

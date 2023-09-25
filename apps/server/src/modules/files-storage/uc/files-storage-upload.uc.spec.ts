@@ -5,14 +5,14 @@ import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
-import { fileRecordFactory, setupEntities } from '@shared/testing';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
+import { AxiosHeadersKeyValue, axiosResponseFactory, fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { Action, AuthorizationService } from '@src/modules/authorization';
-import { AxiosRequestConfig, AxiosResponse, AxiosResponseHeaders } from 'axios';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Request } from 'express';
 import { of } from 'rxjs';
 import { Readable } from 'stream';
-import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
@@ -22,29 +22,16 @@ import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
 import { FilesStorageUC } from './files-storage.uc';
 
-const createAxiosResponse = (data: Readable, headers: AxiosResponseHeaders = {}): AxiosResponse<Readable> => {
-	const response: AxiosResponse<Readable> = {
+const createAxiosResponse = <T>(data: T, headers?: AxiosHeadersKeyValue) =>
+	axiosResponseFactory.build({
 		data,
-		status: 0,
-		statusText: '',
 		headers,
-		config: {},
-	};
-
-	return response;
-};
+	});
 
 const createAxiosErrorResponse = (): AxiosResponse => {
-	const headers: AxiosResponseHeaders = {};
-	const config: AxiosRequestConfig = {};
-	const errorResponse: AxiosResponse = {
-		data: {},
+	const errorResponse: AxiosResponse = axiosResponseFactory.build({
 		status: 404,
-		statusText: 'errorText',
-		headers,
-		config,
-		request: {},
-	};
+	});
 
 	return errorResponse;
 };

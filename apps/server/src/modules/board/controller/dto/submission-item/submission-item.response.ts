@@ -18,6 +18,6 @@ export class SubmissionItemResponse {
 	@ApiProperty()
 	completed: boolean;
 
-	@ApiProperty()
+	@ApiProperty({ pattern: '[a-f0-9]{24}' })
 	userId: string;
 }
