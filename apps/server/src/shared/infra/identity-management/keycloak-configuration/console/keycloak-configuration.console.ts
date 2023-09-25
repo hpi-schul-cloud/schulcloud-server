@@ -17,7 +17,7 @@ interface IMigrationOptions {
 }
 
 interface ICleanOptions {
-	pagination?: number;
+	pageSize?: number;
 }
 @Console({ command: 'idm', description: 'Prefixes all Identity Management (IDM) related console commands.' })
 export class KeycloakConsole {
@@ -57,7 +57,7 @@ export class KeycloakConsole {
 	}
 
 	/**
-	 * For local development. Cleans user from IDM
+	 * Cleans users from IDM
 	 *
 	 * @param options
 	 */
@@ -67,7 +67,7 @@ export class KeycloakConsole {
 		options: [
 			...KeycloakConsole.retryFlags,
 			{
-				flags: '--maxPagination',
+				flags: '- mps, --maxPageSize <value>',
 				description: 'Maximum users to delete per Keycloak API session. Default 100.',
 				required: false,
 				defaultValue: 100,
@@ -78,7 +78,7 @@ export class KeycloakConsole {
 		await this.repeatCommand(
 			'clean',
 			async () => {
-				const count = await this.keycloakConfigurationUc.clean(options.pagination ? Number(options.pagination) : 100);
+				const count = await this.keycloakConfigurationUc.clean(options.pageSize ? Number(options.pageSize) : 100);
 				this.console.info(`Cleaned ${count} users in IDM`);
 				return count;
 			},

@@ -32,7 +32,7 @@ export class KeycloakSeedService {
 		return userCount;
 	}
 
-	public async clean(pagination = 100): Promise<number> {
+	public async clean(pageSize = 100): Promise<number> {
 		let foundUsers = 1;
 		let deletedUsers = 0;
 		const adminUser = this.kcAdmin.getAdminUser();
@@ -42,9 +42,9 @@ export class KeycloakSeedService {
 			// eslint-disable-next-line no-await-in-loop
 			kc = await this.kcAdmin.callKcAdminClient();
 			// eslint-disable-next-line no-await-in-loop
-			const users = (await kc.users.find({ max: pagination })).filter((user) => user.username !== adminUser);
+			const users = (await kc.users.find({ max: pageSize })).filter((user) => user.username !== adminUser);
 			foundUsers = users.length;
-			this.logger.log(`Length of foundUsers: ${foundUsers}`);
+			this.logger.log(`Amount of found Users: ${foundUsers}`);
 			for (const user of users) {
 				// eslint-disable-next-line no-await-in-loop
 				kc = await this.kcAdmin.callKcAdminClient();
