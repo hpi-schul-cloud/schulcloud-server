@@ -3,11 +3,19 @@ import type { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types'
 
 export class FileElement extends BoardComposite<FileElementProps> {
 	get caption(): string {
-		return this.props.caption;
+		return this.props.caption || '';
 	}
 
 	set caption(value: string) {
 		this.props.caption = value;
+	}
+
+	get alternativeText(): string {
+		return this.props.alternativeText || '';
+	}
+
+	set alternativeText(value: string) {
+		this.props.alternativeText = value;
 	}
 
 	isAllowedAsChild(): boolean {
@@ -25,4 +33,9 @@ export class FileElement extends BoardComposite<FileElementProps> {
 
 export interface FileElementProps extends BoardCompositeProps {
 	caption: string;
+	alternativeText: string;
+}
+
+export function isFileElement(reference: unknown): reference is FileElement {
+	return reference instanceof FileElement;
 }

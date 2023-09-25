@@ -114,9 +114,7 @@ describe('submission create (api)', () => {
 			expect(result.id).toBeDefined();
 			expect(result.timestamps.createdAt).toBeDefined();
 			expect(result.timestamps.lastUpdatedAt).toBeDefined();
-			expect(result.userData.userId).toBe(studentUser.id);
-			expect(result.userData.firstName).toBe('John');
-			expect(result.userData.lastName).toBe('Mr Doe');
+			expect(result.userId).toBe(studentUser.id);
 		});
 
 		it('should actually create the submission item', async () => {

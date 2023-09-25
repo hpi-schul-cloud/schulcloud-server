@@ -2,7 +2,7 @@ import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { Account, Role, School, SchoolYear, System, User } from '@shared/domain';
+import { Account, Role, SchoolEntity, SchoolYearEntity, SystemEntity, User } from '@shared/domain';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
@@ -28,7 +28,7 @@ const imports = [
 		clientUrl: DB_URL,
 		password: DB_PASSWORD,
 		user: DB_USERNAME,
-		entities: [User, Account, Role, School, System, SchoolYear],
+		entities: [User, Account, Role, SchoolEntity, SystemEntity, SchoolYearEntity],
 
 		// debug: true, // use it for locally debugging of querys
 	}),

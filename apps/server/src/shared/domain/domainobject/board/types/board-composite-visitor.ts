@@ -1,6 +1,7 @@
 import type { Card } from '../card.do';
 import type { ColumnBoard } from '../column-board.do';
 import type { Column } from '../column.do';
+import { ExternalToolElement } from '../external-tool-element.do';
 import type { FileElement } from '../file-element.do';
 import { RichTextElement } from '../rich-text-element.do';
 import { SubmissionContainerElement } from '../submission-container-element.do';
@@ -14,6 +15,7 @@ export interface BoardCompositeVisitor {
 	visitRichTextElement(richTextElement: RichTextElement): void;
 	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void;
 	visitSubmissionItem(submissionItem: SubmissionItem): void;
+	visitExternalToolElement(externalToolElement: ExternalToolElement): void;
 }
 
 export interface BoardCompositeVisitorAsync {
@@ -24,4 +26,5 @@ export interface BoardCompositeVisitorAsync {
 	visitRichTextElementAsync(richTextElement: RichTextElement): Promise<void>;
 	visitSubmissionContainerElementAsync(submissionContainerElement: SubmissionContainerElement): Promise<void>;
 	visitSubmissionItemAsync(submissionItem: SubmissionItem): Promise<void>;
+	visitExternalToolElementAsync(externalToolElement: ExternalToolElement): Promise<void>;
 }

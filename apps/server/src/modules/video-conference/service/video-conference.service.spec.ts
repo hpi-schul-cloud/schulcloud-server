@@ -19,7 +19,7 @@ import {
 	AuthorizationContextBuilder,
 	AuthorizationService,
 } from '@src/modules/authorization';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/legacy-school';
 import { UserService } from '@src/modules/user';
 import { courseFactory, roleFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
@@ -27,9 +27,9 @@ import { ObjectId } from 'bson';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { CourseService } from '@src/modules/learnroom/service';
 import { VideoConferenceService } from './video-conference.service';
-import { ErrorStatus } from '../error/error-status.enum';
+import { ErrorStatus } from '../error';
 import { BBBRole } from '../bbb';
 import { IScopeInfo, ScopeRef, VideoConferenceState } from '../uc/dto';
 import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';
@@ -39,7 +39,7 @@ describe('VideoConferenceService', () => {
 	let courseService: DeepMocked<CourseService>;
 	let calendarService: DeepMocked<CalendarService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let schoolService: DeepMocked<SchoolService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 	let teamsRepo: DeepMocked<TeamsRepo>;
 	let userService: DeepMocked<UserService>;
 	let videoConferenceRepo: DeepMocked<VideoConferenceRepo>;
@@ -68,8 +68,8 @@ describe('VideoConferenceService', () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 				{
 					provide: TeamsRepo,
@@ -90,7 +90,7 @@ describe('VideoConferenceService', () => {
 		courseService = module.get(CourseService);
 		calendarService = module.get(CalendarService);
 		authorizationService = module.get(AuthorizationService);
-		schoolService = module.get(SchoolService);
+		schoolService = module.get(LegacySchoolService);
 		teamsRepo = module.get(TeamsRepo);
 		userService = module.get(UserService);
 		videoConferenceRepo = module.get(VideoConferenceRepo);
@@ -181,6 +181,42 @@ describe('VideoConferenceService', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
+					.buildWithId();
+				const userId = user.id as EntityId;
+				const scopeId = new ObjectId().toHexString();
+
+				userService.findById.mockResolvedValue(user);
+
+				return {
+					userId,
+					scopeId,
+				};
+			};
+
+			it('should call the user service to find the user by id', async () => {
+				const { userId, scopeId } = setup();
+
+				await service.hasExpertRole(userId, VideoConferenceScope.COURSE, scopeId);
+
+				expect(userService.findById).toHaveBeenCalledWith(userId);
+			});
+
+			it('should return false', async () => {
+				const { userId, scopeId } = setup();
+
+				const result = await service.hasExpertRole(userId, VideoConferenceScope.COURSE, scopeId);
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when user has the EXPERT role and an additional role for a course conference', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory
+					.withRoles([
+						{ id: new ObjectId().toHexString(), name: RoleName.STUDENT },
+						{ id: new ObjectId().toHexString(), name: RoleName.EXPERT },
+					])
 					.buildWithId();
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();

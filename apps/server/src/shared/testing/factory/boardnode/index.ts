@@ -5,3 +5,4 @@ export * from './file-element-node.factory';
 export * from './rich-text-element-node.factory';
 export * from './submission-container-element-node.factory';
 export * from './submission-item-node.factory';
+export * from './external-tool-element-node.factory';

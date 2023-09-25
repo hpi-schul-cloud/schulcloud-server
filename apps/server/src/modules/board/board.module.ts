@@ -4,6 +4,7 @@ import { ConsoleWriterModule } from '@shared/infra/console';
 import { CourseRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { FilesStorageClientModule } from '../files-storage-client';
+import { UserModule } from '../user';
 import { BoardDoRepo, BoardNodeRepo } from './repo';
 import { RecursiveDeleteVisitor } from './repo/recursive-delete.vistor';
 import {
@@ -15,9 +16,11 @@ import {
 	ContentElementService,
 	SubmissionItemService,
 } from './service';
+import { BoardDoCopyService, SchoolSpecificFileCopyServiceFactory } from './service/board-do-copy-service';
+import { ColumnBoardCopyService } from './service/column-board-copy.service';
 
 @Module({
-	imports: [ConsoleWriterModule, FilesStorageClientModule, LoggerModule],
+	imports: [ConsoleWriterModule, FilesStorageClientModule, LoggerModule, UserModule],
 	providers: [
 		BoardDoAuthorizableService,
 		BoardDoRepo,
@@ -31,6 +34,9 @@ import {
 		CourseRepo, // TODO: import learnroom module instead. This is currently not possible due to dependency cycle with authorisation service
 		RecursiveDeleteVisitor,
 		SubmissionItemService,
+		BoardDoCopyService,
+		ColumnBoardCopyService,
+		SchoolSpecificFileCopyServiceFactory,
 	],
 	exports: [
 		BoardDoAuthorizableService,
@@ -39,6 +45,7 @@ import {
 		ColumnService,
 		ContentElementService,
 		SubmissionItemService,
+		ColumnBoardCopyService,
 	],
 })
 export class BoardModule {}
