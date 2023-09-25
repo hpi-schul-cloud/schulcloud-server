@@ -17,7 +17,7 @@ import { encoding } from 'lib0';
 import { TldrawWsService } from '@src/modules/tldraw/service/tldraw-ws.service';
 import { TldrawWsController } from '.';
 
-describe('TldrawWSConytoller', () => {
+describe('TldrawWSController', () => {
 	let app: INestApplication;
 	let gateway: TldrawWsController;
 	let ws: WebSocket;
@@ -43,10 +43,10 @@ describe('TldrawWSConytoller', () => {
 			providers: [TldrawWsController, TldrawWsService],
 		}).compile();
 
+		jest.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] });
 		gateway = testingModule.get<TldrawWsController>(TldrawWsController);
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
-		jest.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] });
 		await app.init();
 	});
 
