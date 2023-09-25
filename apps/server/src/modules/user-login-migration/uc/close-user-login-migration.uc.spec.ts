@@ -179,6 +179,22 @@ describe('CloseUserLoginMigrationUc', () => {
 
 				expect(userLoginMigrationRevertService.revertUserLoginMigration).toHaveBeenCalledWith(closedUserLoginMigration);
 			});
+
+			it('should not mark all un-migrated users as outdated', async () => {
+				const { user, schoolId } = setup();
+
+				await uc.closeMigration(user.id, schoolId);
+
+				expect(schoolMigrationService.markUnmigratedUsersAsOutdated).not.toHaveBeenCalled();
+			});
+
+			it('should return  undefined', async () => {
+				const { user, schoolId } = setup();
+
+				const result = await uc.closeMigration(user.id, schoolId);
+
+				expect(result).toBeUndefined();
+			});
 		});
 
 		describe('when the user login migration was already closed', () => {

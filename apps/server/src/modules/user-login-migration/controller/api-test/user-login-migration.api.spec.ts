@@ -1202,5 +1202,54 @@ describe('UserLoginMigrationController (API)', () => {
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 			});
 		});
+
+		describe('when no user has migrate', () => {
+			const setup = async () => {
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: SchoolEntity = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: new Date(2023, 1, 4),
+				});
+
+				const user: User = userFactory.buildWithId();
+
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
+					Permission.USER_LOGIN_MIGRATION_ADMIN,
+				]);
+
+				await em.persistAndFlush([
+					sourceSystem,
+					targetSystem,
+					school,
+					adminAccount,
+					adminUser,
+					userLoginMigration,
+					user,
+				]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+					userLoginMigration,
+				};
+			};
+
+			it('should return nothing', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.post('/close');
+
+				expect(response.body).toEqual({});
+			});
+		});
 	});
 });
