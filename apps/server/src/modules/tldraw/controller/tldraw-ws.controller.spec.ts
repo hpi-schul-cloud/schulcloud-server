@@ -15,6 +15,7 @@ import * as SyncProtocols from 'y-protocols/sync';
 import * as AwarenessProtocol from 'y-protocols/awareness';
 import { encoding } from 'lib0';
 import { TldrawWsService } from '@src/modules/tldraw/service/tldraw-ws.service';
+import { HttpService } from '@nestjs/axios';
 import { TldrawWsController } from '.';
 
 describe('TldrawWSController', () => {
@@ -40,7 +41,7 @@ describe('TldrawWSController', () => {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
 		const testingModule = await Test.createTestingModule({
 			imports,
-			providers: [TldrawWsController, TldrawWsService],
+			providers: [TldrawWsController, TldrawWsService, HttpService],
 		}).compile();
 
 		jest.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] });
