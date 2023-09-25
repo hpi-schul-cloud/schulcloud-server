@@ -1,5 +1,6 @@
 import { SubmissionItem, UserBoardRoles } from '@shared/domain';
-import { SubmissionItemResponse, SubmissionsResponse, TimestampsResponse, UserDataResponse } from '../dto';
+import { SubmissionsResponse } from '../dto/submission-item/submissions.response';
+import { SubmissionItemResponse, TimestampsResponse, UserDataResponse } from '../dto';
 
 export class SubmissionItemResponseMapper {
 	private static instance: SubmissionItemResponseMapper;

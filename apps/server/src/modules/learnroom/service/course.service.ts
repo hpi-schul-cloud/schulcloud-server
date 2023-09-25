@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Course, EntityId } from '@shared/domain';
+import { Counted, Course, EntityId } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
 import { CourseCreateDto } from '../types';
 
@@ -14,6 +14,12 @@ export class CourseService {
 
 	async findById(courseId: EntityId): Promise<Course> {
 		return this.repo.findById(courseId);
+	}
+
+	public async findAllCoursesByUserId(userId: EntityId): Promise<Counted<Course[]>> {
+		const [courses, count] = await this.repo.findAllByUserId(userId);
+
+		return [courses, count];
 	}
 
 	public async deleteUserDataFromCourse(userId: EntityId): Promise<number> {

@@ -89,6 +89,47 @@ describe('LessonService', () => {
 		});
 	});
 
+	describe('findAllLessonsByUserId', () => {
+		describe('when finding by userId', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const contentExample: IComponentProperties = {
+					title: 'title',
+					hidden: false,
+					user: userId,
+					component: ComponentType.TEXT,
+					content: { text: 'test of content' },
+				};
+				const lesson1 = lessonFactory.buildWithId({ contents: [contentExample] });
+				const lesson2 = lessonFactory.buildWithId({ contents: [contentExample] });
+				const lessons = [lesson1, lesson2];
+
+				lessonRepo.findByUserId.mockResolvedValue(lessons);
+
+				return {
+					userId,
+					lessons,
+				};
+			};
+
+			it('should call findByCourseIds from lesson repo', async () => {
+				const { userId } = setup();
+
+				await expect(lessonService.findAllLessonsByUserId(userId)).resolves.not.toThrow();
+				expect(lessonRepo.findByUserId).toBeCalledWith(userId);
+			});
+
+			it('should return array of lessons with userId', async () => {
+				const { userId, lessons } = setup();
+
+				const result = await lessonService.findAllLessonsByUserId(userId);
+
+				expect(result).toHaveLength(2);
+				expect(result).toEqual(lessons);
+			});
+		});
+	});
+
 	describe('deleteUserDataFromTeams', () => {
 		describe('when deleting by userId', () => {
 			const setup = () => {
