@@ -1,8 +1,8 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { InputFormat } from '@shared/domain/types';
 import { ObjectId } from 'bson';
-import { ExternalToolElement } from './external-tool-element.do';
 import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
+import { ExternalToolElement } from './external-tool-element.do';
 import { FileElement } from './file-element.do';
 import { RichTextElement } from './rich-text-element.do';
 import { SubmissionContainerElement } from './submission-container-element.do';

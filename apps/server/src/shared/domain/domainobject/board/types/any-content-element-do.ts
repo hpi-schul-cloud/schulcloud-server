@@ -5,7 +5,12 @@ import { RichTextElement } from '../rich-text-element.do';
 import { SubmissionContainerElement } from '../submission-container-element.do';
 import type { AnyBoardDo } from './any-board-do';
 
-export type AnyContentElementDo = FileElement | RichTextElement | SubmissionContainerElement | ExternalToolElement | DrawingElement;
+export type AnyContentElementDo =
+	| FileElement
+	| RichTextElement
+	| SubmissionContainerElement
+	| ExternalToolElement
+	| DrawingElement;
 
 export const isAnyContentElement = (element: AnyBoardDo): element is AnyContentElementDo => {
 	const result =
