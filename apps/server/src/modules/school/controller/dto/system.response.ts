@@ -4,6 +4,7 @@ import { LdapConfig, OauthConfig, OidcConfig } from '../../domain';
 
 export class SystemResponse {
 	constructor({
+		id,
 		type,
 		url,
 		alias,
@@ -14,6 +15,7 @@ export class SystemResponse {
 		provisioningStrategy,
 		provisioningUrl,
 	}: SystemResponse) {
+		this.id = id;
 		this.type = type;
 		this.url = url;
 		this.alias = alias;
@@ -24,6 +26,9 @@ export class SystemResponse {
 		this.provisioningStrategy = provisioningStrategy;
 		this.provisioningUrl = provisioningUrl;
 	}
+
+	@ApiProperty()
+	id: string;
 
 	@ApiProperty()
 	type: string;
@@ -37,6 +42,8 @@ export class SystemResponse {
 	@ApiPropertyOptional()
 	displayName?: string;
 
+	// TODO: How deeply do we want to be explicit about the response types?
+	// E.g. do we want an OauthConfigResponse here with all properties marked as ApiProperty?
 	@ApiPropertyOptional()
 	oauthConfig?: OauthConfig;
 

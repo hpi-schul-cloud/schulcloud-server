@@ -92,6 +92,7 @@ export class SchoolResponseMapper {
 
 	private static mapToSystemResponse(system: System) {
 		const res = new SystemResponse({
+			id: system.id,
 			type: system.getProps().type,
 			url: system.getProps().url,
 			alias: system.getProps().alias,
