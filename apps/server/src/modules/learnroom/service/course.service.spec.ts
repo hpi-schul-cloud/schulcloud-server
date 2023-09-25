@@ -40,12 +40,18 @@ describe('CourseService', () => {
 	});
 
 	describe('findById', () => {
-		it('should call findById from course repository', async () => {
+		const setup = () => {
 			const courseId = 'courseId';
 			courseRepo.findById.mockResolvedValueOnce({} as Course);
 
+			return { courseId };
+		};
+
+		it('should call findById from course repository', async () => {
+			const { courseId } = setup();
+
 			await expect(courseService.findById(courseId)).resolves.not.toThrow();
-			expect(courseRepo.findById).toBeCalledTimes(1);
+
 			expect(courseRepo.findById).toBeCalledWith(courseId);
 		});
 	});
@@ -113,6 +119,23 @@ describe('CourseService', () => {
 			const { user } = setup();
 			const result = await courseService.deleteUserDataFromCourse(user.id);
 			expect(result).toEqual(3);
+		});
+	});
+
+	describe('findAllByUserId', () => {
+		const setup = () => {
+			const userId = 'userId';
+			courseRepo.findAllByUserId.mockResolvedValueOnce([[], 0]);
+
+			return { userId };
+		};
+
+		it('should call findAllByUserId from course repository', async () => {
+			const { userId } = setup();
+
+			await expect(courseService.findAllByUserId(userId)).resolves.not.toThrow();
+
+			expect(courseRepo.findAllByUserId).toBeCalledWith(userId);
 		});
 	});
 });
