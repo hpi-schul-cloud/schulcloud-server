@@ -5,7 +5,7 @@ import { Authenticate } from '@src/modules/authentication/decorator/auth.decorat
 import { SchoolUc } from '../domain/uc/school.uc';
 import { SchoolListResponse, SchoolResponse } from './dto';
 import { SchoolUrlParams } from './dto/school-url.params';
-import { SchoolDtoMapper } from './mapper';
+import { SchoolResponseMapper } from './mapper';
 
 @ApiTags('School')
 @Authenticate('jwt')
@@ -17,7 +17,7 @@ export class SchoolController {
 	public async getAllSchools(@Query() pagination: PaginationParams): Promise<SchoolListResponse> {
 		const schools = await this.schoolUc.getAllSchools(pagination);
 
-		const res = SchoolDtoMapper.mapToListResponse(schools);
+		const res = SchoolResponseMapper.mapToListResponse(schools);
 
 		return res;
 	}
@@ -26,7 +26,7 @@ export class SchoolController {
 	public async getSchool(@Param() urlParams: SchoolUrlParams): Promise<SchoolResponse> {
 		const school = await this.schoolUc.getSchool(urlParams.schoolId);
 
-		const res = SchoolDtoMapper.mapToResponse(school);
+		const res = SchoolResponseMapper.mapToResponse(school);
 
 		return res;
 	}

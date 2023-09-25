@@ -6,7 +6,7 @@ import { SchoolReducedResponse } from '../dto/school-reduced.response';
 import { SchoolYearResponse } from '../dto/school-year.response';
 import { SystemResponse } from '../dto/system.response';
 
-export class SchoolDtoMapper {
+export class SchoolResponseMapper {
 	public static mapToResponse(school: School): SchoolResponse {
 		const federalState = this.mapToFederalStateResponse(school.federalState);
 		const schoolYear = school.schoolYear && this.mapToSchoolYearResponse(school.schoolYear);
