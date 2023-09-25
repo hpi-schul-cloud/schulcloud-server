@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { contextExternalToolFactory } from '@shared/testing';
+import { ObjectId } from 'bson';
 import { ToolLaunchService } from '../service';
 import { ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import { ToolLaunchUc } from './tool-launch.uc';
@@ -62,11 +63,11 @@ describe('ToolLaunchUc', () => {
 				properties: [],
 			});
 
-			const userId = 'userId';
+			const userId: string = new ObjectId().toHexString();
 
-			toolPermissionHelper.ensureContextPermissions.mockResolvedValue();
-			contextExternalToolService.getContextExternalToolById.mockResolvedValue(contextExternalTool);
-			toolLaunchService.getLaunchData.mockResolvedValue(toolLaunchData);
+			toolPermissionHelper.ensureContextPermissions.mockResolvedValueOnce();
+			contextExternalToolService.getContextExternalToolById.mockResolvedValueOnce(contextExternalTool);
+			toolLaunchService.getLaunchData.mockResolvedValueOnce(toolLaunchData);
 
 			return {
 				userId,
@@ -95,7 +96,7 @@ describe('ToolLaunchUc', () => {
 		it('should call service to generate launch request', async () => {
 			const { userId, contextExternalToolId, toolLaunchData } = setup();
 
-			toolLaunchService.getLaunchData.mockResolvedValue(toolLaunchData);
+			toolLaunchService.getLaunchData.mockResolvedValueOnce(toolLaunchData);
 
 			await uc.getToolLaunchRequest(userId, contextExternalToolId);
 
