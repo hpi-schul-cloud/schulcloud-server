@@ -3,10 +3,11 @@ import { Server, WebSocket } from 'ws';
 import { MongodbPersistence } from 'y-mongodb-provider';
 import { ConfigService } from '@nestjs/config';
 import { TldrawConfig, SOCKET_PORT } from '@src/modules/tldraw/config';
+import { WsCloseCodeEnum } from '@src/modules/tldraw/types/ws-close-code-enum';
 import { setupWSConnection, setPersistence, updateDocument } from '../utils';
 
 @WebSocketGateway(SOCKET_PORT)
-export class TldrawGateway implements OnGatewayInit, OnGatewayConnection {
+export class TldrawController implements OnGatewayInit, OnGatewayConnection {
 	@WebSocketServer()
 	server!: Server;
 
@@ -22,7 +23,10 @@ export class TldrawGateway implements OnGatewayInit, OnGatewayConnection {
 		if (docName.length > 0 && this.configService.get<string>('FEATURE_TLDRAW_ENABLED')) {
 			setupWSConnection(client, docName);
 		} else {
-			client.close(4000, 'Document name is mandatory in url or Tldraw Tool is turned off.');
+			client.close(
+				WsCloseCodeEnum.WS_CUSTOM_CLIENT_CLOSE_CODE,
+				'Document name is mandatory in url or Tldraw Tool is turned off.'
+			);
 		}
 	}
 

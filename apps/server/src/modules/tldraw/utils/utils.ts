@@ -1,16 +1,12 @@
 import { setInterval, clearInterval } from 'timers';
-import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
-import { Awareness, encodeAwarenessUpdate, removeAwarenessStates, applyAwarenessUpdate } from 'y-protocols/awareness';
+import { encodeAwarenessUpdate, removeAwarenessStates, applyAwarenessUpdate } from 'y-protocols/awareness';
 import { encoding, decoding, map } from 'lib0';
 import { writeUpdate, readSyncMessage, writeSyncStep1 } from 'y-protocols/sync';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import WebSocket from 'ws';
-import { MongodbPersistence } from 'y-mongodb-provider';
-import { WSMessageType, WSConnectionState, Persitence } from '../types';
+import { WSMessageType, WSConnectionState, Persitence, WSSharedDoc } from '../types';
 
 const pingTimeout: number = (Configuration.get('TLDRAW__PING_TIMEOUT') as number) ?? 10000;
-// disable gc when using snapshots!
-const gcEnabled: boolean = Configuration.get('TLDRAW__GC_ENABLED') as boolean;
 
 /**
  * @type {{bindState: function(string,WSSharedDoc):void, writeState:function(string,WSSharedDoc):Promise<any>, provider: any}|null}
@@ -91,58 +87,6 @@ export const updateHandler = (update: Uint8Array, origin, doc: WSSharedDoc) => {
 	const message = encoding.toUint8Array(encoder);
 	doc.conns.forEach((_, conn) => send(doc, conn, message));
 };
-
-export class WSSharedDoc extends Doc {
-	name: string;
-
-	conns: Map<WebSocket, Set<number>>;
-
-	awareness: Awareness;
-
-	/**
-	 * @param {string} name
-	 */
-	constructor(name: string) {
-		super({ gc: gcEnabled });
-		this.name = name;
-		this.conns = new Map();
-		this.awareness = new Awareness(this);
-		this.awareness.setLocalState(null);
-
-		this.awareness.on('update', this.awarenessChangeHandler);
-		this.on('update', updateHandler);
-	}
-
-	/**
-	 * @param {{ added: Array<number>, updated: Array<number>, removed: Array<number> }} changes
-	 * @param {WebSocket | null} conn Origin is the connection that made the change
-	 */
-	awarenessChangeHandler = (
-		{ added, updated, removed }: { added: Array<number>; updated: Array<number>; removed: Array<number> },
-		conn: WebSocket | null
-	) => {
-		const changedClients = added.concat(updated, removed);
-		if (conn !== null) {
-			const connControlledIDs = this.conns.get(conn) as Set<number>;
-			if (connControlledIDs !== undefined) {
-				added.forEach((clientID) => {
-					connControlledIDs.add(clientID);
-				});
-				removed.forEach((clientID) => {
-					connControlledIDs.delete(clientID);
-				});
-			}
-		}
-		// broadcast awareness update
-		const encoder = encoding.createEncoder();
-		encoding.writeVarUint(encoder, WSMessageType.AWARENESS);
-		encoding.writeVarUint8Array(encoder, encodeAwarenessUpdate(this.awareness, changedClients));
-		const buff = encoding.toUint8Array(encoder);
-		this.conns.forEach((_, c) => {
-			send(this, c, buff);
-		});
-	};
-}
 
 /**
  * Gets a Y.Doc by name, whether in memory or on disk
@@ -254,45 +198,4 @@ export const setupWSConnection = (ws: WebSocket, docName = 'GLOBAL') => {
 			send(doc, ws, encoding.toUint8Array(encoder));
 		}
 	}
-};
-
-// eslint-disable-next-line consistent-return
-export const getYDocFromMdb = async (mdb: MongodbPersistence, docName: string) => {
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
-	const yDoc = await mdb.getYDoc(docName);
-	if (yDoc instanceof Doc) {
-		return yDoc;
-	}
-};
-
-export const calculateDiff = (diff: Uint8Array) =>
-	diff.reduce((previousValue, currentValue) => previousValue + currentValue, 0);
-
-export const updateStoredDocWithDiff = (mdb: MongodbPersistence, docName: string, diff: Uint8Array) => {
-	if (calculateDiff(diff) > 0) {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-		mdb.storeUpdate(docName, diff);
-	}
-};
-
-export const updateDocument = async (mdb: MongodbPersistence, docName: string, ydoc: WSSharedDoc) => {
-	const persistedYdoc = await getYDocFromMdb(mdb, docName);
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	const persistedStateVector = encodeStateVector(persistedYdoc);
-	const diff = encodeStateAsUpdate(ydoc, persistedStateVector);
-	updateStoredDocWithDiff(mdb, docName, diff);
-
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	applyUpdate(ydoc, encodeStateAsUpdate(persistedYdoc));
-
-	ydoc.on('update', (update) => {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-		mdb.storeUpdate(docName, update);
-	});
-
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	persistedYdoc.destroy();
 };

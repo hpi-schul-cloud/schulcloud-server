@@ -8,11 +8,11 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { config } from '@src/modules/tldraw/config';
 import * as Utils from '../../utils/utils';
-import { TldrawGateway } from '../tldraw.gateway';
+import { TldrawController } from '../tldraw.controller';
 
-describe('WebSocketGateway (WsAdapter)', () => {
+describe('WebSocketController (WsAdapter)', () => {
 	let app: INestApplication;
-	let gateway: TldrawGateway;
+	let gateway: TldrawController;
 	let ws: WebSocket;
 
 	const gatewayPort = 3346;
@@ -44,9 +44,9 @@ describe('WebSocketGateway (WsAdapter)', () => {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
 		const testingModule = await Test.createTestingModule({
 			imports,
-			providers: [TldrawGateway],
+			providers: [TldrawController],
 		}).compile();
-		gateway = testingModule.get<TldrawGateway>(TldrawGateway);
+		gateway = testingModule.get<TldrawController>(TldrawController);
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
 		await app.init();

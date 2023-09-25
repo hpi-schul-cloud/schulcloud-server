@@ -8,16 +8,17 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { config } from '@src/modules/tldraw/config';
 import * as Utils from '@src/modules/tldraw/utils/utils';
+import * as YjsUtils from '@src/modules/tldraw/utils/ydoc-utils';
 import { WSSharedDoc } from '@src/modules/tldraw/utils/utils';
 import { TextEncoder } from 'util';
 import * as SyncProtocols from 'y-protocols/sync';
 import * as AwarenessProtocol from 'y-protocols/awareness';
 import { encoding } from 'lib0';
-import { TldrawGateway } from '.';
+import { TldrawController } from '.';
 
 describe('TldrawGateway', () => {
 	let app: INestApplication;
-	let gateway: TldrawGateway;
+	let gateway: TldrawController;
 	let ws: WebSocket;
 
 	const gatewayPort = 3346;
@@ -38,10 +39,10 @@ describe('TldrawGateway', () => {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
 		const testingModule = await Test.createTestingModule({
 			imports,
-			providers: [TldrawGateway],
+			providers: [TldrawController],
 		}).compile();
 
-		gateway = testingModule.get<TldrawGateway>(TldrawGateway);
+		gateway = testingModule.get<TldrawController>(TldrawController);
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
 		jest.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] });
@@ -75,7 +76,7 @@ describe('TldrawGateway', () => {
 		};
 	};
 
-	it('should gateway properties be defined', async () => {
+	it('should controller properties be defined', async () => {
 		await app.init();
 
 		expect(gateway).toBeDefined();
@@ -472,7 +473,7 @@ describe('TldrawGateway', () => {
 			};
 			const storeUpdateSpy = jest.spyOn(mdb, 'storeUpdate');
 			const byteArray = new TextEncoder().encode(testMessage);
-			const calculateDiffSpy = jest.spyOn(Utils, 'calculateDiff').mockImplementation(() => 1);
+			const calculateDiffSpy = jest.spyOn(YjsUtils, 'calculateDiff').mockImplementation(() => 1);
 
 			return {
 				mdb,
@@ -486,7 +487,7 @@ describe('TldrawGateway', () => {
 		it('should store on db', async () => {
 			const { mdb, doc, byteArray, storeUpdateSpy, calculateDiffSpy } = await setup();
 
-			await Utils.updateDocument(mdb as MongodbPersistence, 'TEST', doc);
+			await YjsUtils.updateDocument(mdb as MongodbPersistence, 'TEST', doc);
 			doc.emit('update', [byteArray, undefined, doc]);
 			await delay(200);
 			expect(storeUpdateSpy).toHaveBeenCalled();
@@ -512,7 +513,7 @@ describe('TldrawGateway', () => {
 				storeUpdate: () => {},
 			};
 			const storeUpdateSpy = jest.spyOn(mdb, 'storeUpdate');
-			const calculateDiffSpy = jest.spyOn(Utils, 'calculateDiff');
+			const calculateDiffSpy = jest.spyOn(YjsUtils, 'calculateDiff');
 
 			return {
 				mdb,
@@ -525,7 +526,7 @@ describe('TldrawGateway', () => {
 		it('should not update db with diff', async () => {
 			const { mdb, doc, storeUpdateSpy, calculateDiffSpy } = await setup();
 
-			await Utils.updateDocument(mdb as MongodbPersistence, 'TEST2', doc);
+			await YjsUtils.updateDocument(mdb as MongodbPersistence, 'TEST2', doc);
 			await delay(200);
 			expect(storeUpdateSpy).toHaveBeenCalledTimes(0);
 			expect(calculateDiffSpy).toReturnWith(0);
