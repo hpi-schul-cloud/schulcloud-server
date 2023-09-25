@@ -61,7 +61,7 @@ describe(`content element update content (api)`, () => {
 
 			const column = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 			const parentCard = cardNodeFactory.buildWithId({ parent: column });
-			const richTextelement = richTextElementNodeFactory.buildWithId({ parent: parentCard });
+			const richTextElement = richTextElementNodeFactory.buildWithId({ parent: parentCard });
 			const fileElement = fileElementNodeFactory.buildWithId({ parent: parentCard });
 			const submissionContainerElement = submissionContainerElementNodeFactory.buildWithId({ parent: parentCard });
 
@@ -77,7 +77,7 @@ describe(`content element update content (api)`, () => {
 				parentCard,
 				column,
 				columnBoardNode,
-				richTextelement,
+				richTextElement,
 				fileElement,
 				submissionContainerElement,
 				submissionContainerElementWithDueDate,
@@ -88,7 +88,7 @@ describe(`content element update content (api)`, () => {
 
 			return {
 				loggedInClient,
-				richTextelement,
+				richTextElement,
 				fileElement,
 				submissionContainerElement,
 				submissionContainerElementWithDueDate,
@@ -96,9 +96,9 @@ describe(`content element update content (api)`, () => {
 		};
 
 		it('should return status 204', async () => {
-			const { loggedInClient, richTextelement } = await setup();
+			const { loggedInClient, richTextElement } = await setup();
 
-			const response = await loggedInClient.patch(`${richTextelement.id}/content`, {
+			const response = await loggedInClient.patch(`${richTextElement.id}/content`, {
 				data: {
 					content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 },
 					type: ContentElementType.RICH_TEXT,
@@ -109,30 +109,30 @@ describe(`content element update content (api)`, () => {
 		});
 
 		it('should actually change content of the element', async () => {
-			const { loggedInClient, richTextelement } = await setup();
+			const { loggedInClient, richTextElement } = await setup();
 
-			await loggedInClient.patch(`${richTextelement.id}/content`, {
+			await loggedInClient.patch(`${richTextElement.id}/content`, {
 				data: {
 					content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 },
 					type: ContentElementType.RICH_TEXT,
 				},
 			});
-			const result = await em.findOneOrFail(RichTextElementNode, richTextelement.id);
+			const result = await em.findOneOrFail(RichTextElementNode, richTextElement.id);
 
 			expect(result.text).toEqual('hello world');
 		});
 
 		it('should sanitize rich text before changing content of the element', async () => {
-			const { loggedInClient, richTextelement } = await setup();
+			const { loggedInClient, richTextElement } = await setup();
 
 			const text = '<iframe>rich text 1</iframe> some more text';
 
 			const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
 
-			await loggedInClient.patch(`${richTextelement.id}/content`, {
+			await loggedInClient.patch(`${richTextElement.id}/content`, {
 				data: { content: { text, inputFormat: InputFormat.RICH_TEXT_CK5 }, type: ContentElementType.RICH_TEXT },
 			});
-			const result = await em.findOneOrFail(RichTextElementNode, richTextelement.id);
+			const result = await em.findOneOrFail(RichTextElementNode, richTextElement.id);
 
 			expect(result.text).toEqual(sanitizedText);
 		});
