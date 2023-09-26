@@ -142,8 +142,8 @@ export class ExternalToolConfigurationUc {
 		const contextExternalTool: ContextExternalTool = await this.contextExternalToolService.getContextExternalToolById(
 			contextExternalToolId
 		);
-		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
 
+		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
 		await this.toolPermissionHelper.ensureContextPermissions(userId, contextExternalTool, context);
 
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.getSchoolExternalToolById(

@@ -346,22 +346,20 @@ describe('ToolConfigurationController (API)', () => {
 	describe('GET tools/school-external-tools/:schoolExternalToolId/configuration-template', () => {
 		describe('when the user is not authorized', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolFactory.buildWithId();
-
-				const user: User = userFactory.buildWithId({ school, roles: [] });
-				const account: Account = accountFactory.buildWithId({ userId: user.id });
-
-				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId();
-
-				const schoolExternalTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const school = schoolFactory.build();
+				// not on same school like the tool
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({}, []);
+				const otherCourse = courseFactory.build();
+				const externalTool: ExternalToolEntity = externalToolEntityFactory.build();
+				const schoolExternalTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.build({
 					school,
 					tool: externalTool,
 				});
 
-				await em.persistAndFlush([user, account, school, externalTool, schoolExternalTool]);
+				await em.persistAndFlush([adminAccount, adminUser, school, externalTool, schoolExternalTool]);
 				em.clear();
 
-				const loggedInClient: TestApiClient = await testApiClient.login(account);
+				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
 				return {
 					loggedInClient,
@@ -477,51 +475,43 @@ describe('ToolConfigurationController (API)', () => {
 	describe('GET tools/context-external-tools/:contextExternalToolId/configuration-template', () => {
 		describe('when the user is not authorized', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolFactory.buildWithId();
-
-				const course: Course = courseFactory.buildWithId();
-
-				const user: User = userFactory.buildWithId({ school, roles: [] });
-				const account: Account = accountFactory.buildWithId({ userId: user.id });
-
-				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId();
-
-				const schoolExternalTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const school = schoolFactory.build();
+				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.SCHOOL_TOOL_ADMIN]);
+				// user is not part of the course
+				const course = courseFactory.build();
+				const externalTool: ExternalToolEntity = externalToolEntityFactory.build();
+				const schoolExternalTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.build({
 					school,
 					tool: externalTool,
 				});
 
-				const contextExternalTool: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
+				await em.persistAndFlush([course, adminUser, adminAccount, school, externalTool, schoolExternalTool]);
+
+				const contextExternalTool: ContextExternalToolEntity = contextExternalToolEntityFactory.build({
 					schoolTool: schoolExternalTool,
+					contextId: course.id,
 				});
 
-				await em.persistAndFlush([
-					user,
-					account,
-					school,
-					externalTool,
-					schoolExternalTool,
-					contextExternalTool,
-					course,
-				]);
+				await em.persistAndFlush([contextExternalTool]);
 				em.clear();
 
-				const loggedInClient: TestApiClient = await testApiClient.login(account);
+				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
 				return {
 					loggedInClient,
-					contextExternalTool,
+					contextExternalToolId: contextExternalTool.id,
 				};
 			};
 
 			it('should return a forbidden status', async () => {
-				const { loggedInClient, contextExternalTool } = await setup();
+				const { loggedInClient, contextExternalToolId } = await setup();
 
 				const response: Response = await loggedInClient.get(
-					`context-external-tools/${contextExternalTool.id}/configuration-template`
+					`context-external-tools/${contextExternalToolId}/configuration-template`
 				);
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+				// body
 			});
 		});
 
@@ -607,36 +597,26 @@ describe('ToolConfigurationController (API)', () => {
 
 		describe('when tool is hidden', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolFactory.buildWithId();
-
+				const school = schoolFactory.build();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
 					Permission.CONTEXT_TOOL_ADMIN,
 				]);
-
-				const course: Course = courseFactory.buildWithId({ school, teachers: [teacherUser] });
-
-				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({ isHidden: true });
-
-				const schoolExternalTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const course = courseFactory.build({ school, teachers: [teacherUser] });
+				const externalTool: ExternalToolEntity = externalToolEntityFactory.build({ isHidden: true });
+				const schoolExternalTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.build({
 					school,
 					tool: externalTool,
 				});
 
-				const contextExternalTool: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
+				await em.persistAndFlush([teacherUser, school, teacherAccount, externalTool, schoolExternalTool, course]);
+
+				const contextExternalTool: ContextExternalToolEntity = contextExternalToolEntityFactory.build({
 					schoolTool: schoolExternalTool,
 					contextType: ContextExternalToolType.COURSE,
 					contextId: course.id,
 				});
 
-				await em.persistAndFlush([
-					teacherUser,
-					school,
-					teacherAccount,
-					externalTool,
-					schoolExternalTool,
-					contextExternalTool,
-					course,
-				]);
+				await em.persistAndFlush([contextExternalTool]);
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
