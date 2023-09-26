@@ -12,7 +12,7 @@ import {
 	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server/server.module';
-import { AnyContentElementResponse } from '../dto';
+import { AnyContentElementResponse, SubmissionContainerElementResponse } from '../dto';
 
 const baseRouteName = '/cards';
 
@@ -91,7 +91,7 @@ describe(`content element create (api)`, () => {
 			expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.EXTERNAL_TOOL);
 		});
 
-		it('should return the created content element of type SUBMISSION_CONTAINER', async () => {
+		it('should return the created content element of type SUBMISSION_CONTAINER with dueDate set to null', async () => {
 			const { loggedInClient, cardNode } = await setup();
 
 			const response = await loggedInClient.post(`${cardNode.id}/elements`, {
@@ -99,6 +99,7 @@ describe(`content element create (api)`, () => {
 			});
 
 			expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.SUBMISSION_CONTAINER);
+			expect((response.body as SubmissionContainerElementResponse).content.dueDate).toBeNull();
 		});
 
 		it('should actually create the content element', async () => {
