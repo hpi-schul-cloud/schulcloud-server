@@ -21,6 +21,7 @@ import {
 	cardFactory,
 	columnBoardFactory,
 	columnFactory,
+	drawingElementFactory,
 	externalToolElementFactory,
 	fileElementFactory,
 	richTextElementFactory,
@@ -329,7 +330,11 @@ describe('recursive board copy visitor', () => {
 
 		describe('when copying a card with children', () => {
 			const setup = () => {
-				const children = [...richTextElementFactory.buildList(4), ...submissionContainerElementFactory.buildList(3)];
+				const children = [
+					...richTextElementFactory.buildList(4),
+					...submissionContainerElementFactory.buildList(3),
+					...drawingElementFactory.buildList(1),
+				];
 				const original = cardFactory.build({ children });
 
 				return { original, ...setupfileCopyService() };
