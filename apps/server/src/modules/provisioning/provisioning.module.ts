@@ -2,16 +2,15 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
 import { AccountModule } from '@src/modules/account/account.module';
-import { FederalStateModule } from '@src/modules/federal-state';
 import { GroupModule } from '@src/modules/group';
-import { RoleModule } from '@src/modules/role';
 import { LegacySchoolModule } from '@src/modules/legacy-school';
+import { RoleModule } from '@src/modules/role';
 import { SystemModule } from '@src/modules/system/system.module';
 import { UserModule } from '@src/modules/user';
 import { ProvisioningService } from './service/provisioning.service';
 import { IservProvisioningStrategy, OidcMockProvisioningStrategy, SanisProvisioningStrategy } from './strategy';
 import { OidcProvisioningService } from './strategy/oidc/service/oidc-provisioning.service';
-import { SanisResponseMapper } from './strategy/sanis/sanis-response.mappers';
+import { SanisResponseMapper } from './strategy/sanis/sanis-response.mapper';
 
 @Module({
 	imports: [

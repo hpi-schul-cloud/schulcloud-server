@@ -4,6 +4,6 @@ import { FederalStateService } from './service';
 
 @Module({
 	providers: [FederalStateService, FederalStateRepo],
-	exports: [FederalStateService],
+	exports: [FederalStateService, FederalStateRepo],
 })
 export class FederalStateModule {}

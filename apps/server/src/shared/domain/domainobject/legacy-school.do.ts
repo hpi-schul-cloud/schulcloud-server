@@ -1,6 +1,6 @@
-import { FederalStateEntity, SchoolFeatures, SchoolYearEntity } from '@shared/domain/entity';
+import { SchoolFeatures, SchoolYearEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { FederalStateDO } from '@src/modules/federal-state/domainobject/federal-state.do';
+import { FederalStateDO } from '@src/modules/federal-state/domainobject';
 import { BaseDO } from './base.do';
 
 /**
@@ -29,7 +29,7 @@ export class LegacySchoolDo extends BaseDO {
 	userLoginMigrationId?: EntityId;
 
 	// TODO: N21-990 Refactoring: Create domain objects for schoolYear and federalState
-	federalState: FederalStateEntity;
+	federalState: FederalStateDO;
 
 	constructor(params: LegacySchoolDo) {
 		super();
