@@ -47,8 +47,6 @@ export class KeycloakSeedService {
 			this.logger.log(`Amount of found Users: ${foundUsers}`);
 			for (const user of users) {
 				// eslint-disable-next-line no-await-in-loop
-				kc = await this.kcAdmin.callKcAdminClient();
-				// eslint-disable-next-line no-await-in-loop
 				await kc.users.del({
 					id: user.id ?? '',
 				});
