@@ -3,9 +3,9 @@ import {
 	CourseNews,
 	INewsProperties,
 	News,
-	School,
+	SchoolEntity,
 	SchoolNews,
-	Team,
+	TeamEntity,
 	TeamNews,
 	User,
 	NewsTargetModel,
@@ -43,7 +43,7 @@ const date = new Date(2021, 1, 1, 0, 0, 0);
 const createNews = <T extends News>(
 	newsProps,
 	NewsType: { new (props: INewsProperties): T },
-	school: School,
+	school: SchoolEntity,
 	creator: User,
 	target: NewsTarget
 ): T => {
@@ -70,7 +70,7 @@ const createNews = <T extends News>(
 };
 
 const getExpectedNewsResponse = (
-	school: School,
+	school: SchoolEntity,
 	creator: User,
 	news: News,
 	newsProps: { title: string; content: string },
@@ -144,7 +144,7 @@ describe('NewsMapper', () => {
 		});
 		it('should correctly map team news to dto', () => {
 			const school = schoolFactory.build();
-			const team = new Team({ name: 'team #1' });
+			const team = new TeamEntity({ name: 'team #1' });
 			const creator = userFactory.build();
 			const newsProps = { title: 'test title', content: 'test content' };
 			const teamNews = createNews(newsProps, TeamNews, school, creator, team);

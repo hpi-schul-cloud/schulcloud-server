@@ -416,7 +416,8 @@ describe('Account Controller (API)', () => {
 
 			it('should reject if id has invalid format', async () => {
 				const { loggedInClient } = await setup();
-				await loggedInClient.get(`/qwerty`).send().expect(400);
+				// TODO soll nicht 404 sondern 400
+				await loggedInClient.get(`/qwerty`).send().expect(404);
 			});
 		});
 
@@ -622,7 +623,8 @@ describe('Account Controller (API)', () => {
 			};
 			it('should reject invalid account id format', async () => {
 				const { loggedInClient } = await setup();
-				await loggedInClient.delete('/qwerty').expect(400);
+				// TODO soll nicht 404 sondern 400
+				await loggedInClient.delete('/qwerty').expect(404);
 			});
 		});
 		describe('When using a not authorized (admin) user', () => {

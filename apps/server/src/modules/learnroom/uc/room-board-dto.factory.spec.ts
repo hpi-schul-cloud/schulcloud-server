@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board, Course, Lesson, Task, TaskWithStatusVo, User } from '@shared/domain';
+import { Board, Course, LessonEntity, Task, TaskWithStatusVo, User } from '@shared/domain';
 import {
 	boardFactory,
 	columnboardBoardElementFactory,
@@ -44,7 +44,7 @@ describe(RoomBoardDTOFactory.name, () => {
 							throw new Error('Please write a mock for RoomsAuthorisationService.hasTaskReadPermission');
 						},
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						hasLessonReadPermission(user: User, lesson: Lesson): boolean {
+						hasLessonReadPermission(user: User, lesson: LessonEntity): boolean {
 							throw new Error('Please write a mock for RoomsAuthorisationService.hasLessonReadPermission');
 						},
 					},
@@ -204,7 +204,7 @@ describe(RoomBoardDTOFactory.name, () => {
 			let substitutionTeacher: User;
 			let board: Board;
 			let room: Course;
-			let lessons: Lesson[];
+			let lessons: LessonEntity[];
 
 			beforeEach(() => {
 				teacher = userFactory.buildWithId();
@@ -243,7 +243,7 @@ describe(RoomBoardDTOFactory.name, () => {
 			let substitutionTeacher: User;
 			let board: Board;
 			let room: Course;
-			let lesson: Lesson;
+			let lesson: LessonEntity;
 			const inOneDay = new Date(Date.now() + 8.64e7);
 
 			beforeEach(() => {
@@ -325,7 +325,7 @@ describe(RoomBoardDTOFactory.name, () => {
 			let substitutionTeacher: User;
 			let board: Board;
 			let room: Course;
-			let lessons: Lesson[];
+			let lessons: LessonEntity[];
 
 			beforeEach(() => {
 				teacher = userFactory.buildWithId();

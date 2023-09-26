@@ -1,5 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import { submissionContainerElementFactory } from '@shared/testing';
+import { submissionContainerElementFactory, submissionItemFactory } from '@shared/testing';
 import { SubmissionContainerElement } from './submission-container-element.do';
 import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
@@ -10,6 +10,13 @@ describe(SubmissionContainerElement.name, () => {
 			const submissionContainerElementChild = submissionContainerElementFactory.build();
 
 			expect(() => submissionContainerElement.addChild(submissionContainerElementChild)).toThrow();
+		});
+
+		it('should not throw if child is submission-item ', () => {
+			const submissionContainerElement = submissionContainerElementFactory.build();
+			const submissionContainerElementChild = submissionItemFactory.build();
+
+			expect(() => submissionContainerElement.addChild(submissionContainerElementChild)).not.toThrow();
 		});
 	});
 

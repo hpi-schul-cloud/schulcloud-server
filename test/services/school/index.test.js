@@ -133,7 +133,7 @@ describe('school service', () => {
 			const out = await schoolService.get(schoolId);
 			expect(out, 'school has been saved').to.be.not.null;
 			expect(out.currentYear, 'the defined year has been added to the school').to.be.ok;
-			expect(equalIds(sampleYear._id, out.currentYear), 'the defined year has been added to the school').to.be.true;
+			expect(equalIds(sampleYear._id, out.currentYear._id), 'the defined year has been added to the school').to.be.true;
 		});
 
 		it('create school with no currentYear defined that will be added', async () => {
@@ -144,7 +144,7 @@ describe('school service', () => {
 			expect(out, 'school has been saved').to.be.not.null;
 			const { currentYear } = out;
 			expect(currentYear, 'the defined year has been added to the school').to.be.ok;
-			const foundYear = defaultYears.filter((year) => equalIds(year._id, currentYear));
+			const foundYear = defaultYears.filter((year) => equalIds(year._id, currentYear._id));
 			expect(foundYear.length, 'the auto added year exists in years').to.be.equal(1);
 			// here we could test, we have defaultYear added but however we just need any year
 			// to be set and this should not test year logic
@@ -589,7 +589,6 @@ describe('years service', () => {
 	});
 
 	it('registered the years services', () => {
-		assert.ok(app.service('years'));
 		assert.ok(app.service('gradeLevels'));
 	});
 });

@@ -2,7 +2,7 @@ const { Forbidden, NotFound, BadRequest } = require('../../../errors');
 const hooks = require('../hooks');
 const { TEAM_FEATURES } = require('../model');
 const { warning } = require('../../../logger/index');
-const { SC_SHORT_TITLE } = require('../../../../config/globals');
+const { SC_TITLE } = require('../../../../config/globals');
 
 const { createUserWithRole } = require('../hooks/helpers');
 const { getBasic, patchTeam, getSessionUser } = require('../helpers');
@@ -59,7 +59,7 @@ class AdminOverview {
 				if (m.userId) {
 					const obj = {
 						role: m.role.name,
-						user: AdminOverview.getKeys(m.userId, ['roles', '_id', 'firstName', 'lastName']),
+						user: AdminOverview.getKeys(m.userId, ['roles', '_id', 'firstName', 'lastName', 'outdatedSince']),
 					};
 					reducedSchoolMembers.push(obj);
 				}
@@ -195,11 +195,13 @@ class AdminOverview {
 		\nDu wurdest über die Administratoren-Kontaktfunktion benachrichtigt.
 		\n\nText der Nachricht: \n${text}
 		\n\nVielen Dank
-		\nDein ${SC_SHORT_TITLE}-Team`;
+		\nDein ${SC_TITLE}-Team`;
 	}
 
 	static getRestrictedQuery(teamIds, schoolId) {
-		let query = teamIds.map((_id) => ({ _id }));
+		let query = teamIds.map((_id) => {
+			return { _id };
+		});
 		query = { $or: query, $populate: [{ path: 'userIds.userId' }] };
 		query.schoolIds = schoolId;
 		return { query };
@@ -239,7 +241,7 @@ class AdminOverview {
 							throw new NotFound('No team found.');
 						}
 
-						const subject = `${SC_SHORT_TITLE}: Es besteht Klärungsbedarf zu deinem Team!`;
+						const subject = `${SC_TITLE}: Es besteht Klärungsbedarf zu deinem Team!`;
 						const mailService = this.app.service('/mails');
 						const ownerRoleId = ref.findRole('name', 'teamowner', '_id');
 						const emails = teams.reduce((stack, team) => {

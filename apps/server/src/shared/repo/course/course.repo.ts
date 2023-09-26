@@ -63,7 +63,7 @@ export class CourseRepo extends BaseRepo<Course> {
 	async findById(id: EntityId, populate = true): Promise<Course> {
 		const course = await super.findById(id);
 		if (populate) {
-			await this._em.populate(course, ['courseGroups', 'teachers']);
+			await this._em.populate(course, ['courseGroups', 'teachers', 'substitutionTeachers', 'students']);
 		}
 		return course;
 	}
@@ -133,16 +133,6 @@ export class CourseRepo extends BaseRepo<Course> {
 
 		const course = await this._em.findOneOrFail(Course, scope.query);
 
-		return course;
-	}
-
-	async findOneForTeacherOrSubstituteTeacher(userId: EntityId, courseId: EntityId): Promise<Course> {
-		const scope = new CourseScope();
-		scope.forCourseId(courseId);
-		scope.forTeacherOrSubstituteTeacher(userId);
-		const course = await this._em.findOneOrFail(Course, scope.query);
-
-		await this._em.populate(course, ['students']);
 		return course;
 	}
 }

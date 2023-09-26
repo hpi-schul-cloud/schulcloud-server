@@ -1,14 +1,16 @@
 import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
-import { BaseEntityWithTimestamps, type EntityId } from '@shared/domain';
+import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
 import { v4 as uuid } from 'uuid';
 import { ErrorType } from '../error';
+import { PreviewInputMimeTypes } from '../interface/preview-input-mime-types.enum';
 
 export enum ScanStatus {
 	PENDING = 'pending',
 	VERIFIED = 'verified',
 	BLOCKED = 'blocked',
+	WONT_CHECK = 'wont_check',
 	ERROR = 'error',
 }
 
@@ -21,13 +23,23 @@ export enum FileRecordParentType {
 	'Submission' = 'submissions',
 	'BoardNode' = 'boardnodes',
 }
-export interface IFileSecurityCheckProperties {
+
+export enum PreviewStatus {
+	PREVIEW_POSSIBLE = 'preview_possible',
+	AWAITING_SCAN_STATUS = 'awaiting_scan_status',
+	PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR = 'preview_not_possible_scan_status_error',
+	PREVIEW_NOT_POSSIBLE_SCAN_STATUS_WONT_CHECK = 'preview_not_possible_scan_status_wont_check',
+	PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED = 'preview_not_possible_scan_status_blocked',
+	PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE = 'preview_not_possible_wrong_mime_type',
+}
+
+export interface IFileRecordSecurityCheckProperties {
 	status?: ScanStatus;
 	reason?: string;
 	requestToken?: string;
 }
 @Embeddable()
-export class FileSecurityCheck {
+export class FileRecordSecurityCheck {
 	@Enum()
 	status: ScanStatus = ScanStatus.PENDING;
 
@@ -43,7 +55,7 @@ export class FileSecurityCheck {
 	@Property()
 	updatedAt = new Date();
 
-	constructor(props: IFileSecurityCheckProperties) {
+	constructor(props: IFileRecordSecurityCheckProperties) {
 		if (props.status !== undefined) {
 			this.status = props.status;
 		}
@@ -99,8 +111,8 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	@Property()
 	mimeType: string; // TODO mime-type enum?
 
-	@Embedded(() => FileSecurityCheck, { object: true, nullable: false })
-	securityCheck: FileSecurityCheck;
+	@Embedded(() => FileRecordSecurityCheck, { object: true, nullable: false })
+	securityCheck: FileRecordSecurityCheck;
 
 	@Index()
 	@Enum()
@@ -149,7 +161,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		if (props.isCopyFrom) {
 			this._isCopyFrom = new ObjectId(props.isCopyFrom);
 		}
-		this.securityCheck = new FileSecurityCheck({});
+		this.securityCheck = new FileRecordSecurityCheck({});
 		this.deletedSince = props.deletedSince;
 	}
 
@@ -218,6 +230,18 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return isBlocked;
 	}
 
+	public hasScanStatusError(): boolean {
+		const hasError = this.securityCheck.status === ScanStatus.ERROR;
+
+		return hasError;
+	}
+
+	public hasScanStatusWontCheck(): boolean {
+		const hasWontCheckStatus = this.securityCheck.status === ScanStatus.WONT_CHECK;
+
+		return hasWontCheckStatus;
+	}
+
 	public isPending(): boolean {
 		const isPending = this.securityCheck.status === ScanStatus.PENDING;
 
@@ -238,5 +262,29 @@ export class FileRecord extends BaseEntityWithTimestamps {
 
 	public getSchoolId(): EntityId {
 		return this.schoolId;
+	}
+
+	public getPreviewStatus(): PreviewStatus {
+		if (this.isBlocked()) {
+			return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED;
+		}
+
+		if (!Object.values<string>(PreviewInputMimeTypes).includes(this.mimeType)) {
+			return PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE;
+		}
+
+		if (this.isVerified()) {
+			return PreviewStatus.PREVIEW_POSSIBLE;
+		}
+
+		if (this.isPending()) {
+			return PreviewStatus.AWAITING_SCAN_STATUS;
+		}
+
+		if (this.hasScanStatusWontCheck()) {
+			return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_WONT_CHECK;
+		}
+
+		return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR;
 	}
 }

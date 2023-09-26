@@ -7,21 +7,27 @@ import {
 	NotFoundException,
 	Param,
 	Patch,
+	Post,
 	Put,
 } from '@nestjs/common';
-import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { CardUc } from '../uc';
 import { ElementUc } from '../uc/element.uc';
-import { ContentElementUrlParams, MoveContentElementBody } from './dto';
 import {
-	UpdateElementContentBodyParams,
+	ContentElementUrlParams,
+	CreateSubmissionItemBodyParams,
+	ExternalToolElementContentBody,
 	FileElementContentBody,
+	MoveContentElementBody,
 	RichTextElementContentBody,
 	SubmissionContainerElementContentBody,
-} from './dto/element/update-element-content.body.params';
+	SubmissionItemResponse,
+	UpdateElementContentBodyParams,
+} from './dto';
+import { SubmissionItemResponseMapper } from './mapper';
 
 @ApiTags('Board Element')
 @Authenticate('jwt')
@@ -50,7 +56,12 @@ export class ElementController {
 	}
 
 	@ApiOperation({ summary: 'Update a single content element.' })
-	@ApiExtraModels(FileElementContentBody, RichTextElementContentBody, SubmissionContainerElementContentBody)
+	@ApiExtraModels(
+		FileElementContentBody,
+		RichTextElementContentBody,
+		SubmissionContainerElementContentBody,
+		ExternalToolElementContentBody
+	)
 	@ApiResponse({ status: 204 })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
@@ -77,5 +88,29 @@ export class ElementController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.cardUc.deleteElement(currentUser.userId, urlParams.contentElementId);
+	}
+
+	@ApiOperation({ summary: 'Create a new submission item having parent a submission container element.' })
+	@ApiExtraModels(SubmissionItemResponse)
+	@ApiResponse({ status: 201, type: SubmissionItemResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@ApiBody({ required: true, type: CreateSubmissionItemBodyParams })
+	@Post(':contentElementId/submissions')
+	async createSubmissionItem(
+		@Param() urlParams: ContentElementUrlParams,
+		@Body() bodyParams: CreateSubmissionItemBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<SubmissionItemResponse> {
+		const submissionItem = await this.elementUc.createSubmissionItem(
+			currentUser.userId,
+			urlParams.contentElementId,
+			bodyParams.completed
+		);
+		const mapper = SubmissionItemResponseMapper.getInstance();
+		const response = mapper.mapSubmissionsToResponse(submissionItem);
+
+		return response;
 	}
 }

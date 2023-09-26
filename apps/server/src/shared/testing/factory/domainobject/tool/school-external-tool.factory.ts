@@ -1,28 +1,24 @@
+import { CustomParameterEntry, ToolConfigurationStatus } from '@src/modules/tool/common/domain';
+import { SchoolExternalTool, SchoolExternalToolProps } from '@src/modules/tool/school-external-tool/domain';
 import { DeepPartial } from 'fishery';
-import {
-	CustomParameterEntryDO,
-	SchoolExternalToolDO,
-	SchoolExternalToolProps,
-	ToolConfigurationStatus,
-} from '@shared/domain';
 import { DoBaseFactory } from '../do-base.factory';
 
-class SchoolExternalToolDOFactory extends DoBaseFactory<SchoolExternalToolDO, SchoolExternalToolProps> {
+class SchoolExternalToolFactory extends DoBaseFactory<SchoolExternalTool, SchoolExternalToolProps> {
 	withSchoolId(schoolId: string): this {
-		const params: DeepPartial<SchoolExternalToolDO> = {
+		const params: DeepPartial<SchoolExternalTool> = {
 			schoolId,
 		};
 		return this.params(params);
 	}
 }
 
-export const schoolExternalToolDOFactory = SchoolExternalToolDOFactory.define(SchoolExternalToolDO, ({ sequence }) => {
+export const schoolExternalToolFactory = SchoolExternalToolFactory.define(SchoolExternalTool, ({ sequence }) => {
 	return {
 		name: `schoolExternal-${sequence}`,
 		schoolId: `schoolId-${sequence}`,
 		toolVersion: 1,
 		parameters: [
-			new CustomParameterEntryDO({
+			new CustomParameterEntry({
 				name: 'name',
 				value: 'value',
 			}),

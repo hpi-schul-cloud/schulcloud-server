@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { IAccount } from '@shared/domain';
+import { IdmAccount } from '@shared/domain';
 import { AccountDto } from '../services/dto';
 import { AccountIdmToDtoMapper } from './account-idm-to-dto.mapper.abstract';
 import { AccountIdmToDtoMapperDb } from './account-idm-to-dto.mapper.db';
@@ -27,16 +27,16 @@ describe('AccountIdmToDtoMapperDb', () => {
 	describe('mapToDto', () => {
 		describe('when mapping from entity to dto', () => {
 			const setup = () => {
-				const testIdmEntity: IAccount = {
+				const testIdmEntity: IdmAccount = {
 					id: 'id',
 					username: 'username',
 					email: 'email',
 					firstName: 'firstName',
 					lastName: 'lastName',
 					createdDate: new Date(),
-					attRefTechnicalId: 'attRefTechnicalId',
-					attRefFunctionalIntId: 'attRefFunctionalIntId',
-					attRefFunctionalExtId: 'attRefFunctionalExtId',
+					attDbcAccountId: 'attDbcAccountId',
+					attDbcUserId: 'attDbcUserId',
+					attDbcSystemId: 'attDbcSystemId',
 				};
 				return testIdmEntity;
 			};
@@ -48,10 +48,10 @@ describe('AccountIdmToDtoMapperDb', () => {
 
 				expect(ret).toEqual(
 					expect.objectContaining<Partial<AccountDto>>({
-						id: testIdmEntity.attRefTechnicalId,
+						id: testIdmEntity.attDbcAccountId,
 						idmReferenceId: testIdmEntity.id,
-						userId: testIdmEntity.attRefFunctionalIntId,
-						systemId: testIdmEntity.attRefFunctionalExtId,
+						userId: testIdmEntity.attDbcUserId,
+						systemId: testIdmEntity.attDbcSystemId,
 						createdAt: testIdmEntity.createdDate,
 						updatedAt: testIdmEntity.createdDate,
 						username: testIdmEntity.username,
@@ -62,7 +62,7 @@ describe('AccountIdmToDtoMapperDb', () => {
 
 		describe('when date is undefined', () => {
 			const setup = () => {
-				const testIdmEntity: IAccount = {
+				const testIdmEntity: IdmAccount = {
 					id: 'id',
 				};
 				return testIdmEntity;
@@ -81,7 +81,7 @@ describe('AccountIdmToDtoMapperDb', () => {
 
 		describe('when a fields value is missing', () => {
 			const setup = () => {
-				const testIdmEntity: IAccount = {
+				const testIdmEntity: IdmAccount = {
 					id: 'id',
 				};
 				return testIdmEntity;

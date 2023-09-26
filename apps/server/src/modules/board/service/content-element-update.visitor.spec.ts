@@ -1,13 +1,16 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { InputFormat } from '@shared/domain';
 import {
 	cardFactory,
 	columnBoardFactory,
 	columnFactory,
+	externalToolElementFactory,
 	fileElementFactory,
 	richTextElementFactory,
 	submissionContainerElementFactory,
+	submissionItemFactory,
 } from '@shared/testing';
-import { FileContentBody, RichTextContentBody } from '../controller/dto';
+import { ExternalToolContentBody, FileContentBody, RichTextContentBody } from '../controller/dto';
 import { ContentElementUpdateVisitor } from './content-element-update.visitor';
 
 describe(ContentElementUpdateVisitor.name, () => {
@@ -19,9 +22,10 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const content = new RichTextContentBody();
 			content.text = 'a text';
 			content.inputFormat = InputFormat.RICH_TEXT_CK5;
+			const submissionItem = submissionItemFactory.build();
 			const updater = new ContentElementUpdateVisitor(content);
 
-			return { board, column, card, updater };
+			return { board, column, card, submissionItem, updater };
 		};
 
 		describe('when component is a column board', () => {
@@ -42,6 +46,13 @@ describe(ContentElementUpdateVisitor.name, () => {
 			it('should throw an error', () => {
 				const { card, updater } = setup();
 				expect(() => updater.visitCard(card)).toThrow();
+			});
+		});
+
+		describe('when component is a submission-item', () => {
+			it('should throw an error', () => {
+				const { submissionItem, updater } = setup();
+				expect(() => updater.visitSubmissionItem(submissionItem)).toThrow();
 			});
 		});
 	});
@@ -96,6 +107,61 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const { submissionContainerElement, updater } = setup();
 
 			expect(() => updater.visitSubmissionContainerElement(submissionContainerElement)).toThrow();
+		});
+	});
+
+	describe('when visiting a external tool element', () => {
+		describe('when visiting a external tool element with valid content', () => {
+			const setup = () => {
+				const externalToolElement = externalToolElementFactory.build({ contextExternalToolId: undefined });
+				const content = new ExternalToolContentBody();
+				content.contextExternalToolId = new ObjectId().toHexString();
+				const updater = new ContentElementUpdateVisitor(content);
+
+				return { externalToolElement, updater, content };
+			};
+
+			it('should update the content', () => {
+				const { externalToolElement, updater, content } = setup();
+
+				updater.visitExternalToolElement(externalToolElement);
+
+				expect(externalToolElement.contextExternalToolId).toEqual(content.contextExternalToolId);
+			});
+		});
+
+		describe('when visiting a external tool element using the wrong content', () => {
+			const setup = () => {
+				const externalToolElement = externalToolElementFactory.build();
+				const content = new RichTextContentBody();
+				content.text = 'a text';
+				content.inputFormat = InputFormat.RICH_TEXT_CK5;
+				const updater = new ContentElementUpdateVisitor(content);
+
+				return { externalToolElement, updater };
+			};
+
+			it('should throw an error', () => {
+				const { externalToolElement, updater } = setup();
+
+				expect(() => updater.visitExternalToolElement(externalToolElement)).toThrow();
+			});
+		});
+
+		describe('when visiting a external tool element without setting a contextExternalId', () => {
+			const setup = () => {
+				const externalToolElement = externalToolElementFactory.build();
+				const content = new ExternalToolContentBody();
+				const updater = new ContentElementUpdateVisitor(content);
+
+				return { externalToolElement, updater };
+			};
+
+			it('should throw an error', () => {
+				const { externalToolElement, updater } = setup();
+
+				expect(() => updater.visitExternalToolElement(externalToolElement)).toThrow();
+			});
 		});
 	});
 });

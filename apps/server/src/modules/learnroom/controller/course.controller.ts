@@ -48,12 +48,4 @@ export class CourseController {
 		});
 		return new StreamableFile(result);
 	}
-
-	@Get(':courseId')
-	async getCourse(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: CourseUrlParams) {
-		const course = await this.courseUc.getCourse(currentUser.userId, urlParams.courseId);
-		const response = CourseMapper.mapToCourseResponse(course);
-
-		return response;
-	}
 }

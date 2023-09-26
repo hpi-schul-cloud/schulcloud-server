@@ -1,11 +1,11 @@
 import { Permission } from '@shared/domain';
-import { VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
 import { BBBBaseResponse } from '../bbb';
 import {
+	DeprecatedVideoConferenceInfoResponse,
+	DeprecatedVideoConferenceJoinResponse,
 	VideoConferenceBaseResponse,
-	VideoConferenceInfoResponse,
-	VideoConferenceJoinResponse,
 } from '../controller/dto/response/video-conference-deprecated.response';
+import { VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
 import { VideoConferenceResponseDeprecatedMapper } from './vc-deprecated-response.mapper';
 
 /**
@@ -32,7 +32,8 @@ describe('VideoConferenceResponseMapper', () => {
 				url: 'url',
 			};
 
-			const result: VideoConferenceJoinResponse = VideoConferenceResponseDeprecatedMapper.mapToJoinResponse(from);
+			const result: DeprecatedVideoConferenceJoinResponse =
+				VideoConferenceResponseDeprecatedMapper.mapToJoinResponse(from);
 
 			expect(result.state).toEqual(from.state);
 			expect(result.permission).toEqual(from.permission);
@@ -50,7 +51,8 @@ describe('VideoConferenceResponseMapper', () => {
 				},
 			};
 
-			const result: VideoConferenceInfoResponse = VideoConferenceResponseDeprecatedMapper.mapToInfoResponse(from);
+			const result: DeprecatedVideoConferenceInfoResponse =
+				VideoConferenceResponseDeprecatedMapper.mapToInfoResponse(from);
 
 			expect(result.state).toEqual(from.state);
 			expect(result.permission).toEqual(from.permission);

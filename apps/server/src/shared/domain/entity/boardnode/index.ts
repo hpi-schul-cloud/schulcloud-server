@@ -5,4 +5,6 @@ export * from './column-node.entity';
 export * from './file-element-node.entity';
 export * from './rich-text-element-node.entity';
 export * from './submission-container-element-node.entity';
+export * from './submission-item-node.entity';
+export * from './external-tool-element-node.entity';
 export * from './types';

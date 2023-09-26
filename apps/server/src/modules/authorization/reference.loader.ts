@@ -6,14 +6,14 @@ import {
 	CourseRepo,
 	LessonRepo,
 	SchoolExternalToolRepo,
-	SchoolRepo,
+	LegacySchoolRepo,
 	SubmissionRepo,
 	TaskRepo,
 	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
 import { BoardDoAuthorizableService } from '@src/modules/board/service';
-import { ContextExternalToolService } from '@src/modules/tool/service';
+import { ContextExternalToolAuthorizableService } from '@src/modules/tool/context-external-tool/service';
 import { AuthorizableReferenceType } from './types';
 
 // replace later with general "base" do-repo
@@ -21,14 +21,14 @@ type RepoType =
 	| TaskRepo
 	| CourseRepo
 	| UserRepo
-	| SchoolRepo
+	| LegacySchoolRepo
 	| LessonRepo
 	| TeamsRepo
 	| CourseGroupRepo
 	| SubmissionRepo
 	| SchoolExternalToolRepo
 	| BoardDoAuthorizableService
-	| ContextExternalToolService;
+	| ContextExternalToolAuthorizableService;
 
 interface IRepoLoader {
 	repo: RepoType;
@@ -44,13 +44,13 @@ export class ReferenceLoader {
 		private readonly courseRepo: CourseRepo,
 		private readonly courseGroupRepo: CourseGroupRepo,
 		private readonly taskRepo: TaskRepo,
-		private readonly schoolRepo: SchoolRepo,
+		private readonly schoolRepo: LegacySchoolRepo,
 		private readonly lessonRepo: LessonRepo,
 		private readonly teamsRepo: TeamsRepo,
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly boardNodeAuthorizableService: BoardDoAuthorizableService,
-		private readonly contextExternalToolService: ContextExternalToolService
+		private readonly contextExternalToolAuthorizableService: ContextExternalToolAuthorizableService
 	) {
 		this.repos.set(AuthorizableReferenceType.Task, { repo: this.taskRepo });
 		this.repos.set(AuthorizableReferenceType.Course, { repo: this.courseRepo });
@@ -60,9 +60,11 @@ export class ReferenceLoader {
 		this.repos.set(AuthorizableReferenceType.Lesson, { repo: this.lessonRepo });
 		this.repos.set(AuthorizableReferenceType.Team, { repo: this.teamsRepo, populate: true });
 		this.repos.set(AuthorizableReferenceType.Submission, { repo: this.submissionRepo });
-		this.repos.set(AuthorizableReferenceType.SchoolExternalTool, { repo: this.schoolExternalToolRepo });
+		this.repos.set(AuthorizableReferenceType.SchoolExternalToolEntity, { repo: this.schoolExternalToolRepo });
 		this.repos.set(AuthorizableReferenceType.BoardNode, { repo: this.boardNodeAuthorizableService });
-		this.repos.set(AuthorizableReferenceType.ContextExternalTool, { repo: this.contextExternalToolService });
+		this.repos.set(AuthorizableReferenceType.ContextExternalToolEntity, {
+			repo: this.contextExternalToolAuthorizableService,
+		});
 	}
 
 	private resolveRepo(type: AuthorizableReferenceType): IRepoLoader {

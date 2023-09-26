@@ -64,9 +64,9 @@ export class KeycloakSeedService {
 				},
 			],
 			attributes: {
-				refTechnicalId: account._id.$oid,
-				refFunctionalIntId: account.userId.$oid,
-				refFunctionalExtId: account.systemId,
+				dbcAccountId: account._id.$oid,
+				dbcUserId: account.userId.$oid,
+				dbcSystemId: account.systemId,
 			},
 		};
 		const kc = await this.kcAdmin.callKcAdminClient();

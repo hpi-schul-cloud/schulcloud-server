@@ -43,7 +43,4 @@ export class BoardTaskResponse {
 
 	@ApiProperty()
 	status: BoardTaskStatusResponse;
-
-	@ApiPropertyOptional()
-	taskCardId?: string;
 }

@@ -14,16 +14,6 @@ export class TaskScope extends Scope<Task> {
 		return this;
 	}
 
-	byAssignedUser(assignedUserId: EntityId): TaskScope {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		this.addQuery({
-			$or: [{ users: { $exists: false } }, { users: { $eq: [] } }, { users: { $in: [assignedUserId] } }],
-		});
-
-		return this;
-	}
-
 	byOnlyCreatorId(creatorId: EntityId): TaskScope {
 		this.addQuery({
 			$and: [{ creator: creatorId }, { course: null }, { lesson: null }],

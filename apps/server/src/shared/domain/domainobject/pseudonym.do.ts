@@ -1,18 +1,32 @@
 import { EntityId } from '@shared/domain/types';
-import { BaseDO } from './base.do';
+import { AuthorizableObject, DomainObject } from '../domain-object';
 
-export class PseudonymDO extends BaseDO {
+export interface PseudonymProps extends AuthorizableObject {
 	pseudonym: string;
-
 	toolId: EntityId;
-
 	userId: EntityId;
+	createdAt: Date;
+	updatedAt: Date;
+}
 
-	constructor(domainObject: PseudonymDO) {
-		super(domainObject.id);
+export class Pseudonym extends DomainObject<PseudonymProps> {
+	get pseudonym(): string {
+		return this.props.pseudonym;
+	}
 
-		this.pseudonym = domainObject.pseudonym;
-		this.toolId = domainObject.toolId;
-		this.userId = domainObject.userId;
+	get toolId(): EntityId {
+		return this.props.toolId;
+	}
+
+	get userId(): EntityId {
+		return this.props.userId;
+	}
+
+	get createdAt(): Date {
+		return this.props.createdAt;
+	}
+
+	get updatedAt(): Date {
+		return this.props.updatedAt;
 	}
 }

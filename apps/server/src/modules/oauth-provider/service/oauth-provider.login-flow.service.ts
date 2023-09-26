@@ -1,26 +1,32 @@
+import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { ExternalToolDO } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolService } from '@src/modules/lti-tool/service';
-import { ExternalToolService } from '@src/modules/tool/service';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain';
+import { ExternalToolService } from '@src/modules/tool/external-tool/service';
+import { IToolFeatures, ToolFeatures } from '@src/modules/tool/tool-config';
 
 @Injectable()
 export class OauthProviderLoginFlowService {
 	constructor(
 		private readonly ltiToolService: LtiToolService,
-		private readonly externalToolService: ExternalToolService
+		private readonly externalToolService: ExternalToolService,
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
 	) {}
 
-	public async findToolByClientId(clientId: string): Promise<ExternalToolDO | LtiToolDO> {
-		const externalTool: ExternalToolDO | null = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(
-			clientId
-		);
-		const ltiTool: LtiToolDO | null = await this.ltiToolService.findByClientIdAndIsLocal(clientId, true);
+	public async findToolByClientId(clientId: string): Promise<ExternalTool | LtiToolDO> {
+		if (this.toolFeatures.ctlToolsTabEnabled) {
+			const externalTool: ExternalTool | null = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(
+				clientId
+			);
 
-		if (externalTool) {
-			return externalTool;
+			if (externalTool) {
+				return externalTool;
+			}
 		}
+
+		const ltiTool: LtiToolDO | null = await this.ltiToolService.findByClientIdAndIsLocal(clientId, true);
 
 		if (ltiTool) {
 			return ltiTool;
@@ -30,7 +36,7 @@ export class OauthProviderLoginFlowService {
 	}
 
 	// TODO N21-91. Magic Strings are not desireable
-	public isNextcloudTool(tool: ExternalToolDO | LtiToolDO): boolean {
+	public isNextcloudTool(tool: ExternalTool | LtiToolDO): boolean {
 		const isNextcloud: boolean = tool.name === 'SchulcloudNextcloud';
 
 		return isNextcloud;

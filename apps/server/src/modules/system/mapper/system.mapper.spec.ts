@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { System } from '@shared/domain';
+import { SystemEntity } from '@shared/domain';
 import { systemFactory } from '@shared/testing';
 import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
 
@@ -46,7 +46,7 @@ describe('SystemMapper', () => {
 
 	describe('mapFromEntitiesToDtos', () => {
 		it('should map all given entities', () => {
-			const systemEntities: System[] = [
+			const systemEntities: SystemEntity[] = [
 				systemFactory.withOauthConfig().build(),
 				systemFactory.build({ oauthConfig: undefined }),
 			];
@@ -57,7 +57,7 @@ describe('SystemMapper', () => {
 		});
 
 		it('should map oauth config if exists', () => {
-			const systemEntities: System[] = [
+			const systemEntities: SystemEntity[] = [
 				systemFactory.withOauthConfig().build(),
 				systemFactory.build({ oauthConfig: undefined }),
 			];

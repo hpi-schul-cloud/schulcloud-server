@@ -62,5 +62,15 @@ describe(ColumnBoardTargetService.name, () => {
 				expect(result[0].title).toEqual('board #42');
 			});
 		});
+
+		describe('when no target exists for columnBoardId', () => {
+			it('should create a target', async () => {
+				const id = new ObjectId().toHexString();
+				columnBoardService.getBoardObjectTitlesById.mockResolvedValueOnce({ [id]: 'board #42' });
+				const result = await service.findOrCreateTargets([id]);
+
+				expect(result[0].columnBoardId).toEqual(id);
+			});
+		});
 	});
 });

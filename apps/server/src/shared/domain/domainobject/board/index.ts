@@ -6,4 +6,7 @@ export * from './content-element.factory';
 export * from './file-element.do';
 export * from './rich-text-element.do';
 export * from './submission-container-element.do';
+export * from './submission-item.do';
+export * from './submission-item.factory';
+export * from './external-tool-element.do';
 export * from './types';

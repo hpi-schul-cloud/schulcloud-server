@@ -1,14 +1,13 @@
 import { createMock } from '@golevelup/ts-jest';
-
-import express, { Request, Response, NextFunction, RequestHandler, Express } from 'express';
-import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { Logger } from '@src/core/logger';
+import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import {
 	PrometheusMetricsConfig,
 	createAPIResponseTimeMetricMiddleware,
 	createPrometheusMetricsApp,
 } from '@shared/infra/metrics';
+import { Logger } from '@src/core/logger';
+import express, { Express, NextFunction, Request, RequestHandler, Response } from 'express';
 import {
 	PrometheusMetricsSetupState,
 	PrometheusMetricsSetupStateLoggable,
@@ -111,7 +110,7 @@ describe('addPrometheusMetricsMiddlewaresIfEnabled', () => {
 describe('createAndStartPrometheusMetricsAppIfEnabled', () => {
 	describe('should create Prometheus metrics app and run it', () => {
 		const testPort = 9000;
-		const testLoggerSpy = jest.spyOn(testLogger, 'log');
+		const testLoggerSpy = jest.spyOn(testLogger, 'info');
 
 		let appMockListenFn: jest.Mock;
 

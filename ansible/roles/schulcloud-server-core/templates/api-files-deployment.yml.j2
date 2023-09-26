@@ -29,7 +29,7 @@ spec:
         runAsNonRoot: true
       containers:
       - name: api-files
-        image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        image: {{ SCHULCLOUD_SERVER_IMAGE }}:file-storage-{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 4444

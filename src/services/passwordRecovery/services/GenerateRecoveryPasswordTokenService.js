@@ -6,7 +6,7 @@ const PasswordRecoveryModel = require('../model');
 const { randomStringAsBase64Url } = require('../../../utils/randomNumberGenerator');
 const globalHooks = require('../../../hooks');
 const logger = require('../../../logger/index');
-const { SC_SHORT_TITLE } = require('../../../../config/globals');
+const { SC_TITLE } = require('../../../../config/globals');
 
 const HOST = Configuration.get('HOST');
 
@@ -58,10 +58,10 @@ const sendInfo = (context) => {
 							${recoveryLink}\n
 							Bitte beachten Sie das der Link nur für 6 Stunden gültig ist. Danach müssen sie ein neuen Link anfordern.\n
 							Mit Freundlichen Grüßen
-							Ihr ${SC_SHORT_TITLE} Team`;
+							Ihr ${SC_TITLE} Team`;
 
 				globalHooks.sendEmail(context, {
-					subject: `Passwort zurücksetzen für die ${SC_SHORT_TITLE}`,
+					subject: `Passwort zurücksetzen für die ${SC_TITLE}`,
 					emails: [user.email],
 					content: {
 						text: mailContent,

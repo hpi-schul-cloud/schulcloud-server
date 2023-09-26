@@ -46,7 +46,7 @@
       api_version: batch/v1
       kind: CronJob
       namespace: "{{ NAMESPACE }}"
-      name: api-tsp-sync-base-cronjobt
+      name: api-tsp-sync-base-cronjob
     when: not WITH_TSP
 
   - name: API TSP Sync School CronJob

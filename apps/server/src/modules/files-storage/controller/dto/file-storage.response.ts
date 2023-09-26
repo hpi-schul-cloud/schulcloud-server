@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities, PaginationResponse } from '@shared/controller';
-import { FileRecord, FileRecordParentType, ScanStatus } from '../../entity';
+import { FileRecord, FileRecordParentType, PreviewStatus, ScanStatus } from '../../entity';
 import { API_VERSION_PATH } from '../../files-storage.const';
 
 export class FileRecordResponse {
@@ -15,6 +15,7 @@ export class FileRecordResponse {
 		this.mimeType = fileRecord.mimeType;
 		this.parentType = fileRecord.parentType;
 		this.deletedSince = fileRecord.deletedSince;
+		this.previewStatus = fileRecord.getPreviewStatus();
 	}
 
 	@ApiProperty()
@@ -30,7 +31,7 @@ export class FileRecordResponse {
 	@ApiProperty()
 	url: string;
 
-	@ApiProperty({ enum: ScanStatus })
+	@ApiProperty({ enum: ScanStatus, enumName: 'FileRecordScanStatus' })
 	securityCheckStatus: ScanStatus;
 
 	@ApiProperty()
@@ -42,8 +43,11 @@ export class FileRecordResponse {
 	@ApiProperty()
 	mimeType: string;
 
-	@ApiProperty({ enum: FileRecordParentType })
+	@ApiProperty({ enum: FileRecordParentType, enumName: 'FileRecordParentType' })
 	parentType: FileRecordParentType;
+
+	@ApiProperty({ enum: PreviewStatus, enumName: 'PreviewStatus' })
+	previewStatus: PreviewStatus;
 
 	@ApiPropertyOptional()
 	deletedSince?: Date;

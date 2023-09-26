@@ -1,7 +1,7 @@
 import { EntityId } from '@shared/domain';
+import { CopyFiles } from '@shared/infra/s3-client';
 import { FileRecord } from '../entity';
 import { ErrorType } from '../error';
-import { ICopyFiles } from '../interface';
 
 export function createPath(schoolId: EntityId, fileRecordId: EntityId): string {
 	if (!schoolId || !fileRecordId) {
@@ -13,17 +13,30 @@ export function createPath(schoolId: EntityId, fileRecordId: EntityId): string {
 	return path;
 }
 
+export function createPreviewDirectoryPath(schoolId: EntityId, sourceFileRecordId: EntityId): string {
+	const path = ['previews', schoolId, sourceFileRecordId].join('/');
+
+	return path;
+}
+
+export function createPreviewFilePath(schoolId: EntityId, hash: string, sourceFileRecordId: EntityId): string {
+	const folderPath = createPreviewDirectoryPath(schoolId, sourceFileRecordId);
+	const filePath = [folderPath, hash].join('/');
+
+	return filePath;
+}
+
 export function getPaths(fileRecords: FileRecord[]): string[] {
 	const paths = fileRecords.map((fileRecord) => createPath(fileRecord.getSchoolId(), fileRecord.id));
 
 	return paths;
 }
 
-export function createICopyFiles(sourceFile: FileRecord, targetFile: FileRecord): ICopyFiles {
-	const iCopyFiles = {
+export function createCopyFiles(sourceFile: FileRecord, targetFile: FileRecord): CopyFiles {
+	const copyFiles = {
 		sourcePath: createPath(sourceFile.getSchoolId(), sourceFile.id),
 		targetPath: createPath(targetFile.getSchoolId(), targetFile.id),
 	};
 
-	return iCopyFiles;
+	return copyFiles;
 }

@@ -5,18 +5,24 @@ import {
 	CardNode,
 	ColumnBoardNode,
 	ColumnNode,
+	ExternalToolElementNodeEntity,
 	FileElementNode,
 	RichTextElementNode,
 	SubmissionContainerElementNode,
+	SubmissionItemNode,
 } from '@shared/domain';
 import {
 	cardFactory,
 	columnBoardFactory,
 	columnBoardNodeFactory,
 	columnFactory,
+	contextExternalToolEntityFactory,
+	externalToolElementFactory,
 	fileElementFactory,
 	richTextElementFactory,
+	setupEntities,
 	submissionContainerElementFactory,
+	submissionItemFactory,
 } from '@shared/testing';
 import { BoardNodeRepo } from './board-node.repo';
 import { RecursiveSaveVisitor } from './recursive-save.visitor';
@@ -26,9 +32,11 @@ describe(RecursiveSaveVisitor.name, () => {
 	let em: DeepMocked<EntityManager>;
 	let boardNodeRepo: DeepMocked<BoardNodeRepo>;
 
-	beforeAll(() => {
+	beforeAll(async () => {
 		em = createMock<EntityManager>();
 		boardNodeRepo = createMock<BoardNodeRepo>();
+
+		await setupEntities();
 
 		visitor = new RecursiveSaveVisitor(em, boardNodeRepo);
 	});
@@ -123,6 +131,7 @@ describe(RecursiveSaveVisitor.name, () => {
 				id: fileElement.id,
 				type: BoardNodeType.FILE_ELEMENT,
 				caption: fileElement.caption,
+				alternativeText: fileElement.alternativeText,
 			};
 			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
 		});
@@ -155,6 +164,41 @@ describe(RecursiveSaveVisitor.name, () => {
 				id: submissionContainerElement.id,
 				type: BoardNodeType.SUBMISSION_CONTAINER_ELEMENT,
 				dueDate: submissionContainerElement.dueDate,
+			};
+			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
+		});
+	});
+
+	describe('when visiting a submission item composite', () => {
+		it('should create or update the node', () => {
+			const submissionItem = submissionItemFactory.build();
+			jest.spyOn(visitor, 'createOrUpdateBoardNode');
+
+			visitor.visitSubmissionItem(submissionItem);
+
+			const expectedNode: Partial<SubmissionItemNode> = {
+				id: submissionItem.id,
+				type: BoardNodeType.SUBMISSION_ITEM,
+				completed: submissionItem.completed,
+			};
+			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
+		});
+	});
+
+	describe('when visiting a external tool element', () => {
+		it('should create or update the node', () => {
+			const contextExternalTool = contextExternalToolEntityFactory.buildWithId();
+			const externalToolElement = externalToolElementFactory.build({
+				contextExternalToolId: contextExternalTool.id,
+			});
+			jest.spyOn(visitor, 'createOrUpdateBoardNode');
+
+			visitor.visitExternalToolElement(externalToolElement);
+
+			const expectedNode: Partial<ExternalToolElementNodeEntity> = {
+				id: externalToolElement.id,
+				type: BoardNodeType.EXTERNAL_TOOL,
+				contextExternalTool,
 			};
 			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
 		});
