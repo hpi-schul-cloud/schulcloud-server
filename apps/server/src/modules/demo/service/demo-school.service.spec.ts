@@ -149,6 +149,8 @@ describe(DemoSchoolService.name, () => {
 		const fakeProtocol = {
 			id: 'an-id',
 			type: 'none',
+			key: 'super-key',
+			children: [],
 		};
 
 		return {
