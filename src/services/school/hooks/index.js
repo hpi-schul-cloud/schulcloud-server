@@ -14,7 +14,17 @@ const getFileStorageStrategy = require('../../fileStorage/strategies').createStr
 const { yearModel: Year } = require('../model');
 const SchoolYearFacade = require('../logic/year');
 
+// years are cached on first call, because they are expected to not change during runtime.
 let years = null;
+
+const cacheYearsIfNotSet = async () => {
+	if (!years) {
+		years = await Year.find().lean().exec();
+		if (years.length === 0) {
+			throw new Error('At least one year has to exist in the database.');
+		}
+	}
+};
 
 /**
  * Safe function to retrieve result data from context
@@ -75,14 +85,6 @@ const setStudentsCanCreateTeams = async (context) => {
 	return context;
 };
 
-const expectYearsDefined = async () => {
-	if (!years) {
-		// default years will be cached after first call
-		years = await Year.find().lean().exec();
-	}
-	return years;
-};
-
 const getDefaultFileStorageType = () => {
 	if (!fileStorageTypes || !fileStorageTypes.length) {
 		return undefined;
@@ -98,7 +100,7 @@ const setDefaultFileStorageType = (hook) => {
 
 const setCurrentYearIfMissing = async (hook) => {
 	if (!hook.data.currentYear) {
-		await expectYearsDefined();
+		await cacheYearsIfNotSet();
 		const facade = new SchoolYearFacade(years, hook.data);
 		hook.data.currentYear = facade.defaultYear;
 	}
@@ -126,10 +128,11 @@ const createDefaultStorageOptions = (hook) => {
 };
 
 const decorateYears = async (context) => {
-	await expectYearsDefined();
+	await cacheYearsIfNotSet();
 	const addYearsToSchool = (school) => {
 		const facade = new SchoolYearFacade(years, school);
 		school.years = facade.toJSON();
+		school.currentYear = school.years.defaultYear;
 	};
 	try {
 		switch (context.method) {

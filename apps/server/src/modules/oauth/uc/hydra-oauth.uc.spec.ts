@@ -4,11 +4,12 @@ import { HttpModule } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OauthConfig } from '@shared/domain';
+import { axiosResponseFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
 import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 import { HydraOauthUc } from '.';
 import { AuthorizationParams } from '../controller/dto';
 import { StatelessAuthorizationParams } from '../controller/dto/stateless-authorization.params';
@@ -142,7 +143,6 @@ describe('HydraOauthUc', () => {
 
 	describe('requestAuthCode', () => {
 		let expectedAuthParams: StatelessAuthorizationParams;
-		let axiosConfig: AxiosRequestConfig;
 		let axiosResponse1: AxiosResponse;
 		let axiosResponse2: AxiosResponse;
 		let responseDto1: HydraRedirectDto;
@@ -152,13 +152,12 @@ describe('HydraOauthUc', () => {
 			expectedAuthParams = {
 				code: 'defaultAuthCode',
 			};
-			axiosConfig = {
-				headers: {},
+			const axiosConfig = {
 				withCredentials: true,
 				maxRedirects: 0,
 				validateStatus: jest.fn().mockImplementationOnce(() => true),
 			};
-			axiosResponse1 = {
+			axiosResponse1 = axiosResponseFactory.build({
 				data: expectedAuthParams,
 				status: 302,
 				statusText: '',
@@ -167,8 +166,8 @@ describe('HydraOauthUc', () => {
 					Referer: 'hydra',
 				},
 				config: axiosConfig,
-			};
-			axiosResponse2 = {
+			});
+			axiosResponse2 = axiosResponseFactory.build({
 				data: expectedAuthParams,
 				status: 200,
 				statusText: '',
@@ -177,7 +176,7 @@ describe('HydraOauthUc', () => {
 					Referer: 'hydra',
 				},
 				config: axiosConfig,
-			};
+			});
 			responseDto1 = {
 				axiosConfig,
 				cookies: { localCookies: [], hydraCookies: [] },

@@ -21,6 +21,7 @@ describe('AccountResponseMapper', () => {
 			expect(ret.userId).toBe(testEntity.userId?.toString());
 			expect(ret.activated).toBe(testEntity.activated);
 			expect(ret.username).toBe(testEntity.username);
+			expect(ret.updatedAt).toBe(testEntity.updatedAt);
 		});
 
 		it('should ignore missing userId', () => {
@@ -55,6 +56,7 @@ describe('AccountResponseMapper', () => {
 			expect(ret.userId).toBe(testDto.userId?.toString());
 			expect(ret.activated).toBe(testDto.activated);
 			expect(ret.username).toBe(testDto.username);
+			expect(ret.updatedAt).toBe(testDto.updatedAt);
 		});
 	});
 });

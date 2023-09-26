@@ -1,7 +1,7 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MatchCreator, SortOrder, System, User } from '@shared/domain';
+import { MatchCreator, SortOrder, SystemEntity, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, importUserFactory, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
@@ -119,7 +119,7 @@ describe('user repo', () => {
 	});
 
 	describe('findByExternalIdorFail', () => {
-		let sys: System;
+		let sys: SystemEntity;
 		let userA: User;
 		let userB: User;
 		beforeEach(async () => {

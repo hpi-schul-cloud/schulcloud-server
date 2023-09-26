@@ -1,7 +1,7 @@
 import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { School } from '@shared/domain';
+import { SchoolEntity } from '@shared/domain';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { LegacyLogger } from '@src/core/logger';
 import { SchoolExternalToolQuery } from '@src/modules/tool/school-external-tool/uc/dto/school-external-tool.types';
@@ -83,7 +83,7 @@ export class SchoolExternalToolRepo extends BaseDORepo<
 
 	mapDOToEntityProperties(entityDO: SchoolExternalTool): ISchoolExternalToolProperties {
 		return {
-			school: this._em.getReference(School, entityDO.schoolId),
+			school: this._em.getReference(SchoolEntity, entityDO.schoolId),
 			tool: this._em.getReference(ExternalToolEntity, entityDO.toolId),
 			toolVersion: entityDO.toolVersion,
 			schoolParameters: ExternalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),

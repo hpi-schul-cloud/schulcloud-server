@@ -1,9 +1,9 @@
 import { Entity, Property, Unique } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 
-export interface IPseudonymEntityProps {
+export interface PseudonymEntityProps {
 	id?: EntityId;
 	pseudonym: string;
 	toolId: ObjectId;
@@ -23,7 +23,7 @@ export class PseudonymEntity extends BaseEntityWithTimestamps {
 	@Property()
 	userId: ObjectId;
 
-	constructor(props: IPseudonymEntityProps) {
+	constructor(props: PseudonymEntityProps) {
 		super();
 		if (props.id != null) {
 			this.id = props.id;

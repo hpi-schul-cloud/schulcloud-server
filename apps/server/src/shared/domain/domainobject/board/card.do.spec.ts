@@ -1,5 +1,10 @@
 import { createMock } from '@golevelup/ts-jest';
-import { cardFactory, richTextElementFactory, submissionContainerElementFactory } from '@shared/testing';
+import {
+	cardFactory,
+	externalToolElementFactory,
+	richTextElementFactory,
+	submissionContainerElementFactory,
+} from '@shared/testing';
 import { Card } from './card.do';
 import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
@@ -15,6 +20,12 @@ describe(Card.name, () => {
 			const card = cardFactory.build();
 			const submissionContainerElement = submissionContainerElementFactory.build();
 			expect(card.isAllowedAsChild(submissionContainerElement)).toBe(true);
+		});
+
+		it('should allow external tool element objects', () => {
+			const card = cardFactory.build();
+			const externalToolElement = externalToolElementFactory.build();
+			expect(card.isAllowedAsChild(externalToolElement)).toBe(true);
 		});
 	});
 

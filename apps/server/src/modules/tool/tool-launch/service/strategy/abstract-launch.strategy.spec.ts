@@ -2,18 +2,28 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, EntityId, SchoolDO } from '@shared/domain';
-import { CourseRepo } from '@shared/repo';
+import { Course, EntityId, LegacySchoolDo } from '@shared/domain';
 import {
 	contextExternalToolFactory,
 	courseFactory,
 	customParameterFactory,
 	externalToolFactory,
-	schoolDOFactory,
+	legacySchoolDoFactory,
 	schoolExternalToolFactory,
 	setupEntities,
 } from '@shared/testing';
-import { SchoolService } from '@src/modules/school';
+import { CourseService } from '@src/modules/learnroom/service';
+import { LegacySchoolService } from '@src/modules/legacy-school';
+import { CustomParameterEntry } from '../../../common/domain';
+import {
+	CustomParameterLocation,
+	CustomParameterScope,
+	CustomParameterType,
+	ToolContextType,
+} from '../../../common/enum';
+import { ContextExternalTool } from '../../../context-external-tool/domain';
+import { ExternalTool } from '../../../external-tool/domain';
+import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { MissingToolParameterValueLoggableException, ParameterTypeNotImplementedLoggableException } from '../../error';
 import {
 	LaunchRequestMethod,
@@ -25,16 +35,6 @@ import {
 } from '../../types';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
-import {
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	ToolContextType,
-} from '../../../common/enum';
-import { ExternalTool } from '../../../external-tool/domain';
-import { CustomParameterEntry } from '../../../common/domain';
-import { SchoolExternalTool } from '../../../school-external-tool/domain';
-import { ContextExternalTool } from '../../../context-external-tool/domain';
 
 const concreteConfigParameter: PropertyData = {
 	location: PropertyLocation.QUERY,
@@ -73,8 +73,8 @@ describe('AbstractLaunchStrategy', () => {
 	let module: TestingModule;
 	let launchStrategy: TestLaunchStrategy;
 
-	let schoolService: DeepMocked<SchoolService>;
-	let courseRepo: DeepMocked<CourseRepo>;
+	let schoolService: DeepMocked<LegacySchoolService>;
+	let courseService: DeepMocked<CourseService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -83,19 +83,19 @@ describe('AbstractLaunchStrategy', () => {
 			providers: [
 				TestLaunchStrategy,
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 				{
-					provide: CourseRepo,
-					useValue: createMock<CourseRepo>(),
+					provide: CourseService,
+					useValue: createMock<CourseService>(),
 				},
 			],
 		}).compile();
 
 		launchStrategy = module.get(TestLaunchStrategy);
-		schoolService = module.get(SchoolService);
-		courseRepo = module.get(CourseRepo);
+		schoolService = module.get(LegacySchoolService);
+		courseService = module.get(CourseService);
 	});
 
 	afterAll(async () => {
@@ -184,7 +184,7 @@ describe('AbstractLaunchStrategy', () => {
 				});
 
 				// Other
-				const school: SchoolDO = schoolDOFactory.buildWithId(
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(
 					{
 						officialSchoolNumber: '1234',
 					},
@@ -199,7 +199,7 @@ describe('AbstractLaunchStrategy', () => {
 				);
 
 				schoolService.getSchoolById.mockResolvedValue(school);
-				courseRepo.findById.mockResolvedValue(course);
+				courseService.findById.mockResolvedValue(course);
 
 				const sortFn = (a: PropertyData, b: PropertyData) => {
 					if (a.name < b.name) {
@@ -369,7 +369,7 @@ describe('AbstractLaunchStrategy', () => {
 					parameters: [],
 				});
 
-				const school: SchoolDO = schoolDOFactory.buildWithId({
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					officialSchoolNumber: undefined,
 				});
 

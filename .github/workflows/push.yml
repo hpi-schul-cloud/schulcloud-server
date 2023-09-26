@@ -51,8 +51,6 @@ jobs:
 
       - name: test image exists
         run: |
-          mkdir -p ~/.docker 
-          echo '{"experimental": "enabled"}' >> ~/.docker/config.json
           echo "IMAGE_EXISTS=$(docker manifest inspect ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }} > /dev/null && echo 1 || echo 0)" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
@@ -83,8 +81,6 @@ jobs:
 
       - name: test image exists (file storage)
         run: |
-          mkdir -p ~/.docker 
-          echo '{"experimental": "enabled"}' >> ~/.docker/config.json
           echo "IMAGE_EXISTS=$(docker manifest inspect ghcr.io/${{ github.repository }}:file-storage-${{ needs.branch_meta.outputs.sha }} > /dev/null && echo 1 || echo 0)" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx (file storage)

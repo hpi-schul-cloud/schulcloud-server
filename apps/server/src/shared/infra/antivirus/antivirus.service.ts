@@ -17,13 +17,13 @@ export class AntivirusService {
 		@Inject('ANTIVIRUS_SERVICE_OPTIONS') private readonly options: AntivirusServiceOptions
 	) {}
 
-	public send(requestToken: string | undefined) {
+	public async send(requestToken: string | undefined): Promise<void> {
 		try {
 			if (this.options.enabled && requestToken) {
 				const downloadUri = this.getUrl(FilesStorageInternalActions.downloadBySecurityToken, requestToken);
 				const callbackUri = this.getUrl(FilesStorageInternalActions.updateSecurityStatus, requestToken);
 
-				this.amqpConnection.publish(
+				await this.amqpConnection.publish(
 					this.options.exchange,
 					this.options.routingKey,
 					{ download_uri: downloadUri, callback_uri: callbackUri },
