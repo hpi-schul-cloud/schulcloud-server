@@ -15,6 +15,8 @@ import * as SyncProtocols from 'y-protocols/sync';
 import * as AwarenessProtocol from 'y-protocols/awareness';
 import { encoding } from 'lib0';
 import { TldrawWsService } from '@src/modules/tldraw/service/tldraw-ws.service';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import cookie from 'cookie';
 import { HttpModule } from '@nestjs/axios';
 import { TldrawWsController } from '.';
 
@@ -22,6 +24,7 @@ describe('TldrawWSController', () => {
 	let app: INestApplication;
 	let gateway: TldrawWsController;
 	let ws: WebSocket;
+	let tldrawWsService: DeepMocked<TldrawWsService>;
 
 	const gatewayPort = 3346;
 	const wsUrl = `ws://localhost:${gatewayPort}`;
@@ -41,13 +44,23 @@ describe('TldrawWSController', () => {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config)), HttpModule];
 		const testingModule = await Test.createTestingModule({
 			imports,
-			providers: [TldrawWsController, TldrawWsService],
+			providers: [
+				TldrawWsController,
+				{
+					provide: TldrawWsService,
+					useValue: createMock<TldrawWsService>(),
+				},
+			],
 		}).compile();
 
-		jest.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] });
+		tldrawWsService = testingModule.get(TldrawWsService);
+		tldrawWsService.authorizeConnection.mockImplementation((): Promise<void> => Promise.resolve());
+
 		gateway = testingModule.get<TldrawWsController>(TldrawWsController);
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
+		jest.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] });
+		jest.spyOn(cookie, 'parse').mockReturnValue({ jwt: 'Bearer 123' });
 		await app.init();
 	});
 
@@ -90,7 +103,6 @@ describe('TldrawWSController', () => {
 	describe('when client is not connected to WS', () => {
 		const setup = async () => {
 			await setupWs();
-
 			const closeConSpy = jest.spyOn(Utils, 'closeConn').mockImplementationOnce(() => {});
 			const sendSpy = jest.spyOn(Utils, 'send');
 			const doc: { conns: Map<WebSocket, Set<number>> } = { conns: new Map() };
@@ -345,7 +357,6 @@ describe('TldrawWSController', () => {
 
 		it('should not call send method', async () => {
 			const { sendSpy, doc, msg } = await setup();
-
 			Utils.messageHandler(ws, doc, msg);
 
 			expect(sendSpy).toHaveBeenCalledTimes(0);
