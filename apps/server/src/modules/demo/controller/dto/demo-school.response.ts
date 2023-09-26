@@ -16,17 +16,17 @@ export class DemoSchoolResponse {
 	id: string | undefined;
 
 	@ApiPropertyOptional({
-		description: 'Title of the Board',
+		description: 'relevant identifier for the object (course.name, user.email, ...)',
 	})
 	key: string | undefined;
 
 	@ApiProperty({
-		description: 'Title of the Board',
+		description: 'type of the created entity',
 	})
 	type: string;
 
 	@ApiPropertyOptional({
-		description: 'Title of the Board',
+		description: 'child entities that were also created',
 	})
 	children: DemoSchoolResponse[] | undefined;
 }
