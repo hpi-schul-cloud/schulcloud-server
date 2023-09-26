@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, BoardRoles, ContentElementType, UserRoleEnum } from '@shared/domain';
+import { BoardDoAuthorizable, BoardNode, BoardRoles, ContentElementType, UserRoleEnum } from '@shared/domain';
 import { axiosResponseFactory, drawingElementFactory, setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
@@ -8,6 +8,7 @@ import { AuthorizationService } from '@src/modules/authorization';
 import { ObjectId } from 'bson';
 import { HttpService } from '@nestjs/axios';
 import { of } from 'rxjs';
+import { BadRequest } from '@feathersjs/errors';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { CardService } from '../service/card.service';
 import { CardUc } from './card.uc';
@@ -135,6 +136,14 @@ describe(CardUc.name, () => {
 
 				expect(elementService.create).toHaveBeenCalledWith(card, ContentElementType.RICH_TEXT);
 			});
+
+			it('should call the card service if drawing element already exists and throw', async () => {
+				const { user, card } = setup();
+
+				cardService.findDescendantsWithType.mockResolvedValueOnce(Promise.resolve([{} as BoardNode]));
+				await expect(uc.createElement(user.id, card.id, ContentElementType.DRAWING)).rejects.toThrow(BadRequest);
+			});
+
 			it('should call the service to move the element', async () => {
 				const { user, card, element } = setup();
 
