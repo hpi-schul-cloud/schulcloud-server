@@ -97,6 +97,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#closeMigration" >closeMigration</a>
                             </li>
@@ -184,6 +185,7 @@
                         <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>closeMigration</b></span>
                         <a href="#closeMigration"><span class="icon ion-ios-link"></span></a>
@@ -201,14 +203,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;close&#x27;)<br />@ApiUnprocessableEntityResponse({description: &#x27;User login migration is already closed and cannot be modified. Restart is possible.&#x27;, type: UserLoginMigrationAlreadyClosedLoggableException})<br />@ApiUnprocessableEntityResponse({description: &#x27;User login migration is already closed and cannot be modified. It cannot be restarted.&#x27;, type: UserLoginMigrationGracePeriodExpiredLoggableException})<br />@ApiNotFoundResponse({description: &#x27;User login migration does not exist&#x27;, type: UserLoginMigrationNotFoundLoggableException})<br />@ApiOkResponse({description: &#x27;User login migration closed&#x27;, type: UserLoginMigrationResponse})<br />@ApiUnauthorizedResponse()<br />@ApiForbiddenResponse()<br /></code>
+                    <code>@Post(&#x27;close&#x27;)<br />@ApiUnprocessableEntityResponse({description: &#x27;User login migration is already closed and cannot be modified. Restart is possible.&#x27;, type: UserLoginMigrationAlreadyClosedLoggableException})<br />@ApiUnprocessableEntityResponse({description: &#x27;User login migration is already closed and cannot be modified. It cannot be restarted.&#x27;, type: UserLoginMigrationGracePeriodExpiredLoggableException})<br />@ApiNotFoundResponse({description: &#x27;User login migration does not exist&#x27;, type: UserLoginMigrationNotFoundLoggableException})<br />@ApiOkResponse({description: &#x27;User login migration closed&#x27;, type: UserLoginMigrationResponse})<br />@ApiUnauthorizedResponse()<br />@ApiForbiddenResponse()<br />@ApiNoContentResponse({description: &#x27;User login migration was reverted&#x27;})<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="199"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:199</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="201"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:201</a></div>
                 </td>
             </tr>
 
@@ -246,7 +248,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;UserLoginMigrationResponse | void&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;UserLoginMigrationResponse | undefined&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -289,8 +291,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="89"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:89</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="90"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:90</a></div>
                 </td>
             </tr>
 
@@ -384,8 +386,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="59"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:59</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="60"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:60</a></div>
                 </td>
             </tr>
 
@@ -477,8 +479,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="214"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:214</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="218"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:218</a></div>
                 </td>
             </tr>
 
@@ -585,8 +587,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="139"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:139</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="140"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:140</a></div>
                 </td>
             </tr>
 
@@ -670,8 +672,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="167"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:167</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="168"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:168</a></div>
                 </td>
             </tr>
 
@@ -765,8 +767,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="115"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:115</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="116"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:116</a></div>
                 </td>
             </tr>
 
@@ -822,6 +824,7 @@
 import {
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
+	ApiNoContentResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
@@ -1016,16 +1019,19 @@ export class UserLoginMigrationController {
 	@ApiOkResponse({ description: &#x27;User login migration closed&#x27;, type: UserLoginMigrationResponse })
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
-	async closeMigration(@CurrentUser() currentUser: ICurrentUser): Promise&lt;UserLoginMigrationResponse | void&gt; {
-		const userLoginMigration: UserLoginMigrationDO &#x3D; await this.closeUserLoginMigrationUc.closeMigration(
+	@ApiNoContentResponse({ description: &#x27;User login migration was reverted&#x27; })
+	async closeMigration(@CurrentUser() currentUser: ICurrentUser): Promise&lt;UserLoginMigrationResponse | undefined&gt; {
+		const userLoginMigration: UserLoginMigrationDO | undefined &#x3D; await this.closeUserLoginMigrationUc.closeMigration(
 			currentUser.userId,
 			currentUser.schoolId
 		);
 
-		const migrationResponse: UserLoginMigrationResponse &#x3D;
-			UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(userLoginMigration);
-
-		return migrationResponse;
+		if (userLoginMigration) {
+			const migrationResponse: UserLoginMigrationResponse &#x3D;
+				UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(userLoginMigration);
+			return migrationResponse;
+		}
+		return undefined;
 	}
 
 	@Post(&#x27;migrate-to-oauth2&#x27;)

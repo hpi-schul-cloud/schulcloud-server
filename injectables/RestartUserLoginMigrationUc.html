@@ -216,8 +216,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="49"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/restart-user-login-migration.uc.ts:49</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="47"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/restart-user-login-migration.uc.ts:47</a></div>
                 </td>
             </tr>
 
@@ -407,8 +407,6 @@ export class RestartUserLoginMigrationUc {
 			userLoginMigration &#x3D; await this.userLoginMigrationService.restartMigration(schoolId);
 
 			this.logger.info(new UserLoginMigrationStartLoggable(userId, schoolId));
-		} else {
-			// Do nothing, if migration is already started but not stopped.
 		}
 
 		return userLoginMigration;
