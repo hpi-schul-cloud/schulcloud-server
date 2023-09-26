@@ -153,6 +153,10 @@ export class UserRepo extends BaseRepo<User> {
 		return promise;
 	}
 
+	async delete(user: User): Promise<void> {
+		await this._em.removeAndFlush(user);
+	}
+
 	private async populateRoles(roles: Role[]): Promise<void> {
 		for (let i = 0; i < roles.length; i += 1) {
 			const role = roles[i];

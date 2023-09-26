@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IFindOptions, LanguageType, Permission, Role, RoleName, SortOrder, User } from '@shared/domain';
+import { EntityId, IFindOptions, LanguageType, Permission, Role, RoleName, SortOrder, User } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
@@ -14,6 +14,7 @@ import { RoleService } from '@src/modules/role/service/role.service';
 import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
+import { InternalServerErrorException } from '@nestjs/common';
 
 describe('UserService', () => {
 	let service: UserService;
@@ -327,6 +328,54 @@ describe('UserService', () => {
 			await service.saveAll(users);
 
 			expect(userDORepo.saveAll).toHaveBeenCalledWith(users);
+		});
+	});
+
+	describe('deleteUser', () => {
+		describe('when user is missing', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.build({ id: undefined });
+				const userId: EntityId = user.id as EntityId;
+
+				return {
+					userId,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { userId } = setup();
+
+				await expect(service.deleteUser(userId)).rejects.toThrowError(InternalServerErrorException);
+			});
+		});
+
+		describe('when deleting by userId', () => {
+			const setup = () => {
+				const user1: User = userFactory.asStudent().buildWithId();
+				userFactory.asStudent().buildWithId();
+
+				userRepo.findById.mockResolvedValue(user1);
+
+				return {
+					user1,
+				};
+			};
+
+			it('should call userRepo.findById', async () => {
+				const { user1 } = setup();
+
+				await service.deleteUser(user1.id);
+
+				expect(userRepo.findById).toBeCalledWith(user1.id);
+			});
+
+			it('should call userRepo.findById', async () => {
+				const { user1 } = setup();
+
+				await service.deleteUser(user1.id);
+
+				expect(userRepo.delete).toBeCalledWith(user1);
+			});
 		});
 	});
 });
