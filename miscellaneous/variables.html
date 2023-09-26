@@ -4237,11 +4237,11 @@ must use @ApiProperty</p>
                 </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>Object.entries(
-	toolConfigTypeToToolLaunchDataTypeMapping
-).reduce((acc: Record&lt;ToolLaunchDataType, ToolConfigType&gt;, [key, value]) &#x3D;&gt; {
-	return { ...acc, [value]: key as ToolConfigType };
-}, {} as Record&lt;ToolLaunchDataType, ToolConfigType&gt;)</code>
+                        <i>Default value : </i><code>{
+	[ToolLaunchDataType.BASIC]: ToolConfigType.BASIC,
+	[ToolLaunchDataType.LTI11]: ToolConfigType.LTI11,
+	[ToolLaunchDataType.OAUTH2]: ToolConfigType.OAUTH2,
+}</code>
                     </td>
                 </tr>
 

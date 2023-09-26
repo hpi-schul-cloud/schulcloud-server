@@ -108,6 +108,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
+                                <a href="#getAuthenticationValues" >getAuthenticationValues</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#addParameters" >addParameters</a>
                             </li>
@@ -475,7 +479,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:147</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:163</a></code>
 </div>
                 </td>
             </tr>
@@ -515,6 +519,77 @@
                     </div>
                     <div class="io-description">
                         <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#LaunchRequestMethod" target="_self" >LaunchRequestMethod</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getAuthenticationValues"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>getAuthenticationValues</b></span>
+                        <a href="#getAuthenticationValues"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getAuthenticationValues(properties: <a href="../classes/PropertyData.html" target="_self">PropertyData[]</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="144"
+                            class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/strategy/lti11-tool-launch.strategy.ts:144</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>properties</td>
+                                    <td>
+                                                <code><a href="../classes/PropertyData.html" target="_self" >PropertyData[]</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/AuthenticationValues.html" target="_self" >AuthenticationValues</a></code>
 
                     </div>
                     <div class="io-description">
@@ -1508,7 +1583,7 @@ import { Authorization } from &#x27;oauth-1.0a&#x27;;
 import { LtiRole } from &#x27;../../../common/enum&#x27;;
 import { ExternalTool } from &#x27;../../../external-tool/domain&#x27;;
 import { LtiRoleMapper } from &#x27;../../mapper&#x27;;
-import { LaunchRequestMethod, PropertyData, PropertyLocation } from &#x27;../../types&#x27;;
+import { LaunchRequestMethod, PropertyData, PropertyLocation, AuthenticationValues } from &#x27;../../types&#x27;;
 import { Lti11EncryptionService } from &#x27;../lti11-encryption.service&#x27;;
 import { AbstractLaunchStrategy } from &#x27;./abstract-launch.strategy&#x27;;
 import { IToolLaunchParams } from &#x27;./tool-launch-params.interface&#x27;;
@@ -1628,6 +1703,19 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			payload[property.name] &#x3D; property.value;
 		}
 
+		const authentication: AuthenticationValues &#x3D; this.getAuthenticationValues(properties);
+
+		const signedPayload: Authorization &#x3D; this.lti11EncryptionService.sign(
+			authentication.keyValue,
+			authentication.secretValue,
+			url,
+			payload
+		);
+
+		return JSON.stringify(signedPayload);
+	}
+
+	private getAuthenticationValues(properties: PropertyData[]): AuthenticationValues {
 		const key: PropertyData | undefined &#x3D; properties.find((property: PropertyData) &#x3D;&gt; property.name &#x3D;&#x3D;&#x3D; &#x27;key&#x27;);
 		const secret: PropertyData | undefined &#x3D; properties.find((property: PropertyData) &#x3D;&gt; property.name &#x3D;&#x3D;&#x3D; &#x27;secret&#x27;);
 
@@ -1637,9 +1725,12 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			);
 		}
 
-		const signedPayload: Authorization &#x3D; this.lti11EncryptionService.sign(key.value, secret.value, url, payload);
+		const authentication: AuthenticationValues &#x3D; new AuthenticationValues({
+			keyValue: key.value,
+			secretValue: secret.value,
+		});
 
-		return JSON.stringify(signedPayload);
+		return authentication;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars

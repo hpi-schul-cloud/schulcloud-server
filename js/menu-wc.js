@@ -2736,6 +2736,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/AuthenticationCodeGrantTokenRequest.html" data-type="entity-link" >AuthenticationCodeGrantTokenRequest</a>
                             </li>
                             <li class="link">
+                                <a href="classes/AuthenticationValues.html" data-type="entity-link" >AuthenticationValues</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/AuthorizationContextBuilder.html" data-type="entity-link" >AuthorizationContextBuilder</a>
                             </li>
                             <li class="link">
@@ -4255,6 +4258,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/ToolStatusOutdatedLoggableException.html" data-type="entity-link" >ToolStatusOutdatedLoggableException</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/TooManyPseudonymsLoggableException.html" data-type="entity-link" >TooManyPseudonymsLoggableException</a>
                             </li>
                             <li class="link">
                                 <a href="classes/UnauthorizedLoggableException.html" data-type="entity-link" >UnauthorizedLoggableException</a>
