@@ -483,6 +483,7 @@ describe('[ImportUserModule]', () => {
 
 				userMatch1 = userFactory.buildWithId({ school });
 				userMatch2 = userFactory.buildWithId({ school });
+
 				importUser1 = importUserFactory.buildWithId({
 					school,
 					user: userMatch1,
@@ -505,13 +506,15 @@ describe('[ImportUserModule]', () => {
 				userRepoFlushSpy = userRepo.flush.mockResolvedValueOnce();
 				permissionServiceSpy = authorizationService.checkAllPermissions.mockReturnValue();
 				importUserRepoFindImportUsersSpy = importUserRepo.findImportUsers.mockResolvedValue([[], 0]);
-				accountServiceFindByUserIdSpy = accountService.findByUserIdOrFail.mockResolvedValue({
-					id: 'dummyId',
-					userId: currentUser.id,
-					username: currentUser.email,
-					createdAt: new Date(),
-					updatedAt: new Date(),
-				});
+				accountServiceFindByUserIdSpy = accountService.findByUserId
+					.mockResolvedValue({
+						id: 'dummyId',
+						userId: currentUser.id,
+						username: currentUser.email,
+						createdAt: new Date(),
+						updatedAt: new Date(),
+					})
+					.mockResolvedValueOnce(null);
 				importUserRepoDeleteImportUsersBySchoolSpy = importUserRepo.deleteImportUsersBySchool.mockResolvedValue();
 				importUserRepoDeleteImportUserSpy = importUserRepo.delete.mockResolvedValue();
 				schoolServiceSaveSpy = schoolService.save.mockReturnValueOnce(Promise.resolve(createMockSchoolDo(school)));
