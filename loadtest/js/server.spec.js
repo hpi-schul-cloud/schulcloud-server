@@ -21,7 +21,7 @@ function getAccessToken() {
 			},
 		}
 	);
-	console.info(response);
+	// console.info(response);
 	const result = response.json();
 	return result;
 }
@@ -44,6 +44,7 @@ export default function (data) {
 			timeout: '10s',
 		}
 	);
+	// console.info(response);
 	check(response, {
 		'response status 200': (res) => res.status === 200,
 	});
