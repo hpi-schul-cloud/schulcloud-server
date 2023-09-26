@@ -1,5 +1,5 @@
 import { Embeddable, Embedded, Entity, Property } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps } from '../../../shared/domain/entity/base.entity';
+import { BaseEntityWithTimestamps } from '@shared/domain';
 
 export interface IFederalStateProperties {
 	name: string;
