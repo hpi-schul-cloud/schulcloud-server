@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
-import { System } from '@shared/domain';
+import { SystemEntity } from '@shared/domain';
 import { SystemRepo } from '@shared/repo';
 import { systemFactory } from '@shared/testing';
 import { SystemOidcMapper } from '../mapper/system-oidc.mapper';
@@ -37,7 +37,7 @@ describe('SystemService', () => {
 	describe('findById', () => {
 		const oidcSystem = systemFactory.withOidcConfig().buildWithId({ alias: 'oidcSystem' });
 		const standaloneSystem = systemFactory.buildWithId({ alias: 'standaloneSystem' });
-		const setup = (system: System) => {
+		const setup = (system: SystemEntity) => {
 			systemRepoMock.findById.mockResolvedValue(system);
 		};
 

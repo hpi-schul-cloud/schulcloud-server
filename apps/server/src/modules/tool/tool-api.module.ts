@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { LtiToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '@src/modules/authorization';
-import { SchoolModule } from '@src/modules/school';
+import { LegacySchoolModule } from '@src/modules/legacy-school';
 import { UserModule } from '@src/modules/user';
 import { ToolContextController } from './context-external-tool/controller';
 import { ContextExternalToolUc } from './context-external-tool/uc';
@@ -26,7 +26,7 @@ import { CommonToolModule } from './common';
 		UserModule,
 		AuthorizationModule,
 		LoggerModule,
-		SchoolModule,
+		LegacySchoolModule,
 		ToolConfigModule,
 	],
 	controllers: [

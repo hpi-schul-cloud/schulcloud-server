@@ -657,6 +657,11 @@
 			"default": false,
 			"description": "Enables uploading of school specific Privacy Policy on new admin page."
 		},
+		"FEATURE_SCHOOL_TERMS_OF_USE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables uploading of school specific Terms of Use on new admin page."
+		},
 		"ROCKETCHAT_SERVICE_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1266,6 +1271,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the configuration of custom parameters for context external tools"
+		},
+		"FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables external tools on the column board"
 		},
 		"CTL_TOOLS": {
 			"type": "object",

@@ -7,7 +7,7 @@ import {
 	Permission,
 	Role,
 	RoleName,
-	School,
+	SchoolEntity,
 	SchoolFeatures,
 	TargetModels,
 	User,
@@ -161,7 +161,7 @@ describe('VideoConferenceController (API)', () => {
 
 		describe('when the logoutUrl is from a wrong origin', () => {
 			const setup = async () => {
-				const school: School = schoolFactory.buildWithId({ features: [] });
+				const school: SchoolEntity = schoolFactory.buildWithId({ features: [] });
 
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
 					Permission.START_MEETING,
@@ -201,7 +201,7 @@ describe('VideoConferenceController (API)', () => {
 		describe('when conference params are given', () => {
 			describe('when school has not enabled the school feature videoconference', () => {
 				const setup = async () => {
-					const school: School = schoolFactory.buildWithId({ features: [] });
+					const school: SchoolEntity = schoolFactory.buildWithId({ features: [] });
 
 					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
 						Permission.START_MEETING,
@@ -240,7 +240,7 @@ describe('VideoConferenceController (API)', () => {
 
 			describe('when user has not the required permission', () => {
 				const setup = async () => {
-					const school: School = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
+					const school: SchoolEntity = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
 					const studentRole: Role = roleFactory.buildWithId({
 						name: RoleName.STUDENT,
 						permissions: [Permission.JOIN_MEETING],
@@ -282,7 +282,7 @@ describe('VideoConferenceController (API)', () => {
 
 			describe('when user has the required permission', () => {
 				const setup = async () => {
-					const school: School = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
+					const school: SchoolEntity = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
 
 					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
 						Permission.START_MEETING,
@@ -321,7 +321,7 @@ describe('VideoConferenceController (API)', () => {
 
 			describe('when conference is for scope and scopeId is already running', () => {
 				const setup = async () => {
-					const school: School = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
+					const school: SchoolEntity = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
 
 					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
 						Permission.START_MEETING,
@@ -372,7 +372,7 @@ describe('VideoConferenceController (API)', () => {
 		describe('when scope and scopeId are given', () => {
 			describe('when school has not enabled the school feature videoconference', () => {
 				const setup = async () => {
-					const school: School = schoolFactory.buildWithId({ features: [] });
+					const school: SchoolEntity = schoolFactory.buildWithId({ features: [] });
 
 					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
 						Permission.START_MEETING,
@@ -409,7 +409,7 @@ describe('VideoConferenceController (API)', () => {
 
 			describe('when user has the required permission', () => {
 				const setup = async () => {
-					const school: School = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
+					const school: SchoolEntity = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
 
 					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
 						Permission.START_MEETING,
@@ -449,7 +449,7 @@ describe('VideoConferenceController (API)', () => {
 
 			describe('when conference is not running', () => {
 				const setup = async () => {
-					const school: School = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
+					const school: SchoolEntity = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
 
 					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
 						Permission.START_MEETING,
@@ -498,7 +498,7 @@ describe('VideoConferenceController (API)', () => {
 		describe('when scope and scopeId are given', () => {
 			describe('when school has not enabled the school feature videoconference', () => {
 				const setup = async () => {
-					const school: School = schoolFactory.buildWithId({ features: [] });
+					const school: SchoolEntity = schoolFactory.buildWithId({ features: [] });
 
 					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
 						Permission.START_MEETING,
@@ -534,7 +534,7 @@ describe('VideoConferenceController (API)', () => {
 
 			describe('when user has the required permission', () => {
 				const setup = async () => {
-					const school: School = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
+					const school: SchoolEntity = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
 
 					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
 						Permission.START_MEETING,
@@ -571,7 +571,7 @@ describe('VideoConferenceController (API)', () => {
 
 			describe('when guest want meeting info of conference without waiting room', () => {
 				const setup = async () => {
-					const school: School = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
+					const school: SchoolEntity = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
 
 					const expertRole: Role = roleFactory.buildWithId({
 						name: RoleName.EXPERT,
@@ -612,7 +612,7 @@ describe('VideoConferenceController (API)', () => {
 
 			describe('when conference is not running', () => {
 				const setup = async () => {
-					const school: School = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
+					const school: SchoolEntity = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
 
 					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
 						Permission.START_MEETING,
@@ -661,7 +661,7 @@ describe('VideoConferenceController (API)', () => {
 		describe('when scope and scopeId are given', () => {
 			describe('when school has not enabled the school feature videoconference', () => {
 				const setup = async () => {
-					const school: School = schoolFactory.buildWithId({ features: [] });
+					const school: SchoolEntity = schoolFactory.buildWithId({ features: [] });
 
 					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
 						Permission.START_MEETING,
@@ -698,7 +698,7 @@ describe('VideoConferenceController (API)', () => {
 
 			describe('when a user without required permission wants to end a conference', () => {
 				const setup = async () => {
-					const school: School = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
+					const school: SchoolEntity = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
 
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school }, [
 						Permission.JOIN_MEETING,
@@ -732,7 +732,7 @@ describe('VideoConferenceController (API)', () => {
 
 			describe('when a user with required permission wants to end a conference', () => {
 				const setup = async () => {
-					const school: School = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
+					const school: SchoolEntity = schoolFactory.buildWithId({ features: [SchoolFeatures.VIDEOCONFERENCE] });
 
 					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
 						Permission.START_MEETING,

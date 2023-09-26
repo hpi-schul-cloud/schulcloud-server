@@ -1,5 +1,12 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-import { ISchoolProperties, SchoolFeatures, SchoolRoles, SchoolYear, System } from '@shared/domain';
+import {
+	FederalStateEntity,
+	ISchoolProperties,
+	SchoolFeatures,
+	SchoolRoles,
+	SchoolYearEntity,
+	SystemEntity,
+} from '@shared/domain';
 import { federalStateFactory, schoolFactory } from '@shared/testing';
 import { FederalStateEntity } from '@src/modules/federal-state/entity';
 import { DeepPartial } from 'fishery';
@@ -265,15 +272,15 @@ const seedSchools: SeedSchoolProperties[] = [
 ];
 
 export function generateSchools(entities: {
-	systems: System[];
-	schoolYears: SchoolYear[];
+	systems: SystemEntity[];
+	schoolYears: SchoolYearEntity[];
 	federalStates: FederalStateEntity[];
 }) {
 	return seedSchools.map((partial) => {
 		const schoolYear = entities.schoolYears.find((sy) => partial.currentYear && sy.name === partial.currentYear);
 		const systems = partial.systems
 			?.map((systemId) => entities.systems.find((s) => s.id === systemId))
-			.filter((s) => s) as System[] | undefined;
+			.filter((s) => s) as SystemEntity[] | undefined;
 
 		const federalState =
 			entities.federalStates.find((fs) => partial.federalState && fs.name === partial.federalState) ??

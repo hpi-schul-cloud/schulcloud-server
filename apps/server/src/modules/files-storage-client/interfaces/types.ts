@@ -1,4 +1,4 @@
-import { Lesson, Submission, Task } from '@shared/domain';
+import { LessonEntity, Submission, Task } from '@shared/domain';
 
-export type EntitiesWithFiles = Task | Lesson | Submission;
-export type EntityWithEmbeddedFiles = Task | Lesson;
+export type EntitiesWithFiles = Task | LessonEntity | Submission;
+export type EntityWithEmbeddedFiles = Task | LessonEntity;

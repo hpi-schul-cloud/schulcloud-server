@@ -4,8 +4,8 @@ import {
 	ForbiddenException,
 	InternalServerErrorException,
 } from '@nestjs/common';
-import _ from 'lodash';
 import { IError } from '@shared/infra/rabbitmq';
+import _ from 'lodash';
 import { ErrorMapper } from './error.mapper';
 
 describe('ErrorMapper', () => {
@@ -45,6 +45,7 @@ describe('ErrorMapper', () => {
 			const result = ErrorMapper.mapRpcErrorResponseToDomainError(json);
 
 			expect(result).toStrictEqual(new InternalServerErrorException('Internal Server Error Exception'));
+			// @ts-expect-error cause is always unknown
 			expect(result.cause?.message).toContain(errorText);
 		});
 	});

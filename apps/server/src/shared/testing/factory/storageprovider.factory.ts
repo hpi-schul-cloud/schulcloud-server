@@ -1,8 +1,8 @@
-import { StorageProvider, IStorageProviderProperties } from '@shared/domain';
+import { StorageProviderEntity, IStorageProviderProperties } from '@shared/domain';
 import { BaseFactory } from './base.factory';
 
-export const storageProviderFactory = BaseFactory.define<StorageProvider, IStorageProviderProperties>(
-	StorageProvider,
+export const storageProviderFactory = BaseFactory.define<StorageProviderEntity, IStorageProviderProperties>(
+	StorageProviderEntity,
 	() => {
 		return {
 			endpointUrl: 'http://localhost',
