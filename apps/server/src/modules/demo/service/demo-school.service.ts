@@ -122,7 +122,7 @@ export class DemoSchoolService {
 	async createLesson(courseId: string, config: LessonConfig): Promise<CreationProtocol> {
 		const { name, contents, hidden } = config;
 		const id = await this.lessonService.createLesson({ name, contents, hidden, courseId });
-		return { id, key: name, type: 'lesson' };
+		return { id, key: name, type: 'lesson', children: [] };
 	}
 
 	async createUsers(
@@ -159,7 +159,7 @@ export class DemoSchoolService {
 		const userDo = await this.userService.save(user);
 		await this.createAccount(userDo, password);
 
-		return { id: userDo.id, type: 'user', key: extendedEmail };
+		return { id: userDo.id, type: 'user', key: extendedEmail, children: [] };
 	}
 
 	private async createAccount(user: UserDO, password: string): Promise<AccountSaveDto> {
