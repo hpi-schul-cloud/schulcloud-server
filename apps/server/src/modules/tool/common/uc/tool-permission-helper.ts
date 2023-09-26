@@ -12,6 +12,9 @@ export class ToolPermissionHelper {
 	constructor(
 		@Inject(forwardRef(() => AuthorizationService)) private readonly authorizationService: AuthorizationService,
 		private readonly schoolService: LegacySchoolService,
+		// invalid dependency on this place it is in UC layer in a other module
+		// loading of ressources should be part of service layer
+		// if it must resolve different loadings based on the request it can be added in own service and use in UC
 		private readonly courseRepo: CourseRepo
 	) {}
 
@@ -21,6 +24,7 @@ export class ToolPermissionHelper {
 		contextExternalTool: ContextExternalTool,
 		context: AuthorizationContext
 	): Promise<void> {
+		// loading of ressources should be part of the UC -> unnessasary awaits
 		const [authorizableUser, course]: [User, Course] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
 			this.courseRepo.findById(contextExternalTool.contextRef.id),
@@ -40,6 +44,7 @@ export class ToolPermissionHelper {
 		schoolExternalTool: SchoolExternalTool,
 		context: AuthorizationContext
 	): Promise<void> {
+		// loading of ressources should be part of the UC  -> unnessasary awaits
 		const [user, school]: [User, LegacySchoolDo] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
 			this.schoolService.getSchoolById(schoolExternalTool.schoolId),

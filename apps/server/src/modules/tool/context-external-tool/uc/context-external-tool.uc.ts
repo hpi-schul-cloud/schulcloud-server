@@ -61,20 +61,22 @@ export class ContextExternalToolUc {
 		return saved;
 	}
 
-	async deleteContextExternalTool(userId: EntityId, contextExternalToolId: EntityId): Promise<void> {
+	public async deleteContextExternalTool(userId: EntityId, contextExternalToolId: EntityId): Promise<void> {
 		const tool: ContextExternalTool = await this.contextExternalToolService.getContextExternalToolById(
 			contextExternalToolId
 		);
-		const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
 
+		const context = AuthorizationContextBuilder.write([Permission.CONTEXT_TOOL_ADMIN]);
 		await this.toolPermissionHelper.ensureContextPermissions(userId, tool, context);
 
-		const promise: Promise<void> = this.contextExternalToolService.deleteContextExternalTool(tool);
-
-		return promise;
+		await this.contextExternalToolService.deleteContextExternalTool(tool);
 	}
 
-	async getContextExternalToolsForContext(userId: EntityId, contextType: ToolContextType, contextId: string) {
+	public async getContextExternalToolsForContext(
+		userId: EntityId,
+		contextType: ToolContextType,
+		contextId: string
+	): Promise<ContextExternalTool[]> {
 		const tools: ContextExternalTool[] = await this.contextExternalToolService.findAllByContext(
 			new ContextRef({ id: contextId, type: contextType })
 		);
@@ -97,6 +99,7 @@ export class ContextExternalToolUc {
 		userId: EntityId,
 		tools: ContextExternalTool[]
 	): Promise<ContextExternalTool[]> {
+		// authorizationService.getUserWithPermissions hould be part of the public method at place where ressources are loaded and pass the authorizable user to it.
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
 
