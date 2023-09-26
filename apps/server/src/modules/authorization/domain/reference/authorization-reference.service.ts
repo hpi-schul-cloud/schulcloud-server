@@ -7,7 +7,7 @@ import { ForbiddenLoggableException } from '../../errors';
 import { AuthorizationService } from '../../authorization.service';
 
 /**
- * Should by use only internal in authorization module.
+ * Should by use only internal in authorization module. See ticket: BC-3990
  */
 @Injectable()
 export class AuthorizationReferenceService {

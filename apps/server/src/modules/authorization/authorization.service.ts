@@ -50,10 +50,8 @@ export class AuthorizationService {
 		return this.authorizationHelper.hasOneOfPermissions(user, requiredPermissions);
 	}
 
-	// TODO: think about it
-	// TODO: Rename
 	public async getUserWithPermissions(userId: EntityId): Promise<User> {
-		// replace with service method getUserWithPermissions
+		// replace with service method getUserWithPermissions BC-5069
 		const userWithPopulatedRoles = await this.userRepo.findById(userId, true);
 
 		return userWithPopulatedRoles;
