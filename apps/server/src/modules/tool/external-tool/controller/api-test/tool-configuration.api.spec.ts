@@ -33,7 +33,6 @@ describe('ToolConfigurationController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let orm: MikroORM;
-
 	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {

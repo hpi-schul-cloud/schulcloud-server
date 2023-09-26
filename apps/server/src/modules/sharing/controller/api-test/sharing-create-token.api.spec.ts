@@ -105,7 +105,7 @@ describe(`share token creation (api)`, () => {
 		});
 	});
 
-	describe('with ivalid request data', () => {
+	describe('with invalid request data', () => {
 		it('should return status 400 on empty parent id', async () => {
 			const response = await api.post({
 				parentId: '',
