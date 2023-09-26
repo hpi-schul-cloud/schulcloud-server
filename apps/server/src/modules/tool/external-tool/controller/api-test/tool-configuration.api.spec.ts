@@ -348,7 +348,6 @@ describe('ToolConfigurationController (API)', () => {
 				const school = schoolFactory.build();
 				// not on same school like the tool
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({}, []);
-				const otherCourse = courseFactory.build();
 				const externalTool: ExternalToolEntity = externalToolEntityFactory.build();
 				const schoolExternalTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.build({
 					school,
