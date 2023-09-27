@@ -1,4 +1,11 @@
-export type CreationProtocolEntityType = 'school' | 'password' | 'postfix' | 'user' | 'course' | 'lesson';
+export enum CreationProtocolEntityType {
+	SCHOOL = 'SCHOOL',
+	PASSWORD = 'PASSWORD',
+	POSTFIX = 'POSTFIX',
+	USER = 'USER',
+	COURSE = 'COURSE',
+	LESSON = 'LESSON',
+}
 
 export type CreationProtocol = {
 	id: string | undefined;

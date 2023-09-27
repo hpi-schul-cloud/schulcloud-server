@@ -6,15 +6,13 @@ import { AccountService } from '@src/modules/account/services/account.service';
 import { CourseService } from '@src/modules/learnroom/service';
 import { FederalStateNames } from '@src/modules/legacy-school/types';
 import { LessonService } from '@src/modules/lesson/service';
-import { CourseConfig, LessonConfig, SchoolConfig, UserConfig } from '../types';
+import { CourseConfig, CreationProtocolEntityType, LessonConfig, SchoolConfig, UserConfig } from '../types';
 import { DemoSchoolService } from './demo-school.service';
 
 describe(DemoSchoolService.name, () => {
 	let module: TestingModule;
 	let service: DemoSchoolService;
-	// let accountService: DeepMocked<AccountService>;
 	let courseService: DeepMocked<CourseService>;
-	// let federalStateService: DeepMocked<FederalStateService>;
 	let lessonService: DeepMocked<LessonService>;
 	let roleService: DeepMocked<RoleService>;
 	let schoolService: DeepMocked<LegacySchoolService>;
@@ -57,8 +55,6 @@ describe(DemoSchoolService.name, () => {
 
 		service = module.get(DemoSchoolService);
 		courseService = module.get(CourseService);
-		// accountService = module.get(AccountService);
-		// federalStateService = module.get(FederalStateService);
 		lessonService = module.get(LessonService);
 		roleService = module.get(RoleService);
 		schoolService = module.get(LegacySchoolService);
@@ -148,7 +144,7 @@ describe(DemoSchoolService.name, () => {
 
 		const fakeProtocol = {
 			id: 'an-id',
-			type: 'none',
+			type: CreationProtocolEntityType.SCHOOL,
 			key: 'super-key',
 			children: [],
 		};
@@ -216,12 +212,12 @@ describe(DemoSchoolService.name, () => {
 					{
 						id: userId1,
 						key: userConfig1.email,
-						type: 'user',
+						type: CreationProtocolEntityType.USER,
 					},
 					{
 						id: userId2,
 						key: userConfig2.email,
-						type: 'user',
+						type: CreationProtocolEntityType.USER,
 					},
 				].toString()
 			);
@@ -254,12 +250,12 @@ describe(DemoSchoolService.name, () => {
 					{
 						id: fakeLessonId1,
 						key: lessonConfig1.name,
-						type: 'user',
+						type: CreationProtocolEntityType.USER,
 					},
 					{
 						id: fakeLessonId2,
 						key: lessonConfig2.name,
-						type: 'user',
+						type: CreationProtocolEntityType.USER,
 					},
 				].toString()
 			);
@@ -297,12 +293,12 @@ describe(DemoSchoolService.name, () => {
 					{
 						id: fakeCourseId1,
 						key: courseConfig1.name,
-						type: 'course',
+						type: CreationProtocolEntityType.COURSE,
 					},
 					{
 						id: fakeCourseId2,
 						key: courseConfig2.name,
-						type: 'course',
+						type: CreationProtocolEntityType.COURSE,
 					},
 				].toString()
 			);
@@ -323,12 +319,12 @@ describe(DemoSchoolService.name, () => {
 					{
 						id: fakeCourseId1,
 						key: courseConfig1.name,
-						type: 'course',
+						type: CreationProtocolEntityType.COURSE,
 					},
 					{
 						id: fakeCourseId2,
 						key: courseConfig2.name,
-						type: 'course',
+						type: CreationProtocolEntityType.COURSE,
 					},
 				].toString()
 			);
@@ -346,7 +342,7 @@ describe(DemoSchoolService.name, () => {
 					expect.objectContaining({
 						id: fakeSchoolId,
 						key: schoolConfig.name,
-						type: 'school',
+						type: CreationProtocolEntityType.SCHOOL,
 					})
 				);
 			});

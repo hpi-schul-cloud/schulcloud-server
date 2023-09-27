@@ -8,7 +8,7 @@ import { LessonService } from '@src/modules/lesson/service';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import crypto from 'crypto';
 import demoschoolConfig from '../configurations/default-demoschool';
-import { CreationProtocol } from '../types';
+import { CreationProtocol, CreationProtocolEntityType } from '../types';
 import { CourseConfig, LessonConfig, SchoolConfig, UserConfig } from '../types/demo-configuration.types';
 
 const getUserIdByEmail = (email: string, userDos: CreationProtocol[] = []) => {
@@ -53,13 +53,23 @@ export class DemoSchoolService {
 			features: [],
 		});
 		const password = `pswd_${crypto.randomUUID()}`;
-		const passwordEntry: CreationProtocol = { key: password, type: 'password', id: '', children: [] };
+		const passwordEntry: CreationProtocol = {
+			key: password,
+			type: CreationProtocolEntityType.PASSWORD,
+			id: '',
+			children: [],
+		};
 		const postfix = `_${crypto.randomUUID()}`;
-		const postfixEntry: CreationProtocol = { key: postfix, type: 'postfix', id: '', children: [] };
+		const postfixEntry: CreationProtocol = {
+			key: postfix,
+			type: CreationProtocolEntityType.POSTFIX,
+			id: '',
+			children: [],
+		};
 		const createdSchoolDo = await this.schoolService.save(schoolDo);
 		const protocol: CreationProtocol = {
 			key: name,
-			type: 'school',
+			type: CreationProtocolEntityType.SCHOOL,
 			id: createdSchoolDo.id,
 			children: [passwordEntry, postfixEntry],
 		};
@@ -88,7 +98,7 @@ export class DemoSchoolService {
 
 	async createCourse(schoolId: EntityId, config: CourseConfig, protocol: CreationProtocol): Promise<CreationProtocol> {
 		const { name, teachers, students, substitutionTeachers } = config;
-		const users = protocol.children?.filter((c) => c.type === 'user') as CreationProtocol[];
+		const users = protocol.children?.filter((c) => c.type === CreationProtocolEntityType.USER) as CreationProtocol[];
 
 		const teacherIds = mapUserEmailsToIds(teachers, users);
 		const studentIds = mapUserEmailsToIds(students, users);
@@ -107,7 +117,7 @@ export class DemoSchoolService {
 		if (config.lessons) {
 			lessons = await this.createLessons(courseId, config.lessons);
 		}
-		return { id: courseId, key: name, type: 'course', children: lessons };
+		return { id: courseId, key: name, type: CreationProtocolEntityType.COURSE, children: lessons };
 	}
 
 	async createLessons(courseId: string, configs: LessonConfig[]): Promise<CreationProtocol[]> {
@@ -122,7 +132,7 @@ export class DemoSchoolService {
 	async createLesson(courseId: string, config: LessonConfig): Promise<CreationProtocol> {
 		const { name, contents, hidden } = config;
 		const id = await this.lessonService.createLesson({ name, contents, hidden, courseId });
-		return { id, key: name, type: 'lesson', children: [] };
+		return { id, key: name, type: CreationProtocolEntityType.LESSON, children: [] };
 	}
 
 	async createUsers(
@@ -159,7 +169,7 @@ export class DemoSchoolService {
 		const userDo = await this.userService.save(user);
 		await this.createAccount(userDo, password);
 
-		return { id: userDo.id, type: 'user', key: extendedEmail, children: [] };
+		return { id: userDo.id, type: CreationProtocolEntityType.USER, key: extendedEmail, children: [] };
 	}
 
 	private async createAccount(user: UserDO, password: string): Promise<AccountSaveDto> {
