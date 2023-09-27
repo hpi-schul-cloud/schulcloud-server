@@ -11,6 +11,7 @@ import {
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain';
+import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { ObjectId } from 'bson';
@@ -120,6 +121,24 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 			elements: fileCopyStatus,
 		});
 		this.copyMap.set(original.id, copy);
+	}
+
+	async visitLinkElementAsync(original: LinkElement): Promise<void> {
+		const copy = new LinkElement({
+			id: new ObjectId().toHexString(),
+			url: original.url,
+			children: [],
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
+		this.resultMap.set(original.id, {
+			copyEntity: copy,
+			type: CopyElementType.LINK_ELEMENT,
+			status: CopyStatusEnum.SUCCESS,
+		});
+		this.copyMap.set(original.id, copy);
+
+		return Promise.resolve();
 	}
 
 	async visitRichTextElementAsync(original: RichTextElement): Promise<void> {

@@ -31,6 +31,20 @@ export class FileElementContentBody extends ElementContentBody {
 	@ApiProperty()
 	content!: FileContentBody;
 }
+export class LinkContentBody {
+	@IsString()
+	@ApiProperty({})
+	url!: string;
+}
+
+export class LinkElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: ContentElementType.LINK })
+	type!: ContentElementType.LINK;
+
+	@ValidateNested()
+	@ApiProperty()
+	content!: LinkContentBody;
+}
 
 export class RichTextContentBody {
 	@IsString()

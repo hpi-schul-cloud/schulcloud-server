@@ -7,6 +7,7 @@ import type {
 	ColumnNode,
 	ExternalToolElementNodeEntity,
 	FileElementNode,
+	LinkElementNode,
 	RichTextElementNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
@@ -19,6 +20,7 @@ import {
 	ColumnBoard,
 	ExternalToolElement,
 	FileElement,
+	LinkElement,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
@@ -98,6 +100,19 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			id: boardNode.id,
 			caption: boardNode.caption,
 			alternativeText: boardNode.alternativeText,
+			children: [],
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+		});
+		return element;
+	}
+
+	public buildLinkElement(boardNode: LinkElementNode): LinkElement {
+		this.ensureLeafNode(boardNode);
+
+		const element = new LinkElement({
+			id: boardNode.id,
+			url: boardNode.url,
 			children: [],
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,

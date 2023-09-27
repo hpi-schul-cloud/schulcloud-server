@@ -12,10 +12,12 @@ import {
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain';
+import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import {
 	AnyElementContentBody,
 	ExternalToolContentBody,
 	FileContentBody,
+	LinkContentBody,
 	RichTextContentBody,
 	SubmissionContainerContentBody,
 } from '../controller/dto';
@@ -45,6 +47,12 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 			fileElement.alternativeText = sanitizeRichText(this.content.alternativeText, InputFormat.PLAIN_TEXT);
 		} else {
 			this.throwNotHandled(fileElement);
+		}
+	}
+
+	visitLinkElement(linkElement: LinkElement): void {
+		if (!(this.content instanceof LinkContentBody)) {
+			this.throwNotHandled(linkElement);
 		}
 	}
 
