@@ -24,7 +24,6 @@ export class ElementUc {
 		const element = await this.elementService.findById(elementId);
 
 		await this.checkPermission(userId, element, Action.write);
-
 		await this.elementService.update(element, content);
 	}
 
