@@ -225,6 +225,14 @@ describe('user repo', () => {
 			expect(res).to.eql([]);
 		});
 
+		it('should return empty list if ldapDns are empty', async () => {
+			const { school } = await setup();
+
+			const res = await UserRepo.findByLdapDnsAndSchool([], school._id);
+
+			expect(res).to.eql([]);
+		});
+
 		it('should find user by ldap dn and school', async () => {
 			const { school, ldapDns, createdUsers } = await setup();
 
