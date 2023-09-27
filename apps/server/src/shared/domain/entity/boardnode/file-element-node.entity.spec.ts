@@ -40,14 +40,6 @@ describe(FileElementNode.name, () => {
 			expect(builder.buildFileElement).toHaveBeenCalledWith(element);
 		});
 
-		it('should call the specific builder method', () => {
-			const { element, builder } = setup();
-
-			element.useDoBuilder(builder);
-
-			expect(builder.buildFileElement).toHaveBeenCalledWith(element);
-		});
-
 		it('should return FileElementDo', () => {
 			const { element, builder, elementDo } = setup();
 

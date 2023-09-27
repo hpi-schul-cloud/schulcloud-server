@@ -9,11 +9,11 @@ import {
 	OneToOne,
 	Property,
 } from '@mikro-orm/core';
-import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
+import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { BaseEntity } from './base.entity';
-import { SchoolYear } from './schoolyear.entity';
-import { System } from './system.entity';
-import { FederalState } from './federal-state.entity';
+import { SchoolYearEntity } from './schoolyear.entity';
+import { SystemEntity } from './system.entity';
+import { FederalStateEntity } from './federal-state.entity';
 
 export enum SchoolFeatures {
 	ROCKET_CHAT = 'rocketChat',
@@ -34,11 +34,11 @@ export interface ISchoolProperties {
 	previousExternalId?: string;
 	name: string;
 	officialSchoolNumber?: string;
-	systems?: System[];
+	systems?: SystemEntity[];
 	features?: SchoolFeatures[];
-	schoolYear?: SchoolYear;
-	userLoginMigration?: UserLoginMigration;
-	federalState: FederalState;
+	schoolYear?: SchoolYearEntity;
+	userLoginMigration?: UserLoginMigrationEntity;
+	federalState: FederalStateEntity;
 }
 
 @Embeddable()
@@ -83,24 +83,28 @@ export class SchoolEntity extends BaseEntity {
 	@Property({ nullable: true })
 	officialSchoolNumber?: string;
 
-	@ManyToMany('System', undefined, { fieldName: 'systems' })
-	systems = new Collection<System>(this);
+	@ManyToMany(() => SystemEntity, undefined, { fieldName: 'systems' })
+	systems = new Collection<SystemEntity>(this);
 
 	@Embedded(() => SchoolRoles, { object: true, nullable: true, prefix: false })
 	permissions?: SchoolRoles;
 
-	@ManyToOne('SchoolYear', { fieldName: 'currentYear', nullable: true })
-	schoolYear?: SchoolYear;
+	@ManyToOne(() => SchoolYearEntity, { fieldName: 'currentYear', nullable: true })
+	schoolYear?: SchoolYearEntity;
 
-	@OneToOne(() => UserLoginMigration, (userLoginMigration: UserLoginMigration) => userLoginMigration.school, {
-		orphanRemoval: true,
-		nullable: true,
-		fieldName: 'userLoginMigrationId',
-	})
-	userLoginMigration?: UserLoginMigration;
+	@OneToOne(
+		() => UserLoginMigrationEntity,
+		(userLoginMigration: UserLoginMigrationEntity) => userLoginMigration.school,
+		{
+			orphanRemoval: true,
+			nullable: true,
+			fieldName: 'userLoginMigrationId',
+		}
+	)
+	userLoginMigration?: UserLoginMigrationEntity;
 
-	@ManyToOne(() => FederalState, { fieldName: 'federalState', nullable: false })
-	federalState: FederalState;
+	@ManyToOne(() => FederalStateEntity, { fieldName: 'federalState', nullable: false })
+	federalState: FederalStateEntity;
 
 	constructor(props: ISchoolProperties) {
 		super();

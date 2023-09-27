@@ -1,10 +1,10 @@
 import { Embeddable, ManyToOne, Property } from '@mikro-orm/core';
-import { System } from './system.entity';
+import { SystemEntity } from './system.entity';
 
 export interface ExternalSourceEntityProps {
 	externalId: string;
 
-	system: System;
+	system: SystemEntity;
 }
 
 @Embeddable()
@@ -12,8 +12,8 @@ export class ExternalSourceEntity {
 	@Property()
 	externalId: string;
 
-	@ManyToOne(() => System)
-	system: System;
+	@ManyToOne(() => SystemEntity)
+	system: SystemEntity;
 
 	constructor(props: ExternalSourceEntityProps) {
 		this.externalId = props.externalId;

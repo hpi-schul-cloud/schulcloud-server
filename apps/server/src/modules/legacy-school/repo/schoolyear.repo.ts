@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { SchoolYear } from '@shared/domain';
+import { SchoolYearEntity } from '@shared/domain';
 import { BaseRepo } from '@shared/repo/base.repo';
 
 @Injectable()
-export class SchoolYearRepo extends BaseRepo<SchoolYear> {
+export class SchoolYearRepo extends BaseRepo<SchoolYearEntity> {
 	get entityName() {
-		return SchoolYear;
+		return SchoolYearEntity;
 	}
 
-	async findCurrentYear(): Promise<SchoolYear> {
+	async findCurrentYear(): Promise<SchoolYearEntity> {
 		const currentDate = new Date();
-		const year: SchoolYear | null = await this._em.findOneOrFail(SchoolYear, {
+		const year: SchoolYearEntity | null = await this._em.findOneOrFail(SchoolYearEntity, {
 			$and: [{ startDate: { $lte: currentDate } }, { endDate: { $gte: currentDate } }],
 		});
 		return year;

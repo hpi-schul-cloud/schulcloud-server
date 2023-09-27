@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, OauthConfig, SchoolFeatures, System } from '@shared/domain';
+import { LegacySchoolDo, OauthConfig, SchoolFeatures, SystemEntity } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
@@ -50,7 +50,7 @@ describe('OAuthService', () => {
 	let migrationCheckService: DeepMocked<MigrationCheckService>;
 	let schoolService: DeepMocked<LegacySchoolService>;
 
-	let testSystem: System;
+	let testSystem: SystemEntity;
 	let testOauthConfig: OauthConfig;
 
 	const hostUri = 'https://mock.de';

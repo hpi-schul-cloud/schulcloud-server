@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Page, Permission, LegacySchoolDo, System, User, UserLoginMigrationDO } from '@shared/domain';
+import { Page, Permission, LegacySchoolDo, SystemEntity, User, UserLoginMigrationDO } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
 	legacySchoolDoFactory,
@@ -300,7 +300,7 @@ describe('UserLoginMigrationUc', () => {
 				query.systemId = 'systemId';
 				query.redirectUri = 'redirectUri';
 
-				const sourceSystem: System = systemFactory
+				const sourceSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
@@ -415,7 +415,7 @@ describe('UserLoginMigrationUc', () => {
 				query.systemId = 'systemId';
 				query.redirectUri = 'redirectUri';
 
-				const sourceSystem: System = systemFactory
+				const sourceSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
@@ -479,7 +479,7 @@ describe('UserLoginMigrationUc', () => {
 				query.systemId = 'systemId';
 				query.redirectUri = 'redirectUri';
 
-				const sourceSystem: System = systemFactory
+				const sourceSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
@@ -615,7 +615,7 @@ describe('UserLoginMigrationUc', () => {
 				query.systemId = 'systemId';
 				query.redirectUri = 'redirectUri';
 
-				const sourceSystem: System = systemFactory
+				const sourceSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 

@@ -1,8 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, System, UserLoginMigrationDO } from '@shared/domain';
-import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
+import { SchoolEntity, SystemEntity, UserLoginMigrationDO } from '@shared/domain';
+import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, schoolFactory, systemFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
@@ -42,8 +42,8 @@ describe('UserLoginMigrationRepo', () => {
 		describe('when saving a UserLoginMigrationDO', () => {
 			const setup = async () => {
 				const school: SchoolEntity = schoolFactory.buildWithId();
-				const sourceSystem: System = systemFactory.buildWithId();
-				const targetSystem: System = systemFactory.buildWithId();
+				const sourceSystem: SystemEntity = systemFactory.buildWithId();
+				const targetSystem: SystemEntity = systemFactory.buildWithId();
 
 				const domainObject: UserLoginMigrationDO = new UserLoginMigrationDO({
 					schoolId: school.id,
@@ -78,7 +78,7 @@ describe('UserLoginMigrationRepo', () => {
 	describe('delete', () => {
 		describe('when saving a UserLoginMigrationDO', () => {
 			const setup = async () => {
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId();
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId();
 
 				await em.persistAndFlush(userLoginMigration);
 				em.clear();
@@ -105,7 +105,7 @@ describe('UserLoginMigrationRepo', () => {
 	describe('findBySchoolId', () => {
 		describe('when searching for a UserLoginMigration by its school id', () => {
 			const setup = async () => {
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId();
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId();
 
 				await em.persistAndFlush(userLoginMigration);
 				em.clear();

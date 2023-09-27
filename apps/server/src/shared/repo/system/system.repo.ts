@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { System, SystemTypeEnum } from '@shared/domain';
+import { SystemEntity, SystemTypeEnum } from '@shared/domain';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { SystemScope } from '@shared/repo/system/system-scope';
 
 @Injectable()
-export class SystemRepo extends BaseRepo<System> {
+export class SystemRepo extends BaseRepo<SystemEntity> {
 	get entityName() {
-		return System;
+		return SystemEntity;
 	}
 
-	async findByFilter(type: SystemTypeEnum): Promise<System[]> {
+	async findByFilter(type: SystemTypeEnum): Promise<SystemEntity[]> {
 		const scope = new SystemScope();
 		switch (type) {
 			case SystemTypeEnum.LDAP:
@@ -25,10 +25,10 @@ export class SystemRepo extends BaseRepo<System> {
 				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 				throw new Error(`system type ${type} unknown`);
 		}
-		return this._em.find(System, scope.query);
+		return this._em.find(SystemEntity, scope.query);
 	}
 
-	async findAll(): Promise<System[]> {
-		return this._em.find(System, {});
+	async findAll(): Promise<SystemEntity[]> {
+		return this._em.find(SystemEntity, {});
 	}
 }

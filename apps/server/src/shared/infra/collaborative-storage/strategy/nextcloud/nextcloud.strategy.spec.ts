@@ -241,7 +241,7 @@ describe('NextCloudStrategy', () => {
 
 			ltiToolRepo.findByName.mockResolvedValue([nextcloudTool]);
 			client.getNameWithPrefix.mockReturnValue(groupId);
-			pseudonymService.findByUserAndTool.mockRejectedValueOnce(undefined);
+			pseudonymService.findByUserAndToolOrThrow.mockRejectedValueOnce(undefined);
 			client.findGroupFolderIdForGroupId.mockResolvedValue(folderId);
 			client.getGroupUsers.mockResolvedValue([userId]);
 
@@ -306,7 +306,7 @@ describe('NextCloudStrategy', () => {
 				ltiToolRepo.findByName.mockResolvedValue([nextcloudTool]);
 				client.getNameWithPrefix.mockReturnValue(groupId);
 				client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
-				pseudonymService.findByUserAndTool.mockRejectedValueOnce(undefined);
+				pseudonymService.findByUserAndToolOrThrow.mockRejectedValueOnce(undefined);
 				client.findGroupFolderIdForGroupId.mockResolvedValueOnce(folderId);
 
 				const expectedFolderName: string = NextcloudStrategySpec.specGenerateGroupFolderName(teamDto.id, teamDto.name);
@@ -396,7 +396,7 @@ describe('NextCloudStrategy', () => {
 
 				ltiToolRepo.findByName.mockResolvedValue([nextcloudTool]);
 				client.getGroupUsers.mockResolvedValue([]);
-				pseudonymService.findByUserAndTool.mockResolvedValue(pseudonym);
+				pseudonymService.findByUserAndToolOrThrow.mockResolvedValue(pseudonym);
 				client.getNameWithPrefix.mockReturnValue(nextCloudUserId);
 				userService.findById.mockResolvedValue(userDo);
 
@@ -424,7 +424,7 @@ describe('NextCloudStrategy', () => {
 
 				await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
 
-				expect(pseudonymService.findByUserAndTool).toHaveBeenCalledWith(userDo, nextcloudTool);
+				expect(pseudonymService.findByUserAndToolOrThrow).toHaveBeenCalledWith(userDo, nextcloudTool);
 			});
 
 			it('should call userService.findById', async () => {
@@ -476,7 +476,7 @@ describe('NextCloudStrategy', () => {
 
 				ltiToolRepo.findByName.mockResolvedValue([nextcloudTool]);
 				client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
-				pseudonymService.findByUserAndTool.mockResolvedValue(pseudonym);
+				pseudonymService.findByUserAndToolOrThrow.mockResolvedValue(pseudonym);
 				client.getNameWithPrefix.mockReturnValue(nextCloudUserId);
 
 				return { teamUsers, nextCloudUserId, groupId };
@@ -495,7 +495,7 @@ describe('NextCloudStrategy', () => {
 
 				await strategy.specUpdateTeamUsersInGroup(groupId, teamUsers);
 
-				expect(pseudonymService.findByUserAndTool).not.toHaveBeenCalled();
+				expect(pseudonymService.findByUserAndToolOrThrow).not.toHaveBeenCalled();
 			});
 
 			it('should not call clients getNameWithPrefix', async () => {
@@ -542,7 +542,7 @@ describe('NextCloudStrategy', () => {
 
 				ltiToolRepo.findByName.mockResolvedValue([nextcloudTool]);
 				client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
-				pseudonymService.findByUserAndTool.mockResolvedValueOnce(pseudonym).mockRejectedValueOnce(undefined);
+				pseudonymService.findByUserAndToolOrThrow.mockResolvedValueOnce(pseudonym).mockRejectedValueOnce(undefined);
 				client.getNameWithPrefix.mockReturnValue(nextCloudUserId);
 
 				return { teamUsers, groupId };
@@ -582,7 +582,7 @@ describe('NextCloudStrategy', () => {
 
 				client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
 				ltiToolRepo.findByName.mockResolvedValue([nextcloudTool, nextcloudTool2]);
-				pseudonymService.findByUserAndTool.mockResolvedValue(pseudonym);
+				pseudonymService.findByUserAndToolOrThrow.mockResolvedValue(pseudonym);
 
 				return { user, teamUsers, pseudonym, nextCloudUserId, groupId };
 			};
