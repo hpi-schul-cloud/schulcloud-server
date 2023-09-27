@@ -94,7 +94,6 @@ describe('Group (API)', () => {
 					sortBy: ClassSortBy.NAME,
 					sortOrder: SortOrder.desc,
 				});
-				const clazzName = clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name;
 
 				expect(response.body).toEqual<ClassInfoSearchListResponse>({
 					total: 2,
@@ -105,7 +104,7 @@ describe('Group (API)', () => {
 							teachers: [adminUser.lastName],
 						},
 						{
-							name: clazzName,
+							name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
 							teachers: [teacherUser.lastName],
 						},
 					],

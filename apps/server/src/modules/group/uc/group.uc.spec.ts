@@ -226,7 +226,7 @@ describe('GroupUc', () => {
 					expect(result).toEqual<Page<ClassInfoDto>>({
 						data: [
 							{
-								name: clazz.name,
+								name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
 								externalSourceName: clazz.source,
 								teachers: [teacherUser.lastName],
 							},
@@ -261,7 +261,7 @@ describe('GroupUc', () => {
 					expect(result).toEqual<Page<ClassInfoDto>>({
 						data: [
 							{
-								name: clazz.name,
+								name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
 								externalSourceName: clazz.source,
 								teachers: [teacherUser.lastName],
 							},
