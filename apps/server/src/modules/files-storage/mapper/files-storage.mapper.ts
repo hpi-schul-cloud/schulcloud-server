@@ -1,7 +1,4 @@
 import { NotImplementedException, StreamableFile } from '@nestjs/common';
-// TODO: it should be internal and unknown outside. If we switch to registration we do not have this information.
-// make the mapper method mapToAllowedAuthorizationEntityType sense in this context? If we use and parent type that is not known to run time an error is throw.
-// We have no other information. Maybe a enum must be enough.
 import { AuthorizableReferenceType } from '@src/modules/authorization/domain/reference/types';
 import { plainToClass } from 'class-transformer';
 import {

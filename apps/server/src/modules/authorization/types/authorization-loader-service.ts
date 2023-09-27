@@ -5,7 +5,6 @@ export interface AuthorizationLoaderService {
 	findById(id: EntityId): Promise<AuthorizableObject | BaseDO>;
 }
 
-// todo: check useage
 export interface AuthorizationLoaderServiceGeneric<T extends AuthorizableObject | BaseDO>
 	extends AuthorizationLoaderService {
 	findById(id: EntityId): Promise<T>;
