@@ -10,7 +10,7 @@ export class LinkElementNode extends BoardNode {
 
 	constructor(props: LinkElementNodeProps) {
 		super(props);
-		this.type = BoardNodeType.FILE_ELEMENT;
+		this.type = BoardNodeType.LINK_ELEMENT;
 		this.url = props.url;
 	}
 
