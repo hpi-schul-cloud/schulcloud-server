@@ -1,4 +1,3 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityId, IFindOptions, LanguageType, User } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
@@ -12,6 +11,7 @@ import { ICurrentUser } from '@src/modules/authentication';
 import { CurrentUserMapper } from '@src/modules/authentication/mapper';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { RoleService } from '@src/modules/role/service/role.service';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { IUserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
