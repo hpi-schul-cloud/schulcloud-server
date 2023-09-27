@@ -87,7 +87,7 @@ class ClassAction extends BaseConsumerAction {
 
 	async addUsersToClass(schoolId, classId, uniqueMembers) {
 		if (!uniqueMembers) {
-			console.warn('uniqueMembers are undefined.');
+			console.warn('uniqueMembers are undefined or null.');
 			return;
 		}
 
