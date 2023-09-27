@@ -137,7 +137,7 @@ export class CardController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post(':cardId/elements')
 	async createElement(
-		@Param() urlParams: CardUrlParams, // TODO add type-property ?
+		@Param() urlParams: CardUrlParams,
 		@Body() bodyParams: CreateContentElementBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<AnyContentElementResponse> {

@@ -75,6 +75,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 	public buildCard(boardNode: CardNode): Card {
 		this.ensureBoardNodeType(this.getChildren(boardNode), [
 			BoardNodeType.FILE_ELEMENT,
+			BoardNodeType.LINK_ELEMENT,
 			BoardNodeType.RICH_TEXT_ELEMENT,
 			BoardNodeType.SUBMISSION_CONTAINER_ELEMENT,
 			BoardNodeType.EXTERNAL_TOOL,
