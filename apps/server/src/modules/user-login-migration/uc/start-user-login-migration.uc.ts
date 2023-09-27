@@ -34,8 +34,6 @@ export class StartUserLoginMigrationUc {
 				userLoginMigration.id as string,
 				userLoginMigration.closedAt
 			);
-		} else {
-			// Do nothing, if migration is already started but not stopped.
 		}
 
 		return userLoginMigration;
