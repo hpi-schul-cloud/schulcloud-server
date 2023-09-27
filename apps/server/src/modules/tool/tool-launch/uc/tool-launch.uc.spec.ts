@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { contextExternalToolFactory } from '@shared/testing';
+import { ObjectId } from 'bson';
 import { ToolLaunchService } from '../service';
 import { ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import { ToolLaunchUc } from './tool-launch.uc';
@@ -62,7 +63,11 @@ describe('ToolLaunchUc', () => {
 				properties: [],
 			});
 
-			const userId = 'userId';
+			const userId: string = new ObjectId().toHexString();
+
+			toolPermissionHelper.ensureContextPermissions.mockResolvedValueOnce();
+			contextExternalToolService.getContextExternalToolById.mockResolvedValueOnce(contextExternalTool);
+			toolLaunchService.getLaunchData.mockResolvedValueOnce(toolLaunchData);
 
 			return {
 				userId,
@@ -82,8 +87,6 @@ describe('ToolLaunchUc', () => {
 
 		it('should call service to get data', async () => {
 			const { userId, contextExternalToolId, contextExternalTool } = setup();
-			toolPermissionHelper.ensureContextPermissions.mockResolvedValue();
-			contextExternalToolService.getContextExternalToolById.mockResolvedValue(contextExternalTool);
 
 			await uc.getToolLaunchRequest(userId, contextExternalToolId);
 
@@ -91,11 +94,9 @@ describe('ToolLaunchUc', () => {
 		});
 
 		it('should call service to generate launch request', async () => {
-			const { userId, contextExternalToolId, contextExternalTool, toolLaunchData } = setup();
-			toolPermissionHelper.ensureContextPermissions.mockResolvedValue();
-			contextExternalToolService.getContextExternalToolById.mockResolvedValue(contextExternalTool);
+			const { userId, contextExternalToolId, toolLaunchData } = setup();
 
-			toolLaunchService.getLaunchData.mockResolvedValue(toolLaunchData);
+			toolLaunchService.getLaunchData.mockResolvedValueOnce(toolLaunchData);
 
 			await uc.getToolLaunchRequest(userId, contextExternalToolId);
 
@@ -103,10 +104,7 @@ describe('ToolLaunchUc', () => {
 		});
 
 		it('should return launch request', async () => {
-			const { userId, contextExternalToolId, toolLaunchData, contextExternalTool } = setup();
-			toolPermissionHelper.ensureContextPermissions.mockResolvedValue();
-			contextExternalToolService.getContextExternalToolById.mockResolvedValue(contextExternalTool);
-			toolLaunchService.getLaunchData.mockResolvedValue(toolLaunchData);
+			const { userId, contextExternalToolId } = setup();
 
 			const toolLaunchRequest: ToolLaunchRequest = await uc.getToolLaunchRequest(userId, contextExternalToolId);
 
