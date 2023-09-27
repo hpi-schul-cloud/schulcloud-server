@@ -86,6 +86,10 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#findAllBySchoolId" >findAllBySchoolId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findAllByUserId" >findAllByUserId</a>
                             </li>
                             <li>
@@ -110,12 +114,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(em: EntityManager, mapper: <a href="../classes/ClassMapper.html" target="_self">ClassMapper</a>)</code>
+<code>constructor(em: EntityManager)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/class/repo/classes.repo.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/class/repo/classes.repo.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -144,18 +148,6 @@
                                                     </td>
                                                     
                                                 </tr>
-                                                <tr>
-                                                        <td>mapper</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../classes/ClassMapper.html" target="_self" >ClassMapper</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -170,6 +162,77 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findAllBySchoolId"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>findAllBySchoolId</b></span>
+                        <a href="#findAllBySchoolId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findAllBySchoolId(schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="12"
+                            class="link-to-prism">apps/server/src/modules/class/repo/classes.repo.ts:12</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>schoolId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/Class.html" target="_self" >Promise&lt;Class[]&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -192,8 +255,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="13"
-                            class="link-to-prism">apps/server/src/modules/class/repo/classes.repo.ts:13</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="20"
+                            class="link-to-prism">apps/server/src/modules/class/repo/classes.repo.ts:20</a></div>
                 </td>
             </tr>
 
@@ -263,8 +326,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="18"
-                            class="link-to-prism">apps/server/src/modules/class/repo/classes.repo.ts:18</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="28"
+                            class="link-to-prism">apps/server/src/modules/class/repo/classes.repo.ts:28</a></div>
                 </td>
             </tr>
 
@@ -318,21 +381,31 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-
-import { EntityManager, ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager, ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain&#x27;;
-import { ClassEntity } from &#x27;../entity&#x27;;
 import { Class } from &#x27;../domain&#x27;;
+import { ClassEntity } from &#x27;../entity&#x27;;
 import { ClassMapper } from &#x27;./mapper&#x27;;
 
 @Injectable()
 export class ClassesRepo {
-	constructor(private readonly em: EntityManager, private readonly mapper: ClassMapper) {}
+	constructor(private readonly em: EntityManager) {}
+
+	async findAllBySchoolId(schoolId: EntityId): Promise&lt;Class[]&gt; {
+		const classes: ClassEntity[] &#x3D; await this.em.find(ClassEntity, { schoolId: new ObjectId(schoolId) });
+
+		const mapped: Class[] &#x3D; ClassMapper.mapToDOs(classes);
+
+		return mapped;
+	}
 
 	async findAllByUserId(userId: EntityId): Promise&lt;Class[]&gt; {
 		const classes: ClassEntity[] &#x3D; await this.em.find(ClassEntity, { userIds: new ObjectId(userId) });
-		return ClassMapper.mapToDOs(classes);
+
+		const mapped: Class[] &#x3D; ClassMapper.mapToDOs(classes);
+
+		return mapped;
 	}
 
 	async updateMany(classes: Class[]): Promise&lt;void&gt; {

@@ -990,6 +990,34 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="modules/GroupApiModule.html" data-type="entity-link" >GroupApiModule</a>
+                                    <li class="chapter inner">
+                                        <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
+                                            'data-bs-target="#controllers-links-module-GroupApiModule-82692cfff8d33d0dd50f94a4be23c0b68385bf4bf8303dd900299154008e4b597e7c3d2f73dcfc1905d2f7ddbc2d6b2b826327e8d54b92c808e2ce238ef99f04"' : 'data-bs-target="#xs-controllers-links-module-GroupApiModule-82692cfff8d33d0dd50f94a4be23c0b68385bf4bf8303dd900299154008e4b597e7c3d2f73dcfc1905d2f7ddbc2d6b2b826327e8d54b92c808e2ce238ef99f04"' }>
+                                            <span class="icon ion-md-swap"></span>
+                                            <span>Controllers</span>
+                                            <span class="icon ion-ios-arrow-down"></span>
+                                        </div>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-GroupApiModule-82692cfff8d33d0dd50f94a4be23c0b68385bf4bf8303dd900299154008e4b597e7c3d2f73dcfc1905d2f7ddbc2d6b2b826327e8d54b92c808e2ce238ef99f04"' :
+                                            'id="xs-controllers-links-module-GroupApiModule-82692cfff8d33d0dd50f94a4be23c0b68385bf4bf8303dd900299154008e4b597e7c3d2f73dcfc1905d2f7ddbc2d6b2b826327e8d54b92c808e2ce238ef99f04"' }>
+                                            <li class="link">
+                                                <a href="controllers/GroupController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >GroupController</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                <li class="chapter inner">
+                                    <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
+                                        'data-bs-target="#injectables-links-module-GroupApiModule-82692cfff8d33d0dd50f94a4be23c0b68385bf4bf8303dd900299154008e4b597e7c3d2f73dcfc1905d2f7ddbc2d6b2b826327e8d54b92c808e2ce238ef99f04"' : 'data-bs-target="#xs-injectables-links-module-GroupApiModule-82692cfff8d33d0dd50f94a4be23c0b68385bf4bf8303dd900299154008e4b597e7c3d2f73dcfc1905d2f7ddbc2d6b2b826327e8d54b92c808e2ce238ef99f04"' }>
+                                        <span class="icon ion-md-arrow-round-down"></span>
+                                        <span>Injectables</span>
+                                        <span class="icon ion-ios-arrow-down"></span>
+                                    </div>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-GroupApiModule-82692cfff8d33d0dd50f94a4be23c0b68385bf4bf8303dd900299154008e4b597e7c3d2f73dcfc1905d2f7ddbc2d6b2b826327e8d54b92c808e2ce238ef99f04"' :
+                                        'id="xs-injectables-links-module-GroupApiModule-82692cfff8d33d0dd50f94a4be23c0b68385bf4bf8303dd900299154008e4b597e7c3d2f73dcfc1905d2f7ddbc2d6b2b826327e8d54b92c808e2ce238ef99f04"' }>
+                                        <li class="link">
+                                            <a href="injectables/GroupUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >GroupUc</a>
+                                        </li>
+                                    </ul>
+                                </li>
                             </li>
                             <li class="link">
                                 <a href="modules/GroupModule.html" data-type="entity-link" >GroupModule</a>
@@ -2476,6 +2504,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="controllers/FilesStorageController.html" data-type="entity-link" >FilesStorageController</a>
                                 </li>
                                 <li class="link">
+                                    <a href="controllers/GroupController.html" data-type="entity-link" >GroupController</a>
+                                </li>
+                                <li class="link">
                                     <a href="controllers/LessonController.html" data-type="entity-link" >LessonController</a>
                                 </li>
                                 <li class="link">
@@ -2886,7 +2917,19 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ClassFactory.html" data-type="entity-link" >ClassFactory</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ClassInfoDto.html" data-type="entity-link" >ClassInfoDto</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ClassInfoResponse.html" data-type="entity-link" >ClassInfoResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ClassInfoSearchListResponse.html" data-type="entity-link" >ClassInfoSearchListResponse</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ClassMapper.html" data-type="entity-link" >ClassMapper</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ClassSortParams.html" data-type="entity-link" >ClassSortParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ClassSourceOptions.html" data-type="entity-link" >ClassSourceOptions</a>
@@ -3402,7 +3445,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/GroupDomainMapper.html" data-type="entity-link" >GroupDomainMapper</a>
                             </li>
                             <li class="link">
+                                <a href="classes/GroupResponseMapper.html" data-type="entity-link" >GroupResponseMapper</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/GroupRoleUnknownLoggable.html" data-type="entity-link" >GroupRoleUnknownLoggable</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/GroupUcMapper.html" data-type="entity-link" >GroupUcMapper</a>
                             </li>
                             <li class="link">
                                 <a href="classes/GroupUser.html" data-type="entity-link" >GroupUser</a>
@@ -3828,6 +3877,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/RequestInfo.html" data-type="entity-link" >RequestInfo</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ResolvedGroupUser.html" data-type="entity-link" >ResolvedGroupUser</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ResolvedUserMapper.html" data-type="entity-link" >ResolvedUserMapper</a>
                             </li>
                             <li class="link">
@@ -4030,6 +4082,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/SortExternalToolParams.html" data-type="entity-link" >SortExternalToolParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SortHelper.html" data-type="entity-link" >SortHelper</a>
                             </li>
                             <li class="link">
                                 <a href="classes/SortImportUserParams.html" data-type="entity-link" >SortImportUserParams</a>
@@ -4688,6 +4743,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/GroupService.html" data-type="entity-link" >GroupService</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/GroupUc.html" data-type="entity-link" >GroupUc</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/HydraAdapter.html" data-type="entity-link" >HydraAdapter</a>

@@ -1617,7 +1617,7 @@ class UserFactory extends BaseFactory&lt;User, IUserProperties&gt; {
 
 	asStudent(additionalPermissions: Permission[] &#x3D; []): this {
 		const permissions &#x3D; _.union(userPermissions, studentPermissions, additionalPermissions);
-		const role &#x3D; roleFactory.buildWithId({ permissions });
+		const role &#x3D; roleFactory.buildWithId({ permissions, name: RoleName.STUDENT });
 
 		const params: DeepPartial&lt;IUserProperties&gt; &#x3D; { roles: [role] };
 
@@ -1626,7 +1626,7 @@ class UserFactory extends BaseFactory&lt;User, IUserProperties&gt; {
 
 	asTeacher(additionalPermissions: Permission[] &#x3D; []): this {
 		const permissions &#x3D; _.union(userPermissions, teacherPermissions, additionalPermissions);
-		const role &#x3D; roleFactory.buildWithId({ permissions });
+		const role &#x3D; roleFactory.buildWithId({ permissions, name: RoleName.TEACHER });
 
 		const params: DeepPartial&lt;IUserProperties&gt; &#x3D; { roles: [role] };
 
@@ -1635,7 +1635,7 @@ class UserFactory extends BaseFactory&lt;User, IUserProperties&gt; {
 
 	asAdmin(additionalPermissions: Permission[] &#x3D; []): this {
 		const permissions &#x3D; _.union(userPermissions, adminPermissions, additionalPermissions);
-		const role &#x3D; roleFactory.buildWithId({ permissions });
+		const role &#x3D; roleFactory.buildWithId({ permissions, name: RoleName.ADMINISTRATOR });
 
 		const params: DeepPartial&lt;IUserProperties&gt; &#x3D; { roles: [role] };
 

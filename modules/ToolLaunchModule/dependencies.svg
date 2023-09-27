@@ -24,10 +24,6 @@
 <title>cluster_ToolLaunchModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 2429,-268 2429,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_ToolLaunchModule_exports</title>
-<polygon fill="none" stroke="black" points="927,-208 927,-260 1073,-260 1073,-208 927,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_ToolLaunchModule_providers</title>
 <polygon fill="none" stroke="black" points="1261,-78 1261,-130 2421,-130 2421,-78 1261,-78"/>
@@ -35,6 +31,10 @@
 <g id="clust3" class="cluster">
 <title>cluster_ToolLaunchModule_imports</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 1253,-130 1253,-78 16,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_ToolLaunchModule_exports</title>
+<polygon fill="none" stroke="black" points="927,-208 927,-260 1073,-260 1073,-208 927,-208"/>
 </g>
 <!-- CommonToolModule -->
 <g id="node1" class="node">
