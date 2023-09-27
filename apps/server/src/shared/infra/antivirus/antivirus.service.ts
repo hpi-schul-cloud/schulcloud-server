@@ -39,8 +39,10 @@ export class AntivirusService {
 				scanResult.virus_detected = false;
 			}
 		} catch (error) {
-			scanResult.virus_detected = false;
-			scanResult.error = JSON.stringify(error);
+			throw new InternalServerErrorException(
+				'AntivirusService:checkStream',
+				ErrorUtils.createHttpExceptionOptions(error)
+			);
 		}
 
 		return scanResult;

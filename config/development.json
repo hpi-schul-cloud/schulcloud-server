@@ -22,7 +22,8 @@
 		"S3_BUCKET": "schulcloud",
 		"S3_REGION": "eu-central-1",
 		"INCOMING_REQUEST_TIMEOUT": 600000,
-		"EXCHANGE": "files-storage"
+		"EXCHANGE": "files-storage",
+		"USE_STREAM_TO_ANTIVIRUS": true
 	},
 	"FWU_CONTENT": {
 		"S3_ENDPOINT": "http://localhost:4568",
