@@ -1,14 +1,13 @@
-import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
-import { FileElementResponse, RichTextElementResponse } from '@src/modules/board/controller/dto';
+import { ApiProperty } from '@nestjs/swagger';
 import { TimestampsResponse } from '../timestamps.response';
-import { UserDataResponse } from '../user-data.response';
+import { FileElementResponse, RichTextElementResponse } from '..';
 
 export class SubmissionItemResponse {
-	constructor({ id, timestamps, completed, userData, elements }: SubmissionItemResponse) {
+	constructor({ id, timestamps, completed, userId, elements }: SubmissionItemResponse) {
 		this.id = id;
 		this.timestamps = timestamps;
 		this.completed = completed;
-		this.userData = userData;
+		this.userId = userId;
 		this.elements = elements;
 	}
 
@@ -21,8 +20,8 @@ export class SubmissionItemResponse {
 	@ApiProperty()
 	completed: boolean;
 
-	@ApiProperty()
-	userData: UserDataResponse;
+	@ApiProperty({ pattern: '[a-f0-9]{24}' })
+	userId: string;
 
 	@ApiProperty({
 		type: 'array',

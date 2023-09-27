@@ -3,7 +3,7 @@ import {
 	CourseNews,
 	INewsProperties,
 	News,
-	School,
+	SchoolEntity,
 	SchoolNews,
 	TeamEntity,
 	TeamNews,
@@ -43,7 +43,7 @@ const date = new Date(2021, 1, 1, 0, 0, 0);
 const createNews = <T extends News>(
 	newsProps,
 	NewsType: { new (props: INewsProperties): T },
-	school: School,
+	school: SchoolEntity,
 	creator: User,
 	target: NewsTarget
 ): T => {
@@ -70,7 +70,7 @@ const createNews = <T extends News>(
 };
 
 const getExpectedNewsResponse = (
-	school: School,
+	school: SchoolEntity,
 	creator: User,
 	news: News,
 	newsProps: { title: string; content: string },

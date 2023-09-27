@@ -4,12 +4,12 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { CourseGroup } from './coursegroup.entity';
-import { School } from './school.entity';
+import { SchoolEntity } from './school.entity';
 import type { Task } from './task.entity';
 import type { User } from './user.entity';
 
 export interface ISubmissionProperties {
-	school: School;
+	school: SchoolEntity;
 	task: Task;
 	student: User;
 	courseGroup?: CourseGroup;
@@ -25,9 +25,9 @@ export interface ISubmissionProperties {
 @Index({ properties: ['student', 'teamMembers'] })
 @Unique({ properties: ['student', 'task'] })
 export class Submission extends BaseEntityWithTimestamps {
-	@ManyToOne('School', { fieldName: 'schoolId' })
+	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
 	@Index()
-	school: School;
+	school: SchoolEntity;
 
 	@ManyToOne('Task', { fieldName: 'homeworkId' })
 	@Index()

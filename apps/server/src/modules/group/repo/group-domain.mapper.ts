@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExternalSource, ExternalSourceEntity, Role, School, System, User } from '@shared/domain';
+import { ExternalSource, ExternalSourceEntity, Role, SchoolEntity, SystemEntity, User } from '@shared/domain';
 import { Group, GroupProps, GroupTypes, GroupUser } from '../domain';
 import { GroupEntity, GroupEntityProps, GroupEntityTypes, GroupUserEntity, GroupValidPeriodEntity } from '../entity';
 
@@ -15,6 +15,14 @@ export class GroupDomainMapper {
 	static mapDomainObjectToEntityProperties(group: Group, em: EntityManager): GroupEntityProps {
 		const props: GroupProps = group.getProps();
 
+		let validPeriod: GroupValidPeriodEntity | undefined;
+		if (props.validFrom && props.validUntil) {
+			validPeriod = new GroupValidPeriodEntity({
+				from: props.validFrom,
+				until: props.validUntil,
+			});
+		}
+
 		const mapped: GroupEntityProps = {
 			id: props.id,
 			name: props.name,
@@ -25,11 +33,8 @@ export class GroupDomainMapper {
 			users: props.users.map(
 				(groupUser): GroupUserEntity => GroupDomainMapper.mapGroupUserToGroupUserEntity(groupUser, em)
 			),
-			validPeriod: new GroupValidPeriodEntity({
-				until: props.validUntil,
-				from: props.validFrom,
-			}),
-			organization: props.organizationId ? em.getReference(School, props.organizationId) : undefined,
+			validPeriod,
+			organization: props.organizationId ? em.getReference(SchoolEntity, props.organizationId) : undefined,
 		};
 
 		return mapped;
@@ -39,8 +44,8 @@ export class GroupDomainMapper {
 		const mapped: GroupProps = {
 			id: entity.id,
 			users: entity.users.map((groupUser): GroupUser => this.mapGroupUserEntityToGroupUser(groupUser)),
-			validFrom: entity.validPeriod.from,
-			validUntil: entity.validPeriod.until,
+			validFrom: entity.validPeriod ? entity.validPeriod.from : undefined,
+			validUntil: entity.validPeriod ? entity.validPeriod.until : undefined,
 			externalSource: entity.externalSource
 				? this.mapExternalSourceEntityToExternalSource(entity.externalSource)
 				: undefined,
@@ -58,7 +63,7 @@ export class GroupDomainMapper {
 	): ExternalSourceEntity {
 		const mapped = new ExternalSourceEntity({
 			externalId: externalSource.externalId,
-			system: em.getReference(System, externalSource.systemId),
+			system: em.getReference(SystemEntity, externalSource.systemId),
 		});
 
 		return mapped;

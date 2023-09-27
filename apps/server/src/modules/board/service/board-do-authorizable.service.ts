@@ -49,14 +49,32 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 
 	private mapCourseUsersToUsergroup(course: Course): UserBoardRoles[] {
 		const users = [
-			...course.getTeacherIds().map((userId) => {
-				return { userId, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER };
+			...course.getTeachersList().map((user) => {
+				return {
+					userId: user.id,
+					firstName: user.firstName,
+					lastName: user.lastName,
+					roles: [BoardRoles.EDITOR],
+					userRoleEnum: UserRoleEnum.TEACHER,
+				};
 			}),
-			...course.getSubstitutionTeacherIds().map((userId) => {
-				return { userId, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.SUBSTITUTION_TEACHER };
+			...course.getSubstitutionTeachersList().map((user) => {
+				return {
+					userId: user.id,
+					firstName: user.firstName,
+					lastName: user.lastName,
+					roles: [BoardRoles.EDITOR],
+					userRoleEnum: UserRoleEnum.SUBSTITUTION_TEACHER,
+				};
 			}),
-			...course.getStudentIds().map((userId) => {
-				return { userId, roles: [BoardRoles.READER], userRoleEnum: UserRoleEnum.STUDENT };
+			...course.getStudentsList().map((user) => {
+				return {
+					userId: user.id,
+					firstName: user.firstName,
+					lastName: user.lastName,
+					roles: [BoardRoles.READER],
+					userRoleEnum: UserRoleEnum.STUDENT,
+				};
 			}),
 		];
 		return users;

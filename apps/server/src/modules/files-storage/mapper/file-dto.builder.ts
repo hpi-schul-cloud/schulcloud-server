@@ -17,7 +17,7 @@ export class FileDtoBuilder {
 	}
 
 	public static buildFromAxiosResponse(name: string, response: AxiosResponse<Readable>): FileDto {
-		const mimeType = response.headers['content-type'];
+		const mimeType = response.headers['Content-Type']?.toString() || 'application/octet-stream';
 		const file = FileDtoBuilder.build(name, response.data, mimeType);
 
 		return file;

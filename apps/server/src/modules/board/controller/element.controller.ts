@@ -19,15 +19,14 @@ import { ElementUc } from '../uc/element.uc';
 import {
 	ContentElementUrlParams,
 	CreateSubmissionItemBodyParams,
-	MoveContentElementBody,
-	SubmissionItemResponse,
-} from './dto';
-import {
+	ExternalToolElementContentBody,
 	FileElementContentBody,
+	MoveContentElementBody,
 	RichTextElementContentBody,
 	SubmissionContainerElementContentBody,
+	SubmissionItemResponse,
 	UpdateElementContentBodyParams,
-} from './dto/element/update-element-content.body.params';
+} from './dto';
 import { SubmissionItemResponseMapper } from './mapper';
 
 @ApiTags('Board Element')
@@ -57,7 +56,12 @@ export class ElementController {
 	}
 
 	@ApiOperation({ summary: 'Update a single content element.' })
-	@ApiExtraModels(FileElementContentBody, RichTextElementContentBody, SubmissionContainerElementContentBody)
+	@ApiExtraModels(
+		FileElementContentBody,
+		RichTextElementContentBody,
+		SubmissionContainerElementContentBody,
+		ExternalToolElementContentBody
+	)
 	@ApiResponse({ status: 204 })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
@@ -105,7 +109,7 @@ export class ElementController {
 			bodyParams.completed
 		);
 		const mapper = SubmissionItemResponseMapper.getInstance();
-		const response = mapper.mapToResponse(submissionItem);
+		const response = mapper.mapSubmissionsToResponse(submissionItem);
 
 		return response;
 	}

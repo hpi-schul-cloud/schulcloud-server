@@ -25,11 +25,18 @@ import {
 	FileRecordResponse,
 } from '@src/modules/files-storage/controller/dto';
 import { Request } from 'express';
+import FileType from 'file-type-cjs/file-type-cjs-index';
 import request from 'supertest';
 import { FileRecordParentType } from '../../entity';
 import { availableParentTypes } from './mocks';
 
 const baseRouteName = '/file/copy';
+
+jest.mock('file-type-cjs/file-type-cjs-index', () => {
+	return {
+		fileTypeStream: jest.fn(),
+	};
+});
 
 class API {
 	app: INestApplication;
@@ -213,6 +220,8 @@ describe(`${baseRouteName} (api)`, () => {
 						parentType: FileRecordParentType.Course,
 					},
 				};
+
+				jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
 			});
 
 			it('should return status 200 for successful request', async () => {

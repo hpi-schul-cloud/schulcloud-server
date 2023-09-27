@@ -8,6 +8,7 @@ import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { Mail, MailService } from '@shared/infra/mail';
 import { LegacyLogger, Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
+import { TeamService } from '@src/modules/teams/service/team.service';
 import { AccountValidationService } from '@src/modules/account/services/account.validation.service';
 import { AccountUc } from '@src/modules/account/uc/account.uc';
 import { CollaborativeStorageUc } from '@src/modules/collaborative-storage/uc/collaborative-storage.uc';
@@ -18,6 +19,7 @@ import { join } from 'path';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
+import { FeathersRosterService } from '@src/modules/pseudonym';
 import legacyAppPromise = require('../../../../src/app');
 
 import { AppStartLoggable } from './helpers/app-start-loggable';
@@ -76,6 +78,10 @@ async function bootstrap() {
 	feathersExpress.services['nest-account-uc'] = nestApp.get(AccountUc);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-collaborative-storage-uc'] = nestApp.get(CollaborativeStorageUc);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+	feathersExpress.services['nest-team-service'] = nestApp.get(TeamService);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+	feathersExpress.services['nest-feathers-roster-service'] = nestApp.get(FeathersRosterService);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-orm'] = orm;
 

@@ -15,16 +15,12 @@ export class TeamService {
 	public async deleteUserDataFromTeams(userId: EntityId): Promise<number> {
 		const teams = await this.teamsRepo.findByUserId(userId);
 
-		const updatedTeams: TeamEntity[] = teams.map((team: TeamEntity) => {
-			return {
-				...team,
-				userIds: team.userIds.filter((u) => u.userId.id !== userId),
-				teamUsers: team.userIds.filter((u) => u.userId.id !== userId),
-			};
+		teams.forEach((team) => {
+			team.userIds = team.userIds.filter((u) => u.userId.id !== userId);
 		});
 
-		await this.teamsRepo.save(updatedTeams);
+		await this.teamsRepo.save(teams);
 
-		return updatedTeams.length;
+		return teams.length;
 	}
 }

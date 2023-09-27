@@ -5,11 +5,12 @@ import {
 	isRichTextElement,
 	RichTextElement,
 	SubmissionItem,
+	UserBoardRoles,
 } from '@shared/domain';
-import { ContentElementResponseFactory } from '@src/modules/board/controller/mapper/content-element-response.factory';
-import { FileElementResponseMapper } from '@src/modules/board/controller/mapper/file-element-response.mapper';
-import { RichTextElementResponseMapper } from '@src/modules/board/controller/mapper/rich-text-element-response.mapper';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { FileElementResponseMapper } from './file-element-response.mapper';
+import { RichTextElementResponseMapper } from './rich-text-element-response.mapper';
+import { SubmissionsResponse } from '../dto/submission-item/submissions.response';
 import { SubmissionItemResponse, TimestampsResponse, UserDataResponse } from '../dto';
 
 export class SubmissionItemResponseMapper {
@@ -23,9 +24,19 @@ export class SubmissionItemResponseMapper {
 		return SubmissionItemResponseMapper.instance;
 	}
 
-	public mapToResponse(submissionItem: SubmissionItem): SubmissionItemResponse {
-		const children: (FileElement | RichTextElement)[] = submissionItem.children.filter(isContent);
+	public mapToResponse(submissionItems: SubmissionItem[], users: UserBoardRoles[]): SubmissionsResponse {
+		const submissionItemsResponse: SubmissionItemResponse[] = submissionItems.map((item) =>
+			this.mapSubmissionsToResponse(item)
+		);
+		const usersResponse: UserDataResponse[] = users.map((user) => this.mapUsersToResponse(user));
 
+		const response = new SubmissionsResponse(submissionItemsResponse, usersResponse);
+
+		return response;
+	}
+
+	public mapSubmissionsToResponse(submissionItem: SubmissionItem): SubmissionItemResponse {
+		const children: (FileElement | RichTextElement)[] = submissionItem.children.filter(isContent);
 		const result = new SubmissionItemResponse({
 			completed: submissionItem.completed,
 			id: submissionItem.id,
@@ -33,12 +44,7 @@ export class SubmissionItemResponseMapper {
 				lastUpdatedAt: submissionItem.updatedAt,
 				createdAt: submissionItem.createdAt,
 			}),
-			userData: new UserDataResponse({
-				// TODO: put valid user info here which comes from the submission owner
-				firstName: 'John',
-				lastName: 'Mr Doe',
-				userId: submissionItem.userId,
-			}),
+			userId: submissionItem.userId,
 			elements: children.map((element) => {
 				if (isFileElement(element)) {
 					const mapper = FileElementResponseMapper.getInstance();
@@ -52,6 +58,15 @@ export class SubmissionItemResponseMapper {
 			}),
 		});
 
+		return result;
+	}
+
+	private mapUsersToResponse(user: UserBoardRoles) {
+		const result = new UserDataResponse({
+			userId: user.userId,
+			firstName: user.firstName || '',
+			lastName: user.lastName || '',
+		});
 		return result;
 	}
 }

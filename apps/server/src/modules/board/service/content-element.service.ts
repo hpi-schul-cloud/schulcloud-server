@@ -9,7 +9,7 @@ import {
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain';
-import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from '../controller/dto';
+import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementUpdateVisitor } from './content-element-update.visitor';
@@ -57,13 +57,13 @@ export class ContentElementService {
 		await this.boardDoService.move(element, targetCard, targetPosition);
 	}
 
-	async update(
-		element: AnyContentElementDo,
-		content: FileContentBody | RichTextContentBody | SubmissionContainerContentBody
-	): Promise<void> {
+	async update(element: AnyContentElementDo, content: AnyElementContentBody): Promise<void> {
 		const updater = new ContentElementUpdateVisitor(content);
+
 		element.accept(updater);
+
 		const parent = await this.boardDoRepo.findParentOfId(element.id);
+
 		await this.boardDoRepo.save(element, parent);
 	}
 }

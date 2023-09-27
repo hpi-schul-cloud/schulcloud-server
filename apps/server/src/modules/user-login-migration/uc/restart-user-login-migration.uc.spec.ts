@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, SchoolDO, User, UserLoginMigrationDO } from '@shared/domain';
-import { schoolDOFactory, setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
+import { Permission, LegacySchoolDo, User, UserLoginMigrationDO } from '@shared/domain';
+import { legacySchoolDoFactory, setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/legacy-school';
 import {
 	UserLoginMigrationGracePeriodExpiredLoggableException,
 	UserLoginMigrationNotFoundLoggableException,
@@ -19,7 +19,7 @@ describe('RestartUserLoginMigrationUc', () => {
 
 	let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let schoolService: DeepMocked<SchoolService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -34,8 +34,8 @@ describe('RestartUserLoginMigrationUc', () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 				{
 					provide: Logger,
@@ -47,7 +47,7 @@ describe('RestartUserLoginMigrationUc', () => {
 		uc = module.get(RestartUserLoginMigrationUc);
 		userLoginMigrationService = module.get(UserLoginMigrationService);
 		authorizationService = module.get(AuthorizationService);
-		schoolService = module.get(SchoolService);
+		schoolService = module.get(LegacySchoolService);
 
 		await setupEntities();
 	});
@@ -70,7 +70,7 @@ describe('RestartUserLoginMigrationUc', () => {
 
 				const user: User = userFactory.buildWithId();
 
-				const school: SchoolDO = schoolDOFactory.buildWithId();
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
@@ -115,7 +115,7 @@ describe('RestartUserLoginMigrationUc', () => {
 
 				const user: User = userFactory.buildWithId();
 
-				const school: SchoolDO = schoolDOFactory.buildWithId();
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
@@ -157,7 +157,7 @@ describe('RestartUserLoginMigrationUc', () => {
 			const setup = () => {
 				const user: User = userFactory.buildWithId();
 
-				const school: SchoolDO = schoolDOFactory.buildWithId();
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
@@ -179,7 +179,7 @@ describe('RestartUserLoginMigrationUc', () => {
 			const setup = () => {
 				const user: User = userFactory.buildWithId();
 
-				const school: SchoolDO = schoolDOFactory.buildWithId();
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
@@ -207,7 +207,7 @@ describe('RestartUserLoginMigrationUc', () => {
 
 				const user: User = userFactory.buildWithId();
 
-				const school: SchoolDO = schoolDOFactory.buildWithId();
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);

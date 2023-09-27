@@ -10,9 +10,9 @@ export interface GroupProps extends AuthorizableObject {
 
 	type: GroupTypes;
 
-	validFrom: Date;
+	validFrom?: Date;
 
-	validUntil: Date;
+	validUntil?: Date;
 
 	externalSource?: ExternalSource;
 
