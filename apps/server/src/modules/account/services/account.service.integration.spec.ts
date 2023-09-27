@@ -210,21 +210,20 @@ describe('AccountService Integration', () => {
 	});
 
 	describe('updateUsername', () => {
-		describe('when upating Username', () => {
+		describe('when updating Username', () => {
 			const setup = async () => {
 				const newUsername = 'jane.doe@mail.tld';
 				const [dbId, idmId] = await createAccount();
 
-				const foundAccount = await identityManagementService.findAccountById(idmId);
-				const foundDbAccount = await accountRepo.findById(dbId);
-
-				return { newUsername, dbId, idmId, foundAccount, foundDbAccount };
+				return { newUsername, dbId, idmId };
 			};
 			it('should update username', async () => {
 				if (!isIdmReachable) return;
-				const { newUsername, dbId, foundAccount, foundDbAccount } = await setup();
+				const { newUsername, dbId, idmId } = await setup();
 
 				await accountService.updateUsername(dbId, newUsername);
+				const foundAccount = await identityManagementService.findAccountById(idmId);
+				const foundDbAccount = await accountRepo.findById(dbId);
 
 				expect(foundAccount).toEqual(
 					expect.objectContaining<Partial<IdmAccount>>({
@@ -241,7 +240,7 @@ describe('AccountService Integration', () => {
 	});
 
 	describe('updatePassword', () => {
-		describe('when upating password', () => {
+		describe('when updating password', () => {
 			const setup = async () => {
 				const [dbId] = await createAccount();
 
