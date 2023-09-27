@@ -5,6 +5,8 @@ import { ObjectId } from 'bson';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 
+export const defaultTestPassword = 'DummyPasswd!1';
+export const defaultTestPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
 class AccountFactory extends BaseFactory<Account, IdmAccountProperties> {
 	withSystemId(id: EntityId | ObjectId): this {
 		const params: DeepPartial<IdmAccountProperties> = { systemId: id };
@@ -30,7 +32,7 @@ class AccountFactory extends BaseFactory<Account, IdmAccountProperties> {
 			credentialHash: 'credentialHash',
 			expiresAt: new Date(),
 			lasttriedFailedLogin: new Date(),
-			password: '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu',
+			password: defaultTestPassword,
 			systemId: new ObjectId(),
 			token: 'token',
 		}).afterBuild((acc) => {
@@ -51,8 +53,6 @@ class AccountFactory extends BaseFactory<Account, IdmAccountProperties> {
 	}
 }
 
-export const defaultTestPassword = 'DummyPasswd!1';
-export const defaultTestPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
 // !!! important username should not be contain a space !!!
 export const accountFactory = AccountFactory.define(Account, ({ sequence }) => {
 	return {
