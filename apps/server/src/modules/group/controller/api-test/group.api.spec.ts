@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role, RoleName, School, SortOrder, System, User } from '@shared/domain';
+import { Role, RoleName, SchoolEntity, SortOrder, SystemEntity, User } from '@shared/domain';
 import {
 	groupEntityFactory,
 	roleFactory,
@@ -42,12 +42,12 @@ describe('Group (API)', () => {
 	describe('findClassesForSchool', () => {
 		describe('when an admin requests a list of classes', () => {
 			const setup = async () => {
-				const school: School = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolFactory.buildWithId();
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				const teacherRole: Role = roleFactory.buildWithId({ name: RoleName.TEACHER });
 				const teacherUser: User = userFactory.buildWithId({ school, roles: [teacherRole] });
-				const system: System = systemFactory.buildWithId();
+				const system: SystemEntity = systemFactory.buildWithId();
 				const clazz: ClassEntity = classEntityFactory.buildWithId({
 					name: 'Group A',
 					schoolId: school._id,
@@ -94,6 +94,7 @@ describe('Group (API)', () => {
 					sortBy: ClassSortBy.NAME,
 					sortOrder: SortOrder.desc,
 				});
+				const clazzName = clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name;
 
 				expect(response.body).toEqual<ClassInfoSearchListResponse>({
 					total: 2,
@@ -104,7 +105,7 @@ describe('Group (API)', () => {
 							teachers: [adminUser.lastName],
 						},
 						{
-							name: clazz.name,
+							name: clazzName,
 							teachers: [teacherUser.lastName],
 						},
 					],

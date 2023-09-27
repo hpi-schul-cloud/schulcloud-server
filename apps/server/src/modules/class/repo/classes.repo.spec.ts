@@ -1,7 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test } from '@nestjs/testing';
 import { TestingModule } from '@nestjs/testing/testing-module';
-import { School } from '@shared/domain';
+import { SchoolEntity } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, schoolFactory } from '@shared/testing';
 import { classEntityFactory } from '@src/modules/class/entity/testing/factory/class.entity.factory';
@@ -44,7 +44,7 @@ describe(ClassesRepo.name, () => {
 
 		describe('when school has classes', () => {
 			const setup = async () => {
-				const school: School = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolFactory.buildWithId();
 				const classes: ClassEntity[] = classEntityFactory.buildListWithId(3, { schoolId: school.id });
 
 				await em.persistAndFlush(classes);
