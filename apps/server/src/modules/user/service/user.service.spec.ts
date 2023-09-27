@@ -13,8 +13,8 @@ import { ICurrentUser } from '@src/modules/authentication';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
-import { UserQuery } from './user-query.type';
 import { InternalServerErrorException } from '@nestjs/common';
+import { UserQuery } from './user-query.type';
 
 describe('UserService', () => {
 	let service: UserService;
