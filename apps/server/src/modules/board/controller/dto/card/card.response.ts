@@ -1,6 +1,11 @@
 import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
-import { AnyContentElementResponse, FileElementResponse, SubmissionContainerElementResponse } from '../element';
+import {
+	AnyContentElementResponse,
+	FileElementResponse,
+	LinkElementResponse,
+	SubmissionContainerElementResponse,
+} from '../element';
 import { RichTextElementResponse } from '../element/rich-text-element.response';
 import { TimestampsResponse } from '../timestamps.response';
 import { VisibilitySettingsResponse } from './visibility-settings.response';
@@ -35,6 +40,7 @@ export class CardResponse {
 				{ $ref: getSchemaPath(RichTextElementResponse) },
 				{ $ref: getSchemaPath(FileElementResponse) },
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
+				{ $ref: getSchemaPath(LinkElementResponse) },
 			],
 		},
 	})
