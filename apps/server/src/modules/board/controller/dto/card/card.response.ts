@@ -40,9 +40,9 @@ export class CardResponse {
 			oneOf: [
 				{ $ref: getSchemaPath(ExternalToolElementResponse) },
 				{ $ref: getSchemaPath(FileElementResponse) },
-				{ $ref: getSchemaPath(LinkElementResponse) },
 				{ $ref: getSchemaPath(RichTextElementResponse) },
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
+				{ $ref: getSchemaPath(LinkElementResponse) },
 			],
 		},
 	})
