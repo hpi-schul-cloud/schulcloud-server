@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { CreationProtocol } from '../../types';
+import { CreationProtocol, CreationProtocolEntityType } from '../../types';
 
 export class DemoSchoolResponse {
 	constructor({ id, type, key, children }: CreationProtocol) {
@@ -23,7 +23,7 @@ export class DemoSchoolResponse {
 	@ApiProperty({
 		description: 'type of the created entity',
 	})
-	type: string;
+	type: CreationProtocolEntityType;
 
 	@ApiPropertyOptional({
 		description: 'child entities that were also created',

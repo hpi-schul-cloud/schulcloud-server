@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ICurrentUser } from '@src/modules/authentication';
+import { CreationProtocolEntityType } from '../types';
 import { DemoSchoolUc } from '../uc';
 import { DemoSchoolController } from './demo-school.controller';
 import { DemoSchoolResponse } from './dto';
@@ -39,7 +40,7 @@ describe(DemoSchoolController.name, () => {
 				const currentUser = { userId: 'userId' } as ICurrentUser;
 				const ucResult = {
 					id: 'aSchoolsId',
-					type: 'school', // WIP: make it an enum
+					type: CreationProtocolEntityType.SCHOOL,
 					key: 'my own school',
 					children: [],
 				} as DemoSchoolResponse;
