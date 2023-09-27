@@ -30,7 +30,7 @@ class AccountFactory extends BaseFactory<Account, IdmAccountProperties> {
 			credentialHash: 'credentialHash',
 			expiresAt: new Date(),
 			lasttriedFailedLogin: new Date(),
-			password: 'password',
+			password: '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu',
 			systemId: new ObjectId(),
 			token: 'token',
 		}).afterBuild((acc) => {
