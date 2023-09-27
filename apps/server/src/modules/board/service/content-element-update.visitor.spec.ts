@@ -6,6 +6,7 @@ import {
 	columnFactory,
 	externalToolElementFactory,
 	fileElementFactory,
+	linkElementFactory,
 	richTextElementFactory,
 	submissionContainerElementFactory,
 	submissionItemFactory,
@@ -72,6 +73,23 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const { fileElement, updater } = setup();
 
 			expect(() => updater.visitFileElement(fileElement)).toThrow();
+		});
+	});
+
+	describe('when visiting a link element using the wrong content', () => {
+		const setup = () => {
+			const linkElement = linkElementFactory.build();
+			const content = new FileContentBody();
+			content.caption = 'a caption';
+			const updater = new ContentElementUpdateVisitor(content);
+
+			return { linkElement, updater };
+		};
+
+		it('should throw an error', () => {
+			const { linkElement, updater } = setup();
+
+			expect(() => updater.visitLinkElement(linkElement)).toThrow();
 		});
 	});
 
