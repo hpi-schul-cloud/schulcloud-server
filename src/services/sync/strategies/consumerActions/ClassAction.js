@@ -86,20 +86,23 @@ class ClassAction extends BaseConsumerAction {
 	}
 
 	async addUsersToClass(schoolId, classId, uniqueMembers) {
+		if (uniqueMembers === undefined) {
+			console.warn('uniqueMembers are undefined.');
+			return;
+		}
+
 		const students = [];
 		const teachers = [];
 		const ldapDns = !Array.isArray(uniqueMembers) ? [uniqueMembers] : uniqueMembers;
 
-		if (ldapDns && ldapDns !== [undefined]) {
-			const users = await UserRepo.findByLdapDnsAndSchool(ldapDns, schoolId);
+		const users = await UserRepo.findByLdapDnsAndSchool(ldapDns, schoolId);
 
-			users.forEach((user) => {
-				user.roles.forEach((role) => {
-					if (role.name === 'student') students.push(user._id);
-					if (role.name === 'teacher') teachers.push(user._id);
-				});
+		users.forEach((user) => {
+			user.roles.forEach((role) => {
+				if (role.name === 'student') students.push(user._id);
+				if (role.name === 'teacher') teachers.push(user._id);
 			});
-		}
+		});
 
 		await ClassRepo.updateClassStudents(classId, students);
 		await ClassRepo.updateClassTeachers(classId, teachers);

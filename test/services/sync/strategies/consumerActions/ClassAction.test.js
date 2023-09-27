@@ -343,25 +343,16 @@ describe('Class Actions', () => {
 			expect(updateClassTeachersStub.getCall(0).lastArg).to.eql(['user2', 'user3']);
 		});
 
-		it.only('should not add any user to the class', async () => {
+		it('should not add any user to the class', async () => {
 			const uniqueMembers = undefined;
-
-			const foundUsers = [
-				{
-					_id: 'user1',
-					roles: [{ name: 'student' }],
-				},
-			];
-			// const findByLdapDnsAndSchoolStub = sinon.stub(UserRepo, 'findByLdapDnsAndSchool');
-			// findByLdapDnsAndSchoolStub.returns(foundUsers);
-
 			const schoolObj = { _id: new ObjectId(), currentYear: new ObjectId() };
+			const findByLdapDnsAndSchoolStub = sinon.stub(UserRepo, 'findByLdapDnsAndSchool');
+
 			await classAction.addUsersToClass(schoolObj._id, mockClass._id, uniqueMembers);
 
-			// expect(findByLdapDnsAndSchoolStub.calledOnce).to.be.false;
-			// expect(findByLdapDnsAndSchoolStub.getCall(0)).to.equal(schoolObj);
-			expect(updateClassStudentsStub.getCall(0).lastArg).to.eql([]);
-			expect(updateClassTeachersStub.getCall(0).lastArg).to.eql([]);
+			expect(findByLdapDnsAndSchoolStub.notCalled).to.be.true;
+			expect(updateClassStudentsStub.notCalled).to.be.true;
+			expect(updateClassTeachersStub.notCalled).to.be.true;
 		});
 	});
 });
