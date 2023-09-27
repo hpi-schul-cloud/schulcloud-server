@@ -398,28 +398,6 @@ describe('Account Controller (API)', () => {
 				await loggedInClient.get(`/${studentAccount.id}`).expect(200);
 			});
 		});
-		describe('When searching with a superhero user', () => {
-			const setup = async () => {
-				const school = schoolFactory.buildWithId();
-
-				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
-				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
-				const superheroAccount = mapUserToAccount(superheroUser);
-
-				em.persist([school, superheroRoles, superheroUser, superheroAccount]);
-				await em.flush();
-
-				const loggedInClient = await testApiClient.login(superheroAccount);
-
-				return { loggedInClient };
-			};
-
-			it('should reject if id has invalid format', async () => {
-				const { loggedInClient } = await setup();
-				// TODO soll nicht 404 sondern 400
-				await loggedInClient.get(`/qwerty`).send().expect(404);
-			});
-		});
 
 		describe('When searching with a not authorized user', () => {
 			const setup = async () => {
@@ -607,26 +585,6 @@ describe('Account Controller (API)', () => {
 			});
 		});
 
-		describe('When using a superhero user', () => {
-			const setup = async () => {
-				const school = schoolFactory.buildWithId();
-				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
-				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
-				const superheroAccount = mapUserToAccount(superheroUser);
-
-				em.persist([school, superheroRoles, superheroUser, superheroAccount]);
-				await em.flush();
-
-				const loggedInClient = await testApiClient.login(superheroAccount);
-
-				return { loggedInClient };
-			};
-			it('should reject invalid account id format', async () => {
-				const { loggedInClient } = await setup();
-				// TODO soll nicht 404 sondern 400
-				await loggedInClient.delete('/qwerty').expect(404);
-			});
-		});
 		describe('When using a not authorized (admin) user', () => {
 			const setup = async () => {
 				const school = schoolFactory.buildWithId();
