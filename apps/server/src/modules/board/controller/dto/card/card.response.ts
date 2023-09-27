@@ -2,15 +2,16 @@ import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from 
 import { DecodeHtmlEntities } from '@shared/controller';
 import {
 	AnyContentElementResponse,
+	ExternalToolElementResponse,
 	FileElementResponse,
 	LinkElementResponse,
+	RichTextElementResponse,
 	SubmissionContainerElementResponse,
 } from '../element';
-import { RichTextElementResponse } from '../element/rich-text-element.response';
 import { TimestampsResponse } from '../timestamps.response';
 import { VisibilitySettingsResponse } from './visibility-settings.response';
 
-@ApiExtraModels(RichTextElementResponse)
+@ApiExtraModels(LinkElementResponse, RichTextElementResponse)
 export class CardResponse {
 	constructor({ id, title, height, elements, visibilitySettings, timestamps }: CardResponse) {
 		this.id = id;
@@ -37,8 +38,9 @@ export class CardResponse {
 		type: 'array',
 		items: {
 			oneOf: [
-				{ $ref: getSchemaPath(RichTextElementResponse) },
+				{ $ref: getSchemaPath(ExternalToolElementResponse) },
 				{ $ref: getSchemaPath(FileElementResponse) },
+				{ $ref: getSchemaPath(RichTextElementResponse) },
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 				{ $ref: getSchemaPath(LinkElementResponse) },
 			],
