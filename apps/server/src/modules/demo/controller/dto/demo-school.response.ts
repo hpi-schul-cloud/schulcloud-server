@@ -21,7 +21,9 @@ export class DemoSchoolResponse {
 	key: string | undefined;
 
 	@ApiProperty({
+		enum: CreationProtocolEntityType,
 		description: 'type of the created entity',
+		enumName: 'CreationProtocolEntityType',
 	})
 	type: CreationProtocolEntityType;
 
