@@ -145,7 +145,6 @@ const seedSchools: SeedSchoolProperties[] = [
 		pilot: false,
 		language: 'de',
 		logo_dataUrl: '',
-		logo_name: '',
 		officialSchoolNumber: '',
 	},
 	{
