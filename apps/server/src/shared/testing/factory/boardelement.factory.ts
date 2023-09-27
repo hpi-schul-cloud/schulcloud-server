@@ -2,7 +2,7 @@ import {
 	ColumnboardBoardElement,
 	ColumnBoardTarget,
 	EntityId,
-	Lesson,
+	LessonEntity,
 	LessonBoardElement,
 	Task,
 	TaskBoardElement,
@@ -18,7 +18,7 @@ export const taskBoardElementFactory = BaseFactory.define<TaskBoardElement, { ta
 	};
 });
 
-export const lessonBoardElementFactory = BaseFactory.define<LessonBoardElement, { target: Lesson }>(
+export const lessonBoardElementFactory = BaseFactory.define<LessonBoardElement, { target: LessonEntity }>(
 	LessonBoardElement,
 	() => {
 		return { target: lessonFactory.build() };

@@ -11,7 +11,7 @@ import {
 	RoleName,
 	SchoolEntity,
 	SortOrder,
-	System,
+	SystemEntity,
 	User,
 } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
@@ -141,7 +141,7 @@ describe('UserRepo', () => {
 
 	describe('findByExternalId', () => {
 		const externalId = 'externalId';
-		let system: System;
+		let system: SystemEntity;
 		let school: SchoolEntity;
 		let user: User;
 
@@ -185,7 +185,7 @@ describe('UserRepo', () => {
 
 	describe('findByExternalIdOrFail', () => {
 		const externalId = 'externalId';
-		let system: System;
+		let system: SystemEntity;
 		let school: SchoolEntity;
 		let user: User;
 

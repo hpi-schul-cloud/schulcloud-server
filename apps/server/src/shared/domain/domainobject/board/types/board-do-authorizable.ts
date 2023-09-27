@@ -15,6 +15,8 @@ export enum UserRoleEnum {
 }
 
 export interface UserBoardRoles {
+	firstName?: string;
+	lastName?: string;
 	roles: BoardRoles[];
 	userId: EntityId;
 	userRoleEnum: UserRoleEnum;

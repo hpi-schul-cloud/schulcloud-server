@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/core';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, RoleName, SchoolEntity, System, User } from '@shared/domain';
+import { Account, RoleName, SchoolEntity, SystemEntity, User } from '@shared/domain';
 import { accountFactory, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
 import { SSOErrorCode } from '@src/modules/oauth/error/sso-error-code.enum';
 import { OauthTokenResponse } from '@src/modules/oauth/service/dto';
@@ -147,7 +147,7 @@ describe('Login Controller (api)', () => {
 		let account: Account;
 		let user: User;
 		let school: SchoolEntity;
-		let system: System;
+		let system: SystemEntity;
 
 		beforeAll(async () => {
 			const schoolExternalId = 'mockSchoolExternalId';

@@ -14,7 +14,7 @@ import {
 	MatchCreatorScope,
 	Permission,
 	SchoolFeatures,
-	System,
+	SystemEntity,
 	User,
 } from '@shared/domain';
 import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
@@ -292,7 +292,7 @@ export class UserImportUc {
 		await this.importUserRepo.delete(importUser);
 	}
 
-	private async getMigrationSystem(): Promise<System> {
+	private async getMigrationSystem(): Promise<SystemEntity> {
 		const systemId = Configuration.get('FEATURE_USER_MIGRATION_SYSTEM_ID') as string;
 		const system = await this.systemRepo.findById(systemId);
 		return system;
@@ -303,7 +303,7 @@ export class UserImportUc {
 			for (const systemId of school.systems) {
 				// very unusual to have more than 1 system
 				// eslint-disable-next-line no-await-in-loop
-				const system: System = await this.systemRepo.findById(systemId);
+				const system: SystemEntity = await this.systemRepo.findById(systemId);
 				if (system.ldapConfig) {
 					throw new LdapAlreadyPersistedException();
 				}

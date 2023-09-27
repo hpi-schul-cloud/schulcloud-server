@@ -13,7 +13,7 @@ import {
 	Permission,
 	SchoolEntity,
 	SchoolFeatures,
-	System,
+	SystemEntity,
 	User,
 } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -123,7 +123,9 @@ describe('[ImportUserModule]', () => {
 			const inMaintenanceSince = school ? school.inMaintenanceSince : undefined;
 			const inUserMigration = school ? school.inUserMigration : undefined;
 			const systems =
-				school && school.systems.isInitialized() ? school.systems.getItems().map((system: System) => system.id) : [];
+				school && school.systems.isInitialized()
+					? school.systems.getItems().map((system: SystemEntity) => system.id)
+					: [];
 			const federalState = school ? school.federalState : federalStateFactory.build();
 
 			return new LegacySchoolDo({
@@ -452,7 +454,7 @@ describe('[ImportUserModule]', () => {
 		});
 
 		describe('[saveAllUsersMatches]', () => {
-			let system: System;
+			let system: SystemEntity;
 			let school: SchoolEntity;
 			let currentUser: User;
 			let userMatch1: User;
@@ -589,7 +591,7 @@ describe('[ImportUserModule]', () => {
 		});
 
 		describe('[startSchoolInUserMigration]', () => {
-			let system: System;
+			let system: SystemEntity;
 			let school: SchoolEntity;
 			let currentUser: User;
 			let userRepoByIdSpy: jest.SpyInstance;
