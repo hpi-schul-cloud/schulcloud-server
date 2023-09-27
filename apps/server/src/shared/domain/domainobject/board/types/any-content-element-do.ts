@@ -6,18 +6,19 @@ import { SubmissionContainerElement } from '../submission-container-element.do';
 import type { AnyBoardDo } from './any-board-do';
 
 export type AnyContentElementDo =
+	| ExternalToolElement
 	| FileElement
 	| LinkElement
 	| RichTextElement
-	| SubmissionContainerElement
-	| ExternalToolElement;
+	| SubmissionContainerElement;
 
 export const isAnyContentElement = (element: AnyBoardDo): element is AnyContentElementDo => {
 	const result =
+		element instanceof ExternalToolElement ||
 		element instanceof FileElement ||
+		element instanceof LinkElement ||
 		element instanceof RichTextElement ||
-		element instanceof SubmissionContainerElement ||
-		element instanceof ExternalToolElement;
+		element instanceof SubmissionContainerElement;
 
 	return result;
 };

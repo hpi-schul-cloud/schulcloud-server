@@ -81,7 +81,9 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			BoardNodeType.EXTERNAL_TOOL,
 		]);
 
-		const elements = this.buildChildren<RichTextElement | SubmissionContainerElement>(boardNode);
+		const elements = this.buildChildren<
+			ExternalToolElement | FileElement | LinkElement | RichTextElement | SubmissionContainerElement
+		>(boardNode);
 
 		const card = new Card({
 			id: boardNode.id,

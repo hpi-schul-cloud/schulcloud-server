@@ -1,13 +1,13 @@
-import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
-import { SubmissionItem } from '@shared/domain/domainobject/board/submission-item.do';
 import type {
 	Card,
 	Column,
 	ColumnBoard,
 	ExternalToolElement,
 	FileElement,
+	LinkElement,
 	RichTextElement,
 	SubmissionContainerElement,
+	SubmissionItem,
 } from '../../../domainobject';
 import type { CardNode } from '../card-node.entity';
 import type { ColumnBoardNode } from '../column-board-node.entity';
