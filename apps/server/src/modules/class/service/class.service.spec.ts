@@ -1,13 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { EntityId } from '@shared/domain';
-import { InternalServerErrorException } from '@nestjs/common';
-import { classEntityFactory } from '@src/modules/class/entity/testing/factory/class.entity.factory';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { InternalServerErrorException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { EntityId } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
-import { ClassService } from './class.service';
+import { classEntityFactory } from '@src/modules/class/entity/testing/factory/class.entity.factory';
+import { Class } from '../domain';
+import { classFactory } from '../domain/testing/factory/class.factory';
 import { ClassesRepo } from '../repo';
 import { ClassMapper } from '../repo/mapper';
+import { ClassService } from './class.service';
 
 describe(ClassService.name, () => {
 	let module: TestingModule;
@@ -39,38 +41,35 @@ describe(ClassService.name, () => {
 		await module.close();
 	});
 
-	describe('findUserDataFromClasses', () => {
-		describe('when finding by userId', () => {
+	describe('findClassesForSchool', () => {
+		describe('when the school has classes', () => {
 			const setup = () => {
-				const userId1 = new ObjectId();
-				const userId2 = new ObjectId();
-				const userId3 = new ObjectId();
-				const class1 = classEntityFactory.withUserIds([userId1, userId2]).build();
-				const class2 = classEntityFactory.withUserIds([userId1, userId3]).build();
-				classEntityFactory.withUserIds([userId2, userId3]).build();
+				const schoolId: string = new ObjectId().toHexString();
 
-				const mappedClasses = ClassMapper.mapToDOs([class1, class2]);
+				const classes: Class[] = classFactory.buildList(3);
 
-				classesRepo.findAllByUserId.mockResolvedValue(mappedClasses);
+				classesRepo.findAllBySchoolId.mockResolvedValueOnce(classes);
 
 				return {
-					userId1,
+					schoolId,
+					classes,
 				};
 			};
 
-			it('should call classesRepo.findAllByUserId', async () => {
-				const { userId1 } = setup();
-				await service.deleteUserDataFromClasses(userId1.toHexString());
+			it('should call the repo', async () => {
+				const { schoolId } = setup();
 
-				expect(classesRepo.findAllByUserId).toBeCalledWith(userId1.toHexString());
+				await service.findClassesForSchool(schoolId);
+
+				expect(classesRepo.findAllBySchoolId).toHaveBeenCalledWith(schoolId);
 			});
 
-			it('should return array of two teams with user', async () => {
-				const { userId1 } = setup();
+			it('should return the classes', async () => {
+				const { schoolId, classes } = setup();
 
-				const result = await service.findUserDataFromClasses(userId1.toHexString());
+				const result: Class[] = await service.findClassesForSchool(schoolId);
 
-				expect(result.length).toEqual(2);
+				expect(result).toEqual(classes);
 			});
 		});
 	});
