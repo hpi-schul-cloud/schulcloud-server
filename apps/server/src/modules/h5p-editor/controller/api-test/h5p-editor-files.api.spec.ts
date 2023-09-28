@@ -1,15 +1,69 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ILibraryName } from '@lumieducation/h5p-server';
 import { ContentMetadata } from '@lumieducation/h5p-server/build/src/ContentMetadata';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { ObjectID } from 'bson';
 import { Readable } from 'stream';
-import { TemporaryFile } from '../../entity';
+import { H5PContent, H5PContentParentType, IH5PContentProperties, TemporaryFile } from '../../entity';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 import { H5P_CONTENT_S3_CONNECTION, H5P_LIBRARIES_S3_CONNECTION } from '../../h5p-editor.config';
+import { H5PContentRepo } from '../../repo';
 import { ContentStorage, LibraryStorage, TemporaryFileStorage } from '../../service';
+
+const helpers = {
+	buildMetadata(
+		title: string,
+		mainLibrary: string,
+		preloadedDependencies: ILibraryName[] = [],
+		dynamicDependencies?: ILibraryName[],
+		editorDependencies?: ILibraryName[]
+	): ContentMetadata {
+		return {
+			defaultLanguage: 'de-DE',
+			license: 'Unlicensed',
+			title,
+			dynamicDependencies,
+			editorDependencies,
+			embedTypes: ['iframe'],
+			language: 'de-DE',
+			mainLibrary,
+			preloadedDependencies,
+		};
+	},
+
+	buildContent(n = 0) {
+		const metadata = helpers.buildMetadata(`Content #${n}`, `Library-${n}.0`);
+		const content = {
+			data: `Data #${n}`,
+		};
+		const h5pContentProperties: IH5PContentProperties = {
+			creatorId: new ObjectID().toString(),
+			parentId: new ObjectID().toString(),
+			schoolId: new ObjectID().toString(),
+			metadata,
+			content,
+			parentType: H5PContentParentType.Lesson,
+		};
+		const h5pContent = new H5PContent(h5pContentProperties);
+
+		return {
+			withID(id?: number) {
+				const objectId = new ObjectID(id);
+				h5pContent._id = objectId;
+				h5pContent.id = objectId.toString();
+
+				return h5pContent;
+			},
+			new() {
+				return h5pContent;
+			},
+		};
+	},
+};
 
 describe('H5PEditor Controller (api)', () => {
 	let app: INestApplication;
@@ -19,6 +73,7 @@ describe('H5PEditor Controller (api)', () => {
 	let contentStorage: DeepMocked<ContentStorage>;
 	let libraryStorage: DeepMocked<LibraryStorage>;
 	let temporaryStorage: DeepMocked<TemporaryFileStorage>;
+	let contentRepo: DeepMocked<H5PContentRepo>;
 
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
@@ -34,6 +89,8 @@ describe('H5PEditor Controller (api)', () => {
 			.useValue(createMock<LibraryStorage>())
 			.overrideProvider(TemporaryFileStorage)
 			.useValue(createMock<TemporaryFileStorage>())
+			.overrideProvider(H5PContentRepo)
+			.useValue(createMock<H5PContentRepo>())
 			.compile();
 
 		app = module.createNestApplication();
@@ -42,6 +99,7 @@ describe('H5PEditor Controller (api)', () => {
 		contentStorage = app.get(ContentStorage);
 		libraryStorage = app.get(LibraryStorage);
 		temporaryStorage = app.get(TemporaryFileStorage);
+		contentRepo = module.get(H5PContentRepo);
 		testApiClient = new TestApiClient(app, 'h5p-editor');
 	});
 
@@ -281,20 +339,21 @@ describe('H5PEditor Controller (api)', () => {
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
+				const content = helpers.buildContent(0).withID(12);
 
-				return { loggedInClient };
+				return { loggedInClient, content };
 			};
 
 			it('should return the content parameters', async () => {
-				const { loggedInClient } = await setup();
+				const { loggedInClient, content } = await setup();
 
 				const dummyMetadata = new ContentMetadata();
 				const dummyParams = { name: 'Dummy' };
 
 				contentStorage.getMetadata.mockResolvedValueOnce(dummyMetadata);
 				contentStorage.getParameters.mockResolvedValueOnce(dummyParams);
-
-				const response = await loggedInClient.get(`params/dummyId`);
+				contentRepo.findById.mockResolvedValueOnce(content);
+				const response = await loggedInClient.get(`params/${content.id}`);
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual({
