@@ -12,6 +12,7 @@ export class ShareTokenContextTypeMapper {
 		if (!res) {
 			throw new NotImplementedException();
 		}
+
 		return res;
 	}
 }
