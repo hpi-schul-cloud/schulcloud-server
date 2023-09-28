@@ -87,7 +87,9 @@ class ClassAction extends BaseConsumerAction {
 
 	async addUsersToClass(schoolId, classId, uniqueMembers) {
 		if (!uniqueMembers) {
-			console.warn('uniqueMembers are undefined or null.');
+			console.warn(
+				'In LDAP-Sync->ClassAction.js->addUsersToClass: uniqueMembers are not given: No users are added to class.'
+			);
 			return;
 		}
 
