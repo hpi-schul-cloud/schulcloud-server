@@ -1,3 +1,4 @@
+import { OpenGraphData } from '@src/modules/board/service';
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import type { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
@@ -8,6 +9,14 @@ export class LinkElement extends BoardComposite<LinkElementProps> {
 
 	set url(value: string) {
 		this.props.url = value;
+	}
+
+	get openGraphData(): OpenGraphData {
+		return { url: this.props.url, title: '', description: '', ...this.props.openGraphData };
+	}
+
+	set openGraphData(value: OpenGraphData) {
+		this.props.openGraphData = value;
 	}
 
 	isAllowedAsChild(): boolean {
@@ -25,6 +34,7 @@ export class LinkElement extends BoardComposite<LinkElementProps> {
 
 export interface LinkElementProps extends BoardCompositeProps {
 	url: string;
+	openGraphData?: OpenGraphData;
 }
 
 export function isLinkElement(reference: unknown): reference is LinkElement {

@@ -18,7 +18,7 @@ export class LinkElementResponseMapper implements BaseResponseMapper {
 			id: element.id,
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
 			type: ContentElementType.LINK,
-			content: new LinkElementContent({ url: element.url }),
+			content: new LinkElementContent({ url: element.url, openGraphData: element.openGraphData }),
 		});
 
 		return result;

@@ -1,14 +1,19 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ContentElementType } from '@shared/domain';
+import { OpenGraphData } from '@src/modules/board/service';
 import { TimestampsResponse } from '../timestamps.response';
 
 export class LinkElementContent {
-	constructor({ url }: LinkElementContent) {
+	constructor({ url, openGraphData }: LinkElementContent) {
 		this.url = url;
+		this.openGraphData = openGraphData;
 	}
 
 	@ApiProperty()
 	url: string;
+
+	@ApiPropertyOptional({ type: 'OpenGraphData' })
+	openGraphData?: OpenGraphData;
 }
 
 export class LinkElementResponse {
