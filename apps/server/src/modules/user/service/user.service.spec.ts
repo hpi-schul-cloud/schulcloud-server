@@ -361,20 +361,12 @@ describe('UserService', () => {
 				};
 			};
 
-			it('should call userRepo.findById', async () => {
+			it('should call userRepo.deleteUser', async () => {
 				const { user1 } = setup();
 
 				await service.deleteUser(user1.id);
 
-				expect(userRepo.findById).toBeCalledWith(user1.id);
-			});
-
-			it('should call userRepo.findById', async () => {
-				const { user1 } = setup();
-
-				await service.deleteUser(user1.id);
-
-				expect(userRepo.delete).toBeCalledWith(user1);
+				expect(userRepo.deleteUser).toBeCalledWith(user1.id);
 			});
 		});
 	});

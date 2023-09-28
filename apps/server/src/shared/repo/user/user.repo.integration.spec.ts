@@ -410,7 +410,7 @@ describe('user repo', () => {
 			await em.persistAndFlush([user1, user2, user3]);
 			// em.clear();
 
-			await repo.delete(user1);
+			await repo.deleteUser(user1.id);
 			const result1 = await em.find(User, { id: user1.id });
 			expect(result1).toHaveLength(0);
 

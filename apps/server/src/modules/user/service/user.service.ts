@@ -113,8 +113,6 @@ export class UserService {
 			throw new InternalServerErrorException('User id is missing');
 		}
 
-		const user = await this.userRepo.findById(userId);
-
-		await this.userRepo.delete(user);
+		await this.userRepo.deleteUser(userId);
 	}
 }

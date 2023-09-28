@@ -163,8 +163,10 @@ export class UserRepo extends BaseRepo<User> {
 		return promise;
 	}
 
-	async delete(user: User): Promise<void> {
-		await this._em.removeAndFlush(user);
+	async deleteUser(userId: EntityId): Promise<void> {
+		await this._em.nativeDelete(User, {
+			id: userId,
+		});
 	}
 
 	private async populateRoles(roles: Role[]): Promise<void> {
