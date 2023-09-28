@@ -1,15 +1,7 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import NodeClam from 'clamscan';
 import { AntivirusService } from './antivirus.service';
-
-interface AntivirusModuleOptions {
-	enabled: boolean;
-	filesServiceBaseUrl: string;
-	exchange: string;
-	routingKey: string;
-	hostname: string;
-	port: number;
-}
+import { AntivirusModuleOptions } from './interfaces';
 
 @Module({})
 export class AntivirusModule {
