@@ -25,7 +25,7 @@ export class County {
 	countyId: number;
 
 	@Property()
-	antaresKey: string;
+	antaresKey?: string;
 }
 
 @Entity({ tableName: 'federalstates' })

@@ -13,8 +13,8 @@ export class FederalStateService {
 		return federalState;
 	}
 
-	async findAll() {
-		const federalStates: FederalStateDO[] = await this.federalStateRepo.findAll();
+	async findAll(): Promise<FederalStateDO[]> {
+		const federalStates = await this.federalStateRepo.findAll();
 		return federalStates;
 	}
 

@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
 import { IsNumber, IsString } from 'class-validator';
 
@@ -17,8 +17,8 @@ export class CountyResponse {
 	@IsNumber()
 	countyId: number;
 
-	@ApiProperty()
+	@ApiPropertyOptional()
 	@IsString()
 	@DecodeHtmlEntities()
-	antaresKey: string;
+	antaresKey?: string;
 }

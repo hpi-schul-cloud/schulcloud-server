@@ -3,7 +3,7 @@ import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 export interface ICounty {
 	countyId: number;
 	name: string;
-	antaresKey: string;
+	antaresKey?: string;
 }
 export interface FederalStateProps extends AuthorizableObject {
 	name: string;

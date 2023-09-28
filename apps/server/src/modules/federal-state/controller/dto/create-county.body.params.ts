@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
 import { IsNumber, IsString } from 'class-validator';
 
@@ -18,10 +18,9 @@ export class CreateCountyBodyParams {
 
 	@IsString()
 	@DecodeHtmlEntities()
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Antares key of the county',
-		required: true,
 		type: String,
 	})
-	antaresKey!: string;
+	antaresKey?: string;
 }

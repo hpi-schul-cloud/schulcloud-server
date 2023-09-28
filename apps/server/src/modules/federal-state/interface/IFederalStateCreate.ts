@@ -1,7 +1,7 @@
 export interface ICountyCreate {
 	name: string;
 	countyId: number;
-	antaresKey: string;
+	antaresKey?: string;
 }
 
 export interface IFederalStateCreate {
