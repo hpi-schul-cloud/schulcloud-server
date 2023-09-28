@@ -185,4 +185,19 @@ export class OidcProvisioningService {
 
 		return filteredUsers;
 	}
+
+	async removeUserFromExternalGroups(
+		externalUserId: EntityId,
+		externalGroups: ExternalGroupDto[],
+		systemId: EntityId
+	): Promise<void> {
+		const existingGroupsOfUser: Group[] = await this.groupService.findByUserId(externalUserId); // TODO implement service and repo function
+
+		const groupsWithoutUser: Group[] = await Promise.all(
+			existingGroupsOfUser.map(async (existingGroup: Group): Promise<Group> => {
+				// TODO check for existingGroup not in externalGroups[] and remove user from this group
+			})
+		);
+		// TODO remove all groupsWithoutUser.length === 0
+	}
 }
