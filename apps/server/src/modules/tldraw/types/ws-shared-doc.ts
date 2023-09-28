@@ -4,7 +4,7 @@ import { Awareness, encodeAwarenessUpdate } from 'y-protocols/awareness';
 import { encoding } from 'lib0';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { WSMessageType } from '@src/modules/tldraw/types/connection-enum';
-import { send, updateHandler } from '@src/modules/tldraw/utils';
+import { TldrawWsService } from '@src/modules/tldraw/service';
 
 // disable gc when using snapshots!
 const gcEnabled: boolean = Configuration.get('TLDRAW__GC_ENABLED') as boolean;
@@ -12,14 +12,15 @@ const gcEnabled: boolean = Configuration.get('TLDRAW__GC_ENABLED') as boolean;
 export class WSSharedDoc extends Doc {
 	name: string;
 
-	conns: Map<WebSocket, Set<number>>;
+	public conns: Map<WebSocket, Set<number>>;
 
-	awareness: Awareness;
+	public awareness: Awareness;
 
 	/**
 	 * @param {string} name
+	 * @param {TldrawWsService} tldrawService
 	 */
-	constructor(name: string) {
+	constructor(name: string, private readonly tldrawService: TldrawWsService) {
 		super({ gc: gcEnabled });
 		this.name = name;
 		this.conns = new Map();
@@ -27,14 +28,15 @@ export class WSSharedDoc extends Doc {
 		this.awareness.setLocalState(null);
 
 		this.awareness.on('update', this.awarenessChangeHandler);
-		this.on('update', updateHandler);
+		// eslint-disable-next-line @typescript-eslint/unbound-method
+		this.on('update', this.tldrawService.updateHandler);
 	}
 
 	/**
 	 * @param {{ added: Array<number>, updated: Array<number>, removed: Array<number> }} changes
 	 * @param {WebSocket | null} conn Origin is the connection that made the change
 	 */
-	awarenessChangeHandler = (
+	public awarenessChangeHandler = (
 		{ added, updated, removed }: { added: Array<number>; updated: Array<number>; removed: Array<number> },
 		conn: WebSocket | null
 	) => {
@@ -56,7 +58,7 @@ export class WSSharedDoc extends Doc {
 		encoding.writeVarUint8Array(encoder, encodeAwarenessUpdate(this.awareness, changedClients));
 		const buff = encoding.toUint8Array(encoder);
 		this.conns.forEach((_, c) => {
-			send(this, c, buff);
+			this.tldrawService.send(this, c, buff);
 		});
 	};
 }

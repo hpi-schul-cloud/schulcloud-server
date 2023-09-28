@@ -14,11 +14,11 @@ import { TextEncoder } from 'util';
 import * as SyncProtocols from 'y-protocols/sync';
 import * as AwarenessProtocol from 'y-protocols/awareness';
 import { encoding } from 'lib0';
-import { TldrawWsController } from '.';
+import { TldrawWs } from '.';
 
-describe('TldrawWSConytoller', () => {
+describe('TldrawWS', () => {
 	let app: INestApplication;
-	let gateway: TldrawWsController;
+	let gateway: TldrawWs;
 	let ws: WebSocket;
 
 	const gatewayPort = 3346;
@@ -39,10 +39,10 @@ describe('TldrawWSConytoller', () => {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
 		const testingModule = await Test.createTestingModule({
 			imports,
-			providers: [TldrawWsController],
+			providers: [TldrawWs],
 		}).compile();
 
-		gateway = testingModule.get<TldrawWsController>(TldrawWsController);
+		gateway = testingModule.get<TldrawWs>(TldrawWs);
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
 		jest.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] });

@@ -7,12 +7,11 @@ import { CoreModule } from '@src/core';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { config } from '@src/modules/tldraw/config';
-import * as Utils from '../../utils/utils';
-import { TldrawWsController } from '../tldraw-ws.controller';
+import { TldrawWs } from '../tldraw.ws';
 
 describe('WebSocketController (WsAdapter)', () => {
 	let app: INestApplication;
-	let gateway: TldrawWsController;
+	let gateway: TldrawWs;
 	let ws: WebSocket;
 
 	const gatewayPort = 3346;
@@ -44,9 +43,9 @@ describe('WebSocketController (WsAdapter)', () => {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
 		const testingModule = await Test.createTestingModule({
 			imports,
-			providers: [TldrawWsController],
+			providers: [TldrawWs],
 		}).compile();
-		gateway = testingModule.get<TldrawWsController>(TldrawWsController);
+		gateway = testingModule.get<TldrawWs>(TldrawWs);
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
 		await app.init();
@@ -137,18 +136,16 @@ describe('WebSocketController (WsAdapter)', () => {
 	describe('when tldraw is not correctly setup', () => {
 		const setup = async () => {
 			const handleConnectionSpy = jest.spyOn(gateway, 'handleConnection');
-			const utilsSpy = jest.spyOn(Utils, 'messageHandler').mockReturnValueOnce();
 
 			await setupWs();
 
 			return {
 				handleConnectionSpy,
-				utilsSpy,
 			};
 		};
 
 		it(`should refuse connection if there is no docName`, async () => {
-			const { handleConnectionSpy, utilsSpy } = await setup();
+			const { handleConnectionSpy } = await setup();
 
 			const { buffer } = getMessage();
 			ws.send(buffer);
@@ -156,7 +153,6 @@ describe('WebSocketController (WsAdapter)', () => {
 			expect(gateway.server).toBeDefined();
 			expect(handleConnectionSpy).toHaveBeenCalled();
 			expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
-			expect(utilsSpy).not.toHaveBeenCalled();
 
 			await delay(200);
 			ws.close();

@@ -1,1 +1,1 @@
-export * from './tldraw-ws.controller';
+export * from './tldraw.ws';
