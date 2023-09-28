@@ -5,15 +5,16 @@ import { ConfigModule } from '@nestjs/config';
 import { Account, Role, School, SchoolYear, System, User } from '@shared/domain';
 import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq';
 
+import { S3ClientModule } from '@shared/infra/s3-client';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
-import { S3ClientModule } from '@shared/infra/s3-client';
 import { UserModule } from '..';
 
-import { config, s3ConfigContent, s3ConfigLibraries } from '../h5p-editor/h5p-editor.config';
+import { config, s3ConfigContent } from '../h5p-editor/h5p-editor.config';
 import { LibraryRepo } from '../h5p-editor/repo';
 import { LibraryStorage } from '../h5p-editor/service';
+import { s3ConfigLibraries } from './h5p-library-management.config';
 
 import { InstalledLibrary } from '../h5p-editor/entity';
 import { H5PLibraryManagementService } from './service/h5p-library-management.service';
