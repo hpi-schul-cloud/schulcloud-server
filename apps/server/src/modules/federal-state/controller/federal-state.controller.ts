@@ -49,8 +49,6 @@ export class FederalStateController {
 	@ApiResponse({ status: 404, type: NotFoundException, description: 'federal state is not found.' })
 	@Delete(':id')
 	async deleteFederalState(@CurrentUser() currentUser: ICurrentUser, @Param('id') id: string) {
-		const federalStateDo = await this.federalStateUC.deleteFederalState(id, currentUser.userId);
-		const federalStateResponse = FederalStateMapper.mapFederalStateToResponse(federalStateDo);
-		return federalStateResponse;
+		await this.federalStateUC.deleteFederalState(id, currentUser.userId);
 	}
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
 import { AuthorizationService } from '@src/modules/authorization';
+import { FederalStateDO } from '../domainobject';
 import { IFederalStateCreate } from '../interface';
 import { FederalStateService } from '../service/federal-state.service';
 
@@ -11,7 +12,7 @@ export class FederalStateUC {
 		private readonly authorizationService: AuthorizationService
 	) {}
 
-	async findAllFederalStates(userId: EntityId) {
+	async findAllFederalStates(userId: EntityId): Promise<FederalStateDO[]> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		this.authorizationService.checkOneOfPermissions(user, [Permission.FEDERALSTATE_VIEW]);
@@ -37,7 +38,6 @@ export class FederalStateUC {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		this.authorizationService.checkOneOfPermissions(user, [Permission.FEDERALSTATE_EDIT]);
-		const deletedFederalState = await this.federalStateService.delete(id);
-		return deletedFederalState;
+		await this.federalStateService.delete(id);
 	}
 }

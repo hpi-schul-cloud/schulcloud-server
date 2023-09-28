@@ -1,7 +1,7 @@
 export interface CountyProps {
 	name: string;
 	countyId: number;
-	antaresKey: string;
+	antaresKey?: string;
 }
 
 export class CountyDO {
@@ -19,7 +19,7 @@ export class CountyDO {
 		return this.props.countyId;
 	}
 
-	get antaresKey(): string {
+	get antaresKey(): string | undefined {
 		return this.props.antaresKey;
 	}
 }

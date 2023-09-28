@@ -2,6 +2,7 @@ import { EntityName } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { FederalStateDO } from '../domainobject';
+import { CountyDO } from '../domainobject/county.do';
 import { County, FederalStateEntity } from '../entity';
 import { IFederalStateCreate } from '../interface';
 
@@ -60,13 +61,12 @@ export class FederalStateRepo extends BaseRepo<FederalStateEntity> {
 		return federalStateDo;
 	}
 
-	mapCountyEntityToDomainObject(countyEntity: County) {
-		console.log('countyEntity', countyEntity);
-		const county = {
+	mapCountyEntityToDomainObject(countyEntity: County): CountyDO {
+		const county = new CountyDO({
 			name: countyEntity.name,
 			countyId: countyEntity.countyId,
 			antaresKey: countyEntity.antaresKey,
-		};
+		});
 		return county;
 	}
 }
