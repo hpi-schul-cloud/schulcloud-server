@@ -201,22 +201,24 @@ export class OidcProvisioningService {
 			}
 		);
 
-		await Promise.all(
-			existingGroupsOfUser.map(async (existingGroup: Group): Promise<void> => {
-				if (existingGroup.externalSource) {
-					const isGroupWithoutUser = !externalGroupsExternalSources.includes(existingGroup.externalSource);
+		existingGroupsOfUser.map(async (existingGroup: Group): Promise<void> => {
+			if (existingGroup.externalSource) {
+				const isGroupWithoutUser = !externalGroupsExternalSources.includes(existingGroup.externalSource);
 
-					if (isGroupWithoutUser) {
-						await this.groupService.deleteUserFromGroup(externalUserId, existingGroup.externalSource); // TODO implement service and repo function
-
-						const groupUsers: GroupUser[] = await this.groupService.getUsersOfGroup(existingGroup.externalSource); // TODO implement service and repo function
-
-						if (groupUsers.length === 0) {
-							await this.groupService.deleteGroup(existingGroup.externalSource); // TODO implement service and repo function
-						}
-					}
+				if (isGroupWithoutUser) {
+					await this.removeUserFromGroup(externalUserId, existingGroup.externalSource);
 				}
-			})
-		);
+			}
+		});
+	}
+
+	private async removeUserFromGroup(externalUserId: string, externalSource: ExternalSource): Promise<void> {
+		await this.groupService.deleteUserFromGroup(externalUserId, externalSource); // TODO implement service and repo function
+
+		const groupUsers: GroupUser[] = await this.groupService.getUsersOfGroup(externalSource); // TODO implement service and repo function
+
+		if (groupUsers.length === 0) {
+			await this.groupService.deleteGroup(externalSource); // TODO implement service and repo function
+		}
 	}
 }
