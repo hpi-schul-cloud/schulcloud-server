@@ -51,7 +51,10 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 	}
 
 	visitLinkElement(linkElement: LinkElement): void {
-		if (!(this.content instanceof LinkContentBody)) {
+		if (this.content instanceof LinkContentBody) {
+			const urlWithProtocol = this.content.url.match(/:\/\//) ? this.content.url : `https://${this.content.url}`;
+			linkElement.url = new URL(urlWithProtocol).toString();
+		} else {
 			this.throwNotHandled(linkElement);
 		}
 	}
