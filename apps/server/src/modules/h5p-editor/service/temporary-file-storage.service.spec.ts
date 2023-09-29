@@ -2,13 +2,14 @@ import { ServiceOutputTypes } from '@aws-sdk/client-s3';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IUser } from '@lumieducation/h5p-server';
 import { Test, TestingModule } from '@nestjs/testing';
-import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { FileDto } from '@src/modules/files-storage/dto';
-import { IGetFileResponse } from '@src/modules/files-storage/interface';
+import { GetFileResponse } from '@src/modules/files-storage/interface';
 import { ReadStream } from 'fs';
 import { join } from 'node:path';
 import { Readable } from 'node:stream';
 import { TemporaryFile } from '../entity/temporary-file.entity';
+import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
 import { TemporaryFileRepo } from '../repo/temporary-file.repo';
 import { TemporaryFileStorage } from './temporary-file-storage.service';
 
@@ -29,6 +30,7 @@ describe('TemporaryFileStorage', () => {
 					provide: TemporaryFileRepo,
 					useValue: createMock<TemporaryFileRepo>(),
 				},
+				{ provide: H5P_CONTENT_S3_CONNECTION, useValue: createMock<S3ClientAdapter>() },
 				{
 					provide: 'S3ClientAdapter_Content',
 					useValue: createMock<S3ClientAdapter>(),
@@ -182,14 +184,15 @@ describe('TemporaryFileStorage', () => {
 			it('should return readable file stream', async () => {
 				const { user1, file1 } = setup();
 				const actualContent = fileContent(user1.id, file1.filename);
-				const response: Required<IGetFileResponse> = {
+				const response: Required<GetFileResponse> = {
 					data: Readable.from(actualContent),
-					contentType: undefined,
-					contentLength: undefined,
-					contentRange: undefined,
-					etag: undefined,
+					etag: '',
+					contentType: '',
+					contentLength: 0,
+					contentRange: '',
 					name: '',
 				};
+
 				repo.findByUserAndFilename.mockResolvedValueOnce(file1);
 				s3clientAdapter.get.mockResolvedValueOnce(response);
 

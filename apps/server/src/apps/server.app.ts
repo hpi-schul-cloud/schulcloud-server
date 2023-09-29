@@ -19,6 +19,7 @@ import { join } from 'path';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
+import { FeathersRosterService } from '@src/modules/pseudonym';
 import legacyAppPromise = require('../../../../src/app');
 
 import { AppStartLoggable } from './helpers/app-start-loggable';
@@ -79,6 +80,8 @@ async function bootstrap() {
 	feathersExpress.services['nest-collaborative-storage-uc'] = nestApp.get(CollaborativeStorageUc);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
 	feathersExpress.services['nest-team-service'] = nestApp.get(TeamService);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+	feathersExpress.services['nest-feathers-roster-service'] = nestApp.get(FeathersRosterService);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-orm'] = orm;
 

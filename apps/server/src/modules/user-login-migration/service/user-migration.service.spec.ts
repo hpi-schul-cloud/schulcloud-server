@@ -4,12 +4,12 @@ import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName, SchoolDO, UserDO } from '@shared/domain';
-import { schoolDOFactory, setupEntities, userDoFactory } from '@shared/testing';
+import { LegacySchoolDo, RoleName, UserDO } from '@shared/domain';
+import { legacySchoolDoFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto, AccountSaveDto } from '@src/modules/account/services/dto';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/legacy-school';
 import { SystemService } from '@src/modules/system';
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
@@ -24,7 +24,7 @@ describe('UserMigrationService', () => {
 	let configBefore: IConfig;
 	let logger: LegacyLogger;
 
-	let schoolService: DeepMocked<SchoolService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 	let systemService: DeepMocked<SystemService>;
 	let userService: DeepMocked<UserService>;
 	let accountService: DeepMocked<AccountService>;
@@ -43,8 +43,8 @@ describe('UserMigrationService', () => {
 			providers: [
 				UserMigrationService,
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 				{
 					provide: SystemService,
@@ -66,7 +66,7 @@ describe('UserMigrationService', () => {
 		}).compile();
 
 		service = module.get(UserMigrationService);
-		schoolService = module.get(SchoolService);
+		schoolService = module.get(LegacySchoolService);
 		systemService = module.get(SystemService);
 		userService = module.get(UserService);
 		accountService = module.get(AccountService);
@@ -89,7 +89,7 @@ describe('UserMigrationService', () => {
 		describe('when finding the migration systems', () => {
 			const setup = () => {
 				const officialSchoolNumber = '3';
-				const school: SchoolDO = schoolDOFactory.buildWithId({ name: 'schoolName', officialSchoolNumber });
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ name: 'schoolName', officialSchoolNumber });
 
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
 

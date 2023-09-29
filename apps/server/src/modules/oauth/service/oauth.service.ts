@@ -1,14 +1,12 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { EntityId, OauthConfig, SchoolFeatures } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { UserDO } from '@shared/domain/domainobject/user.do';
+import { EntityId, LegacySchoolDo, OauthConfig, SchoolFeatures, UserDO } from '@shared/domain';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { LegacyLogger } from '@src/core/logger';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/legacy-school';
 import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
@@ -31,7 +29,7 @@ export class OAuthService {
 		private readonly systemService: SystemService,
 		private readonly userMigrationService: UserMigrationService,
 		private readonly migrationCheckService: MigrationCheckService,
-		private readonly schoolService: SchoolService
+		private readonly schoolService: LegacySchoolService
 	) {
 		this.logger.setContext(OAuthService.name);
 	}
@@ -132,7 +130,7 @@ export class OAuthService {
 	}
 
 	async isOauthProvisioningEnabledForSchool(officialSchoolNumber: string): Promise<boolean> {
-		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
+		const school: LegacySchoolDo | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
 
 		if (!school) {
 			return true;

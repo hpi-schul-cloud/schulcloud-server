@@ -116,7 +116,7 @@ export class PreviewService {
 	): PassThrough {
 		const mimeType = previewParams.outputFormat ?? fileRecord.mimeType;
 		const format = this.getFormat(mimeType);
-		const im = subClass({ imageMagick: true });
+		const im = subClass({ imageMagick: '7+' });
 
 		const preview = im(original.data, fileRecord.name);
 		const { width } = previewParams;

@@ -7,7 +7,6 @@ export * from './coursegroup.entity';
 export * from './dashboard.entity';
 export * from './dashboard.model.entity';
 export * from './federal-state.entity';
-export * from './file.entity';
 export * from './import-user.entity';
 export * from './legacy-board';
 export * from './lesson.entity';

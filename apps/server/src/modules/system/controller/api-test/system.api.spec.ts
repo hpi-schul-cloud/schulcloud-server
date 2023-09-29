@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { OauthConfig, System } from '@shared/domain';
+import { OauthConfig, SystemEntity } from '@shared/domain';
 import { cleanupCollections, systemFactory } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
@@ -46,8 +46,8 @@ describe('System (API)', () => {
 	describe('[GET] systems/public', () => {
 		describe('when the endpoint is called', () => {
 			const setup = async () => {
-				const system1: System = systemFactory.buildWithId();
-				const system2: System = systemFactory.withOauthConfig().buildWithId();
+				const system1: SystemEntity = systemFactory.buildWithId();
+				const system2: SystemEntity = systemFactory.withOauthConfig().buildWithId();
 				const system2OauthConfig: OauthConfig = system2.oauthConfig as OauthConfig;
 
 				await em.persistAndFlush([system1, system2]);
@@ -98,8 +98,8 @@ describe('System (API)', () => {
 	describe('[GET] systems/public/:systemId', () => {
 		describe('when the endpoint is called with a known systemId', () => {
 			const setup = async () => {
-				const system1: System = systemFactory.buildWithId();
-				const system2: System = systemFactory.buildWithId();
+				const system1: SystemEntity = systemFactory.buildWithId();
+				const system2: SystemEntity = systemFactory.buildWithId();
 
 				await em.persistAndFlush([system1, system2]);
 				em.clear();

@@ -1,5 +1,4 @@
-import { BadRequestException, Injectable, PipeTransform, ValidationPipe } from '@nestjs/common';
-import { AnyFilesInterceptor } from '@nestjs/platform-express';
+import { Injectable, PipeTransform, ValidationPipe } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 import { IsArray, IsMongoId, IsOptional, IsString, validate } from 'class-validator';

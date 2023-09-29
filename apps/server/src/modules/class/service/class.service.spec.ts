@@ -1,13 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { EntityId } from '@shared/domain';
-import { InternalServerErrorException } from '@nestjs/common';
-import { classEntityFactory } from '@src/modules/class/entity/testing/factory/class.entity.factory';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { InternalServerErrorException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { EntityId } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
-import { ClassService } from './class.service';
+import { classEntityFactory } from '@src/modules/class/entity/testing/factory/class.entity.factory';
+import { Class } from '../domain';
+import { classFactory } from '../domain/testing/factory/class.factory';
 import { ClassesRepo } from '../repo';
 import { ClassMapper } from '../repo/mapper';
+import { ClassService } from './class.service';
 
 describe(ClassService.name, () => {
 	let module: TestingModule;
@@ -37,6 +39,39 @@ describe(ClassService.name, () => {
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	describe('findClassesForSchool', () => {
+		describe('when the school has classes', () => {
+			const setup = () => {
+				const schoolId: string = new ObjectId().toHexString();
+
+				const classes: Class[] = classFactory.buildList(3);
+
+				classesRepo.findAllBySchoolId.mockResolvedValueOnce(classes);
+
+				return {
+					schoolId,
+					classes,
+				};
+			};
+
+			it('should call the repo', async () => {
+				const { schoolId } = setup();
+
+				await service.findClassesForSchool(schoolId);
+
+				expect(classesRepo.findAllBySchoolId).toHaveBeenCalledWith(schoolId);
+			});
+
+			it('should return the classes', async () => {
+				const { schoolId, classes } = setup();
+
+				const result: Class[] = await service.findClassesForSchool(schoolId);
+
+				expect(result).toEqual(classes);
+			});
+		});
 	});
 
 	describe('deleteUserDataFromClasses', () => {

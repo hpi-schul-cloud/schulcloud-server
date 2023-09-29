@@ -1,9 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { contextExternalToolFactory, schoolDOFactory, schoolExternalToolFactory, setupEntities } from '@shared/testing';
-import { Permission, SchoolDO } from '@shared/domain';
+import {
+	contextExternalToolFactory,
+	legacySchoolDoFactory,
+	schoolExternalToolFactory,
+	setupEntities,
+} from '@shared/testing';
+import { Permission, LegacySchoolDo } from '@shared/domain';
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/legacy-school';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ToolPermissionHelper } from './tool-permission-helper';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
@@ -13,7 +18,7 @@ describe('ToolPermissionHelper', () => {
 	let helper: ToolPermissionHelper;
 
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let schoolService: DeepMocked<SchoolService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -25,15 +30,15 @@ describe('ToolPermissionHelper', () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 			],
 		}).compile();
 
 		helper = module.get(ToolPermissionHelper);
 		authorizationService = module.get(AuthorizationService);
-		schoolService = module.get(SchoolService);
+		schoolService = module.get(LegacySchoolService);
 	});
 
 	afterAll(async () => {
@@ -79,7 +84,7 @@ describe('ToolPermissionHelper', () => {
 				const userId = 'userId';
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 				const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
-				const school: SchoolDO = schoolDOFactory.build({ id: schoolExternalTool.schoolId });
+				const school: LegacySchoolDo = legacySchoolDoFactory.build({ id: schoolExternalTool.schoolId });
 
 				schoolService.getSchoolById.mockResolvedValue(school);
 

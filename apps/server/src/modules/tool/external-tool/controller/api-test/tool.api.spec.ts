@@ -1,7 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, Permission, School } from '@shared/domain';
+import { Course, Permission, SchoolEntity } from '@shared/domain';
 import {
 	cleanupCollections,
 	contextExternalToolEntityFactory,
@@ -608,8 +608,8 @@ describe('ToolController (API)', () => {
 
 		describe('when user has no access to a tool', () => {
 			const setup = async () => {
-				const schoolWithoutTool: School = schoolFactory.buildWithId();
-				const school: School = schoolFactory.buildWithId();
+				const schoolWithoutTool: SchoolEntity = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolFactory.buildWithId();
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school: schoolWithoutTool });
 				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
@@ -656,7 +656,7 @@ describe('ToolController (API)', () => {
 
 		describe('when user has access for a tool', () => {
 			const setup = async () => {
-				const school: School = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolFactory.buildWithId();
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 					Permission.CONTEXT_TOOL_USER,
 				]);

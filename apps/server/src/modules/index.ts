@@ -14,7 +14,7 @@ export * from './oauth-provider';
 export * from './provisioning';
 export * from './rocketchat';
 export * from './role';
-export * from './school';
+export * from './legacy-school';
 export * from './sharing';
 export * from './system';
 export * from './task';

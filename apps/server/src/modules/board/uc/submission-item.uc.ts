@@ -1,5 +1,12 @@
 import { ForbiddenException, forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { AnyBoardDo, EntityId, SubmissionContainerElement, SubmissionItem, UserRoleEnum } from '@shared/domain';
+import {
+	AnyBoardDo,
+	EntityId,
+	SubmissionContainerElement,
+	SubmissionItem,
+	UserBoardRoles,
+	UserRoleEnum,
+} from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Action } from '@src/modules/authorization/types/action.enum';
@@ -18,7 +25,10 @@ export class SubmissionItemUc {
 		this.logger.setContext(SubmissionItemUc.name);
 	}
 
-	async findSubmissionItems(userId: EntityId, submissionContainerId: EntityId): Promise<SubmissionItem[]> {
+	async findSubmissionItems(
+		userId: EntityId,
+		submissionContainerId: EntityId
+	): Promise<{ submissionItems: SubmissionItem[]; users: UserBoardRoles[] }> {
 		const submissionContainer = await this.getSubmissionContainer(submissionContainerId);
 		await this.checkPermission(userId, submissionContainer, Action.read);
 
@@ -31,12 +41,16 @@ export class SubmissionItemUc {
 			);
 		}
 
+		const boardAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(submissionContainer);
+		let users = boardAuthorizable.users.filter((user) => user.userRoleEnum === UserRoleEnum.STUDENT);
+
 		const isAuthorizedStudent = await this.isAuthorizedStudent(userId, submissionContainer);
 		if (isAuthorizedStudent) {
 			submissionItems = submissionItems.filter((item) => item.userId === userId);
+			users = [];
 		}
 
-		return submissionItems;
+		return { submissionItems, users };
 	}
 
 	async updateSubmissionItem(

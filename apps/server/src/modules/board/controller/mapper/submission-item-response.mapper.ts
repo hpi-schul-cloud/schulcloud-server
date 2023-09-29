@@ -1,4 +1,5 @@
-import { SubmissionItem } from '@shared/domain';
+import { SubmissionItem, UserBoardRoles } from '@shared/domain';
+import { SubmissionsResponse } from '../dto/submission-item/submissions.response';
 import { SubmissionItemResponse, TimestampsResponse, UserDataResponse } from '../dto';
 
 export class SubmissionItemResponseMapper {
@@ -12,7 +13,18 @@ export class SubmissionItemResponseMapper {
 		return SubmissionItemResponseMapper.instance;
 	}
 
-	public mapToResponse(submissionItem: SubmissionItem): SubmissionItemResponse {
+	public mapToResponse(submissionItems: SubmissionItem[], users: UserBoardRoles[]): SubmissionsResponse {
+		const submissionItemsResponse: SubmissionItemResponse[] = submissionItems.map((item) =>
+			this.mapSubmissionsToResponse(item)
+		);
+		const usersResponse: UserDataResponse[] = users.map((user) => this.mapUsersToResponse(user));
+
+		const response = new SubmissionsResponse(submissionItemsResponse, usersResponse);
+
+		return response;
+	}
+
+	public mapSubmissionsToResponse(submissionItem: SubmissionItem): SubmissionItemResponse {
 		const result = new SubmissionItemResponse({
 			completed: submissionItem.completed,
 			id: submissionItem.id,
@@ -20,14 +32,18 @@ export class SubmissionItemResponseMapper {
 				lastUpdatedAt: submissionItem.updatedAt,
 				createdAt: submissionItem.createdAt,
 			}),
-			userData: new UserDataResponse({
-				// TODO: put valid user info here which comes from the submission owner
-				firstName: 'John',
-				lastName: 'Mr Doe',
-				userId: submissionItem.userId,
-			}),
+			userId: submissionItem.userId,
 		});
 
+		return result;
+	}
+
+	private mapUsersToResponse(user: UserBoardRoles) {
+		const result = new UserDataResponse({
+			userId: user.userId,
+			firstName: user.firstName || '',
+			lastName: user.lastName || '',
+		});
 		return result;
 	}
 }

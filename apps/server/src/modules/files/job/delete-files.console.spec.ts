@@ -26,7 +26,8 @@ describe('DeleteFilesConsole', () => {
 		console = module.get(DeleteFilesConsole);
 		deleteFilesUc = module.get(DeleteFilesUc);
 
-		// Set fake system time. Otherwise dates constructed in the test and the console can differ because of the short time elapsing between the calls.
+		// Set fake system time. Otherwise, dates constructed in the test and the
+		// console can differ because of the short time elapsing between the calls.
 		jest.useFakeTimers();
 		jest.setSystemTime(new Date(2022, 1, 22));
 	});

@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { StorageProvider, System } from '@shared/domain';
+import { StorageProviderEntity, SystemEntity } from '@shared/domain';
 import { DatabaseManagementService } from '@shared/infra/database';
 import {
 	DefaultEncryptionService,
@@ -124,7 +124,7 @@ describe('DatabaseManagementService', () => {
 		},
 	};
 
-	const storageProviderParsed: StorageProvider[] = [
+	const storageProviderParsed: StorageProviderEntity[] = [
 		{
 			id: '62d6ca7e769952e3f6e67925',
 			_id: new ObjectId('62d6ca7e769952e3f6e67925'),
@@ -496,11 +496,11 @@ describe('DatabaseManagementService', () => {
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
-					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
+					expect((importedSystems[0] as SystemEntity).oauthConfig).toMatchObject({
 						clientId: 'SANIS_CLIENT_ID',
 						clientSecret: 'SANIS_CLIENT_SECRET',
 					});
-					expect((importedSystems[1] as System).oidcConfig).toMatchObject({
+					expect((importedSystems[1] as SystemEntity).oidcConfig).toMatchObject({
 						clientId: 'OIDC_CLIENT_ID',
 						clientSecret: 'OIDC_CLIENT_SECRET',
 					});
@@ -512,11 +512,11 @@ describe('DatabaseManagementService', () => {
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
-					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
+					expect((importedSystems[0] as SystemEntity).oauthConfig).toMatchObject({
 						clientId: 'SANIS_CLIENT_ID_env',
 						clientSecret: 'SANIS_CLIENT_SECRET_env',
 					});
-					expect((importedSystems[1] as System).oidcConfig).toMatchObject({
+					expect((importedSystems[1] as SystemEntity).oidcConfig).toMatchObject({
 						clientId: 'OIDC_CLIENT_ID_env',
 						clientSecret: 'OIDC_CLIENT_SECRET_env',
 					});
@@ -528,11 +528,11 @@ describe('DatabaseManagementService', () => {
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
-					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
+					expect((importedSystems[0] as SystemEntity).oauthConfig).toMatchObject({
 						clientId: '',
 						clientSecret: '',
 					});
-					expect((importedSystems[1] as System).oidcConfig).toMatchObject({
+					expect((importedSystems[1] as SystemEntity).oidcConfig).toMatchObject({
 						clientId: '',
 						clientSecret: '',
 					});
@@ -560,7 +560,7 @@ describe('DatabaseManagementService', () => {
 					expect(dbService.createCollection).toBeCalledWith(systemsCollectionName);
 					expect(dbService.clearCollection).not.toBeCalled();
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
-					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
+					expect((importedSystems[0] as SystemEntity).oauthConfig).toMatchObject({
 						clientId: configurationCompareValue,
 						clientSecret: configurationCompareValue,
 					});
@@ -589,11 +589,11 @@ describe('DatabaseManagementService', () => {
 					expect(dbService.createCollection).toBeCalledWith(systemsCollectionName);
 					expect(dbService.clearCollection).not.toBeCalled();
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
-					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
+					expect((importedSystems[0] as SystemEntity).oauthConfig).toMatchObject({
 						clientId: 'SANIS_CLIENT_ID',
 						clientSecret: 'SANIS_CLIENT_SECRET_encrypted',
 					});
-					expect((importedSystems[1] as System).oidcConfig).toMatchObject({
+					expect((importedSystems[1] as SystemEntity).oidcConfig).toMatchObject({
 						clientId: 'OIDC_CLIENT_ID',
 						clientSecret: 'OIDC_CLIENT_SECRET_encrypted',
 					});
@@ -609,7 +609,7 @@ describe('DatabaseManagementService', () => {
 					expect(dbService.createCollection).toBeCalledWith(systemsCollectionName);
 					expect(dbService.clearCollection).not.toBeCalled();
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
-					expect(importedSystems as System[]).toEqual(
+					expect(importedSystems as SystemEntity[]).toEqual(
 						expect.arrayContaining([
 							expect.objectContaining({
 								ldapConfig: {

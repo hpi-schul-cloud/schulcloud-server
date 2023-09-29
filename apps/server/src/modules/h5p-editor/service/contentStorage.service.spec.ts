@@ -1,15 +1,17 @@
 import { HeadObjectCommandOutput } from '@aws-sdk/client-s3';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { IContentMetadata, ILibraryName, LibraryName } from '@lumieducation/h5p-server';
+import { IContentMetadata, ILibraryName, IUser, LibraryName } from '@lumieducation/h5p-server';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IEntity } from '@shared/domain';
-import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
-import { IGetFileResponse } from '@src/modules/files-storage/interface';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
+import { GetFileResponse } from '@src/modules/files-storage/interface';
 import { ObjectID } from 'bson';
 import { Readable } from 'stream';
-import { H5PContent } from '../entity';
+import { H5PContent, H5PContentParentType, IH5PContentProperties } from '../entity';
+import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
 import { H5PContentRepo } from '../repo';
+import { H5PContentParentParams, LumiUserWithContentData } from '../types/lumi-types';
 import { ContentStorage } from './contentStorage.service';
 
 const helpers = {
@@ -38,8 +40,15 @@ const helpers = {
 		const content = {
 			data: `Data #${n}`,
 		};
-
-		const h5pContent = new H5PContent({ metadata, content });
+		const h5pContentProperties: IH5PContentProperties = {
+			creatorId: new ObjectID().toString(),
+			parentId: new ObjectID().toString(),
+			schoolId: new ObjectID().toString(),
+			metadata,
+			content,
+			parentType: H5PContentParentType.Lesson,
+		};
+		const h5pContent = new H5PContent(h5pContentProperties);
 
 		return {
 			withID(id?: number) {
@@ -96,6 +105,7 @@ describe('ContentStorage', () => {
 				ContentStorage,
 				{ provide: 'S3ClientAdapter_Content', useValue: createMock<S3ClientAdapter>() },
 				{ provide: H5PContentRepo, useValue: createMock<H5PContentRepo>() },
+				{ provide: H5P_CONTENT_S3_CONNECTION, useValue: createMock<S3ClientAdapter>() },
 			],
 		}).compile();
 
@@ -121,7 +131,21 @@ describe('ContentStorage', () => {
 			const newContent = helpers.buildContent(0).new();
 			const existingContent = helpers.buildContent(0).withID();
 
-			const user = helpers.createUser();
+			const iUser: IUser = {
+				canCreateRestricted: false,
+				canInstallRecommended: false,
+				canUpdateAndInstallLibraries: false,
+				email: 'example@schul-cloud.org',
+				id: '12345',
+				name: 'Example User',
+				type: 'user',
+			};
+			const parentParams: H5PContentParentParams = {
+				schoolId: '',
+				parentType: H5PContentParentType.Lesson,
+				parentId: '',
+			};
+			const user = new LumiUserWithContentData(iUser, parentParams);
 
 			return { newContent, existingContent, user };
 		};
@@ -595,7 +619,7 @@ describe('ContentStorage', () => {
 			const filename = 'testfile.txt';
 			const fileStream = Readable.from('content');
 			const contentID = new ObjectID().toString();
-			const fileResponse = createMock<IGetFileResponse>({ data: fileStream });
+			const fileResponse = createMock<GetFileResponse>({ data: fileStream });
 			const user = helpers.createUser();
 
 			const getError = new Error('Could not get file');

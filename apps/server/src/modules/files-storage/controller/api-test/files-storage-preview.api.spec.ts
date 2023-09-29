@@ -12,12 +12,19 @@ import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { FILES_STORAGE_S3_CONNECTION, FilesStorageTestModule } from '@src/modules/files-storage';
 import { FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { Request } from 'express';
+import FileType from 'file-type-cjs/file-type-cjs-index';
 import request from 'supertest';
 import { FileRecord, ScanStatus } from '../../entity';
 import { ErrorType } from '../../error';
 import { TestHelper } from '../../helper/test-helper';
 import { PreviewWidth } from '../../interface';
 import { PreviewOutputMimeTypes } from '../../interface/preview-output-mime-types.enum';
+
+jest.mock('file-type-cjs/file-type-cjs-index', () => {
+	return {
+		fileTypeStream: jest.fn(),
+	};
+});
 
 class API {
 	app: INestApplication;
@@ -134,6 +141,8 @@ describe('File Controller (API) - preview', () => {
 		schoolId = school.id;
 		currentUser = mapUserToCurrentUser(user);
 		uploadPath = `/file/upload/${schoolId}/schools/${schoolId}`;
+
+		jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
 	});
 
 	const setScanStatus = async (fileRecordId: EntityId, status: ScanStatus) => {
