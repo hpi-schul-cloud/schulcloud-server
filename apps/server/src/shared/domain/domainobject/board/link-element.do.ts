@@ -1,4 +1,4 @@
-import { OpenGraphData } from '@src/modules/board/service';
+import { OpenGraphData } from '@src/modules/board/controller/dto';
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import type { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 

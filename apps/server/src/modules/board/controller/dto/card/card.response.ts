@@ -11,7 +11,13 @@ import {
 import { TimestampsResponse } from '../timestamps.response';
 import { VisibilitySettingsResponse } from './visibility-settings.response';
 
-@ApiExtraModels(LinkElementResponse, RichTextElementResponse)
+@ApiExtraModels(
+	ExternalToolElementResponse,
+	FileElementResponse,
+	LinkElementResponse,
+	RichTextElementResponse,
+	SubmissionContainerElementResponse
+)
 export class CardResponse {
 	constructor({ id, title, height, elements, visibilitySettings, timestamps }: CardResponse) {
 		this.id = id;
@@ -40,9 +46,9 @@ export class CardResponse {
 			oneOf: [
 				{ $ref: getSchemaPath(ExternalToolElementResponse) },
 				{ $ref: getSchemaPath(FileElementResponse) },
+				{ $ref: getSchemaPath(LinkElementResponse) },
 				{ $ref: getSchemaPath(RichTextElementResponse) },
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
-				{ $ref: getSchemaPath(LinkElementResponse) },
 			],
 		},
 	})

@@ -1,50 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { sortBy } from 'lodash';
 import ogs from 'open-graph-scraper';
 import { ImageObject } from 'open-graph-scraper/dist/lib/types';
-
-export class OpenGraphImageData {
-	constructor({ url, type, width, height }: OpenGraphImageData) {
-		this.url = url;
-		this.type = type;
-		this.width = width ? +width : undefined;
-		this.height = height ? +height : undefined;
-	}
-
-	@ApiProperty()
-	url: string;
-
-	@ApiPropertyOptional()
-	type?: string;
-
-	@ApiPropertyOptional()
-	width?: number;
-
-	@ApiPropertyOptional()
-	height?: number;
-}
-
-export class OpenGraphData {
-	constructor({ title, description, image, url }: OpenGraphData) {
-		this.title = title;
-		this.description = description;
-		this.image = image;
-		this.url = url;
-	}
-
-	@ApiProperty()
-	title: string;
-
-	@ApiProperty()
-	description: string;
-
-	@ApiPropertyOptional()
-	image?: OpenGraphImageData;
-
-	@ApiProperty()
-	url: string;
-}
+import { OpenGraphData, OpenGraphImageData } from '../controller/dto';
 
 @Injectable()
 export class OpenGraphProxyService {
@@ -70,7 +28,6 @@ export class OpenGraphProxyService {
 		const sortedImages = sortBy(imagesWithCorrectDimensions, ['width', 'height']);
 		const biggestSmallEnoughImage = [...sortedImages].reverse().find((i) => i.width && i.width <= maxWidth);
 		const smallestBigEnoughImage = sortedImages.find((i) => i.width && i.width >= minWidth);
-		// return imagesWithCorrectDimensions[0];
 		return biggestSmallEnoughImage ?? smallestBigEnoughImage ?? sortedImages[0];
 	}
 }

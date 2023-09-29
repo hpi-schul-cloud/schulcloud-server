@@ -25,6 +25,7 @@ import {
 	CreateContentElementBodyParams,
 	ExternalToolElementResponse,
 	FileElementResponse,
+	LinkElementResponse,
 	MoveCardBodyParams,
 	RenameBodyParams,
 	RichTextElementResponse,
@@ -116,19 +117,21 @@ export class CardController {
 
 	@ApiOperation({ summary: 'Create a new element on a card.' })
 	@ApiExtraModels(
-		RichTextElementResponse,
+		ExternalToolElementResponse,
 		FileElementResponse,
-		SubmissionContainerElementResponse,
-		ExternalToolElementResponse
+		LinkElementResponse,
+		RichTextElementResponse,
+		SubmissionContainerElementResponse
 	)
 	@ApiResponse({
 		status: 201,
 		schema: {
 			oneOf: [
-				{ $ref: getSchemaPath(RichTextElementResponse) },
-				{ $ref: getSchemaPath(FileElementResponse) },
-				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 				{ $ref: getSchemaPath(ExternalToolElementResponse) },
+				{ $ref: getSchemaPath(FileElementResponse) },
+				{ $ref: getSchemaPath(LinkElementResponse) },
+				{ $ref: getSchemaPath(RichTextElementResponse) },
+				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 			],
 		},
 	})
