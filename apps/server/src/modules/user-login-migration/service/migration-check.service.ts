@@ -3,6 +3,7 @@ import { EntityId, LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { LegacySchoolService } from '@src/modules/legacy-school';
 import { UserService } from '@src/modules/user';
+import { SchoolInMigrationError } from '../../authentication/errors/school-in-migration.error';
 
 @Injectable()
 export class MigrationCheckService {
@@ -33,7 +34,7 @@ export class MigrationCheckService {
 				const hasMigrated: boolean = user.lastLoginSystemChange > userLoginMigration.startedAt;
 				return !hasMigrated;
 			}
-			return !!userLoginMigration && !userLoginMigration.closedAt;
+			return !!userLoginMigration && !userLoginMigration.closedAt; */
 		}
 		return false;
 	}
