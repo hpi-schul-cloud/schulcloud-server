@@ -30,6 +30,7 @@ import { OauthUc } from '../uc';
 import { OauthLoginStateDto } from '../uc/dto/oauth-login-state.dto';
 import { AuthorizationParams, SSOLoginQuery, SystemIdParams } from './dto';
 import { StatelessAuthorizationParams } from './dto/stateless-authorization.params';
+import { SchoolInMigrationError } from '../../authentication/errors/school-in-migration.error';
 
 @ApiTags('SSO')
 @Controller('sso')
@@ -47,7 +48,16 @@ export class OauthSSOController {
 
 	private errorHandler(error: unknown, session: ISession, res: Response, provider?: string) {
 		this.logger.error(error);
-		const ssoError: OAuthSSOError = error instanceof OAuthSSOError ? error : new OAuthSSOError();
+		// const ssoError: OAuthSSOError = error instanceof OAuthSSOError ? error : new OAuthSSOError();
+		let ssoError: OAuthSSOError;
+
+		if (error instanceof SchoolInMigrationError) {
+			ssoError = new OAuthSSOError(error.message, error.type);
+		} else if (error instanceof OAuthSSOError) {
+			ssoError = error;
+		} else {
+			ssoError = new OAuthSSOError();
+		}
 
 		session.destroy((err) => {
 			this.logger.log(err);
