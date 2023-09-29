@@ -10,7 +10,7 @@ import { readableStreamWithFileTypeFactory } from '@shared/testing/factory/reada
 import { LegacyLogger } from '@src/core/logger';
 import { MimeType } from 'file-type';
 import FileType from 'file-type-cjs/file-type-cjs-index';
-import { Readable } from 'stream';
+import { PassThrough, Readable } from 'stream';
 import { FileRecordParams } from '../controller/dto';
 import { FileDto } from '../dto';
 import { FileRecord, FileRecordParentType } from '../entity';
@@ -176,7 +176,7 @@ describe('FilesStorageService upload methods', () => {
 
 				await service.uploadFile(userId, params, file);
 
-				expect(getMimeTypeSpy).toHaveBeenCalledWith(file.data);
+				expect(getMimeTypeSpy).toHaveBeenCalledWith(expect.any(PassThrough));
 			});
 
 			it('should call getFileRecordsOfParent with correct params', async () => {
