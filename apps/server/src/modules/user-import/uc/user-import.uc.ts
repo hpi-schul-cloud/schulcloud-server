@@ -23,6 +23,7 @@ import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import { AuthorizationService } from '@src/modules/authorization';
 import { LegacySchoolService } from '@src/modules/legacy-school';
+import { AccountSaveDto } from '../../account/services/dto';
 import {
 	MigrationMayBeCompleted,
 	MigrationMayNotBeCompleted,
@@ -281,15 +282,30 @@ export class UserImportUc {
 		user.ldapDn = importUser.ldapDn;
 		user.externalId = importUser.externalId;
 
-		const account: AccountDto = await this.accountService.findByUserIdOrFail(user.id);
+		const account: AccountDto = await this.getAccount(user);
 
 		account.systemId = importUser.system.id;
 		account.password = undefined;
-		account.username = `${school.externalId}/${importUser.loginName}`;
+		account.username = `${school.externalId}/${importUser.loginName}`.toLowerCase();
 
 		await this.userRepo.save(user);
 		await this.accountService.save(account);
 		await this.importUserRepo.delete(importUser);
+	}
+
+	private async getAccount(user: User): Promise<AccountDto> {
+		let account: AccountDto | null = await this.accountService.findByUserId(user.id);
+
+		if (!account) {
+			const newAccount: AccountSaveDto = new AccountSaveDto({
+				userId: user.id,
+				username: user.email,
+			});
+
+			await this.accountService.saveWithValidation(newAccount);
+			account = await this.accountService.findByUserIdOrFail(user.id);
+		}
+		return account;
 	}
 
 	private async getMigrationSystem(): Promise<SystemEntity> {

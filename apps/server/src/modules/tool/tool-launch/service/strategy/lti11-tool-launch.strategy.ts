@@ -3,13 +3,13 @@ import { EntityId, LtiPrivacyPermission, Pseudonym, RoleName, UserDO } from '@sh
 import { RoleReference } from '@shared/domain/domainobject';
 import { CourseService } from '@src/modules/learnroom/service';
 import { LegacySchoolService } from '@src/modules/legacy-school';
-import { PseudonymService } from '@src/modules/pseudonym';
+import { PseudonymService } from '@src/modules/pseudonym/service';
 import { UserService } from '@src/modules/user';
 import { Authorization } from 'oauth-1.0a';
 import { LtiRole } from '../../../common/enum';
 import { ExternalTool } from '../../../external-tool/domain';
 import { LtiRoleMapper } from '../../mapper';
-import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
+import { LaunchRequestMethod, PropertyData, PropertyLocation, AuthenticationValues } from '../../types';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
@@ -129,6 +129,19 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			payload[property.name] = property.value;
 		}
 
+		const authentication: AuthenticationValues = this.getAuthenticationValues(properties);
+
+		const signedPayload: Authorization = this.lti11EncryptionService.sign(
+			authentication.keyValue,
+			authentication.secretValue,
+			url,
+			payload
+		);
+
+		return JSON.stringify(signedPayload);
+	}
+
+	private getAuthenticationValues(properties: PropertyData[]): AuthenticationValues {
 		const key: PropertyData | undefined = properties.find((property: PropertyData) => property.name === 'key');
 		const secret: PropertyData | undefined = properties.find((property: PropertyData) => property.name === 'secret');
 
@@ -138,9 +151,12 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			);
 		}
 
-		const signedPayload: Authorization = this.lti11EncryptionService.sign(key.value, secret.value, url, payload);
+		const authentication: AuthenticationValues = new AuthenticationValues({
+			keyValue: key.value,
+			secretValue: secret.value,
+		});
 
-		return JSON.stringify(signedPayload);
+		return authentication;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -169,7 +169,6 @@ export class UserLoginMigrationService {
 	}
 
 	private async updateExistingMigration(userLoginMigrationDO: UserLoginMigrationDO) {
-		userLoginMigrationDO.startedAt = new Date();
 		userLoginMigrationDO.closedAt = undefined;
 		userLoginMigrationDO.finishedAt = undefined;
 

@@ -1,7 +1,7 @@
-import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { ContentElementType, InputFormat } from '@shared/domain';
 import { Type } from 'class-transformer';
-import { IsDate, IsEnum, IsString, ValidateNested } from 'class-validator';
+import { IsDate, IsEnum, IsMongoId, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 export abstract class ElementContentBody {
 	@ApiProperty({
@@ -53,8 +53,12 @@ export class RichTextElementContentBody extends ElementContentBody {
 
 export class SubmissionContainerContentBody {
 	@IsDate()
-	@ApiProperty()
-	dueDate!: Date;
+	@IsOptional()
+	@ApiPropertyOptional({
+		required: false,
+		description: 'The point in time until when a submission can be handed in.',
+	})
+	dueDate?: Date;
 }
 
 export class SubmissionContainerElementContentBody extends ElementContentBody {
@@ -66,7 +70,27 @@ export class SubmissionContainerElementContentBody extends ElementContentBody {
 	content!: SubmissionContainerContentBody;
 }
 
-export type AnyElementContentBody = RichTextElementContentBody | FileContentBody;
+export class ExternalToolContentBody {
+	@IsMongoId()
+	@IsOptional()
+	@ApiPropertyOptional()
+	contextExternalToolId?: string;
+}
+
+export class ExternalToolElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: ContentElementType.EXTERNAL_TOOL })
+	type!: ContentElementType.EXTERNAL_TOOL;
+
+	@ValidateNested()
+	@ApiProperty()
+	content!: ExternalToolContentBody;
+}
+
+export type AnyElementContentBody =
+	| FileContentBody
+	| RichTextContentBody
+	| SubmissionContainerContentBody
+	| ExternalToolContentBody;
 
 export class UpdateElementContentBodyParams {
 	@ValidateNested()
@@ -77,6 +101,7 @@ export class UpdateElementContentBodyParams {
 				{ value: FileElementContentBody, name: ContentElementType.FILE },
 				{ value: RichTextElementContentBody, name: ContentElementType.RICH_TEXT },
 				{ value: SubmissionContainerElementContentBody, name: ContentElementType.SUBMISSION_CONTAINER },
+				{ value: ExternalToolElementContentBody, name: ContentElementType.EXTERNAL_TOOL },
 			],
 		},
 		keepDiscriminatorProperty: true,
@@ -86,7 +111,12 @@ export class UpdateElementContentBodyParams {
 			{ $ref: getSchemaPath(FileElementContentBody) },
 			{ $ref: getSchemaPath(RichTextElementContentBody) },
 			{ $ref: getSchemaPath(SubmissionContainerElementContentBody) },
+			{ $ref: getSchemaPath(ExternalToolElementContentBody) },
 		],
 	})
-	data!: FileElementContentBody | RichTextElementContentBody | SubmissionContainerElementContentBody;
+	data!:
+		| FileElementContentBody
+		| RichTextElementContentBody
+		| SubmissionContainerElementContentBody
+		| ExternalToolElementContentBody;
 }

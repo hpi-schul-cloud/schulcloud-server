@@ -8,11 +8,11 @@ export class UserDataResponse {
 	}
 
 	@ApiProperty()
-	firstName!: string;
+	firstName: string;
 
 	@ApiProperty()
-	lastName!: string;
+	lastName: string;
 
 	@ApiProperty()
-	userId!: string;
+	userId: string;
 }

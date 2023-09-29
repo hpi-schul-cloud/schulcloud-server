@@ -3,7 +3,7 @@ import type { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types'
 
 export class FileElement extends BoardComposite<FileElementProps> {
 	get caption(): string {
-		return this.props.caption;
+		return this.props.caption || '';
 	}
 
 	set caption(value: string) {
