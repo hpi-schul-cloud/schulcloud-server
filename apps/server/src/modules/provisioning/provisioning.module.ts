@@ -7,6 +7,7 @@ import { LegacySchoolModule } from '@src/modules/legacy-school';
 import { RoleModule } from '@src/modules/role';
 import { SystemModule } from '@src/modules/system/system.module';
 import { UserModule } from '@src/modules/user';
+import { FederalStateModule } from '../federal-state';
 import { ProvisioningService } from './service/provisioning.service';
 import { IservProvisioningStrategy, OidcMockProvisioningStrategy, SanisProvisioningStrategy } from './strategy';
 import { OidcProvisioningService } from './strategy/oidc/service/oidc-provisioning.service';
@@ -22,6 +23,7 @@ import { SanisResponseMapper } from './strategy/sanis/sanis-response.mapper';
 		HttpModule,
 		LoggerModule,
 		GroupModule,
+		FederalStateModule,
 	],
 	providers: [
 		ProvisioningService,
