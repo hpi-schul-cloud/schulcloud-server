@@ -42,7 +42,7 @@ export class LinkElementContentBody extends ElementContentBody {
 	type!: ContentElementType.LINK;
 
 	@ValidateNested()
-	@ApiProperty()
+	@ApiProperty({})
 	content!: LinkContentBody;
 }
 

@@ -21,6 +21,7 @@ import {
 	CreateSubmissionItemBodyParams,
 	ExternalToolElementContentBody,
 	FileElementContentBody,
+	LinkElementContentBody,
 	MoveContentElementBody,
 	RichTextElementContentBody,
 	SubmissionContainerElementContentBody,
@@ -60,7 +61,8 @@ export class ElementController {
 		FileElementContentBody,
 		RichTextElementContentBody,
 		SubmissionContainerElementContentBody,
-		ExternalToolElementContentBody
+		ExternalToolElementContentBody,
+		LinkElementContentBody
 	)
 	@ApiResponse({ status: 204 })
 	@ApiResponse({ status: 400, type: ApiValidationError })

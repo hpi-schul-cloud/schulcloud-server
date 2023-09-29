@@ -1,8 +1,9 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiExtraModels, ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ContentElementType } from '@shared/domain';
 import { OpenGraphData } from '@src/modules/board/service';
 import { TimestampsResponse } from '../timestamps.response';
 
+@ApiExtraModels(OpenGraphData)
 export class LinkElementContent {
 	constructor({ url, openGraphData }: LinkElementContent) {
 		this.url = url;
