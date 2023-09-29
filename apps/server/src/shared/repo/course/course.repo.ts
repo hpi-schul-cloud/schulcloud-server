@@ -72,12 +72,10 @@ export class CourseRepo extends BaseRepo<Course> {
 			students: studentRefs,
 			teachers: teacherRefs,
 			substitutionTeachers: substitutionTeacherRefs,
-			// WIP: courseGroups,
 			color: courseDto.color,
 			startDate: courseDto.startDate,
 			untilDate: courseDto.untilDate,
 			copyingSince: courseDto.copyingSince,
-			// shareToken: courseDO.shareToken,
 			features: courseDto.features ?? [],
 		});
 		if (courseDto.id) course.id = courseDto.id;

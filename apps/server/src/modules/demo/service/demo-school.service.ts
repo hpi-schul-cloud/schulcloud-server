@@ -28,14 +28,13 @@ const mapUserEmailsToIds = (emails: string[] = [], users: CreationProtocol[] = [
 @Injectable()
 export class DemoSchoolService {
 	constructor(
-		// private readonly repo: DemoSchoolRepo,
 		private readonly schoolService: LegacySchoolService,
 		private readonly userService: UserService,
 		private readonly accountService: AccountService,
 		private readonly roleService: RoleService,
 		private readonly courseService: CourseService,
 		private readonly federalStateService: FederalStateService,
-		private readonly lessonService: LessonService // private readonly teamservice: TeamService
+		private readonly lessonService: LessonService
 	) {}
 
 	async createDemoSchool(): Promise<CreationProtocol> {
