@@ -10,9 +10,9 @@ import { CoreModule } from '@src/core';
 import { LegacyLogger, Logger } from '@src/core/logger';
 import { UserModule } from '..';
 
-import { LibraryStorage } from '../h5p-editor/service';
-import { config, s3ConfigLibraries } from '../h5p-editor/h5p-editor.config';
-import { LibraryRepo } from '../h5p-editor/repo';
+import { ContentStorage, LibraryStorage } from '../h5p-editor/service';
+import { config, s3ConfigContent, s3ConfigLibraries } from '../h5p-editor/h5p-editor.config';
+import { H5PContentRepo, LibraryRepo } from '../h5p-editor/repo';
 import { createS3ClientAdapter } from '../h5p-editor';
 
 import { H5PLibraryManagementService } from './service/h5p-library-management.service';
@@ -46,11 +46,22 @@ const controllers = [];
 const providers = [
 	Logger,
 	H5PLibraryManagementService,
+	ContentStorage,
+	H5PContentRepo,
 	LibraryRepo,
 	LibraryStorage,
 	{
+		provide: 'S3Config_Content',
+		useValue: s3ConfigContent,
+	},
+	{
 		provide: 'S3Config_Libraries',
 		useValue: s3ConfigLibraries,
+	},
+	{
+		provide: 'S3ClientAdapter_Content',
+		useFactory: createS3ClientAdapter,
+		inject: ['S3Config_Content', LegacyLogger],
 	},
 	{
 		provide: 'S3ClientAdapter_Libraries',

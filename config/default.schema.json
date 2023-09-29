@@ -303,7 +303,7 @@
 		},
 		"H5P_EDITOR": {
 			"type": "object",
-			"description": "Properties of the H5P server microservice",
+			"description": "Properties of the H5P server microservice and library management job",
 			"required": [
 				"S3_ENDPOINT",
 				"S3_REGION",
@@ -362,6 +362,11 @@
 					"minimum": 0,
 					"default": 10000,
 					"description": "Timeout for incoming requests to the h5p editor in milliseconds."
+				},
+				"LIBRARY_LIST_PATH": {
+					"type": "string",
+					"default": "config/h5p-libraries.yaml",
+					"description": "Path to yaml file with list of h5p content type libraries which should be installed"
 				}
 			}
 		},
