@@ -1,9 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
-import { externalToolDOFactory, schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/tool';
+import { externalToolFactory, schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool';
 import { CommonToolValidationService } from '../../common/service';
+import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
+import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
 
 describe('SchoolExternalToolValidationService', () => {
@@ -39,60 +40,60 @@ describe('SchoolExternalToolValidationService', () => {
 
 	describe('validate', () => {
 		const setup = (
-			externalToolDoMock?: Partial<ExternalToolDO>,
-			schoolExternalToolDoMock?: Partial<SchoolExternalToolDO>
+			externalToolDoMock?: Partial<ExternalTool>,
+			schoolExternalToolDoMock?: Partial<SchoolExternalTool>
 		) => {
-			const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
-				...schoolExternalToolDOFactory.buildWithId(),
+			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+				...schoolExternalToolFactory.buildWithId(),
 				...schoolExternalToolDoMock,
 			});
-			const externalToolDO: ExternalToolDO = new ExternalToolDO({
-				...externalToolDOFactory.buildWithId(),
+			const externalTool: ExternalTool = new ExternalTool({
+				...externalToolFactory.buildWithId(),
 				...externalToolDoMock,
 			});
-			externalToolService.findExternalToolById.mockResolvedValue(externalToolDO);
-			const schoolExternalToolId = schoolExternalToolDO.id as string;
+			externalToolService.findExternalToolById.mockResolvedValue(externalTool);
+			const schoolExternalToolId = schoolExternalTool.id as string;
 			return {
-				schoolExternalToolDO,
-				externalToolDO,
+				schoolExternalTool,
+				ExternalTool,
 				schoolExternalToolId,
 			};
 		};
 
 		describe('when schoolExternalTool is given', () => {
 			it('should call externalToolService.findExternalToolById', async () => {
-				const { schoolExternalToolDO } = setup();
+				const { schoolExternalTool } = setup();
 
-				await service.validate(schoolExternalToolDO);
+				await service.validate(schoolExternalTool);
 
-				expect(externalToolService.findExternalToolById).toHaveBeenCalledWith(schoolExternalToolDO.toolId);
+				expect(externalToolService.findExternalToolById).toHaveBeenCalledWith(schoolExternalTool.toolId);
 			});
 
 			it('should call commonToolValidationService.checkForDuplicateParameters', async () => {
-				const { schoolExternalToolDO } = setup();
+				const { schoolExternalTool } = setup();
 
-				await service.validate(schoolExternalToolDO);
+				await service.validate(schoolExternalTool);
 
-				expect(commonToolValidationService.checkForDuplicateParameters).toHaveBeenCalledWith(schoolExternalToolDO);
+				expect(commonToolValidationService.checkForDuplicateParameters).toHaveBeenCalledWith(schoolExternalTool);
 			});
 
 			it('should call commonToolValidationService.checkCustomParameterEntries', async () => {
-				const { schoolExternalToolDO } = setup();
+				const { schoolExternalTool } = setup();
 
-				await service.validate(schoolExternalToolDO);
+				await service.validate(schoolExternalTool);
 
 				expect(commonToolValidationService.checkCustomParameterEntries).toHaveBeenCalledWith(
 					expect.anything(),
-					schoolExternalToolDO
+					schoolExternalTool
 				);
 			});
 		});
 
 		describe('when version of externalTool and schoolExternalTool are different', () => {
 			it('should throw error', async () => {
-				const { schoolExternalToolDO } = setup({ version: 8383 }, { toolVersion: 1337 });
+				const { schoolExternalTool } = setup({ version: 8383 }, { toolVersion: 1337 });
 
-				const func = () => service.validate(schoolExternalToolDO);
+				const func = () => service.validate(schoolExternalTool);
 
 				await expect(func()).rejects.toThrowError('tool_version_mismatch:');
 			});

@@ -46,7 +46,29 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: ${{ steps.docker_meta_img_hub.outputs.tags }}
-          labels: ${{ steps.docker_meta_img.outputs.labels }}
+          labels: ${{ steps.docker_meta_img_hub.outputs.labels }}
+
+      - name: Docker meta Service Name for docker hub (file storage)
+        id: docker_meta_img_hub_file_storage
+        uses: docker/metadata-action@v4
+        with:
+          images: docker.io/schulcloud/schulcloud-server, quay.io/schulcloudverbund/schulcloud-server
+          tags: |
+            type=semver,pattern={{version}},prefix=file-storage-,onlatest=false
+            type=semver,pattern={{major}}.{{minor}},prefix=file-storage-,onlatest=false
+          labels: |
+            org.opencontainers.image.title=schulcloud-file-storage
+      - name: Build and push ${{ github.repository }} (file-storage)
+        uses: docker/build-push-action@v4
+        with:
+          build-args: |
+            BASE_IMAGE=quay.io/schulcloudverbund/schulcloud-server:${{ github.ref_name }}
+          context: .
+          file: ./Dockerfile.filestorage
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.docker_meta_img_hub_file_storage.outputs.tags }}
+          labels: ${{ steps.docker_meta_img_hub_file_storage.outputs.labels }}
 
   create-release:
     needs:

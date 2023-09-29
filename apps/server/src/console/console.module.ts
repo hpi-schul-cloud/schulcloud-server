@@ -9,7 +9,6 @@ import { KeycloakModule } from '@shared/infra/identity-management/keycloak/keycl
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { FilesModule } from '@src/modules/files';
 import { FileRecord } from '@src/modules/files-storage/entity';
-import { H5PEditorModule } from '@src/modules/h5p-editor';
 import { ManagementModule } from '@src/modules/management/management.module';
 import { serverConfig } from '@src/modules/server';
 import { ConsoleModule } from 'nestjs-console';
@@ -21,7 +20,6 @@ import { ServerConsole } from './server.console';
 		ConsoleModule,
 		ConsoleWriterModule,
 		FilesModule,
-		H5PEditorModule,
 		ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 		...((Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean) ? [KeycloakModule] : []),
 		MikroOrmModule.forRoot({

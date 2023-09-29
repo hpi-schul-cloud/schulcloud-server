@@ -1,21 +1,49 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { ContentMetadata } from '@lumieducation/h5p-server/build/src/ContentMetadata';
+import { H5PAjaxEndpoint, H5PEditor, IPlayerModel } from '@lumieducation/h5p-server';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing';
-import { UserService } from '@src/modules';
+import { h5pContentFactory, setupEntities } from '@shared/testing';
+import { AuthorizationContextBuilder, AuthorizationService, ICurrentUser, UserService } from '@src/modules';
 import { Request } from 'express';
 import { Readable } from 'stream';
-import { TemporaryFile } from '../entity/temporary-file.entity';
-import { ContentStorage, H5PAjaxEndpointService, H5PEditorService, H5PPlayerService, LibraryStorage } from '../service';
+import { H5PContentRepo } from '../repo';
+import { ContentStorage, H5PEditorService, H5PPlayerService, LibraryStorage } from '../service';
 import { TemporaryFileStorage } from '../service/temporary-file-storage.service';
 import { H5PEditorUc } from './h5p.uc';
+
+const createParams = () => {
+	const content = h5pContentFactory.build();
+
+	const mockCurrentUser: ICurrentUser = {
+		accountId: 'mockAccountId',
+		roles: ['student'],
+		schoolId: 'mockSchoolId',
+		userId: 'mockUserId',
+	};
+
+	const mockContentParameters: Awaited<ReturnType<H5PEditor['getContent']>> = {
+		h5p: content.metadata,
+		library: content.metadata.mainLibrary,
+		params: {
+			metadata: content.metadata,
+			params: content.content,
+		},
+	};
+
+	const playerResponseMock = expect.objectContaining({
+		contentId: content.id,
+	}) as IPlayerModel;
+
+	return { content, mockCurrentUser, playerResponseMock, mockContentParameters };
+};
 
 describe('H5P Files', () => {
 	let module: TestingModule;
 	let uc: H5PEditorUc;
-	let contentStorage: DeepMocked<ContentStorage>;
 	let libraryStorage: DeepMocked<LibraryStorage>;
-	let temporaryStorage: DeepMocked<TemporaryFileStorage>;
+	let ajaxEndpointService: DeepMocked<H5PAjaxEndpoint>;
+	let h5pContentRepo: DeepMocked<H5PContentRepo>;
+	let authorizationService: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -23,7 +51,10 @@ describe('H5P Files', () => {
 				H5PEditorUc,
 				H5PEditorService,
 				H5PPlayerService,
-				H5PAjaxEndpointService,
+				{
+					provide: H5PAjaxEndpoint,
+					useValue: createMock<H5PAjaxEndpoint>(),
+				},
 				{
 					provide: ContentStorage,
 					useValue: createMock<ContentStorage>(),
@@ -40,13 +71,22 @@ describe('H5P Files', () => {
 					provide: UserService,
 					useValue: createMock<UserService>(),
 				},
+				{
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
+				},
+				{
+					provide: H5PContentRepo,
+					useValue: createMock<H5PContentRepo>(),
+				},
 			],
 		}).compile();
 
 		uc = module.get(H5PEditorUc);
-		contentStorage = module.get(ContentStorage);
 		libraryStorage = module.get(LibraryStorage);
-		temporaryStorage = module.get(TemporaryFileStorage);
+		ajaxEndpointService = module.get(H5PAjaxEndpoint);
+		h5pContentRepo = module.get(H5PContentRepo);
+		authorizationService = module.get(AuthorizationService);
 		await setupEntities();
 	});
 
@@ -58,290 +98,491 @@ describe('H5P Files', () => {
 		await module.close();
 	});
 
-	describe('when getting content parameters', () => {
-		const userMock = { userId: 'dummyId', roles: [], schoolId: 'dummySchool', accountId: 'dummyAccountId' };
+	describe('getContentParameters is called', () => {
+		describe('WHEN user is authorized and service executes successfully', () => {
+			const setup = () => {
+				const { content, mockCurrentUser, mockContentParameters } = createParams();
 
-		it('should call ContentStorage and return the result', async () => {
-			const dummyMetadata = new ContentMetadata();
-			const dummyParams = { name: 'Dummy' };
+				ajaxEndpointService.getContentParameters.mockResolvedValueOnce(mockContentParameters);
+				h5pContentRepo.findById.mockResolvedValueOnce(content);
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
 
-			contentStorage.getMetadata.mockResolvedValueOnce(dummyMetadata);
-			contentStorage.getParameters.mockResolvedValueOnce(dummyParams);
+				return { content, mockCurrentUser, mockContentParameters };
+			};
 
-			const result = await uc.getContentParameters('dummylib-1.0', userMock);
+			it('should call authorizationService.checkPermissionByReferences', async () => {
+				const { content, mockCurrentUser } = setup();
 
-			expect(result).toEqual({
-				h5p: dummyMetadata,
-				params: { metadata: dummyMetadata, params: dummyParams },
+				await uc.getContentParameters(content.id, mockCurrentUser);
+
+				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
+					mockCurrentUser.userId,
+					content.parentType,
+					content.parentId,
+					AuthorizationContextBuilder.read([])
+				);
+			});
+
+			it('should call service with correct params', async () => {
+				const { content, mockCurrentUser } = setup();
+
+				await uc.getContentParameters(content.id, mockCurrentUser);
+
+				expect(ajaxEndpointService.getContentParameters).toHaveBeenCalledWith(
+					content.id,
+					expect.objectContaining({
+						id: mockCurrentUser.userId,
+					})
+				);
+			});
+
+			it('should return results of service', async () => {
+				const { mockCurrentUser, content, mockContentParameters } = setup();
+
+				const result = await uc.getContentParameters(content.id, mockCurrentUser);
+
+				expect(result).toEqual(mockContentParameters);
 			});
 		});
 
-		it('should throw an error if the content does not exist', async () => {
-			contentStorage.getMetadata.mockRejectedValueOnce(new Error('Could not get Metadata'));
-			contentStorage.getParameters.mockRejectedValueOnce(new Error('Could not get Parameters'));
+		describe('WHEN content does not exist', () => {
+			const setup = () => {
+				const { content, mockCurrentUser } = createParams();
 
-			const result = uc.getContentParameters('dummylib-1.0', userMock);
+				h5pContentRepo.findById.mockRejectedValueOnce(new NotFoundException());
 
-			await expect(result).rejects.toThrow();
+				return { content, mockCurrentUser };
+			};
+
+			it('should throw NotFoundException', async () => {
+				const { mockCurrentUser, content } = setup();
+
+				const getContentParametersPromise = uc.getContentParameters(content.id, mockCurrentUser);
+
+				await expect(getContentParametersPromise).rejects.toThrow(new NotFoundException());
+			});
+		});
+
+		describe('WHEN user is not authorized', () => {
+			const setup = () => {
+				const { content, mockCurrentUser } = createParams();
+
+				h5pContentRepo.findById.mockResolvedValueOnce(content);
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+
+				return { content, mockCurrentUser };
+			};
+
+			it('should throw forbidden error', async () => {
+				const { mockCurrentUser, content } = setup();
+
+				const getContentParametersPromise = uc.getContentParameters(content.id, mockCurrentUser);
+
+				await expect(getContentParametersPromise).rejects.toThrow(new ForbiddenException());
+			});
+		});
+
+		describe('WHEN service throws error', () => {
+			const setup = () => {
+				const { content, mockCurrentUser } = createParams();
+
+				h5pContentRepo.findById.mockResolvedValueOnce(content);
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				ajaxEndpointService.getContentParameters.mockRejectedValueOnce(new Error('test'));
+
+				return { content, mockCurrentUser };
+			};
+
+			it('should return NotFoundException', async () => {
+				const { mockCurrentUser, content } = setup();
+
+				const getContentParametersPromise = uc.getContentParameters(content.id, mockCurrentUser);
+
+				await expect(getContentParametersPromise).rejects.toThrow(new NotFoundException());
+			});
 		});
 	});
 
-	describe('when getting content file', () => {
-		const setup = (
-			contentId: string,
-			filename: string,
-			content: string,
-			rangeCallbackReturnValue?: { start: number; end: number }[] | -1 | -2
-		) => {
-			const fileDate = new Date();
+	describe('getContentFile is called', () => {
+		describe('WHEN user is authorized and service executes successfully', () => {
+			const setup = () => {
+				const { content, mockCurrentUser, mockContentParameters } = createParams();
 
-			const readableContent = Readable.from(content);
-			const contentLength = content.length;
+				const fileResponseMock = createMock<Awaited<ReturnType<H5PAjaxEndpoint['getContentFile']>>>();
+				const requestMock = createMock<Request>({
+					range: () => undefined,
+				});
+				// Mock partial implementation so that range callback gets called
+				ajaxEndpointService.getContentFile.mockImplementationOnce((contentId, filename, user, rangeCallback) => {
+					rangeCallback?.(100);
+					return Promise.resolve(fileResponseMock);
+				});
 
-			let contentRange: { start: number; end: number } | undefined;
-			if (rangeCallbackReturnValue && rangeCallbackReturnValue !== -1 && rangeCallbackReturnValue !== -2) {
-				contentRange = rangeCallbackReturnValue[0];
-			}
+				h5pContentRepo.findById.mockResolvedValueOnce(content);
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
 
-			contentStorage.getFileStats.mockResolvedValueOnce({ birthtime: fileDate, size: contentLength });
-			contentStorage.getFileStream.mockResolvedValueOnce(readableContent);
+				const filename = 'test/file.txt';
 
-			const requestMock = {
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				range: (size: number) => rangeCallbackReturnValue,
-			} as Request;
+				return { content, filename, fileResponseMock, requestMock, mockCurrentUser, mockContentParameters };
+			};
 
-			const userMock = { userId: 'dummyId', roles: [], schoolId: 'dummySchool', accountId: 'dummyAccountId' };
+			it('should call authorizationService.checkPermissionByReferences', async () => {
+				const { content, filename, requestMock, mockCurrentUser } = setup();
 
-			return { contentId, filename, requestMock, contentRange, contentLength, readableContent, userMock };
-		};
+				await uc.getContentFile(content.id, filename, requestMock, mockCurrentUser);
 
-		it('should call ContentStorage and return the result', async () => {
-			const { contentId, filename, requestMock, contentLength, contentRange, readableContent, userMock } = setup(
-				'DummyId',
-				'dummy-file.jpg',
-				'File Content'
-			);
-
-			const result = await uc.getContentFile(contentId, filename, requestMock, userMock);
-
-			expect(result).toStrictEqual({
-				data: readableContent,
-				contentType: 'image/jpeg',
-				contentLength,
-				contentRange,
+				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
+					mockCurrentUser.userId,
+					content.parentType,
+					content.parentId,
+					AuthorizationContextBuilder.read([])
+				);
 			});
 
-			expect(contentStorage.getFileStats).toHaveBeenCalledWith(
-				contentId,
-				filename,
-				expect.objectContaining({ id: 'dummyId' })
-			);
-			expect(contentStorage.getFileStream).toHaveBeenCalledWith(
-				contentId,
-				filename,
-				expect.objectContaining({ id: 'dummyId' }),
-				contentRange?.start,
-				contentRange?.end
-			);
-		});
+			it('should call service with correct params', async () => {
+				const { content, mockCurrentUser, filename, requestMock } = setup();
 
-		it('should accept ranges', async () => {
-			const content = 'File Content';
+				await uc.getContentFile(content.id, filename, requestMock, mockCurrentUser);
 
-			const { contentId, filename, requestMock, contentLength, contentRange, readableContent, userMock } = setup(
-				'DummyId',
-				'dummy-file.jpg',
-				content,
-				[{ start: 0, end: content.length }]
-			);
-
-			const result = await uc.getContentFile(contentId, filename, requestMock, userMock);
-
-			expect(result).toStrictEqual({
-				data: readableContent,
-				contentType: 'image/jpeg',
-				contentLength,
-				contentRange,
+				expect(ajaxEndpointService.getContentFile).toHaveBeenCalledWith(
+					content.id,
+					filename,
+					expect.objectContaining({
+						id: mockCurrentUser.userId,
+					}),
+					expect.any(Function)
+				);
 			});
 
-			expect(contentStorage.getFileStats).toHaveBeenCalledWith(
-				contentId,
-				filename,
-				expect.objectContaining({ id: 'dummyId' })
-			);
-			expect(contentStorage.getFileStream).toHaveBeenCalledWith(
-				contentId,
-				filename,
-				expect.objectContaining({ id: 'dummyId' }),
-				contentRange?.start,
-				contentRange?.end
-			);
+			it('should return results of service', async () => {
+				const { mockCurrentUser, fileResponseMock, filename, requestMock, content } = setup();
+
+				const result = await uc.getContentFile(content.id, filename, requestMock, mockCurrentUser);
+
+				expect(result).toEqual({
+					data: fileResponseMock.stream,
+					contentType: fileResponseMock.mimetype,
+					contentLength: fileResponseMock.stats.size,
+					contentRange: fileResponseMock.range,
+				});
+			});
 		});
 
-		it('should fail on invalid ranges', async () => {
-			const { contentId, filename, requestMock, userMock } = setup('DummyId', 'dummy-file.jpg', 'File Content', -2);
-			const result = uc.getContentFile(contentId, filename, requestMock, userMock);
-			await expect(result).rejects.toThrow();
+		describe('WHEN user is authorized and a range is requested', () => {
+			const setup = () => {
+				const { content, mockCurrentUser, mockContentParameters } = createParams();
+
+				const range = { start: 0, end: 100 };
+
+				const requestMock = createMock<Request>({
+					// @ts-expect-error partial types cause error
+					range: () => [range],
+				});
+
+				h5pContentRepo.findById.mockResolvedValueOnce(content);
+				ajaxEndpointService.getContentFile.mockImplementationOnce((contentId, filename, user, rangeCallback) => {
+					const parsedRange = rangeCallback?.(100);
+					if (!parsedRange) throw new Error('no range');
+					return Promise.resolve({
+						range: parsedRange,
+						mimetype: '',
+						stats: { birthtime: new Date(), size: 100 },
+						stream: createMock<Readable>(),
+					});
+				});
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+
+				const filename = 'test/file.txt';
+
+				return { range, content, filename, requestMock, mockCurrentUser, mockContentParameters };
+			};
+
+			it('should return parsed range', async () => {
+				const { mockCurrentUser, range, content, filename, requestMock } = setup();
+
+				const result = await uc.getContentFile(content.id, filename, requestMock, mockCurrentUser);
+
+				expect(result.contentRange).toEqual(range);
+			});
 		});
 
-		it('should fail on unsatisfiable ranges', async () => {
-			const { contentId, filename, requestMock, userMock } = setup('DummyId', 'dummy-file.jpg', 'File Content', -1);
-			const result = uc.getContentFile(contentId, filename, requestMock, userMock);
-			await expect(result).rejects.toThrow();
+		describe('WHEN user is authorized but content range is bad', () => {
+			const setup = (rangeResponse?: { start: number; end: number }[] | -1 | -2) => {
+				const { content, mockCurrentUser, mockContentParameters } = createParams();
+
+				const requestMock = createMock<Request>({
+					// @ts-expect-error partial types cause error
+					range() {
+						return rangeResponse;
+					},
+				});
+
+				h5pContentRepo.findById.mockResolvedValueOnce(content);
+				ajaxEndpointService.getContentFile.mockImplementationOnce((contentId, filename, user, rangeCallback) => {
+					rangeCallback?.(100);
+					return createMock();
+				});
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+
+				const filename = 'test/file.txt';
+
+				return { content, filename, requestMock, mockCurrentUser, mockContentParameters };
+			};
+
+			describe('WHEN content range is invalid', () => {
+				it('should throw NotFoundException', async () => {
+					const { mockCurrentUser, filename, requestMock, content } = setup(-2);
+
+					const getContentFilePromise = uc.getContentFile(content.id, filename, requestMock, mockCurrentUser);
+
+					await expect(getContentFilePromise).rejects.toThrow(NotFoundException);
+				});
+			});
+
+			describe('WHEN content range is unsatisfiable', () => {
+				it('should throw NotFoundException', async () => {
+					const { mockCurrentUser, filename, requestMock, content } = setup(-1);
+
+					const getContentFilePromise = uc.getContentFile(content.id, filename, requestMock, mockCurrentUser);
+
+					await expect(getContentFilePromise).rejects.toThrow(NotFoundException);
+				});
+			});
+
+			describe('WHEN content range is multipart', () => {
+				it('should throw NotFoundException', async () => {
+					const { mockCurrentUser, filename, requestMock, content } = setup([
+						{ start: 0, end: 1 },
+						{ start: 2, end: 3 },
+					]);
+
+					const getContentFilePromise = uc.getContentFile(content.id, filename, requestMock, mockCurrentUser);
+
+					await expect(getContentFilePromise).rejects.toThrow(NotFoundException);
+				});
+			});
 		});
 
-		it('should fail on multipart ranges', async () => {
-			const { contentId, filename, requestMock, userMock } = setup('DummyId', 'dummy-file.jpg', 'File Content', [
-				{ start: 0, end: 5 },
-				{ start: 8, end: 12 },
-			]);
-			const result = uc.getContentFile(contentId, filename, requestMock, userMock);
-			await expect(result).rejects.toThrow();
+		describe('WHEN user is authorized but content does not exist', () => {
+			const setup = () => {
+				const { content, mockCurrentUser, mockContentParameters } = createParams();
+
+				const requestMock = createMock<Request>();
+				const fileResponseMock = createMock<Awaited<ReturnType<H5PAjaxEndpoint['getContentFile']>>>();
+
+				h5pContentRepo.findById.mockRejectedValueOnce(new NotFoundException());
+
+				const filename = 'test/file.txt';
+
+				return { content, filename, fileResponseMock, requestMock, mockCurrentUser, mockContentParameters };
+			};
+
+			it('should return error of service', async () => {
+				const { mockCurrentUser, filename, requestMock, content } = setup();
+
+				const getContentFilePromise = uc.getContentFile(content.id, filename, requestMock, mockCurrentUser);
+
+				await expect(getContentFilePromise).rejects.toThrow(NotFoundException);
+			});
+		});
+
+		describe('WHEN user is authorized but service throws error', () => {
+			const setup = () => {
+				const { content, mockCurrentUser, mockContentParameters } = createParams();
+
+				const requestMock = createMock<Request>();
+				const fileResponseMock = createMock<Awaited<ReturnType<H5PAjaxEndpoint['getContentFile']>>>();
+
+				ajaxEndpointService.getContentFile.mockRejectedValueOnce(new Error('test'));
+				h5pContentRepo.findById.mockResolvedValueOnce(content);
+				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+
+				const filename = 'test/file.txt';
+
+				return { content, filename, fileResponseMock, requestMock, mockCurrentUser, mockContentParameters };
+			};
+
+			it('should return error of service', async () => {
+				const { mockCurrentUser, filename, requestMock, content } = setup();
+
+				const getContentFilePromise = uc.getContentFile(content.id, filename, requestMock, mockCurrentUser);
+
+				await expect(getContentFilePromise).rejects.toThrow(NotFoundException);
+			});
 		});
 	});
 
-	describe('when getting library file', () => {
-		const setup = (ubername: string, filename: string, mimetype: string, content: string) => {
-			const readableContent = Readable.from(content);
-			const contentLength = content.length;
+	describe('getLibraryFile is called', () => {
+		describe('WHEN service executes successfully', () => {
+			const setup = () => {
+				const fileResponseMock = createMock<Awaited<ReturnType<LibraryStorage['getLibraryFile']>>>();
 
-			libraryStorage.getLibraryFile.mockResolvedValueOnce({
-				size: contentLength,
-				mimetype,
-				stream: readableContent,
+				libraryStorage.getLibraryFile.mockResolvedValueOnce(fileResponseMock);
+
+				const ubername = 'H5P.Test-1.0';
+				const filename = 'test/file.txt';
+
+				return { ubername, filename, fileResponseMock };
+			};
+
+			it('should call service with correct params', async () => {
+				const { ubername, filename } = setup();
+
+				await uc.getLibraryFile(ubername, filename);
+
+				expect(libraryStorage.getLibraryFile).toHaveBeenCalledWith(ubername, filename);
 			});
 
-			return { ubername, filename, contentLength, readableContent };
-		};
+			it('should return results of service', async () => {
+				const { ubername, filename, fileResponseMock } = setup();
 
-		it('should call LibraryStorage and return the result', async () => {
-			const { ubername, filename, contentLength, readableContent } = setup(
-				'H5P.Example-1.0',
-				'dummy-file.jpg',
-				'image/jpeg',
-				'File Content'
-			);
+				const result = await uc.getLibraryFile(ubername, filename);
 
-			const result = await uc.getLibraryFile(ubername, filename);
-
-			expect(result).toStrictEqual({
-				data: readableContent,
-				contentType: 'image/jpeg',
-				contentLength,
+				expect(result).toEqual({
+					data: fileResponseMock.stream,
+					contentType: fileResponseMock.mimetype,
+					contentLength: fileResponseMock.size,
+				});
 			});
+		});
 
-			expect(libraryStorage.getLibraryFile).toHaveBeenCalledWith('H5P.Example-1.0', 'dummy-file.jpg');
+		describe('WHEN service throws error', () => {
+			const setup = () => {
+				libraryStorage.getLibraryFile.mockRejectedValueOnce(new Error('test'));
+
+				const ubername = 'H5P.Test-1.0';
+				const filename = 'test/file.txt';
+
+				return { ubername, filename };
+			};
+
+			it('should return NotFoundException', async () => {
+				const { ubername, filename } = setup();
+
+				const getLibraryFilePromise = uc.getLibraryFile(ubername, filename);
+
+				await expect(getLibraryFilePromise).rejects.toThrow(NotFoundException);
+			});
 		});
 	});
 
-	describe('when getting temporary file', () => {
-		const setup = (
-			filename: string,
-			content: string,
-			rangeCallbackReturnValue?: { start: number; end: number }[] | -1 | -2
-		) => {
-			const fileDate = new Date();
+	describe('getTemporaryFile is called', () => {
+		describe('WHEN service executes successfully', () => {
+			const setup = () => {
+				const { content, mockCurrentUser, mockContentParameters } = createParams();
 
-			const readableContent = Readable.from(content);
-			const contentLength = content.length;
+				const requestMock = createMock<Request>();
+				const fileResponseMock = createMock<Awaited<ReturnType<H5PAjaxEndpoint['getTemporaryFile']>>>();
 
-			let contentRange: { start: number; end: number } | undefined;
-			if (rangeCallbackReturnValue && rangeCallbackReturnValue !== -1 && rangeCallbackReturnValue !== -2) {
-				contentRange = rangeCallbackReturnValue[0];
-			}
+				ajaxEndpointService.getTemporaryFile.mockResolvedValueOnce(fileResponseMock);
 
-			const tempFile = new TemporaryFile({
-				filename,
-				ownedByUserId: 'dummyId',
-				expiresAt: fileDate,
-				birthtime: fileDate,
-				size: contentLength,
+				const filename = 'test/file.txt';
+
+				return { content, filename, fileResponseMock, requestMock, mockCurrentUser, mockContentParameters };
+			};
+
+			it('should call service with correct params', async () => {
+				const { mockCurrentUser, filename, requestMock } = setup();
+
+				await uc.getTemporaryFile(filename, requestMock, mockCurrentUser);
+
+				expect(ajaxEndpointService.getTemporaryFile).toHaveBeenCalledWith(
+					filename,
+					expect.objectContaining({
+						id: mockCurrentUser.userId,
+					}),
+					expect.any(Function)
+				);
 			});
 
-			temporaryStorage.getFileStats.mockResolvedValueOnce(tempFile);
-			temporaryStorage.getFileStream.mockResolvedValueOnce(readableContent);
+			it('should return results of service', async () => {
+				const { mockCurrentUser, fileResponseMock, filename, requestMock } = setup();
 
-			const requestMock = {
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				range: (size: number) => rangeCallbackReturnValue,
-			} as Request;
+				const result = await uc.getTemporaryFile(filename, requestMock, mockCurrentUser);
 
-			const userMock = { userId: 'dummyId', roles: [], schoolId: 'dummySchool', accountId: 'dummyAccountId' };
+				expect(result).toEqual({
+					data: fileResponseMock.stream,
+					contentType: fileResponseMock.mimetype,
+					contentLength: fileResponseMock.stats.size,
+					contentRange: fileResponseMock.range,
+				});
+			});
+		});
 
-			return { filename, requestMock, contentRange, contentLength, readableContent, userMock };
-		};
+		describe('WHEN content range is bad', () => {
+			const setup = (rangeResponse?: { start: number; end: number }[] | -1 | -2) => {
+				const { content, mockCurrentUser, mockContentParameters } = createParams();
 
-		it('should call ContentStorage and return the result', async () => {
-			const { filename, requestMock, contentLength, contentRange, readableContent, userMock } = setup(
-				'dummy-file.jpg',
-				'File Content'
-			);
+				const requestMock = createMock<Request>({
+					// @ts-expect-error partial types cause error
+					range() {
+						return rangeResponse;
+					},
+				});
 
-			const result = await uc.getTemporaryFile(filename, requestMock, userMock);
+				ajaxEndpointService.getTemporaryFile.mockImplementationOnce((filename, user, rangeCallback) => {
+					rangeCallback?.(100);
+					return createMock();
+				});
+				const filename = 'test/file.txt';
 
-			expect(result).toStrictEqual({
-				data: readableContent,
-				contentType: 'image/jpeg',
-				contentLength,
-				contentRange,
+				return { content, filename, requestMock, mockCurrentUser, mockContentParameters };
+			};
+
+			describe('WHEN content range is invalid', () => {
+				it('should throw NotFoundException', async () => {
+					const { mockCurrentUser, filename, requestMock } = setup(-2);
+
+					const getTemporaryFilePromise = uc.getTemporaryFile(filename, requestMock, mockCurrentUser);
+
+					await expect(getTemporaryFilePromise).rejects.toThrow(NotFoundException);
+				});
 			});
 
-			expect(temporaryStorage.getFileStats).toHaveBeenCalledWith(filename, expect.objectContaining({ id: 'dummyId' }));
-			expect(temporaryStorage.getFileStream).toHaveBeenCalledWith(
-				filename,
-				expect.objectContaining({ id: 'dummyId' }),
-				contentRange?.start,
-				contentRange?.end
-			);
-		});
+			describe('WHEN content range is unsatisfiable', () => {
+				it('should throw NotFoundException', async () => {
+					const { mockCurrentUser, filename, requestMock } = setup(-1);
 
-		it('should accept ranges', async () => {
-			const content = 'File Content';
+					const getTemporaryFilePromise = uc.getTemporaryFile(filename, requestMock, mockCurrentUser);
 
-			const { filename, requestMock, contentLength, contentRange, readableContent, userMock } = setup(
-				'dummy-file.jpg',
-				content,
-				[{ start: 0, end: content.length }]
-			);
-
-			const result = await uc.getTemporaryFile(filename, requestMock, userMock);
-
-			expect(result).toStrictEqual({
-				data: readableContent,
-				contentType: 'image/jpeg',
-				contentLength,
-				contentRange,
+					await expect(getTemporaryFilePromise).rejects.toThrow(NotFoundException);
+				});
 			});
 
-			expect(temporaryStorage.getFileStats).toHaveBeenCalledWith(filename, expect.objectContaining({ id: 'dummyId' }));
-			expect(temporaryStorage.getFileStream).toHaveBeenCalledWith(
-				filename,
-				expect.objectContaining({ id: 'dummyId' }),
-				contentRange?.start,
-				contentRange?.end
-			);
+			describe('WHEN content range is multipart', () => {
+				it('should throw NotFoundException', async () => {
+					const { mockCurrentUser, filename, requestMock } = setup([
+						{ start: 0, end: 1 },
+						{ start: 2, end: 3 },
+					]);
+
+					const getTemporaryFilePromise = uc.getTemporaryFile(filename, requestMock, mockCurrentUser);
+
+					await expect(getTemporaryFilePromise).rejects.toThrow(NotFoundException);
+				});
+			});
 		});
 
-		it('should fail on invalid ranges', async () => {
-			const { filename, requestMock, userMock } = setup('dummy-file.jpg', 'File Content', -2);
-			const result = uc.getTemporaryFile(filename, requestMock, userMock);
-			await expect(result).rejects.toThrow();
-		});
+		describe('WHEN service throws error', () => {
+			const setup = () => {
+				const { content, mockCurrentUser, mockContentParameters } = createParams();
 
-		it('should fail on unsatisfiable ranges', async () => {
-			const { filename, requestMock, userMock } = setup('dummy-file.jpg', 'File Content', -2);
-			const result = uc.getTemporaryFile(filename, requestMock, userMock);
-			await expect(result).rejects.toThrow();
-		});
+				const requestMock = createMock<Request>();
 
-		it('should fail on multipart ranges', async () => {
-			const { filename, requestMock, userMock } = setup('dummy-file.jpg', 'File Content', [
-				{ start: 0, end: 5 },
-				{ start: 8, end: 12 },
-			]);
-			const result = uc.getTemporaryFile(filename, requestMock, userMock);
-			await expect(result).rejects.toThrow();
+				ajaxEndpointService.getTemporaryFile.mockRejectedValueOnce(new Error('test'));
+
+				const filename = 'test/file.txt';
+
+				return { content, filename, requestMock, mockCurrentUser, mockContentParameters };
+			};
+
+			it('should return error of service', async () => {
+				const { mockCurrentUser, filename, requestMock } = setup();
+
+				const getTemporaryFilePromise = uc.getTemporaryFile(filename, requestMock, mockCurrentUser);
+
+				await expect(getTemporaryFilePromise).rejects.toThrow(NotFoundException);
+			});
 		});
 	});
 });

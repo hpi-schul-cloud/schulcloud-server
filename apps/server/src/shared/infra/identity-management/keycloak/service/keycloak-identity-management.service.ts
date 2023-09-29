@@ -1,7 +1,7 @@
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
-import { Counted, IAccount, IAccountUpdate } from '@shared/domain';
+import { Counted, IdmAccount, IdmAccountUpdate } from '@shared/domain';
 import { IdentityManagementService, SearchOptions } from '../../identity-management.service';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 
@@ -11,7 +11,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 		super();
 	}
 
-	async createAccount(account: IAccount, password?: string): Promise<string> {
+	async createAccount(account: IdmAccount, password?: string): Promise<string> {
 		const kc = await this.kcAdminClient.callKcAdminClient();
 		const id = await kc.users.create({
 			username: account.username,
@@ -20,9 +20,9 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 			lastName: account.lastName,
 			enabled: true,
 			attributes: {
-				refTechnicalId: account.attRefTechnicalId,
-				refFunctionalIntId: account.attRefFunctionalIntId,
-				refFunctionalExtId: account.attRefFunctionalExtId,
+				dbcAccountId: account.attDbcAccountId,
+				dbcUserId: account.attDbcUserId,
+				dbcSystemId: account.attDbcSystemId,
 			},
 		});
 		if (id && password) {
@@ -43,7 +43,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 		return id.id;
 	}
 
-	async updateAccount(id: string, account: IAccountUpdate): Promise<string> {
+	async updateAccount(id: string, account: IdmAccountUpdate): Promise<string> {
 		await (
 			await this.kcAdminClient.callKcAdminClient()
 		).users.update(
@@ -73,7 +73,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 		return id;
 	}
 
-	async findAccountById(id: string): Promise<IAccount> {
+	async findAccountById(id: string): Promise<IdmAccount> {
 		const keycloakUser = await (await this.kcAdminClient.callKcAdminClient()).users.findOne({ id });
 		if (!keycloakUser) {
 			throw new Error(`Account '${id}' not found`);
@@ -81,36 +81,36 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 		return this.extractAccount(keycloakUser);
 	}
 
-	async findAccountByTecRefId(accountTecRefId: string): Promise<IAccount> {
+	async findAccountByDbcAccountId(accountDbcAccountId: string): Promise<IdmAccount> {
 		const keycloakUsers = await (
 			await this.kcAdminClient.callKcAdminClient()
-		).users.find({ q: `refTechnicalId:${accountTecRefId} }` });
+		).users.find({ q: `dbcAccountId:${accountDbcAccountId} }` });
 		if (keycloakUsers.length > 1) {
 			throw new Error('Multiple accounts for the same id!');
 		}
 		if (keycloakUsers.length === 0) {
-			throw new Error(`Account '${accountTecRefId}' not found`);
+			throw new Error(`Account '${accountDbcAccountId}' not found`);
 		}
 
 		return this.extractAccount(keycloakUsers[0]);
 	}
 
-	async findAccountByFctIntId(accountFctIntId: string): Promise<IAccount> {
+	async findAccountByDbcUserId(accountDbcUserId: string): Promise<IdmAccount> {
 		const keycloakUsers = await (
 			await this.kcAdminClient.callKcAdminClient()
-		).users.find({ q: `refFunctionalIntId:${accountFctIntId} }` });
+		).users.find({ q: `dbcUserId:${accountDbcUserId} }` });
 
 		if (keycloakUsers.length > 1) {
 			throw new Error('Multiple accounts for the same id!');
 		}
 		if (keycloakUsers.length === 0) {
-			throw new Error(`Account '${accountFctIntId}' not found`);
+			throw new Error(`Account '${accountDbcUserId}' not found`);
 		}
 
 		return this.extractAccount(keycloakUsers[0]);
 	}
 
-	async findAccountsByUsername(username: string, options?: SearchOptions): Promise<Counted<IAccount[]>> {
+	async findAccountsByUsername(username: string, options?: SearchOptions): Promise<Counted<IdmAccount[]>> {
 		const kc = await this.kcAdminClient.callKcAdminClient();
 		const total = await kc.users.count({ username });
 		const results = await kc.users.find({
@@ -123,7 +123,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 		return [accounts, total];
 	}
 
-	async getAllAccounts(): Promise<IAccount[]> {
+	async getAllAccounts(): Promise<IdmAccount[]> {
 		const keycloakUsers = await (await this.kcAdminClient.callKcAdminClient()).users.find();
 		return keycloakUsers.map((user: UserRepresentation) => this.extractAccount(user));
 	}
@@ -167,8 +167,8 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 		await kc.users.update({ id: userId }, user);
 	}
 
-	private extractAccount(user: UserRepresentation): IAccount {
-		const ret: IAccount = {
+	private extractAccount(user: UserRepresentation): IdmAccount {
+		const ret: IdmAccount = {
 			id: user.id ?? '',
 			username: user.username,
 			email: user.email,
@@ -176,9 +176,9 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 			lastName: user.lastName,
 			createdDate: user.createdTimestamp ? new Date(user.createdTimestamp) : undefined,
 		};
-		ret.attRefFunctionalExtId = this.extractAttributeValue(user.attributes?.refFunctionalExtId);
-		ret.attRefFunctionalIntId = this.extractAttributeValue(user.attributes?.refFunctionalIntId);
-		ret.attRefTechnicalId = this.extractAttributeValue(user.attributes?.refTechnicalId);
+		ret.attDbcSystemId = this.extractAttributeValue(user.attributes?.dbcSystemId);
+		ret.attDbcUserId = this.extractAttributeValue(user.attributes?.dbcUserId);
+		ret.attDbcAccountId = this.extractAttributeValue(user.attributes?.dbcAccountId);
 
 		return ret;
 	}

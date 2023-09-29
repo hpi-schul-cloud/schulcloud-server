@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ToolConfigType } from '../../../../../common/interface';
+import { ToolConfigType } from '../../../../../common/enum';
 import { ExternalToolConfigResponse } from './external-tool-config.response';
 
 export class BasicToolConfigResponse extends ExternalToolConfigResponse {

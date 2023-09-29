@@ -1,33 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import {
-	ContextExternalToolDO,
-	Course,
-	CustomParameterDO,
-	CustomParameterEntryDO,
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	EntityId,
-	ExternalToolDO,
-	SchoolDO,
-	SchoolExternalToolDO,
-} from '@shared/domain';
+import { Course, EntityId, SchoolDO } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
 import { SchoolService } from '@src/modules/school';
 import { URLSearchParams } from 'url';
-import { ToolContextType } from '../../../common/interface';
+import {
+	CustomParameterLocation,
+	CustomParameterScope,
+	CustomParameterType,
+	ToolContextType,
+} from '../../../common/enum';
 import { MissingToolParameterValueLoggableException, ParameterTypeNotImplementedLoggableException } from '../../error';
 import { ToolLaunchMapper } from '../../mapper';
 import { LaunchRequestMethod, PropertyData, PropertyLocation, ToolLaunchData, ToolLaunchRequest } from '../../types';
 import { IToolLaunchParams } from './tool-launch-params.interface';
 import { IToolLaunchStrategy } from './tool-launch-strategy.interface';
+import { SchoolExternalTool } from '../../../school-external-tool/domain';
+import { CustomParameter, CustomParameterEntry } from '../../../common/domain';
+import { ContextExternalTool } from '../../../context-external-tool/domain';
+import { ExternalTool } from '../../../external-tool/domain';
 
 @Injectable()
 export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 	constructor(private readonly schoolService: SchoolService, private readonly courseRepo: CourseRepo) {}
 
 	public async createLaunchData(userId: EntityId, data: IToolLaunchParams): Promise<ToolLaunchData> {
-		const launchData: ToolLaunchData = this.buildToolLaunchDataFromExternalTool(data.externalToolDO);
+		const launchData: ToolLaunchData = this.buildToolLaunchDataFromExternalTool(data.externalTool);
 
 		const launchDataProperties: PropertyData[] = await this.buildToolLaunchDataFromTools(data);
 		const additionalLaunchDataProperties: PropertyData[] = await this.buildToolLaunchDataFromConcreteConfig(
@@ -114,12 +111,12 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 		url.pathname = filledPathParams.join('/');
 	}
 
-	private buildToolLaunchDataFromExternalTool(externalToolDO: ExternalToolDO): ToolLaunchData {
+	private buildToolLaunchDataFromExternalTool(externalTool: ExternalTool): ToolLaunchData {
 		const launchData = new ToolLaunchData({
-			baseUrl: externalToolDO.config.baseUrl,
-			type: ToolLaunchMapper.mapToToolLaunchDataType(externalToolDO.config.type),
+			baseUrl: externalTool.config.baseUrl,
+			type: ToolLaunchMapper.mapToToolLaunchDataType(externalTool.config.type),
 			properties: [],
-			openNewTab: externalToolDO.openNewTab,
+			openNewTab: externalTool.openNewTab,
 		});
 
 		return launchData;
@@ -127,41 +124,41 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 
 	private async buildToolLaunchDataFromTools(data: IToolLaunchParams): Promise<PropertyData[]> {
 		const propertyData: PropertyData[] = [];
-		const { externalToolDO, schoolExternalToolDO, contextExternalToolDO } = data;
-		const customParameters = externalToolDO.parameters || [];
+		const { externalTool, schoolExternalTool, contextExternalTool } = data;
+		const customParameters = externalTool.parameters || [];
 
-		const scopes: { scope: CustomParameterScope; params: CustomParameterEntryDO[] }[] = [
+		const scopes: { scope: CustomParameterScope; params: CustomParameterEntry[] }[] = [
 			{ scope: CustomParameterScope.GLOBAL, params: customParameters },
-			{ scope: CustomParameterScope.SCHOOL, params: schoolExternalToolDO.parameters || [] },
-			{ scope: CustomParameterScope.CONTEXT, params: contextExternalToolDO.parameters || [] },
+			{ scope: CustomParameterScope.SCHOOL, params: schoolExternalTool.parameters || [] },
+			{ scope: CustomParameterScope.CONTEXT, params: contextExternalTool.parameters || [] },
 		];
 
-		await this.addParameters(propertyData, customParameters, scopes, schoolExternalToolDO, contextExternalToolDO);
+		await this.addParameters(propertyData, customParameters, scopes, schoolExternalTool, contextExternalTool);
 
 		return propertyData;
 	}
 
 	private async addParameters(
 		propertyData: PropertyData[],
-		customParameterDOs: CustomParameterDO[],
-		scopes: { scope: CustomParameterScope; params: CustomParameterEntryDO[] }[],
-		schoolExternalToolDO: SchoolExternalToolDO,
-		contextExternalToolDO: ContextExternalToolDO
+		customParameterDOs: CustomParameter[],
+		scopes: { scope: CustomParameterScope; params: CustomParameterEntry[] }[],
+		schoolExternalTool: SchoolExternalTool,
+		contextExternalTool: ContextExternalTool
 	): Promise<void> {
 		await Promise.all(
 			scopes.map(async ({ scope, params }): Promise<void> => {
-				const parameterNames: string[] = params.map((parameter: CustomParameterEntryDO) => parameter.name);
+				const parameterNames: string[] = params.map((parameter: CustomParameterEntry) => parameter.name);
 
-				const parametersToInclude: CustomParameterDO[] = customParameterDOs.filter(
-					(parameter: CustomParameterDO) => parameter.scope === scope && parameterNames.includes(parameter.name)
+				const parametersToInclude: CustomParameter[] = customParameterDOs.filter(
+					(parameter: CustomParameter) => parameter.scope === scope && parameterNames.includes(parameter.name)
 				);
 
 				await this.handleParametersToInclude(
 					propertyData,
 					parametersToInclude,
 					params,
-					schoolExternalToolDO,
-					contextExternalToolDO
+					schoolExternalTool,
+					contextExternalTool
 				);
 			})
 		);
@@ -169,24 +166,24 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 
 	private async handleParametersToInclude(
 		propertyData: PropertyData[],
-		parametersToInclude: CustomParameterDO[],
-		params: CustomParameterEntryDO[],
-		schoolExternalToolDO: SchoolExternalToolDO,
-		contextExternalToolDO: ContextExternalToolDO
+		parametersToInclude: CustomParameter[],
+		params: CustomParameterEntry[],
+		schoolExternalTool: SchoolExternalTool,
+		contextExternalTool: ContextExternalTool
 	): Promise<void> {
-		const missingParameters: CustomParameterDO[] = [];
+		const missingParameters: CustomParameter[] = [];
 
 		await Promise.all(
 			parametersToInclude.map(async (parameter): Promise<void> => {
-				const matchingParameter: CustomParameterEntryDO | undefined = params.find(
-					(param: CustomParameterEntryDO) => param.name === parameter.name
+				const matchingParameter: CustomParameterEntry | undefined = params.find(
+					(param: CustomParameterEntry) => param.name === parameter.name
 				);
 
 				const value: string | undefined = await this.getParameterValue(
 					parameter,
 					matchingParameter,
-					schoolExternalToolDO,
-					contextExternalToolDO
+					schoolExternalTool,
+					contextExternalTool
 				);
 
 				if (value !== undefined) {
@@ -200,36 +197,36 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 		);
 
 		if (missingParameters.length > 0) {
-			throw new MissingToolParameterValueLoggableException(contextExternalToolDO, missingParameters);
+			throw new MissingToolParameterValueLoggableException(contextExternalTool, missingParameters);
 		}
 	}
 
 	private async getParameterValue(
-		customParameter: CustomParameterDO,
-		matchingParameterEntry: CustomParameterEntryDO | undefined,
-		schoolExternalToolDO: SchoolExternalToolDO,
-		contextExternalToolDO: ContextExternalToolDO
+		customParameter: CustomParameter,
+		matchingParameterEntry: CustomParameterEntry | undefined,
+		schoolExternalTool: SchoolExternalTool,
+		contextExternalTool: ContextExternalTool
 	): Promise<string | undefined> {
 		switch (customParameter.type) {
 			case CustomParameterType.AUTO_SCHOOLID: {
-				return schoolExternalToolDO.schoolId;
+				return schoolExternalTool.schoolId;
 			}
 			case CustomParameterType.AUTO_CONTEXTID: {
-				return contextExternalToolDO.contextRef.id;
+				return contextExternalTool.contextRef.id;
 			}
 			case CustomParameterType.AUTO_CONTEXTNAME: {
-				if (contextExternalToolDO.contextRef.type === ToolContextType.COURSE) {
-					const course: Course = await this.courseRepo.findById(contextExternalToolDO.contextRef.id);
+				if (contextExternalTool.contextRef.type === ToolContextType.COURSE) {
+					const course: Course = await this.courseRepo.findById(contextExternalTool.contextRef.id);
 
 					return course.name;
 				}
 
 				throw new ParameterTypeNotImplementedLoggableException(
-					`${customParameter.type}/${contextExternalToolDO.contextRef.type as string}`
+					`${customParameter.type}/${contextExternalTool.contextRef.type as string}`
 				);
 			}
 			case CustomParameterType.AUTO_SCHOOLNUMBER: {
-				const school: SchoolDO = await this.schoolService.getSchoolById(schoolExternalToolDO.schoolId);
+				const school: SchoolDO = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
 
 				return school.officialSchoolNumber;
 			}

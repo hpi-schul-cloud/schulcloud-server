@@ -1,9 +1,11 @@
-import { ContextExternalToolDO, ExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
+import { ExternalTool } from '../../../external-tool/domain';
+import { SchoolExternalTool } from '../../../school-external-tool/domain';
+import { ContextExternalTool } from '../../../context-external-tool/domain';
 
 export interface IToolLaunchParams {
-	externalToolDO: ExternalToolDO;
+	externalTool: ExternalTool;
 
-	schoolExternalToolDO: SchoolExternalToolDO;
+	schoolExternalTool: SchoolExternalTool;
 
-	contextExternalToolDO: ContextExternalToolDO;
+	contextExternalTool: ContextExternalTool;
 }

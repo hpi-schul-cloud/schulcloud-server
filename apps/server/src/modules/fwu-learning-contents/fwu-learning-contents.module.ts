@@ -1,46 +1,19 @@
-import { S3Client } from '@aws-sdk/client-s3';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { HttpModule } from '@nestjs/axios';
-import { Module, NotFoundException, Scope } from '@nestjs/common';
+import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Account, Role, School, SchoolYear, System, User } from '@shared/domain';
+import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq';
+import { S3ClientModule } from '@shared/infra/s3-client';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { AuthorizationModule } from '@src/modules/authorization';
-import { S3ClientAdapter } from '../files-storage/client/s3-client.adapter';
+import { AuthenticationModule } from '../authentication/authentication.module';
 import { FwuLearningContentsController } from './controller/fwu-learning-contents.controller';
 import { config, s3Config } from './fwu-learning-contents.config';
-import { S3Config } from './interface/config';
 import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';
-import { FilesStorageAMQPModule } from '../files-storage/files-storage-amqp.module';
-
-const providers = [
-	{
-		provide: 'S3_Client',
-		scope: Scope.REQUEST,
-		useFactory: (configProvider: S3Config) =>
-			new S3Client({
-				region: configProvider.region,
-				credentials: {
-					accessKeyId: configProvider.accessKeyId,
-					secretAccessKey: configProvider.secretAccessKey,
-				},
-				endpoint: configProvider.endpoint,
-				forcePathStyle: true,
-				tls: true,
-			}),
-		inject: ['S3_Config'],
-	},
-	{
-		provide: 'S3_Config',
-		useValue: s3Config,
-	},
-	FwuLearningContentsUc,
-	S3ClientAdapter,
-];
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -55,7 +28,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		CoreModule,
 		LoggerModule,
 		HttpModule,
-		FilesStorageAMQPModule,
+		RabbitMQWrapperModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
@@ -68,8 +41,9 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			// debug: true, // use it for locally debugging of querys
 		}),
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
+		S3ClientModule.register([s3Config]),
 	],
 	controllers: [FwuLearningContentsController],
-	providers,
+	providers: [FwuLearningContentsUc],
 })
 export class FwuLearningContentsModule {}

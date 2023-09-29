@@ -1,19 +1,19 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { HttpService } from '@nestjs/axios';
+import { Inject, InternalServerErrorException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { OauthConfig } from '@shared/domain';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { LtiToolRepo } from '@shared/repo';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { Inject, InternalServerErrorException } from '@nestjs/common';
-import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import QueryString from 'qs';
-import { HttpService } from '@nestjs/axios';
-import { nanoid } from 'nanoid';
-import { firstValueFrom, Observable } from 'rxjs';
-import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
-import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
+import { LtiToolRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
+import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
+import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
+import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { nanoid } from 'nanoid';
+import QueryString from 'qs';
+import { Observable, firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class HydraSsoService {
@@ -42,7 +42,12 @@ export class HydraSsoService {
 
 	async processRedirect(dto: HydraRedirectDto): Promise<HydraRedirectDto> {
 		const localDto: HydraRedirectDto = new HydraRedirectDto(dto);
-		let { location } = localDto.response.headers;
+		let location = '';
+
+		if (typeof localDto.response.headers.location === 'string') {
+			({ location } = localDto.response.headers);
+		}
+
 		const isLocal = !location.startsWith('http');
 		const isHydra = location.startsWith(Configuration.get('HYDRA_PUBLIC_URI') as string);
 

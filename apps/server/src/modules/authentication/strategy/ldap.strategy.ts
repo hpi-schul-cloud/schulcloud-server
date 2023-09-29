@@ -98,7 +98,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 			account = await this.authenticationService.loadAccount(`${externalSchoolId}/${username}`.toLowerCase(), systemId);
 		} catch (err: unknown) {
 			if (school.previousExternalId) {
-				this.logger.log(
+				this.logger.info(
 					new ErrorLoggable(
 						new Error(
 							`Could not find LDAP account with externalSchoolId ${externalSchoolId} for user ${username}. Trying to use the previousExternalId ${school.previousExternalId} next...`

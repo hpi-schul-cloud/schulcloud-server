@@ -1,5 +1,6 @@
-import { IsOptional, IsMongoId, IsString, Matches, IsNotEmpty, IsBoolean, IsDate } from 'class-validator';
+import { PrivacyProtect } from '@shared/controller';
 import { EntityId } from '@shared/domain';
+import { IsBoolean, IsDate, IsMongoId, IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
 import { passwordPattern } from '../../controller/dto/password-pattern';
 
 export class AccountSaveDto {
@@ -19,6 +20,7 @@ export class AccountSaveDto {
 	@IsNotEmpty()
 	username: string;
 
+	@PrivacyProtect()
 	@IsOptional()
 	@Matches(passwordPattern)
 	password?: string;

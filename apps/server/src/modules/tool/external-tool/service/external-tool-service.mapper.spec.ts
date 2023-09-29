@@ -1,9 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Oauth2ToolConfigDO } from '@shared/domain/domainobject/tool';
-import { ToolConfigType } from '@shared/domain';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
-import { TokenEndpointAuthMethod } from '../../common/interface';
+import { TokenEndpointAuthMethod, ToolConfigType } from '../../common/enum';
+import { Oauth2ToolConfig } from '../domain';
 
 describe('ExternalToolServiceMapper', () => {
 	let module: TestingModule;
@@ -24,7 +23,7 @@ describe('ExternalToolServiceMapper', () => {
 	describe('mapDoToProviderOauthClient', () => {
 		it('should map an Oauth2ToolConfigDO to a ProviderOauthClient', () => {
 			const toolName = 'toolName';
-			const oauth2Config: Oauth2ToolConfigDO = new Oauth2ToolConfigDO({
+			const oauth2Config: Oauth2ToolConfig = new Oauth2ToolConfig({
 				type: ToolConfigType.OAUTH2,
 				baseUrl: 'baseUrl',
 				clientId: 'clientId',

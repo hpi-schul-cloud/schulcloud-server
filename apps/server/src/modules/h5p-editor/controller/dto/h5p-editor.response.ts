@@ -11,9 +11,11 @@ export class H5PEditorModelResponse {
 	@ApiProperty()
 	integration: IIntegration;
 
+	// This is a list of URLs that point to the Javascript files the H5P editor needs to load
 	@ApiProperty()
 	scripts: string[];
 
+	// This is a list of URLs that point to the CSS files the H5P editor needs to load
 	@ApiProperty()
 	styles: string[];
 }

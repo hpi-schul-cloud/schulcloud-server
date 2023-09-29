@@ -1,12 +1,14 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContextExternalToolDO, ExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
-import { contextExternalToolDOFactory, externalToolDOFactory, schoolExternalToolDOFactory } from '@shared/testing';
+import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
 import { SchoolService } from '@src/modules/school';
 import { LaunchRequestMethod, PropertyData } from '../../types';
 import { OAuth2ToolLaunchStrategy } from './oauth2-tool-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
+import { ExternalTool } from '../../../external-tool/domain';
+import { ContextExternalTool } from '../../../context-external-tool/domain';
+import { SchoolExternalTool } from '../../../school-external-tool/domain';
 
 describe('OAuth2ToolLaunchStrategy', () => {
 	let module: TestingModule;
@@ -43,14 +45,14 @@ describe('OAuth2ToolLaunchStrategy', () => {
 	describe('buildToolLaunchDataFromConcreteConfig', () => {
 		describe('when always', () => {
 			const setup = () => {
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.build();
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build();
-				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build();
+				const externalTool: ExternalTool = externalToolFactory.build();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
 
 				const data: IToolLaunchParams = {
-					contextExternalToolDO,
-					schoolExternalToolDO,
-					externalToolDO,
+					contextExternalTool,
+					schoolExternalTool,
+					externalTool,
 				};
 
 				return { data };

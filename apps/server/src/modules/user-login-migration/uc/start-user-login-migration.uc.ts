@@ -28,7 +28,7 @@ export class StartUserLoginMigrationUc {
 		if (!userLoginMigration) {
 			userLoginMigration = await this.userLoginMigrationService.startMigration(schoolId);
 
-			this.logger.log(new UserLoginMigrationStartLoggable(userId, userLoginMigration.id as string));
+			this.logger.info(new UserLoginMigrationStartLoggable(userId, userLoginMigration.id as string));
 		} else if (userLoginMigration.closedAt) {
 			throw new UserLoginMigrationAlreadyClosedLoggableException(
 				userLoginMigration.id as string,

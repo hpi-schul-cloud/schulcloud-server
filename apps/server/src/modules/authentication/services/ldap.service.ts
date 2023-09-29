@@ -1,7 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { System } from '@shared/domain';
-import { Client, createClient } from 'ldapjs';
+import { ErrorUtils } from '@src/core/error/utils';
 import { LegacyLogger } from '@src/core/logger';
+import { Client, createClient } from 'ldapjs';
 import { LdapConnectionError } from '../errors/ldap-connection.error';
 
 @Injectable()
@@ -37,7 +38,12 @@ export class LdapService {
 				client.bind(username, password, (err) => {
 					if (err) {
 						this.logger.debug(err);
-						reject(new UnauthorizedException(err, 'User could not authenticate'));
+						reject(
+							new UnauthorizedException(
+								'User could not authenticate',
+								ErrorUtils.createHttpExceptionOptions(err, 'LdapService:connect')
+							)
+						);
 					} else {
 						this.logger.debug('[LDAP] Bind successful');
 						resolve(client);

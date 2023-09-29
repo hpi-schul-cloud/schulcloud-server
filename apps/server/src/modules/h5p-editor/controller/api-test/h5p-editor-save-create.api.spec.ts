@@ -1,16 +1,17 @@
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import request from 'supertest';
+import { DeepMocked, createMock } from '@golevelup/ts-jest/lib/mocks';
+import { IContentMetadata } from '@lumieducation/h5p-server';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { Request } from 'express';
-import { IContentMetadata } from '@lumieducation/h5p-server';
-import { DeepMocked, createMock } from '@golevelup/ts-jest/lib/mocks';
-import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
+import request from 'supertest';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
+import { H5P_CONTENT_S3_CONNECTION, H5P_LIBRARIES_S3_CONNECTION } from '../../h5p-editor.config';
 import { H5PEditorUc } from '../../uc/h5p.uc';
 
 const setup = () => {
@@ -81,9 +82,9 @@ describe('H5PEditor Controller (api)', () => {
 					return true;
 				},
 			})
-			.overrideProvider('S3ClientAdapter_Content')
+			.overrideProvider(H5P_CONTENT_S3_CONNECTION)
 			.useValue(createMock<S3ClientAdapter>())
-			.overrideProvider('S3ClientAdapter_Libraries')
+			.overrideProvider(H5P_LIBRARIES_S3_CONNECTION)
 			.useValue(createMock<S3ClientAdapter>())
 			.overrideProvider(H5PEditorUc)
 			.useValue(createMock<H5PEditorUc>())

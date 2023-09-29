@@ -1,15 +1,17 @@
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import request from 'supertest';
+import { DeepMocked, createMock } from '@golevelup/ts-jest/lib/mocks';
+import { IPlayerModel } from '@lumieducation/h5p-server';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { Request } from 'express';
-import { DeepMocked, createMock } from '@golevelup/ts-jest/lib/mocks';
-import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
+import request from 'supertest';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
+import { H5P_CONTENT_S3_CONNECTION, H5P_LIBRARIES_S3_CONNECTION } from '../../h5p-editor.config';
 import { H5PEditorUc } from '../../uc/h5p.uc';
 
 class API {
@@ -26,7 +28,8 @@ const setup = () => {
 	const contentId = new ObjectId(0).toString();
 	const notExistingContentId = new ObjectId(1).toString();
 
-	const playerResult = {
+	// @ts-expect-error partial object
+	const playerResult: IPlayerModel = {
 		contentId,
 		dependencies: [],
 		downloadPath: '',
@@ -57,9 +60,9 @@ describe('H5PEditor Controller (api)', () => {
 					return true;
 				},
 			})
-			.overrideProvider('S3ClientAdapter_Content')
+			.overrideProvider(H5P_CONTENT_S3_CONNECTION)
 			.useValue(createMock<S3ClientAdapter>())
-			.overrideProvider('S3ClientAdapter_Libraries')
+			.overrideProvider(H5P_LIBRARIES_S3_CONNECTION)
 			.useValue(createMock<S3ClientAdapter>())
 			.overrideProvider(H5PEditorUc)
 			.useValue(createMock<H5PEditorUc>())
@@ -94,7 +97,6 @@ describe('H5PEditor Controller (api)', () => {
 		describe('with valid request params', () => {
 			it('should return 200 status', async () => {
 				const { contentId, playerResult } = setup();
-				// @ts-expect-error partial object
 				h5PEditorUc.getH5pPlayer.mockResolvedValueOnce(playerResult);
 				const response = await api.getPlayer(contentId);
 				expect(response.status).toEqual(200);

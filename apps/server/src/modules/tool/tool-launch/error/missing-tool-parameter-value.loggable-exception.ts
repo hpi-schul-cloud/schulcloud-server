@@ -1,12 +1,13 @@
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common';
-import { ContextExternalToolDO, CustomParameterDO } from '@shared/domain';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { ContextExternalTool } from '../../context-external-tool/domain';
+import { CustomParameter } from '../../common/domain';
 
 export class MissingToolParameterValueLoggableException extends BusinessError implements Loggable {
 	constructor(
-		private readonly contextExternalTool: ContextExternalToolDO,
-		private readonly parameters: CustomParameterDO[]
+		private readonly contextExternalTool: ContextExternalTool,
+		private readonly parameters: CustomParameter[]
 	) {
 		super(
 			{

@@ -1,9 +1,10 @@
-import { contextExternalToolDOFactory, schoolDOFactory, schoolExternalToolDOFactory } from '@shared/testing';
-import { ContextExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
+import { contextExternalToolFactory, schoolDOFactory, schoolExternalToolFactory } from '@shared/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { ContextExternalToolAuthorizableService } from './context-external-tool-authorizable.service';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { ContextExternalTool } from '../domain';
 
 describe('ContextExternalToolAuthorizableService', () => {
 	let module: TestingModule;
@@ -38,10 +39,10 @@ describe('ContextExternalToolAuthorizableService', () => {
 		describe('when id is given', () => {
 			const setup = () => {
 				const schoolId: string = schoolDOFactory.buildWithId().id as string;
-				const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					schoolId,
 				});
-				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef(schoolExternalTool.id as string, schoolExternalTool.schoolId)
 					.build();
 
@@ -56,7 +57,7 @@ describe('ContextExternalToolAuthorizableService', () => {
 			it('should return a contextExternalTool', async () => {
 				const { contextExternalTool, contextExternalToolId } = setup();
 
-				const result: ContextExternalToolDO = await service.findById(contextExternalToolId);
+				const result: ContextExternalTool = await service.findById(contextExternalToolId);
 
 				expect(result).toEqual(contextExternalTool);
 			});

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ContextExternalToolModule } from './context-external-tool';
 import { SchoolExternalToolModule } from './school-external-tool';
 import { ExternalToolModule } from './external-tool';
@@ -10,7 +10,7 @@ import { ToolConfigModule } from './tool-config.module';
 @Module({
 	imports: [
 		ToolConfigModule,
-		CommonToolModule,
+		forwardRef(() => CommonToolModule),
 		ExternalToolModule,
 		SchoolExternalToolModule,
 		ContextExternalToolModule,

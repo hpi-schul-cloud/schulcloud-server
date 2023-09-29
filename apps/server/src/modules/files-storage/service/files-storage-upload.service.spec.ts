@@ -4,17 +4,25 @@ import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
-import { S3ClientAdapter } from '../client/s3-client.adapter';
+import StreamMimeType from 'stream-mime-type-cjs/stream-mime-type-cjs-index';
 import { FileRecordParams } from '../controller/dto';
 import { FileDto } from '../dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
+import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { createFileRecord, resolveFileNameDuplicates } from '../helper';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
+
+jest.mock('stream-mime-type-cjs/stream-mime-type-cjs-index', () => {
+	return {
+		getMimeType: jest.fn(),
+	};
+});
 
 const buildFileRecordsWithParams = () => {
 	const parentId = new ObjectId().toHexString();
@@ -50,7 +58,7 @@ describe('FilesStorageService upload methods', () => {
 			providers: [
 				FilesStorageService,
 				{
-					provide: S3ClientAdapter,
+					provide: FILES_STORAGE_S3_CONNECTION,
 					useValue: createMock<S3ClientAdapter>(),
 				},
 				{
@@ -73,7 +81,7 @@ describe('FilesStorageService upload methods', () => {
 		}).compile();
 
 		service = module.get(FilesStorageService);
-		storageClient = module.get(S3ClientAdapter);
+		storageClient = module.get(FILES_STORAGE_S3_CONNECTION);
 		fileRecordRepo = module.get(FileRecordRepo);
 		antivirusService = module.get(AntivirusService);
 		configService = module.get(ConfigService);
@@ -93,31 +101,22 @@ describe('FilesStorageService upload methods', () => {
 	});
 
 	describe('uploadFile is called', () => {
-		const createUploadFileParams = () => {
+		const createUploadFileParams = (props: { mimeType: string } = { mimeType: 'dto-mime-type' }) => {
 			const { params, fileRecords, parentId: userId } = buildFileRecordsWithParams();
 
 			const file = createMock<FileDto>();
-			file.data = Readable.from('abc');
+			const readable = Readable.from('abc');
+			file.data = readable;
 			file.name = fileRecords[0].name;
-			file.mimeType = 'mimeType';
+			file.mimeType = props.mimeType;
 
 			const fileSize = 3;
 
 			const fileRecord = createFileRecord(file.name, 0, file.mimeType, params, userId);
 			const { securityCheck, ...expectedFileRecord } = fileRecord;
 			expectedFileRecord.name = resolveFileNameDuplicates(fileRecord.name, fileRecords);
-
-			const getFileRecordsOfParentSpy = jest
-				.spyOn(service, 'getFileRecordsOfParent')
-				.mockResolvedValue([[fileRecord], 1]);
-
-			// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
-			// eslint-disable-next-line @typescript-eslint/require-await
-			fileRecordRepo.save.mockImplementation(async (fr) => {
-				if (fr instanceof FileRecord && !fr._id) {
-					fr._id = new ObjectId();
-				}
-			});
+			const detectedMimeType = 'detected-mime-type';
+			expectedFileRecord.mimeType = detectedMimeType;
 
 			return {
 				params,
@@ -127,39 +126,105 @@ describe('FilesStorageService upload methods', () => {
 				fileRecord,
 				expectedFileRecord,
 				fileRecords,
-				getFileRecordsOfParentSpy,
+				readable,
+				detectedMimeType,
 			};
 		};
 
-		it('should call getFileRecordsOfParent with correct params', async () => {
-			const { params, file, userId, getFileRecordsOfParentSpy } = createUploadFileParams();
+		describe('WHEN file records of parent, file record repo save and get mime type are successfull', () => {
+			const setup = () => {
+				const { params, file, fileSize, userId, fileRecord, expectedFileRecord, detectedMimeType, readable } =
+					createUploadFileParams();
 
-			await service.uploadFile(userId, params, file);
+				const getFileRecordsOfParentSpy = jest
+					.spyOn(service, 'getFileRecordsOfParent')
+					.mockResolvedValue([[fileRecord], 1]);
 
-			expect(getFileRecordsOfParentSpy).toHaveBeenCalledWith(params.parentId);
-		});
+				const getMimeTypeSpy = jest
+					.spyOn(StreamMimeType, 'getMimeType')
+					.mockResolvedValueOnce({ mime: detectedMimeType, stream: readable as unknown as undefined });
 
-		it('should call fileRecordRepo.save twice with correct params', async () => {
-			const { params, file, fileSize, userId, expectedFileRecord } = createUploadFileParams();
+				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
+				// eslint-disable-next-line @typescript-eslint/require-await
+				fileRecordRepo.save.mockImplementation(async (fr) => {
+					if (fr instanceof FileRecord && !fr._id) {
+						fr._id = new ObjectId();
+					}
+				});
 
-			await service.uploadFile(userId, params, file);
+				return { params, file, userId, getFileRecordsOfParentSpy, getMimeTypeSpy, fileSize, expectedFileRecord };
+			};
 
-			expect(fileRecordRepo.save).toHaveBeenCalledTimes(2);
+			it('should call getMimeType with correct params', async () => {
+				const { params, file, userId, getMimeTypeSpy } = setup();
 
-			expect(fileRecordRepo.save).toHaveBeenLastCalledWith(
-				expect.objectContaining({
-					...expectedFileRecord,
-					size: fileSize,
-					createdAt: expect.any(Date),
-					updatedAt: expect.any(Date),
-				})
-			);
+				await service.uploadFile(userId, params, file);
+
+				expect(getMimeTypeSpy).toHaveBeenCalledWith(file.data, { strict: true });
+			});
+
+			it('should call getFileRecordsOfParent with correct params', async () => {
+				const { params, file, userId, getFileRecordsOfParentSpy } = setup();
+
+				await service.uploadFile(userId, params, file);
+
+				expect(getFileRecordsOfParentSpy).toHaveBeenCalledWith(params.parentId);
+			});
+
+			it('should call fileRecordRepo.save twice with correct params', async () => {
+				const { params, file, fileSize, userId, expectedFileRecord } = setup();
+
+				await service.uploadFile(userId, params, file);
+
+				expect(fileRecordRepo.save).toHaveBeenCalledTimes(2);
+
+				expect(fileRecordRepo.save).toHaveBeenLastCalledWith(
+					expect.objectContaining({
+						...expectedFileRecord,
+						size: fileSize,
+						createdAt: expect.any(Date),
+						updatedAt: expect.any(Date),
+					})
+				);
+			});
+
+			it('should call antivirusService.send with fileRecord', async () => {
+				const { params, file, userId } = setup();
+
+				const fileRecord = await service.uploadFile(userId, params, file);
+
+				expect(antivirusService.send).toHaveBeenCalledWith(fileRecord.securityCheck.requestToken);
+			});
+
+			it('should call storageClient.create with correct params', async () => {
+				const { params, file, userId } = setup();
+
+				const fileRecord = await service.uploadFile(userId, params, file);
+
+				const filePath = [fileRecord.schoolId, fileRecord.id].join('/');
+				expect(storageClient.create).toHaveBeenCalledWith(filePath, file);
+			});
+
+			it('should return an instance of FileRecord', async () => {
+				const { params, file, userId } = setup();
+
+				const result = await service.uploadFile(userId, params, file);
+
+				expect(result).toBeInstanceOf(FileRecord);
+			});
 		});
 
 		describe('WHEN file record repo throws error', () => {
 			const setup = () => {
-				const { params, file, userId, fileRecord, expectedFileRecord } = createUploadFileParams();
+				const { params, file, userId, fileRecord, expectedFileRecord, detectedMimeType, readable } =
+					createUploadFileParams();
 				const error = new Error('test');
+
+				jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValue([[fileRecord], 1]);
+
+				jest
+					.spyOn(StreamMimeType, 'getMimeType')
+					.mockResolvedValueOnce({ mime: detectedMimeType, stream: readable as unknown as undefined });
 
 				fileRecordRepo.save.mockRejectedValueOnce(error);
 
@@ -174,19 +239,25 @@ describe('FilesStorageService upload methods', () => {
 			});
 		});
 
-		it('should call storageClient.create with correct params', async () => {
-			const { params, file, userId } = createUploadFileParams();
-
-			const fileRecord = await service.uploadFile(userId, params, file);
-
-			const filePath = [fileRecord.schoolId, fileRecord.id].join('/');
-			expect(storageClient.create).toHaveBeenCalledWith(filePath, file);
-		});
-
 		describe('WHEN storageClient throws error', () => {
 			const setup = () => {
-				const { params, file, userId, fileRecord, expectedFileRecord } = createUploadFileParams();
+				const { params, file, userId, fileRecord, expectedFileRecord, detectedMimeType, readable } =
+					createUploadFileParams();
 				const error = new Error('test');
+
+				jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValue([[fileRecord], 1]);
+
+				jest
+					.spyOn(StreamMimeType, 'getMimeType')
+					.mockResolvedValueOnce({ mime: detectedMimeType, stream: readable as unknown as undefined });
+
+				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
+				// eslint-disable-next-line @typescript-eslint/require-await
+				fileRecordRepo.save.mockImplementation(async (fr) => {
+					if (fr instanceof FileRecord && !fr._id) {
+						fr._id = new ObjectId();
+					}
+				});
 
 				storageClient.create.mockRejectedValueOnce(error);
 
@@ -204,9 +275,23 @@ describe('FilesStorageService upload methods', () => {
 
 		describe('WHEN file is too big', () => {
 			const setup = () => {
-				const { params, file, userId } = createUploadFileParams();
+				const { params, file, userId, fileRecord, detectedMimeType, readable } = createUploadFileParams();
 
-				configService.get.mockReturnValueOnce(1);
+				jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValue([[fileRecord], 1]);
+
+				jest
+					.spyOn(StreamMimeType, 'getMimeType')
+					.mockResolvedValueOnce({ mime: detectedMimeType, stream: readable as unknown as undefined });
+
+				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
+				// eslint-disable-next-line @typescript-eslint/require-await
+				fileRecordRepo.save.mockImplementation(async (fr) => {
+					if (fr instanceof FileRecord && !fr._id) {
+						fr._id = new ObjectId();
+					}
+				});
+
+				configService.get.mockReturnValueOnce(2);
 				const error = new BadRequestException(ErrorType.FILE_TOO_BIG);
 
 				return { params, file, userId, error };
@@ -221,35 +306,75 @@ describe('FilesStorageService upload methods', () => {
 			});
 		});
 
-		it('should correctly set file size', async () => {
-			const { params, file, fileSize, userId } = createUploadFileParams();
+		describe('WHEN file size is bigger than maxSecurityCheckFileSize', () => {
+			const setup = () => {
+				const { params, file, userId, expectedFileRecord, detectedMimeType, readable, fileRecord } =
+					createUploadFileParams();
 
-			await service.uploadFile(userId, params, file);
+				jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValue([[fileRecord], 1]);
 
-			expect(fileRecordRepo.save).toHaveBeenNthCalledWith(
-				2,
-				expect.objectContaining({
-					size: fileSize,
-				})
-			);
-		});
+				// Mock for max file size
+				configService.get.mockReturnValueOnce(10);
 
-		it('should call antivirusService.send with fileRecord', async () => {
-			const { params, file, userId } = createUploadFileParams();
+				// Mock for max security check file size
+				configService.get.mockReturnValueOnce(2);
 
-			const fileRecord = await service.uploadFile(userId, params, file);
+				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
+				// eslint-disable-next-line @typescript-eslint/require-await
+				fileRecordRepo.save.mockImplementation(async (fr) => {
+					if (fr instanceof FileRecord && !fr._id) {
+						fr._id = new ObjectId();
+					}
+				});
 
-			expect(antivirusService.send).toHaveBeenCalledWith(fileRecord.securityCheck.requestToken);
+				jest
+					.spyOn(StreamMimeType, 'getMimeType')
+					.mockResolvedValueOnce({ mime: detectedMimeType, stream: readable as unknown as undefined });
+
+				return { params, file, userId, expectedFileRecord };
+			};
+
+			it('should call save with WONT_CHECK status', async () => {
+				const { params, file, userId } = setup();
+
+				await service.uploadFile(userId, params, file);
+
+				expect(fileRecordRepo.save).toHaveBeenNthCalledWith(
+					1,
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					expect.objectContaining({ securityCheck: expect.objectContaining({ status: 'wont_check' }) })
+				);
+			});
+
+			it('should not call antivirus send', async () => {
+				const { params, file, userId } = setup();
+
+				await service.uploadFile(userId, params, file);
+
+				expect(antivirusService.send).not.toHaveBeenCalled();
+			});
 		});
 
 		describe('WHEN antivirusService throws error', () => {
 			const setup = () => {
-				const { params, file, userId } = createUploadFileParams();
+				const { params, file, userId, fileRecord, detectedMimeType, readable } = createUploadFileParams();
 				const error = new Error('test');
 
-				antivirusService.send.mockImplementationOnce(() => {
-					throw error;
+				jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValue([[fileRecord], 1]);
+
+				jest
+					.spyOn(StreamMimeType, 'getMimeType')
+					.mockResolvedValueOnce({ mime: detectedMimeType, stream: readable as unknown as undefined });
+
+				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
+				// eslint-disable-next-line @typescript-eslint/require-await
+				fileRecordRepo.save.mockImplementation(async (fr) => {
+					if (fr instanceof FileRecord && !fr._id) {
+						fr._id = new ObjectId();
+					}
 				});
+
+				antivirusService.send.mockRejectedValueOnce(error);
 
 				return { params, file, userId, error };
 			};
@@ -263,12 +388,71 @@ describe('FilesStorageService upload methods', () => {
 			});
 		});
 
-		it('should return an instance of FileRecord', async () => {
-			const { params, file, userId } = createUploadFileParams();
+		describe('WHEN getMimeType returns undefined', () => {
+			const setup = () => {
+				const { params, file, userId, fileRecord, readable } = createUploadFileParams();
 
-			const result = await service.uploadFile(userId, params, file);
+				jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValue([[fileRecord], 1]);
 
-			expect(result).toBeInstanceOf(FileRecord);
+				jest
+					.spyOn(StreamMimeType, 'getMimeType')
+					.mockResolvedValueOnce({ mime: undefined as unknown as string, stream: readable as unknown as undefined });
+
+				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
+				// eslint-disable-next-line @typescript-eslint/require-await
+				fileRecordRepo.save.mockImplementation(async (fr) => {
+					if (fr instanceof FileRecord && !fr._id) {
+						fr._id = new ObjectId();
+					}
+				});
+
+				return { params, file, userId };
+			};
+
+			it('should use dto mime type', async () => {
+				const { params, file, userId } = setup();
+
+				const fileRecord = await service.uploadFile(userId, params, file);
+
+				expect(fileRecord.mimeType).toEqual(file.mimeType);
+			});
+		});
+
+		describe('WHEN mime type cant be detected from stream', () => {
+			const setup = () => {
+				const mimeType = 'image/svg+xml';
+				const { params, file, userId, fileRecord } = createUploadFileParams({ mimeType });
+
+				jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValue([[fileRecord], 1]);
+
+				const getMimeTypeSpy = jest.spyOn(StreamMimeType, 'getMimeType');
+
+				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
+				// eslint-disable-next-line @typescript-eslint/require-await
+				fileRecordRepo.save.mockImplementation(async (fr) => {
+					if (fr instanceof FileRecord && !fr._id) {
+						fr._id = new ObjectId();
+					}
+				});
+
+				return { params, file, userId, getMimeTypeSpy, mimeType };
+			};
+
+			it('should use dto mime type', async () => {
+				const { params, file, userId, mimeType } = setup();
+
+				await service.uploadFile(userId, params, file);
+
+				expect(fileRecordRepo.save).toHaveBeenCalledWith(expect.objectContaining({ mimeType }));
+			});
+
+			it('should not detect from stream', async () => {
+				const { params, file, userId, getMimeTypeSpy } = setup();
+
+				await service.uploadFile(userId, params, file);
+
+				expect(getMimeTypeSpy).not.toHaveBeenCalled();
+			});
 		});
 	});
 });

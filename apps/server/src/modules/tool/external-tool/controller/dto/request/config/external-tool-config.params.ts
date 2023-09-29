@@ -1,4 +1,4 @@
-import { ToolConfigType } from '../../../../../common/interface';
+import { ToolConfigType } from '../../../../../common/enum';
 
 export abstract class ExternalToolConfigCreateParams {
 	abstract type: ToolConfigType;

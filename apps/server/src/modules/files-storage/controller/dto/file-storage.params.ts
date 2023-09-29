@@ -1,7 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { StringToBoolean } from '@shared/controller';
 import { EntityId } from '@shared/domain';
-import { Allow, IsEnum, IsMongoId, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import { Allow, IsBoolean, IsEnum, IsMongoId, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { FileRecordParentType } from '../../entity';
+import { PreviewOutputMimeTypes, PreviewWidth } from '../../interface';
 
 export class FileRecordParams {
 	@ApiProperty()
@@ -12,7 +14,7 @@ export class FileRecordParams {
 	@IsMongoId()
 	parentId!: EntityId;
 
-	@ApiProperty({ enum: FileRecordParentType })
+	@ApiProperty({ enum: FileRecordParentType, enumName: 'FileRecordParentType' })
 	@IsEnum(FileRecordParentType)
 	parentType!: FileRecordParentType;
 }
@@ -101,4 +103,24 @@ export class CopyFilesOfParentPayload {
 
 	@ValidateNested()
 	target!: FileRecordParams;
+}
+
+export class PreviewParams {
+	@ApiPropertyOptional({ enum: PreviewOutputMimeTypes, enumName: 'PreviewOutputMimeTypes' })
+	@IsOptional()
+	@IsEnum(PreviewOutputMimeTypes)
+	outputFormat?: PreviewOutputMimeTypes;
+
+	@ApiPropertyOptional({ enum: PreviewWidth, enumName: 'PreviewWidth' })
+	@IsOptional()
+	@IsEnum(PreviewWidth)
+	width?: PreviewWidth;
+
+	@IsOptional()
+	@IsBoolean()
+	@StringToBoolean()
+	@ApiPropertyOptional({
+		description: 'If true, the preview will be generated again.',
+	})
+	forceUpdate?: boolean;
 }

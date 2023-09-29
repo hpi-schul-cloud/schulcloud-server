@@ -1,7 +1,8 @@
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import {
-	ApiBearerAuth,
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
+	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
 	ApiResponse,
@@ -9,13 +10,14 @@ import {
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
-import { ContextExternalToolDO } from '@shared/domain';
+import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { LegacyLogger } from '@src/core/logger';
+import { ContextExternalTool } from '../domain';
 import { ContextExternalToolRequestMapper, ContextExternalToolResponseMapper } from '../mapper';
+import { ContextExternalToolUc } from '../uc';
+import { ContextExternalToolDto } from '../uc/dto/context-external-tool.types';
 import {
 	ContextExternalToolContextParams,
 	ContextExternalToolIdParams,
@@ -23,12 +25,10 @@ import {
 	ContextExternalToolResponse,
 	ContextExternalToolSearchListResponse,
 } from './dto';
-import { ContextExternalToolUc } from '../uc';
-import { ContextExternalTool } from '../uc/dto/context-external-tool.types';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
-@Controller('tools/context')
+@Controller('tools/context-external-tools')
 export class ToolContextController {
 	constructor(private readonly contextExternalToolUc: ContextExternalToolUc, private readonly logger: LegacyLogger) {}
 
@@ -46,10 +46,10 @@ export class ToolContextController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: ContextExternalToolPostParams
 	): Promise<ContextExternalToolResponse> {
-		const contextExternalTool: ContextExternalTool =
+		const contextExternalTool: ContextExternalToolDto =
 			ContextExternalToolRequestMapper.mapContextExternalToolRequest(body);
 
-		const createdTool: ContextExternalToolDO = await this.contextExternalToolUc.createContextExternalTool(
+		const createdTool: ContextExternalTool = await this.contextExternalToolUc.createContextExternalTool(
 			currentUser.userId,
 			contextExternalTool
 		);
@@ -65,6 +65,7 @@ export class ToolContextController {
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
 	@ApiOperation({ summary: 'Deletes a ContextExternalTool' })
+	@HttpCode(HttpStatus.NO_CONTENT)
 	async deleteContextExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextExternalToolIdParams
@@ -77,7 +78,6 @@ export class ToolContextController {
 	}
 
 	@Get(':contextType/:contextId')
-	@ApiBearerAuth()
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
 	@ApiOkResponse({
@@ -106,6 +106,59 @@ export class ToolContextController {
 		);
 
 		const response: ContextExternalToolSearchListResponse = new ContextExternalToolSearchListResponse(mappedTools);
+		return response;
+	}
+
+	@Get(':contextExternalToolId')
+	@ApiForbiddenResponse()
+	@ApiUnauthorizedResponse()
+	@ApiNotFoundResponse()
+	@ApiOkResponse({
+		description: 'Returns a ContextExternalTool for the given id',
+		type: ContextExternalToolResponse,
+	})
+	@ApiOperation({ summary: 'Searches a ContextExternalTool for the given id' })
+	async getContextExternalTool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ContextExternalToolIdParams
+	): Promise<ContextExternalToolResponse> {
+		const contextExternalTool: ContextExternalTool = await this.contextExternalToolUc.getContextExternalTool(
+			currentUser.userId,
+			params.contextExternalToolId
+		);
+
+		const response: ContextExternalToolResponse =
+			ContextExternalToolResponseMapper.mapContextExternalToolResponse(contextExternalTool);
+
+		return response;
+	}
+
+	@Put(':contextExternalToolId')
+	@ApiOkResponse({
+		description: 'The ContextExternalTool has been successfully updated.',
+		type: ContextExternalToolResponse,
+	})
+	@ApiForbiddenResponse()
+	@ApiUnauthorizedResponse()
+	@ApiUnprocessableEntityResponse()
+	@ApiOperation({ summary: 'Updates a ContextExternalTool' })
+	async updateContextExternalTool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ContextExternalToolIdParams,
+		@Body() body: ContextExternalToolPostParams
+	): Promise<ContextExternalToolResponse> {
+		const contextExternalTool: ContextExternalToolDto =
+			ContextExternalToolRequestMapper.mapContextExternalToolRequest(body);
+
+		const updatedTool: ContextExternalTool = await this.contextExternalToolUc.updateContextExternalTool(
+			currentUser.userId,
+			params.contextExternalToolId,
+			contextExternalTool
+		);
+
+		const response: ContextExternalToolResponse =
+			ContextExternalToolResponseMapper.mapContextExternalToolResponse(updatedTool);
+
 		return response;
 	}
 }

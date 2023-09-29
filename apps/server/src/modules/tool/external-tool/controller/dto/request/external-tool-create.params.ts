@@ -1,7 +1,7 @@
 import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { ToolConfigType } from '../../../../common/interface';
+import { ToolConfigType } from '../../../../common/enum';
 import {
 	BasicToolConfigParams,
 	ExternalToolConfigCreateParams,

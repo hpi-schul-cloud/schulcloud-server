@@ -1,17 +1,13 @@
 import { Injectable } from '@nestjs/common';
+import { SortOrderMap } from '@shared/domain';
 import {
 	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	ExternalToolDO,
-	SortOrderMap,
-} from '@shared/domain';
-import {
 	CustomParameterLocationParams,
+	CustomParameterScope,
 	CustomParameterScopeTypeParams,
+	CustomParameterType,
 	CustomParameterTypeParams,
-	ExternalToolSearchQuery,
-} from '../../common/interface';
+} from '../../common/enum';
 import {
 	BasicToolConfigParams,
 	CustomParameterPostParams,
@@ -25,8 +21,8 @@ import {
 	SortExternalToolParams,
 } from '../controller/dto';
 import {
-	BasicToolConfig,
-	CustomParameter,
+	BasicToolConfigDto,
+	CustomParameterDto,
 	ExternalToolCreate,
 	ExternalToolUpdate,
 	Lti11ToolConfigCreate,
@@ -34,6 +30,8 @@ import {
 	Oauth2ToolConfigCreate,
 	Oauth2ToolConfigUpdate,
 } from '../uc';
+import { ExternalTool } from '../domain';
+import { ExternalToolSearchQuery } from '../../common/interface';
 
 const scopeMapping: Record<CustomParameterScopeTypeParams, CustomParameterScope> = {
 	[CustomParameterScopeTypeParams.GLOBAL]: CustomParameterScope.GLOBAL,
@@ -60,7 +58,7 @@ const typeMapping: Record<CustomParameterTypeParams, CustomParameterType> = {
 @Injectable()
 export class ExternalToolRequestMapper {
 	public mapUpdateRequest(externalToolUpdateParams: ExternalToolUpdateParams, version = 1): ExternalToolUpdate {
-		let mappedConfig: BasicToolConfig | Lti11ToolConfigUpdate | Oauth2ToolConfigUpdate;
+		let mappedConfig: BasicToolConfigDto | Lti11ToolConfigUpdate | Oauth2ToolConfigUpdate;
 		if (externalToolUpdateParams.config instanceof BasicToolConfigParams) {
 			mappedConfig = this.mapRequestToBasicToolConfig(externalToolUpdateParams.config);
 		} else if (externalToolUpdateParams.config instanceof Lti11ToolConfigUpdateParams) {
@@ -69,7 +67,7 @@ export class ExternalToolRequestMapper {
 			mappedConfig = this.mapRequestToOauth2ToolConfigUpdate(externalToolUpdateParams.config);
 		}
 
-		const mappedCustomParameter: CustomParameter[] = this.mapRequestToCustomParameterDO(
+		const mappedCustomParameter: CustomParameterDto[] = this.mapRequestToCustomParameterDO(
 			externalToolUpdateParams.parameters ?? []
 		);
 
@@ -87,7 +85,7 @@ export class ExternalToolRequestMapper {
 	}
 
 	public mapCreateRequest(externalToolCreateParams: ExternalToolCreateParams, version = 1): ExternalToolCreate {
-		let mappedConfig: BasicToolConfig | Lti11ToolConfigCreate | Oauth2ToolConfigCreate;
+		let mappedConfig: BasicToolConfigDto | Lti11ToolConfigCreate | Oauth2ToolConfigCreate;
 		if (externalToolCreateParams.config instanceof BasicToolConfigParams) {
 			mappedConfig = this.mapRequestToBasicToolConfig(externalToolCreateParams.config);
 		} else if (externalToolCreateParams.config instanceof Lti11ToolConfigCreateParams) {
@@ -96,7 +94,7 @@ export class ExternalToolRequestMapper {
 			mappedConfig = this.mapRequestToOauth2ToolConfigCreate(externalToolCreateParams.config);
 		}
 
-		const mappedCustomParameter: CustomParameter[] = this.mapRequestToCustomParameterDO(
+		const mappedCustomParameter: CustomParameterDto[] = this.mapRequestToCustomParameterDO(
 			externalToolCreateParams.parameters ?? []
 		);
 
@@ -112,7 +110,7 @@ export class ExternalToolRequestMapper {
 		};
 	}
 
-	private mapRequestToBasicToolConfig(externalToolConfigParams: BasicToolConfigParams): BasicToolConfig {
+	private mapRequestToBasicToolConfig(externalToolConfigParams: BasicToolConfigParams): BasicToolConfigDto {
 		return { ...externalToolConfigParams };
 	}
 
@@ -140,7 +138,7 @@ export class ExternalToolRequestMapper {
 		return { ...externalToolConfigParams };
 	}
 
-	private mapRequestToCustomParameterDO(customParameterParams: CustomParameterPostParams[]): CustomParameter[] {
+	private mapRequestToCustomParameterDO(customParameterParams: CustomParameterPostParams[]): CustomParameterDto[] {
 		return customParameterParams.map((customParameterParam: CustomParameterPostParams) => {
 			return {
 				name: customParameterParam.name,
@@ -157,13 +155,13 @@ export class ExternalToolRequestMapper {
 		});
 	}
 
-	mapSortingQueryToDomain(sortingQuery: SortExternalToolParams): SortOrderMap<ExternalToolDO> | undefined {
+	mapSortingQueryToDomain(sortingQuery: SortExternalToolParams): SortOrderMap<ExternalTool> | undefined {
 		const { sortBy } = sortingQuery;
 		if (sortBy == null) {
 			return undefined;
 		}
 
-		const result: SortOrderMap<ExternalToolDO> = {
+		const result: SortOrderMap<ExternalTool> = {
 			[sortBy]: sortingQuery.sortOrder,
 		};
 		return result;

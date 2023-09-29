@@ -3,7 +3,7 @@ import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-ad
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, IAccount } from '@shared/domain';
+import { Account, IdmAccount } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { IdentityManagementModule } from '@shared/infra/identity-management';
 import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
@@ -55,9 +55,9 @@ describe('AccountService Integration', () => {
 		const idmId = await identityManagementService.createAccount(
 			{
 				username: testAccount.username,
-				attRefFunctionalIntId: testAccount.userId,
-				attRefFunctionalExtId: testAccount.systemId,
-				attRefTechnicalId: refId,
+				attDbcUserId: testAccount.userId,
+				attDbcSystemId: testAccount.systemId,
+				attDbcAccountId: refId,
 			},
 			testAccount.password
 		);
@@ -137,12 +137,12 @@ describe('AccountService Integration', () => {
 	const compareIdmAccount = async (idmId: string, createdAccount: AccountDto): Promise<void> => {
 		const foundAccount = await identityManagementService.findAccountById(idmId);
 		expect(foundAccount).toEqual(
-			expect.objectContaining<IAccount>({
+			expect.objectContaining<IdmAccount>({
 				id: createdAccount.idmReferenceId ?? '',
 				username: createdAccount.username,
-				attRefTechnicalId: createdAccount.id,
-				attRefFunctionalIntId: createdAccount.userId,
-				attRefFunctionalExtId: createdAccount.systemId,
+				attDbcAccountId: createdAccount.id,
+				attDbcUserId: createdAccount.userId,
+				attDbcSystemId: createdAccount.systemId,
 			})
 		);
 	};
@@ -199,7 +199,7 @@ describe('AccountService Integration', () => {
 
 		const foundAccount = await identityManagementService.findAccountById(idmId);
 		expect(foundAccount).toEqual(
-			expect.objectContaining<Partial<IAccount>>({
+			expect.objectContaining<Partial<IdmAccount>>({
 				username: newUserName,
 			})
 		);

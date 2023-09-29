@@ -18,7 +18,7 @@ import { JwtTestFactory } from '@shared/testing/factory/jwt.test.factory';
 import { userLoginMigrationFactory } from '@shared/testing/factory/user-login-migration.factory';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { SanisResponse, SanisRole } from '@src/modules/provisioning';
+import { SanisResponse, SanisRole } from '@src/modules/provisioning/strategy/sanis/response';
 import { ServerTestModule } from '@src/modules/server';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -292,16 +292,15 @@ describe('OAuth SSO Controller (API)', () => {
 					},
 					personenkontexte: [
 						{
-							id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713'),
+							id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713').toString(),
 							rolle: SanisRole.LEHR,
 							organisation: {
-								id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713'),
+								id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713').toString(),
 								kennung: officialSchoolNumber,
 								name: 'schulName',
 								typ: 'not necessary',
 							},
 							personenstatus: 'not necessary',
-							email: 'email',
 						},
 					],
 				});
@@ -484,7 +483,7 @@ describe('OAuth SSO Controller (API)', () => {
 			};
 
 			it('should redirect to the general migration error page', async () => {
-				const { targetSystem, sourceUser, sourceSystem, query, cookies } = await setupMigration();
+				const { sourceUser, sourceSystem, query, cookies } = await setupMigration();
 				currentUser = mapUserToCurrentUser(sourceUser, undefined, sourceSystem.id);
 				const baseUrl: string = Configuration.get('HOST') as string;
 				query.error = SSOAuthenticationError.INVALID_REQUEST;
@@ -494,10 +493,7 @@ describe('OAuth SSO Controller (API)', () => {
 					.set('Cookie', cookies)
 					.query(query)
 					.expect(302)
-					.expect(
-						'Location',
-						`${baseUrl}/migration/error?sourceSystem=${sourceSystem.id}&targetSystem=${targetSystem.id}`
-					);
+					.expect('Location', `${baseUrl}/migration/error`);
 			});
 		});
 
@@ -575,10 +571,7 @@ describe('OAuth SSO Controller (API)', () => {
 					.set('Cookie', cookies)
 					.query(query)
 					.expect(302)
-					.expect(
-						'Location',
-						`${baseUrl}/migration/error?sourceSystem=${sourceSystem.id}&targetSystem=${targetSystem.id}&sourceSchoolNumber=11111&targetSchoolNumber=22222`
-					);
+					.expect('Location', `${baseUrl}/migration/error?sourceSchoolNumber=11111&targetSchoolNumber=22222`);
 			});
 		});
 

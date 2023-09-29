@@ -9,6 +9,12 @@ export class H5PContentRepo extends BaseRepo<H5PContent> {
 		return H5PContent;
 	}
 
+	async existsOne(contentId: EntityId): Promise<boolean> {
+		const entityCount = await this._em.count(this.entityName, { id: contentId });
+
+		return entityCount === 1;
+	}
+
 	async deleteContent(content: H5PContent): Promise<void> {
 		return this.delete(content);
 	}

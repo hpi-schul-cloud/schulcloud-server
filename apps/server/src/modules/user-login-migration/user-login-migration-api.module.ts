@@ -9,6 +9,7 @@ import { UserLoginMigrationController } from './controller/user-login-migration.
 import { UserMigrationController } from './controller/user-migration.controller';
 import { PageContentMapper } from './mapper';
 import {
+	CloseUserLoginMigrationUc,
 	RestartUserLoginMigrationUc,
 	StartUserLoginMigrationUc,
 	ToggleUserLoginMigrationUc,
@@ -31,6 +32,7 @@ import { UserLoginMigrationModule } from './user-login-migration.module';
 		StartUserLoginMigrationUc,
 		RestartUserLoginMigrationUc,
 		ToggleUserLoginMigrationUc,
+		CloseUserLoginMigrationUc,
 		PageContentMapper,
 	],
 	controllers: [UserMigrationController, UserLoginMigrationController],

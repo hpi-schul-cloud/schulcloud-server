@@ -1,29 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolReference } from '@shared/domain';
+import { CustomParameter } from '../../common/domain';
 import {
-	BasicToolConfigDO,
-	CustomParameterDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/tool';
-import {
+	CustomParameterLocation,
 	CustomParameterLocationParams,
+	CustomParameterScope,
 	CustomParameterScopeTypeParams,
+	CustomParameterType,
 	CustomParameterTypeParams,
-} from '../../common/interface';
+} from '../../common/enum';
+import { statusMapping } from '../../school-external-tool/mapper';
 import {
 	BasicToolConfigResponse,
 	CustomParameterResponse,
-	ExternalToolConfigurationTemplateResponse,
 	ExternalToolResponse,
 	Lti11ToolConfigResponse,
 	Oauth2ToolConfigResponse,
-	ToolConfigurationEntryResponse,
-	ToolConfigurationListResponse,
 	ToolReferenceResponse,
 } from '../controller/dto';
-import { statusMapping } from '../../school-external-tool/mapper';
+import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig, ToolReference } from '../domain';
 
 const scopeMapping: Record<CustomParameterScope, CustomParameterScopeTypeParams> = {
 	[CustomParameterScope.GLOBAL]: CustomParameterScopeTypeParams.GLOBAL,
@@ -49,47 +43,47 @@ const typeMapping: Record<CustomParameterType, CustomParameterTypeParams> = {
 
 @Injectable()
 export class ExternalToolResponseMapper {
-	mapToExternalToolResponse(externalToolDO: ExternalToolDO): ExternalToolResponse {
+	static mapToExternalToolResponse(externalTool: ExternalTool): ExternalToolResponse {
 		let mappedConfig: BasicToolConfigResponse | Lti11ToolConfigResponse | Oauth2ToolConfigResponse;
-		if (externalToolDO.config instanceof BasicToolConfigDO) {
-			mappedConfig = this.mapBasicToolConfigDOToResponse(externalToolDO.config);
-		} else if (externalToolDO.config instanceof Lti11ToolConfigDO) {
-			mappedConfig = this.mapLti11ToolConfigDOToResponse(externalToolDO.config);
+		if (externalTool.config instanceof BasicToolConfig) {
+			mappedConfig = this.mapBasicToolConfigDOToResponse(externalTool.config);
+		} else if (externalTool.config instanceof Lti11ToolConfig) {
+			mappedConfig = this.mapLti11ToolConfigDOToResponse(externalTool.config);
 		} else {
-			mappedConfig = this.mapOauth2ToolConfigDOToResponse(externalToolDO.config);
+			mappedConfig = this.mapOauth2ToolConfigDOToResponse(externalTool.config);
 		}
 
-		const mappedCustomParameter: CustomParameterResponse[] = this.mapCustomParameterDOToResponse(
-			externalToolDO.parameters ?? []
+		const mappedCustomParameter: CustomParameterResponse[] = this.mapCustomParameterToResponse(
+			externalTool.parameters ?? []
 		);
 
 		return new ExternalToolResponse({
-			id: externalToolDO.id ?? '',
-			name: externalToolDO.name,
-			url: externalToolDO.url,
-			logoUrl: externalToolDO.logoUrl,
+			id: externalTool.id ?? '',
+			name: externalTool.name,
+			url: externalTool.url,
+			logoUrl: externalTool.logoUrl,
 			config: mappedConfig,
 			parameters: mappedCustomParameter,
-			isHidden: externalToolDO.isHidden,
-			openNewTab: externalToolDO.openNewTab,
-			version: externalToolDO.version,
+			isHidden: externalTool.isHidden,
+			openNewTab: externalTool.openNewTab,
+			version: externalTool.version,
 		});
 	}
 
-	private mapBasicToolConfigDOToResponse(externalToolConfigDO: BasicToolConfigDO): BasicToolConfigResponse {
+	private static mapBasicToolConfigDOToResponse(externalToolConfigDO: BasicToolConfig): BasicToolConfigResponse {
 		return new BasicToolConfigResponse({ ...externalToolConfigDO });
 	}
 
-	private mapLti11ToolConfigDOToResponse(externalToolConfigDO: Lti11ToolConfigDO): Lti11ToolConfigResponse {
+	private static mapLti11ToolConfigDOToResponse(externalToolConfigDO: Lti11ToolConfig): Lti11ToolConfigResponse {
 		return new Lti11ToolConfigResponse({ ...externalToolConfigDO });
 	}
 
-	private mapOauth2ToolConfigDOToResponse(externalToolConfigDO: Oauth2ToolConfigDO): Oauth2ToolConfigResponse {
+	private static mapOauth2ToolConfigDOToResponse(externalToolConfigDO: Oauth2ToolConfig): Oauth2ToolConfigResponse {
 		return new Oauth2ToolConfigResponse({ ...externalToolConfigDO });
 	}
 
-	private mapCustomParameterDOToResponse(customParameterDOS: CustomParameterDO[]): CustomParameterResponse[] {
-		return customParameterDOS.map((customParameterDO: CustomParameterDO) => {
+	static mapCustomParameterToResponse(customParameters: CustomParameter[]): CustomParameterResponse[] {
+		return customParameters.map((customParameterDO: CustomParameter) => {
 			return {
 				name: customParameterDO.name,
 				displayName: customParameterDO.displayName,
@@ -105,38 +99,7 @@ export class ExternalToolResponseMapper {
 		});
 	}
 
-	mapExternalToolDOsToToolConfigurationListResponse(externalTools: ExternalToolDO[]): ToolConfigurationListResponse {
-		return new ToolConfigurationListResponse(this.mapExternalToolDOsToToolConfigurationResponses(externalTools));
-	}
-
-	private mapExternalToolDOsToToolConfigurationResponses(
-		externalTools: ExternalToolDO[]
-	): ToolConfigurationEntryResponse[] {
-		return externalTools.map(
-			(tool: ExternalToolDO) =>
-				new ToolConfigurationEntryResponse({
-					id: tool.id ?? '',
-					name: tool.name,
-					logoUrl: tool.logoUrl,
-				})
-		);
-	}
-
-	mapToConfigurationTemplateResponse(externalToolDO: ExternalToolDO): ExternalToolConfigurationTemplateResponse {
-		const mappedCustomParameter: CustomParameterResponse[] = this.mapCustomParameterDOToResponse(
-			externalToolDO.parameters ?? []
-		);
-
-		return new ExternalToolConfigurationTemplateResponse({
-			id: externalToolDO.id ?? '',
-			name: externalToolDO.name,
-			logoUrl: externalToolDO.logoUrl,
-			parameters: mappedCustomParameter,
-			version: externalToolDO.version,
-		});
-	}
-
-	mapToToolReferenceResponses(toolReferences: ToolReference[]): ToolReferenceResponse[] {
+	static mapToToolReferenceResponses(toolReferences: ToolReference[]): ToolReferenceResponse[] {
 		const toolReferenceResponses: ToolReferenceResponse[] = toolReferences.map((toolReference: ToolReference) =>
 			this.mapToToolReferenceResponse(toolReference)
 		);
@@ -144,7 +107,7 @@ export class ExternalToolResponseMapper {
 		return toolReferenceResponses;
 	}
 
-	private mapToToolReferenceResponse(toolReference: ToolReference): ToolReferenceResponse {
+	private static mapToToolReferenceResponse(toolReference: ToolReference): ToolReferenceResponse {
 		const response = new ToolReferenceResponse({
 			contextToolId: toolReference.contextToolId,
 			displayName: toolReference.displayName,

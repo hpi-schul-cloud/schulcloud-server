@@ -1,18 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-	ContextExternalToolDO,
-	CustomParameterDO,
-	CustomParameterScope,
-	CustomParameterType,
-	ExternalToolDO,
-	SchoolExternalToolDO,
-} from '@shared/domain';
-import {
-	contextExternalToolDOFactory,
-	customParameterDOFactory,
-	externalToolDOFactory,
-	schoolExternalToolDOFactory,
+	contextExternalToolFactory,
+	customParameterFactory,
+	externalToolFactory,
+	schoolExternalToolFactory,
 } from '@shared/testing';
+import { ContextExternalTool } from '../../context-external-tool/domain';
+import { ExternalTool } from '../../external-tool/domain';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { CustomParameter } from '../domain';
+import { CustomParameterScope, CustomParameterType } from '../enum';
 import { CommonToolValidationService } from './common-tool-validation.service';
 
 describe('CommonToolValidationService', () => {
@@ -26,10 +23,96 @@ describe('CommonToolValidationService', () => {
 		service = module.get(CommonToolValidationService);
 	});
 
+	describe('isValueValidForType', () => {
+		describe('when parameter type is string', () => {
+			it('should return true', () => {
+				const result: boolean = service.isValueValidForType(CustomParameterType.STRING, 'test');
+
+				expect(result).toEqual(true);
+			});
+		});
+
+		describe('when parameter type is boolean', () => {
+			describe('when value is true', () => {
+				it('should return true', () => {
+					const result: boolean = service.isValueValidForType(CustomParameterType.BOOLEAN, 'true');
+
+					expect(result).toEqual(true);
+				});
+			});
+
+			describe('when value is false', () => {
+				it('should return true', () => {
+					const result: boolean = service.isValueValidForType(CustomParameterType.BOOLEAN, 'false');
+
+					expect(result).toEqual(true);
+				});
+			});
+
+			describe('when value is not true or false', () => {
+				it('should return false', () => {
+					const result: boolean = service.isValueValidForType(CustomParameterType.BOOLEAN, 'other');
+
+					expect(result).toEqual(false);
+				});
+			});
+		});
+
+		describe('when parameter type is number', () => {
+			describe('when value is a number', () => {
+				it('should return true', () => {
+					const result: boolean = service.isValueValidForType(CustomParameterType.NUMBER, '1234');
+
+					expect(result).toEqual(true);
+				});
+			});
+
+			describe('when value is not a number', () => {
+				it('should return false', () => {
+					const result: boolean = service.isValueValidForType(CustomParameterType.NUMBER, 'NaN');
+
+					expect(result).toEqual(false);
+				});
+			});
+		});
+
+		describe('when defining a value for parameter of type auto_contextId', () => {
+			it('should return false', () => {
+				const result: boolean = service.isValueValidForType(CustomParameterType.AUTO_CONTEXTID, 'test');
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when defining a value for parameter of type auto_contextId', () => {
+			it('should return false', () => {
+				const result: boolean = service.isValueValidForType(CustomParameterType.AUTO_CONTEXTNAME, 'test');
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when defining a value for parameter of type auto_contextId', () => {
+			it('should return false', () => {
+				const result: boolean = service.isValueValidForType(CustomParameterType.AUTO_SCHOOLID, 'test');
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when defining a value for parameter of type auto_contextId', () => {
+			it('should return false', () => {
+				const result: boolean = service.isValueValidForType(CustomParameterType.AUTO_SCHOOLNUMBER, 'test');
+
+				expect(result).toEqual(false);
+			});
+		});
+	});
+
 	describe('checkForDuplicateParameters', () => {
 		describe('when given parameters has a case sensitive duplicate', () => {
 			const setup = () => {
-				const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					parameters: [
 						{ name: 'nameDuplicate', value: 'value' },
 						{ name: 'nameDuplicate', value: 'value' },
@@ -52,7 +135,7 @@ describe('CommonToolValidationService', () => {
 
 		describe('when given parameters has case insensitive duplicate', () => {
 			const setup = () => {
-				const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					parameters: [
 						{ name: 'nameDuplicate', value: 'value' },
 						{ name: 'nameduplicate', value: 'value' },
@@ -75,7 +158,7 @@ describe('CommonToolValidationService', () => {
 
 		describe('when given parameters has no duplicates', () => {
 			const setup = () => {
-				const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 					parameters: [
 						{ name: 'nameNoDuplicate1', value: 'value' },
 						{ name: 'nameNoDuplicate2', value: 'value' },
@@ -99,21 +182,21 @@ describe('CommonToolValidationService', () => {
 
 	describe('checkCustomParameterEntries', () => {
 		const createTools = (
-			externalToolMock?: Partial<ExternalToolDO>,
-			schoolExternalToolMock?: Partial<SchoolExternalToolDO>,
-			contextExternalToolMock?: Partial<ContextExternalToolDO>
+			externalToolMock?: Partial<ExternalTool>,
+			schoolExternalToolMock?: Partial<SchoolExternalTool>,
+			contextExternalToolMock?: Partial<ContextExternalTool>
 		) => {
-			const externalTool: ExternalToolDO = new ExternalToolDO({
-				...externalToolDOFactory.buildWithId(),
+			const externalTool: ExternalTool = new ExternalTool({
+				...externalToolFactory.buildWithId(),
 				...externalToolMock,
 			});
-			const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
-				...schoolExternalToolDOFactory.buildWithId(),
+			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+				...schoolExternalToolFactory.buildWithId(),
 				...schoolExternalToolMock,
 			});
 			const schoolExternalToolId = schoolExternalTool.id as string;
-			const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.build({
-				...contextExternalToolDOFactory.buildWithId(),
+			const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+				...contextExternalToolFactory.buildWithId(),
 				...contextExternalToolMock,
 			});
 
@@ -128,7 +211,7 @@ describe('CommonToolValidationService', () => {
 		describe('when checking parameter is required', () => {
 			describe('and given parameter is not optional and parameter value is empty', () => {
 				const setup = () => {
-					const requiredParam: CustomParameterDO = customParameterDOFactory.build({
+					const requiredParam: CustomParameter = customParameterFactory.build({
 						name: 'requiredParam',
 						scope: CustomParameterScope.SCHOOL,
 						type: CustomParameterType.STRING,
@@ -161,13 +244,13 @@ describe('CommonToolValidationService', () => {
 
 		describe('when checking parameters of school external tool', () => {
 			const setup = () => {
-				const requiredContextParam: CustomParameterDO = customParameterDOFactory.build({
+				const requiredContextParam: CustomParameter = customParameterFactory.build({
 					name: 'missingContextParam',
 					isOptional: false,
 					scope: CustomParameterScope.CONTEXT,
 					type: CustomParameterType.BOOLEAN,
 				});
-				const schoolParam: CustomParameterDO = customParameterDOFactory.build({
+				const schoolParam: CustomParameter = customParameterFactory.build({
 					name: 'schoolParam',
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.BOOLEAN,
@@ -197,7 +280,7 @@ describe('CommonToolValidationService', () => {
 
 		describe('when parameter is not school or context', () => {
 			const setup = () => {
-				const notSchoolParam: CustomParameterDO = customParameterDOFactory.build({
+				const notSchoolParam: CustomParameter = customParameterFactory.build({
 					name: 'notSchoolParam',
 					scope: CustomParameterScope.GLOBAL,
 					type: CustomParameterType.BOOLEAN,
@@ -228,7 +311,7 @@ describe('CommonToolValidationService', () => {
 		describe('when parameter scope is school', () => {
 			describe('when required parameter is missing', () => {
 				const setup = () => {
-					const missingParam: CustomParameterDO = customParameterDOFactory.build({
+					const missingParam: CustomParameter = customParameterFactory.build({
 						name: 'isMissing',
 						isOptional: false,
 						scope: CustomParameterScope.SCHOOL,
@@ -258,7 +341,7 @@ describe('CommonToolValidationService', () => {
 
 			describe('when parameter is optional but is missing on params', () => {
 				const setup = () => {
-					const param: CustomParameterDO = customParameterDOFactory.build({
+					const param: CustomParameter = customParameterFactory.build({
 						name: 'notChecked',
 						scope: CustomParameterScope.SCHOOL,
 						isOptional: true,
@@ -290,7 +373,7 @@ describe('CommonToolValidationService', () => {
 		describe('when parameter scope is context', () => {
 			describe('when required parameter is missing', () => {
 				const setup = () => {
-					const missingParam: CustomParameterDO = customParameterDOFactory.build({
+					const missingParam: CustomParameter = customParameterFactory.build({
 						name: 'isMissing',
 						isOptional: false,
 						scope: CustomParameterScope.CONTEXT,
@@ -323,7 +406,7 @@ describe('CommonToolValidationService', () => {
 
 			describe('when parameter is optional but is missing on params', () => {
 				const setup = () => {
-					const param: CustomParameterDO = customParameterDOFactory.build({
+					const param: CustomParameter = customParameterFactory.build({
 						name: 'notChecked',
 						scope: CustomParameterScope.CONTEXT,
 						isOptional: true,
@@ -357,7 +440,7 @@ describe('CommonToolValidationService', () => {
 
 		describe('when checking parameter type string', () => {
 			const setup = () => {
-				const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
+				const correctTypeParam: CustomParameter = customParameterFactory.build({
 					name: 'correctType',
 					scope: CustomParameterScope.SCHOOL,
 					type: CustomParameterType.STRING,
@@ -388,7 +471,7 @@ describe('CommonToolValidationService', () => {
 		describe('when checking parameter type number', () => {
 			describe('when type matches param value', () => {
 				const setup = () => {
-					const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
+					const correctTypeParam: CustomParameter = customParameterFactory.build({
 						name: 'correctType',
 						scope: CustomParameterScope.SCHOOL,
 						type: CustomParameterType.NUMBER,
@@ -418,7 +501,7 @@ describe('CommonToolValidationService', () => {
 
 			describe('when type not matches param value', () => {
 				const setup = () => {
-					const wrongTypeParam: CustomParameterDO = customParameterDOFactory.build({
+					const wrongTypeParam: CustomParameter = customParameterFactory.build({
 						name: 'wrongType',
 						scope: CustomParameterScope.SCHOOL,
 						type: CustomParameterType.NUMBER,
@@ -450,7 +533,7 @@ describe('CommonToolValidationService', () => {
 		describe('when checking parameter type boolean', () => {
 			describe('when type matches param value', () => {
 				const setup = () => {
-					const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
+					const correctTypeParam: CustomParameter = customParameterFactory.build({
 						name: 'correctType',
 						scope: CustomParameterScope.SCHOOL,
 						type: CustomParameterType.BOOLEAN,
@@ -480,7 +563,7 @@ describe('CommonToolValidationService', () => {
 
 			describe('when type not matches param value', () => {
 				const setup = () => {
-					const wrongTypeParam: CustomParameterDO = customParameterDOFactory.build({
+					const wrongTypeParam: CustomParameter = customParameterFactory.build({
 						name: 'wrongType',
 						scope: CustomParameterScope.SCHOOL,
 						type: CustomParameterType.BOOLEAN,
@@ -509,130 +592,10 @@ describe('CommonToolValidationService', () => {
 			});
 		});
 
-		describe('when checking parameter type auto_contextId', () => {
-			const setup = () => {
-				const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
-					name: 'correctType',
-					scope: CustomParameterScope.SCHOOL,
-					type: CustomParameterType.AUTO_CONTEXTID,
-				});
-
-				const { externalTool, schoolExternalTool } = createTools(
-					{ parameters: [correctTypeParam] },
-					{
-						parameters: [{ name: correctTypeParam.name, value: 'irgendeineId123' }],
-					}
-				);
-
-				return {
-					externalTool,
-					schoolExternalTool,
-				};
-			};
-
-			it('should return without error', () => {
-				const { externalTool, schoolExternalTool } = setup();
-
-				const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
-
-				expect(func).not.toThrowError('tool_param_type_mismatch');
-			});
-		});
-
-		describe('when checking parameter type auto_contextName', () => {
-			const setup = () => {
-				const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
-					name: 'correctType',
-					scope: CustomParameterScope.SCHOOL,
-					type: CustomParameterType.AUTO_CONTEXTNAME,
-				});
-
-				const { externalTool, schoolExternalTool } = createTools(
-					{ parameters: [correctTypeParam] },
-					{
-						parameters: [{ name: correctTypeParam.name, value: 'irgendeineId123' }],
-					}
-				);
-
-				return {
-					externalTool,
-					schoolExternalTool,
-				};
-			};
-
-			it('should return without error', () => {
-				const { externalTool, schoolExternalTool } = setup();
-
-				const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
-
-				expect(func).not.toThrowError('tool_param_type_mismatch');
-			});
-		});
-
-		describe('when checking parameter type auto_schoolId', () => {
-			const setup = () => {
-				const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
-					name: 'correctType',
-					scope: CustomParameterScope.SCHOOL,
-					type: CustomParameterType.AUTO_SCHOOLID,
-				});
-
-				const { externalTool, schoolExternalTool } = createTools(
-					{ parameters: [correctTypeParam] },
-					{
-						parameters: [{ name: correctTypeParam.name, value: 'irgendeineId123' }],
-					}
-				);
-
-				return {
-					externalTool,
-					schoolExternalTool,
-				};
-			};
-
-			it('should return without error', () => {
-				const { externalTool, schoolExternalTool } = setup();
-
-				const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
-
-				expect(func).not.toThrowError('tool_param_type_mismatch');
-			});
-		});
-
-		describe('when checking parameter type auto_schoolnumber', () => {
-			const setup = () => {
-				const correctTypeParam: CustomParameterDO = customParameterDOFactory.build({
-					name: 'correctType',
-					scope: CustomParameterScope.SCHOOL,
-					type: CustomParameterType.AUTO_SCHOOLNUMBER,
-				});
-
-				const { externalTool, schoolExternalTool } = createTools(
-					{ parameters: [correctTypeParam] },
-					{
-						parameters: [{ name: correctTypeParam.name, value: 'irgendeineId123' }],
-					}
-				);
-
-				return {
-					externalTool,
-					schoolExternalTool,
-				};
-			};
-
-			it('should return without error', () => {
-				const { externalTool, schoolExternalTool } = setup();
-
-				const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
-
-				expect(func).not.toThrowError('tool_param_type_mismatch');
-			});
-		});
-
 		describe('when validating regex', () => {
 			describe('when no regex is given', () => {
 				const setup = () => {
-					const undefinedRegex: CustomParameterDO = customParameterDOFactory.build({
+					const undefinedRegex: CustomParameter = customParameterFactory.build({
 						name: 'undefinedRegex',
 						scope: CustomParameterScope.SCHOOL,
 						type: CustomParameterType.STRING,
@@ -664,7 +627,7 @@ describe('CommonToolValidationService', () => {
 
 			describe('when regex is given and param value is valid', () => {
 				const setup = () => {
-					const validRegex: CustomParameterDO = customParameterDOFactory.build({
+					const validRegex: CustomParameter = customParameterFactory.build({
 						name: 'validRegex',
 						scope: CustomParameterScope.SCHOOL,
 						type: CustomParameterType.STRING,
@@ -696,7 +659,7 @@ describe('CommonToolValidationService', () => {
 
 			describe('when regex is given and param value is invalid', () => {
 				const setup = () => {
-					const validRegex: CustomParameterDO = customParameterDOFactory.build({
+					const validRegex: CustomParameter = customParameterFactory.build({
 						name: 'validRegex',
 						scope: CustomParameterScope.SCHOOL,
 						type: CustomParameterType.STRING,

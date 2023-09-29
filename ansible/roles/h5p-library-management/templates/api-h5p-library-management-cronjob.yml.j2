@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api-library-management-cronjob
+  name: api-library-management-cronjob
+spec:
+  itemPath: "vaults/{{ ONEPASSWORD_OPERATOR_VAULT }}/items/h5p-library-manager-ionos-s3"
+spec:
+  schedule: "{{ SERVER_H5P_LIBRARY_MANAGEMENT_CRONJOB|default("0 3 * * 3,6", true) }}"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: {{ SERVER_H5P_LIBRARY_MANAGEMENT_CRONJOB_TIMEOUT|default("39600", true) }}
+      template:
+        spec:
+          containers:
+          - name: api-h5p-library-management-cronjob
+            image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+            envFrom:
+            - configMapRef:
+                name: api-configmap
+            - secretRef:
+                name: api-secret
+            command: ['/bin/sh', '-c']
+            args: ['npm run nest:start:h5p:library-management']
+            resources:
+              limits:
+                cpu: {{ API_H5P_LIBRARY_MANAGEMENT_CPU_LIMITS|default("2000m", true) }}
+                memory: {{ API_H5P_LIBRARY_MANAGEMENT_MEMORY_LIMITS|default("2Gi", true) }}
+              requests:
+                cpu: {{ API_H5P_LIBRARY_MANAGEMENT_CPU_REQUESTS|default("100m", true) }}
+                memory: {{ API_H5P_LIBRARY_MANAGEMENT_MEMORY_REQUESTS|default("150Mi", true) }}
+          restartPolicy: OnFailure

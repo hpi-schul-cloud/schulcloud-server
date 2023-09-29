@@ -3,7 +3,7 @@ import {
 	CustomParameterLocationParams,
 	CustomParameterScopeTypeParams,
 	CustomParameterTypeParams,
-} from '../../../../common/interface';
+} from '../../../../common/enum';
 
 export class CustomParameterResponse {
 	@ApiProperty()

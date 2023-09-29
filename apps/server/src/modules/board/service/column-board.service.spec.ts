@@ -120,7 +120,7 @@ describe(ColumnBoardService.name, () => {
 
 				await service.getBoardObjectTitlesById(ids);
 
-				expect(boardDoRepo.getTitleById).toHaveBeenCalledWith(ids);
+				expect(boardDoRepo.getTitlesByIds).toHaveBeenCalledWith(ids);
 			});
 		});
 	});
@@ -235,6 +235,39 @@ describe(ColumnBoardService.name, () => {
 				expect(element.text).toEqual(
 					expect.stringContaining(Configuration.get('COLUMN_BOARD_FEEDBACK_LINK') as string)
 				);
+			});
+		});
+
+		describe('contact link text element', () => {
+			it('should add a text element containing the link url when theme is not default', async () => {
+				Configuration.set('SC_THEME', 'brb');
+				const { externalReference } = setup();
+
+				const clientUrl = Configuration.get('HOST') as string;
+				const expectedContactUrl = `${clientUrl}/help/contact/`;
+
+				const columnBoard = await service.createWelcomeColumnBoard(externalReference);
+
+				const column = columnBoard.children[0];
+				const card = column.children[0] as Card;
+				const element = card.children.find((child) => (child as RichTextElement).text.includes(clientUrl));
+
+				expect((element as RichTextElement).text).toEqual(expect.stringContaining(expectedContactUrl));
+			});
+
+			it('should not add a text element when theme is default', async () => {
+				Configuration.set('SC_THEME', 'default');
+				const { externalReference } = setup();
+
+				const clientUrl = Configuration.get('HOST') as string;
+
+				const columnBoard = await service.createWelcomeColumnBoard(externalReference);
+
+				const column = columnBoard.children[0];
+				const card = column.children[0] as Card;
+				const element = card.children.find((child) => (child as RichTextElement).text.includes(clientUrl));
+
+				expect(element).toBeUndefined();
 			});
 		});
 	});

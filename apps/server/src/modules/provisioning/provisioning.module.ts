@@ -6,13 +6,14 @@ import { RoleModule } from '@src/modules/role';
 import { SchoolModule } from '@src/modules/school/school.module';
 import { SystemModule } from '@src/modules/system/system.module';
 import { UserModule } from '@src/modules/user';
+import { GroupModule } from '@src/modules/group';
 import { ProvisioningService } from './service/provisioning.service';
 import { IservProvisioningStrategy, OidcMockProvisioningStrategy, SanisProvisioningStrategy } from './strategy';
 import { OidcProvisioningService } from './strategy/oidc/service/oidc-provisioning.service';
 import { SanisResponseMapper } from './strategy/sanis/sanis-response.mapper';
 
 @Module({
-	imports: [AccountModule, SchoolModule, UserModule, RoleModule, SystemModule, HttpModule, LoggerModule],
+	imports: [AccountModule, SchoolModule, UserModule, RoleModule, SystemModule, HttpModule, LoggerModule, GroupModule],
 	providers: [
 		ProvisioningService,
 		SanisResponseMapper,

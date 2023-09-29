@@ -1,6 +1,6 @@
-import { CustomParameterLocation, ToolConfigType } from '@shared/domain';
 import { PropertyLocation, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import { ToolLaunchRequestResponse } from '../controller/dto';
+import { CustomParameterLocation, ToolConfigType } from '../../common/enum';
 
 const customToParameterLocationMapping: Record<CustomParameterLocation, PropertyLocation> = {
 	[CustomParameterLocation.PATH]: PropertyLocation.PATH,

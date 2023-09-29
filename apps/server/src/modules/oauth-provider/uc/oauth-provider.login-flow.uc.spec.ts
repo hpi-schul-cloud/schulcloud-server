@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalToolDO, LtiToolDO, Permission, Pseudonym, UserDO } from '@shared/domain';
+import { LtiToolDO, Permission, Pseudonym, UserDO } from '@shared/domain';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { ProviderLoginResponse, ProviderRedirectResponse } from '@shared/infra/oauth-provider/dto';
 import {
-	externalToolDOFactory,
+	externalToolFactory,
 	ltiToolDOFactory,
 	pseudonymFactory,
 	setupEntities,
@@ -14,6 +14,7 @@ import {
 } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
 import { PseudonymService } from '@src/modules/pseudonym';
+import { ExternalTool } from '@src/modules/tool/external-tool/domain';
 import { UserService } from '@src/modules/user';
 import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '../controller/dto';
 import { OauthProviderLoginFlowService } from '../service/oauth-provider.login-flow.service';
@@ -137,7 +138,7 @@ describe('OauthProviderLoginFlowUc', () => {
 				};
 
 				const user: UserDO = userDoFactory.buildWithId();
-				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config({ skipConsent: true }).buildWithId();
+				const tool: ExternalTool = externalToolFactory.withOauth2Config({ skipConsent: true }).buildWithId();
 
 				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
@@ -289,9 +290,7 @@ describe('OauthProviderLoginFlowUc', () => {
 					subject: 'subject',
 				};
 
-				const tool: ExternalToolDO = externalToolDOFactory
-					.withOauth2Config()
-					.buildWithId({ name: 'SchulcloudNextcloud' });
+				const tool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId({ name: 'SchulcloudNextcloud' });
 
 				const user = userFactory.buildWithId();
 
@@ -381,7 +380,7 @@ describe('OauthProviderLoginFlowUc', () => {
 					subject: 'subject',
 				};
 
-				const tool: ExternalToolDO = externalToolDOFactory.withOauth2Config().build({ id: undefined });
+				const tool: ExternalTool = externalToolFactory.withOauth2Config().build({ id: undefined });
 
 				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
@@ -424,7 +423,7 @@ describe('OauthProviderLoginFlowUc', () => {
 					subject: 'subject',
 				};
 
-				const tool: ExternalToolDO = externalToolDOFactory.buildWithId();
+				const tool: ExternalTool = externalToolFactory.buildWithId();
 
 				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);

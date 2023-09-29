@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { IAccount } from '@shared/domain';
+import { IdmAccount } from '@shared/domain';
 import { AccountDto } from '../services/dto';
 import { AccountIdmToDtoMapper } from './account-idm-to-dto.mapper.abstract';
 import { AccountIdmToDtoMapperIdm } from './account-idm-to-dto.mapper.idm';
@@ -32,16 +32,16 @@ describe('AccountIdmToDtoMapperIdm', () => {
 
 	describe('when mapping from entity to dto', () => {
 		it('should map all fields', () => {
-			const testIdmEntity: IAccount = {
+			const testIdmEntity: IdmAccount = {
 				id: 'id',
 				username: 'username',
 				email: 'email',
 				firstName: 'firstName',
 				lastName: 'lastName',
 				createdDate: new Date(),
-				attRefTechnicalId: 'attRefTechnicalId',
-				attRefFunctionalIntId: 'attRefFunctionalIntId',
-				attRefFunctionalExtId: 'attRefFunctionalExtId',
+				attDbcAccountId: 'attDbcAccountId',
+				attDbcUserId: 'attDbcUserId',
+				attDbcSystemId: 'attDbcSystemId',
 			};
 			const ret = mapper.mapToDto(testIdmEntity);
 
@@ -49,8 +49,8 @@ describe('AccountIdmToDtoMapperIdm', () => {
 				expect.objectContaining<Partial<AccountDto>>({
 					id: testIdmEntity.id,
 					idmReferenceId: undefined,
-					userId: testIdmEntity.attRefFunctionalIntId,
-					systemId: testIdmEntity.attRefFunctionalExtId,
+					userId: testIdmEntity.attDbcUserId,
+					systemId: testIdmEntity.attDbcSystemId,
 					createdAt: testIdmEntity.createdDate,
 					updatedAt: testIdmEntity.createdDate,
 					username: testIdmEntity.username,
@@ -60,7 +60,7 @@ describe('AccountIdmToDtoMapperIdm', () => {
 
 		describe('when date is undefined', () => {
 			it('should use actual date', () => {
-				const testIdmEntity: IAccount = {
+				const testIdmEntity: IdmAccount = {
 					id: 'id',
 				};
 				const ret = mapper.mapToDto(testIdmEntity);
@@ -72,7 +72,7 @@ describe('AccountIdmToDtoMapperIdm', () => {
 
 		describe('when a fields value is missing', () => {
 			it('should fill with empty string', () => {
-				const testIdmEntity: IAccount = {
+				const testIdmEntity: IdmAccount = {
 					id: 'id',
 				};
 				const ret = mapper.mapToDto(testIdmEntity);

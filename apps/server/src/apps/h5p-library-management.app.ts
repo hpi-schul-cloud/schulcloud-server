@@ -13,14 +13,23 @@ import { H5PLibraryManagementService } from '@src/modules/h5p-library-management
 async function bootstrap() {
 	sourceMapInstall();
 
-	const app = await NestFactory.createApplicationContext(H5PLibraryManagementModule);
+	const nestApp = await NestFactory.createApplicationContext(H5PLibraryManagementModule);
 
 	// WinstonLogger
-	app.useLogger(await app.resolve(LegacyLogger));
+	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
 
-	await app.get(H5PLibraryManagementService).run();
+	await nestApp.init();
+
+	console.log('#########################################');
+	console.log(`##### Start H5P Library Management ######`);
+	console.log('#########################################');
+
+	await nestApp.get(H5PLibraryManagementService).run();
+	// await app.get(H5PLibraryManagementService).run();
 	// TODO: properly close app (there is some issue with the logger)
-	// await app.close();
-	process.exit(0);
+	console.log('#########################################');
+	console.log(`##### Close H5P Library Management ######`);
+	console.log('#########################################');
+	await nestApp.close();
 }
 void bootstrap();

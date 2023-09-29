@@ -5,7 +5,11 @@ export class ToolReferenceResponse {
 	@ApiProperty({ nullable: false, required: true, description: 'The id of the tool in the context' })
 	contextToolId: string;
 
-	@ApiPropertyOptional({ nullable: false, required: false, description: 'The url of the logo of the tool' })
+	@ApiPropertyOptional({
+		nullable: false,
+		required: false,
+		description: 'The url of the logo which is stored in the db',
+	})
 	logoUrl?: string;
 
 	@ApiProperty({ nullable: false, required: true, description: 'The display name of the tool' })

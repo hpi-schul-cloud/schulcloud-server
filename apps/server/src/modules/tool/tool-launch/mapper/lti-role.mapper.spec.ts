@@ -1,6 +1,6 @@
 import { RoleName } from '@shared/domain';
-import { LtiRole } from '../../common/interface';
 import { LtiRoleMapper } from './lti-role.mapper';
+import { LtiRole } from '../../common/enum';
 
 describe('LtiRoleMapper', () => {
 	describe('mapRolesToLtiRoles', () => {

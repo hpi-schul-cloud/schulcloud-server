@@ -9,12 +9,12 @@ import {
 	SchoolExternalToolRule,
 	SchoolRule,
 	SubmissionRule,
-	TaskCardRule,
 	TaskRule,
 	TeamRule,
 	UserRule,
 } from '@shared/domain/rules';
 import { ContextExternalToolRule } from '@shared/domain/rules/context-external-tool.rule';
+import { UserLoginMigrationRule } from '@shared/domain/rules/user-login-migration.rule';
 import { AuthorizationContext, Rule } from './types';
 
 @Injectable()
@@ -27,20 +27,19 @@ export class RuleManager {
 		private readonly lessonRule: LessonRule,
 		private readonly schoolRule: SchoolRule,
 		private readonly taskRule: TaskRule,
-		private readonly taskCardRule: TaskCardRule,
 		private readonly userRule: UserRule,
 		private readonly teamRule: TeamRule,
 		private readonly submissionRule: SubmissionRule,
 		private readonly schoolExternalToolRule: SchoolExternalToolRule,
 		private readonly boardDoRule: BoardDoRule,
-		private readonly contextExternalToolRule: ContextExternalToolRule
+		private readonly contextExternalToolRule: ContextExternalToolRule,
+		private readonly userLoginMigrationRule: UserLoginMigrationRule
 	) {
 		this.rules = [
 			this.courseRule,
 			this.courseGroupRule,
 			this.lessonRule,
 			this.taskRule,
-			this.taskCardRule,
 			this.teamRule,
 			this.userRule,
 			this.schoolRule,
@@ -48,6 +47,7 @@ export class RuleManager {
 			this.schoolExternalToolRule,
 			this.boardDoRule,
 			this.contextExternalToolRule,
+			this.userLoginMigrationRule,
 		];
 	}
 

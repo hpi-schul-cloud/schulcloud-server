@@ -9,7 +9,8 @@ export class LibraryRepo extends BaseRepo<InstalledLibrary> {
 	}
 
 	async createLibrary(library: InstalledLibrary): Promise<void> {
-		return this.save(this.create(library));
+		const entity = this.create(library);
+		await this.save(entity);
 	}
 
 	async getAll(): Promise<InstalledLibrary[]> {
