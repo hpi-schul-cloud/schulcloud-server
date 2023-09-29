@@ -366,5 +366,41 @@ describe('Class Actions', () => {
 			expect(updateClassStudentsStub.notCalled).to.be.true;
 			expect(updateClassTeachersStub.notCalled).to.be.true;
 		});
+
+		it('should not add any user to the class, when uniqueMembers are []', async () => {
+			const uniqueMembers = [];
+			const schoolObj = { _id: new ObjectId(), currentYear: new ObjectId() };
+			const findByLdapDnsAndSchoolStub = sinon.stub(UserRepo, 'findByLdapDnsAndSchool');
+
+			await classAction.addUsersToClass(schoolObj._id, mockClass._id, uniqueMembers);
+
+			expect(findByLdapDnsAndSchoolStub.notCalled).to.be.true;
+			expect(updateClassStudentsStub.notCalled).to.be.true;
+			expect(updateClassTeachersStub.notCalled).to.be.true;
+		});
+
+		it('should not add any user to the class, when uniqueMembers are [undefined]', async () => {
+			const uniqueMembers = [undefined];
+			const schoolObj = { _id: new ObjectId(), currentYear: new ObjectId() };
+			const findByLdapDnsAndSchoolStub = sinon.stub(UserRepo, 'findByLdapDnsAndSchool');
+
+			await classAction.addUsersToClass(schoolObj._id, mockClass._id, uniqueMembers);
+
+			expect(findByLdapDnsAndSchoolStub.notCalled).to.be.true;
+			expect(updateClassStudentsStub.notCalled).to.be.true;
+			expect(updateClassTeachersStub.notCalled).to.be.true;
+		});
+
+		it('should not add any user to the class, when uniqueMembers are [null]', async () => {
+			const uniqueMembers = [null];
+			const schoolObj = { _id: new ObjectId(), currentYear: new ObjectId() };
+			const findByLdapDnsAndSchoolStub = sinon.stub(UserRepo, 'findByLdapDnsAndSchool');
+
+			await classAction.addUsersToClass(schoolObj._id, mockClass._id, uniqueMembers);
+
+			expect(findByLdapDnsAndSchoolStub.notCalled).to.be.true;
+			expect(updateClassStudentsStub.notCalled).to.be.true;
+			expect(updateClassTeachersStub.notCalled).to.be.true;
+		});
 	});
 });
