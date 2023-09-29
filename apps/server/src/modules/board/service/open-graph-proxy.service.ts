@@ -7,6 +7,9 @@ import { OpenGraphData, OpenGraphImageData } from '../controller/dto';
 @Injectable()
 export class OpenGraphProxyService {
 	async fetchOpenGraphData(url: string): Promise<OpenGraphData> {
+		if (url.length === 0) {
+			throw new Error(`OpenGraphProxyService requires a valid URL. Given URL: ${url}`);
+		}
 		const data = await ogs({ url });
 
 		const title = data.result.ogTitle ?? '';

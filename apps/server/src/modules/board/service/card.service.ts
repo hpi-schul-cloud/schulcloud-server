@@ -49,7 +49,11 @@ export class CardService {
 	}
 
 	private async extendLinkElement(linkElement: LinkElement): Promise<void> {
-		linkElement.openGraphData = await this.openGraphProxyService.fetchOpenGraphData(linkElement.url);
+		try {
+			linkElement.openGraphData = await this.openGraphProxyService.fetchOpenGraphData(linkElement.url);
+		} catch (e) {
+			return Promise.resolve();
+		}
 		return Promise.resolve();
 	}
 
