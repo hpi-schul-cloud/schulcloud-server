@@ -193,11 +193,30 @@ export class OidcProvisioningService {
 	): Promise<void> {
 		const existingGroupsOfUser: Group[] = await this.groupService.findByUserId(externalUserId); // TODO implement service and repo function
 
-		const groupsWithoutUser: Group[] = await Promise.all(
-			existingGroupsOfUser.map(async (existingGroup: Group): Promise<Group> => {
-				// TODO check for existingGroup not in externalGroups[] and remove user from this group
+		const externalGroupsExternalSources: ExternalSource[] = externalGroups.forEach(
+			(externalGroup: ExternalGroupDto): ExternalSource => {
+				const externalGroupId: ExternalSource = { externalId: externalGroup.externalId, systemId };
+
+				return externalGroupId;
+			}
+		);
+
+		await Promise.all(
+			existingGroupsOfUser.map(async (existingGroup: Group): Promise<void> => {
+				if (existingGroup.externalSource) {
+					const isGroupWithoutUser = !externalGroupsExternalSources.includes(existingGroup.externalSource);
+
+					if (isGroupWithoutUser) {
+						await this.groupService.deleteUserFromGroup(externalUserId, existingGroup.externalSource); // TODO implement service and repo function
+
+						const groupUsers: GroupUser[] = await this.groupService.getUsersOfGroup(existingGroup.externalSource); // TODO implement service and repo function
+
+						if (groupUsers.length === 0) {
+							await this.groupService.deleteGroup(existingGroup.externalSource); // TODO implement service and repo function
+						}
+					}
+				}
 			})
 		);
-		// TODO remove all groupsWithoutUser.length === 0
 	}
 }
