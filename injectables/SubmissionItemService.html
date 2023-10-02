@@ -430,9 +430,9 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;bson&#x27;;
-import { Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
+import { Injectable, NotFoundException, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
 
-import { EntityId, SubmissionContainerElement, SubmissionItem } from &#x27;@shared/domain&#x27;;
+import { EntityId, isSubmissionContainerElement, SubmissionContainerElement, SubmissionItem } from &#x27;@shared/domain&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
 
 import { BoardDoRepo } from &#x27;../repo&#x27;;
@@ -473,14 +473,18 @@ export class SubmissionItemService {
 	}
 
 	async update(submissionItem: SubmissionItem, completed: boolean): Promise&lt;void&gt; {
-		const parent &#x3D; (await this.boardDoRepo.findParentOfId(submissionItem.id)) as SubmissionContainerElement;
+		const submissionContainterElement &#x3D; await this.boardDoRepo.findParentOfId(submissionItem.id);
+		if (!isSubmissionContainerElement(submissionContainterElement)) {
+			throw new UnprocessableEntityException();
+		}
+
 		const now &#x3D; new Date();
-		if (parent.dueDate &amp;&amp; parent.dueDate &lt; now) {
+		if (submissionContainterElement.dueDate &amp;&amp; submissionContainterElement.dueDate &lt; now) {
 			throw new ValidationError(&#x27;not allowed to save anymore&#x27;);
 		}
 		submissionItem.completed &#x3D; completed;
 
-		await this.boardDoRepo.save(submissionItem, parent);
+		await this.boardDoRepo.save(submissionItem, submissionContainterElement);
 	}
 }
 </code></pre>

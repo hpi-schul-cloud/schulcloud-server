@@ -96,11 +96,6 @@
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
-                                <a href="#getSubmissionContainer" >getSubmissionContainer</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
                                 <a href="#isAuthorizedStudent" >isAuthorizedStudent</a>
                             </li>
                             <li>
@@ -130,7 +125,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/board/uc/submission-item.uc.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/board/uc/submission-item.uc.ts:17</a></div>
                             </td>
                         </tr>
 
@@ -244,8 +239,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="101"
-                            class="link-to-prism">apps/server/src/modules/board/uc/submission-item.uc.ts:101</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="88"
+                            class="link-to-prism">apps/server/src/modules/board/uc/submission-item.uc.ts:88</a></div>
                 </td>
             </tr>
 
@@ -351,8 +346,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="28"
-                            class="link-to-prism">apps/server/src/modules/board/uc/submission-item.uc.ts:28</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="29"
+                            class="link-to-prism">apps/server/src/modules/board/uc/submission-item.uc.ts:29</a></div>
                 </td>
             </tr>
 
@@ -416,78 +411,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getSubmissionContainer"></a>
-                    <span class="name">
-                        <span class="modifier">Private</span>
-                        <span class="modifier">Async</span>
-                        <span ><b>getSubmissionContainer</b></span>
-                        <a href="#getSubmissionContainer"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getSubmissionContainer(submissionContainerId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="89"
-                            class="link-to-prism">apps/server/src/modules/board/uc/submission-item.uc.ts:89</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>submissionContainerId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/Submission.html" target="_self" >Promise&lt;SubmissionContainerElement&gt;</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="isAuthorizedStudent"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
@@ -507,8 +430,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="73"
-                            class="link-to-prism">apps/server/src/modules/board/uc/submission-item.uc.ts:73</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="72"
+                            class="link-to-prism">apps/server/src/modules/board/uc/submission-item.uc.ts:72</a></div>
                 </td>
             </tr>
 
@@ -590,8 +513,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="56"
-                            class="link-to-prism">apps/server/src/modules/board/uc/submission-item.uc.ts:56</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="55"
+                            class="link-to-prism">apps/server/src/modules/board/uc/submission-item.uc.ts:55</a></div>
                 </td>
             </tr>
 
@@ -673,7 +596,8 @@
 import {
 	AnyBoardDo,
 	EntityId,
-	SubmissionContainerElement,
+	isSubmissionContainerElement,
+	isSubmissionItem,
 	SubmissionItem,
 	UserBoardRoles,
 	UserRoleEnum,
@@ -700,22 +624,20 @@ export class SubmissionItemUc {
 		userId: EntityId,
 		submissionContainerId: EntityId
 	): Promise&lt;{ submissionItems: SubmissionItem[]; users: UserBoardRoles[] }&gt; {
-		const submissionContainer &#x3D; await this.getSubmissionContainer(submissionContainerId);
-		await this.checkPermission(userId, submissionContainer, Action.read);
+		const submissionContainerElement &#x3D; await this.elementService.findById(submissionContainerId);
 
-		let submissionItems &#x3D; submissionContainer.children as SubmissionItem[];
-
-		if (!submissionItems.every((child) &#x3D;&gt; child instanceof SubmissionItem)) {
-			throw new HttpException(
-				&#x27;Children of submission-container-element must be of type submission-item&#x27;,
-				HttpStatus.UNPROCESSABLE_ENTITY
-			);
+		if (!isSubmissionContainerElement(submissionContainerElement)) {
+			throw new HttpException(&#x27;Id is not submission container&#x27;, HttpStatus.UNPROCESSABLE_ENTITY);
 		}
 
-		const boardAuthorizable &#x3D; await this.boardDoAuthorizableService.getBoardAuthorizable(submissionContainer);
+		await this.checkPermission(userId, submissionContainerElement, Action.read);
+
+		let submissionItems &#x3D; submissionContainerElement.children.filter(isSubmissionItem);
+
+		const boardAuthorizable &#x3D; await this.boardDoAuthorizableService.getBoardAuthorizable(submissionContainerElement);
 		let users &#x3D; boardAuthorizable.users.filter((user) &#x3D;&gt; user.userRoleEnum &#x3D;&#x3D;&#x3D; UserRoleEnum.STUDENT);
 
-		const isAuthorizedStudent &#x3D; await this.isAuthorizedStudent(userId, submissionContainer);
+		const isAuthorizedStudent &#x3D; await this.isAuthorizedStudent(userId, submissionContainerElement);
 		if (isAuthorizedStudent) {
 			submissionItems &#x3D; submissionItems.filter((item) &#x3D;&gt; item.userId &#x3D;&#x3D;&#x3D; userId);
 			users &#x3D; [];
@@ -755,18 +677,6 @@ export class SubmissionItemUc {
 		}
 
 		return false;
-	}
-
-	private async getSubmissionContainer(submissionContainerId: EntityId): Promise&lt;SubmissionContainerElement&gt; {
-		const submissionContainer &#x3D; (await this.elementService.findById(
-			submissionContainerId
-		)) as SubmissionContainerElement;
-
-		if (!(submissionContainer instanceof SubmissionContainerElement)) {
-			throw new HttpException(&#x27;Id does not belong to a submission container&#x27;, HttpStatus.UNPROCESSABLE_ENTITY);
-		}
-
-		return submissionContainer;
 	}
 
 	private async checkPermission(

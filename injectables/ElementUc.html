@@ -120,7 +120,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:18</a></div>
                             </td>
                         </tr>
 
@@ -234,8 +234,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="67"
-                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:67</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="76"
+                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:76</a></div>
                 </td>
             </tr>
 
@@ -341,8 +341,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="31"
-                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:31</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="38"
+                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:38</a></div>
                 </td>
             </tr>
 
@@ -436,8 +436,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="23"
-                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:23</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="30"
+                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:30</a></div>
                 </td>
             </tr>
 
@@ -516,7 +516,14 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
-import { AnyBoardDo, EntityId, SubmissionContainerElement, SubmissionItem, UserRoleEnum } from &#x27;@shared/domain&#x27;;
+import {
+	AnyBoardDo,
+	EntityId,
+	isSubmissionContainerElement,
+	isSubmissionItem,
+	SubmissionItem,
+	UserRoleEnum,
+} from &#x27;@shared/domain&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
 import { Action } from &#x27;@src/modules/authorization/types/action.enum&#x27;;
@@ -550,23 +557,25 @@ export class ElementUc {
 		contentElementId: EntityId,
 		completed: boolean
 	): Promise&lt;SubmissionItem&gt; {
-		const submissionContainer &#x3D; (await this.elementService.findById(contentElementId)) as SubmissionContainerElement;
+		const submissionContainerElement &#x3D; await this.elementService.findById(contentElementId);
 
-		if (!(submissionContainer instanceof SubmissionContainerElement))
+		if (!isSubmissionContainerElement(submissionContainerElement)) {
 			throw new HttpException(
 				&#x27;Cannot create submission-item for non submission-container-element&#x27;,
 				HttpStatus.UNPROCESSABLE_ENTITY
 			);
+		}
 
-		if (!submissionContainer.children.every((child) &#x3D;&gt; child instanceof SubmissionItem))
+		if (!submissionContainerElement.children.every((child) &#x3D;&gt; isSubmissionItem(child))) {
 			throw new HttpException(
 				&#x27;Children of submission-container-element must be of type submission-item&#x27;,
 				HttpStatus.UNPROCESSABLE_ENTITY
 			);
+		}
 
-		const userSubmissionExists &#x3D; submissionContainer.children.find(
-			(item) &#x3D;&gt; (item as SubmissionItem).userId &#x3D;&#x3D;&#x3D; userId
-		);
+		const userSubmissionExists &#x3D; submissionContainerElement.children
+			.filter(isSubmissionItem)
+			.find((item) &#x3D;&gt; item.userId &#x3D;&#x3D;&#x3D; userId);
 		if (userSubmissionExists) {
 			throw new HttpException(
 				&#x27;User is not allowed to have multiple submission-items per submission-container-element&#x27;,
@@ -574,9 +583,9 @@ export class ElementUc {
 			);
 		}
 
-		await this.checkPermission(userId, submissionContainer, Action.read, UserRoleEnum.STUDENT);
+		await this.checkPermission(userId, submissionContainerElement, Action.read, UserRoleEnum.STUDENT);
 
-		const submissionItem &#x3D; await this.submissionItemService.create(userId, submissionContainer, { completed });
+		const submissionItem &#x3D; await this.submissionItemService.create(userId, submissionContainerElement, { completed });
 
 		return submissionItem;
 	}
