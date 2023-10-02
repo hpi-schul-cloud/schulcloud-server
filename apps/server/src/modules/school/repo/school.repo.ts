@@ -1,9 +1,10 @@
 import { EntityName, FindOptions } from '@mikro-orm/core';
 import { EntityId, IFindOptions, SchoolEntity, SortOrder } from '@shared/domain';
 import { BaseRepo } from '@shared/repo';
-import { SchoolRepo } from '../domain';
+import { SchoolQuery, SchoolRepo } from '../domain';
 import { School } from '../domain/do/school';
 import { SchoolMapper } from './mapper/school.mapper';
+import { SchoolScope } from './scope/school.scope';
 
 // TODO: How should the repo implentation be named? I'm undecided between "SchoolMongoRepo" and "SchoolMikroOrmRepo".
 // On the one hand we could have another repo for MongoDB but with mongoose, on the other hand we could have another repo with MikroORM but for a SQL database.
@@ -14,10 +15,14 @@ export class SchoolMikroOrmRepo extends BaseRepo<SchoolEntity> implements School
 		return SchoolEntity;
 	}
 
-	public async getAllSchools(options?: IFindOptions<SchoolEntity>): Promise<School[]> {
+	public async getAllSchools(query: SchoolQuery, options?: IFindOptions<SchoolEntity>): Promise<School[]> {
+		const scope = new SchoolScope();
+		scope.allowEmptyQuery(true);
+		scope.byFederalState(query.federalStateId);
+
 		const findOptions = this.mapToMikroOrmOptions(options);
 
-		const entities = await this._em.find(SchoolEntity, {}, findOptions);
+		const entities = await this._em.find(SchoolEntity, scope.query, findOptions);
 
 		const schools = SchoolMapper.mapToDos(entities);
 
