@@ -10,7 +10,7 @@ export class SchoolResponseMapper {
 	public static mapToResponse(school: School): SchoolResponse {
 		const federalState = this.mapToFederalStateResponse(school.federalState);
 		const schoolYear = school.schoolYear && this.mapToSchoolYearResponse(school.schoolYear);
-		const systems = school.systems && school.systems.map((system) => this.mapToSystemResponse(system));
+		const systems = school.systems?.map((system) => this.mapToSystemResponse(system));
 
 		// TODO: Do we want to access the props via getProps() here or do we want getters?
 		// I added getters for federalState and schoolYear because there are conditions with them below
