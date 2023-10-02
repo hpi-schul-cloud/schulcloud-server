@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SubmissionItem } from '@shared/domain';
 import { ValidationError } from '@shared/common';
-import { setupEntities, userFactory } from '@shared/testing';
+import { richTextElementFactory, setupEntities, userFactory } from '@shared/testing';
 import {
 	cardFactory,
 	submissionContainerElementFactory,
@@ -108,12 +108,20 @@ describe(SubmissionItemService.name, () => {
 			return { submissionContainer, submissionItem };
 		};
 
-		it('should fetch the SubmissionContainer parent', async () => {
+		it('should fetch the parent', async () => {
 			const { submissionItem } = setup();
 
 			await service.update(submissionItem, true);
 
 			expect(boardDoRepo.findParentOfId).toHaveBeenCalledWith(submissionItem.id);
+		});
+
+		it('should throw if parent is not SubmissionContainerElement', async () => {
+			const submissionItem = submissionItemFactory.build();
+			const richTextElement = richTextElementFactory.build();
+			boardDoRepo.findParentOfId.mockResolvedValueOnce(richTextElement);
+
+			await expect(service.update(submissionItem, true)).rejects.toThrow(UnprocessableEntityException);
 		});
 
 		it('should call bord repo to save submission item', async () => {
