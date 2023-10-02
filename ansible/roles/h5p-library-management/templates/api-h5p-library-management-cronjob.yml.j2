@@ -6,8 +6,6 @@ metadata:
     app: api-library-management-cronjob
   name: api-library-management-cronjob
 spec:
-  itemPath: "vaults/{{ ONEPASSWORD_OPERATOR_VAULT }}/items/h5p-library-manager-ionos-s3"
-spec:
   schedule: "{{ SERVER_H5P_LIBRARY_MANAGEMENT_CRONJOB|default("0 3 * * 3,6", true) }}"
   concurrencyPolicy: Forbid
   jobTemplate:
