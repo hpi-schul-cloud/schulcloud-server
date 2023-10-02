@@ -12,9 +12,9 @@ import {
 	ContentElementType,
 	EntityId,
 	FileElement,
-	isSumbmissionItem,
+	isSubmissionContainerElement,
+	isSubmissionItem,
 	RichTextElement,
-	SubmissionContainerElement,
 	SubmissionItem,
 	UserBoardRoles,
 	UserRoleEnum,
@@ -41,15 +41,20 @@ export class SubmissionItemUc {
 		userId: EntityId,
 		submissionContainerId: EntityId
 	): Promise<{ submissionItems: SubmissionItem[]; users: UserBoardRoles[] }> {
-		const submissionContainer = await this.getSubmissionContainer(submissionContainerId);
-		await this.checkPermission(userId, submissionContainer, Action.read);
+		const submissionContainerElement = await this.elementService.findById(submissionContainerId);
 
-		let submissionItems: SubmissionItem[] = submissionContainer.children.filter(isSumbmissionItem);
+		if (!isSubmissionContainerElement(submissionContainerElement)) {
+			throw new HttpException('Id is not submission container', HttpStatus.UNPROCESSABLE_ENTITY);
+		}
 
-		const boardAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(submissionContainer);
+		await this.checkPermission(userId, submissionContainerElement, Action.read);
+
+		let submissionItems = submissionContainerElement.children.filter(isSubmissionItem);
+
+		const boardAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(submissionContainerElement);
 		let users = boardAuthorizable.users.filter((user) => user.userRoleEnum === UserRoleEnum.STUDENT);
 
-		const isAuthorizedStudent = await this.isAuthorizedStudent(userId, submissionContainer);
+		const isAuthorizedStudent = await this.isAuthorizedStudent(userId, submissionContainerElement);
 		if (isAuthorizedStudent) {
 			submissionItems = submissionItems.filter((item) => item.userId === userId);
 			users = [];
@@ -108,16 +113,6 @@ export class SubmissionItemUc {
 		}
 
 		return false;
-	}
-
-	private async getSubmissionContainer(submissionContainerId: EntityId): Promise<SubmissionContainerElement> {
-		const submissionContainer = await this.elementService.findSubmissionContainerElement(submissionContainerId);
-
-		if (!(submissionContainer instanceof SubmissionContainerElement)) {
-			throw new HttpException('Id does not belong to a submission container', HttpStatus.UNPROCESSABLE_ENTITY);
-		}
-
-		return submissionContainer;
 	}
 
 	private async checkPermission(

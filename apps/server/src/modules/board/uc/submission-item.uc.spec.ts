@@ -194,29 +194,7 @@ describe(SubmissionItemUc.name, () => {
 			it('should throw HttpException', async () => {
 				const { teacher, fileEl } = setup();
 
-				await expect(uc.findSubmissionItems(teacher.id, fileEl.id)).rejects.toThrow(
-					'Id does not belong to a submission container'
-				);
-			});
-		});
-		describe('when called with invalid submission container children', () => {
-			const setup = () => {
-				const teacher = userFactory.buildWithId();
-				const fileEl = fileElementFactory.build();
-				const submissionContainer = submissionContainerElementFactory.build({
-					children: [fileEl],
-				});
-				elementService.findById.mockResolvedValue(submissionContainer);
-
-				return { teacher, submissionContainer };
-			};
-
-			it('should throw HttpException', async () => {
-				const { teacher, submissionContainer } = setup();
-
-				await expect(uc.findSubmissionItems(teacher.id, submissionContainer.id)).rejects.toThrow(
-					'Children of submission-container-element must be of type submission-item'
-				);
+				await expect(uc.findSubmissionItems(teacher.id, fileEl.id)).rejects.toThrow('Id is not submission container');
 			});
 		});
 	});
