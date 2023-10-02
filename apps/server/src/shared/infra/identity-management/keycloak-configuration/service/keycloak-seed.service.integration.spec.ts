@@ -3,31 +3,47 @@ import { faker } from '@faker-js/faker';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { LoggerModule } from '@src/core/logger';
+import { LegacyLogger, LoggerModule } from '@src/core/logger';
 import { v1 } from 'uuid';
+import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
+import ClientRepresentation from '@keycloak/keycloak-admin-client/lib/defs/clientRepresentation';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakConfigurationModule } from '../keycloak-configuration.module';
 import { KeycloakSeedService } from './keycloak-seed.service';
 
 describe('KeycloakSeedService Integration', () => {
 	let module: TestingModule;
+	let logger: LegacyLogger;
 	let keycloak: KeycloakAdminClient;
 	let keycloakSeedService: KeycloakSeedService;
 	let keycloakAdministrationService: KeycloakAdministrationService;
 	let isKeycloakAvailable = false;
-	const numberOfIdmUsers = 1009;
+	const numberOfIdmUsers = 100_000;
 
 	const testRealm = `test-realm-${v1().toString()}`;
 
-	const createIdmUser = async (index: number): Promise<void> => {
+	const createIdmAdminUserObject = (realm: string): UserRepresentation => {
+		const user = {
+			realm,
+			username: 'keycloak',
+			firstName: undefined,
+			lastName: undefined,
+			enabled: true,
+		};
+		return user;
+	};
+
+	const createIdmUserObject = (index: number, realm: string): UserRepresentation => {
 		const firstName = faker.person.firstName();
 		const lastName = faker.person.lastName();
-		await keycloak.users.create({
+		const user = {
+			realm,
 			username: `${index}.${lastName}@sp-sh.de`,
 			firstName,
 			lastName,
 			email: `${index}.${lastName}@sp-sh.de`,
-		});
+		};
+		return user;
 	};
 
 	beforeAll(async () => {
@@ -55,7 +71,8 @@ describe('KeycloakSeedService Integration', () => {
 			keycloak = await keycloakAdministrationService.callKcAdminClient();
 		}
 		keycloakSeedService = module.get(KeycloakSeedService);
-	});
+		logger = module.get(LegacyLogger);
+	}, 30 * 60 * 1000);
 
 	afterAll(async () => {
 		await module.close();
@@ -64,29 +81,67 @@ describe('KeycloakSeedService Integration', () => {
 	beforeEach(async () => {
 		if (isKeycloakAvailable) {
 			await keycloak.realms.create({ realm: testRealm, enabled: true });
+			const { id } = await keycloak.users.create(createIdmAdminUserObject(testRealm));
 			keycloak.setConfig({ realmName: testRealm });
-			let i = 1;
-			for (i = 1; i <= numberOfIdmUsers; i += 1) {
-				// eslint-disable-next-line no-await-in-loop
-				await createIdmUser(i);
+			const client = (await keycloak.clients.find()).find(
+				(clients) => clients.clientId === 'realm-management'
+			) as ClientRepresentation;
+			const roles = await keycloak.clients.listRoles({
+				id: client.id as string,
+			});
+			const realmAdmin = roles.find((role) => role.name === 'realm-admin');
+			await keycloak.users.addClientRoleMappings({
+				id,
+				clientUniqueId: client.id as string,
+				roles: [
+					{
+						id: realmAdmin?.id as string,
+						name: realmAdmin?.name as string,
+					},
+				],
+			});
+			await keycloak.users.resetPassword({
+				id,
+				credential: {
+					temporary: false,
+					type: 'password',
+					value: 'keycloak',
+				},
+			});
+
+			for (let i = 0; i < numberOfIdmUsers; i += 1) {
+				try {
+					if (i % 5000 === 0) {
+						// eslint-disable-next-line no-await-in-loop
+						await keycloakAdministrationService.testKcConnection();
+					}
+					// eslint-disable-next-line no-await-in-loop
+					await keycloak.users.create(createIdmUserObject(i, testRealm));
+				} catch (err) {
+					logger.log(err);
+				}
 			}
 		}
-	}, 60000);
+	}, 30 * 60 * 1000);
 
 	afterEach(async () => {
 		if (isKeycloakAvailable) {
 			await keycloak.realms.del({ realm: testRealm });
 		}
-	});
+	}, 30 * 60 * 1000);
 
 	// Execute this test for a test run against a running Keycloak instance
 	describe('clean', () => {
 		describe('Given all users are able to delete', () => {
-			it('should delete all users in the IDM', async () => {
-				if (!isKeycloakAvailable) return;
-				const deletedUsers = await keycloakSeedService.clean(500);
-				expect(deletedUsers).toBe(numberOfIdmUsers);
-			}, 60000);
+			it(
+				'should delete all users in the IDM',
+				async () => {
+					if (!isKeycloakAvailable) return;
+					const deletedUsers = await keycloakSeedService.clean(1000);
+					expect(deletedUsers).toBe(numberOfIdmUsers);
+				},
+				30 * 60 * 1000
+			);
 		});
 	});
 });
