@@ -4,7 +4,6 @@ import {
 	EntityId,
 	isSubmissionContainerElement,
 	isSubmissionItem,
-	SubmissionContainerElement,
 	SubmissionItem,
 	UserBoardRoles,
 	UserRoleEnum,
