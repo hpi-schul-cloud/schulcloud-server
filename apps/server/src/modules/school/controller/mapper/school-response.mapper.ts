@@ -1,3 +1,4 @@
+import { PaginationParams } from '@shared/controller';
 import { County, FederalState, School, SchoolYear, System } from '../../domain';
 import { SchoolListResponse, SchoolResponse } from '../dto';
 import { CountyResponse } from '../dto/county.response';
@@ -31,10 +32,10 @@ export class SchoolResponseMapper {
 		return res;
 	}
 
-	public static mapToListResponse(schools: School[]): SchoolListResponse {
+	public static mapToListResponse(schools: School[], pagination: PaginationParams): SchoolListResponse {
 		const dtos = schools.map((school) => this.mapToReducedResponse(school));
 
-		const list = new SchoolListResponse(dtos, dtos.length);
+		const list = new SchoolListResponse(dtos, dtos.length, pagination.skip, pagination.limit);
 
 		return list;
 	}

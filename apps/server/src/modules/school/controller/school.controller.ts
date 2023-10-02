@@ -21,8 +21,7 @@ export class SchoolController {
 	): Promise<SchoolListResponse> {
 		const schools = await this.schoolUc.getAllSchools(query, pagination);
 
-		// TODO: Add pagination params to response
-		const res = SchoolResponseMapper.mapToListResponse(schools);
+		const res = SchoolResponseMapper.mapToListResponse(schools, pagination);
 
 		return res;
 	}
