@@ -172,7 +172,7 @@ const hasEditPermissions = async (context) => {
 			if (
 				(user.permissions.includes('SCHOOL_CHAT_MANAGE') && updatesChat(key, context.data)) ||
 				(user.permissions.includes('SCHOOL_STUDENT_TEAM_MANAGE') && updatesTeamCreation(key, context.data)) ||
-				(user.permissions.includes('SCHOOL_LOGO_MANAGE') && key === 'logo_dataUrl')
+				(user.permissions.includes('SCHOOL_LOGO_MANAGE') && (key === 'logo_dataUrl' || key === 'logo_name'))
 			) {
 				patch[key] = context.data[key];
 			}
