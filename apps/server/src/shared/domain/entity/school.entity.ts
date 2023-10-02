@@ -81,8 +81,8 @@ export class SchoolEntity extends BaseEntity {
 	@Embedded(() => SchoolRoles, { object: true, nullable: true, prefix: false })
 	permissions?: SchoolRoles;
 
-	@ManyToOne(() => SchoolYearEntity, { fieldName: 'currentYear', nullable: true })
-	schoolYear?: SchoolYearEntity;
+	@ManyToOne(() => SchoolYearEntity, { nullable: true })
+	currentYear?: SchoolYearEntity;
 
 	@OneToOne(
 		() => UserLoginMigrationEntity,
@@ -127,7 +127,7 @@ export class SchoolEntity extends BaseEntity {
 			this.features = props.features;
 		}
 		if (props.schoolYear) {
-			this.schoolYear = props.schoolYear;
+			this.currentYear = props.schoolYear;
 		}
 		if (props.userLoginMigration) {
 			this.userLoginMigration = props.userLoginMigration;

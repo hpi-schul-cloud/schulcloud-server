@@ -61,7 +61,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 		const userEntity: User = await this._em.findOneOrFail(this.entityName, id as FilterQuery<User>);
 
 		if (populate) {
-			await this._em.populate(userEntity, ['roles', 'school.systems', 'school.schoolYear']);
+			await this._em.populate(userEntity, ['roles', 'school.systems', 'school.currentYear']);
 			await this.populateRoles(userEntity.roles.getItems());
 		}
 

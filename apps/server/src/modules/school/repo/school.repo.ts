@@ -28,7 +28,7 @@ export class SchoolMikroOrmRepo extends BaseRepo<SchoolEntity> implements School
 		const entity = await this._em.findOneOrFail(
 			SchoolEntity,
 			{ id: schoolId },
-			{ populate: ['federalState', 'schoolYear', 'systems'] }
+			{ populate: ['federalState', 'currentYear', 'systems'] }
 		);
 
 		const school = SchoolMapper.mapToDo(entity);

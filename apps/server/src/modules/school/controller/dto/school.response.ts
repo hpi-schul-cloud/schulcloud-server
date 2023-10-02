@@ -11,7 +11,7 @@ export class SchoolResponse {
 		name,
 		officialSchoolNumber,
 		federalState,
-		schoolYear,
+		currentYear,
 		purpose,
 		features,
 		county,
@@ -21,7 +21,7 @@ export class SchoolResponse {
 		this.name = name;
 		this.officialSchoolNumber = officialSchoolNumber;
 		this.federalState = federalState;
-		this.schoolYear = schoolYear;
+		this.currentYear = currentYear;
 		this.purpose = purpose;
 		this.features = features;
 		this.county = county;
@@ -38,7 +38,7 @@ export class SchoolResponse {
 	officialSchoolNumber?: string;
 
 	@ApiProperty({ type: () => SchoolYearResponse })
-	schoolYear?: SchoolYearResponse;
+	currentYear?: SchoolYearResponse;
 
 	@ApiProperty({ type: () => FederalStateResponse })
 	federalState: FederalStateResponse;

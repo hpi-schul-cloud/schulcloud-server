@@ -9,7 +9,7 @@ import { SystemResponse } from '../dto/system.response';
 export class SchoolResponseMapper {
 	public static mapToResponse(school: School): SchoolResponse {
 		const federalState = this.mapToFederalStateResponse(school.federalState);
-		const schoolYear = school.schoolYear && this.mapToSchoolYearResponse(school.schoolYear);
+		const currentYear = school.currentYear && this.mapToSchoolYearResponse(school.currentYear);
 		const systems = school.systems?.map((system) => this.mapToSystemResponse(system));
 
 		// TODO: Do we want to access the props via getProps() here or do we want getters?
@@ -20,7 +20,7 @@ export class SchoolResponseMapper {
 			id: school.id,
 			name: school.getProps().name,
 			officialSchoolNumber: school.getProps().officialSchoolNumber,
-			schoolYear,
+			currentYear,
 			federalState,
 			county: school.getProps().county,
 			purpose: school.getProps().purpose,

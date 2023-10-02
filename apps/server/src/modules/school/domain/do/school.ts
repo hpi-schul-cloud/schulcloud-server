@@ -5,8 +5,8 @@ import { SchoolYear } from './school-year';
 import { System } from './system';
 
 export class School extends DomainObject<SchoolProps> {
-	public get schoolYear() {
-		return this.getProps().schoolYear;
+	public get currentYear() {
+		return this.getProps().currentYear;
 	}
 
 	public get federalState() {
@@ -25,7 +25,7 @@ interface SchoolProps extends AuthorizableObject {
 	previousExternalId?: string;
 	inMaintenanceSince?: Date;
 	inUserMigration?: boolean;
-	schoolYear?: SchoolYear;
+	currentYear?: SchoolYear;
 	federalState: FederalState;
 	county?: County;
 	purpose?: SchoolPurpose;

@@ -60,8 +60,8 @@ export class CourseCopyService {
 			name: copyName,
 			color: originalCourse.color,
 			teachers: [user],
-			startDate: user.school.schoolYear?.startDate,
-			untilDate: user.school.schoolYear?.endDate,
+			startDate: user.school.currentYear?.startDate,
+			untilDate: user.school.currentYear?.endDate,
 			copyingSince: new Date(),
 		});
 

@@ -6,7 +6,7 @@ import { SystemMapper } from './system.mapper';
 
 export class SchoolMapper {
 	public static mapToDo(entity: SchoolEntity): School {
-		const schoolYear = entity.schoolYear && SchoolYearMapper.mapToDo(entity.schoolYear);
+		const schoolYear = entity.currentYear && SchoolYearMapper.mapToDo(entity.currentYear);
 		const federalState = FederalStateMapper.mapToDo(entity.federalState);
 		const systems = entity.systems.getItems().map((system) => SystemMapper.mapToDo(system));
 
@@ -18,7 +18,7 @@ export class SchoolMapper {
 			previousExternalId: entity.previousExternalId,
 			inMaintenanceSince: entity.inMaintenanceSince,
 			inUserMigration: entity.inUserMigration,
-			schoolYear,
+			currentYear: schoolYear,
 			federalState,
 			county: entity.county,
 			purpose: entity.purpose,
