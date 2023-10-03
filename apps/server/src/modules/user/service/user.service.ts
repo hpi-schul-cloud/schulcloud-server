@@ -108,11 +108,13 @@ export class UserService {
 		}
 	}
 
-	async deleteUser(userId: EntityId): Promise<void> {
+	async deleteUser(userId: EntityId): Promise<number> {
 		if (!userId) {
 			throw new InternalServerErrorException('User id is missing');
 		}
 
-		await this.userRepo.deleteUser(userId);
+		const deletedUser: Promise<number> = this.userRepo.deleteUser(userId);
+
+		return deletedUser;
 	}
 }

@@ -355,18 +355,20 @@ describe('UserService', () => {
 				userFactory.asStudent().buildWithId();
 
 				userRepo.findById.mockResolvedValue(user1);
+				userRepo.deleteUser.mockResolvedValue(1);
 
 				return {
 					user1,
 				};
 			};
 
-			it('should call userRepo.deleteUser', async () => {
+			it('should delete user by userId', async () => {
 				const { user1 } = setup();
 
-				await service.deleteUser(user1.id);
+				const result = await service.deleteUser(user1.id);
 
-				expect(userRepo.deleteUser).toBeCalledWith(user1.id);
+				expect(userRepo.deleteUser).toHaveBeenCalledWith(user1.id);
+				expect(result).toEqual(1);
 			});
 		});
 	});

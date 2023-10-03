@@ -401,14 +401,23 @@ describe('user repo', () => {
 	});
 
 	describe('delete', () => {
-		it('should delete user', async () => {
+		const setup = async () => {
 			const user1: User = userFactory.buildWithId();
 			const user2: User = userFactory.buildWithId();
 			const user3: User = userFactory.buildWithId();
-
 			await em.persistAndFlush([user1, user2, user3]);
 
-			await repo.deleteUser(user1.id);
+			return {
+				user1,
+				user2,
+				user3,
+			};
+		};
+		it('should delete user', async () => {
+			const { user1, user2, user3 } = await setup();
+			const deleteResult = await repo.deleteUser(user1.id);
+			expect(deleteResult).toEqual(1);
+
 			const result1 = await em.find(User, { id: user1.id });
 			expect(result1).toHaveLength(0);
 
