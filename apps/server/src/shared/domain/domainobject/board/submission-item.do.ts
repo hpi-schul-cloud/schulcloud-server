@@ -38,3 +38,7 @@ export interface SubmissionItemProps extends BoardCompositeProps {
 	completed: boolean;
 	userId: EntityId;
 }
+
+export function isSubmissionItem(reference: unknown): reference is SubmissionItem {
+	return reference instanceof SubmissionItem;
+}
