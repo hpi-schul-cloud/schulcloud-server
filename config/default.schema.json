@@ -1312,7 +1312,7 @@
 		"TLDRAW": {
 			"type": "object",
 			"description": "Tldraw managing variables.",
-			"required": ["PING_TIMEOUT", "SOCKET_PORT","GC_ENABLED", "DB_COLLECTION_NAME", "DB_FLUSH_SIZE", "DB_MULTIPLE_COLLECTIONS", "DB_URL", "DB_TEST_URL"],
+			"required": ["PING_TIMEOUT", "SOCKET_PORT","GC_ENABLED", "DB_COLLECTION_NAME", "DB_FLUSH_SIZE", "DB_MULTIPLE_COLLECTIONS"],
 			"properties": {
 				"SOCKET_PORT": {
 					"type": "number",
@@ -1337,14 +1337,6 @@
 				"DB_MULTIPLE_COLLECTIONS": {
 					"type": "boolean",
 					"description": "DB collection allowing multiple collections for drawing"
-				},
-				"DB_URL": {
-					"type": "string",
-					"description": "DB connection url"
-				},
-				"DB_TEST_URL": {
-					"type": "string",
-					"description": "DB connection url for testing"
 				}
 			},
 			"default": {
@@ -1353,10 +1345,18 @@
 				"GC_ENABLED": true,
 				"DB_COLLECTION_NAME": "drawing",
 				"DB_FLUSH_SIZE": 400,
-				"DB_MULTIPLE_COLLECTIONS": false,
-				"DB_URL": "mongodb://127.0.0.1:27017/tldraw",
-				"DB_TEST_URL": "mongodb://127.0.0.1:27017/tldraw-test"
+				"DB_MULTIPLE_COLLECTIONS": false
 			}
+		},
+		"TLDRAW_DB_URL": {
+			"type": "string",
+			"default": "mongodb://127.0.0.1:27017/tldraw",
+			"description": "DB connection url"
+		},
+		"TLDRAW_DB_TEST_URL": {
+			"type": "string",
+			"default": "mongodb://127.0.0.1:27017/tldraw-test",
+			"description": "DB connection url for testing"
 		},
 		"FEATURE_TLDRAW_ENABLED": {
 			"type": "boolean",
