@@ -1,6 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { NodeEnvType } from '@src/modules/server';
-import { TLDRAW_DB_URL } from '@src/config';
 
 export interface TldrawConfig {
 	NEST_LOG_LEVEL: string;
@@ -14,6 +13,11 @@ export interface TldrawConfig {
 	TLDRAW_PING_TIMEOUT: number;
 }
 
+const tldrawConnectionString: string =
+	(Configuration.get('NODE_ENV') as NodeEnvType) === NodeEnvType.TEST
+		? (Configuration.get('TLDRAW__DB_URL') as string)
+		: (Configuration.get('TLDRAW__DB_TEST_URL') as string);
+
 const tldrawConfig = {
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
@@ -22,7 +26,7 @@ const tldrawConfig = {
 	TLDRAW_DB_FLUSH_SIZE: Configuration.get('TLDRAW__DB_FLUSH_SIZE') as number,
 	TLDRAW_DB_MULTIPLE_COLLECTIONS: Configuration.get('TLDRAW__DB_MULTIPLE_COLLECTIONS') as boolean,
 	FEATURE_TLDRAW_ENABLED: Configuration.get('FEATURE_TLDRAW_ENABLED') as boolean,
-	CONNECTION_STRING: TLDRAW_DB_URL,
+	CONNECTION_STRING: tldrawConnectionString,
 	TLDRAW_PING_TIMEOUT: Configuration.get('TLDRAW__PING_TIMEOUT') as number,
 };
 

@@ -20,7 +20,7 @@ export class WSSharedDoc extends Doc {
 	 * @param {string} name
 	 * @param {TldrawWsService} tldrawService
 	 */
-	constructor(name: string, private readonly tldrawService: TldrawWsService) {
+	constructor(name: string, private tldrawService: TldrawWsService) {
 		super({ gc: gcEnabled });
 		this.name = name;
 		this.conns = new Map();
@@ -28,8 +28,9 @@ export class WSSharedDoc extends Doc {
 		this.awareness.setLocalState(null);
 
 		this.awareness.on('update', this.awarenessChangeHandler);
-		// eslint-disable-next-line @typescript-eslint/unbound-method
-		this.on('update', this.tldrawService.updateHandler);
+		this.on('update', (update: Uint8Array, origin, doc: WSSharedDoc) => {
+			this.tldrawService.updateHandler(update, origin, doc);
+		});
 	}
 
 	/**

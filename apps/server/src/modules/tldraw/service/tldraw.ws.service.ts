@@ -86,7 +86,9 @@ export class TldrawWsService {
 		encoding.writeVarUint(encoder, WSMessageType.SYNC);
 		writeUpdate(encoder, update);
 		const message = encoding.toUint8Array(encoder);
-		doc.conns.forEach((_, conn) => this.send(doc, conn, message));
+		doc.conns.forEach((_, conn) => {
+			this.send(doc, conn, message);
+		});
 	}
 
 	/**

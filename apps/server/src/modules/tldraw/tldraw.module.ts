@@ -4,6 +4,7 @@ import { createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
 import { TldrawBoardRepo } from '@src/modules/tldraw/repo';
+import { TldrawWsService } from '@src/modules/tldraw/service';
 import { TldrawWs } from './controller';
 import { config } from './config';
 
@@ -11,6 +12,6 @@ const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(conf
 
 @Module({
 	imports,
-	providers: [Logger, TldrawWs, TldrawBoardRepo],
+	providers: [Logger, TldrawWs, TldrawWsService, TldrawBoardRepo],
 })
 export class TldrawModule {}

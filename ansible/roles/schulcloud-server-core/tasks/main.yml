@@ -90,7 +90,7 @@
       namespace: "{{ NAMESPACE }}"
       template: tldraw-deployment.yml.j2
 
-  - name: TlDrawServerService
+  - name: TlDrawWsService
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
