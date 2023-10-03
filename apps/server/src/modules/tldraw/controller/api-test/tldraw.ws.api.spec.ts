@@ -41,10 +41,10 @@ describe('WebSocketController (WsAdapter)', () => {
 	const getMessage = () => new TextEncoder().encode(testMessage);
 
 	beforeAll(async () => {
-		const imports = [CoreModule, TldrawWsService, ConfigModule.forRoot(createConfigModuleOptions(config))];
+		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
 		const testingModule = await Test.createTestingModule({
 			imports,
-			providers: [TldrawWs],
+			providers: [TldrawWs, TldrawWsService],
 		}).compile();
 		gateway = testingModule.get<TldrawWs>(TldrawWs);
 		app = testingModule.createNestApplication();
