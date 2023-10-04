@@ -2,6 +2,7 @@ import { FederalStateDO, ICounty } from '../../domainobject/federal-state.do';
 import { CountyResponse } from '../dto';
 import { FederalStateResponse } from '../dto/federal-state.response';
 
+// TODO: move to mapper
 export class FederalStateMapper {
 	static mapFederalStateToResponse(federalStateDO: FederalStateDO): FederalStateResponse {
 		const dto = new FederalStateResponse({

@@ -6,6 +6,12 @@
 // import { FederalStateService } from './federal-state.service';
 // import { FederalStateNames } from '../types/federal-state-names.enum';
 
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
+import { setupEntities } from '@shared/testing';
+import { FederalStateRepo } from '../repo';
+import { FederalStateService } from './federal-state.service';
+
 // describe('FederalStateService', () => {
 // 	let module: TestingModule;
 // 	let service: FederalStateService;
@@ -51,3 +57,38 @@
 // 		});
 // 	});
 // });
+
+describe(FederalStateService.name, () => {
+	let module: TestingModule;
+	let service: FederalStateService;
+	let federalStateRepo: DeepMocked<FederalStateRepo>;
+
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
+			providers: [
+				FederalStateService,
+				{
+					provide: FederalStateRepo,
+					useValue: createMock<FederalStateRepo>(),
+				},
+			],
+		}).compile();
+
+		service = module.get(FederalStateService);
+		federalStateRepo = module.get(FederalStateRepo);
+
+		await setupEntities();
+	});
+
+	afterAll(async () => {
+		await module.close();
+	});
+
+	describe('findFederalStateByName', () => {});
+
+	describe('findAll', () => {});
+
+	describe('create', () => {});
+
+	describe('delete', () => {});
+});
