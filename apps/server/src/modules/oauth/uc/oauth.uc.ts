@@ -63,6 +63,9 @@ export class OauthUc {
 		return authenticationUrl;
 	}
 
+	/**
+	 * @deprecated Please use the oauth2 strategy instead.
+	 */
 	async processOAuthLogin(cachedState: OauthLoginStateDto, code?: string, error?: string): Promise<OAuthProcessDto> {
 		const { state, systemId, postLoginRedirect, userLoginMigration } = cachedState;
 
@@ -139,8 +142,12 @@ export class OauthUc {
 		return migrationDto;
 	}
 
+	/**
+	 * @deprecated Please use the {@link ICurrentUser} from the specific stragegy instead.
+	 */
 	private async getJwtForUser(userId: EntityId): Promise<string> {
 		const currentUser: ICurrentUser = await this.userService.getResolvedUser(userId);
+		currentUser.isExternalUser = true;
 
 		const { accessToken } = await this.authenticationService.generateJwt(currentUser);
 

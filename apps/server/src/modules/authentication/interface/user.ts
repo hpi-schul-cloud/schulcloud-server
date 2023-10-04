@@ -39,4 +39,6 @@ export interface ICurrentUser {
 
 	/** True if a support member impersonates the user */
 	impersonated?: boolean;
+
+	isExternalUser: boolean;
 }

@@ -61,6 +61,7 @@ describe('CurrentUserMapper', () => {
 		describe('when userDO has no ID', () => {
 			it('should throw error', () => {
 				const user: UserDO = userDoFactory.build({ createdAt: new Date(), updatedAt: new Date() });
+
 				expect(() => CurrentUserMapper.userDoToICurrentUser(accountId, user)).toThrow(ValidationError);
 			});
 		});
@@ -68,7 +69,9 @@ describe('CurrentUserMapper', () => {
 		describe('when userDO is valid', () => {
 			it('should return valid ICurrentUser instance', () => {
 				const user: UserDO = userDoFactory.buildWithId({ id: userId, createdAt: new Date(), updatedAt: new Date() });
+
 				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user);
+
 				expect(currentUser).toMatchObject({
 					accountId,
 					systemId: undefined,
@@ -80,10 +83,21 @@ describe('CurrentUserMapper', () => {
 		});
 
 		describe('when userDO is valid and a systemId is provided', () => {
-			it('should return valid ICurrentUser instance with systemId', () => {
+			const setup = () => {
 				const user: UserDO = userDoFactory.buildWithId({ id: userId, createdAt: new Date(), updatedAt: new Date() });
 				const systemId = 'mockSystemId';
+
+				return {
+					user,
+					systemId,
+				};
+			};
+
+			it('should return valid ICurrentUser instance with systemId', () => {
+				const { user, systemId } = setup();
+
 				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user, systemId);
+
 				expect(currentUser).toMatchObject({
 					accountId,
 					systemId,
@@ -132,7 +146,7 @@ describe('CurrentUserMapper', () => {
 
 	describe('jwtToICurrentUser', () => {
 		describe('when JWT is provided with all claims', () => {
-			it('should return current user', () => {
+			const setup = () => {
 				const jwtPayload: JwtPayload = {
 					accountId: 'dummyAccountId',
 					systemId: 'dummySystemId',
@@ -140,6 +154,7 @@ describe('CurrentUserMapper', () => {
 					schoolId: 'dummySchoolId',
 					userId: 'dummyUserId',
 					support: true,
+					isExternalUser: true,
 					sub: 'dummyAccountId',
 					jti: 'random string',
 					aud: 'some audience',
@@ -147,7 +162,17 @@ describe('CurrentUserMapper', () => {
 					iat: Math.floor(new Date().getTime() / 1000),
 					exp: Math.floor(new Date().getTime() / 1000) + 3600,
 				};
+
+				return {
+					jwtPayload,
+				};
+			};
+
+			it('should return current user', () => {
+				const { jwtPayload } = setup();
+
 				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
+
 				expect(currentUser).toMatchObject({
 					accountId: jwtPayload.accountId,
 					systemId: jwtPayload.systemId,
@@ -157,9 +182,20 @@ describe('CurrentUserMapper', () => {
 					impersonated: jwtPayload.support,
 				});
 			});
+
+			it('should return current user with default for isExternalUser', () => {
+				const { jwtPayload } = setup();
+
+				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
+
+				expect(currentUser).toMatchObject({
+					isExternalUser: false,
+				});
+			});
 		});
+
 		describe('when JWT is provided without optional claims', () => {
-			it('should return current user', () => {
+			const setup = () => {
 				const jwtPayload: JwtPayload = {
 					accountId: 'dummyAccountId',
 					roles: ['mockRoleId'],
@@ -172,12 +208,32 @@ describe('CurrentUserMapper', () => {
 					iat: Math.floor(new Date().getTime() / 1000),
 					exp: Math.floor(new Date().getTime() / 1000) + 3600,
 				};
+
+				return {
+					jwtPayload,
+				};
+			};
+
+			it('should return current user', () => {
+				const { jwtPayload } = setup();
+
 				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
+
 				expect(currentUser).toMatchObject({
 					accountId: jwtPayload.accountId,
 					roles: [jwtPayload.roles[0]],
 					schoolId: jwtPayload.schoolId,
 					userId: jwtPayload.userId,
+				});
+			});
+
+			it('should return current user with default for isExternalUser', () => {
+				const { jwtPayload } = setup();
+
+				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
+
+				expect(currentUser).toMatchObject({
+					isExternalUser: false,
 				});
 			});
 		});

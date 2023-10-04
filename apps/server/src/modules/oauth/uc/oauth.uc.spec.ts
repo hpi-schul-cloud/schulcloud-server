@@ -254,7 +254,7 @@ describe('OAuthUc', () => {
 				externalId: 'mockExternalId',
 			});
 
-			const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
+			const currentUser: ICurrentUser = { userId: 'userId', isExternalUser: true } as ICurrentUser;
 			const testSystem: SystemDto = new SystemDto({
 				id: 'mockSystemId',
 				type: 'mock',

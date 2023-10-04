@@ -86,6 +86,7 @@ describe('Oauth2Strategy', () => {
 					roles: [user.roles[0].id],
 					schoolId: user.schoolId,
 					accountId: account.id,
+					isExternalUser: true,
 				});
 			});
 		});

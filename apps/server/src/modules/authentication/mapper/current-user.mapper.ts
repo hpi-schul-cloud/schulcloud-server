@@ -13,10 +13,16 @@ export class CurrentUserMapper {
 			roles: user.roles.getItems().map((role: Role) => role.id),
 			schoolId: user.school.id,
 			userId: user.id,
+			isExternalUser: false,
 		};
 	}
 
-	static userDoToICurrentUser(accountId: string, user: UserDO, systemId?: string): ICurrentUser {
+	static userDoToICurrentUser(
+		accountId: string,
+		user: UserDO,
+		systemId?: string,
+		isExternalUser = false
+	): ICurrentUser {
 		if (!user.id) {
 			throw new ValidationError('user has no ID');
 		}
@@ -27,6 +33,7 @@ export class CurrentUserMapper {
 			roles: user.roles.map((roleRef: RoleReference) => roleRef.id),
 			schoolId: user.schoolId,
 			userId: user.id,
+			isExternalUser,
 		};
 	}
 
@@ -38,6 +45,7 @@ export class CurrentUserMapper {
 			schoolId: jwtPayload.schoolId,
 			userId: jwtPayload.userId,
 			impersonated: jwtPayload.support,
+			isExternalUser: false,
 		};
 	}
 }
