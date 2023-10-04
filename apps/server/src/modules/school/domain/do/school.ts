@@ -16,6 +16,18 @@ export class School extends DomainObject<SchoolProps> {
 	public get systems() {
 		return this.getProps().systems;
 	}
+
+	public get features() {
+		return this.getProps().features;
+	}
+
+	public addFeature(feature: SchoolFeatures): void {
+		this.props.features?.add(feature);
+	}
+
+	public removeFeature(feature: SchoolFeatures): void {
+		this.props.features?.delete(feature);
+	}
 }
 
 interface SchoolProps extends AuthorizableObject {
@@ -29,7 +41,7 @@ interface SchoolProps extends AuthorizableObject {
 	federalState: FederalState;
 	county?: County;
 	purpose?: SchoolPurpose;
-	features?: SchoolFeatures[];
+	features?: Set<SchoolFeatures>;
 	systems?: System[];
 	// userLoginMigration?: UserLoginMigration;
 }

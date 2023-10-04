@@ -104,6 +104,9 @@ export class SchoolEntity extends BaseEntity {
 	@Property({ nullable: true })
 	purpose?: SchoolPurpose;
 
+	@Property({ nullable: true })
+	enableStudentTeamCreation?: boolean;
+
 	constructor(props: ISchoolProperties) {
 		super();
 		if (props.externalId) {

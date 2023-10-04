@@ -1,4 +1,5 @@
 import { SchoolEntity } from '@shared/domain';
+import { SchoolFeatures } from '../../domain';
 import { School } from '../../domain/do/school';
 import { FederalStateMapper } from './federal-state.mapper';
 import { SchoolYearMapper } from './school-year.mapper';
@@ -6,8 +7,9 @@ import { SystemMapper } from './system.mapper';
 
 export class SchoolMapper {
 	public static mapToDo(entity: SchoolEntity): School {
-		const schoolYear = entity.currentYear && SchoolYearMapper.mapToDo(entity.currentYear);
+		const currentYear = entity.currentYear && SchoolYearMapper.mapToDo(entity.currentYear);
 		const federalState = FederalStateMapper.mapToDo(entity.federalState);
+		const features = this.mapFeatures(entity);
 		const systems = entity.systems.getItems().map((system) => SystemMapper.mapToDo(system));
 
 		const school = new School({
@@ -18,11 +20,11 @@ export class SchoolMapper {
 			previousExternalId: entity.previousExternalId,
 			inMaintenanceSince: entity.inMaintenanceSince,
 			inUserMigration: entity.inUserMigration,
-			currentYear: schoolYear,
+			currentYear,
 			federalState,
 			county: entity.county,
 			purpose: entity.purpose,
-			features: entity.features,
+			features,
 			systems,
 		});
 
@@ -33,5 +35,15 @@ export class SchoolMapper {
 		const schools = schoolEntities.map((entity) => this.mapToDo(entity));
 
 		return schools;
+	}
+
+	private static mapFeatures(entity: SchoolEntity): Set<SchoolFeatures> {
+		const features = new Set(entity.features);
+
+		if (entity.enableStudentTeamCreation) {
+			features.add(SchoolFeatures.IS_TEAM_CREATION_BY_STUDENTS_ENABLED);
+		}
+
+		return features;
 	}
 }

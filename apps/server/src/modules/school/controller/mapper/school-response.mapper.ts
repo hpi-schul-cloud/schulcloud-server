@@ -11,6 +11,7 @@ export class SchoolResponseMapper {
 	public static mapToResponse(school: School): SchoolResponse {
 		const federalState = this.mapToFederalStateResponse(school.federalState);
 		const currentYear = school.currentYear && this.mapToSchoolYearResponse(school.currentYear);
+		const features = school.features && Array.from(school.features);
 		const systems = school.systems?.map((system) => this.mapToSystemResponse(system));
 
 		// TODO: Do we want to access the props via getProps() here or do we want getters?
@@ -25,7 +26,7 @@ export class SchoolResponseMapper {
 			federalState,
 			county: school.getProps().county,
 			purpose: school.getProps().purpose,
-			features: school.getProps().features,
+			features,
 			systems,
 		});
 
@@ -50,6 +51,7 @@ export class SchoolResponseMapper {
 		return res;
 	}
 
+	// TODO: Create own mappers for other DOs!
 	private static mapToFederalStateResponse(federalState: FederalState): FederalStateResponse {
 		const counties = federalState.counties && this.mapToCountyResponses(federalState.counties);
 
