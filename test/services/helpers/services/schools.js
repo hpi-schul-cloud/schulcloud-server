@@ -22,6 +22,7 @@ const create =
 		documentBaseDirType,
 		// eslint-disable-next-line camelcase
 		logo_dataUrl,
+		logo_name,
 		purpose = 'test',
 		rssFeeds = [],
 		features = [],
@@ -56,6 +57,7 @@ const create =
 			currentYear,
 			// eslint-disable-next-line camelcase
 			logo_dataUrl,
+			logo_name,
 			purpose,
 			rssFeeds,
 			features,
