@@ -1,24 +1,20 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Card, Column, ContentElementType, EntityId, LinkElement } from '@shared/domain';
+import { Card, Column, ContentElementType, EntityId } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementService } from './content-element.service';
-import { OpenGraphProxyService } from './open-graph-proxy.service';
 
 @Injectable()
 export class CardService {
 	constructor(
 		private readonly boardDoRepo: BoardDoRepo,
 		private readonly boardDoService: BoardDoService,
-		private readonly contentElementService: ContentElementService,
-		private readonly openGraphProxyService: OpenGraphProxyService
+		private readonly contentElementService: ContentElementService
 	) {}
 
 	async findById(cardId: EntityId): Promise<Card> {
-		const card = await this.boardDoRepo.findByClassAndId(Card, cardId);
-		const extendedCard = await this.extendLinkElements(card);
-		return extendedCard;
+		return this.boardDoRepo.findByClassAndId(Card, cardId);
 	}
 
 	async findByIds(cardIds: EntityId[]): Promise<Card[]> {
@@ -27,34 +23,7 @@ export class CardService {
 			throw new NotFoundException('some ids do not belong to a card');
 		}
 
-		const promises: Promise<Card>[] = [];
-		for (const card of cards) {
-			const extendedCardPromise = this.extendLinkElements(card as Card);
-			promises.push(extendedCardPromise);
-		}
-
-		const extendedCards = Promise.all(promises);
-		return extendedCards;
-	}
-
-	private async extendLinkElements(card: Card): Promise<Card> {
-		const linkElements: LinkElement[] = card.children.filter((c) => c instanceof LinkElement) as LinkElement[];
-		const promises: Promise<unknown>[] = [];
-		for (const linkElement of linkElements) {
-			promises.push(this.extendLinkElement(linkElement));
-		}
-		(await Promise.all(promises)) as LinkElement[];
-
-		return card;
-	}
-
-	private async extendLinkElement(linkElement: LinkElement): Promise<void> {
-		try {
-			linkElement.openGraphData = await this.openGraphProxyService.fetchOpenGraphData(linkElement.url);
-		} catch (e) {
-			return Promise.resolve();
-		}
-		return Promise.resolve();
+		return cards as Card[];
 	}
 
 	async create(parent: Column, requiredEmptyElements?: ContentElementType[]): Promise<Card> {

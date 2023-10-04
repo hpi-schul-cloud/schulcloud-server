@@ -127,6 +127,8 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		const copy = new LinkElement({
 			id: new ObjectId().toHexString(),
 			url: original.url,
+			title: original.title,
+			imageUrl: original.imageUrl,
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),

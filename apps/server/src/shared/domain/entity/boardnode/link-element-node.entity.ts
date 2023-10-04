@@ -8,10 +8,18 @@ export class LinkElementNode extends BoardNode {
 	@Property()
 	url: string;
 
+	@Property()
+	title: string;
+
+	@Property()
+	imageUrl?: string;
+
 	constructor(props: LinkElementNodeProps) {
 		super(props);
 		this.type = BoardNodeType.LINK_ELEMENT;
 		this.url = props.url;
+		this.title = props.title;
+		this.imageUrl = props.imageUrl;
 	}
 
 	useDoBuilder(builder: BoardDoBuilder): AnyBoardDo {
@@ -23,4 +31,6 @@ export class LinkElementNode extends BoardNode {
 
 export interface LinkElementNodeProps extends BoardNodeProps {
 	url: string;
+	title: string;
+	imageUrl?: string;
 }

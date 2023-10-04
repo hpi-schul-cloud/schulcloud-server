@@ -1,7 +1,8 @@
+import { Injectable } from '@nestjs/common';
 import { sanitizeRichText } from '@shared/controller';
 import {
 	AnyBoardDo,
-	BoardCompositeVisitor,
+	BoardCompositeVisitorAsync,
 	Card,
 	Column,
 	ColumnBoard,
@@ -21,75 +22,81 @@ import {
 	RichTextContentBody,
 	SubmissionContainerContentBody,
 } from '../controller/dto';
+import { OpenGraphProxyService } from './open-graph-proxy.service';
 
-export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
+@Injectable()
+export class ContentElementUpdateVisitor implements BoardCompositeVisitorAsync {
 	private readonly content: AnyElementContentBody;
 
-	constructor(content: AnyElementContentBody) {
+	constructor(content: AnyElementContentBody, private readonly openGraphProxyService: OpenGraphProxyService) {
 		this.content = content;
 	}
 
-	visitColumnBoard(columnBoard: ColumnBoard): void {
-		this.throwNotHandled(columnBoard);
+	async visitColumnBoardAsync(columnBoard: ColumnBoard): Promise<void> {
+		return this.rejectNotHandled(columnBoard);
 	}
 
-	visitColumn(column: Column): void {
-		this.throwNotHandled(column);
+	async visitColumnAsync(column: Column): Promise<void> {
+		return this.rejectNotHandled(column);
 	}
 
-	visitCard(card: Card): void {
-		this.throwNotHandled(card);
+	async visitCardAsync(card: Card): Promise<void> {
+		return this.rejectNotHandled(card);
 	}
 
-	visitFileElement(fileElement: FileElement): void {
+	async visitFileElementAsync(fileElement: FileElement): Promise<void> {
 		if (this.content instanceof FileContentBody) {
 			fileElement.caption = sanitizeRichText(this.content.caption, InputFormat.PLAIN_TEXT);
 			fileElement.alternativeText = sanitizeRichText(this.content.alternativeText, InputFormat.PLAIN_TEXT);
-		} else {
-			this.throwNotHandled(fileElement);
+			return Promise.resolve();
 		}
+		return this.rejectNotHandled(fileElement);
 	}
 
-	visitLinkElement(linkElement: LinkElement): void {
+	async visitLinkElementAsync(linkElement: LinkElement): Promise<void> {
 		if (this.content instanceof LinkContentBody) {
 			const urlWithProtocol = this.content.url.match(/:\/\//) ? this.content.url : `https://${this.content.url}`;
 			linkElement.url = new URL(urlWithProtocol).toString();
-		} else {
-			this.throwNotHandled(linkElement);
+			const openGraphData = await this.openGraphProxyService.fetchOpenGraphData(linkElement.url);
+			linkElement.title = openGraphData.title;
+			linkElement.description = openGraphData.description;
+			if (openGraphData.image) {
+				linkElement.imageUrl = openGraphData.image.url;
+			}
+			return Promise.resolve();
 		}
+		return this.rejectNotHandled(linkElement);
 	}
 
-	visitRichTextElement(richTextElement: RichTextElement): void {
+	async visitRichTextElementAsync(richTextElement: RichTextElement): Promise<void> {
 		if (this.content instanceof RichTextContentBody) {
 			richTextElement.text = sanitizeRichText(this.content.text, this.content.inputFormat);
 			richTextElement.inputFormat = this.content.inputFormat;
-		} else {
-			this.throwNotHandled(richTextElement);
+			return Promise.resolve();
 		}
+		return this.rejectNotHandled(richTextElement);
 	}
 
-	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void {
+	async visitSubmissionContainerElementAsync(submissionContainerElement: SubmissionContainerElement): Promise<void> {
 		if (this.content instanceof SubmissionContainerContentBody) {
 			submissionContainerElement.dueDate = this.content.dueDate ?? undefined;
-		} else {
-			this.throwNotHandled(submissionContainerElement);
 		}
+		return this.rejectNotHandled(submissionContainerElement);
 	}
 
-	visitSubmissionItem(submission: SubmissionItem): void {
-		this.throwNotHandled(submission);
+	async visitSubmissionItemAsync(submission: SubmissionItem): Promise<void> {
+		return this.rejectNotHandled(submission);
 	}
 
-	visitExternalToolElement(externalToolElement: ExternalToolElement): void {
+	async visitExternalToolElementAsync(externalToolElement: ExternalToolElement): Promise<void> {
 		if (this.content instanceof ExternalToolContentBody && this.content.contextExternalToolId !== undefined) {
 			// Updates should not remove an existing reference to a tool, to prevent orphan tool instances
 			externalToolElement.contextExternalToolId = this.content.contextExternalToolId;
-		} else {
-			this.throwNotHandled(externalToolElement);
 		}
+		return this.rejectNotHandled(externalToolElement);
 	}
 
-	private throwNotHandled(component: AnyBoardDo) {
-		throw new Error(`Cannot update element of type: '${component.constructor.name}'`);
+	private rejectNotHandled(component: AnyBoardDo): Promise<void> {
+		return Promise.reject(new Error(`Cannot update element of type: '${component.constructor.name}'`));
 	}
 }

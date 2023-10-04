@@ -2,58 +2,25 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ContentElementType } from '@shared/domain';
 import { TimestampsResponse } from '../timestamps.response';
 
-export class OpenGraphImageData {
-	constructor({ url, type, width, height }: OpenGraphImageData) {
+export class LinkElementContent {
+	constructor({ url, title, description, imageUrl }: LinkElementContent) {
 		this.url = url;
-		this.type = type;
-		this.width = width ? +width : undefined;
-		this.height = height ? +height : undefined;
+		this.title = title;
+		this.description = description;
+		this.imageUrl = imageUrl;
 	}
 
 	@ApiProperty()
 	url: string;
-
-	@ApiPropertyOptional()
-	type?: string;
-
-	@ApiPropertyOptional()
-	width?: number;
-
-	@ApiPropertyOptional()
-	height?: number;
-}
-
-export class OpenGraphData {
-	constructor({ title, description, image, url }: OpenGraphData) {
-		this.title = title;
-		this.description = description;
-		this.image = image;
-		this.url = url;
-	}
 
 	@ApiProperty()
 	title: string;
 
-	@ApiProperty()
-	description: string;
+	@ApiPropertyOptional()
+	description?: string;
 
-	@ApiPropertyOptional({ type: OpenGraphImageData })
-	image?: OpenGraphImageData;
-
-	@ApiProperty()
-	url: string;
-}
-export class LinkElementContent {
-	constructor({ url, openGraphData }: LinkElementContent) {
-		this.url = url;
-		this.openGraphData = openGraphData;
-	}
-
-	@ApiProperty()
-	url: string;
-
-	@ApiPropertyOptional({ type: OpenGraphData })
-	openGraphData?: OpenGraphData;
+	@ApiPropertyOptional()
+	imageUrl?: string;
 }
 
 export class LinkElementResponse {

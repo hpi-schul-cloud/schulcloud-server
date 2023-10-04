@@ -116,6 +116,8 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 		const element = new LinkElement({
 			id: boardNode.id,
 			url: boardNode.url,
+			title: boardNode.title,
+			imageUrl: boardNode.imageUrl,
 			children: [],
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,

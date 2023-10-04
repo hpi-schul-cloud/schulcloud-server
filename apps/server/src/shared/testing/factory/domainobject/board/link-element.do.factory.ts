@@ -7,6 +7,7 @@ export const linkElementFactory = BaseFactory.define<LinkElement, LinkElementPro
 	return {
 		id: new ObjectId().toHexString(),
 		url: `https://www.example.com/link/${sequence}`,
+		title: 'Website opengraph title',
 		children: [],
 		createdAt: new Date(),
 		updatedAt: new Date(),

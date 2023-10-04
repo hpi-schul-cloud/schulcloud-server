@@ -57,6 +57,7 @@ export class ContentElementFactory {
 		const element = new LinkElement({
 			id: new ObjectId().toHexString(),
 			url: '',
+			title: '',
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		});
