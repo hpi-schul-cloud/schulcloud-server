@@ -28,6 +28,7 @@ export class SchoolResponseMapper {
 			purpose: school.getProps().purpose,
 			features,
 			systems,
+			inMaintenance: school.isInMaintenance(),
 		});
 
 		return res;

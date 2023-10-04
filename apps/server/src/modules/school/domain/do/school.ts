@@ -28,6 +28,12 @@ export class School extends DomainObject<SchoolProps> {
 	public removeFeature(feature: SchoolFeatures): void {
 		this.props.features?.delete(feature);
 	}
+
+	public isInMaintenance(): boolean {
+		const result = this.props.inMaintenanceSince ? this.props.inMaintenanceSince <= new Date() : false;
+
+		return result;
+	}
 }
 
 interface SchoolProps extends AuthorizableObject {

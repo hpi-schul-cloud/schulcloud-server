@@ -16,6 +16,7 @@ export class SchoolResponse {
 		features,
 		county,
 		systems,
+		inMaintenance,
 	}: SchoolResponse) {
 		this.id = id;
 		this.name = name;
@@ -26,6 +27,7 @@ export class SchoolResponse {
 		this.features = features;
 		this.county = county;
 		this.systems = systems;
+		this.inMaintenance = inMaintenance;
 	}
 
 	@ApiProperty()
@@ -54,4 +56,7 @@ export class SchoolResponse {
 
 	@ApiPropertyOptional({ type: () => [SystemResponse] })
 	systems?: SystemResponse[];
+
+	@ApiProperty()
+	inMaintenance?: boolean;
 }
