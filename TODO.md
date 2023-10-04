@@ -20,7 +20,7 @@
 - test object creator for nest entities
 - enable log only for failed tests: https://stackoverflow.com/a/61909588
 - remove mongoose history (keep one)
-- remove custom npm packages (ldap, ...)
+- remove custom npm packages (ldap, ..)
 - API default tests to extend: auth required, fails without/succeeds with  
 
 ## ACCEPTED
