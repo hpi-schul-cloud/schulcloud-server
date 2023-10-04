@@ -242,8 +242,100 @@ describe('OAuth SSO Controller (API)', () => {
 			});
 		});
 
+		describe('when school is in migration during the login process', () => {
+			const setupMigration = async () => {
+				const externalUserId = 'externalUserId';
+				const system: SystemEntity = systemFactory
+					.withOauthConfig()
+					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
+					sourceSystem: system,
+					targetSystem: system,
+					startedAt: new Date('2022-12-17T03:24:00'),
+				});
+				const school: SchoolEntity = schoolFactory.buildWithId({
+					systems: [system],
+					userLoginMigration,
+					officialSchoolNumber: 'officialSchoolNumber',
+				});
+				const user: User = userFactory.buildWithId({ school });
+				const account: Account = accountFactory.buildWithId({ systemId: system.id, userId: user.id });
+				await em.persistAndFlush([system, user, school, account, userLoginMigration]);
+				em.clear();
+
+				const query: AuthorizationParams = new AuthorizationParams();
+				query.code = 'code';
+				query.state = 'state';
+
+				return {
+					system,
+					user,
+					externalUserId,
+					school,
+					query,
+					userLoginMigration,
+				};
+			};
+			it('should redirect to login page with migration error', async () => {
+				const { system, externalUserId, query } = await setupMigration();
+				const { state, cookies } = await setupSessionState(system.id, false);
+				const baseUrl: string = Configuration.get('HOST') as string;
+				query.code = 'code';
+				query.state = state;
+
+				const idToken: string = JwtTestFactory.createJwt({
+					sub: 'testUser',
+					iss: system.oauthConfig?.issuer,
+					aud: system.oauthConfig?.clientId,
+					// For OIDC provisioning strategy
+					external_sub: externalUserId,
+				});
+
+				axiosMock
+					.onPost(system.oauthConfig?.tokenEndpoint)
+					.reply<OauthTokenResponse>(200, {
+						id_token: idToken,
+						refresh_token: 'refreshToken',
+						access_token: 'accessToken',
+					})
+					.onGet(system.provisioningUrl)
+					.replyOnce<SanisResponse>(200, {
+						pid: externalUserId,
+						person: {
+							name: {
+								familienname: 'familienName',
+								vorname: 'vorname',
+							},
+							geschlecht: 'weiblich',
+							lokalisierung: 'not necessary',
+							vertrauensstufe: 'not necessary',
+						},
+						personenkontexte: [
+							{
+								id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713').toString(),
+								rolle: SanisRole.LEHR,
+								organisation: {
+									id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713').toString(),
+									kennung: 'officialSchoolNumber',
+									name: 'schulName',
+									typ: 'not necessary',
+								},
+								personenstatus: 'not necessary',
+							},
+						],
+					});
+
+				await request(app.getHttpServer())
+					.get(`/sso/oauth`)
+					.set('Cookie', cookies)
+					.query(query)
+					.expect(302)
+					.expect('Location', `${baseUrl}/login?error=SCHOOL_IN_MIGRATION&provider=mock_type`);
+			});
+		});
+
 		describe('when a faulty query is passed', () => {
-			it('should redirect to the login page with an error', async () => {
+			it('should redirect to the login page with an sso error', async () => {
 				const { system, query } = await setup();
 				const { state, cookies } = await setupSessionState(system.id, false);
 				const clientUrl: string = Configuration.get('HOST') as string;

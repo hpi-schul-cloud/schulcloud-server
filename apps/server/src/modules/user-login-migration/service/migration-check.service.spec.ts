@@ -6,6 +6,7 @@ import { legacySchoolDoFactory, userDoFactory } from '@shared/testing';
 import { LegacySchoolService } from '@src/modules/legacy-school';
 import { UserService } from '@src/modules/user';
 import { MigrationCheckService } from './migration-check.service';
+import { SchoolInMigrationError } from '../../authentication/errors/school-in-migration.error';
 
 describe('MigrationCheckService', () => {
 	let module: TestingModule;
@@ -95,9 +96,9 @@ describe('MigrationCheckService', () => {
 			it('should return true', async () => {
 				setup();
 
-				const result: boolean = await service.shouldUserMigrate('externalId', 'systemId', 'officialSchoolNumber');
-
-				expect(result).toEqual(true);
+				await expect(service.shouldUserMigrate('externalId', 'systemId', 'officialSchoolNumber')).rejects.toThrowError(
+					new SchoolInMigrationError()
+				);
 			});
 		});
 

@@ -48,7 +48,7 @@ export class OauthSSOController {
 
 	private errorHandler(error: unknown, session: ISession, res: Response, provider?: string) {
 		this.logger.error(error);
-		// const ssoError: OAuthSSOError = error instanceof OAuthSSOError ? error : new OAuthSSOError();
+
 		let ssoError: OAuthSSOError;
 
 		if (error instanceof SchoolInMigrationError) {

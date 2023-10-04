@@ -22,6 +22,7 @@ export class MigrationCheckService {
 			);
 
 			const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
+
 			if (!user) {
 				throw new SchoolInMigrationError();
 			} else if (user && user.lastLoginSystemChange && userLoginMigration && !userLoginMigration.closedAt) {
@@ -30,11 +31,6 @@ export class MigrationCheckService {
 			} else {
 				return !!userLoginMigration && !userLoginMigration.closedAt;
 			}
-			/* if (user?.lastLoginSystemChange && userLoginMigration && !userLoginMigration.closedAt) {
-				const hasMigrated: boolean = user.lastLoginSystemChange > userLoginMigration.startedAt;
-				return !hasMigrated;
-			}
-			return !!userLoginMigration && !userLoginMigration.closedAt; */
 		}
 		return false;
 	}
