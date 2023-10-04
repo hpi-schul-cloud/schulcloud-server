@@ -55,5 +55,6 @@ interface SchoolProps extends AuthorizableObject {
 	purpose?: SchoolPurpose;
 	features?: Set<SchoolFeatures>;
 	systems?: System[];
+	logo_dataUrl?: string;
 	// userLoginMigration?: UserLoginMigration;
 }

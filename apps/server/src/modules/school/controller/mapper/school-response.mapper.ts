@@ -30,6 +30,7 @@ export class SchoolResponseMapper {
 			systems,
 			inMaintenance: school.isInMaintenance(),
 			isExternal: school.isExternal(),
+			logo_dataUrl: school.getProps().logo_dataUrl,
 		});
 
 		return res;

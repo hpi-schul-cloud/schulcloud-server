@@ -31,6 +31,8 @@ export interface ISchoolProperties {
 	federalState: FederalStateEntity;
 	county?: County;
 	purpose?: SchoolPurpose;
+	enableStudentTeamCreation?: boolean;
+	logo_dataUrl?: string;
 }
 
 @Embeddable()
@@ -106,6 +108,9 @@ export class SchoolEntity extends BaseEntity {
 
 	@Property({ nullable: true })
 	enableStudentTeamCreation?: boolean;
+
+	@Property({ nullable: true })
+	logo_dataUrl?: string;
 
 	constructor(props: ISchoolProperties) {
 		super();

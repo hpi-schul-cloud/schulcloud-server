@@ -26,6 +26,7 @@ export class SchoolMapper {
 			purpose: entity.purpose,
 			features,
 			systems,
+			logo_dataUrl: entity.logo_dataUrl,
 		});
 
 		return school;

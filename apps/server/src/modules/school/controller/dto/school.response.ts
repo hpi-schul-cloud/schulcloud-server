@@ -18,6 +18,7 @@ export class SchoolResponse {
 		systems,
 		inMaintenance,
 		isExternal,
+		logo_dataUrl,
 	}: SchoolResponse) {
 		this.id = id;
 		this.name = name;
@@ -30,6 +31,7 @@ export class SchoolResponse {
 		this.systems = systems;
 		this.inMaintenance = inMaintenance;
 		this.isExternal = isExternal;
+		this.logo_dataUrl = logo_dataUrl;
 	}
 
 	@ApiProperty()
@@ -64,4 +66,7 @@ export class SchoolResponse {
 
 	@ApiProperty()
 	isExternal: boolean;
+
+	@ApiPropertyOptional()
+	logo_dataUrl?: string;
 }
