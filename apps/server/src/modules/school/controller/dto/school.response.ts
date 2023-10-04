@@ -17,6 +17,7 @@ export class SchoolResponse {
 		county,
 		systems,
 		inMaintenance,
+		isExternal,
 	}: SchoolResponse) {
 		this.id = id;
 		this.name = name;
@@ -28,6 +29,7 @@ export class SchoolResponse {
 		this.county = county;
 		this.systems = systems;
 		this.inMaintenance = inMaintenance;
+		this.isExternal = isExternal;
 	}
 
 	@ApiProperty()
@@ -58,5 +60,8 @@ export class SchoolResponse {
 	systems?: SystemResponse[];
 
 	@ApiProperty()
-	inMaintenance?: boolean;
+	inMaintenance: boolean;
+
+	@ApiProperty()
+	isExternal: boolean;
 }

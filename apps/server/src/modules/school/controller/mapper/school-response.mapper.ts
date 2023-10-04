@@ -29,6 +29,7 @@ export class SchoolResponseMapper {
 			features,
 			systems,
 			inMaintenance: school.isInMaintenance(),
+			isExternal: school.isExternal(),
 		});
 
 		return res;

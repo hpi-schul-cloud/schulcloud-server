@@ -34,6 +34,12 @@ export class School extends DomainObject<SchoolProps> {
 
 		return result;
 	}
+
+	public isExternal(): boolean {
+		const result = !!this.props.externalId;
+
+		return result;
+	}
 }
 
 interface SchoolProps extends AuthorizableObject {
