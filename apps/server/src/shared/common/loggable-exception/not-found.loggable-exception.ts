@@ -7,7 +7,7 @@ export class NotFoundLoggableException extends NotFoundException implements Logg
 	constructor(
 		private readonly resourceName: string,
 		private readonly identifierName: string,
-		private readonly resourceId: EntityId
+		private readonly resourceId: string
 	) {
 		super();
 	}

@@ -12,6 +12,8 @@ import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
 import CryptoJS from 'crypto-js';
+import { notFound } from '@feathersjs/express';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
 
@@ -191,34 +193,37 @@ export class OidcProvisioningService {
 		externalGroups: ExternalGroupDto[],
 		systemId: EntityId
 	): Promise<void> {
-		const existingGroupsOfUser: Group[] = await this.groupService.findByUserId(externalUserId); // TODO implement service and repo function
+		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
 
-		const externalGroupsExternalSources: ExternalSource[] = externalGroups.forEach(
-			(externalGroup: ExternalGroupDto): ExternalSource => {
-				const externalGroupId: ExternalSource = { externalId: externalGroup.externalId, systemId };
+		if (!user) {
+			throw new NotFoundLoggableException('User', 'externalId', externalUserId);
+		}
 
-				return externalGroupId;
-			}
+		const existingGroupsOfUser: Group[] = await this.groupService.findByUser(user);
+
+		const groupsFromSystem: Group[] = existingGroupsOfUser.filter(
+			(existingGroup: Group) => existingGroup.externalSource?.systemId === systemId
 		);
 
-		existingGroupsOfUser.map(async (existingGroup: Group): Promise<void> => {
-			if (existingGroup.externalSource) {
-				const isGroupWithoutUser = !externalGroupsExternalSources.includes(existingGroup.externalSource);
+		const groupsWithoutUser: Group[] = groupsFromSystem.filter((existingGroupFromSystem: Group) => {
+			const isUserInGroup = externalGroups.some(
+				(externalGroup: ExternalGroupDto) =>
+					externalGroup.externalId === existingGroupFromSystem.externalSource?.externalId
+			);
 
-				if (isGroupWithoutUser) {
-					await this.removeUserFromGroup(externalUserId, existingGroup.externalSource);
-				}
-			}
+			return !isUserInGroup;
 		});
-	}
 
-	private async removeUserFromGroup(externalUserId: string, externalSource: ExternalSource): Promise<void> {
-		await this.groupService.deleteUserFromGroup(externalUserId, externalSource); // TODO implement service and repo function
+		await Promise.all(
+			groupsWithoutUser.map(async (group: Group) => {
+				group.removeUser(user);
 
-		const groupUsers: GroupUser[] = await this.groupService.getUsersOfGroup(externalSource); // TODO implement service and repo function
-
-		if (groupUsers.length === 0) {
-			await this.groupService.deleteGroup(externalSource); // TODO implement service and repo function
-		}
+				if (group.isEmpty()) {
+					await this.groupService.delete(group);
+				} else {
+					await this.groupService.save(group);
+				}
+			})
+		);
 	}
 }
