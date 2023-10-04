@@ -1,2 +1,2 @@
 export * from './authorization-reference.service';
-export * from './types';
+export * from '../types';

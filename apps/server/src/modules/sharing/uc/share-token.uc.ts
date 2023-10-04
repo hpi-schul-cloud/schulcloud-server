@@ -3,7 +3,7 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotImple
 import { EntityId, Permission } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { AuthorizationReferenceService } from '@src/modules/authorization/domain/reference';
+import { AuthorizationReferenceService } from '@src/modules/authorization/domain/service';
 import { CopyStatus } from '@src/modules/copy-helper';
 import { CourseCopyService } from '@src/modules/learnroom';
 import { CourseService } from '@src/modules/learnroom/service';

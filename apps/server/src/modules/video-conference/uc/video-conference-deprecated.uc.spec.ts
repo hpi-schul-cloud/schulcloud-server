@@ -20,7 +20,7 @@ import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import { roleFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { LegacySchoolService, UserService } from '@src/modules';
-import { AuthorizationReferenceService } from '@src/modules/authorization/domain/reference';
+import { AuthorizationReferenceService } from '@src/modules/authorization/domain/service';
 import { ICurrentUser } from '@src/modules/authentication';
 import { CourseService } from '@src/modules/learnroom/service';
 import { IScopeInfo, VideoConference, VideoConferenceJoin, VideoConferenceState } from './dto';

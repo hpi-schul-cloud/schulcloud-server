@@ -15,7 +15,7 @@ import { LoggerModule } from '@src/core/logger';
 import { ALL_RULES } from '@shared/domain/rules';
 import { BoardModule } from '../board';
 import { AuthorizationHelper } from './authorization.helper';
-import { ReferenceLoader } from './domain/reference/reference.loader';
+import { ReferenceLoader } from './domain/service/reference.loader';
 import { AuthorizationReferenceService } from './domain';
 import { AuthorizationModule } from './authorization.module';
 

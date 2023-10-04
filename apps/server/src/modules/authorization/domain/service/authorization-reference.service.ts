@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { ReferenceLoader } from './reference.loader';
 import { AuthorizationContext } from '../../types';
-import { AuthorizableReferenceType } from './types';
+import { AuthorizableReferenceType } from '../types';
 import { ForbiddenLoggableException } from '../../errors';
 import { AuthorizationService } from '../../authorization.service';
 
