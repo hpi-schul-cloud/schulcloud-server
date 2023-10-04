@@ -474,6 +474,10 @@
 					"description": "Port of host to use when connecting via TCP interface",
 					"default": 3310
 				}
+			},
+			"default": {
+				"SERVICE_HOSTNAME": "localhost",
+				"SERVICE_PORT": 3310
 			}
 		},
 		"RABBITMQ_URI": {
