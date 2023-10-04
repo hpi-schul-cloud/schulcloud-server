@@ -1,4 +1,11 @@
-import { EntityId, FileElement, isFileElement, isRichTextElement, RichTextElement } from '@shared/domain';
+import {
+	EntityId,
+	FileElement,
+	isFileElement,
+	isRichTextElement,
+	isSumbmissionItem,
+	RichTextElement,
+} from '@shared/domain';
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 

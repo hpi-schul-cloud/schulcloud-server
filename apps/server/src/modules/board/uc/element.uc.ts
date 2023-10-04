@@ -1,4 +1,12 @@
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+	ForbiddenException,
+	forwardRef,
+	HttpException,
+	HttpStatus,
+	Inject,
+	Injectable,
+	UnprocessableEntityException,
+} from '@nestjs/common';
 import {
 	AnyBoardDo,
 	EntityId,
@@ -8,8 +16,7 @@ import {
 	UserRoleEnum,
 } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
-import { Action } from '@src/modules/authorization/types/action.enum';
+import { Action, AuthorizationService } from '@src/modules/authorization';
 import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { SubmissionItemService } from '../service/submission-item.service';
@@ -30,8 +37,13 @@ export class ElementUc {
 	async updateElementContent(userId: EntityId, elementId: EntityId, content: AnyElementContentBody) {
 		const element = await this.elementService.findById(elementId);
 
-		await this.checkPermission(userId, element, Action.write);
+		const parent = await this.elementService.findParentOfId(elementId);
 
+		if (isSubmissionItem(parent)) {
+			await this.checkSubmissionPermission(userId, element, parent);
+		} else {
+			await this.checkPermission(userId, element, Action.write);
+		}
 		await this.elementService.update(element, content);
 	}
 
@@ -43,16 +55,12 @@ export class ElementUc {
 		const submissionContainerElement = await this.elementService.findById(contentElementId);
 
 		if (!isSubmissionContainerElement(submissionContainerElement)) {
-			throw new HttpException(
-				'Cannot create submission-item for non submission-container-element',
-				HttpStatus.UNPROCESSABLE_ENTITY
-			);
+			throw new UnprocessableEntityException('Cannot create submission-item for non submission-container-element');
 		}
 
 		if (!submissionContainerElement.children.every((child) => isSubmissionItem(child))) {
-			throw new HttpException(
-				'Children of submission-container-element must be of type submission-item',
-				HttpStatus.UNPROCESSABLE_ENTITY
+			throw new UnprocessableEntityException(
+				'Children of submission-container-element must be of type submission-item'
 			);
 		}
 
@@ -60,9 +68,8 @@ export class ElementUc {
 			.filter(isSubmissionItem)
 			.find((item) => item.userId === userId);
 		if (userSubmissionExists) {
-			throw new HttpException(
-				'User is not allowed to have multiple submission-items per submission-container-element',
-				HttpStatus.NOT_ACCEPTABLE
+			throw new ForbiddenException(
+				'User is not allowed to have multiple submission-items per submission-container-element'
 			);
 		}
 
@@ -85,5 +92,12 @@ export class ElementUc {
 		const context = { action, requiredPermissions: [] };
 
 		return this.authorizationService.checkPermission(user, boardDoAuthorizable, context);
+	}
+
+	private async checkSubmissionPermission(userId: EntityId, element: AnyBoardDo, parent: SubmissionItem) {
+		if (parent.userId !== userId) {
+			throw new ForbiddenException();
+		}
+		await this.checkPermission(userId, parent, Action.read, UserRoleEnum.STUDENT);
 	}
 }

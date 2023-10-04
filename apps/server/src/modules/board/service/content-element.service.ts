@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
+	AnyBoardDo,
 	AnyContentElementDo,
 	Card,
 	ContentElementFactory,
@@ -30,6 +31,14 @@ export class ContentElementService {
 		}
 
 		return element;
+	}
+
+	async findParentOfId(elementId: EntityId): Promise<AnyBoardDo> {
+		const parent = await this.boardDoRepo.findParentOfId(elementId);
+		if (!parent) {
+			throw new NotFoundException('There is no node with this id');
+		}
+		return parent;
 	}
 
 	async findSubmissionContainerElement(elementId: EntityId): Promise<SubmissionContainerElement> {

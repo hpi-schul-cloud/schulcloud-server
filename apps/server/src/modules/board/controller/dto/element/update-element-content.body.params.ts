@@ -38,7 +38,9 @@ export class RichTextContentBody {
 	text!: string;
 
 	@IsEnum(InputFormat)
-	@ApiProperty()
+	@ApiProperty({
+		enum: InputFormat,
+	})
 	inputFormat!: InputFormat;
 }
 

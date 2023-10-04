@@ -6,6 +6,7 @@ import {
 	HttpStatus,
 	Inject,
 	Injectable,
+	UnprocessableEntityException,
 } from '@nestjs/common';
 import {
 	AnyBoardDo,
@@ -44,7 +45,7 @@ export class SubmissionItemUc {
 		const submissionContainerElement = await this.elementService.findById(submissionContainerId);
 
 		if (!isSubmissionContainerElement(submissionContainerElement)) {
-			throw new HttpException('Id is not submission container', HttpStatus.UNPROCESSABLE_ENTITY);
+			throw new UnprocessableEntityException('Id is not belong to a submission container');
 		}
 
 		await this.checkPermission(userId, submissionContainerElement, Action.read);
@@ -69,12 +70,7 @@ export class SubmissionItemUc {
 		completed: boolean
 	): Promise<SubmissionItem> {
 		const submissionItem = await this.submissionItemService.findById(submissionItemId);
-
-		await this.checkPermission(userId, submissionItem, Action.read, UserRoleEnum.STUDENT);
-		if (submissionItem.userId !== userId) {
-			throw new ForbiddenException();
-		}
-
+		await this.checkSubmissionItemPermission(userId, submissionItem);
 		await this.submissionItemService.update(submissionItem, completed);
 
 		return submissionItem;
@@ -113,6 +109,13 @@ export class SubmissionItemUc {
 		}
 
 		return false;
+	}
+
+	private async checkSubmissionItemPermission(userId: EntityId, submissionItem: SubmissionItem) {
+		await this.checkPermission(userId, submissionItem, Action.read, UserRoleEnum.STUDENT);
+		if (submissionItem.userId !== userId) {
+			throw new ForbiddenException();
+		}
 	}
 
 	private async checkPermission(
