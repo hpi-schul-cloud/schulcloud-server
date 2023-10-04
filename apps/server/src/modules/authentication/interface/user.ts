@@ -40,5 +40,6 @@ export interface ICurrentUser {
 	/** True if a support member impersonates the user */
 	impersonated?: boolean;
 
+	/** True if the user is an external user which could be e.g. a ldap or oauth user */
 	isExternalUser: boolean;
 }
