@@ -12,6 +12,7 @@ export * from './course';
 export * from './coursegroup';
 export * from './dashboard';
 export * from './externaltool';
+export * from './federal-state';
 export * from './importuser';
 export * from './lesson';
 export * from './ltitool';

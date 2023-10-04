@@ -3,6 +3,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import {
 	EntityId,
+	FederalStateEntity,
 	ISchoolProperties,
 	LegacySchoolDo,
 	SchoolEntity,
@@ -11,7 +12,6 @@ import {
 } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { FederalStateDO } from '@src/modules/federal-state/domainobject/federal-state.do';
-import { FederalStateEntity } from '@src/modules/federal-state/entity';
 import { BaseDORepo } from '../base.do.repo';
 
 /**

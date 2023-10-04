@@ -1,5 +1,5 @@
+import { County } from '@shared/domain/entity';
 import { federalStateFactory } from '@shared/testing';
-import { County } from '../entity';
 import { FederalStateMapper } from './federal-state.mapper';
 
 describe('federal-state mapper', () => {

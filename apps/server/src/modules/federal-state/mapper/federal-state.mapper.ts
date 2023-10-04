@@ -1,6 +1,6 @@
+import { County, FederalStateEntity } from '@shared/domain/entity';
 import { FederalStateDO } from '../domainobject';
 import { CountyDO } from '../domainobject/county.do';
-import { County, FederalStateEntity } from '../entity';
 
 export class FederalStateMapper {
 	static mapCountyEntityToDO(entity: County): CountyDO {

@@ -1,62 +1,9 @@
-// import { Test, TestingModule } from '@nestjs/testing';
-// import { FederalStateRepo } from '@shared/repo';
-// import { federalStateFactory, setupEntities } from '@shared/testing';
-// import { FederalState } from '@shared/domain';
-// import { createMock, DeepMocked } from '@golevelup/ts-jest';
-// import { FederalStateService } from './federal-state.service';
-// import { FederalStateNames } from '../types/federal-state-names.enum';
-
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing';
-import { FederalStateRepo } from '../repo';
+import { FederalStateRepo } from '@shared/repo';
+import { federalStateFactory, setupEntities } from '@shared/testing';
+import { FederalStateMapper } from '../mapper/federal-state.mapper';
 import { FederalStateService } from './federal-state.service';
-
-// describe('FederalStateService', () => {
-// 	let module: TestingModule;
-// 	let service: FederalStateService;
-// 	let federalStateRepo: DeepMocked<FederalStateRepo>;
-
-// 	beforeAll(async () => {
-// 		module = await Test.createTestingModule({
-// 			providers: [
-// 				FederalStateService,
-// 				{
-// 					provide: FederalStateRepo,
-// 					useValue: createMock<FederalStateRepo>(),
-// 				},
-// 			],
-// 		}).compile();
-
-// 		service = module.get(FederalStateService);
-// 		federalStateRepo = module.get(FederalStateRepo);
-
-// 		await setupEntities();
-// 	});
-
-// 	afterAll(async () => {
-// 		await module.close();
-// 	});
-
-// 	describe('findFederalStateByName', () => {
-// 		const setup = () => {
-// 			const federalState: FederalState = federalStateFactory.build({ name: FederalStateNames.NIEDERSACHEN });
-// 			federalStateRepo.findByName.mockResolvedValue(federalState);
-
-// 			return {
-// 				federalState,
-// 			};
-// 		};
-
-// 		it('should return a federal state', async () => {
-// 			const { federalState } = setup();
-
-// 			const result: FederalState = await service.findFederalStateByName(federalState.name);
-
-// 			expect(result).toBeDefined();
-// 		});
-// 	});
-// });
 
 describe(FederalStateService.name, () => {
 	let module: TestingModule;
@@ -84,11 +31,26 @@ describe(FederalStateService.name, () => {
 		await module.close();
 	});
 
-	describe('findFederalStateByName', () => {});
+	describe('findAll', () => {
+		const setup = () => {
+			const federalStateEntities = federalStateFactory.buildList(5);
+			federalStateRepo.findAll.mockResolvedValue(federalStateEntities);
 
-	describe('findAll', () => {});
+			return { federalStateEntities };
+		};
 
-	describe('create', () => {});
+		it('should return do objects', async () => {
+			const { federalStateEntities } = setup();
 
-	describe('delete', () => {});
+			const federalStateDos = await service.findAll();
+			const toExpect = federalStateEntities.map((e) => FederalStateMapper.mapFederalStateEntityToDO(e));
+
+			expect(federalStateDos.length).toEqual(federalStateEntities.length);
+			expect(federalStateDos).toEqual(toExpect);
+		});
+	});
+
+	// describe('create', () => {});
+
+	// describe('delete', () => {});
 });

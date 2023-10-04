@@ -1,9 +1,9 @@
 import { EntityName } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
+import { County, FederalStateEntity } from '@shared/domain/entity';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { FederalStateDO } from '../domainobject';
 import { CountyDO } from '../domainobject/county.do';
-import { County, FederalStateEntity } from '../entity';
 import { IFederalStateCreate } from '../interface';
 
 @Injectable()
