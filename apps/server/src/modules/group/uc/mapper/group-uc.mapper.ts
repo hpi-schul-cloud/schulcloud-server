@@ -11,6 +11,7 @@ export class GroupUcMapper {
 		system?: SystemDto
 	): ClassInfoDto {
 		const mapped: ClassInfoDto = new ClassInfoDto({
+			id: group.id,
 			name: group.name,
 			externalSourceName: system?.displayName,
 			teachers: resolvedUsers
@@ -25,6 +26,7 @@ export class GroupUcMapper {
 		const name = clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name;
 
 		const mapped: ClassInfoDto = new ClassInfoDto({
+			id: clazz.id,
 			name,
 			externalSourceName: clazz.source,
 			teachers: teachers.map((user: UserDO) => user.lastName),

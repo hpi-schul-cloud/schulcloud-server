@@ -1,4 +1,6 @@
 export class ClassInfoDto {
+	id?: string;
+
 	name: string;
 
 	externalSourceName?: string;
@@ -6,6 +8,7 @@ export class ClassInfoDto {
 	teachers: string[];
 
 	constructor(props: ClassInfoDto) {
+		this.id = props.id;
 		this.name = props.name;
 		this.externalSourceName = props.externalSourceName;
 		this.teachers = props.teachers;
