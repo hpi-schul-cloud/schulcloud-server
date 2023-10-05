@@ -9,10 +9,12 @@ import { SystemResponse } from '../dto/system.response';
 
 export class SchoolResponseMapper {
 	public static mapToResponse(school: School): SchoolResponse {
-		const federalState = this.mapToFederalStateResponse(school.federalState);
-		const currentYear = school.currentYear && this.mapToSchoolYearResponse(school.currentYear);
-		const features = school.features && Array.from(school.features);
-		const systems = school.systems?.map((system) => this.mapToSystemResponse(system));
+		const schoolProps = school.getProps();
+
+		const federalState = this.mapToFederalStateResponse(schoolProps.federalState);
+		const currentYear = schoolProps.currentYear && this.mapToSchoolYearResponse(schoolProps.currentYear);
+		const features = schoolProps.features && Array.from(schoolProps.features);
+		const systems = schoolProps.systems?.map((system) => this.mapToSystemResponse(system));
 
 		// TODO: Do we want to access the props via getProps() here or do we want getters?
 		// I added getters for federalState and schoolYear because there are conditions with them below
@@ -20,17 +22,17 @@ export class SchoolResponseMapper {
 		// Do we want any fixed criteria for when to add getters?
 		const res = new SchoolResponse({
 			id: school.id,
-			name: school.getProps().name,
-			officialSchoolNumber: school.getProps().officialSchoolNumber,
+			name: schoolProps.name,
+			officialSchoolNumber: schoolProps.officialSchoolNumber,
 			currentYear,
 			federalState,
-			county: school.getProps().county,
-			purpose: school.getProps().purpose,
+			county: schoolProps.county,
+			purpose: schoolProps.purpose,
 			features,
 			systems,
 			inMaintenance: school.isInMaintenance(),
 			isExternal: school.isExternal(),
-			logo_dataUrl: school.getProps().logo_dataUrl,
+			logo_dataUrl: schoolProps.logo_dataUrl,
 		});
 
 		return res;
@@ -45,10 +47,12 @@ export class SchoolResponseMapper {
 	}
 
 	private static mapToReducedResponse(school: School): SchoolReducedResponse {
+		const schoolProps = school.getProps();
+
 		const res = new SchoolReducedResponse({
 			id: school.id,
-			name: school.getProps().name,
-			purpose: school.getProps().purpose,
+			name: schoolProps.name,
+			purpose: schoolProps.purpose,
 		});
 
 		return res;
@@ -56,13 +60,15 @@ export class SchoolResponseMapper {
 
 	// TODO: Create own mappers for other DOs!
 	private static mapToFederalStateResponse(federalState: FederalState): FederalStateResponse {
-		const counties = federalState.counties && this.mapToCountyResponses(federalState.counties);
+		const federalStateProps = federalState.getProps();
+
+		const counties = federalStateProps.counties && this.mapToCountyResponses(federalStateProps.counties);
 
 		const res = new FederalStateResponse({
 			id: federalState.id,
-			name: federalState.getProps().name,
-			abbreviation: federalState.getProps().abbreviation,
-			logoUrl: federalState.getProps().logoUrl,
+			name: federalStateProps.name,
+			abbreviation: federalStateProps.abbreviation,
+			logoUrl: federalStateProps.logoUrl,
 			counties,
 		});
 
@@ -86,28 +92,32 @@ export class SchoolResponseMapper {
 	}
 
 	private static mapToSchoolYearResponse(schoolYear: SchoolYear): SchoolYearResponse {
+		const schoolYearProps = schoolYear.getProps();
+
 		const res = new SchoolYearResponse({
 			id: schoolYear.id,
-			name: schoolYear.getProps().name,
-			startDate: schoolYear.getProps().startDate,
-			endDate: schoolYear.getProps().endDate,
+			name: schoolYearProps.name,
+			startDate: schoolYearProps.startDate,
+			endDate: schoolYearProps.endDate,
 		});
 
 		return res;
 	}
 
 	private static mapToSystemResponse(system: System) {
+		const systemProps = system.getProps();
+
 		const res = new SystemResponse({
 			id: system.id,
-			type: system.getProps().type,
-			url: system.getProps().url,
-			alias: system.getProps().alias,
-			displayName: system.getProps().displayName,
-			oauthConfig: system.getProps().oauthConfig,
-			oidcConfig: system.getProps().oidcConfig,
-			ldapConfig: system.getProps().ldapConfig,
-			provisioningStrategy: system.getProps().provisioningStrategy,
-			provisioningUrl: system.getProps().provisioningUrl,
+			type: systemProps.type,
+			url: systemProps.url,
+			alias: systemProps.alias,
+			displayName: systemProps.displayName,
+			oauthConfig: systemProps.oauthConfig,
+			oidcConfig: systemProps.oidcConfig,
+			ldapConfig: systemProps.ldapConfig,
+			provisioningStrategy: systemProps.provisioningStrategy,
+			provisioningUrl: systemProps.provisioningUrl,
 		});
 
 		return res;

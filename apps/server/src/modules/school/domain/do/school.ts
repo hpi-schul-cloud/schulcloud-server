@@ -5,22 +5,6 @@ import { SchoolYear } from './school-year';
 import { System } from './system';
 
 export class School extends DomainObject<SchoolProps> {
-	public get currentYear() {
-		return this.getProps().currentYear;
-	}
-
-	public get federalState() {
-		return this.getProps().federalState;
-	}
-
-	public get systems() {
-		return this.getProps().systems;
-	}
-
-	public get features() {
-		return this.getProps().features;
-	}
-
 	public addFeature(feature: SchoolFeature): void {
 		this.props.features?.add(feature);
 	}
