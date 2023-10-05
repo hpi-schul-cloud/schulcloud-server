@@ -1,11 +1,11 @@
 import { PaginationParams } from '@shared/controller';
 import { County, FederalState, School, SchoolYear, System } from '../../domain';
-import { SchoolListResponse, SchoolResponse } from '../dto';
-import { CountyResponse } from '../dto/county.response';
-import { FederalStateResponse } from '../dto/federal-state.response';
-import { SchoolReducedResponse } from '../dto/school-reduced.response';
-import { SchoolYearResponse } from '../dto/school-year.response';
-import { SystemResponse } from '../dto/system.response';
+import { SchoolListResponse, SchoolResponse } from '../response';
+import { CountyResponse } from '../response/county.response';
+import { FederalStateResponse } from '../response/federal-state.response';
+import { SchoolReducedResponse } from '../response/school-reduced.response';
+import { SchoolYearResponse } from '../response/school-year.response';
+import { SystemResponse } from '../response/system.response';
 
 export class SchoolResponseMapper {
 	public static mapToResponse(school: School): SchoolResponse {

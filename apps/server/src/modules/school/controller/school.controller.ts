@@ -3,10 +3,9 @@ import { ApiTags } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
 import { SchoolUc } from '../domain/uc/school.uc';
-import { SchoolListResponse, SchoolResponse } from './dto';
-import { SchoolQueryParams } from './dto/school-query.params';
-import { SchoolUrlParams } from './dto/school-url.params';
 import { SchoolResponseMapper } from './mapper';
+import { SchoolQueryParams, SchoolUrlParams } from './param';
+import { SchoolListResponse, SchoolResponse } from './response';
 
 @ApiTags('School')
 @Authenticate('jwt')
