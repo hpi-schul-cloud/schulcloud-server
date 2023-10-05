@@ -19,7 +19,7 @@ export class TaskCopyUC {
 	) {}
 
 	async copyTask(userId: EntityId, taskId: EntityId, parentParams: TaskCopyParentParams): Promise<CopyStatus> {
-		this.featureEnabled();
+		this.checkFeatureEnabled();
 
 		// i put it to promise all, it do not look like any more information can be expose over errors if it is called between the authorizations
 		// TODO: Add try catch around it with throw BadRequest invalid data
@@ -32,7 +32,7 @@ export class TaskCopyUC {
 		this.canReadTask(authorizableUser, originalTask);
 
 		if (destinationCourse) {
-			this.canWriteCourse(authorizableUser, destinationCourse);
+			this.checkDestinationCourseAuthorisation(authorizableUser, destinationCourse);
 		}
 
 		// i think getDestinationLesson can also to a promise.all on top
@@ -44,7 +44,7 @@ export class TaskCopyUC {
 		]);
 
 		if (destinationLesson) {
-			this.canWriteLesson(authorizableUser, destinationLesson);
+			this.checkDestinationLessonAuthorization(authorizableUser, destinationLesson);
 		}
 
 		const status = await this.taskCopyService.copyTask({
@@ -66,12 +66,12 @@ export class TaskCopyUC {
 		}
 	}
 
-	private canWriteCourse(authorizableUser: User, destinationCourse: Course): void {
+	private checkDestinationCourseAuthorisation(authorizableUser: User, destinationCourse: Course): void {
 		const context = AuthorizationContextBuilder.write([]);
 		this.authorisation.checkPermission(authorizableUser, destinationCourse, context);
 	}
 
-	private canWriteLesson(authorizableUser: User, destinationLesson: LessonEntity): void {
+	private checkDestinationLessonAuthorization(authorizableUser: User, destinationLesson: LessonEntity): void {
 		const context = AuthorizationContextBuilder.write([]);
 		if (!this.authorisation.hasPermission(authorizableUser, destinationLesson, context)) {
 			throw new ForbiddenException('you dont have permission to add to this lesson');
@@ -109,7 +109,7 @@ export class TaskCopyUC {
 		return destinationLesson;
 	}
 
-	private featureEnabled() {
+	private checkFeatureEnabled() {
 		// This is the deprecated way to read envirement variables
 		const enabled = Configuration.get('FEATURE_COPY_SERVICE_ENABLED') as boolean;
 		if (!enabled) {

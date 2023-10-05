@@ -19,14 +19,14 @@ export class LessonCopyUC {
 	) {}
 
 	async copyLesson(userId: EntityId, lessonId: EntityId, parentParams: LessonCopyParentParams): Promise<CopyStatus> {
-		this.featureEnabled();
+		this.checkFeatureEnabled();
 
 		const [user, originalLesson]: [User, LessonEntity] = await Promise.all([
 			this.authorisation.getUserWithPermissions(userId),
 			this.lessonRepo.findById(lessonId),
 		]);
 
-		this.hasTopicCreateAndCanReadLesson(user, originalLesson);
+		this.checkOriginalLessonAuthorization(user, originalLesson);
 
 		// should be a seperate private method
 		const destinationCourse = parentParams.courseId
@@ -34,7 +34,7 @@ export class LessonCopyUC {
 			: originalLesson.course;
 		// ---
 
-		this.canWriteInDestinationCourse(user, destinationCourse);
+		this.checkDestinationCourseAuthorization(user, destinationCourse);
 
 		// should be a seperate private method
 		const [existingLessons] = await this.lessonRepo.findAllByCourseIds([originalLesson.course.id]);
@@ -52,7 +52,7 @@ export class LessonCopyUC {
 		return copyStatus;
 	}
 
-	private hasTopicCreateAndCanReadLesson(user: User, originalLesson: LessonEntity): void {
+	private checkOriginalLessonAuthorization(user: User, originalLesson: LessonEntity): void {
 		const contextReadWithTopicCreate = AuthorizationContextBuilder.read([Permission.TOPIC_CREATE]);
 		if (!this.authorisation.hasPermission(user, originalLesson, contextReadWithTopicCreate)) {
 			// error message is not correct, switch to authorisation.checkPermission() makse sense for me
@@ -60,12 +60,12 @@ export class LessonCopyUC {
 		}
 	}
 
-	private canWriteInDestinationCourse(user: User, destinationCourse: Course): void {
+	private checkDestinationCourseAuthorization(user: User, destinationCourse: Course): void {
 		const contextCanWrite = AuthorizationContextBuilder.write([]);
 		this.authorisation.checkPermission(user, destinationCourse, contextCanWrite);
 	}
 
-	private featureEnabled() {
+	private checkFeatureEnabled() {
 		const enabled = Configuration.get('FEATURE_COPY_SERVICE_ENABLED') as boolean;
 		if (!enabled) {
 			throw new InternalServerErrorException('Copy Feature not enabled');

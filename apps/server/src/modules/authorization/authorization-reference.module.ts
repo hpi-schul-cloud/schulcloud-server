@@ -38,7 +38,6 @@ import { AuthorizationModule } from './authorization.module';
 		TeamsRepo,
 		SubmissionRepo,
 		SchoolExternalToolRepo,
-
 		AuthorizationReferenceService,
 	],
 	exports: [AuthorizationReferenceService],
