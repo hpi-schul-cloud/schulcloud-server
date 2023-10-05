@@ -375,18 +375,18 @@ describe('OidcProvisioningService', () => {
 				};
 			};
 
-			it('should not call groupService.save', async () => {
+			it('should not save the group', async () => {
 				const { externalGroups, systemId, externalUserId } = setup();
 
-				await service.removeUserFromExternalGroups(externalUserId, externalGroups, systemId);
+				await service.removeExternalGroupsAndAffiliation(externalUserId, externalGroups, systemId);
 
 				expect(groupService.save).not.toHaveBeenCalled();
 			});
 
-			it('should not call groupService.delete', async () => {
+			it('should not delete the group', async () => {
 				const { externalGroups, systemId, externalUserId } = setup();
 
-				await service.removeUserFromExternalGroups(externalUserId, externalGroups, systemId);
+				await service.removeExternalGroupsAndAffiliation(externalUserId, externalGroups, systemId);
 
 				expect(groupService.delete).not.toHaveBeenCalled();
 			});
@@ -433,21 +433,23 @@ describe('OidcProvisioningService', () => {
 					};
 				};
 
-				it('should call groupService.delete', async () => {
+				it('should delete the group', async () => {
 					const { externalGroups, systemId, externalUserId, existingGroups } = setup();
 
-					await service.removeUserFromExternalGroups(externalUserId, externalGroups, systemId);
+					await service.removeExternalGroupsAndAffiliation(externalUserId, externalGroups, systemId);
 
 					expect(groupService.delete).toHaveBeenCalledWith(existingGroups[1]);
 				});
-				it('should not call groupService.save', async () => {
+
+				it('should not save the group', async () => {
 					const { externalGroups, systemId, externalUserId } = setup();
 
-					await service.removeUserFromExternalGroups(externalUserId, externalGroups, systemId);
+					await service.removeExternalGroupsAndAffiliation(externalUserId, externalGroups, systemId);
 
 					expect(groupService.save).not.toHaveBeenCalled();
 				});
 			});
+
 			describe('when group is not empty after removal of the User', () => {
 				const setup = () => {
 					const systemId = 'systemId';
@@ -498,17 +500,18 @@ describe('OidcProvisioningService', () => {
 					};
 				};
 
-				it('should call groupService.save', async () => {
+				it('should save the group', async () => {
 					const { externalGroups, systemId, externalUserId, existingGroups } = setup();
 
-					await service.removeUserFromExternalGroups(externalUserId, externalGroups, systemId);
+					await service.removeExternalGroupsAndAffiliation(externalUserId, externalGroups, systemId);
 
 					expect(groupService.save).toHaveBeenCalledWith(existingGroups[1]);
 				});
-				it('should not call groupService.delete', async () => {
+
+				it('should not delete the group', async () => {
 					const { externalGroups, systemId, externalUserId } = setup();
 
-					await service.removeUserFromExternalGroups(externalUserId, externalGroups, systemId);
+					await service.removeExternalGroupsAndAffiliation(externalUserId, externalGroups, systemId);
 
 					expect(groupService.delete).not.toHaveBeenCalled();
 				});
@@ -533,7 +536,7 @@ describe('OidcProvisioningService', () => {
 			it('should throw NotFoundLoggableException', async () => {
 				const { externalGroups, systemId, externalUserId } = setup();
 
-				const func = async () => service.removeUserFromExternalGroups(externalUserId, externalGroups, systemId);
+				const func = async () => service.removeExternalGroupsAndAffiliation(externalUserId, externalGroups, systemId);
 
 				await expect(func).rejects.toThrow(new NotFoundLoggableException('User', 'externalId', externalUserId));
 			});

@@ -198,12 +198,12 @@ describe('OidcStrategy', () => {
 				};
 			};
 
-			it('should call the OidcProvisioningService.removeUserFromExternalGroups', async () => {
+			it('should call the OidcProvisioningService.removeExternalGroupsAndAffiliation', async () => {
 				const { oauthData } = setup();
 
 				await strategy.apply(oauthData);
 
-				expect(oidcProvisioningService.removeUserFromExternalGroups).toHaveBeenCalledWith(
+				expect(oidcProvisioningService.removeExternalGroupsAndAffiliation).toHaveBeenCalledWith(
 					oauthData.externalUser.externalId,
 					oauthData.externalGroups,
 					oauthData.system.systemId
@@ -253,12 +253,12 @@ describe('OidcStrategy', () => {
 				};
 			};
 
-			it('should not call the OidcProvisioningService.removeUserFromExternalGroups', async () => {
+			it('should not call the OidcProvisioningService.removeExternalGroupsAndAffiliation', async () => {
 				const { oauthData } = setup();
 
 				await strategy.apply(oauthData);
 
-				expect(oidcProvisioningService.removeUserFromExternalGroups).not.toHaveBeenCalled();
+				expect(oidcProvisioningService.removeExternalGroupsAndAffiliation).not.toHaveBeenCalled();
 			});
 
 			it('should not call the OidcProvisioningService.provisionExternalGroup', async () => {

@@ -24,7 +24,7 @@ export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
 		);
 
 		if (Configuration.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED') && data.externalGroups) {
-			await this.oidcProvisioningService.removeUserFromExternalGroups(
+			await this.oidcProvisioningService.removeExternalGroupsAndAffiliation(
 				data.externalUser.externalId,
 				data.externalGroups,
 				data.system.systemId

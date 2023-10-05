@@ -188,7 +188,7 @@ export class OidcProvisioningService {
 		return filteredUsers;
 	}
 
-	async removeUserFromExternalGroups(
+	async removeExternalGroupsAndAffiliation(
 		externalUserId: EntityId,
 		externalGroups: ExternalGroupDto[],
 		systemId: EntityId
@@ -196,7 +196,7 @@ export class OidcProvisioningService {
 		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
 
 		if (!user) {
-			throw new NotFoundLoggableException('User', 'externalId', externalUserId);
+			throw new NotFoundLoggableException(UserDO.name, 'externalId', externalUserId);
 		}
 
 		const existingGroupsOfUser: Group[] = await this.groupService.findByUser(user);
