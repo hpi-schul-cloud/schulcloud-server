@@ -1,4 +1,4 @@
-import { BoardNodeType, ExternalToolElement } from '@shared/domain';
+import { BoardNodeType, ExternalToolElement, LinkElement } from '@shared/domain';
 import {
 	cardNodeFactory,
 	columnBoardNodeFactory,
@@ -208,15 +208,15 @@ describe(BoardDoBuilderImpl.name, () => {
 
 	describe('when building a link element', () => {
 		it('should work without descendants', () => {
-			const linkElementNode = linkElementNodeFactory.build();
+			const linkElementNode = linkElementNodeFactory.buildWithId();
 
 			const domainObject = new BoardDoBuilderImpl().buildLinkElement(linkElementNode);
 
-			expect(domainObject.constructor.name).toBe(ExternalToolElement.name);
+			expect(domainObject.constructor.name).toBe(LinkElement.name);
 		});
 
 		it('should throw error if linkElement is not a leaf', () => {
-			const linkElementNode = linkElementNodeFactory.build();
+			const linkElementNode = linkElementNodeFactory.buildWithId();
 			const columnNode = columnNodeFactory.buildWithId({ parent: linkElementNode });
 
 			expect(() => {
