@@ -35,7 +35,7 @@ export class LegacySchoolUc {
 			this.schoolService.getSchoolById(schoolId),
 		]);
 
-		this.hasSchoolEditAndCanReadSchool(authorizableUser, school);
+		this.checkSchoolAuthorization(authorizableUser, school);
 
 		const existingUserLoginMigration: UserLoginMigrationDO | null =
 			await this.userLoginMigrationService.findMigrationBySchool(schoolId);
@@ -80,7 +80,7 @@ export class LegacySchoolUc {
 			this.schoolService.getSchoolById(schoolId),
 		]);
 
-		this.hasSchoolEditAndCanReadSchool(authorizableUser, school);
+		this.checkSchoolAuthorization(authorizableUser, school);
 
 		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
 			schoolId
@@ -98,7 +98,7 @@ export class LegacySchoolUc {
 		return migrationDto;
 	}
 
-	private hasSchoolEditAndCanReadSchool(authorizableUser: User, school: LegacySchoolDo): void {
+	private checkSchoolAuthorization(authorizableUser: User, school: LegacySchoolDo): void {
 		const context = AuthorizationContextBuilder.read([Permission.SCHOOL_EDIT]);
 		this.authService.checkPermission(authorizableUser, school, context);
 	}
