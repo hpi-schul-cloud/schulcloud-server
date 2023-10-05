@@ -262,7 +262,7 @@ describe('AccountService Integration', () => {
 	});
 
 	describe('delete', () => {
-		describe('when delete', () => {
+		describe('when delete an account', () => {
 			const setup = async () => {
 				const [dbId, idmId] = await createAccount();
 				const foundIdmAccount = await identityManagementService.findAccountById(idmId);
@@ -285,7 +285,7 @@ describe('AccountService Integration', () => {
 	});
 
 	describe('deleteByUserId', () => {
-		describe('when delete by User Id', () => {
+		describe('when delete an account by User Id', () => {
 			const setup = async () => {
 				const [dbId, idmId] = await createAccount();
 				const foundIdmAccount = await identityManagementService.findAccountById(idmId);

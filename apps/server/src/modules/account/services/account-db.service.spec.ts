@@ -194,7 +194,7 @@ describe('AccountDbService', () => {
 	});
 
 	describe('findMultipleByUserId', () => {
-		describe('when search existing multiple Ids', () => {
+		describe('when searching for multiple existing ids', () => {
 			const setup = () => {
 				const mockTeacherUser = userFactory.buildWithId();
 				const mockStudentUser = userFactory.buildWithId();
@@ -267,7 +267,7 @@ describe('AccountDbService', () => {
 			});
 		});
 
-		describe('when user not exists', () => {
+		describe('when user does not exist', () => {
 			const setup = () => {
 				const mockTeacherUser = userFactory.buildWithId();
 				const mockTeacherAccount = accountFactory.buildWithId({
@@ -304,7 +304,7 @@ describe('AccountDbService', () => {
 				return { mockTeacherAccountDto, mockTeacherAccount };
 			};
 
-			it('should update', async () => {
+			it('should update account', async () => {
 				const { mockTeacherAccountDto, mockTeacherAccount } = setup();
 				const ret = await accountService.save(mockTeacherAccountDto);
 
@@ -362,7 +362,7 @@ describe('AccountDbService', () => {
 
 				return { mockStudentUser, mockTeacherAccountDto, mockTeacherAccount };
 			};
-			it('should update', async () => {
+			it('should update account', async () => {
 				const { mockStudentUser, mockTeacherAccountDto, mockTeacherAccount } = setup();
 
 				const ret = await accountService.save(mockTeacherAccountDto);
@@ -406,7 +406,7 @@ describe('AccountDbService', () => {
 			});
 		});
 
-		describe('when account not exists', () => {
+		describe('when account does not exists', () => {
 			const setup = () => {
 				const mockUserWithoutAccount = userFactory.buildWithId();
 
@@ -671,7 +671,7 @@ describe('AccountDbService', () => {
 	});
 
 	describe('delete', () => {
-		describe('when deleting existing account', () => {
+		describe('when delete an existing account', () => {
 			const setup = () => {
 				const mockTeacherAccount = accountFactory.buildWithId();
 
@@ -697,7 +697,7 @@ describe('AccountDbService', () => {
 				return { mockTeacherAccount };
 			};
 
-			it('should throw', async () => {
+			it('should throw account not found', async () => {
 				const { mockTeacherAccount } = setup();
 				await expect(accountService.delete(mockTeacherAccount.id)).rejects.toThrow();
 			});
@@ -802,7 +802,7 @@ describe('AccountDbService', () => {
 
 				return {};
 			};
-			it('should call repo', async () => {
+			it('should call repo each time', async () => {
 				setup();
 				const foundAccounts = await accountService.findMany();
 				expect(accountRepo.findMany).toHaveBeenCalledWith(0, 100);

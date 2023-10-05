@@ -283,7 +283,7 @@ describe('Account Controller (API)', () => {
 
 				return { query, loggedInClient };
 			};
-			it('should search for user name', async () => {
+			it('should search for username', async () => {
 				const { query, loggedInClient } = await setup();
 
 				await loggedInClient.get().query(query).send().expect(200);

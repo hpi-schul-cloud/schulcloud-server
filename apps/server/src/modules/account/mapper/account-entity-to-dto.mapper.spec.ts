@@ -16,19 +16,19 @@ describe('AccountEntityToDtoMapper', () => {
 	describe('mapToDto', () => {
 		describe('When mapping AccountEntity to AccountDto', () => {
 			const setup = () => {
-				const fullEntity = accountFactory.withAllProperties().buildWithId({}, '000000000000000000000001');
+				const accountEntity = accountFactory.withAllProperties().buildWithId({}, '000000000000000000000001');
 
 				const missingSystemUserIdEntity: Account = accountFactory.withoutSystemAndUserId().build();
 
-				return { fullEntity, missingSystemUserIdEntity };
+				return { accountEntity, missingSystemUserIdEntity };
 			};
 
 			it('should map all fields', () => {
-				const { fullEntity } = setup();
+				const { accountEntity } = setup();
 
-				const ret = AccountEntityToDtoMapper.mapToDto(fullEntity);
+				const ret = AccountEntityToDtoMapper.mapToDto(accountEntity);
 
-				expect({ ...ret, _id: fullEntity._id }).toMatchObject(fullEntity);
+				expect({ ...ret, _id: accountEntity._id }).toMatchObject(accountEntity);
 			});
 
 			it('should ignore missing ids', () => {

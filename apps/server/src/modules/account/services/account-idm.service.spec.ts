@@ -296,7 +296,7 @@ describe('AccountIdmService', () => {
 				accountLookupServiceMock.getExternalId.mockResolvedValue(null);
 			};
 
-			it('should throw error', async () => {
+			it('should throw account not found error', async () => {
 				setup();
 				await expect(accountIdmService.delete(mockIdmAccountRefId)).rejects.toThrow();
 			});
@@ -304,17 +304,19 @@ describe('AccountIdmService', () => {
 	});
 
 	describe('deleteByUserId', () => {
-		const setup = () => {
-			idmServiceMock.findAccountByDbcUserId.mockResolvedValue(mockIdmAccount);
-			const deleteSpy = jest.spyOn(idmServiceMock, 'deleteAccountById');
-			return { deleteSpy };
-		};
+		describe('when deleting an account by user id', () => {
+			const setup = () => {
+				idmServiceMock.findAccountByDbcUserId.mockResolvedValue(mockIdmAccount);
+				const deleteSpy = jest.spyOn(idmServiceMock, 'deleteAccountById');
+				return { deleteSpy };
+			};
 
-		it('should delete the account with given user id via repo', async () => {
-			const { deleteSpy } = setup();
+			it('should delete the account with given user id via repo', async () => {
+				const { deleteSpy } = setup();
 
-			await accountIdmService.deleteByUserId(mockIdmAccount.attDbcUserId ?? '');
-			expect(deleteSpy).toHaveBeenCalledWith(mockIdmAccount.id);
+				await accountIdmService.deleteByUserId(mockIdmAccount.attDbcUserId ?? '');
+				expect(deleteSpy).toHaveBeenCalledWith(mockIdmAccount.id);
+			});
 		});
 	});
 
@@ -336,7 +338,7 @@ describe('AccountIdmService', () => {
 				idmServiceMock.findAccountById.mockRejectedValue(new Error());
 			};
 
-			it('should throw', async () => {
+			it('should throw account not found', async () => {
 				setup();
 				await expect(accountIdmService.findById('notExistingId')).rejects.toThrow();
 			});
@@ -408,7 +410,7 @@ describe('AccountIdmService', () => {
 				idmServiceMock.findAccountByDbcUserId.mockResolvedValue(undefined as unknown as IdmAccount);
 			};
 
-			it('should throw', async () => {
+			it('should throw account not found', async () => {
 				setup();
 				await expect(accountIdmService.findByUserIdOrFail('notExistingId')).rejects.toThrow(EntityNotFoundError);
 			});
@@ -514,7 +516,7 @@ describe('AccountIdmService', () => {
 			});
 		});
 
-		it('findMany should throw', async () => {
+		it('findMany should throw not implemented Exception', async () => {
 			await expect(accountIdmService.findMany(0, 0)).rejects.toThrow(NotImplementedException);
 		});
 	});

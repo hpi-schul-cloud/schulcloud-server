@@ -104,7 +104,7 @@ describe('AccountUc', () => {
 			});
 		});
 
-		describe('When account does not exist', () => {
+		describe('When account does not exists', () => {
 			const setup = () => {
 				const mockSchool = schoolFactory.buildWithId();
 
@@ -125,7 +125,7 @@ describe('AccountUc', () => {
 				return { mockUserWithoutAccount };
 			};
 
-			it('should throw', async () => {
+			it('should throw entity not found error', async () => {
 				const { mockUserWithoutAccount } = setup();
 				await expect(
 					accountUc.updateMyAccount(mockUserWithoutAccount.id, {
@@ -679,7 +679,7 @@ describe('AccountUc', () => {
 			});
 		});
 
-		describe('When account does not exist', () => {
+		describe('When account does not exists', () => {
 			const setup = () => {
 				const mockSchool = schoolFactory.buildWithId();
 				const mockUserWithoutAccount = userFactory.buildWithId({
@@ -853,7 +853,7 @@ describe('AccountUc', () => {
 			});
 		});
 
-		describe('When the admin manipulated the users password', () => {
+		describe('When the admin manipulate the users password', () => {
 			const setup = () => {
 				const mockSchool = schoolFactory.buildWithId();
 
@@ -886,7 +886,7 @@ describe('AccountUc', () => {
 			});
 		});
 
-		describe('When this is the users first login', () => {
+		describe('when a user logs in for the first time', () => {
 			const setup = () => {
 				const mockSchool = schoolFactory.buildWithId();
 
@@ -920,7 +920,7 @@ describe('AccountUc', () => {
 			});
 		});
 
-		describe('When this is the users first login (if undefined)', () => {
+		describe('when a user logs in for the first time (if undefined)', () => {
 			const setup = () => {
 				const mockSchool = schoolFactory.buildWithId();
 
@@ -1250,7 +1250,7 @@ describe('AccountUc', () => {
 
 				return { mockSuperheroUser };
 			};
-			it('should throw', async () => {
+			it('should throw Invalid search type', async () => {
 				const { mockSuperheroUser } = setup();
 				await expect(
 					accountUc.searchAccounts(
@@ -1261,7 +1261,7 @@ describe('AccountUc', () => {
 			});
 		});
 
-		describe('When user is no superhero', () => {
+		describe('When user is not superhero', () => {
 			const setup = () => {
 				const mockSchool = schoolFactory.buildWithId();
 
@@ -2119,7 +2119,7 @@ describe('AccountUc', () => {
 	});
 
 	describe('updateAccountById', () => {
-		describe('When executing user does not exist', () => {
+		describe('when updating a user that does not exist', () => {
 			const setup = () => {
 				const mockSchool = schoolFactory.buildWithId();
 
@@ -2567,7 +2567,7 @@ describe('AccountUc', () => {
 
 					return { mockAdminUser, mockTeacherAccount };
 				};
-				it('should not throw when editing a teacher', async () => {
+				it('should not throw error when editing a teacher', async () => {
 					const { mockAdminUser, mockTeacherAccount } = setup();
 					const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
 					const params = { id: mockTeacherAccount.id } as AccountByIdParams;
@@ -2603,7 +2603,7 @@ describe('AccountUc', () => {
 
 					return { mockStudentAccount, mockTeacherUser };
 				};
-				it('should not throw when editing a student', async () => {
+				it('should not throw error when editing a student', async () => {
 					const { mockTeacherUser, mockStudentAccount } = setup();
 					const currentUser = { userId: mockTeacherUser.id } as ICurrentUser;
 					const params = { id: mockStudentAccount.id } as AccountByIdParams;
@@ -2647,7 +2647,7 @@ describe('AccountUc', () => {
 
 					return { mockStudentAccount, mockAdminUser };
 				};
-				it('should not throw when editing a student', async () => {
+				it('should not throw error when editing a student', async () => {
 					const { mockAdminUser, mockStudentAccount } = setup();
 					const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
 					const params = { id: mockStudentAccount.id } as AccountByIdParams;
@@ -2794,7 +2794,7 @@ describe('AccountUc', () => {
 
 					return { mockAdminAccount, mockSuperheroUser };
 				};
-				it('should not throw when editing a admin', async () => {
+				it('should not throw error when editing a admin', async () => {
 					const { mockSuperheroUser, mockAdminAccount } = setup();
 					const currentUser = { userId: mockSuperheroUser.id } as ICurrentUser;
 					const params = { id: mockAdminAccount.id } as AccountByIdParams;
@@ -2922,7 +2922,7 @@ describe('AccountUc', () => {
 			});
 		});
 
-		describe('When the current user is no superhero', () => {
+		describe('When the current user is not superhero', () => {
 			const setup = () => {
 				const mockSchool = schoolFactory.buildWithId();
 
@@ -3114,7 +3114,7 @@ describe('AccountUc', () => {
 
 				return { mockAccountWithNoLastFailedLogin };
 			};
-			it('should not throw', async () => {
+			it('should not throw error', async () => {
 				const { mockAccountWithNoLastFailedLogin } = setup();
 				await expect(
 					accountUc.checkBrutForce(

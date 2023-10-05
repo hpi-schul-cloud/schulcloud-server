@@ -122,7 +122,7 @@ describe('account repo', () => {
 		});
 
 		describe('When id does not exist', () => {
-			it('should throw', async () => {
+			it('should throw not found error', async () => {
 				await expect(repo.findByUserIdOrFail('123456789012')).rejects.toThrow(NotFoundError);
 			});
 		});

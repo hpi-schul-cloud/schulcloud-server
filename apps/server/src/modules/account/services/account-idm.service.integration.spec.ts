@@ -95,7 +95,7 @@ describe('AccountIdmService Integration', () => {
 	});
 
 	describe('save', () => {
-		describe('when account not exists', () => {
+		describe('when account does not exists', () => {
 			it('should create a new account', async () => {
 				if (!isIdmReachable) return;
 				const createdAccount = await accountIdmService.save(testAccount);

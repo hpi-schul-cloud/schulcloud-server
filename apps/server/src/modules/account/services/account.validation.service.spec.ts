@@ -142,7 +142,7 @@ describe('AccountValidationService', () => {
 			});
 		});
 
-		describe('When new email already in use by any user', () => {
+		describe('When new email already in use by any user and system id is given', () => {
 			const setup = () => {
 				const mockTeacherUser = userFactory.buildWithId({
 					roles: [new Role({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] })],
@@ -159,7 +159,7 @@ describe('AccountValidationService', () => {
 
 				return { mockTeacherAccount, mockStudentUser, mockStudentAccount };
 			};
-			it('should return false, system id is given', async () => {
+			it('should return false', async () => {
 				const { mockTeacherAccount, mockStudentUser, mockStudentAccount } = setup();
 				const res = await accountValidationService.isUniqueEmail(
 					mockTeacherAccount.username,
