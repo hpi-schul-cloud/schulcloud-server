@@ -23,7 +23,6 @@ export class ForbiddenLoggableException extends ForbiddenException implements Lo
 				action: this.context.action,
 				requiredPermissions: this.context.requiredPermissions.join(','),
 			},
-			// TODO: cause is missing
 		};
 
 		return message;
