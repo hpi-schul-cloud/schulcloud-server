@@ -29,7 +29,7 @@ export class TaskCopyUC {
 			this.getDestinationCourse(parentParams.courseId),
 		]);
 
-		this.canReadTask(authorizableUser, originalTask);
+		this.checkOriginalTaskAuthorization(authorizableUser, originalTask);
 
 		if (destinationCourse) {
 			this.checkDestinationCourseAuthorisation(authorizableUser, destinationCourse);
@@ -58,7 +58,7 @@ export class TaskCopyUC {
 		return status;
 	}
 
-	private canReadTask(authorizableUser: User, originalTask: Task): void {
+	private checkOriginalTaskAuthorization(authorizableUser: User, originalTask: Task): void {
 		const context = AuthorizationContextBuilder.read([]);
 		if (!this.authorisation.hasPermission(authorizableUser, originalTask, context)) {
 			// error message and erorr type are not correct
