@@ -1,4 +1,5 @@
 import { Inject, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { PreviewProducer } from '@shared/infra/preview-generator';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { LegacyLogger } from '@src/core/logger';
 import { PreviewParams } from '../controller/dto';
@@ -6,10 +7,9 @@ import { FileRecord, PreviewStatus } from '../entity';
 import { ErrorType } from '../error';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { createPath, createPreviewDirectoryPath, createPreviewFilePath, createPreviewNameHash } from '../helper';
-import { GetFileResponse, PreviewFileOptions, PreviewFileParams } from '../interface';
+import { GetFileResponse, PreviewFileParams } from '../interface';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
 import { FileResponseBuilder } from '../mapper';
-import { PreviewProducer } from './preview.producer';
 
 @Injectable()
 export class PreviewService {
@@ -103,7 +103,7 @@ export class PreviewService {
 	}
 
 	private async generatePreview(params: PreviewFileParams): Promise<void> {
-		const payload: PreviewFileOptions = {
+		const payload = {
 			originFilePath: params.originFilePath,
 			previewFilePath: params.previewFilePath,
 			previewOptions: { width: params.previewParams.width, format: params.format },

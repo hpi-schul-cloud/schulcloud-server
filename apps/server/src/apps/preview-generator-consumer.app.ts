@@ -1,8 +1,6 @@
 /* istanbul ignore file */
 /* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
-
-// register source-map-support for debugging
 import { PreviewGeneratorAMQPModule } from '@src/modules/files-storage';
 import { install as sourceMapInstall } from 'source-map-support';
 

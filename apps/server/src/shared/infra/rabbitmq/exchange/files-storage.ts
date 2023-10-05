@@ -7,7 +7,6 @@ export enum FilesStorageEvents {
 	'COPY_FILES_OF_PARENT' = 'copy-files-of-parent',
 	'LIST_FILES_OF_PARENT' = 'list-files-of-parent',
 	'DELETE_FILES_OF_PARENT' = 'delete-files-of-parent',
-	'GENERATE_PREVIEW' = 'generate-preview',
 }
 
 export enum ScanStatus {

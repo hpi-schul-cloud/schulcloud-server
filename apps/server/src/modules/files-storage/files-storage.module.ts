@@ -5,6 +5,7 @@ import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
 import { AntivirusModule } from '@shared/infra/antivirus/antivirus.module';
+import { PreviewGeneratorProducerModule } from '@shared/infra/preview-generator';
 import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq/rabbitmq.module';
 import { S3ClientModule } from '@shared/infra/s3-client';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
@@ -13,8 +14,6 @@ import { FileRecord, FileRecordSecurityCheck } from './entity';
 import { config, s3Config } from './files-storage.config';
 import { FileRecordRepo } from './repo';
 import { FilesStorageService } from './service/files-storage.service';
-import { PreviewGeneratorService } from './service/preview-generator.service';
-import { PreviewProducer } from './service/preview.producer';
 import { PreviewService } from './service/preview.service';
 
 const imports = [
@@ -27,8 +26,9 @@ const imports = [
 		routingKey: Configuration.get('ANTIVIRUS_ROUTING_KEY') as string,
 	}),
 	S3ClientModule.register([s3Config]),
+	PreviewGeneratorProducerModule,
 ];
-const providers = [FilesStorageService, PreviewService, FileRecordRepo, PreviewGeneratorService, PreviewProducer];
+const providers = [FilesStorageService, PreviewService, FileRecordRepo];
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -53,6 +53,6 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		}),
 	],
 	providers,
-	exports: [FilesStorageService, PreviewService, PreviewGeneratorService],
+	exports: [FilesStorageService, PreviewService],
 })
 export class FilesStorageModule {}

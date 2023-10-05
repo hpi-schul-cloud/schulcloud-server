@@ -2,6 +2,7 @@ import { AmqpConnectionManager, RabbitMQModule } from '@golevelup/nestjs-rabbitm
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Global, Module, OnModuleDestroy } from '@nestjs/common';
 import { FilesStorageExchange } from './exchange';
+import { FilesPreviewExchange } from './exchange/files-preview';
 
 /**
  * https://www.npmjs.com/package/@golevelup/nestjs-rabbitmq#usage
@@ -26,6 +27,10 @@ const imports = [
 			},
 			{
 				name: FilesStorageExchange,
+				type: 'direct',
+			},
+			{
+				name: FilesPreviewExchange,
 				type: 'direct',
 			},
 		],

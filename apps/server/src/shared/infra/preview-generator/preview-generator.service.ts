@@ -1,17 +1,13 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { GetFile, S3ClientAdapter } from '@shared/infra/s3-client';
 import { LegacyLogger } from '@src/core/logger';
 import { subClass } from 'gm';
 import { PassThrough } from 'stream';
-import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
-import { PreviewFileOptions, PreviewOptions, PreviewResponseMessage } from '../interface';
+import { PreviewFileOptions, PreviewOptions, PreviewResponseMessage } from './interface';
 
 @Injectable()
 export class PreviewGeneratorService {
-	constructor(
-		@Inject(FILES_STORAGE_S3_CONNECTION) private readonly storageClient: S3ClientAdapter,
-		private logger: LegacyLogger
-	) {
+	constructor(private readonly storageClient: S3ClientAdapter, private logger: LegacyLogger) {
 		this.logger.setContext(PreviewGeneratorService.name);
 	}
 
