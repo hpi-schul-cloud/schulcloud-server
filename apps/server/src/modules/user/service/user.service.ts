@@ -113,8 +113,8 @@ export class UserService {
 			throw new InternalServerErrorException('User id is missing');
 		}
 
-		const deletedUser: Promise<number> = this.userRepo.deleteUser(userId);
+		const deletedUserNumber: Promise<number> = this.userRepo.deleteUser(userId);
 
-		return deletedUser;
+		return deletedUserNumber;
 	}
 }
