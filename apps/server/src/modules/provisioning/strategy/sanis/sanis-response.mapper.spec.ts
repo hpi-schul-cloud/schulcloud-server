@@ -172,10 +172,6 @@ describe('SanisResponseMapper', () => {
 					externalId: group.gruppe.id,
 					users: [
 						{
-							externalUserId: group.sonstige_gruppenzugehoerige![0].ktid,
-							roleName: RoleName.STUDENT,
-						},
-						{
 							externalUserId: personenkontext.id,
 							roleName: RoleName.TEACHER,
 						},

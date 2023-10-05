@@ -37,4 +37,10 @@ export class Group extends DomainObject<GroupProps> {
 	get organizationId(): string | undefined {
 		return this.props.organizationId;
 	}
+
+	addUser(user: GroupUser): void {
+		if (!this.users.find((u) => u.userId === user.userId)) {
+			this.users.push(user);
+		}
+	}
 }
