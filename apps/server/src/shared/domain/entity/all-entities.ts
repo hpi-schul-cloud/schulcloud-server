@@ -19,7 +19,7 @@ import { BoardNode } from './boardnode/boardnode.entity';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
-import { County, FederalStateEntity } from './federal-state.entity';
+import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';
 import { ImportUser } from './import-user.entity';
 import {
 	Board,
@@ -61,7 +61,7 @@ export const ALL_ENTITIES = [
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
 	ContextExternalToolEntity,
-	County,
+	CountyEmbeddable,
 	Course,
 	CourseGroup,
 	CourseNews,

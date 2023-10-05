@@ -1,4 +1,4 @@
-import { County, FederalStateEntity, IFederalStateProperties } from '@shared/domain';
+import { CountyEmbeddable, FederalStateEntity, IFederalStateProperties } from '@shared/domain';
 import { BaseFactory } from './base.factory';
 
 export const federalStateFactory = BaseFactory.define<FederalStateEntity, IFederalStateProperties>(
@@ -10,12 +10,12 @@ export const federalStateFactory = BaseFactory.define<FederalStateEntity, IFeder
 			logoUrl:
 				'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Coat_of_arms_of_Hamburg.svg/1200px-Coat_of_arms_of_Hamburg.svg.png',
 			counties: [
-				new County({
+				new CountyEmbeddable({
 					name: 'Hamburg-Mitte',
 					countyId: 2000,
 					antaresKey: '02000',
 				}),
-				new County({
+				new CountyEmbeddable({
 					name: 'Altona',
 					countyId: 2002,
 					antaresKey: '02002',

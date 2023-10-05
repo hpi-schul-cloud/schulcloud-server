@@ -1,10 +1,10 @@
-import { County, IFederalStateProperties } from '@shared/domain/entity/federal-state.entity';
+import { CountyEmbeddable, IFederalStateProperties } from '@shared/domain/entity/federal-state.entity';
 import { federalStateFactory } from '@shared/testing/factory/federal-state.factory';
 import { DeepPartial } from 'fishery';
 
 type SeedFederalStateProperties = Omit<IFederalStateProperties, 'counties' | 'createdAt' | 'updatedAt'> & {
 	id: string;
-	counties?: (County & { id: string })[];
+	counties?: (CountyEmbeddable & { id: string })[];
 	createdAt?: string;
 	updatedAt?: string;
 };
@@ -209,10 +209,10 @@ const seedFederalStates: SeedFederalStateProperties[] = [
 
 export function generateFederalStates() {
 	return seedFederalStates.map((federalState) => {
-		const counties: County[] =
+		const counties: CountyEmbeddable[] =
 			federalState.counties?.map(
 				(county) =>
-					new County({
+					new CountyEmbeddable({
 						antaresKey: county.antaresKey,
 						name: county.name,
 						countyId: county.countyId,

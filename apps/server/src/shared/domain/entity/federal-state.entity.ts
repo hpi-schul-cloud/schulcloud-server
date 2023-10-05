@@ -5,15 +5,14 @@ export interface IFederalStateProperties {
 	name: string;
 	abbreviation: string;
 	logoUrl: string;
-	counties?: County[];
+	counties?: CountyEmbeddable[];
 	createdAt: Date;
 	updatedAt: Date;
 }
 
-// TODO: Do we also want to rename embedded types, e.g. to "CountyEmbeddable", to avoid naming conflicts with the domain types.
 @Embeddable()
-export class County {
-	constructor(county: County) {
+export class CountyEmbeddable {
+	constructor(county: CountyEmbeddable) {
 		this.name = county.name;
 		this.countyId = county.countyId;
 		this.antaresKey = county.antaresKey;
@@ -40,8 +39,8 @@ export class FederalStateEntity extends BaseEntityWithTimestamps {
 	@Property()
 	logoUrl: string;
 
-	@Embedded(() => County, { array: true, nullable: true })
-	counties?: County[];
+	@Embedded(() => CountyEmbeddable, { array: true, nullable: true })
+	counties?: CountyEmbeddable[];
 
 	constructor(props: IFederalStateProperties) {
 		super();

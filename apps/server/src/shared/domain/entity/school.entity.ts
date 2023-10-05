@@ -12,7 +12,7 @@ import {
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { SchoolFeature, SchoolPurpose } from '@src/modules/school/domain';
 import { BaseEntity } from './base.entity';
-import { County, FederalStateEntity } from './federal-state.entity';
+import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';
 import { SchoolYearEntity } from './schoolyear.entity';
 import { SystemEntity } from './system.entity';
 
@@ -29,7 +29,7 @@ export interface ISchoolProperties {
 	schoolYear?: SchoolYearEntity;
 	userLoginMigration?: UserLoginMigrationEntity;
 	federalState: FederalStateEntity;
-	county?: County;
+	county?: CountyEmbeddable;
 	purpose?: SchoolPurpose;
 	enableStudentTeamCreation?: boolean;
 	logo_dataUrl?: string;
@@ -101,7 +101,7 @@ export class SchoolEntity extends BaseEntity {
 	federalState: FederalStateEntity;
 
 	@Property({ nullable: true })
-	county?: County;
+	county?: CountyEmbeddable;
 
 	@Property({ nullable: true })
 	purpose?: SchoolPurpose;
