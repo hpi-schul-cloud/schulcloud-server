@@ -204,7 +204,7 @@ async editCourseByAdmin(userId: EntityId, params: { courseId: EntityId, descript
    const school = course.school;
 
    const context = AuthorizationContextBuilder.write([Permission.INSTANCE, Permission.CREATE_USER]);
-   this.authorizationService.hasPermissions(user, school, context);
+   this.authorizationService.checkPermissions(user, school, context);
 
    course.description = params.description;
    await this.courseService.save(course);
