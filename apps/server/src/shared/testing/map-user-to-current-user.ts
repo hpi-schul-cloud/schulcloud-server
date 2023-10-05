@@ -15,6 +15,7 @@ export const mapUserToCurrentUser = (
 		accountId: account ? account.id : new ObjectId().toHexString(),
 		systemId,
 		impersonated,
+		isExternalUser: false,
 	};
 
 	return currentUser;
