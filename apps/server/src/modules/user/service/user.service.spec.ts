@@ -163,6 +163,7 @@ describe('UserService', () => {
 					schoolId: user.school.id,
 					accountId: account.id,
 					roles: [role.id],
+					isExternalUser: false,
 				});
 			});
 		});
