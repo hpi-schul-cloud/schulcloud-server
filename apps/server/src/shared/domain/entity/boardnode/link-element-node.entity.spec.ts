@@ -6,7 +6,7 @@ import { BoardDoBuilder, BoardNodeType } from './types';
 describe(LinkElementNode.name, () => {
 	describe('when trying to create a link element', () => {
 		const setup = () => {
-			const elementProps = { url: 'https://www.any-fake.url/that-is-linked.html' };
+			const elementProps = { url: 'https://www.any-fake.url/that-is-linked.html', title: 'A Great WebPage' };
 			const builder: DeepMocked<BoardDoBuilder> = createMock<BoardDoBuilder>();
 
 			return { elementProps, builder };
@@ -23,7 +23,10 @@ describe(LinkElementNode.name, () => {
 
 	describe('useDoBuilder()', () => {
 		const setup = () => {
-			const element = new LinkElementNode({ url: 'https://www.any-fake.url/that-is-linked.html' });
+			const element = new LinkElementNode({
+				url: 'https://www.any-fake.url/that-is-linked.html',
+				title: 'A Great WebPage',
+			});
 			const builder: DeepMocked<BoardDoBuilder> = createMock<BoardDoBuilder>();
 			const elementDo = linkElementFactory.build();
 
