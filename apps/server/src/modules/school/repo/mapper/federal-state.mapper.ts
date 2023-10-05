@@ -1,5 +1,5 @@
 import { FederalStateEntity } from '@shared/domain';
-import { FederalState } from '../../domain/do';
+import { FederalState } from '../../domain';
 
 export class FederalStateMapper {
 	public static mapToDo(entity: FederalStateEntity): FederalState {

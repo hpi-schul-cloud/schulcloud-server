@@ -1,6 +1,5 @@
 import { SchoolEntity } from '@shared/domain';
-import { SchoolFeature } from '../../domain';
-import { School } from '../../domain/do/school';
+import { School, SchoolFeature } from '../../domain';
 import { FederalStateMapper } from './federal-state.mapper';
 import { SchoolYearMapper } from './school-year.mapper';
 import { SystemMapper } from './system.mapper';

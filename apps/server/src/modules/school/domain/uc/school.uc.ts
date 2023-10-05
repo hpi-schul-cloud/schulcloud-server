@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, IPagination } from '@shared/domain';
-import { School } from '../do/school';
-import { SchoolService } from '../service/school.service';
-import { SchoolQuery } from '../type/school-query';
+import { School } from '../do';
+import { SchoolService } from '../service';
+import { SchoolQuery } from '../type';
 
 @Injectable()
 export class SchoolUc {
