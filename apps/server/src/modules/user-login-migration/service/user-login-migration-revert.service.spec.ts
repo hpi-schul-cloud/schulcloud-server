@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userLoginMigrationDOFactory } from '@shared/testing';
 import { LegacySchoolService } from '@src/modules/legacy-school';
-import { SchoolFeatures } from '@src/modules/school/domain';
+import { SchoolFeature } from '@src/modules/school/domain';
 import { UserLoginMigrationRevertService } from './user-login-migration-revert.service';
 import { UserLoginMigrationService } from './user-login-migration.service';
 
@@ -60,7 +60,7 @@ describe('UserLoginMigrationRevertService', () => {
 
 				expect(schoolService.removeFeature).toHaveBeenCalledWith(
 					userLoginMigration.schoolId,
-					SchoolFeatures.OAUTH_PROVISIONING_ENABLED
+					SchoolFeature.OAUTH_PROVISIONING_ENABLED
 				);
 			});
 

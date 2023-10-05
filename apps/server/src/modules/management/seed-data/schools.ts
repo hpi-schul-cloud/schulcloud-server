@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import { FederalStateEntity, ISchoolProperties, SchoolRoles, SchoolYearEntity, SystemEntity } from '@shared/domain';
 import { federalStateFactory, schoolFactory } from '@shared/testing';
-import { SchoolFeatures, SchoolPurpose } from '@src/modules/school/domain';
+import { SchoolFeature, SchoolPurpose } from '@src/modules/school/domain';
 import { DeepPartial } from 'fishery';
 import { EFederalState } from './federalstates';
 import { SeedSchoolYearEnum } from './schoolyears';
@@ -53,7 +53,7 @@ const seedSchools: SeedSchoolProperties[] = [
 				STUDENT_LIST: true,
 			},
 		},
-		features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 	},
 	{
 		id: '5f2987e020834114b8efd6f7',
@@ -69,7 +69,7 @@ const seedSchools: SeedSchoolProperties[] = [
 				STUDENT_LIST: true,
 			},
 		},
-		features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 	},
 	{
 		id: '5f2987e020834114b8efd6f8',
@@ -93,10 +93,10 @@ const seedSchools: SeedSchoolProperties[] = [
 			},
 		},
 		features: [
-			SchoolFeatures.ROCKET_CHAT,
-			SchoolFeatures.LDAP_UNIVENTION_MIGRATION,
-			SchoolFeatures.VIDEOCONFERENCE,
-			SchoolFeatures.OAUTH_PROVISIONING_ENABLED,
+			SchoolFeature.ROCKET_CHAT,
+			SchoolFeature.LDAP_UNIVENTION_MIGRATION,
+			SchoolFeature.VIDEOCONFERENCE,
+			SchoolFeature.OAUTH_PROVISIONING_ENABLED,
 		],
 		enableStudentTeamCreation: false,
 	},
@@ -116,7 +116,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		fileStorageType: 'awsS3',
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.EXPERT,
-		features: [SchoolFeatures.ROCKET_CHAT, SchoolFeatures.VIDEOCONFERENCE, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.VIDEOCONFERENCE, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 	},
 	{
 		id: '5fa2c5ccb229544f2c69666c',
@@ -139,7 +139,7 @@ const seedSchools: SeedSchoolProperties[] = [
 				LERNSTORE_VIEW: true,
 			},
 		},
-		features: [SchoolFeatures.ROCKET_CHAT, SchoolFeatures.STUDENTVISIBILITY, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.STUDENTVISIBILITY, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: '',
 		experimental: false,
 		pilot: false,
@@ -168,7 +168,7 @@ const seedSchools: SeedSchoolProperties[] = [
 				LERNSTORE_VIEW: true,
 			},
 		},
-		features: [SchoolFeatures.ROCKET_CHAT, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: '',
 		experimental: false,
 		pilot: false,
@@ -191,7 +191,7 @@ const seedSchools: SeedSchoolProperties[] = [
 				LERNSTORE_VIEW: true,
 			},
 		},
-		features: [SchoolFeatures.ROCKET_CHAT, SchoolFeatures.STUDENTVISIBILITY, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.STUDENTVISIBILITY, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: '',
 		experimental: false,
 		pilot: false,
@@ -215,7 +215,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		systems: [],
 		fileStorageType: 'awsS3',
 		currentYear: SeedSchoolYearEnum['2022/23'],
-		features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: '',
 		experimental: false,
 		pilot: false,
@@ -227,7 +227,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		createdAt: '2020-12-16T12:47:27.338Z',
 		systems: [],
 		purpose: SchoolPurpose.TOMBSTONE,
-		features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+		features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: '',
 		experimental: false,
 		pilot: false,
@@ -254,10 +254,10 @@ const seedSchools: SeedSchoolProperties[] = [
 			},
 		},
 		features: [
-			SchoolFeatures.OAUTH_PROVISIONING_ENABLED,
-			SchoolFeatures.LDAP_UNIVENTION_MIGRATION,
-			SchoolFeatures.VIDEOCONFERENCE,
-			SchoolFeatures.OAUTH_PROVISIONING_ENABLED,
+			SchoolFeature.OAUTH_PROVISIONING_ENABLED,
+			SchoolFeature.LDAP_UNIVENTION_MIGRATION,
+			SchoolFeature.VIDEOCONFERENCE,
+			SchoolFeature.OAUTH_PROVISIONING_ENABLED,
 		],
 		externalId: '0000d186816abba584714c92',
 		enableStudentTeamCreation: false,

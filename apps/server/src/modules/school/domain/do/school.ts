@@ -1,5 +1,5 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { County, SchoolFeatures, SchoolPurpose } from '../type';
+import { County, SchoolFeature, SchoolPurpose } from '../type';
 import { FederalState } from './federal-state';
 import { SchoolYear } from './school-year';
 import { System } from './system';
@@ -21,11 +21,11 @@ export class School extends DomainObject<SchoolProps> {
 		return this.getProps().features;
 	}
 
-	public addFeature(feature: SchoolFeatures): void {
+	public addFeature(feature: SchoolFeature): void {
 		this.props.features?.add(feature);
 	}
 
-	public removeFeature(feature: SchoolFeatures): void {
+	public removeFeature(feature: SchoolFeature): void {
 		this.props.features?.delete(feature);
 	}
 
@@ -53,7 +53,7 @@ interface SchoolProps extends AuthorizableObject {
 	federalState: FederalState;
 	county?: County;
 	purpose?: SchoolPurpose;
-	features?: Set<SchoolFeatures>;
+	features?: Set<SchoolFeature>;
 	systems?: System[];
 	logo_dataUrl?: string;
 	// userLoginMigration?: UserLoginMigration;

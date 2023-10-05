@@ -4,7 +4,7 @@ import { EntityId, IPagination, SortOrder } from '@shared/domain';
 import { SchoolConfig } from '../../school.config';
 import { School } from '../do';
 import { SchoolRepo, SCHOOL_REPO } from '../interface';
-import { SchoolFeatures, SchoolQuery } from '../type';
+import { SchoolFeature, SchoolQuery } from '../type';
 
 @Injectable()
 export class SchoolService {
@@ -36,9 +36,9 @@ export class SchoolService {
 		const configValue = this.configService.get<string>('STUDENT_TEAM_CREATION');
 
 		if (configValue === 'enabled') {
-			school.addFeature(SchoolFeatures.IS_TEAM_CREATION_BY_STUDENTS_ENABLED);
+			school.addFeature(SchoolFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED);
 		} else if (configValue === 'disabled') {
-			school.removeFeature(SchoolFeatures.IS_TEAM_CREATION_BY_STUDENTS_ENABLED);
+			school.removeFeature(SchoolFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED);
 		} else {
 			// leave it as it is configured for the specific school
 		}

@@ -23,7 +23,7 @@ import { LoggerModule } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AuthorizationService } from '@src/modules/authorization';
 import { LegacySchoolService } from '@src/modules/legacy-school';
-import { SchoolFeatures } from '@src/modules/school/domain';
+import { SchoolFeature } from '@src/modules/school/domain';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,
@@ -117,7 +117,7 @@ describe('[ImportUserModule]', () => {
 		const createMockSchoolDo = (school?: SchoolEntity): LegacySchoolDo => {
 			const name = school ? school.name : 'testSchool';
 			const id = school ? school.id : 'someId';
-			const features = school ? school.features ?? [SchoolFeatures.LDAP_UNIVENTION_MIGRATION] : [];
+			const features = school ? school.features ?? [SchoolFeature.LDAP_UNIVENTION_MIGRATION] : [];
 			const externalId = school ? school.externalId : undefined;
 			const officialSchoolNumber = school ? school.officialSchoolNumber : undefined;
 			const inMaintenanceSince = school ? school.inMaintenanceSince : undefined;

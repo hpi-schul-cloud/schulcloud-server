@@ -25,7 +25,7 @@ import {
 } from '@src/modules/authorization';
 import { CourseService } from '@src/modules/learnroom/service';
 import { LegacySchoolService } from '@src/modules/legacy-school';
-import { SchoolFeatures } from '@src/modules/school/domain';
+import { SchoolFeature } from '@src/modules/school/domain';
 import { UserService } from '@src/modules/user';
 import {
 	BBBBaseMeetingConfig,
@@ -433,7 +433,7 @@ export class VideoConferenceDeprecatedUc {
 			);
 		}
 		// throw, if the current users school does not have the feature enabled
-		const schoolFeatureEnabled: boolean = await this.schoolService.hasFeature(schoolId, SchoolFeatures.VIDEOCONFERENCE);
+		const schoolFeatureEnabled: boolean = await this.schoolService.hasFeature(schoolId, SchoolFeature.VIDEOCONFERENCE);
 		if (!schoolFeatureEnabled) {
 			throw new ForbiddenException(ErrorStatus.SCHOOL_FEATURE_DISABLED, 'school feature VIDEOCONFERENCE is disabled');
 		}

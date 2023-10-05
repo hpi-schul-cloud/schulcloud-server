@@ -1,6 +1,6 @@
 // TODO: I think this should be renamed to SchoolFeature because an enum's name should always be singular.
 // Though probably too much for this PR.
-export enum SchoolFeatures {
+export enum SchoolFeature {
 	ROCKET_CHAT = 'rocketChat',
 	VIDEOCONFERENCE = 'videoconference',
 	NEXTCLOUD = 'nextcloud',

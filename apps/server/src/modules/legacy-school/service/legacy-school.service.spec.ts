@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain';
 import { LegacySchoolRepo } from '@shared/repo';
 import { legacySchoolDoFactory, setupEntities } from '@shared/testing';
-import { SchoolFeatures } from '@src/modules/school/domain';
+import { SchoolFeature } from '@src/modules/school/domain';
 import { LegacySchoolService } from './legacy-school.service';
 import { SchoolValidationService } from './validation/school-validation.service';
 
@@ -48,7 +48,7 @@ describe('LegacySchoolService', () => {
 			externalId: 'externalId',
 			officialSchoolNumber: '9999',
 			systems,
-			features: [SchoolFeatures.VIDEOCONFERENCE],
+			features: [SchoolFeature.VIDEOCONFERENCE],
 		});
 		const schoolUnsaved: LegacySchoolDo = legacySchoolDoFactory.build({ name: 'school #2}', systems: [] });
 		schoolRepo.findById.mockResolvedValue(schoolSaved);
@@ -76,7 +76,7 @@ describe('LegacySchoolService', () => {
 			it('should return true', async () => {
 				const { schoolSavedId } = setupOld();
 
-				const result = await schoolService.hasFeature(schoolSavedId, SchoolFeatures.VIDEOCONFERENCE);
+				const result = await schoolService.hasFeature(schoolSavedId, SchoolFeature.VIDEOCONFERENCE);
 
 				expect(result).toBe(true);
 			});
@@ -88,7 +88,7 @@ describe('LegacySchoolService', () => {
 				schoolSaved.features = [];
 				schoolRepo.findById.mockResolvedValue(schoolSaved);
 
-				const result = await schoolService.hasFeature(schoolSavedId, SchoolFeatures.VIDEOCONFERENCE);
+				const result = await schoolService.hasFeature(schoolSavedId, SchoolFeature.VIDEOCONFERENCE);
 
 				expect(result).toBe(false);
 			});
@@ -100,7 +100,7 @@ describe('LegacySchoolService', () => {
 				schoolSaved.features = undefined;
 				schoolRepo.findById.mockResolvedValue(schoolSaved);
 
-				const result = await schoolService.hasFeature(schoolSavedId, SchoolFeatures.VIDEOCONFERENCE);
+				const result = await schoolService.hasFeature(schoolSavedId, SchoolFeature.VIDEOCONFERENCE);
 
 				expect(result).toBe(false);
 			});
@@ -111,7 +111,7 @@ describe('LegacySchoolService', () => {
 		describe('when given schoolFeature exists on school', () => {
 			const setup = () => {
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
-					features: [SchoolFeatures.VIDEOCONFERENCE, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+					features: [SchoolFeature.VIDEOCONFERENCE, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 				});
 
 				schoolRepo.findById.mockResolvedValue(school);
@@ -124,7 +124,7 @@ describe('LegacySchoolService', () => {
 			it('should call schoolRepo.findById', async () => {
 				const { schoolId } = setup();
 
-				await schoolService.removeFeature(schoolId, SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
+				await schoolService.removeFeature(schoolId, SchoolFeature.OAUTH_PROVISIONING_ENABLED);
 
 				expect(schoolRepo.findById).toHaveBeenCalledWith(schoolId);
 			});
@@ -133,7 +133,7 @@ describe('LegacySchoolService', () => {
 		describe('when school has a feature which should be removed', () => {
 			const setup = () => {
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
-					features: [SchoolFeatures.VIDEOCONFERENCE, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+					features: [SchoolFeature.VIDEOCONFERENCE, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 				});
 
 				schoolRepo.findById.mockResolvedValue(school);
@@ -146,11 +146,11 @@ describe('LegacySchoolService', () => {
 			it('should save school without given feature', async () => {
 				const { schoolId } = setup();
 
-				await schoolService.removeFeature(schoolId, SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
+				await schoolService.removeFeature(schoolId, SchoolFeature.OAUTH_PROVISIONING_ENABLED);
 
 				expect(schoolRepo.save).toHaveBeenCalledWith(
 					expect.objectContaining({
-						features: [SchoolFeatures.VIDEOCONFERENCE],
+						features: [SchoolFeature.VIDEOCONFERENCE],
 					})
 				);
 			});

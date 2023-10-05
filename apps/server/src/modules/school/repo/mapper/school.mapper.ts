@@ -1,5 +1,5 @@
 import { SchoolEntity } from '@shared/domain';
-import { SchoolFeatures } from '../../domain';
+import { SchoolFeature } from '../../domain';
 import { School } from '../../domain/do/school';
 import { FederalStateMapper } from './federal-state.mapper';
 import { SchoolYearMapper } from './school-year.mapper';
@@ -38,11 +38,11 @@ export class SchoolMapper {
 		return schools;
 	}
 
-	private static mapFeatures(entity: SchoolEntity): Set<SchoolFeatures> {
+	private static mapFeatures(entity: SchoolEntity): Set<SchoolFeature> {
 		const features = new Set(entity.features);
 
 		if (entity.enableStudentTeamCreation) {
-			features.add(SchoolFeatures.IS_TEAM_CREATION_BY_STUDENTS_ENABLED);
+			features.add(SchoolFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED);
 		}
 
 		return features;

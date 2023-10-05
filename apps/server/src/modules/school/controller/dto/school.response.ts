@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { SchoolFeatures, SchoolPurpose } from '../../domain';
+import { SchoolFeature, SchoolPurpose } from '../../domain';
 import { CountyResponse } from './county.response';
 import { FederalStateResponse } from './federal-state.response';
 import { SchoolYearResponse } from './school-year.response';
@@ -56,7 +56,7 @@ export class SchoolResponse {
 	purpose?: SchoolPurpose;
 
 	@ApiPropertyOptional()
-	features?: SchoolFeatures[];
+	features?: SchoolFeature[];
 
 	@ApiPropertyOptional({ type: () => [SystemResponse] })
 	systems?: SystemResponse[];

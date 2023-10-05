@@ -3,7 +3,7 @@ import { Injectable, InternalServerErrorException, UnprocessableEntityException 
 import { EntityId, LegacySchoolDo, SystemTypeEnum, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { LegacySchoolService } from '@src/modules/legacy-school';
-import { SchoolFeatures } from '@src/modules/school/domain';
+import { SchoolFeature } from '@src/modules/school/domain';
 import { SystemDto, SystemService } from '@src/modules/system';
 import { UserService } from '@src/modules/user';
 import { UserLoginMigrationNotFoundLoggableException } from '../error';
@@ -74,7 +74,7 @@ export class UserLoginMigrationService {
 
 		if (oauthMigrationFinished !== undefined) {
 			// this would throw an error when executed before the userLoginMigrationRepo.save method.
-			await this.schoolService.removeFeature(schoolId, SchoolFeatures.ENABLE_LDAP_SYNC_DURING_MIGRATION);
+			await this.schoolService.removeFeature(schoolId, SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION);
 		}
 
 		return savedMigration;
@@ -134,7 +134,7 @@ export class UserLoginMigrationService {
 			throw new UserLoginMigrationNotFoundLoggableException(schoolId);
 		}
 
-		await this.schoolService.removeFeature(schoolId, SchoolFeatures.ENABLE_LDAP_SYNC_DURING_MIGRATION);
+		await this.schoolService.removeFeature(schoolId, SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION);
 
 		const now: Date = new Date();
 		const gracePeriodDuration: number = Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number;
@@ -180,10 +180,10 @@ export class UserLoginMigrationService {
 	}
 
 	private enableOauthMigrationFeature(schoolDo: LegacySchoolDo) {
-		if (schoolDo.features && !schoolDo.features.includes(SchoolFeatures.OAUTH_PROVISIONING_ENABLED)) {
-			schoolDo.features.push(SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
+		if (schoolDo.features && !schoolDo.features.includes(SchoolFeature.OAUTH_PROVISIONING_ENABLED)) {
+			schoolDo.features.push(SchoolFeature.OAUTH_PROVISIONING_ENABLED);
 		} else {
-			schoolDo.features = [SchoolFeatures.OAUTH_PROVISIONING_ENABLED];
+			schoolDo.features = [SchoolFeature.OAUTH_PROVISIONING_ENABLED];
 		}
 	}
 

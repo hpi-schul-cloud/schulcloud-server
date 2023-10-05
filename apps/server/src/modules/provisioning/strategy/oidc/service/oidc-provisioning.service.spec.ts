@@ -19,7 +19,7 @@ import { Group, GroupService } from '@src/modules/group';
 import { FederalStateService, LegacySchoolService, SchoolYearService } from '@src/modules/legacy-school';
 import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { SchoolFeatures } from '@src/modules/school/domain';
+import { SchoolFeature } from '@src/modules/school/domain';
 import { UserService } from '@src/modules/user';
 import CryptoJS from 'crypto-js';
 import { ExternalGroupDto, ExternalSchoolDto, ExternalUserDto } from '../../../dto';
@@ -113,7 +113,7 @@ describe('OidcProvisioningService', () => {
 				name: 'name',
 				officialSchoolNumber: 'officialSchoolNumber',
 				systems: [systemId],
-				features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+				features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 			});
 			const existingSchoolDO = legacySchoolDoFactory.build({
 				id: 'schoolId',
@@ -121,7 +121,7 @@ describe('OidcProvisioningService', () => {
 				name: 'existingName',
 				officialSchoolNumber: 'existingOfficialSchoolNumber',
 				systems: [systemId],
-				features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+				features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 			});
 
 			schoolService.save.mockResolvedValue(savedSchoolDO);

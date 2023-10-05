@@ -7,7 +7,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { LegacySchoolService } from '@src/modules/legacy-school';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
-import { SchoolFeatures } from '@src/modules/school/domain';
+import { SchoolFeature } from '@src/modules/school/domain';
 import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
@@ -137,7 +137,7 @@ export class OAuthService {
 			return true;
 		}
 
-		return !!school.features?.includes(SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
+		return !!school.features?.includes(SchoolFeature.OAUTH_PROVISIONING_ENABLED);
 	}
 
 	async requestToken(code: string, oauthConfig: OauthConfig, redirectUri: string): Promise<OAuthTokenDto> {

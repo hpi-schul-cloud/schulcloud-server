@@ -10,7 +10,7 @@ import {
 	Property,
 } from '@mikro-orm/core';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
-import { SchoolFeatures, SchoolPurpose } from '@src/modules/school/domain';
+import { SchoolFeature, SchoolPurpose } from '@src/modules/school/domain';
 import { BaseEntity } from './base.entity';
 import { County, FederalStateEntity } from './federal-state.entity';
 import { SchoolYearEntity } from './schoolyear.entity';
@@ -25,7 +25,7 @@ export interface ISchoolProperties {
 	name: string;
 	officialSchoolNumber?: string;
 	systems?: SystemEntity[];
-	features?: SchoolFeatures[];
+	features?: SchoolFeature[];
 	schoolYear?: SchoolYearEntity;
 	userLoginMigration?: UserLoginMigrationEntity;
 	federalState: FederalStateEntity;
@@ -57,7 +57,7 @@ export class SchoolRoles {
 @Index({ properties: ['externalId', 'systems'] })
 export class SchoolEntity extends BaseEntity {
 	@Property({ nullable: true })
-	features?: SchoolFeatures[];
+	features?: SchoolFeature[];
 
 	@Property({ nullable: true })
 	inMaintenanceSince?: Date;

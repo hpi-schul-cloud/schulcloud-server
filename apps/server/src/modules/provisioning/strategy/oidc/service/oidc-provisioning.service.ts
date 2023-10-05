@@ -9,7 +9,7 @@ import { FederalStateService, LegacySchoolService, SchoolYearService } from '@sr
 import { FederalStateNames } from '@src/modules/legacy-school/types';
 import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { SchoolFeatures } from '@src/modules/school/domain';
+import { SchoolFeature } from '@src/modules/school/domain';
 import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
 import CryptoJS from 'crypto-js';
@@ -55,7 +55,7 @@ export class OidcProvisioningService {
 				name: externalSchool.name,
 				officialSchoolNumber: externalSchool.officialSchoolNumber,
 				systems: [systemId],
-				features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+				features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 				// TODO: N21-990 Refactoring: Create domain objects for schoolYear and federalState
 				schoolYear,
 				federalState,

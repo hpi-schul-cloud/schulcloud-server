@@ -10,7 +10,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { LegacySchoolService } from '@src/modules/legacy-school';
 import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
 import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
-import { SchoolFeatures } from '@src/modules/school/domain';
+import { SchoolFeature } from '@src/modules/school/domain';
 import { OauthConfigDto } from '@src/modules/system/service';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemService } from '@src/modules/system/service/system.service';
@@ -426,7 +426,7 @@ describe('OAuthService', () => {
 					}),
 				});
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
-					features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+					features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 				});
 
 				provisioningService.getData.mockResolvedValue(oauthData);

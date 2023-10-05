@@ -1,6 +1,6 @@
 import { FederalStateEntity, SchoolYearEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { SchoolFeatures } from '@src/modules/school/domain';
+import { SchoolFeature } from '@src/modules/school/domain';
 import { BaseDO } from './base.do';
 
 /**
@@ -21,7 +21,7 @@ export class LegacySchoolDo extends BaseDO {
 
 	systems?: EntityId[];
 
-	features?: SchoolFeatures[];
+	features?: SchoolFeature[];
 
 	// TODO: N21-990 Refactoring: Create domain objects for schoolYear and federalState
 	schoolYear?: SchoolYearEntity;

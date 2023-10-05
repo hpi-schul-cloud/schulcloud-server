@@ -43,14 +43,14 @@ import {
 } from '@src/modules/user-import/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
-import { SchoolFeatures } from '@src/modules/school/domain';
+import { SchoolFeature } from '@src/modules/school/domain';
 
 describe('ImportUser Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 
-	const authenticatedUser = async (permissions: Permission[] = [], features: SchoolFeatures[] = []) => {
+	const authenticatedUser = async (permissions: Permission[] = [], features: SchoolFeature[] = []) => {
 		const system = systemFactory.buildWithId(); // TODO no id?
 		const school = schoolFactory.build({ officialSchoolNumber: 'foo', features });
 		const roles = [roleFactory.build({ name: RoleName.ADMINISTRATOR, permissions })];
@@ -205,7 +205,7 @@ describe('ImportUser Controller (API)', () => {
 				beforeEach(async () => {
 					({ school, system, user } = await authenticatedUser(
 						[Permission.SCHOOL_IMPORT_USERS_VIEW],
-						[SchoolFeatures.LDAP_UNIVENTION_MIGRATION]
+						[SchoolFeature.LDAP_UNIVENTION_MIGRATION]
 					));
 					currentUser = mapUserToCurrentUser(user);
 					Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', system._id.toString());

@@ -25,7 +25,7 @@ import {
 } from '@src/modules/authorization';
 import { CourseService } from '@src/modules/learnroom/service';
 import { LegacySchoolService } from '@src/modules/legacy-school';
-import { SchoolFeatures } from '@src/modules/school/domain';
+import { SchoolFeature } from '@src/modules/school/domain';
 import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
 import { BBBRole } from '../bbb';
@@ -422,7 +422,7 @@ describe('VideoConferenceService', () => {
 				const func = () => service.throwOnFeaturesDisabled(schoolId);
 
 				await expect(func()).rejects.toThrow(new ForbiddenException(ErrorStatus.SCHOOL_FEATURE_DISABLED));
-				expect(schoolService.hasFeature).toHaveBeenCalledWith(schoolId, SchoolFeatures.VIDEOCONFERENCE);
+				expect(schoolService.hasFeature).toHaveBeenCalledWith(schoolId, SchoolFeature.VIDEOCONFERENCE);
 			});
 		});
 
@@ -434,7 +434,7 @@ describe('VideoConferenceService', () => {
 				const func = () => service.throwOnFeaturesDisabled(schoolId);
 
 				await expect(func()).resolves.toBeUndefined();
-				expect(schoolService.hasFeature).toHaveBeenCalledWith(schoolId, SchoolFeatures.VIDEOCONFERENCE);
+				expect(schoolService.hasFeature).toHaveBeenCalledWith(schoolId, SchoolFeature.VIDEOCONFERENCE);
 			});
 		});
 	});
