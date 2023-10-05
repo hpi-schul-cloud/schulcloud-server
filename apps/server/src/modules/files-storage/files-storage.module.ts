@@ -13,6 +13,8 @@ import { FileRecord, FileRecordSecurityCheck } from './entity';
 import { config, s3Config } from './files-storage.config';
 import { FileRecordRepo } from './repo';
 import { FilesStorageService } from './service/files-storage.service';
+import { PreviewGeneratorService } from './service/preview-generator.service';
+import { PreviewProducer } from './service/preview.producer';
 import { PreviewService } from './service/preview.service';
 
 const imports = [
@@ -26,7 +28,7 @@ const imports = [
 	}),
 	S3ClientModule.register([s3Config]),
 ];
-const providers = [FilesStorageService, PreviewService, FileRecordRepo];
+const providers = [FilesStorageService, PreviewService, FileRecordRepo, PreviewGeneratorService, PreviewProducer];
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -51,6 +53,6 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		}),
 	],
 	providers,
-	exports: [FilesStorageService, PreviewService],
+	exports: [FilesStorageService, PreviewService, PreviewGeneratorService],
 })
 export class FilesStorageModule {}

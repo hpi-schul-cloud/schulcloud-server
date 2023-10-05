@@ -1,6 +1,7 @@
 import { Readable } from 'stream';
-import type { DownloadFileParams, PreviewParams } from '../controller/dto';
+import type { PreviewParams } from '../controller/dto';
 import { FileRecord } from '../entity';
+import { PreviewWidth } from './preview-width.enum';
 
 export interface GetFileResponse {
 	data: Readable;
@@ -13,9 +14,26 @@ export interface GetFileResponse {
 
 export interface PreviewFileParams {
 	fileRecord: FileRecord;
-	downloadParams: DownloadFileParams;
 	previewParams: PreviewParams;
 	hash: string;
-	filePath: string;
+	originFilePath: string;
+	previewFilePath: string;
+	format: string;
 	bytesRange?: string;
+}
+
+export interface PreviewOptions {
+	format: string;
+	width?: PreviewWidth;
+}
+
+export interface PreviewFileOptions {
+	originFilePath: string;
+	previewFilePath: string;
+	previewOptions: PreviewOptions;
+}
+
+export interface PreviewResponseMessage {
+	previewFilePath: string;
+	status: boolean;
 }

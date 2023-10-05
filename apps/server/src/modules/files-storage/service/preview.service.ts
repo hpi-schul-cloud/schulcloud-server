@@ -1,48 +1,55 @@
 import { Inject, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { LegacyLogger } from '@src/core/logger';
-import { subClass } from 'gm';
-import { PassThrough } from 'stream';
-import { DownloadFileParams, PreviewParams } from '../controller/dto';
+import { PreviewParams } from '../controller/dto';
 import { FileRecord, PreviewStatus } from '../entity';
 import { ErrorType } from '../error';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
-import { createPreviewDirectoryPath, createPreviewFilePath, createPreviewNameHash } from '../helper';
-import { GetFileResponse, PreviewFileParams } from '../interface';
+import { createPath, createPreviewDirectoryPath, createPreviewFilePath, createPreviewNameHash } from '../helper';
+import { GetFileResponse, PreviewFileOptions, PreviewFileParams } from '../interface';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
-import { FileDtoBuilder, FileResponseBuilder } from '../mapper';
-import { FilesStorageService } from './files-storage.service';
+import { FileResponseBuilder } from '../mapper';
+import { PreviewProducer } from './preview.producer';
 
 @Injectable()
 export class PreviewService {
 	constructor(
 		@Inject(FILES_STORAGE_S3_CONNECTION) private readonly storageClient: S3ClientAdapter,
-		private readonly fileStorageService: FilesStorageService,
-		private logger: LegacyLogger
+		private logger: LegacyLogger,
+		private readonly previewProducer: PreviewProducer
 	) {
 		this.logger.setContext(PreviewService.name);
 	}
 
 	public async getPreview(
 		fileRecord: FileRecord,
-		downloadParams: DownloadFileParams,
 		previewParams: PreviewParams,
 		bytesRange?: string
 	): Promise<GetFileResponse> {
 		this.checkIfPreviewPossible(fileRecord);
 
-		const hash = createPreviewNameHash(fileRecord.id, previewParams);
-		const filePath = createPreviewFilePath(fileRecord.getSchoolId(), hash, fileRecord.id);
+		const { schoolId, id, mimeType } = fileRecord;
+		const originFilePath = createPath(schoolId, id);
+		const format = this.getFormat(previewParams.outputFormat ?? mimeType);
 
-		let response: GetFileResponse;
+		const hash = createPreviewNameHash(id, previewParams);
+		const previewFilePath = createPreviewFilePath(schoolId, hash, id);
 
-		const previewFileParams = { fileRecord, downloadParams, previewParams, hash, filePath, bytesRange };
+		const previewFileParams = {
+			fileRecord,
+			previewParams,
+			hash,
+			previewFilePath,
+			originFilePath,
+			format,
+			bytesRange,
+		};
 
 		if (previewParams.forceUpdate) {
-			response = await this.generatePreview(previewFileParams);
-		} else {
-			response = await this.tryGetPreviewOrGenerate(previewFileParams);
+			await this.generatePreview(previewFileParams);
 		}
+
+		const response = await this.tryGetPreviewOrGenerate(previewFileParams);
 
 		return response;
 	}
@@ -78,56 +85,31 @@ export class PreviewService {
 				throw error;
 			}
 
-			file = await this.generatePreview(params);
+			await this.generatePreview(params);
+			file = await this.getPreviewFile(params);
 		}
 
 		return file;
 	}
 
 	private async getPreviewFile(params: PreviewFileParams): Promise<GetFileResponse> {
-		const { fileRecord, filePath, bytesRange, previewParams } = params;
+		const { fileRecord, previewFilePath, bytesRange, previewParams } = params;
 		const name = this.getPreviewName(fileRecord, previewParams.outputFormat);
-		const file = await this.storageClient.get(filePath, bytesRange);
+		const file = await this.storageClient.get(previewFilePath, bytesRange);
 
 		const response = FileResponseBuilder.build(file, name);
 
 		return response;
 	}
 
-	private async generatePreview(params: PreviewFileParams): Promise<GetFileResponse> {
-		const { fileRecord, downloadParams, previewParams, hash, filePath, bytesRange } = params;
+	private async generatePreview(params: PreviewFileParams): Promise<void> {
+		const payload: PreviewFileOptions = {
+			originFilePath: params.originFilePath,
+			previewFilePath: params.previewFilePath,
+			previewOptions: { width: params.previewParams.width, format: params.format },
+		};
 
-		const original = await this.fileStorageService.download(fileRecord, downloadParams, bytesRange);
-		const preview = this.resizeAndConvert(original, fileRecord, previewParams);
-
-		const format = previewParams.outputFormat ?? fileRecord.mimeType;
-		const fileDto = FileDtoBuilder.build(hash, preview, format);
-		await this.storageClient.create(filePath, fileDto);
-
-		const response = await this.getPreviewFile(params);
-
-		return response;
-	}
-
-	private resizeAndConvert(
-		original: GetFileResponse,
-		fileRecord: FileRecord,
-		previewParams: PreviewParams
-	): PassThrough {
-		const mimeType = previewParams.outputFormat ?? fileRecord.mimeType;
-		const format = this.getFormat(mimeType);
-		const im = subClass({ imageMagick: '7+' });
-
-		const preview = im(original.data, fileRecord.name);
-		const { width } = previewParams;
-
-		if (width) {
-			preview.resize(width, undefined, '>');
-		}
-
-		const result = preview.stream(format);
-
-		return result;
+		await this.previewProducer.generate(payload);
 	}
 
 	private getFormat(mimeType: string): string {
