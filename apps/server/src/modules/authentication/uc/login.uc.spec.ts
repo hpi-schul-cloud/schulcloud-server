@@ -29,7 +29,13 @@ describe('LoginUc', () => {
 	describe('getLoginData', () => {
 		describe('when userInfo is given', () => {
 			const setup = () => {
-				const userInfo: CreateJwtPayload = { accountId: '', roles: [], schoolId: '', userId: '' };
+				const userInfo: CreateJwtPayload = {
+					accountId: '',
+					roles: [],
+					schoolId: '',
+					userId: '',
+					isExternalUser: false,
+				};
 				const loginDto: LoginDto = new LoginDto({ accessToken: 'accessToken' });
 				authenticationService.generateJwt.mockResolvedValue(loginDto);
 
