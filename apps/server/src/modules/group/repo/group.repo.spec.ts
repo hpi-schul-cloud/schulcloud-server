@@ -14,7 +14,6 @@ import {
 import { Group, GroupProps, GroupTypes, GroupUser } from '../domain';
 import { GroupEntity, GroupEntityTypes } from '../entity';
 import { GroupRepo } from './group.repo';
-import { SortHelper } from '../util';
 
 describe('GroupRepo', () => {
 	let module: TestingModule;

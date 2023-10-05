@@ -1,5 +1,4 @@
 import { NotFoundException } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
 import { Loggable } from '@src/core/logger/interfaces';
 import { ErrorLogMessage } from '@src/core/logger/types';
 

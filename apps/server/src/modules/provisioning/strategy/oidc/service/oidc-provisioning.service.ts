@@ -12,7 +12,6 @@ import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
 import CryptoJS from 'crypto-js';
-import { notFound } from '@feathersjs/express';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
