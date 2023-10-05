@@ -28,6 +28,7 @@ export class GroupResponseMapper {
 			name: classInfo.name,
 			externalSourceName: classInfo.externalSourceName,
 			teachers: classInfo.teachers,
+			schoolYear: classInfo.schoolYear,
 		});
 
 		return mapped;
