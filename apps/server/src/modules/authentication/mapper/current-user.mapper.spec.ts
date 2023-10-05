@@ -189,7 +189,7 @@ describe('CurrentUserMapper', () => {
 				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
 
 				expect(currentUser).toMatchObject({
-					isExternalUser: false,
+					isExternalUser: jwtPayload.isExternalUser,
 				});
 			});
 		});
@@ -201,6 +201,7 @@ describe('CurrentUserMapper', () => {
 					roles: ['mockRoleId'],
 					schoolId: 'dummySchoolId',
 					userId: 'dummyUserId',
+					isExternalUser: false,
 					sub: 'dummyAccountId',
 					jti: 'random string',
 					aud: 'some audience',
@@ -224,6 +225,7 @@ describe('CurrentUserMapper', () => {
 					roles: [jwtPayload.roles[0]],
 					schoolId: jwtPayload.schoolId,
 					userId: jwtPayload.userId,
+					isExternalUser: false,
 				});
 			});
 

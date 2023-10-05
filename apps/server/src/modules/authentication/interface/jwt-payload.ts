@@ -5,7 +5,7 @@ export interface CreateJwtPayload {
 	roles: string[];
 	systemId?: string; // without this the user needs to change his PW during first login
 	support?: boolean;
-	isExternalUser?: boolean;
+	isExternalUser: boolean;
 }
 
 export interface JwtPayload extends CreateJwtPayload {

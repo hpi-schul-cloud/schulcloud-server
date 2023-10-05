@@ -45,7 +45,7 @@ export class CurrentUserMapper {
 			schoolId: jwtPayload.schoolId,
 			userId: jwtPayload.userId,
 			impersonated: jwtPayload.support,
-			isExternalUser: false,
+			isExternalUser: jwtPayload.isExternalUser,
 		};
 	}
 }
