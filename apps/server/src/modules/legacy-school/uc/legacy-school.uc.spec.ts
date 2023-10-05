@@ -66,7 +66,7 @@ describe('LegacySchoolUc', () => {
 		jest.resetAllMocks();
 	});
 
-	// Tests with case of authService.checkPermission.mockImplementation(() => throw new ForbiddenException()); 
+	// Tests with case of authService.checkPermission.mockImplementation(() => throw new ForbiddenException());
 	// are missed for both methodes
 
 	describe('setMigration is called', () => {

@@ -8,7 +8,7 @@ import { AuthorizationContextBuilder } from './authorization-context.builder';
 import { AuthorizationHelper } from './authorization.helper';
 import { AuthorizationService } from './authorization.service';
 import { ForbiddenLoggableException } from './errors/forbidden.loggable-exception';
-import { ReferenceLoader } from './domain/reference/reference.loader';
+import { ReferenceLoader } from './domain/service/reference.loader';
 import { RuleManager } from './rule-manager';
 import { Rule } from './types';
 

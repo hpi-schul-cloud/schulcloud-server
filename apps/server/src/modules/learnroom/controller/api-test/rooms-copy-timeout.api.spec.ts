@@ -1,5 +1,4 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
