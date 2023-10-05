@@ -103,9 +103,9 @@ export class VideoConferenceService {
 			scopeRessource = await this.courseService.findById(scopeId);
 		} else if (scope === VideoConferenceScope.EVENT) {
 			scopeRessource = await this.teamsRepo.findById(scopeId);
+		} else {
+			// Need to be solve the null with throw by it self.
 		}
-
-		// Need to be solve the null with throw by it self.
 
 		return scopeRessource;
 	}
