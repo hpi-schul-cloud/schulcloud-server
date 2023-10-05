@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { TldrawConfig } from '@src/modules/tldraw/config';
 import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
 import { calculateDiff } from '@src/modules/tldraw/utils';
-import { WSSharedDoc } from '@src/modules/tldraw/types';
+import { WsSharedDocDo } from '@src/modules/tldraw/types';
 
 @Injectable()
 export class TldrawBoardRepo {
@@ -44,13 +44,14 @@ export class TldrawBoardRepo {
 	}
 
 	updateStoredDocWithDiff(docName: string, diff: Uint8Array) {
-		if (calculateDiff(diff) > 0) {
+		const clac = calculateDiff(diff);
+		if (clac > 0) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 			this.mdb.storeUpdate(docName, diff);
 		}
 	}
 
-	async updateDocument(docName: string, ydoc: WSSharedDoc) {
+	async updateDocument(docName: string, ydoc: WsSharedDocDo) {
 		const persistedYdoc = await this.getYDocFromMdb(docName);
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore

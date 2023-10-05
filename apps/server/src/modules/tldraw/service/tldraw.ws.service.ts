@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TldrawConfig } from '@src/modules/tldraw/config';
-import { Persitence, WSConnectionState, WSMessageType, WSSharedDoc } from '@src/modules/tldraw/types';
+import { Persitence, WSConnectionState, WSMessageType, WsSharedDocDo } from '@src/modules/tldraw/types';
 import WebSocket from 'ws';
 import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
 import { encoding, decoding, map } from 'lib0';
@@ -28,10 +28,10 @@ export class TldrawWsService {
 	}
 
 	/**
-	 * @param {WSSharedDoc} doc
+	 * @param {WsSharedDocDo} doc
 	 * @param {WebSocket} ws
 	 */
-	closeConn(doc: WSSharedDoc, ws: WebSocket) {
+	closeConn(doc: WsSharedDocDo, ws: WebSocket) {
 		if (doc.conns.has(ws)) {
 			const controlledIds = doc.conns.get(ws) as Set<number>;
 			doc.conns.delete(ws);
@@ -57,11 +57,11 @@ export class TldrawWsService {
 	}
 
 	/**
-	 * @param {WSSharedDoc} doc
+	 * @param {WsSharedDocDo} doc
 	 * @param {WebSocket} conn
 	 * @param {Uint8Array} message
 	 */
-	send(doc: WSSharedDoc, conn: WebSocket, message: Uint8Array) {
+	send(doc: WsSharedDocDo, conn: WebSocket, message: Uint8Array) {
 		if (conn.readyState !== WSConnectionState.CONNECTING && conn.readyState !== WSConnectionState.OPEN) {
 			this.closeConn(doc, conn);
 		}
@@ -79,9 +79,9 @@ export class TldrawWsService {
 	/**
 	 * @param {Uint8Array} update
 	 * @param {any} origin
-	 * @param {WSSharedDoc} doc
+	 * @param {WsSharedDocDo} doc
 	 */
-	updateHandler(update: Uint8Array, origin, doc: WSSharedDoc) {
+	updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo) {
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, WSMessageType.SYNC);
 		writeUpdate(encoder, update);
@@ -95,12 +95,12 @@ export class TldrawWsService {
 	 * Gets a Y.Doc by name, whether in memory or on disk
 	 *
 	 * @param {string} docname - the name of the Y.Doc to find or create
-	 * @param  gc - whether to allow gc on the doc (applies only when created)
-	 * @return {WSSharedDoc}
+	 * @param  {boolean} gc - whether to allow gc on the doc (applies only when created)
+	 * @return {WsSharedDocDo}
 	 */
 	getYDoc(docname: string, gc = true) {
 		return map.setIfUndefined(this.docs, docname, () => {
-			const doc = new WSSharedDoc(docname, this);
+			const doc = new WsSharedDocDo(docname, this);
 			doc.gc = gc;
 			if (this.persistence !== null) {
 				this.persistence.bindState(docname, doc).catch(() => {});
@@ -110,7 +110,7 @@ export class TldrawWsService {
 		});
 	}
 
-	messageHandler(conn: WebSocket, doc: WSSharedDoc, message: Uint8Array) {
+	messageHandler(conn: WebSocket, doc: WsSharedDocDo, message: Uint8Array) {
 		try {
 			const encoder = encoding.createEncoder();
 			const decoder = decoding.createDecoder(message);
@@ -199,7 +199,7 @@ export class TldrawWsService {
 		}
 	}
 
-	async updateDocument(docName: string, ydoc: WSSharedDoc) {
+	async updateDocument(docName: string, ydoc: WsSharedDocDo) {
 		await this.tldrawBoardRepo.updateDocument(docName, ydoc);
 	}
 

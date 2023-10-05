@@ -9,7 +9,7 @@ import { TldrawWsService } from '@src/modules/tldraw/service';
 // disable gc when using snapshots!
 const gcEnabled: boolean = Configuration.get('TLDRAW__GC_ENABLED') as boolean;
 
-export class WSSharedDoc extends Doc {
+export class WsSharedDocDo extends Doc {
 	name: string;
 
 	public conns: Map<WebSocket, Set<number>>;
@@ -28,7 +28,7 @@ export class WSSharedDoc extends Doc {
 		this.awareness.setLocalState(null);
 
 		this.awareness.on('update', this.awarenessChangeHandler);
-		this.on('update', (update: Uint8Array, origin, doc: WSSharedDoc) => {
+		this.on('update', (update: Uint8Array, origin, doc: WsSharedDocDo) => {
 			this.tldrawService.updateHandler(update, origin, doc);
 		});
 	}

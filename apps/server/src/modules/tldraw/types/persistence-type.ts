@@ -1,6 +1,6 @@
-import { WSSharedDoc } from '@src/modules/tldraw/types/ws-shared-doc';
+import { WsSharedDocDo } from '@src/modules/tldraw/domain/ws-shared-doc.do';
 
 export type Persitence = {
-	bindState: (docName: string, ydoc: WSSharedDoc) => Promise<void>;
-	writeState: (docName: string, ydoc: WSSharedDoc) => Promise<void>;
+	bindState: (docName: string, ydoc: WsSharedDocDo) => Promise<void>;
+	writeState: (docName: string, ydoc: WsSharedDocDo) => Promise<void>;
 };
