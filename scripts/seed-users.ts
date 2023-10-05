@@ -31,19 +31,6 @@ async function refresh(): Promise<void> {
 	keycloak.refreshToken = refresh_token;
 }
 
-function createUserObject(index: number): Object {
-		const firstName = faker.person.firstName();
-		const lastName = faker.person.lastName();
-		const user = {
-			realm: 'foobar',
-			username: `${index}.${lastName}@sp-sh.de`,
-			firstName,
-			lastName,
-			email: `${index}.${lastName}@sp-sh.de`,
-		};
-	return user;
-}
-
 async function createUser(index: number): Promise<void> {
 	const firstName = faker.person.firstName();
 	const lastName = faker.person.lastName();
@@ -74,25 +61,13 @@ async function createUser(index: number): Promise<void> {
 async function main(): Promise<void> {
 	await login();
 
-	// const count = keycloak.users.count({ realm: 'foobar' });
-	// console.log(`${count} users in the foobar realm.`);
+	const count = keycloak.users.count({ realm: 'foobar' });
+	console.log(`${count} users in the foobar realm.`);
 
-	for( let i = 0; i < 100_000; i += 1){
-		try {
-			if((i % 5000 === 0)){
-				await login();
-			}
-			await keycloak.users.create(createUserObject(i));
-		} catch (err) {
-			console.error(err);
-		}
-	} 
-
-	// let k = 0;
 	// for (let i = 0; i < 100; i += 1) {
 	// 	const tasks = new Array<Promise<void>>();
 	// 	for (let j = 0; j < 1_000; j += 1) {
-	// 		tasks.push(createUser(k += 1));
+	// 		tasks.push(createUser(j + j * i));
 	// 	}
 	// 	await Promise.allSettled(tasks);
 	// }
