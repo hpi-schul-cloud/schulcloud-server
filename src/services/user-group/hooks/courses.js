@@ -21,7 +21,7 @@ const addWholeClassToCourse = async (hook) => {
 	const requestBody = hook.data;
 	const course = hook.result;
 
-	if (Configuration.get('FEATURE_GROUPS_IN_COURSE') && (requestBody.groupIds || []).length > 0) {
+	if (Configuration.get('FEATURE_GROUPS_IN_COURSE_ENABLED') && (requestBody.groupIds || []).length > 0) {
 		await Promise.all(
 			requestBody.groupIds.map((groupId) =>
 				app

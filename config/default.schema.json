@@ -1293,6 +1293,11 @@
 			"default": false,
 			"description": "Enables the new class list view"
 		},
+		"FEATURE_GROUPS_IN_COURSE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables groups of type class in courses"
+		},
 		"TSP_SCHOOL_SYNCER": {
 			"type": "object",
 			"description": "TSP School Syncer properties",
