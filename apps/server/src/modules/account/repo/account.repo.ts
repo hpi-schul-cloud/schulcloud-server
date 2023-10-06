@@ -15,7 +15,9 @@ export class AccountRepo extends BaseRepo<Account> {
 	 * Finds an account by user id.
 	 * @param userId the user id
 	 */
+	// TODO: here only EntityIds should arrive
 	async findByUserId(userId: EntityId | ObjectId): Promise<Account | null> {
+		// TODO: you can use userId directly, without constructing an objectId
 		return this._em.findOne(Account, { userId: new ObjectId(userId) });
 	}
 
@@ -47,6 +49,8 @@ export class AccountRepo extends BaseRepo<Account> {
 		await this._em.flush();
 	}
 
+	// TODO: the default values for skip and limit, are they required and/or correct here?
+	// TODO: use counted for the return type
 	async searchByUsernameExactMatch(username: string, skip = 0, limit = 1): Promise<[Account[], number]> {
 		return this.searchByUsername(username, skip, limit, true);
 	}
@@ -80,6 +84,7 @@ export class AccountRepo extends BaseRepo<Account> {
 		limit: number,
 		exactMatch: boolean
 	): Promise<[Account[], number]> {
+		// TODO: check that injections are not possible, eg make sure sanitizeHTML has been called at some point (for username)
 		// escapes every character, that's not a unicode letter or number
 		const escapedUsername = username.replace(/[^(\p{L}\p{N})]/gu, '\\$&');
 		const searchUsername = exactMatch ? `^${escapedUsername}$` : escapedUsername;
