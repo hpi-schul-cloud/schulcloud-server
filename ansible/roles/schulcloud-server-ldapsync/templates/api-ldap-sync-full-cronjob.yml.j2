@@ -4,6 +4,7 @@ metadata:
   namespace: {{ NAMESPACE }}
   labels:
     app: api-ldapsync-cronjob
+    app.kubernetes.io/part-of: schulcloud-verbund
   name: api-ldapsync-full-cronjob
 spec:
   schedule: "{{ SERVER_LDAP_SYNC_FULL_CRONJOB|default("0 3 * * 3,6", true) }}"
@@ -15,6 +16,7 @@ spec:
         metadata:
           labels:
             app: api-ldapsync-cronjob
+            app.kubernetes.io/part-of: schulcloud-verbund
         spec:
           affinity:
             podAffinity:
@@ -23,18 +25,10 @@ spec:
                 podAffinityTerm:
                   labelSelector:
                     matchExpressions:
-                    - key: app
+                    - key: app.kubernetes.io/part-of
                       operator: In
                       values:
-                      - api
-                      - api-files
-                      - amqp-files
-                      - api-fwu
-                      - api-tsp-sync
-                      - api-tsp-sync-cronjob
-                      - api-worker
-                      - api-ldapsync-cronjob
-                      - management-deployment
+                      - schulcloud-verbund
                   topologyKey: "kubernetes.io/hostname"
           containers:
           - name: api-ldapsync-cronjob

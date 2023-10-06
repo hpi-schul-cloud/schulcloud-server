@@ -4,6 +4,7 @@ metadata:
   namespace: {{ NAMESPACE }}
   labels:
     app: api-tsp-sync-cronjob
+    app.kubernetes.io/part-of: schulcloud-verbund
   name: api-tsp-sync-base-cronjob
 spec:
   schedule: "{{ SERVER_TSP_SYNC_BASE_CRONJOB|default("9 3 * * *", true) }}"
@@ -11,11 +12,13 @@ spec:
     metadata:
       labels:
         app: api-tsp-sync-cronjob
+        app.kubernetes.io/part-of: schulcloud-verbund
     spec:
       template:
         metadata:
           labels:
             app: api-tsp-sync-cronjob
+            app.kubernetes.io/part-of: schulcloud-verbund
         spec:
           affinity:
             podAffinity:
@@ -24,18 +27,10 @@ spec:
                 podAffinityTerm:
                   labelSelector:
                     matchExpressions:
-                    - key: app
+                    - key: app.kubernetes.io/part-of
                       operator: In
                       values:
-                      - api
-                      - api-files
-                      - amqp-files
-                      - api-fwu
-                      - api-tsp-sync
-                      - api-tsp-sync-cronjob
-                      - api-worker
-                      - api-ldapsync-cronjob
-                      - management-deployment
+                      - schulcloud-verbund
                   topologyKey: "kubernetes.io/hostname"
           containers:
           - name: api-tsp-sync-base-cronjob

@@ -5,6 +5,7 @@ metadata:
   labels:
     app: api
     cronjob: delete-s3-files
+    app.kubernetes.io/part-of: schulcloud-verbund
   name: api-delete-s3-files-cronjob
 spec:
   concurrencyPolicy: Forbid
@@ -13,11 +14,13 @@ spec:
     labels:
       app: api
       cronjob: delete-s3-files
+      app.kubernetes.io/part-of: schulcloud-verbund
     spec:
       template:
         labels:
           app: api
           cronjob: delete-s3-files
+          app.kubernetes.io/part-of: schulcloud-verbund
         spec:
           affinity:
             podAffinity:
@@ -26,18 +29,10 @@ spec:
                 podAffinityTerm:
                   labelSelector:
                     matchExpressions:
-                    - key: app
+                    - key: app.kubernetes.io/part-of
                       operator: In
                       values:
-                      - api
-                      - api-files
-                      - amqp-files
-                      - api-fwu
-                      - api-tsp-sync
-                      - api-tsp-sync-cronjob
-                      - api-worker
-                      - api-ldapsync-cronjob
-                      - management-deployment
+                      - schulcloud-verbund
                   topologyKey: "kubernetes.io/hostname"
           containers:
           - name: delete-s3-files-cronjob

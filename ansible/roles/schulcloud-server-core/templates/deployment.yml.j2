@@ -5,6 +5,7 @@ metadata:
   namespace: {{ NAMESPACE }}
   labels:
     app: api
+    app.kubernetes.io/part-of: schulcloud-verbund
 spec:
   replicas: {{ API_REPLICAS|default("1", true) }}
   strategy:
@@ -21,6 +22,7 @@ spec:
     metadata:
       labels:
         app: api
+        app.kubernetes.io/part-of: schulcloud-verbund
     spec:
       securityContext:
         runAsUser: 1000
@@ -34,18 +36,10 @@ spec:
             podAffinityTerm:
               labelSelector:
                 matchExpressions:
-                - key: app
+                - key: app.kubernetes.io/part-of
                   operator: In
                   values:
-                  - api
-                  - api-files
-                  - amqp-files
-                  - api-fwu
-                  - api-tsp-sync
-                  - api-tsp-sync-cronjob
-                  - api-worker
-                  - api-ldapsync-cronjob
-                  - management-deployment
+                  - schulcloud-verbund
               topologyKey: "kubernetes.io/hostname"
       containers:
       - name: api
