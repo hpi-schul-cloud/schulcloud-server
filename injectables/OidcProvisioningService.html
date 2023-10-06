@@ -278,8 +278,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="165"
-                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:165</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="166"
+                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:166</a></div>
                 </td>
             </tr>
 
@@ -622,8 +622,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="190"
-                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:190</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="191"
+                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:191</a></div>
                 </td>
             </tr>
 
@@ -822,10 +822,6 @@ export class OidcProvisioningService {
 	}
 
 	async provisionExternalGroup(externalGroup: ExternalGroupDto, systemId: EntityId): Promise&lt;void&gt; {
-		if (externalGroup.users.length &#x3D;&#x3D;&#x3D; 0) {
-			return;
-		}
-
 		const existingGroup: Group | null &#x3D; await this.groupService.findByExternalSource(
 			externalGroup.externalId,
 			systemId
@@ -848,6 +844,10 @@ export class OidcProvisioningService {
 
 		const users: GroupUser[] &#x3D; await this.getFilteredGroupUsers(externalGroup, systemId);
 
+		if (!users.length) {
+			return;
+		}
+
 		const group: Group &#x3D; new Group({
 			id: existingGroup ? existingGroup.id : new ObjectId().toHexString(),
 			name: externalGroup.name,
@@ -859,8 +859,9 @@ export class OidcProvisioningService {
 			organizationId,
 			validFrom: externalGroup.from,
 			validUntil: externalGroup.until,
-			users,
+			users: existingGroup ? existingGroup.users : [],
 		});
+		users.forEach((user: GroupUser) &#x3D;&gt; group.addUser(user));
 
 		await this.groupService.save(group);
 	}
@@ -871,7 +872,7 @@ export class OidcProvisioningService {
 				const user: UserDO | null &#x3D; await this.userService.findByExternalId(externalGroupUser.externalUserId, systemId);
 				const roles: RoleDto[] &#x3D; await this.roleService.findByNames([externalGroupUser.roleName]);
 
-				if (!user || !user.id || roles.length !&#x3D;&#x3D; 1 || !roles[0].id) {
+				if (!user?.id || roles.length !&#x3D;&#x3D; 1 || !roles[0].id) {
 					this.logger.info(new UserForGroupNotFoundLoggable(externalGroupUser));
 					return null;
 				}

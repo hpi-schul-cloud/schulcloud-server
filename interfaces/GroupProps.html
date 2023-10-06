@@ -494,6 +494,12 @@ export class Group extends DomainObject&lt;GroupProps&gt; {
 	isEmpty(): boolean {
 		return this.props.users.length &#x3D;&#x3D;&#x3D; 0;
 	}
+
+	addUser(user: GroupUser): void {
+		if (!this.users.find((u) &#x3D;&gt; u.userId &#x3D;&#x3D;&#x3D; user.userId)) {
+			this.users.push(user);
+		}
+	}
 }
 </code></pre>
     </div>

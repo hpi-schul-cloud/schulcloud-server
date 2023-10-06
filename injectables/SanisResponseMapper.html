@@ -343,8 +343,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="112"
-                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:112</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="111"
+                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:111</a></div>
                 </td>
             </tr>
 
@@ -635,7 +635,7 @@ export class SanisResponseMapper {
 	}
 
 	mapToExternalGroupDtos(source: SanisResponse): ExternalGroupDto[] | undefined {
-		const groups: SanisGruppenResponse[] | undefined &#x3D; source.personenkontexte[0].gruppen;
+		const groups: SanisGruppenResponse[] | undefined &#x3D; source.personenkontexte[0]?.gruppen;
 
 		if (!groups) {
 			return undefined;
@@ -650,12 +650,11 @@ export class SanisResponseMapper {
 				}
 
 				const sanisGroupUsers: SanisSonstigeGruppenzugehoerigeResponse[] &#x3D; [
-					...(group.sonstige_gruppenzugehoerige ?? []),
 					{
 						ktid: source.personenkontexte[0].id,
 						rollen: group.gruppenzugehoerigkeit.rollen,
 					},
-				].sort((a, b) &#x3D;&gt; a.ktid.localeCompare(b.ktid));
+				].filter((sanisGroupUser) &#x3D;&gt; sanisGroupUser.ktid &amp;&amp; sanisGroupUser.rollen);
 
 				const gruppenzugehoerigkeiten: ExternalGroupUserDto[] &#x3D; sanisGroupUsers
 					.map((relation): ExternalGroupUserDto | null &#x3D;&gt; this.mapToExternalGroupUser(relation))
