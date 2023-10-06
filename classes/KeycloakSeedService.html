@@ -131,12 +131,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(kcAdmin: <a href="../injectables/KeycloakAdministrationService.html" target="_self">KeycloakAdministrationService</a>, inputFiles: <a href="../interfaces/IKeycloakConfigurationInputFiles.html" target="_self">IKeycloakConfigurationInputFiles</a>)</code>
+<code>constructor(kcAdmin: <a href="../injectables/KeycloakAdministrationService.html" target="_self">KeycloakAdministrationService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, inputFiles: <a href="../interfaces/IKeycloakConfigurationInputFiles.html" target="_self">IKeycloakConfigurationInputFiles</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/service/keycloak-seed.service.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/service/keycloak-seed.service.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -158,6 +158,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/KeycloakAdministrationService.html" target="_self" >KeycloakAdministrationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -208,15 +220,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>clean()</code>
+                    <code>clean(pageSize: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="33"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/service/keycloak-seed.service.ts:33</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="35"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/service/keycloak-seed.service.ts:35</a></div>
                 </td>
             </tr>
 
@@ -225,8 +237,44 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>pageSize</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>100</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
                         <b>Returns : </b>    <code>Promise&lt;number&gt;</code>
 
+                    </div>
+                    <div class="io-description">
+                        
                     </div>
                 </td>
             </tr>
@@ -255,8 +303,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="52"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/service/keycloak-seed.service.ts:52</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="60"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/service/keycloak-seed.service.ts:60</a></div>
                 </td>
             </tr>
 
@@ -339,8 +387,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="86"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/service/keycloak-seed.service.ts:86</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="94"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/service/keycloak-seed.service.ts:94</a></div>
                 </td>
             </tr>
 
@@ -379,8 +427,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="91"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/service/keycloak-seed.service.ts:91</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="99"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/service/keycloak-seed.service.ts:99</a></div>
                 </td>
             </tr>
 
@@ -418,8 +466,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="18"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/service/keycloak-seed.service.ts:18</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="20"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/service/keycloak-seed.service.ts:20</a></div>
                 </td>
             </tr>
 
@@ -447,6 +495,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import UserRepresentation from &#x27;@keycloak/keycloak-admin-client/lib/defs/userRepresentation&#x27;;
 import { Inject } from &#x27;@nestjs/common&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import fs from &#x27;node:fs/promises&#x27;;
 import { IJsonAccount } from &#x27;../interface/json-account.interface&#x27;;
 import { IJsonUser } from &#x27;../interface/json-user.interface&#x27;;
@@ -459,6 +508,7 @@ import {
 export class KeycloakSeedService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
+		private readonly logger: LegacyLogger,
 		@Inject(KeycloakConfigurationInputFiles) private readonly inputFiles: IKeycloakConfigurationInputFiles
 	) {}
 
@@ -477,23 +527,29 @@ export class KeycloakSeedService {
 		return userCount;
 	}
 
-	public async clean(): Promise&lt;number&gt; {
-		let kc &#x3D; await this.kcAdmin.callKcAdminClient();
+	public async clean(pageSize &#x3D; 100): Promise&lt;number&gt; {
+		let foundUsers &#x3D; 1;
+		let deletedUsers &#x3D; 0;
 		const adminUser &#x3D; this.kcAdmin.getAdminUser();
-		const users &#x3D; (await kc.users.find()).filter((user) &#x3D;&gt; user.username !&#x3D;&#x3D; adminUser);
-
-		// eslint-disable-next-line no-restricted-syntax
-		for (const user of users) {
-			// needs to be called once per minute. To be save we call it in the loop. Ineffcient but ok, since only used to locally revert seeding
+		let kc &#x3D; await this.kcAdmin.callKcAdminClient();
+		this.logger.log(&#x60;Starting to delete users...&#x60;);
+		while (foundUsers &gt; 0) {
 			// eslint-disable-next-line no-await-in-loop
 			kc &#x3D; await this.kcAdmin.callKcAdminClient();
 			// eslint-disable-next-line no-await-in-loop
-			await kc.users.del({
-				// can not be undefined, see filter above
-				id: user.id ?? &#x27;&#x27;,
-			});
+			const users &#x3D; (await kc.users.find({ max: pageSize })).filter((user) &#x3D;&gt; user.username !&#x3D;&#x3D; adminUser);
+			foundUsers &#x3D; users.length;
+			this.logger.log(&#x60;Amount of found Users: ${foundUsers}&#x60;);
+			for (const user of users) {
+				// eslint-disable-next-line no-await-in-loop
+				await kc.users.del({
+					id: user.id ?? &#x27;&#x27;,
+				});
+			}
+			deletedUsers +&#x3D; foundUsers;
+			this.logger.log(&#x60;...deleted ${deletedUsers} users so far.&#x60;);
 		}
-		return users.length;
+		return deletedUsers;
 	}
 
 	private async createOrUpdateIdmAccount(account: IJsonAccount, user: IJsonUser): Promise&lt;boolean&gt; {

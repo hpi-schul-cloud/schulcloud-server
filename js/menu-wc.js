@@ -5307,6 +5307,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/IClassEntityProps.html" data-type="entity-link" >IClassEntityProps</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/ICleanOptions.html" data-type="entity-link" >ICleanOptions</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/ICollaborativeStorageStrategy.html" data-type="entity-link" >ICollaborativeStorageStrategy</a>
                             </li>
                             <li class="link">

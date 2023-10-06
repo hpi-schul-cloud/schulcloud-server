@@ -257,6 +257,10 @@ interface IMigrationOptions {
 	query?: string;
 	verbose?: boolean;
 }
+
+interface ICleanOptions {
+	pageSize?: number;
+}
 @Console({ command: &#x27;idm&#x27;, description: &#x27;Prefixes all Identity Management (IDM) related console commands.&#x27; })
 export class KeycloakConsole {
 	constructor(
@@ -295,21 +299,29 @@ export class KeycloakConsole {
 	}
 
 	/**
-	 * For local development. Cleans user from IDM
+	 * Cleans users from IDM
 	 *
 	 * @param options
 	 */
 	@Command({
 		command: &#x27;clean&#x27;,
 		description: &#x27;Remove all users from the IDM.&#x27;,
-		options: KeycloakConsole.retryFlags,
+		options: [
+			...KeycloakConsole.retryFlags,
+			{
+				flags: &#x27;- mps, --maxPageSize &lt;value&gt;&#x27;,
+				description: &#x27;Maximum users to delete per Keycloak API session. Default 100.&#x27;,
+				required: false,
+				defaultValue: 100,
+			},
+		],
 	})
-	async clean(options: IRetryOptions): Promise&lt;void&gt; {
+	async clean(options: IRetryOptions &amp; ICleanOptions): Promise&lt;void&gt; {
 		await this.repeatCommand(
 			&#x27;clean&#x27;,
 			async () &#x3D;&gt; {
-				const count &#x3D; await this.keycloakConfigurationUc.clean();
-				this.console.info(&#x60;Cleaned ${count} users into IDM&#x60;);
+				const count &#x3D; await this.keycloakConfigurationUc.clean(options.pageSize ? Number(options.pageSize) : 100);
+				this.console.info(&#x60;Cleaned ${count} users in IDM&#x60;);
 				return count;
 			},
 			options.retryCount,
