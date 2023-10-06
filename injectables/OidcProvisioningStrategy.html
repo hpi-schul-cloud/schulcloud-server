@@ -401,7 +401,11 @@ export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
 		);
 
 		if (Configuration.get(&#x27;FEATURE_SANIS_GROUP_PROVISIONING_ENABLED&#x27;) &amp;&amp; data.externalGroups) {
-			// TODO: N21-1212 remove user from groups
+			await this.oidcProvisioningService.removeExternalGroupsAndAffiliation(
+				data.externalUser.externalId,
+				data.externalGroups,
+				data.system.systemId
+			);
 
 			await Promise.all(
 				data.externalGroups.map((externalGroup) &#x3D;&gt;

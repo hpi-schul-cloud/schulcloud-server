@@ -102,6 +102,11 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#findByUser" >findByUser</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#findClassesForSchool" >findClassesForSchool</a>
                             </li>
                             <li>
@@ -203,8 +208,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="46"
-                            class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:46</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="52"
+                            class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:52</a></div>
                 </td>
             </tr>
 
@@ -412,6 +417,78 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findByUser"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>findByUser</b></span>
+                        <a href="#findByUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findByUser(user: <a href="../classes/UserDO.html" target="_self">UserDO</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="34"
+                            class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:34</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>user</td>
+                                    <td>
+                                                <code><a href="../classes/UserDO.html" target="_self" >UserDO</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/Group.html" target="_self" >Promise&lt;Group[]&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findClassesForSchool"></a>
                     <span class="name">
                         <span class="modifier">Public</span>
@@ -431,8 +508,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="34"
-                            class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:34</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="40"
+                            class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:40</a></div>
                 </td>
             </tr>
 
@@ -503,8 +580,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="40"
-                            class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:40</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="46"
+                            class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:46</a></div>
                 </td>
             </tr>
 
@@ -632,7 +709,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { NotFoundLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
-import { EntityId } from &#x27;@shared/domain&#x27;;
+import { EntityId, type UserDO } from &#x27;@shared/domain&#x27;;
 import { AuthorizationLoaderServiceGeneric } from &#x27;@src/modules/authorization&#x27;;
 import { Group } from &#x27;../domain&#x27;;
 import { GroupRepo } from &#x27;../repo&#x27;;
@@ -661,6 +738,12 @@ export class GroupService implements AuthorizationLoaderServiceGeneric&lt;Group&
 		const group: Group | null &#x3D; await this.groupRepo.findByExternalSource(externalId, systemId);
 
 		return group;
+	}
+
+	public async findByUser(user: UserDO): Promise&lt;Group[]&gt; {
+		const groups: Group[] &#x3D; await this.groupRepo.findByUser(user);
+
+		return groups;
 	}
 
 	public async findClassesForSchool(schoolId: EntityId): Promise&lt;Group[]&gt; {

@@ -447,7 +447,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId, ExternalSource } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId, ExternalSource, type UserDO } from &#x27;@shared/domain&#x27;;
 import { AuthorizableObject, DomainObject } from &#x27;@shared/domain/domain-object&#x27;;
 import { GroupTypes } from &#x27;./group-types&#x27;;
 import { GroupUser } from &#x27;./group-user&#x27;;
@@ -485,6 +485,14 @@ export class Group extends DomainObject&lt;GroupProps&gt; {
 
 	get organizationId(): string | undefined {
 		return this.props.organizationId;
+	}
+
+	removeUser(user: UserDO): void {
+		this.props.users &#x3D; this.props.users.filter((groupUser: GroupUser): boolean &#x3D;&gt; groupUser.userId !&#x3D;&#x3D; user.id);
+	}
+
+	isEmpty(): boolean {
+		return this.props.users.length &#x3D;&#x3D;&#x3D; 0;
 	}
 }
 </code></pre>

@@ -122,12 +122,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(resourceName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, identifierName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, resourceId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+<code>constructor(resourceName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, identifierName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, resourceId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/shared/common/loggable-exception/not-found.loggable-exception.ts:6</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/shared/common/loggable-exception/not-found.loggable-exception.ts:5</a></div>
                             </td>
                         </tr>
 
@@ -172,7 +172,7 @@
                                                         <td>resourceId</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                                        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -215,8 +215,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="15"
-                            class="link-to-prism">apps/server/src/shared/common/loggable-exception/not-found.loggable-exception.ts:15</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="14"
+                            class="link-to-prism">apps/server/src/shared/common/loggable-exception/not-found.loggable-exception.ts:14</a></div>
                 </td>
             </tr>
 
@@ -243,7 +243,6 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { NotFoundException } from &#x27;@nestjs/common&#x27;;
-import { EntityId } from &#x27;@shared/domain&#x27;;
 import { Loggable } from &#x27;@src/core/logger/interfaces&#x27;;
 import { ErrorLogMessage } from &#x27;@src/core/logger/types&#x27;;
 
@@ -251,7 +250,7 @@ export class NotFoundLoggableException extends NotFoundException implements Logg
 	constructor(
 		private readonly resourceName: string,
 		private readonly identifierName: string,
-		private readonly resourceId: EntityId
+		private readonly resourceId: string
 	) {
 		super();
 	}
