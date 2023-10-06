@@ -71,6 +71,7 @@ describe('KeycloakSeedService Integration', () => {
 			keycloak = await keycloakAdministrationService.callKcAdminClient();
 		}
 		keycloakSeedService = module.get(KeycloakSeedService);
+		logger = module.get(LegacyLogger);
 	}, 30 * 60 * 1000);
 
 	afterAll(async () => {
