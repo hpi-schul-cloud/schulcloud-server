@@ -426,29 +426,31 @@ export class LibraryStorage implements ILibraryStorage {
 	 */
 	public async getLibraryFile(ubername: string, file: string) {
 		const libraryName = LibraryName.fromUberName(ubername);
-
 		this.checkFilename(file);
 
+		let returnValue: {};
 		if (file === 'library.json') {
 			const metadata = await this.getMetadata(libraryName);
 			const stringifiedMetadata = JSON.stringify(metadata);
 			const readable = Readable.from(stringifiedMetadata);
 
-			return {
+			returnValue =  {
 				stream: readable,
 				mimetype: 'application/json',
 				size: stringifiedMetadata.length,
 			};
+		} else{
+			const response = await this.s3Client.get(this.getS3Key(libraryName, file));
+			const mimetype = mime.lookup(file, 'application/octet-stream');
+
+			returnValue = {
+				stream: response.data,
+				mimetype,
+				size: response.contentLength,
+			};
+
 		}
 
-		const response = await this.s3Client.get(this.getS3Key(libraryName, file));
-
-		const mimetype = mime.lookup(file, 'application/octet-stream');
-
-		return {
-			stream: response.data,
-			mimetype,
-			size: response.contentLength,
-		};
+		return returnValue;
 	}
 }
