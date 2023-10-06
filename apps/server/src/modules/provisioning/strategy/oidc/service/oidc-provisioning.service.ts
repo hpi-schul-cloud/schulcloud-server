@@ -12,6 +12,7 @@ import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
 import CryptoJS from 'crypto-js';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
 
@@ -184,5 +185,44 @@ export class OidcProvisioningService {
 		const filteredUsers: GroupUser[] = users.filter((groupUser): groupUser is GroupUser => groupUser !== null);
 
 		return filteredUsers;
+	}
+
+	async removeExternalGroupsAndAffiliation(
+		externalUserId: EntityId,
+		externalGroups: ExternalGroupDto[],
+		systemId: EntityId
+	): Promise<void> {
+		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
+
+		if (!user) {
+			throw new NotFoundLoggableException(UserDO.name, 'externalId', externalUserId);
+		}
+
+		const existingGroupsOfUser: Group[] = await this.groupService.findByUser(user);
+
+		const groupsFromSystem: Group[] = existingGroupsOfUser.filter(
+			(existingGroup: Group) => existingGroup.externalSource?.systemId === systemId
+		);
+
+		const groupsWithoutUser: Group[] = groupsFromSystem.filter((existingGroupFromSystem: Group) => {
+			const isUserInGroup = externalGroups.some(
+				(externalGroup: ExternalGroupDto) =>
+					externalGroup.externalId === existingGroupFromSystem.externalSource?.externalId
+			);
+
+			return !isUserInGroup;
+		});
+
+		await Promise.all(
+			groupsWithoutUser.map(async (group: Group) => {
+				group.removeUser(user);
+
+				if (group.isEmpty()) {
+					await this.groupService.delete(group);
+				} else {
+					await this.groupService.save(group);
+				}
+			})
+		);
 	}
 }
