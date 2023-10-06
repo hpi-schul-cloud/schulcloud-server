@@ -61,18 +61,6 @@ describe('KeycloakSeedService Integration', () => {
 		await module.close();
 	});
 
-	beforeEach(async () => {
-		if (isKeycloakAvailable) {
-			await keycloak.realms.create({ realm: testRealm, enabled: true });
-			keycloak.setConfig({ realmName: testRealm });
-			let i = 1;
-			for (i = 1; i <= numberOfIdmUsers; i += 1) {
-				// eslint-disable-next-line no-await-in-loop
-				await createIdmUser(i);
-			}
-		}
-	}, 60000);
-
 	afterEach(async () => {
 		if (isKeycloakAvailable) {
 			await keycloak.realms.del({ realm: testRealm });
@@ -82,8 +70,19 @@ describe('KeycloakSeedService Integration', () => {
 	// Execute this test for a test run against a running Keycloak instance
 	describe('clean', () => {
 		describe('Given all users are able to delete', () => {
+			const setup = async () => {
+				await keycloak.realms.create({ realm: testRealm, enabled: true });
+				keycloak.setConfig({ realmName: testRealm });
+				let i = 1;
+				for (i = 1; i <= numberOfIdmUsers; i += 1) {
+					// eslint-disable-next-line no-await-in-loop
+					await createIdmUser(i);
+				}
+			};
+
 			it('should delete all users in the IDM', async () => {
 				if (!isKeycloakAvailable) return;
+				await setup();
 				const deletedUsers = await keycloakSeedService.clean(500);
 				expect(deletedUsers).toBe(numberOfIdmUsers);
 			}, 60000);
