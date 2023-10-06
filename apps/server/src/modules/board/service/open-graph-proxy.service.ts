@@ -15,8 +15,10 @@ export class OpenGraphProxyService {
 		if (url.length === 0) {
 			throw new Error(`OpenGraphProxyService requires a valid URL. Given URL: ${url}`);
 		}
+
 		const data = await ogs({ url });
-		console.log('fetchOpenGraphData', data.result);
+		// WIP: add nice debug logging for available openGraphData?!?
+
 		const title = data.result.ogTitle ?? '';
 		const description = data.result.ogDescription ?? '';
 		const image = data.result.ogImage ? this.pickImage(data.result.ogImage) : undefined;
