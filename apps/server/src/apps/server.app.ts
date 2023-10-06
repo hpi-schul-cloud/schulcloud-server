@@ -27,6 +27,7 @@ import {
 	addPrometheusMetricsMiddlewaresIfEnabled,
 	createAndStartPrometheusMetricsAppIfEnabled,
 } from './helpers/prometheus-metrics';
+import { GroupUc } from '../modules/group/uc';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -82,6 +83,8 @@ async function bootstrap() {
 	feathersExpress.services['nest-team-service'] = nestApp.get(TeamService);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-feathers-roster-service'] = nestApp.get(FeathersRosterService);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+	feathersExpress.services['nest-groups-uc'] = nestApp.get(GroupUc);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-orm'] = orm;
 

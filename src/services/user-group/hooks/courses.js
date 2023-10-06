@@ -1,4 +1,6 @@
 const _ = require('lodash');
+const { Configuration } = require('@hpi-schul-cloud/commons/lib');
+const { service } = require('feathers-mongoose');
 
 const { BadRequest } = require('../../../errors');
 const globalHooks = require('../../../hooks');
@@ -10,17 +12,28 @@ const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCur
 const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
 
 const { checkScopePermissions } = require('../../helpers/scopePermissions/hooks');
-
 /**
  * adds all students to a course when a class is added to the course
  * @param hook - contains created/patched object and request body
  */
-const addWholeClassToCourse = (hook) => {
+const addWholeClassToCourse = async (hook) => {
+	console.log(hook);
 	const requestBody = hook.data;
 	const course = hook.result;
 	if (requestBody.classIds === undefined) {
+		console.log(hook);
 		return hook;
 	}
+	console.log(hook);
+
+	if (Configuration.get('FEATURE_GROUPS_IN_COURSE')) {
+		const { app } = hook;
+		const groupUc = await app
+			.service('nest-groups-service')
+			.addWholeClassToCourse(hook.result, hook.data, requestBody.classIds);
+		return groupUc;
+	}
+	console.log(hook);
 	if ((requestBody.classIds || []).length > 0) {
 		// just courses do have a property "classIds"
 		return Promise.all(
@@ -34,6 +47,7 @@ const addWholeClassToCourse = (hook) => {
 			studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
 
 			await CourseModel.update({ _id: course._id }, { $addToSet: { userIds: { $each: studentIds } } }).exec();
+			console.log(hook);
 			return hook;
 		});
 	}

@@ -15,6 +15,7 @@ const { DB_PASSWORD, DB_URL, DB_USERNAME } = require('../../dist/apps/server/con
 const { ALL_ENTITIES } = require('../../dist/apps/server/shared/domain/entity/all-entities');
 const { TeamService } = require('../../dist/apps/server/modules/teams/service/team.service');
 const { TeamsApiModule } = require('../../dist/apps/server/modules/teams/teams-api.module');
+const { GroupUc } = require('../../dist/apps/server/modules/group/uc');
 
 const setupNestServices = async (app) => {
 	const module = await Test.createTestingModule({
@@ -39,11 +40,13 @@ const setupNestServices = async (app) => {
 	const accountService = nestApp.get(AccountService);
 	const accountValidationService = nestApp.get(AccountValidationService);
 	const teamService = nestApp.get(TeamService);
+	const groupUc = nestApp.get(GroupUc);
 
 	app.services['nest-account-uc'] = accountUc;
 	app.services['nest-account-service'] = accountService;
 	app.services['nest-account-validation-service'] = accountValidationService;
 	app.services['nest-team-service'] = teamService;
+	app.services['nest-groups-uc'] = groupUc;
 	app.services['nest-orm'] = orm;
 
 	return { nestApp, orm, accountUc, accountService };
