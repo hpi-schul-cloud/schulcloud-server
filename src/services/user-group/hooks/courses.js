@@ -30,7 +30,7 @@ const addWholeClassToCourse = async (hook) => {
 		const { app } = hook;
 		const groupUc = await app
 			.service('nest-groups-service')
-			.addWholeClassToCourse(hook.result, hook.data, requestBody.classIds);
+			.addWholeClassToCourse('userId', hook.result.id, requestBody.classIds, requestBody.groupIds);
 		return groupUc;
 	}
 	console.log(hook);
