@@ -36,12 +36,9 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 
 	public async fileExists(filename: string, user: IUser): Promise<boolean> {
 		this.checkFilename(filename);
-		try {
-			await this.repo.findByUserAndFilename(user.id, filename);
-			return true;
-		} catch (error) {
-			return false;
-		}
+		await this.repo.findByUserAndFilename(user.id, filename);
+		return true;
+
 	}
 
 	public async getFileStats(filename: string, user: IUser): Promise<TemporaryFile> {
@@ -86,19 +83,17 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		expirationTime: Date
 	): Promise<ITemporaryFile> {
 		this.checkFilename(filename);
-		const now = new Date();
-		if (expirationTime < now) {
+		if (expirationTime < new Date()) {
 			throw new Error('expirationTime must be in the future');
 		}
 
 		const path = this.getFilePath(user.id, filename);
 		let tempFile: TemporaryFile | undefined;
-		try {
-			tempFile = await this.repo.findByUserAndFilename(user.id, filename);
-			await this.s3Client.delete([path]);
-		} catch (err) {
-			/* does not exist */
-		}
+		tempFile = await this.repo.findByUserAndFilename(user.id, filename);
+		await this.s3Client.delete(
+			[path]
+		);
+
 		await this.s3Client.create(
 			path,
 			new FileDto({ name: path, mimeType: 'application/octet-stream', data: dataStream })
@@ -112,12 +107,11 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 				birthtime: new Date(),
 				size: dataStream.bytesRead,
 			});
-			await this.repo.save(tempFile);
 		} else {
 			tempFile.expiresAt = expirationTime;
 			tempFile.size = dataStream.bytesRead;
-			await this.repo.save(tempFile);
 		}
+		await this.repo.save(tempFile);
 
 		return tempFile;
 	}
