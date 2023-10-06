@@ -90,14 +90,16 @@ class ClassAction extends BaseConsumerAction {
 		const teachers = [];
 		const ldapDns = !Array.isArray(uniqueMembers) ? [uniqueMembers] : uniqueMembers;
 
-		const users = await UserRepo.findByLdapDnsAndSchool(ldapDns, schoolId);
+		if (ldapDns[0]) {
+			const users = await UserRepo.findByLdapDnsAndSchool(ldapDns, schoolId);
 
-		users.forEach((user) => {
-			user.roles.forEach((role) => {
-				if (role.name === 'student') students.push(user._id);
-				if (role.name === 'teacher') teachers.push(user._id);
+			users.forEach((user) => {
+				user.roles.forEach((role) => {
+					if (role.name === 'student') students.push(user._id);
+					if (role.name === 'teacher') teachers.push(user._id);
+				});
 			});
-		});
+		}
 
 		await ClassRepo.updateClassStudents(classId, students);
 		await ClassRepo.updateClassTeachers(classId, teachers);
