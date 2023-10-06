@@ -11,7 +11,7 @@ const {
 	restrictToUsersOwnClasses,
 } = require('../../../../src/services/user-group/hooks/classes');
 
-describe('class hooks', () => {
+describe.only('class hooks', () => {
 	describe('sorting method', () => {
 		const defaultQuery = { year: 1, gradeLevel: 1, name: 1 };
 

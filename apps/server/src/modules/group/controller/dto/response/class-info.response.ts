@@ -1,8 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ClassRootType } from '../../../uc/dto/class-root-type';
 
 export class ClassInfoResponse {
-	@ApiPropertyOptional()
-	id?: string;
+	@ApiProperty()
+	id: string;
+
+	@ApiProperty({ enum: ClassRootType })
+	type: ClassRootType;
 
 	@ApiProperty()
 	name: string;
@@ -18,6 +22,7 @@ export class ClassInfoResponse {
 
 	constructor(props: ClassInfoResponse) {
 		this.id = props.id;
+		this.type = props.type;
 		this.name = props.name;
 		this.externalSourceName = props.externalSourceName;
 		this.teachers = props.teachers;

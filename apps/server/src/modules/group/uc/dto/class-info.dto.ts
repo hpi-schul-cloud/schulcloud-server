@@ -1,5 +1,9 @@
+import { ClassRootType } from './class-root-type';
+
 export class ClassInfoDto {
-	id?: string;
+	id: string;
+
+	type: ClassRootType;
 
 	name: string;
 
@@ -11,6 +15,7 @@ export class ClassInfoDto {
 
 	constructor(props: ClassInfoDto) {
 		this.id = props.id;
+		this.type = props.type;
 		this.name = props.name;
 		this.externalSourceName = props.externalSourceName;
 		this.teachers = props.teachers;

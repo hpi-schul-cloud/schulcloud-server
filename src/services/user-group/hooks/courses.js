@@ -17,23 +17,29 @@ const { checkScopePermissions } = require('../../helpers/scopePermissions/hooks'
  * @param hook - contains created/patched object and request body
  */
 const addWholeClassToCourse = async (hook) => {
-	console.log(hook);
+	const { app } = hook;
 	const requestBody = hook.data;
 	const course = hook.result;
-	if (requestBody.classIds === undefined) {
-		console.log(hook);
-		return hook;
-	}
-	console.log(hook);
 
-	if (Configuration.get('FEATURE_GROUPS_IN_COURSE')) {
-		const { app } = hook;
-		const groupUc = await app
-			.service('nest-groups-service')
-			.addWholeClassToCourse(hook.result, hook.data, requestBody.classIds);
-		return groupUc;
+	if (Configuration.get('FEATURE_GROUPS_IN_COURSE') && (requestBody.groupIds || []).length > 0) {
+		await Promise.all(
+			requestBody.groupIds.map((groupId) =>
+				app
+					.service('nest-group-service')
+					.findById(groupId)
+					.then((group) => group.users)
+			)
+		).then(async (groupUsers) => {
+			// flatten deep arrays and remove duplicates
+			const userIds = _.flattenDeep(groupUsers).map((groupUser) => groupUser.userId);
+			const uniqueUserIds = _.uniqWith(userIds, (a, b) => a === b);
+
+			await CourseModel.update({ _id: course._id }, { $addToSet: { userIds: { $each: uniqueUserIds } } }).exec();
+
+			return undefined;
+		});
 	}
-	console.log(hook);
+
 	if ((requestBody.classIds || []).length > 0) {
 		// just courses do have a property "classIds"
 		return Promise.all(
@@ -47,7 +53,7 @@ const addWholeClassToCourse = async (hook) => {
 			studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
 
 			await CourseModel.update({ _id: course._id }, { $addToSet: { userIds: { $each: studentIds } } }).exec();
-			console.log(hook);
+
 			return hook;
 		});
 	}
