@@ -12,7 +12,30 @@ spec:
     spec:
       activeDeadlineSeconds: {{ SERVER_LDAP_SYNC_FULL_CRONJOB_TIMEOUT|default("39600", true) }}
       template:
+        metadata:
+          labels:
+            app: api-ldapsync-cronjob
         spec:
+          affinity:
+            podAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                      - api
+                      - api-files
+                      - amqp-files
+                      - api-fwu
+                      - api-tsp-sync
+                      - api-tsp-sync-cronjob
+                      - api-worker
+                     - api-ldapsync-cronjob
+                     - management-deployment
+                  topologyKey: "kubernetes.io/hostname"
           containers:
           - name: api-ldapsync-cronjob
             image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}

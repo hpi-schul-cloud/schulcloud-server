@@ -27,6 +27,26 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
         runAsNonRoot: true
+      affinity:
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - api
+                  - api-files
+                  - amqp-files
+                  - api-fwu
+                  - api-tsp-sync
+                  - api-tsp-sync-cronjob
+                  - api-worker
+                  - api-ldapsync-cronjob
+                  - management-deployment
+              topologyKey: "kubernetes.io/hostname"
       containers:
       - name: api-worker
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}

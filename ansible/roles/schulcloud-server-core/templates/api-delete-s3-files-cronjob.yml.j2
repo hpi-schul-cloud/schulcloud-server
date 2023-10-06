@@ -15,7 +15,30 @@ spec:
       cronjob: delete-s3-files
     spec:
       template:
+        labels:
+          app: api
+          cronjob: delete-s3-files
         spec:
+          affinity:
+            podAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                      - api
+                      - api-files
+                      - amqp-files
+                      - api-fwu
+                      - api-tsp-sync
+                      - api-tsp-sync-cronjob
+                      - api-worker
+                     - api-ldapsync-cronjob
+                     - management-deployment
+                  topologyKey: "kubernetes.io/hostname"
           containers:
           - name: delete-s3-files-cronjob
             image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}

@@ -8,12 +8,35 @@ metadata:
 spec:
   schedule: "{{ SERVER_TSP_SYNC_BASE_CRONJOB|default("9 3 * * *", true) }}"
   jobTemplate:
+    metadata:
+      labels:
+        app: api-tsp-sync-cronjob
     spec:
       template:
         metadata:
           labels:
             app: api-tsp-sync-cronjob
         spec:
+          affinity:
+            podAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                      - api
+                      - api-files
+                      - amqp-files
+                      - api-fwu
+                      - api-tsp-sync
+                      - api-tsp-sync-cronjob
+                      - api-worker
+                     - api-ldapsync-cronjob
+                     - management-deployment
+                  topologyKey: "kubernetes.io/hostname"
           containers:
           - name: api-tsp-sync-base-cronjob
             image: schulcloud/infra-tools:latest
