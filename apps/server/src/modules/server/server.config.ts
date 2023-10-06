@@ -3,6 +3,7 @@ import type { IIdentityManagementConfig } from '@shared/infra/identity-managemen
 import type { ICoreModuleConfig } from '@src/core';
 import type { IAccountConfig, IFilesStorageClientConfig, IUserConfig } from '@src/modules/';
 import type { ICommonCartridgeConfig } from '@src/modules/learnroom/common-cartridge';
+import { SchoolConfig } from '@src/modules/school';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -14,6 +15,7 @@ export enum NodeEnvType {
 export interface IServerConfig
 	extends ICoreModuleConfig,
 		IUserConfig,
+		SchoolConfig,
 		IFilesStorageClientConfig,
 		IAccountConfig,
 		IIdentityManagementConfig,
@@ -37,6 +39,7 @@ const config: IServerConfig = {
 	FEATURE_IDENTITY_MANAGEMENT_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,
+	STUDENT_TEAM_CREATION: Configuration.get('STUDENT_TEAM_CREATION') as string,
 };
 
 export const serverConfig = () => config;
