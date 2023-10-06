@@ -267,7 +267,7 @@ export class LibraryStorage implements ILibraryStorage {
 
 		const response = await this.getLibraryFile(ubername, file);
 
-		return response.stream;
+		return response.stream!;
 	}
 
 	/**
