@@ -661,7 +661,7 @@ describe('OidcProvisioningService', () => {
 
 		describe('when provision group', () => {
 			const setup = () => {
-				const group: Group = groupFactory.build();
+				const group: Group = groupFactory.build({ users: [] });
 				groupService.findByExternalSource.mockResolvedValue(group);
 
 				const school: LegacySchoolDo = legacySchoolDoFactory.build({ id: 'schoolId' });
