@@ -7,7 +7,7 @@ import { ALL_ENTITIES } from '@shared/domain';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MailModule } from '@shared/infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
-import { REDIS_CLIENT, RedisModule } from '@shared/infra/redis';
+import { RedisModule, REDIS_CLIENT } from '@shared/infra/redis';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LegacyLogger, LoggerModule } from '@src/core/logger';
@@ -18,15 +18,17 @@ import { CollaborativeStorageModule } from '@src/modules/collaborative-storage';
 import { FilesStorageClientModule } from '@src/modules/files-storage-client';
 import { GroupApiModule } from '@src/modules/group/group-api.module';
 import { LearnroomApiModule } from '@src/modules/learnroom/learnroom-api.module';
+import { LegacySchoolApiModule } from '@src/modules/legacy-school/legacy-school-api.module';
 import { LessonApiModule } from '@src/modules/lesson/lesson-api.module';
 import { NewsModule } from '@src/modules/news';
 import { OauthProviderApiModule } from '@src/modules/oauth-provider';
 import { OauthApiModule } from '@src/modules/oauth/oauth-api.module';
 import { RocketChatModule } from '@src/modules/rocketchat';
-import { LegacySchoolApiModule } from '@src/modules/legacy-school/legacy-school-api.module';
+import { SchoolApiModule } from '@src/modules/school/school-api.module';
 import { SharingApiModule } from '@src/modules/sharing/sharing.module';
 import { SystemApiModule } from '@src/modules/system/system-api.module';
 import { TaskApiModule } from '@src/modules/task/task-api.module';
+import { TeamsApiModule } from '@src/modules/teams/teams-api.module';
 import { ToolApiModule } from '@src/modules/tool/tool-api.module';
 import { ImportUserModule } from '@src/modules/user-import';
 import { UserLoginMigrationApiModule } from '@src/modules/user-login-migration/user-login-migration-api.module';
@@ -35,10 +37,8 @@ import { VideoConferenceApiModule } from '@src/modules/video-conference/video-co
 import connectRedis from 'connect-redis';
 import session from 'express-session';
 import { RedisClient } from 'redis';
-import { TeamsApiModule } from '@src/modules/teams/teams-api.module';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
-import { SchoolApiModule } from '../school/school-api.module';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
