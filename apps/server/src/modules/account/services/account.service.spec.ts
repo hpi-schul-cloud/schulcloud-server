@@ -234,7 +234,7 @@ describe('AccountService', () => {
 		});
 
 		describe('When username for a local user is not an email', () => {
-			it('should throw', async () => {
+			it('should throw username is not an email error', async () => {
 				const params: AccountSaveDto = {
 					username: 'John Doe',
 					password: 'JohnsPassword',
@@ -244,7 +244,7 @@ describe('AccountService', () => {
 		});
 
 		describe('When username for an external user is not an email', () => {
-			it('should not throw', async () => {
+			it('should not throw an error', async () => {
 				const params: AccountSaveDto = {
 					username: 'John Doe',
 					systemId: 'ABC123',
@@ -254,7 +254,7 @@ describe('AccountService', () => {
 		});
 
 		describe('When username for an external user is a ldap search string', () => {
-			it('should not throw', async () => {
+			it('should not throw an error', async () => {
 				const params: AccountSaveDto = {
 					username: 'dc=schul-cloud,dc=org/fake.ldap',
 					systemId: 'ABC123',
@@ -264,7 +264,7 @@ describe('AccountService', () => {
 		});
 
 		describe('When no password is provided for an internal user', () => {
-			it('should throw', async () => {
+			it('should throw no password provided error', async () => {
 				const params: AccountSaveDto = {
 					username: 'john.doe@mail.tld',
 				};
@@ -273,7 +273,7 @@ describe('AccountService', () => {
 		});
 
 		describe('When account already exists', () => {
-			it('should throw', async () => {
+			it('should throw account already exists', async () => {
 				const params: AccountSaveDto = {
 					username: 'john.doe@mail.tld',
 					password: 'JohnsPassword',
@@ -288,7 +288,7 @@ describe('AccountService', () => {
 			const setup = () => {
 				accountValidationService.isUniqueEmail.mockResolvedValueOnce(false);
 			};
-			it('should throw', async () => {
+			it('should throw username already exists', async () => {
 				setup();
 				const params: AccountSaveDto = {
 					username: 'john.doe@mail.tld',
