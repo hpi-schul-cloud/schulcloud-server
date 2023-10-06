@@ -85,9 +85,7 @@ export class SanisResponseMapper {
 						ktid: source.personenkontexte[0].id,
 						rollen: group.gruppenzugehoerigkeit.rollen,
 					},
-				]
-					.filter((sanisGroupUser) => sanisGroupUser.ktid && sanisGroupUser.rollen)
-					.sort((a, b) => a.ktid.localeCompare(b.ktid));
+				].filter((sanisGroupUser) => sanisGroupUser.ktid && sanisGroupUser.rollen);
 
 				const gruppenzugehoerigkeiten: ExternalGroupUserDto[] = sanisGroupUsers
 					.map((relation): ExternalGroupUserDto | null => this.mapToExternalGroupUser(relation))
