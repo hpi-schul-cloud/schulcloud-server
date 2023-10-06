@@ -24,10 +24,6 @@
 <title>cluster_VideoConferenceModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 1987,-268 1987,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_VideoConferenceModule_exports</title>
-<polygon fill="none" stroke="black" points="582,-208 582,-260 866,-260 866,-208 582,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_VideoConferenceModule_providers</title>
 <polygon fill="none" stroke="black" points="826,-78 826,-130 1979,-130 1979,-78 826,-78"/>
@@ -35,6 +31,10 @@
 <g id="clust3" class="cluster">
 <title>cluster_VideoConferenceModule_imports</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 818,-130 818,-78 16,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_VideoConferenceModule_exports</title>
+<polygon fill="none" stroke="black" points="582,-208 582,-260 866,-260 866,-208 582,-208"/>
 </g>
 <!-- AuthorizationModule -->
 <g id="node1" class="node">
