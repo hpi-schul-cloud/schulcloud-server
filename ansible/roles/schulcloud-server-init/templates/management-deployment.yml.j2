@@ -40,6 +40,7 @@ spec:
                   values:
                   - schulcloud-verbund
               topologyKey: "kubernetes.io/hostname"
+              namespaceSelector: {}
       containers:
       - name: api
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}

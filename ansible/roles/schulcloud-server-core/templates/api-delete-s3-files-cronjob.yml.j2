@@ -34,6 +34,7 @@ spec:
                       values:
                       - schulcloud-verbund
                   topologyKey: "kubernetes.io/hostname"
+                  namespaceSelector: {}
           containers:
           - name: delete-s3-files-cronjob
             image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}

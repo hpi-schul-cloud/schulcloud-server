@@ -32,6 +32,7 @@ spec:
                       values:
                       - schulcloud-verbund
                   topologyKey: "kubernetes.io/hostname"
+                  namespaceSelector: {}
           containers:
           - name: api-tsp-sync-base-cronjob
             image: schulcloud/infra-tools:latest
