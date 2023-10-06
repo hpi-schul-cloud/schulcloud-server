@@ -428,7 +428,11 @@ export class LibraryStorage implements ILibraryStorage {
 		const libraryName = LibraryName.fromUberName(ubername);
 		this.checkFilename(file);
 
-		let returnValue: {};
+		let returnValue: {
+			stream?: Readable;
+			mimetype?: string;
+			size?: number;
+		  } = {};
 		if (file === 'library.json') {
 			const metadata = await this.getMetadata(libraryName);
 			const stringifiedMetadata = JSON.stringify(metadata);
