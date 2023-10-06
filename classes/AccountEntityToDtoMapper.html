@@ -142,8 +142,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="28"
-                            class="link-to-prism">apps/server/src/modules/account/mapper/account-entity-to-dto.mapper.ts:28</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="30"
+                            class="link-to-prism">apps/server/src/modules/account/mapper/account-entity-to-dto.mapper.ts:30</a></div>
                 </td>
             </tr>
 
@@ -213,8 +213,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="22"
-                            class="link-to-prism">apps/server/src/modules/account/mapper/account-entity-to-dto.mapper.ts:22</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="24"
+                            class="link-to-prism">apps/server/src/modules/account/mapper/account-entity-to-dto.mapper.ts:24</a></div>
                 </td>
             </tr>
 
@@ -364,6 +364,8 @@ export class AccountEntityToDtoMapper {
 		});
 	}
 
+	// TODO: use Counted&lt;Account[]&gt; instead of [Account[], number]
+	// TODO: adjust naming of accountEntities
 	static mapSearchResult(accountEntities: [Account[], number]): Counted&lt;AccountDto[]&gt; {
 		const foundAccounts &#x3D; accountEntities[0];
 		const accountDtos: AccountDto[] &#x3D; AccountEntityToDtoMapper.mapAccountsToDto(foundAccounts);
