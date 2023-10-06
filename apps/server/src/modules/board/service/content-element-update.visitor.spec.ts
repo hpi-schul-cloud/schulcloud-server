@@ -13,6 +13,7 @@ import {
 } from '@shared/testing';
 import { ExternalToolContentBody, FileContentBody, RichTextContentBody } from '../controller/dto';
 import { ContentElementUpdateVisitor } from './content-element-update.visitor';
+import { OpenGraphProxyService } from './open-graph-proxy.service';
 
 describe(ContentElementUpdateVisitor.name, () => {
 	describe('when visiting an unsupported component', () => {
@@ -24,36 +25,37 @@ describe(ContentElementUpdateVisitor.name, () => {
 			content.text = 'a text';
 			content.inputFormat = InputFormat.RICH_TEXT_CK5;
 			const submissionItem = submissionItemFactory.build();
-			const updater = new ContentElementUpdateVisitor(content);
+			const openGraphProxyService = new OpenGraphProxyService();
+			const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
 
 			return { board, column, card, submissionItem, updater };
 		};
 
 		describe('when component is a column board', () => {
-			it('should throw an error', () => {
+			it('should throw an error', async () => {
 				const { board, updater } = setup();
-				expect(() => updater.visitColumnBoard(board)).toThrow();
+				await expect(updater.visitColumnBoardAsync(board)).rejects.toThrow();
 			});
 		});
 
 		describe('when component is a column', () => {
-			it('should throw an error', () => {
+			it('should throw an error', async () => {
 				const { column, updater } = setup();
-				expect(() => updater.visitColumn(column)).toThrow();
+				await expect(() => updater.visitColumnAsync(column)).rejects.toThrow();
 			});
 		});
 
 		describe('when component is a card', () => {
-			it('should throw an error', () => {
+			it('should throw an error', async () => {
 				const { card, updater } = setup();
-				expect(() => updater.visitCard(card)).toThrow();
+				await expect(() => updater.visitCardAsync(card)).rejects.toThrow();
 			});
 		});
 
 		describe('when component is a submission-item', () => {
-			it('should throw an error', () => {
+			it('should throw an error', async () => {
 				const { submissionItem, updater } = setup();
-				expect(() => updater.visitSubmissionItem(submissionItem)).toThrow();
+				await expect(() => updater.visitSubmissionItemAsync(submissionItem)).rejects.toThrow();
 			});
 		});
 	});
@@ -64,15 +66,16 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const content = new RichTextContentBody();
 			content.text = 'a text';
 			content.inputFormat = InputFormat.RICH_TEXT_CK5;
-			const updater = new ContentElementUpdateVisitor(content);
+			const openGraphProxyService = new OpenGraphProxyService();
+			const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
 
 			return { fileElement, updater };
 		};
 
-		it('should throw an error', () => {
+		it('should throw an error', async () => {
 			const { fileElement, updater } = setup();
 
-			expect(() => updater.visitFileElement(fileElement)).toThrow();
+			await expect(() => updater.visitFileElementAsync(fileElement)).rejects.toThrow();
 		});
 	});
 
@@ -81,15 +84,16 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const linkElement = linkElementFactory.build();
 			const content = new FileContentBody();
 			content.caption = 'a caption';
-			const updater = new ContentElementUpdateVisitor(content);
+			const openGraphProxyService = new OpenGraphProxyService();
+			const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
 
 			return { linkElement, updater };
 		};
 
-		it('should throw an error', () => {
+		it('should throw an error', async () => {
 			const { linkElement, updater } = setup();
 
-			expect(() => updater.visitLinkElement(linkElement)).toThrow();
+			await expect(() => updater.visitLinkElementAsync(linkElement)).rejects.toThrow();
 		});
 	});
 
@@ -98,15 +102,16 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const richTextElement = richTextElementFactory.build();
 			const content = new FileContentBody();
 			content.caption = 'a caption';
-			const updater = new ContentElementUpdateVisitor(content);
+			const openGraphProxyService = new OpenGraphProxyService();
+			const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
 
 			return { richTextElement, updater };
 		};
 
-		it('should throw an error', () => {
+		it('should throw an error', async () => {
 			const { richTextElement, updater } = setup();
 
-			expect(() => updater.visitRichTextElement(richTextElement)).toThrow();
+			await expect(() => updater.visitRichTextElementAsync(richTextElement)).rejects.toThrow();
 		});
 	});
 
@@ -116,15 +121,16 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const content = new RichTextContentBody();
 			content.text = 'a text';
 			content.inputFormat = InputFormat.RICH_TEXT_CK5;
-			const updater = new ContentElementUpdateVisitor(content);
+			const openGraphProxyService = new OpenGraphProxyService();
+			const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
 
 			return { submissionContainerElement, updater };
 		};
 
-		it('should throw an error', () => {
+		it('should throw an error', async () => {
 			const { submissionContainerElement, updater } = setup();
 
-			expect(() => updater.visitSubmissionContainerElement(submissionContainerElement)).toThrow();
+			await expect(() => updater.visitSubmissionContainerElementAsync(submissionContainerElement)).rejects.toThrow();
 		});
 	});
 
@@ -134,15 +140,16 @@ describe(ContentElementUpdateVisitor.name, () => {
 				const externalToolElement = externalToolElementFactory.build({ contextExternalToolId: undefined });
 				const content = new ExternalToolContentBody();
 				content.contextExternalToolId = new ObjectId().toHexString();
-				const updater = new ContentElementUpdateVisitor(content);
+				const openGraphProxyService = new OpenGraphProxyService();
+				const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
 
 				return { externalToolElement, updater, content };
 			};
 
-			it('should update the content', () => {
+			it('should update the content', async () => {
 				const { externalToolElement, updater, content } = setup();
 
-				updater.visitExternalToolElement(externalToolElement);
+				await updater.visitExternalToolElementAsync(externalToolElement);
 
 				expect(externalToolElement.contextExternalToolId).toEqual(content.contextExternalToolId);
 			});
@@ -154,15 +161,16 @@ describe(ContentElementUpdateVisitor.name, () => {
 				const content = new RichTextContentBody();
 				content.text = 'a text';
 				content.inputFormat = InputFormat.RICH_TEXT_CK5;
-				const updater = new ContentElementUpdateVisitor(content);
+				const openGraphProxyService = new OpenGraphProxyService();
+				const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
 
 				return { externalToolElement, updater };
 			};
 
-			it('should throw an error', () => {
+			it('should throw an error', async () => {
 				const { externalToolElement, updater } = setup();
 
-				expect(() => updater.visitExternalToolElement(externalToolElement)).toThrow();
+				await expect(() => updater.visitExternalToolElementAsync(externalToolElement)).rejects.toThrow();
 			});
 		});
 
@@ -170,15 +178,16 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const setup = () => {
 				const externalToolElement = externalToolElementFactory.build();
 				const content = new ExternalToolContentBody();
-				const updater = new ContentElementUpdateVisitor(content);
+				const openGraphProxyService = new OpenGraphProxyService();
+				const updater = new ContentElementUpdateVisitor(content, openGraphProxyService);
 
 				return { externalToolElement, updater };
 			};
 
-			it('should throw an error', () => {
+			it('should throw an error', async () => {
 				const { externalToolElement, updater } = setup();
 
-				expect(() => updater.visitExternalToolElement(externalToolElement)).toThrow();
+				await expect(() => updater.visitExternalToolElementAsync(externalToolElement)).rejects.toThrow();
 			});
 		});
 	});

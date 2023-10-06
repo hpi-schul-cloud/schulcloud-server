@@ -1,18 +1,32 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContentElementFactory, ContentElementType, FileElement, InputFormat, RichTextElement } from '@shared/domain';
+import {
+	ContentElementFactory,
+	ContentElementType,
+	FileElement,
+	InputFormat,
+	RichTextElement,
+	SubmissionContainerElement,
+} from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import {
 	cardFactory,
 	fileElementFactory,
+	linkElementFactory,
 	richTextElementFactory,
 	submissionContainerElementFactory,
 } from '@shared/testing/factory/domainobject';
-import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from '../controller/dto';
+import {
+	FileContentBody,
+	LinkContentBody,
+	RichTextContentBody,
+	SubmissionContainerContentBody,
+} from '../controller/dto';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementService } from './content-element.service';
+import { OpenGraphProxyService } from './open-graph-proxy.service';
 
 describe(ContentElementService.name, () => {
 	let module: TestingModule;
@@ -20,6 +34,7 @@ describe(ContentElementService.name, () => {
 	let boardDoRepo: DeepMocked<BoardDoRepo>;
 	let boardDoService: DeepMocked<BoardDoService>;
 	let contentElementFactory: DeepMocked<ContentElementFactory>;
+	let openGraphProxyService: DeepMocked<OpenGraphProxyService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -37,6 +52,10 @@ describe(ContentElementService.name, () => {
 					provide: ContentElementFactory,
 					useValue: createMock<ContentElementFactory>(),
 				},
+				{
+					provide: OpenGraphProxyService,
+					useValue: createMock<OpenGraphProxyService>(),
+				},
 			],
 		}).compile();
 
@@ -44,6 +63,7 @@ describe(ContentElementService.name, () => {
 		boardDoRepo = module.get(BoardDoRepo);
 		boardDoService = module.get(BoardDoService);
 		contentElementFactory = module.get(ContentElementFactory);
+		openGraphProxyService = module.get(OpenGraphProxyService);
 
 		await setupEntities();
 	});
@@ -229,6 +249,44 @@ describe(ContentElementService.name, () => {
 			});
 		});
 
+		describe('when element is a link element', () => {
+			const setup = () => {
+				const linkElement = linkElementFactory.build();
+
+				const content = new LinkContentBody();
+				content.url = 'https://www.medium.com/great-article';
+				const card = cardFactory.build();
+				boardDoRepo.findParentOfId.mockResolvedValue(card);
+
+				const imageResponse = {
+					title: 'Webpage-title',
+					description: '',
+					url: linkElement.url,
+					image: { url: 'https://my-open-graph-proxy.scvs.de/image/adefcb12ed3a' },
+				};
+
+				openGraphProxyService.fetchOpenGraphData.mockResolvedValueOnce(imageResponse);
+
+				return { linkElement, content, card, imageResponse };
+			};
+
+			it('should persist the element', async () => {
+				const { linkElement, content, card } = setup();
+
+				await service.update(linkElement, content);
+
+				expect(boardDoRepo.save).toHaveBeenCalledWith(linkElement, card);
+			});
+
+			it('should call open graph service', async () => {
+				const { linkElement, content, card } = setup();
+
+				await service.update(linkElement, content);
+
+				expect(boardDoRepo.save).toHaveBeenCalledWith(linkElement, card);
+			});
+		});
+
 		describe('when element is a submission container element', () => {
 			const setup = () => {
 				const submissionContainerElement = submissionContainerElementFactory.build();
@@ -245,17 +303,17 @@ describe(ContentElementService.name, () => {
 			it('should update the element', async () => {
 				const { submissionContainerElement, content } = setup();
 
-				await service.update(submissionContainerElement, content);
+				const element = (await service.update(submissionContainerElement, content)) as SubmissionContainerElement;
 
-				expect(submissionContainerElement.dueDate).toEqual(content.dueDate);
+				expect(element.dueDate).toEqual(content.dueDate);
 			});
 
 			it('should persist the element', async () => {
 				const { submissionContainerElement, content, card } = setup();
 
-				await service.update(submissionContainerElement, content);
+				const element = await service.update(submissionContainerElement, content);
 
-				expect(boardDoRepo.save).toHaveBeenCalledWith(submissionContainerElement, card);
+				expect(boardDoRepo.save).toHaveBeenCalledWith(element, card);
 			});
 		});
 	});

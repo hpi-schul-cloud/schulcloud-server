@@ -55,7 +55,7 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitorAsync {
 
 	async visitLinkElementAsync(linkElement: LinkElement): Promise<void> {
 		if (this.content instanceof LinkContentBody) {
-			const urlWithProtocol = this.content.url.match(/:\/\//) ? this.content.url : `https://${this.content.url}`;
+			const urlWithProtocol = /:\/\//.test(this.content.url) ? this.content.url : `https://${this.content.url}`;
 			linkElement.url = new URL(urlWithProtocol).toString();
 			const openGraphData = await this.openGraphProxyService.fetchOpenGraphData(linkElement.url);
 			linkElement.title = openGraphData.title;
@@ -80,6 +80,7 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitorAsync {
 	async visitSubmissionContainerElementAsync(submissionContainerElement: SubmissionContainerElement): Promise<void> {
 		if (this.content instanceof SubmissionContainerContentBody) {
 			submissionContainerElement.dueDate = this.content.dueDate ?? undefined;
+			return Promise.resolve();
 		}
 		return this.rejectNotHandled(submissionContainerElement);
 	}
@@ -92,6 +93,7 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitorAsync {
 		if (this.content instanceof ExternalToolContentBody && this.content.contextExternalToolId !== undefined) {
 			// Updates should not remove an existing reference to a tool, to prevent orphan tool instances
 			externalToolElement.contextExternalToolId = this.content.contextExternalToolId;
+			return Promise.resolve();
 		}
 		return this.rejectNotHandled(externalToolElement);
 	}
