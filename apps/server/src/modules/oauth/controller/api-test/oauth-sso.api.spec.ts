@@ -267,22 +267,6 @@ describe('OAuth SSO Controller (API)', () => {
 				query.code = 'code';
 				query.state = 'state';
 
-				return {
-					system,
-					user,
-					externalUserId,
-					school,
-					query,
-					userLoginMigration,
-				};
-			};
-			it('should redirect to login page with migration error', async () => {
-				const { system, externalUserId, query } = await setupMigration();
-				const { state, cookies } = await setupSessionState(system.id, false);
-				const baseUrl: string = Configuration.get('HOST') as string;
-				query.code = 'code';
-				query.state = state;
-
 				const idToken: string = JwtTestFactory.createJwt({
 					sub: 'testUser',
 					iss: system.oauthConfig?.issuer,
@@ -324,6 +308,22 @@ describe('OAuth SSO Controller (API)', () => {
 							},
 						],
 					});
+
+				return {
+					system,
+					user,
+					externalUserId,
+					school,
+					query,
+					userLoginMigration,
+				};
+			};
+
+			it('should redirect to login page with migration error', async () => {
+				const { system, query } = await setupMigration();
+				const { state, cookies } = await setupSessionState(system.id, false);
+				const baseUrl: string = Configuration.get('HOST') as string;
+				query.state = state;
 
 				await request(app.getHttpServer())
 					.get(`/sso/oauth`)

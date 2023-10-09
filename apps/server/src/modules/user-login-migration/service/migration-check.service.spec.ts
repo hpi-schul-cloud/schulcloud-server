@@ -5,8 +5,8 @@ import { UserLoginMigrationRepo } from '@shared/repo';
 import { legacySchoolDoFactory, userDoFactory } from '@shared/testing';
 import { LegacySchoolService } from '@src/modules/legacy-school';
 import { UserService } from '@src/modules/user';
+import { SchoolInMigrationError } from '@src/modules/authentication/errors/school-in-migration.error';
 import { MigrationCheckService } from './migration-check.service';
-import { SchoolInMigrationError } from '../../authentication/errors/school-in-migration.error';
 
 describe('MigrationCheckService', () => {
 	let module: TestingModule;
