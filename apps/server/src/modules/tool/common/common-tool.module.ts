@@ -1,13 +1,14 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { ContextExternalToolRepo, CourseRepo, SchoolExternalToolRepo } from '@shared/repo';
+import { ContextExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { LegacySchoolModule } from '@src/modules/legacy-school';
+import { LearnroomModule } from '@src/modules/learnroom';
 import { CommonToolService, CommonToolValidationService } from './service';
 import { ToolPermissionHelper } from './uc/tool-permission-helper';
 
 @Module({
-	imports: [LoggerModule, forwardRef(() => AuthorizationModule), LegacySchoolModule],
+	imports: [LoggerModule, forwardRef(() => AuthorizationModule), LegacySchoolModule, LearnroomModule],
 	// TODO: make deletion of entities cascading, adjust ExternalToolService.deleteExternalTool and remove the repos from here
 	providers: [
 		CommonToolService,
@@ -15,7 +16,6 @@ import { ToolPermissionHelper } from './uc/tool-permission-helper';
 		ToolPermissionHelper,
 		SchoolExternalToolRepo,
 		ContextExternalToolRepo,
-		CourseRepo,
 	],
 	exports: [
 		CommonToolService,

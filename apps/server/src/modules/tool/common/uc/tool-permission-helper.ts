@@ -2,7 +2,7 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Course, EntityId, LegacySchoolDo, User } from '@shared/domain';
 import { AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
 import { LegacySchoolService } from '@src/modules/legacy-school';
-import { CourseRepo } from '@shared/repo';
+import { CourseService } from '@src/modules/learnroom';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 // import { ContextTypeMapper } from '../mapper';
@@ -15,7 +15,7 @@ export class ToolPermissionHelper {
 		// invalid dependency on this place it is in UC layer in a other module
 		// loading of ressources should be part of service layer
 		// if it must resolve different loadings based on the request it can be added in own service and use in UC
-		private readonly courseRepo: CourseRepo
+		private readonly courseService: CourseService
 	) {}
 
 	// TODO build interface to get contextDO by contextType
@@ -27,7 +27,7 @@ export class ToolPermissionHelper {
 		// loading of ressources should be part of the UC -> unnessasary awaits
 		const [authorizableUser, course]: [User, Course] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
-			this.courseRepo.findById(contextExternalTool.contextRef.id),
+			this.courseService.findById(contextExternalTool.contextRef.id),
 		]);
 
 		if (contextExternalTool.id) {
