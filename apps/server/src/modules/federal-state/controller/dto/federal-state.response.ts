@@ -11,7 +11,9 @@ export class FederalStateResponse {
 		this.name = name;
 		this.abbreviation = abbreviation;
 		this.logoUrl = logoUrl;
-		this.counties = counties;
+		if (counties) {
+			this.counties = counties;
+		}
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 	}
