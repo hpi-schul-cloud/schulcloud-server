@@ -16,12 +16,13 @@ import {
 } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { FILES_STORAGE_S3_CONNECTION, FilesStorageTestModule } from '@src/modules/files-storage';
+import { FILES_STORAGE_S3_CONNECTION } from '@src/modules/files-storage';
 import { FileRecordListResponse, FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { Request } from 'express';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import request from 'supertest';
 import { FileRecordParentType, PreviewStatus } from '../../entity';
+import { FilesStorageTestModule } from '../../files-storage-test.module';
 import { availableParentTypes } from './mocks';
 
 const baseRouteName = '/file/restore';
