@@ -33,11 +33,10 @@ export class PreviewGeneratorService {
 	}
 
 	private resizeAndConvert(original: GetFile, previewParams: PreviewOptions): PassThrough {
-		const { format } = previewParams;
+		const { format, width } = previewParams;
 		const im = subClass({ imageMagick: '7+' });
 
 		const preview = im(original.data);
-		const { width } = previewParams;
 
 		if (width) {
 			preview.resize(width, undefined, '>');

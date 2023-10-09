@@ -16,7 +16,7 @@ export class PreviewGeneratorConsumer {
 		routingKey: FilesPreviewEvents.GENERATE_PREVIEW,
 		queue: FilesPreviewEvents.GENERATE_PREVIEW,
 	})
-	public async copyFilesOfParent(@RabbitPayload() payload: PreviewFileOptions) {
+	public async generatePreview(@RabbitPayload() payload: PreviewFileOptions) {
 		this.logger.debug({ action: 'generate preview', payload });
 
 		const response = await this.previewGeneratorService.generatePreview(payload);

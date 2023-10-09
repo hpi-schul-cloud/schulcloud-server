@@ -16,9 +16,9 @@ export class PreviewProducer extends RpcMessageProducer {
 		this.logger.setContext(PreviewProducer.name);
 	}
 
-	async generate(payload: PreviewFileOptions): Promise<PreviewResponseMessage[]> {
+	async generate(payload: PreviewFileOptions): Promise<PreviewResponseMessage> {
 		this.logger.debug({ action: 'generate:started', payload });
-		const response = await this.request<PreviewResponseMessage[]>(FilesPreviewEvents.GENERATE_PREVIEW, payload);
+		const response = await this.request<PreviewResponseMessage>(FilesPreviewEvents.GENERATE_PREVIEW, payload);
 
 		this.logger.debug({ action: 'generate:finished', payload });
 

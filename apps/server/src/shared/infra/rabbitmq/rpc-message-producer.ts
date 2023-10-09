@@ -1,5 +1,5 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { ErrorMapper } from '@src/modules/files-storage-client/mapper';
+import { ErrorMapper } from './error.mapper';
 import { RpcMessage } from './rpc-message';
 
 export abstract class RpcMessageProducer {
@@ -13,7 +13,7 @@ export abstract class RpcMessageProducer {
 		const response = await this.amqpConnection.request<RpcMessage<T>>(this.createRequest(event, payload));
 
 		this.checkError<T>(response);
-		return response.message || [];
+		return response.message;
 	}
 
 	// need to be fixed with https://ticketsystem.dbildungscloud.de/browse/BC-2984

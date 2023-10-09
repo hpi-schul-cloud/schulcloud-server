@@ -1,0 +1,123 @@
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { setupEntities } from '@shared/testing';
+import { LegacyLogger } from '@src/core/logger';
+import { ErrorMapper, FilesPreviewEvents, FilesPreviewExchange } from '../rabbitmq';
+import { PreviewFileOptions } from './interface';
+import { PreviewProducer } from './preview.producer';
+
+describe('PreviewProducer', () => {
+	let module: TestingModule;
+	let service: PreviewProducer;
+	let configService: DeepMocked<ConfigService>;
+	let amqpConnection: DeepMocked<AmqpConnection>;
+
+	const timeout = 10000;
+
+	beforeAll(async () => {
+		await setupEntities();
+		module = await Test.createTestingModule({
+			providers: [
+				PreviewProducer,
+				{
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
+				},
+				{
+					provide: AmqpConnection,
+					useValue: createMock<AmqpConnection>(),
+				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
+				},
+			],
+		}).compile();
+
+		service = module.get(PreviewProducer);
+		amqpConnection = module.get(AmqpConnection);
+		configService = module.get(ConfigService);
+		configService.get.mockReturnValue(timeout);
+	});
+
+	afterAll(async () => {
+		await module.close();
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+	it('should be defined', () => {
+		expect(service).toBeDefined();
+	});
+
+	describe('generate', () => {
+		describe('when valid params are passed and amqp connection return with a message', () => {
+			const setup = () => {
+				const params: PreviewFileOptions = {
+					originFilePath: 'file/test.jpeg',
+					previewFilePath: 'preview/text.webp',
+					previewOptions: {
+						format: 'webp',
+						width: 500,
+					},
+				};
+
+				const message = [];
+				amqpConnection.request.mockResolvedValueOnce({ message });
+
+				const expectedParams = {
+					exchange: FilesPreviewExchange,
+					routingKey: FilesPreviewEvents.GENERATE_PREVIEW,
+					payload: params,
+					timeout,
+				};
+
+				return { params, expectedParams, message };
+			};
+
+			it('should call the ampqConnection.', async () => {
+				const { params, expectedParams } = setup();
+
+				await service.generate(params);
+
+				expect(amqpConnection.request).toHaveBeenCalledWith(expectedParams);
+			});
+
+			it('should return the response message.', async () => {
+				const { params, message } = setup();
+
+				const res = await service.generate(params);
+
+				expect(res).toEqual(message);
+			});
+		});
+
+		describe('when amqpConnection return with error in response', () => {
+			const setup = () => {
+				const params: PreviewFileOptions = {
+					originFilePath: 'file/test.jpeg',
+					previewFilePath: 'preview/text.webp',
+					previewOptions: {
+						format: 'webp',
+						width: 500,
+					},
+				};
+
+				amqpConnection.request.mockResolvedValueOnce({ error: new Error() });
+				const spy = jest.spyOn(ErrorMapper, 'mapRpcErrorResponseToDomainError');
+
+				return { params, spy };
+			};
+
+			it('should call error mapper and throw with error', async () => {
+				const { params, spy } = setup();
+
+				await expect(service.generate(params)).rejects.toThrowError();
+				expect(spy).toBeCalled();
+			});
+		});
+	});
+});
