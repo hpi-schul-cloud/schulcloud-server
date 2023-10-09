@@ -1,4 +1,5 @@
 import { SchoolEntity } from '@shared/domain';
+import { MikroOrmRepoUtils } from '@shared/repo/mikro-orm-repo.utils';
 import { School, SchoolFeature } from '../../domain';
 import { FederalStateMapper } from './federal-state.mapper';
 import { SchoolYearMapper } from './school-year.mapper';
@@ -6,6 +7,10 @@ import { SystemMapper } from './system.mapper';
 
 export class SchoolMapper {
 	public static mapToDo(entity: SchoolEntity): School {
+		MikroOrmRepoUtils.checkIfRequiredPropsArePopulated(entity, ['federalState']);
+
+		MikroOrmRepoUtils.removeOptionalReferencesIfNotPopulated(entity, ['currentYear', 'systems']);
+
 		const currentYear = entity.currentYear && SchoolYearMapper.mapToDo(entity.currentYear);
 		const federalState = FederalStateMapper.mapToDo(entity.federalState);
 		const features = this.mapFeatures(entity);
