@@ -347,7 +347,7 @@ describe('VideoConferenceService', () => {
 				};
 			};
 
-			it('should call the correct authorisation order', async () => {
+			it('should call the correct authorization order', async () => {
 				const { user, entity, userId, conferenceScope, entityId } = setup();
 
 				await service.determineBbbRole(userId, entityId, conferenceScope);
@@ -389,7 +389,7 @@ describe('VideoConferenceService', () => {
 				};
 			};
 
-			it('should call the correct authorisation order', async () => {
+			it('should call the correct authorization order', async () => {
 				const { user, entity, userId, conferenceScope, entityId } = setup();
 
 				await service.determineBbbRole(userId, entityId, conferenceScope);
@@ -429,7 +429,7 @@ describe('VideoConferenceService', () => {
 				};
 			};
 
-			it('should call the correct authorisation order', async () => {
+			it('should call the correct authorization order', async () => {
 				const { user, entity, userId, conferenceScope, entityId } = setup();
 
 				await service.determineBbbRole(userId, entityId, conferenceScope);
@@ -479,9 +479,9 @@ describe('VideoConferenceService', () => {
 			it('should throw a ForbiddenException', async () => {
 				const { userId, conferenceScope, entityId } = setup();
 
-				await expect(service.determineBbbRole(userId, entityId, conferenceScope)).rejects.toThrow(
-					new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION)
-				);
+				const callDetermineBbbRole = () => service.determineBbbRole(userId, entityId, conferenceScope);
+
+				await expect(callDetermineBbbRole).rejects.toThrow(new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION));
 			});
 		});
 	});
