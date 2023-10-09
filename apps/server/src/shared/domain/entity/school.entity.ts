@@ -97,7 +97,7 @@ export class SchoolEntity extends BaseEntity {
 	)
 	userLoginMigration?: UserLoginMigrationEntity;
 
-	@ManyToOne(() => FederalStateEntity, { fieldName: 'federalState', nullable: false })
+	@ManyToOne(() => FederalStateEntity)
 	federalState: FederalStateEntity;
 
 	@Property({ nullable: true })
