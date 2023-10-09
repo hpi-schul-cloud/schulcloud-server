@@ -129,12 +129,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.downloadPreview(userId, fileDownloadParams, previewParams);
 
-				expect(previewService.getPreview).toHaveBeenCalledWith(
-					fileRecord,
-					fileDownloadParams,
-					previewParams,
-					undefined
-				);
+				expect(previewService.getPreview).toHaveBeenCalledWith(fileRecord, previewParams, undefined);
 			});
 
 			it('should call checkPermission with correct params', async () => {
