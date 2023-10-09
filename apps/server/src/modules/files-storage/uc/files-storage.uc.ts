@@ -153,6 +153,8 @@ export class FilesStorageUC {
 
 		await this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.read);
 
+		this.filesStorageService.checkFileName(fileRecord, params);
+
 		const result = this.previewService.getPreview(fileRecord, previewParams, bytesRange);
 
 		return result;

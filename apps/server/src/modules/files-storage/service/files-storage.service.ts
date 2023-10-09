@@ -229,7 +229,7 @@ export class FilesStorageService {
 	}
 
 	// download
-	private checkFileName(fileRecord: FileRecord, params: DownloadFileParams): void | NotFoundException {
+	public checkFileName(fileRecord: FileRecord, params: DownloadFileParams): void | NotFoundException {
 		if (!fileRecord.hasName(params.fileName)) {
 			this.logger.debug(`could not find file with id: ${fileRecord.id} by filename`);
 			throw new NotFoundException(ErrorType.FILE_NOT_FOUND);

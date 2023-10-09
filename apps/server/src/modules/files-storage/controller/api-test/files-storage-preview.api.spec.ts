@@ -5,6 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { EntityId, Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { PreviewProducer } from '@shared/infra/preview-generator';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
@@ -102,6 +103,8 @@ describe('File Controller (API) - preview', () => {
 		})
 			.overrideProvider(AntivirusService)
 			.useValue(createMock<AntivirusService>())
+			.overrideProvider(PreviewProducer)
+			.useValue(createMock<PreviewProducer>())
 			.overrideProvider(FILES_STORAGE_S3_CONNECTION)
 			.useValue(createMock<S3ClientAdapter>())
 			.overrideGuard(JwtAuthGuard)
@@ -326,9 +329,8 @@ describe('File Controller (API) - preview', () => {
 						const { result: uploadedFile } = await api.postUploadFile(uploadPath);
 						await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
-						const originalFile = TestHelper.createFile();
 						const previewFile = TestHelper.createFile('bytes 0-3/4');
-						s3ClientAdapter.get.mockResolvedValueOnce(originalFile).mockResolvedValueOnce(previewFile);
+						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
 						return { uploadedFile };
 					};
@@ -371,12 +373,8 @@ describe('File Controller (API) - preview', () => {
 					await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
 					const error = new NotFoundException();
-					const originalFile = TestHelper.createFile();
 					const previewFile = TestHelper.createFile('bytes 0-3/4');
-					s3ClientAdapter.get
-						.mockRejectedValueOnce(error)
-						.mockResolvedValueOnce(originalFile)
-						.mockResolvedValueOnce(previewFile);
+					s3ClientAdapter.get.mockRejectedValueOnce(error).mockResolvedValueOnce(previewFile);
 
 					return { uploadedFile };
 				};
