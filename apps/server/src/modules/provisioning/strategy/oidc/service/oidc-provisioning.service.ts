@@ -14,6 +14,7 @@ import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
 import CryptoJS from 'crypto-js';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
 
@@ -120,10 +121,6 @@ export class OidcProvisioningService {
 	}
 
 	async provisionExternalGroup(externalGroup: ExternalGroupDto, systemId: EntityId): Promise<void> {
-		if (externalGroup.users.length === 0) {
-			return;
-		}
-
 		const existingGroup: Group | null = await this.groupService.findByExternalSource(
 			externalGroup.externalId,
 			systemId
@@ -146,6 +143,10 @@ export class OidcProvisioningService {
 
 		const users: GroupUser[] = await this.getFilteredGroupUsers(externalGroup, systemId);
 
+		if (!users.length) {
+			return;
+		}
+
 		const group: Group = new Group({
 			id: existingGroup ? existingGroup.id : new ObjectId().toHexString(),
 			name: externalGroup.name,
@@ -157,8 +158,9 @@ export class OidcProvisioningService {
 			organizationId,
 			validFrom: externalGroup.from,
 			validUntil: externalGroup.until,
-			users,
+			users: existingGroup ? existingGroup.users : [],
 		});
+		users.forEach((user: GroupUser) => group.addUser(user));
 
 		await this.groupService.save(group);
 	}
@@ -169,7 +171,7 @@ export class OidcProvisioningService {
 				const user: UserDO | null = await this.userService.findByExternalId(externalGroupUser.externalUserId, systemId);
 				const roles: RoleDto[] = await this.roleService.findByNames([externalGroupUser.roleName]);
 
-				if (!user || !user.id || roles.length !== 1 || !roles[0].id) {
+				if (!user?.id || roles.length !== 1 || !roles[0].id) {
 					this.logger.info(new UserForGroupNotFoundLoggable(externalGroupUser));
 					return null;
 				}
@@ -186,5 +188,44 @@ export class OidcProvisioningService {
 		const filteredUsers: GroupUser[] = users.filter((groupUser): groupUser is GroupUser => groupUser !== null);
 
 		return filteredUsers;
+	}
+
+	async removeExternalGroupsAndAffiliation(
+		externalUserId: EntityId,
+		externalGroups: ExternalGroupDto[],
+		systemId: EntityId
+	): Promise<void> {
+		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
+
+		if (!user) {
+			throw new NotFoundLoggableException(UserDO.name, 'externalId', externalUserId);
+		}
+
+		const existingGroupsOfUser: Group[] = await this.groupService.findByUser(user);
+
+		const groupsFromSystem: Group[] = existingGroupsOfUser.filter(
+			(existingGroup: Group) => existingGroup.externalSource?.systemId === systemId
+		);
+
+		const groupsWithoutUser: Group[] = groupsFromSystem.filter((existingGroupFromSystem: Group) => {
+			const isUserInGroup = externalGroups.some(
+				(externalGroup: ExternalGroupDto) =>
+					externalGroup.externalId === existingGroupFromSystem.externalSource?.externalId
+			);
+
+			return !isUserInGroup;
+		});
+
+		await Promise.all(
+			groupsWithoutUser.map(async (group: Group) => {
+				group.removeUser(user);
+
+				if (group.isEmpty()) {
+					await this.groupService.delete(group);
+				} else {
+					await this.groupService.save(group);
+				}
+			})
+		);
 	}
 }

@@ -98,7 +98,7 @@ describe('OidcStrategy', () => {
 				};
 			};
 
-			it('should call the OidcProvisioningService.provisionExternalSchool', async () => {
+			it('should provision school', async () => {
 				const { oauthData } = setup();
 
 				await strategy.apply(oauthData);
@@ -150,7 +150,7 @@ describe('OidcStrategy', () => {
 				};
 			};
 
-			it('should call the OidcProvisioningService.provisionExternalUser', async () => {
+			it('should provision external user', async () => {
 				const { oauthData, schoolId } = setup();
 
 				await strategy.apply(oauthData);
@@ -198,7 +198,19 @@ describe('OidcStrategy', () => {
 				};
 			};
 
-			it('should call the OidcProvisioningService.provisionExternalGroup for each group', async () => {
+			it('should remove external groups and affiliation', async () => {
+				const { oauthData } = setup();
+
+				await strategy.apply(oauthData);
+
+				expect(oidcProvisioningService.removeExternalGroupsAndAffiliation).toHaveBeenCalledWith(
+					oauthData.externalUser.externalId,
+					oauthData.externalGroups,
+					oauthData.system.systemId
+				);
+			});
+
+			it('should provision every external group', async () => {
 				const { oauthData } = setup();
 
 				await strategy.apply(oauthData);
@@ -241,7 +253,15 @@ describe('OidcStrategy', () => {
 				};
 			};
 
-			it('should not call the OidcProvisioningService.provisionExternalGroup', async () => {
+			it('should not remove external groups and affiliation', async () => {
+				const { oauthData } = setup();
+
+				await strategy.apply(oauthData);
+
+				expect(oidcProvisioningService.removeExternalGroupsAndAffiliation).not.toHaveBeenCalled();
+			});
+
+			it('should not provision groups', async () => {
 				const { oauthData } = setup();
 
 				await strategy.apply(oauthData);
