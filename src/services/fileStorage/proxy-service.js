@@ -422,10 +422,10 @@ const signedUrlService = {
 			throw new NotFound('File seems not to be there.');
 		}
 
-		// deprecated: author check via file.permissions[0].refId is deprecated and will be removed in the next release
+		// deprecated: author check via file.permissions[0]?.refId is deprecated and will be removed in the next release
 		const creatorId =
 			fileObject.creator ||
-			(fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId);
+			(fileObject.permissions[0]?.refPermModel !== 'user' ? userId : fileObject.permissions[0]?.refId);
 
 		if (download && fileObject.securityCheck && fileObject.securityCheck.status === SecurityCheckStatusTypes.BLOCKED) {
 			throw new Forbidden('File access blocked by security check.');
@@ -456,11 +456,11 @@ const signedUrlService = {
 			throw new NotFound('File seems not to be there.');
 		}
 
-		// deprecated: author check via file.permissions[0].refId is deprecated and will be removed in the next release
+		// deprecated: author check via file.permissions[0]?.refId is deprecated and will be removed in the next release
 		const creatorId =
-			fileObject.creator || fileObject.permissions[0].refPermModel !== 'user'
+			fileObject.creator || fileObject.permissions[0]?.refPermModel !== 'user'
 				? userId
-				: fileObject.permissions[0].refId;
+				: fileObject.permissions[0]?.refId;
 
 		return canRead(userId, id)
 			.then(() =>
@@ -899,8 +899,8 @@ const filePermissionService = {
 		const { refOwnerModel, owner } = fileObj;
 		const rolePermissions = fileObj.permissions.filter(({ refPermModel }) => refPermModel === 'role');
 		const rolePromises = rolePermissions.map(({ refId }) => RoleModel.findOne({ _id: refId }).lean().exec());
-		// deprecated: author check via file.permissions[0].refId is deprecated and will be removed in the next release
-		const isFileCreator = equalIds(fileObj.creator || fileObj.permissions[0].refId, userId);
+		// deprecated: author check via file.permissions[0]?.refId is deprecated and will be removed in the next release
+		const isFileCreator = equalIds(fileObj.creator || fileObj.permissions[0]?.refId, userId);
 
 		const actionMap = {
 			user: () => {
