@@ -466,13 +466,11 @@
 			"properties": {
 				"SERVICE_HOSTNAME": {
 					"type": "string",
-					"description": "IP of host to connect to TCP interface",
-					"default": "localhost"
+					"description": "IP of host to connect to TCP interface"
 				},
 				"SERVICE_PORT": {
 					"type": "number",
-					"description": "Port of host to use when connecting via TCP interface",
-					"default": 3310
+					"description": "Port of host to use when connecting via TCP interface"
 				}
 			},
 			"default": {
