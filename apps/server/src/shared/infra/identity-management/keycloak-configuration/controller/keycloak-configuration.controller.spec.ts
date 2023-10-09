@@ -3,10 +3,14 @@ import { ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyLogger } from '@src/core/logger';
+// NodeEnvType exists but should not, we want to remove it inside the repo<domain>controller layers
+// shared should not import from modules/* -> we need clean dependecies
 import { NodeEnvType } from '@src/modules/server/server.config';
 import { KeycloakConfigurationUc } from '../uc/keycloak-configuration.uc';
 import { KeycloakManagementController } from './keycloak-configuration.controller';
 
+// We want to have api test instead of unit, same for console
+// console and controller sounds like it should not be places in shared, please move it into a module. To hidden to see it.
 describe('KeycloakManagementController', () => {
 	let module: TestingModule;
 	let uc: DeepMocked<KeycloakConfigurationUc>;
@@ -59,6 +63,7 @@ describe('KeycloakManagementController', () => {
 		expect(controller).toBeDefined();
 	});
 
+	// test structure
 	describe('importSeedData', () => {
 		it('should accept calls on seed route', async () => {
 			const received = await controller.importSeedData();

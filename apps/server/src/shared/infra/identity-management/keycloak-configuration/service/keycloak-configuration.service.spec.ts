@@ -12,6 +12,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SystemEntity, SystemTypeEnum } from '@shared/domain';
 import { SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { systemFactory } from '@shared/testing';
+// do not import from modules
+// do not import from deep internals in a module use @src/modules/system
 import { SystemOidcMapper } from '@src/modules/system/mapper/system-oidc.mapper';
 import { SystemOidcService } from '@src/modules/system/service/system-oidc.service';
 import { AxiosResponse } from 'axios';

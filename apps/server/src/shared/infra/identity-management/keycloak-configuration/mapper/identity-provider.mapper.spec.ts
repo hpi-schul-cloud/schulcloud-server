@@ -30,6 +30,7 @@ describe('OidcIdentityProviderMapper', () => {
 		mapper = module.get(OidcIdentityProviderMapper);
 	});
 
+	// test structure
 	describe('mapToKeycloakIdentityProvider', () => {
 		const brokerFlowAlias = 'flow';
 		const internalRepresentation: OidcConfigDto = {
@@ -80,7 +81,7 @@ describe('OidcIdentityProviderMapper', () => {
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 					config: expect.objectContaining({
 						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-						clientSecret: expect.stringMatching('.*dec'),
+						clientSecret: expect.stringMatching('.*dec'), // Should this check also exists in mapper?
 					}),
 				})
 			);

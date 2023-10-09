@@ -10,10 +10,13 @@ import { systemFactory } from '@shared/testing/factory';
 import { LoggerModule } from '@src/core/logger';
 import { SystemService } from '@src/modules/system/service/system.service';
 import { v1 } from 'uuid';
+// import from ../../keycloak-administration/
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakConfigurationModule } from '../keycloak-configuration.module';
 import { KeycloakConfigurationService } from './keycloak-configuration.service';
 
+// the service is part of the domain layer, on other places we do not have integration tests for this layer (the services)..
+// ..is this really nessasary?
 describe('KeycloakConfigurationService Integration', () => {
 	let module: TestingModule;
 	let keycloak: KeycloakAdminClient;
@@ -22,6 +25,7 @@ describe('KeycloakConfigurationService Integration', () => {
 	let keycloakConfigurationService: KeycloakConfigurationService;
 	let isKeycloakAvailable = false;
 
+	// maybe uuid.v1() give you more hints
 	const testRealm = `test-realm-${v1().toString()}`;
 	const flowAlias = 'Direct Broker Flow';
 	const systemServiceMock = createMock<SystemService>();
@@ -43,6 +47,7 @@ describe('KeycloakConfigurationService Integration', () => {
 		systemRepo = module.get(SystemRepo);
 		keycloakAdministrationService = module.get(KeycloakAdministrationService);
 		keycloakConfigurationService = module.get(KeycloakConfigurationService);
+		// not the best solution for testing it, is already mentioned in one of the last code reviews
 		isKeycloakAvailable = await keycloakAdministrationService.testKcConnection();
 		if (isKeycloakAvailable) {
 			keycloak = await keycloakAdministrationService.callKcAdminClient();
@@ -67,6 +72,7 @@ describe('KeycloakConfigurationService Integration', () => {
 		}
 	});
 
+	// test structure
 	// Execute this test for a test run against a running Keycloak instance
 	describe('configureBrokerFlows', () => {
 		it('should configure broker flows', async () => {

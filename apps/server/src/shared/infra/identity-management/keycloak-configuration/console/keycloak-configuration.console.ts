@@ -5,6 +5,7 @@ import { KeycloakConfigurationUc } from '../uc/keycloak-configuration.uc';
 
 const defaultError = new Error('IDM is not reachable or authentication failed.');
 
+// move interface to additional file, I prefix is deprectated
 interface IRetryOptions {
 	retryCount?: number;
 	retryDelay?: number;
@@ -49,6 +50,7 @@ export class KeycloakConsole {
 	 */
 	@Command({ command: 'check', description: 'Test the connection to the IDM.' })
 	async check(): Promise<void> {
+		// put this to const before, connection call with try catch and real error give you more hints over the error details
 		if (await this.keycloakConfigurationUc.check()) {
 			this.console.info('Connected to IDM');
 		} else {
@@ -172,6 +174,9 @@ export class KeycloakConsole {
 	private async repeatCommand<T>(commandName: string, command: () => Promise<T>, count = 1, delay = 10): Promise<T> {
 		let repetitions = 0;
 		let error = new Error('error could be thrown if count is < 1');
+		// structure of this method and the called places can be improved, error callback, retry and callback are mixed,...
+		// ...it is hard to read
+		// use private check methods
 		while (repetitions < count) {
 			repetitions += 1;
 			try {

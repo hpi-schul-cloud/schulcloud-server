@@ -17,11 +17,12 @@ enum ConfigureAction {
 	UPDATE = 'update',
 	DELETE = 'delete',
 }
-
+// is it possible to use enum from keycloak
 const flowAlias = 'Direct Broker Flow';
 const oidcUserAttributeMapperName = 'OIDC User Attribute Mapper';
 const oidcExternalSubMapperName = 'External Sub Mapper';
 
+// outsource keycloack communication to a proper adapter (this client/or repo part can be tested over ingration test if it is possible)
 @Injectable()
 export class KeycloakConfigurationService {
 	constructor(
@@ -31,6 +32,7 @@ export class KeycloakConfigurationService {
 		private readonly systemOidcService: SystemOidcService
 	) {}
 
+	// move logic to private methods -> split logic and orchestration, the calls are part of the adapter
 	public async configureBrokerFlows(): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
 		const executionProviders = ['idp-create-user-if-unique', 'idp-auto-link'];
@@ -80,7 +82,12 @@ export class KeycloakConfigurationService {
 			topLevel: true,
 			builtIn: false,
 		});
+		// Do not use awaits in loop, use promise.all or allSettled.
+		// The updateExecutionRequest has no need to wait for addExecutionRequest.. <-- please check it
+		// ..The operations do not depend on each other.
 		// eslint-disable-next-line no-restricted-syntax
+
+		// const executionProviders = ['idp-create-user-if-unique', 'idp-auto-link'];
 		for (const executionProvider of executionProviders) {
 			// eslint-disable-next-line no-await-in-loop
 			await addExecutionRequest({
@@ -89,6 +96,8 @@ export class KeycloakConfigurationService {
 				provider: executionProvider,
 			});
 		}
+
+		// -------------------------
 		const executions = await getFlowExecutionsRequest({
 			realmName: kc.realmName,
 			flowAlias,
@@ -105,10 +114,15 @@ export class KeycloakConfigurationService {
 		}
 	}
 
+	// It look like service and UC orechtstration is mixed
+	// The code or logic can be cleanup
 	public async configureClient(): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
+		// use PUBLIC_BACKEND_URL and remove  scDomain === 'localhost'.....
 		const scDomain = this.configService.get<string>('SC_DOMAIN');
 		const redirectUri = scDomain === 'localhost' ? 'http://localhost:3030/' : `https://${scDomain}/`;
+		// can it be moved to a mapper?
+		// cr is not the best naming :D
 		const cr: ClientRepresentation = {
 			clientId: this.kcAdmin.getClientId(),
 			enabled: true,
@@ -116,6 +130,9 @@ export class KeycloakConfigurationService {
 			publicClient: false,
 			redirectUris: [`${redirectUri}*`],
 		};
+		// write to const before
+		// do not use [0]?.id, put it to private get method with save call and error handling
+		// if i use this by every call make it sense to split it in update and create? Give it benefit to remember the old connection?
 		let defaultClientInternalId = (await kc.clients.find({ clientId: this.kcAdmin.getClientId() }))[0]?.id;
 		if (!defaultClientInternalId) {
 			({ id: defaultClientInternalId } = await kc.clients.create(cr));
@@ -128,9 +145,11 @@ export class KeycloakConfigurationService {
 	public async configureIdentityProviders(): Promise<number> {
 		let count = 0;
 		const kc = await this.kcAdmin.callKcAdminClient();
+		// use promise.all()
 		const oldConfigs = await kc.identityProviders.find();
 		const newConfigs = await this.systemOidcService.findAll();
 		const configureActions = this.selectConfigureAction(newConfigs, oldConfigs);
+		// we do not want awaits in loops
 		// eslint-disable-next-line no-restricted-syntax
 		for (const configureAction of configureActions) {
 			if (configureAction.action === ConfigureAction.CREATE) {
@@ -152,6 +171,7 @@ export class KeycloakConfigurationService {
 		return count;
 	}
 
+	// public
 	async configureRealm(): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
 		await kc.realms.update(
@@ -164,6 +184,9 @@ export class KeycloakConfigurationService {
 		);
 	}
 
+	/**
+	 * @CeEv we stop at this place, pleae note this in the next EW review Ticket. Thank you. :)
+	 */
 	private async addClientProtocolMappers(defaultClientInternalId: string) {
 		const kc = await this.kcAdmin.callKcAdminClient();
 		const allMappers = await kc.clients.listProtocolMappers({ id: defaultClientInternalId });

@@ -17,9 +17,11 @@ export class KeycloakManagementController {
 	 */
 	@Post('seed')
 	async importSeedData(): Promise<number> {
+		// do not use this.keycloakManagementUc.check(), the logic should be rewrite to get valid http handling and responses
 		if (await this.keycloakManagementUc.check()) {
 			try {
 				await this.keycloakManagementUc.configure();
+				// do not return dirctly write it to a const before and think about the naming :D
 				return await this.keycloakManagementUc.seed();
 			} catch (err) {
 				this.logger.error(err);

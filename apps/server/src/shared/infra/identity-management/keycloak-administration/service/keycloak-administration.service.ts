@@ -6,6 +6,7 @@ import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-setti
 export class KeycloakAdministrationService {
 	private lastAuthorizationTime = 0;
 
+	// Move this to configuration
 	private static AUTHORIZATION_TIMEBOX_MS = 59 * 1000;
 
 	public constructor(
@@ -20,9 +21,12 @@ export class KeycloakAdministrationService {
 
 	public async callKcAdminClient(): Promise<KeycloakAdminClient> {
 		await this.authorizeAccess();
+
 		return this.kcAdminClient;
 	}
 
+	// We do not want to catch the errors
+	// If the code restructured in in the next (2 levels / references / method calls) that this method should not nessasary
 	public async testKcConnection(): Promise<boolean> {
 		try {
 			await this.kcAdminClient.auth(this.kcSettings.credentials);

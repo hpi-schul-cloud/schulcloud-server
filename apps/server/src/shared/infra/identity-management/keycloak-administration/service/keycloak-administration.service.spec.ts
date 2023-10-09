@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+// maybe not use deep imports
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { Clients } from '@keycloak/keycloak-admin-client/lib/resources/clients';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -56,10 +57,12 @@ describe('KeycloakAdministrationService', () => {
 
 	afterEach(() => {
 		service.resetLastAuthorizationTime();
+		// put this in setup with Once
 		kcApiClientMock.find.mockClear();
 		jest.resetAllMocks();
 	});
 
+	// test structure
 	describe('callKcAdminClient', () => {
 		it('should return the original client', async () => {
 			const ret = await service.callKcAdminClient();

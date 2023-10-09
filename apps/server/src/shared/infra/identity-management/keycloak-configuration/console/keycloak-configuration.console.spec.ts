@@ -40,11 +40,14 @@ describe('KeycloakConsole', () => {
 		await module.close();
 	});
 
+	// test structure
+	// use Once
 	describe('check', () => {
 		it('should resolve successfully', async () => {
 			jest.spyOn(uc, 'check').mockResolvedValue(true);
 			await expect(console.check()).resolves.not.toThrow();
 		});
+
 		it('should throw on error', async () => {
 			jest.spyOn(uc, 'check').mockResolvedValue(false);
 			await expect(console.check()).rejects.toThrow();
@@ -56,15 +59,18 @@ describe('KeycloakConsole', () => {
 			jest.spyOn(uc, 'clean').mockResolvedValue(0);
 			await expect(console.clean({ retryCount: 1, retryDelay: 0 })).resolves.not.toThrow();
 		});
+
 		it('should retry and resolve successfully', async () => {
 			jest.spyOn(uc, 'clean').mockRejectedValueOnce('error');
 			jest.spyOn(uc, 'clean').mockResolvedValue(0);
 			await expect(console.clean({ retryCount: 2, retryDelay: 0 })).resolves.not.toThrow();
 		});
+
 		it('should throw on error', async () => {
 			jest.spyOn(uc, 'clean').mockRejectedValue(new Error());
 			await expect(console.clean({ retryCount: 1, retryDelay: 0 })).rejects.toThrow();
 		});
+
 		it('should retry but throw error after last attempt', async () => {
 			jest.spyOn(uc, 'clean').mockRejectedValue(new Error());
 			await expect(console.clean({ retryCount: 2, retryDelay: 0 })).rejects.toThrow();
@@ -76,6 +82,7 @@ describe('KeycloakConsole', () => {
 			jest.spyOn(uc, 'seed').mockResolvedValue(0);
 			await expect(console.seed({ retryCount: 1, retryDelay: 10 })).resolves.not.toThrow();
 		});
+
 		it('should throw on error', async () => {
 			jest.spyOn(uc, 'seed').mockRejectedValue(new Error());
 			await expect(console.seed({ retryCount: 1, retryDelay: 10 })).rejects.toThrow();
@@ -87,22 +94,29 @@ describe('KeycloakConsole', () => {
 			jest.spyOn(uc, 'migrate').mockResolvedValue(1);
 			await expect(console.migrate({ retryCount: 1, retryDelay: 10 })).resolves.not.toThrow();
 		});
+
 		it('should forward the skip option', async () => {
 			const migrateSpy = jest.spyOn(uc, 'migrate');
 			migrateSpy.mockClear();
 			migrateSpy.mockResolvedValue(1);
 			const skipValue = 10;
+
 			await console.migrate({ skip: skipValue });
+
 			expect(migrateSpy).toHaveBeenCalledWith(skipValue, expect.anything());
 		});
+
 		it('should forward the verbose option', async () => {
 			const migrateSpy = jest.spyOn(uc, 'migrate');
 			migrateSpy.mockClear();
 			migrateSpy.mockResolvedValue(1);
 			const verboseValue = true;
+
 			await console.migrate({ verbose: verboseValue });
+
 			expect(migrateSpy).toHaveBeenCalledWith(undefined, verboseValue);
 		});
+
 		it('should throw on error', async () => {
 			jest.spyOn(uc, 'migrate').mockRejectedValue(new Error());
 			await expect(console.migrate({})).rejects.toThrow();
@@ -137,6 +151,7 @@ describe('KeycloakConsole', () => {
 		});
 
 		it('should not throw an instance of error object', async () => {
+			// Do no look like a valid error format, you can use new Error without throw instead
 			const mockedError = {
 				name: 'test error',
 			};
