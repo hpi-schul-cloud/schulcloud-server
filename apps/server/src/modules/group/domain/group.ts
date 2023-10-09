@@ -45,4 +45,10 @@ export class Group extends DomainObject<GroupProps> {
 	isEmpty(): boolean {
 		return this.props.users.length === 0;
 	}
+
+	addUser(user: GroupUser): void {
+		if (!this.users.find((u) => u.userId === user.userId)) {
+			this.users.push(user);
+		}
+	}
 }
