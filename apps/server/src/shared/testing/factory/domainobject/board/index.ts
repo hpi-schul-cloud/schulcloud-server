@@ -7,4 +7,3 @@ export * from './link-element.do.factory';
 export * from './rich-text-element.do.factory';
 export * from './submission-container-element.do.factory';
 export * from './submission-item.do.factory';
-
