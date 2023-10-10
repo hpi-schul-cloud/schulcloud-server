@@ -11,6 +11,8 @@ import {
 	SubmissionContainerElementNode,
 } from '@shared/domain';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	cardNodeFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
@@ -19,8 +21,6 @@ import {
 	fileElementNodeFactory,
 	richTextElementNodeFactory,
 	submissionContainerElementNodeFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server/server.module';
 
@@ -63,7 +63,10 @@ describe(`content element update content (api)`, () => {
 			const parentCard = cardNodeFactory.buildWithId({ parent: column });
 			const richTextElement = richTextElementNodeFactory.buildWithId({ parent: parentCard });
 			const fileElement = fileElementNodeFactory.buildWithId({ parent: parentCard });
-			const submissionContainerElement = submissionContainerElementNodeFactory.buildWithId({ parent: parentCard });
+			const submissionContainerElement = submissionContainerElementNodeFactory.buildWithId({
+				parent: parentCard,
+				dueDate: null,
+			});
 
 			const tomorrow = new Date(Date.now() + 86400000);
 			const submissionContainerElementWithDueDate = submissionContainerElementNodeFactory.buildWithId({
@@ -166,7 +169,6 @@ describe(`content element update content (api)`, () => {
 
 		it('should return status 204 (nothing changed) without dueDate parameter for submission container element', async () => {
 			const { loggedInClient, submissionContainerElement } = await setup();
-
 			const response = await loggedInClient.patch(`${submissionContainerElement.id}/content`, {
 				data: {
 					content: {},
@@ -177,7 +179,7 @@ describe(`content element update content (api)`, () => {
 			expect(response.statusCode).toEqual(204);
 		});
 
-		it('should not change dueDate value without dueDate parameter for submission container element', async () => {
+		it('should not change dueDate when not proviced in submission container element without dueDate', async () => {
 			const { loggedInClient, submissionContainerElement } = await setup();
 
 			await loggedInClient.patch(`${submissionContainerElement.id}/content`, {
@@ -187,11 +189,10 @@ describe(`content element update content (api)`, () => {
 				},
 			});
 			const result = await em.findOneOrFail(SubmissionContainerElementNode, submissionContainerElement.id);
-
-			expect(result.dueDate).toBeUndefined();
+			expect(result.dueDate).toBeNull();
 		});
 
-		it('should set dueDate value when dueDate parameter is provided for submission container element', async () => {
+		it('should set dueDate value when provided for submission container element', async () => {
 			const { loggedInClient, submissionContainerElement } = await setup();
 
 			const inThreeDays = new Date(Date.now() + 259200000);
@@ -207,18 +208,20 @@ describe(`content element update content (api)`, () => {
 			expect(result.dueDate).toEqual(inThreeDays);
 		});
 
-		it('should unset dueDate value when dueDate parameter is not provided for submission container element', async () => {
+		it('should unset dueDate value when dueDate parameter is null for submission container element', async () => {
 			const { loggedInClient, submissionContainerElementWithDueDate } = await setup();
 
 			await loggedInClient.patch(`${submissionContainerElementWithDueDate.id}/content`, {
 				data: {
-					content: {},
+					content: {
+						dueDate: null,
+					},
 					type: 'submissionContainer',
 				},
 			});
 			const result = await em.findOneOrFail(SubmissionContainerElementNode, submissionContainerElementWithDueDate.id);
 
-			expect(result.dueDate).toBeUndefined();
+			expect(result.dueDate).toBeNull();
 		});
 
 		it('should return status 400 for wrong date format for submission container element', async () => {
