@@ -353,8 +353,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="168"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:168</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="165"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:165</a></div>
                 </td>
             </tr>
 
@@ -651,8 +651,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="154"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:154</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="151"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:151</a></div>
                 </td>
             </tr>
 
@@ -935,8 +935,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="140"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:140</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="137"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:137</a></div>
                 </td>
             </tr>
 
@@ -1004,8 +1004,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="184"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:184</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="181"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:181</a></div>
                 </td>
             </tr>
 
@@ -1085,8 +1085,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="179"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:179</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="176"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:176</a></div>
                 </td>
             </tr>
 
@@ -1154,8 +1154,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="173"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:173</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="170"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:170</a></div>
                 </td>
             </tr>
 
@@ -1343,11 +1343,8 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			children: elements,
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
+			dueDate: boardNode.dueDate,
 		});
-
-		if (boardNode.dueDate) {
-			element.dueDate &#x3D; boardNode.dueDate;
-		}
 
 		return element;
 	}

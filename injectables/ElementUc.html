@@ -234,8 +234,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="76"
-                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:76</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="75"
+                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:75</a></div>
                 </td>
             </tr>
 
@@ -341,8 +341,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="38"
-                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:38</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="37"
+                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:37</a></div>
                 </td>
             </tr>
 
@@ -548,7 +548,6 @@ export class ElementUc {
 		const element &#x3D; await this.elementService.findById(elementId);
 
 		await this.checkPermission(userId, element, Action.write);
-
 		await this.elementService.update(element, content);
 	}
 

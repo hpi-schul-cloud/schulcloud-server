@@ -747,7 +747,7 @@
 
                 <tr>
                     <td class="col-md-4">
-                        <span class="accessor"><b>set</b><code>dueDate(value: Date | undefined)</code></span>
+                        <span class="accessor"><b>set</b><code>dueDate(value: Date | null)</code></span>
                     </td>
                 </tr>
                             <tr>
@@ -773,7 +773,7 @@
                                                             <td>value</td>
                                                     
                                                             <td>
-                                                                        <code>Date | undefined</code>
+                                                                        <code>Date | null</code>
                                                             </td>
                                                     
                                                         <td>
@@ -804,11 +804,11 @@ import { SubmissionItem } from &#x27;./submission-item.do&#x27;;
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from &#x27;./types&#x27;;
 
 export class SubmissionContainerElement extends BoardComposite&lt;SubmissionContainerElementProps&gt; {
-	get dueDate(): Date | undefined {
+	get dueDate(): Date | null {
 		return this.props.dueDate;
 	}
 
-	set dueDate(value: Date | undefined) {
+	set dueDate(value: Date | null) {
 		this.props.dueDate &#x3D; value;
 	}
 
@@ -827,7 +827,7 @@ export class SubmissionContainerElement extends BoardComposite&lt;SubmissionCont
 }
 
 export interface SubmissionContainerElementProps extends BoardCompositeProps {
-	dueDate?: Date;
+	dueDate: Date | null;
 }
 
 export function isSubmissionContainerElement(reference: unknown): reference is SubmissionContainerElement {

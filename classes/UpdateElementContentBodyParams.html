@@ -144,7 +144,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="117" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/update-element-content.body.params.ts:117</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="118" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/update-element-content.body.params.ts:118</a></div>
                         </td>
                     </tr>
 
@@ -221,6 +221,7 @@ export class SubmissionContainerContentBody {
 	@IsOptional()
 	@ApiPropertyOptional({
 		required: false,
+		nullable: true,
 		description: &#x27;The point in time until when a submission can be handed in.&#x27;,
 	})
 	dueDate?: Date;

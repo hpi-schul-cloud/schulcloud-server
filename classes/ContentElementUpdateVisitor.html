@@ -262,8 +262,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="81"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:81</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="82"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:82</a></div>
                 </td>
             </tr>
 
@@ -538,8 +538,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="72"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:72</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="73"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:73</a></div>
                 </td>
             </tr>
 
@@ -814,8 +814,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="68"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:68</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="69"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:69</a></div>
                 </td>
             </tr>
 
@@ -934,7 +934,8 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 
 	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void {
 		if (this.content instanceof SubmissionContainerContentBody) {
-			submissionContainerElement.dueDate &#x3D; this.content.dueDate ?? undefined;
+			if (this.content.dueDate &#x3D;&#x3D;&#x3D; undefined) return;
+			submissionContainerElement.dueDate &#x3D; this.content.dueDate;
 		} else {
 			this.throwNotHandled(submissionContainerElement);
 		}

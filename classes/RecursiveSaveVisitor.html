@@ -284,8 +284,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="188"
-                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:188</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="185"
+                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:185</a></div>
                 </td>
             </tr>
 
@@ -353,8 +353,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="180"
-                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:180</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="177"
+                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:177</a></div>
                 </td>
             </tr>
 
@@ -598,8 +598,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="173"
-                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:173</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="170"
+                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:170</a></div>
                 </td>
             </tr>
 
@@ -817,8 +817,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="157"
-                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:157</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="154"
+                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:154</a></div>
                 </td>
             </tr>
 
@@ -1093,8 +1093,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="143"
-                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:143</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="140"
+                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:140</a></div>
                 </td>
             </tr>
 
@@ -1284,11 +1284,8 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			id: submissionContainerElement.id,
 			parent: parentData?.boardNode,
 			position: parentData?.position,
+			dueDate: submissionContainerElement.dueDate,
 		});
-
-		if (submissionContainerElement.dueDate) {
-			boardNode.dueDate &#x3D; submissionContainerElement.dueDate;
-		}
 
 		this.createOrUpdateBoardNode(boardNode);
 		this.visitChildren(submissionContainerElement, boardNode);

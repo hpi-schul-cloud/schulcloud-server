@@ -272,6 +272,7 @@ export class SubmissionContainerContentBody {
 	@IsOptional()
 	@ApiPropertyOptional({
 		required: false,
+		nullable: true,
 		description: &#x27;The point in time until when a submission can be handed in.&#x27;,
 	})
 	dueDate?: Date;
