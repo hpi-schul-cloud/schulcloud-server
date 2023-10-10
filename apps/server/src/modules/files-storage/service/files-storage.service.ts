@@ -157,7 +157,7 @@ export class FilesStorageService {
 		try {
 			const fileSizePromise = this.countFileSize(file);
 
-			if (useStreamToAntivirus) {
+			if (useStreamToAntivirus && fileRecord.isPreviewPossible()) {
 				const streamToAntivirus = file.data.pipe(new PassThrough());
 
 				const [, antivirusClientResponse] = await Promise.all([
