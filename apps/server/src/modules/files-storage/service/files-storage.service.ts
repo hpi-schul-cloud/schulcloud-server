@@ -175,7 +175,7 @@ export class FilesStorageService {
 			this.throwErrorIfFileIsTooBig(fileRecord.size);
 			await this.fileRecordRepo.save(fileRecord);
 
-			if (!useStreamToAntivirus) {
+			if (!useStreamToAntivirus || !fileRecord.isPreviewPossible()) {
 				await this.sendToAntivirus(fileRecord);
 			}
 		} catch (error) {
