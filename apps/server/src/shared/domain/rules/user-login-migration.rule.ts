@@ -1,12 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
-import { AuthorizationContext, Rule } from '@src/modules/authorization/types';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { AuthorizationContext, Rule, AuthorizationHelper } from '@src/modules/authorization';
 import { UserLoginMigrationDO } from '../domainobject';
 import { User } from '../entity';
 
 @Injectable()
 export class UserLoginMigrationRule implements Rule<UserLoginMigrationDO> {
-	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
+	constructor(
+		@Inject(forwardRef(() => AuthorizationHelper)) private readonly authorizationHelper: AuthorizationHelper
+	) {}
 
 	public isApplicable(user: User, entity: UserLoginMigrationDO): boolean {
 		const isMatched: boolean = entity instanceof UserLoginMigrationDO;

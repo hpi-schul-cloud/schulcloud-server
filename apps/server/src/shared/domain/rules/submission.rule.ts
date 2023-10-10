@@ -1,12 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { Submission, User } from '@shared/domain/entity';
-import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
-import { Action, AuthorizationContext, Rule } from '@src/modules/authorization/types';
+import { Action, AuthorizationContext, Rule, AuthorizationHelper } from '@src/modules/authorization';
 import { TaskRule } from './task.rule';
 
 @Injectable()
 export class SubmissionRule implements Rule {
-	constructor(private readonly authorizationHelper: AuthorizationHelper, private readonly taskRule: TaskRule) {}
+	constructor(
+		@Inject(forwardRef(() => AuthorizationHelper)) private readonly authorizationHelper: AuthorizationHelper,
+		private readonly taskRule: TaskRule
+	) {}
 
 	public isApplicable(user: User, entity: Submission): boolean {
 		const isMatched = entity instanceof Submission;

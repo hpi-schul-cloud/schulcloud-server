@@ -1,14 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { Task, User } from '@shared/domain/entity';
-import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
-import { Action, AuthorizationContext, Rule } from '@src/modules/authorization/types';
+import { Action, AuthorizationContext, Rule, AuthorizationHelper } from '@src/modules/authorization';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
 
 @Injectable()
 export class TaskRule implements Rule {
 	constructor(
-		private readonly authorizationHelper: AuthorizationHelper,
+		@Inject(forwardRef(() => AuthorizationHelper)) private readonly authorizationHelper: AuthorizationHelper,
 		private readonly courseRule: CourseRule,
 		private readonly lessonRule: LessonRule
 	) {}

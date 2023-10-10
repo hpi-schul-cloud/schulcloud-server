@@ -12,9 +12,8 @@ import {
 } from '@shared/repo';
 import { ToolModule } from '@src/modules/tool';
 import { LoggerModule } from '@src/core/logger';
-import { ALL_RULES } from '@shared/domain/rules';
-import { BoardModule } from '../board';
-import { AuthorizationHelper } from './authorization.helper';
+import { BoardModule } from '@src/modules/board';
+import { AuthorizationHelper } from './domain/service';
 import { ReferenceLoader } from './domain/service/reference.loader';
 import { AuthorizationReferenceService } from './domain';
 import { AuthorizationModule } from './authorization.module';
@@ -26,7 +25,6 @@ import { AuthorizationModule } from './authorization.module';
 	// TODO: remove forwardRef to TooModule N21-1055
 	imports: [AuthorizationModule, forwardRef(() => ToolModule), forwardRef(() => BoardModule), LoggerModule],
 	providers: [
-		...ALL_RULES,
 		AuthorizationHelper,
 		ReferenceLoader,
 		UserRepo,

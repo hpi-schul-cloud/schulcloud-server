@@ -10,8 +10,7 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
-import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
-import { Action } from '@src/modules/authorization/types';
+import { Action, AuthorizationHelper } from '@src/modules/authorization';
 import { CourseGroupRule, CourseRule } from '.';
 import { LessonRule } from './lesson.rule';
 

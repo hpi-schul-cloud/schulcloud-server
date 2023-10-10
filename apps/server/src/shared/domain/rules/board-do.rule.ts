@@ -1,12 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
-import { Action, AuthorizationContext, Rule } from '@src/modules/authorization/types';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { Action, AuthorizationContext, Rule, AuthorizationHelper } from '@src/modules/authorization';
+// import { AuthorizationHelper } from '@src/modules/authorization/domain/service';
+// import { Action, AuthorizationContext, Rule } from '@src/modules/authorization';
 import { BoardDoAuthorizable, BoardRoles } from '../domainobject';
 import { User } from '../entity';
 
 @Injectable()
 export class BoardDoRule implements Rule {
-	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
+	constructor(
+		@Inject(forwardRef(() => AuthorizationHelper)) private readonly authorizationHelper: AuthorizationHelper
+	) {}
 
 	public isApplicable(user: User, boardDoAuthorizable: BoardDoAuthorizable): boolean {
 		const isMatched = boardDoAuthorizable instanceof BoardDoAuthorizable;

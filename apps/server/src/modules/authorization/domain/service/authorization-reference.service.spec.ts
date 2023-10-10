@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { AuthorizableReferenceType } from '../types';
-import { AuthorizationService } from '../../authorization.service';
+import { AuthorizationService } from './authorization.service';
 import { ReferenceLoader } from './reference.loader';
 import { AuthorizationContextBuilder } from '../../authorization-context.builder';
 import { ForbiddenLoggableException } from '../../errors';

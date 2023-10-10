@@ -2,8 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CourseGroup, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { courseFactory, courseGroupFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
-import { Action } from '@src/modules/authorization/types';
+import { AuthorizationHelper, Action } from '@src/modules/authorization';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 

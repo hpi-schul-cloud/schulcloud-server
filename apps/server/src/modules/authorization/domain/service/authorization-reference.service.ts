@@ -4,7 +4,7 @@ import { ReferenceLoader } from './reference.loader';
 import { AuthorizationContext } from '../../types';
 import { AuthorizableReferenceType } from '../types';
 import { ForbiddenLoggableException } from '../../errors';
-import { AuthorizationService } from '../../authorization.service';
+import { AuthorizationService } from './authorization.service';
 
 /**
  * Should by use only internal in authorization module. See ticket: BC-3990

@@ -3,8 +3,7 @@ import { Permission } from '@shared/domain/interface';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { TeamRule } from '@shared/domain/rules/team.rule';
-import { AuthorizationContextBuilder } from '@src/modules/authorization/authorization-context.builder';
-import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
+import { AuthorizationContextBuilder, AuthorizationHelper } from '@src/modules/authorization';
 
 describe('TeamRule', () => {
 	let rule: TeamRule;

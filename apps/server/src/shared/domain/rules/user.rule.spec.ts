@@ -2,8 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Role, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
-import { Action } from '@src/modules/authorization/types';
+import { AuthorizationHelper, Action } from '@src/modules/authorization';
 import { UserRule } from './user.rule';
 
 describe('UserRule', () => {

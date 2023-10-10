@@ -3,18 +3,18 @@ import { BaseDO, User } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object'; // fix import when it is avaible
 import {
 	BoardDoRule,
+	ContextExternalToolRule,
 	CourseGroupRule,
 	CourseRule,
 	LessonRule,
 	SchoolExternalToolRule,
-	LegacySchoolRule,
 	SubmissionRule,
 	TaskRule,
 	TeamRule,
 	UserRule,
+	UserLoginMigrationRule,
+	LegacySchoolRule,
 } from '@shared/domain/rules';
-import { ContextExternalToolRule } from '@shared/domain/rules/context-external-tool.rule';
-import { UserLoginMigrationRule } from '@shared/domain/rules/user-login-migration.rule';
 import { AuthorizationContext, Rule } from './types';
 
 @Injectable()

@@ -9,8 +9,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
-import { Action } from '@src/modules/authorization/types';
+import { AuthorizationHelper, Action } from '@src/modules/authorization';
 import { CourseGroupRule, CourseRule, LessonRule, SubmissionRule, TaskRule } from '.';
 
 const buildUserWithPermission = (permission) => {

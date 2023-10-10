@@ -8,8 +8,7 @@ import {
 	schoolExternalToolFactory,
 } from '@shared/testing';
 
-import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
-import { Action } from '@src/modules/authorization/types';
+import { AuthorizationHelper, Action } from '@src/modules/authorization';
 import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain';
 import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
 import { Role, User } from '../entity';
