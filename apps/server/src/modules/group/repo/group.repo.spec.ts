@@ -1,8 +1,16 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalSource, SchoolEntity } from '@shared/domain';
+import { ExternalSource, SchoolEntity, UserDO, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, groupEntityFactory, groupFactory, schoolFactory } from '@shared/testing';
+import {
+	cleanupCollections,
+	groupEntityFactory,
+	groupFactory,
+	roleFactory,
+	schoolFactory,
+	userDoFactory,
+	userFactory,
+} from '@shared/testing';
 import { Group, GroupProps, GroupTypes, GroupUser } from '../domain';
 import { GroupEntity, GroupEntityTypes } from '../entity';
 import { GroupRepo } from './group.repo';
@@ -78,6 +86,62 @@ describe('GroupRepo', () => {
 				const result: Group | null = await repo.findById(new ObjectId().toHexString());
 
 				expect(result).toBeNull();
+			});
+		});
+	});
+
+	describe('findByUser', () => {
+		describe('when the user has groups', () => {
+			const setup = async () => {
+				const userEntity: User = userFactory.buildWithId();
+				const user: UserDO = userDoFactory.build({ id: userEntity.id });
+				const groups: GroupEntity[] = groupEntityFactory.buildListWithId(3, {
+					users: [{ user: userEntity, role: roleFactory.buildWithId() }],
+				});
+
+				const otherGroups: GroupEntity[] = groupEntityFactory.buildListWithId(2);
+
+				await em.persistAndFlush([userEntity, ...groups, ...otherGroups]);
+				em.clear();
+
+				return {
+					user,
+					groups,
+				};
+			};
+
+			it('should return the groups', async () => {
+				const { user, groups } = await setup();
+
+				const result: Group[] = await repo.findByUser(user);
+
+				expect(result.map((group) => group.id).sort((a, b) => a.localeCompare(b))).toEqual(
+					groups.map((group) => group.id).sort((a, b) => a.localeCompare(b))
+				);
+			});
+		});
+
+		describe('when the user has no groups exists', () => {
+			const setup = async () => {
+				const userEntity: User = userFactory.buildWithId();
+				const user: UserDO = userDoFactory.build({ id: userEntity.id });
+
+				const otherGroups: GroupEntity[] = groupEntityFactory.buildListWithId(2);
+
+				await em.persistAndFlush([userEntity, ...otherGroups]);
+				em.clear();
+
+				return {
+					user,
+				};
+			};
+
+			it('should return an empty array', async () => {
+				const { user } = await setup();
+
+				const result: Group[] = await repo.findByUser(user);
+
+				expect(result).toHaveLength(0);
 			});
 		});
 	});
