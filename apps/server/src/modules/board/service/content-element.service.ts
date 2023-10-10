@@ -5,7 +5,7 @@ import {
 	ContentElementFactory,
 	ContentElementType,
 	EntityId,
-	isAnyContentElement,
+	isAnyContentElement
 } from '@shared/domain';
 import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';

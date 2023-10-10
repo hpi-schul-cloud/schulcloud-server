@@ -148,11 +148,8 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			children: elements,
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
+			dueDate: boardNode.dueDate,
 		});
-
-		if (boardNode.dueDate) {
-			element.dueDate = boardNode.dueDate;
-		}
 
 		return element;
 	}

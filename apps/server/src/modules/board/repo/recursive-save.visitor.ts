@@ -148,11 +148,8 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			id: submissionContainerElement.id,
 			parent: parentData?.boardNode,
 			position: parentData?.position,
+			dueDate: submissionContainerElement.dueDate,
 		});
-
-		if (submissionContainerElement.dueDate) {
-			boardNode.dueDate = submissionContainerElement.dueDate;
-		}
 
 		this.createOrUpdateBoardNode(boardNode);
 		this.visitChildren(submissionContainerElement, boardNode);

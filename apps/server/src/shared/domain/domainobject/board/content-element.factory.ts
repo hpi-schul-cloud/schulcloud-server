@@ -81,6 +81,7 @@ export class ContentElementFactory {
 	private buildSubmissionContainer() {
 		const element = new SubmissionContainerElement({
 			id: new ObjectId().toHexString(),
+			dueDate: null,
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),

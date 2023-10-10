@@ -79,7 +79,9 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitorAsync {
 
 	async visitSubmissionContainerElementAsync(submissionContainerElement: SubmissionContainerElement): Promise<void> {
 		if (this.content instanceof SubmissionContainerContentBody) {
-			submissionContainerElement.dueDate = this.content.dueDate ?? undefined;
+			if (this.content.dueDate !== undefined) {
+				submissionContainerElement.dueDate = this.content.dueDate;
+			}
 			return Promise.resolve();
 		}
 		return this.rejectNotHandled(submissionContainerElement);

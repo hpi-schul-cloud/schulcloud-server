@@ -3,11 +3,11 @@ import { SubmissionItem } from './submission-item.do';
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
 export class SubmissionContainerElement extends BoardComposite<SubmissionContainerElementProps> {
-	get dueDate(): Date | undefined {
+	get dueDate(): Date | null {
 		return this.props.dueDate;
 	}
 
-	set dueDate(value: Date | undefined) {
+	set dueDate(value: Date | null) {
 		this.props.dueDate = value;
 	}
 
@@ -26,7 +26,7 @@ export class SubmissionContainerElement extends BoardComposite<SubmissionContain
 }
 
 export interface SubmissionContainerElementProps extends BoardCompositeProps {
-	dueDate?: Date;
+	dueDate: Date | null;
 }
 
 export function isSubmissionContainerElement(reference: unknown): reference is SubmissionContainerElement {
