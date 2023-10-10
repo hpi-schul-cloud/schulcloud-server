@@ -267,7 +267,7 @@ export class LibraryStorage implements ILibraryStorage {
 
 		const response = await this.getLibraryFile(ubername, file);
 
-		return response.stream!;
+		return response.stream;
 	}
 
 	/**
@@ -426,35 +426,29 @@ export class LibraryStorage implements ILibraryStorage {
 	 */
 	public async getLibraryFile(ubername: string, file: string) {
 		const libraryName = LibraryName.fromUberName(ubername);
+
 		this.checkFilename(file);
 
-		let returnValue: {
-			stream?: Readable;
-			mimetype?: string;
-			size?: number;
-		  } = {};
 		if (file === 'library.json') {
 			const metadata = await this.getMetadata(libraryName);
 			const stringifiedMetadata = JSON.stringify(metadata);
 			const readable = Readable.from(stringifiedMetadata);
 
-			returnValue =  {
+			return {
 				stream: readable,
 				mimetype: 'application/json',
 				size: stringifiedMetadata.length,
 			};
-		} else{
-			const response = await this.s3Client.get(this.getS3Key(libraryName, file));
-			const mimetype = mime.lookup(file, 'application/octet-stream');
-
-			returnValue = {
-				stream: response.data,
-				mimetype,
-				size: response.contentLength,
-			};
-
 		}
 
-		return returnValue;
+		const response = await this.s3Client.get(this.getS3Key(libraryName, file));
+
+		const mimetype = mime.lookup(file, 'application/octet-stream');
+
+		return {
+			stream: response.data,
+			mimetype,
+			size: response.contentLength,
+		};
 	}
 }
