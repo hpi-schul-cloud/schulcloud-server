@@ -61,35 +61,64 @@ describe('CurrentUserMapper', () => {
 		describe('when userDO has no ID', () => {
 			it('should throw error', () => {
 				const user: UserDO = userDoFactory.build({ createdAt: new Date(), updatedAt: new Date() });
-				expect(() => CurrentUserMapper.userDoToICurrentUser(accountId, user)).toThrow(ValidationError);
+				expect(() => CurrentUserMapper.userDoToICurrentUser(accountId, user, undefined, 'idToken')).toThrow(
+					ValidationError
+				);
 			});
 		});
 
 		describe('when userDO is valid', () => {
-			it('should return valid ICurrentUser instance', () => {
+			const setup = () => {
 				const user: UserDO = userDoFactory.buildWithId({ id: userId, createdAt: new Date(), updatedAt: new Date() });
-				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user);
+				const idToken = 'idToken';
+
+				return {
+					user,
+					idToken,
+				};
+			};
+
+			it('should return valid ICurrentUser instance', () => {
+				const { user, idToken } = setup();
+
+				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user, undefined, idToken);
+
 				expect(currentUser).toMatchObject({
 					accountId,
 					systemId: undefined,
 					roles: [],
 					schoolId: user.schoolId,
 					userId: user.id,
+					externalIdToken: idToken,
 				});
 			});
 		});
 
 		describe('when userDO is valid and a systemId is provided', () => {
-			it('should return valid ICurrentUser instance with systemId', () => {
+			const setup = () => {
 				const user: UserDO = userDoFactory.buildWithId({ id: userId, createdAt: new Date(), updatedAt: new Date() });
 				const systemId = 'mockSystemId';
-				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user, systemId);
+				const idToken = 'idToken';
+
+				return {
+					user,
+					idToken,
+					systemId,
+				};
+			};
+
+			it('should return valid ICurrentUser instance with systemId', () => {
+				const { user, systemId, idToken } = setup();
+
+				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user, systemId, idToken);
+
 				expect(currentUser).toMatchObject({
 					accountId,
 					systemId,
 					roles: [],
 					schoolId: user.schoolId,
 					userId: user.id,
+					externalIdToken: idToken,
 				});
 			});
 		});
@@ -117,7 +146,7 @@ describe('CurrentUserMapper', () => {
 			it('should return valid ICurrentUser instance without systemId', () => {
 				const { user } = setup();
 
-				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user);
+				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user, undefined, 'idToken');
 
 				expect(currentUser).toMatchObject({
 					accountId,

@@ -60,9 +60,10 @@ describe('Oauth2Strategy', () => {
 					username: 'username',
 				});
 
+				const idToken = 'idToken';
 				oauthService.authenticateUser.mockResolvedValue(
 					new OAuthTokenDto({
-						idToken: 'idToken',
+						idToken,
 						accessToken: 'accessToken',
 						refreshToken: 'refreshToken',
 					})
@@ -70,11 +71,11 @@ describe('Oauth2Strategy', () => {
 				oauthService.provisionUser.mockResolvedValue({ user, redirect: '' });
 				accountService.findByUserId.mockResolvedValue(account);
 
-				return { systemId, user, account };
+				return { systemId, user, account, idToken };
 			};
 
 			it('should return the ICurrentUser', async () => {
-				const { systemId, user, account } = setup();
+				const { systemId, user, account, idToken } = setup();
 
 				const result: ICurrentUser = await strategy.validate({
 					body: { code: 'code', redirectUri: 'redirectUri', systemId },
@@ -86,6 +87,7 @@ describe('Oauth2Strategy', () => {
 					roles: [user.roles[0].id],
 					schoolId: user.schoolId,
 					accountId: account.id,
+					externalIdToken: idToken,
 				});
 			});
 		});

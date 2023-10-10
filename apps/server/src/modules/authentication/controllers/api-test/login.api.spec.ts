@@ -11,7 +11,7 @@ import MockAdapter from 'axios-mock-adapter';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
-import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams } from '../dto';
+import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams, LoginResponse } from '../dto';
 
 const ldapAccountUserName = 'ldapAccountUserName';
 const mockUserLdapDN = 'mockUserLdapDN';
@@ -129,6 +129,7 @@ describe('Login Controller (api)', () => {
 				expect(decodedToken).toHaveProperty('accountId');
 				expect(decodedToken).toHaveProperty('schoolId');
 				expect(decodedToken).toHaveProperty('roles');
+				expect(decodedToken).not.toHaveProperty('externalIdToken');
 			});
 		});
 
@@ -253,11 +254,12 @@ describe('Login Controller (api)', () => {
 
 				return {
 					system,
+					idToken,
 				};
 			};
 
 			it('should return jwt', async () => {
-				const { system } = await setup();
+				const { system, idToken } = await setup();
 
 				const response: Response = await request(app.getHttpServer())
 					.post(`${basePath}/oauth2`)
@@ -269,7 +271,10 @@ describe('Login Controller (api)', () => {
 					.expect(HttpStatus.OK);
 
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				expect(response.body.accessToken).toBeDefined();
+				expect(response.body).toEqual<LoginResponse>({
+					accessToken: expect.any(String),
+					externalIdToken: idToken,
+				});
 			});
 		});
 

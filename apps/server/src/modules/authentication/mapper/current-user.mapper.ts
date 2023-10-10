@@ -16,7 +16,12 @@ export class CurrentUserMapper {
 		};
 	}
 
-	static userDoToICurrentUser(accountId: string, user: UserDO, systemId?: string): ICurrentUser {
+	static userDoToICurrentUser(
+		accountId: string,
+		user: UserDO,
+		systemId?: string,
+		externalIdToken?: string
+	): ICurrentUser {
 		if (!user.id) {
 			throw new ValidationError('user has no ID');
 		}
@@ -27,6 +32,7 @@ export class CurrentUserMapper {
 			roles: user.roles.map((roleRef: RoleReference) => roleRef.id),
 			schoolId: user.schoolId,
 			userId: user.id,
+			externalIdToken,
 		};
 	}
 

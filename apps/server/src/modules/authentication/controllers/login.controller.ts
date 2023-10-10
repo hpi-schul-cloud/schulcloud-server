@@ -30,7 +30,7 @@ export class LoginController {
 	async loginLdap(@CurrentUser() user: ICurrentUser, @Body() _: LdapAuthorizationBodyParams): Promise<LoginResponse> {
 		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
 
-		const mapped: LoginResponse = LoginResponseMapper.mapLoginDtoToResponse(loginDto);
+		const mapped: LoginResponse = LoginResponseMapper.mapToLoginResponse(loginDto, user.externalIdToken);
 
 		return mapped;
 	}
@@ -46,7 +46,7 @@ export class LoginController {
 	async loginLocal(@CurrentUser() user: ICurrentUser, @Body() _: LocalAuthorizationBodyParams): Promise<LoginResponse> {
 		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
 
-		const mapped: LoginResponse = LoginResponseMapper.mapLoginDtoToResponse(loginDto);
+		const mapped: LoginResponse = LoginResponseMapper.mapToLoginResponse(loginDto, user.externalIdToken);
 
 		return mapped;
 	}
@@ -65,7 +65,7 @@ export class LoginController {
 	): Promise<LoginResponse> {
 		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
 
-		const mapped: LoginResponse = LoginResponseMapper.mapLoginDtoToResponse(loginDto);
+		const mapped: LoginResponse = LoginResponseMapper.mapToLoginResponse(loginDto, user.externalIdToken);
 
 		return mapped;
 	}
