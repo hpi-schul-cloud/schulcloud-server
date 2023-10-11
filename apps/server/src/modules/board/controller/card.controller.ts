@@ -25,6 +25,7 @@ import {
 	CreateContentElementBodyParams,
 	ExternalToolElementResponse,
 	FileElementResponse,
+	LinkElementResponse,
 	MoveCardBodyParams,
 	RenameBodyParams,
 	RichTextElementResponse,
@@ -116,19 +117,21 @@ export class CardController {
 
 	@ApiOperation({ summary: 'Create a new element on a card.' })
 	@ApiExtraModels(
-		RichTextElementResponse,
+		ExternalToolElementResponse,
 		FileElementResponse,
-		SubmissionContainerElementResponse,
-		ExternalToolElementResponse
+		LinkElementResponse,
+		RichTextElementResponse,
+		SubmissionContainerElementResponse
 	)
 	@ApiResponse({
 		status: 201,
 		schema: {
 			oneOf: [
-				{ $ref: getSchemaPath(RichTextElementResponse) },
-				{ $ref: getSchemaPath(FileElementResponse) },
-				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 				{ $ref: getSchemaPath(ExternalToolElementResponse) },
+				{ $ref: getSchemaPath(FileElementResponse) },
+				{ $ref: getSchemaPath(LinkElementResponse) },
+				{ $ref: getSchemaPath(RichTextElementResponse) },
+				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 			],
 		},
 	})
@@ -137,7 +140,7 @@ export class CardController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post(':cardId/elements')
 	async createElement(
-		@Param() urlParams: CardUrlParams, // TODO add type-property ?
+		@Param() urlParams: CardUrlParams,
 		@Body() bodyParams: CreateContentElementBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<AnyContentElementResponse> {
