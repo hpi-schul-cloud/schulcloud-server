@@ -331,7 +331,7 @@ The authorization module is the core of authorization. It collects all needed in
 
 ### Reference.loader
 
-It should be use only inside of the authorisation module.
+It should be use only inside of the authorization module.
 It is use to load registrated ressouces by the id and name of the ressource.
 This is needed to solve the API requests from external services. (API implementation is missing for now)
 

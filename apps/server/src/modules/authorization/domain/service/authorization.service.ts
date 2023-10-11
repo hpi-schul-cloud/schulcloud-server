@@ -3,7 +3,7 @@ import { BaseDO, EntityId, User } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { UserRepo } from '@shared/repo';
 import { AuthorizationHelper } from './authorization.helper';
-import { ForbiddenLoggableException } from '../error/forbidden.loggable-exception';
+import { ForbiddenLoggableException } from '../error';
 import { RuleManager } from './rule-manager';
 import { AuthorizationContext } from '../../type';
 
