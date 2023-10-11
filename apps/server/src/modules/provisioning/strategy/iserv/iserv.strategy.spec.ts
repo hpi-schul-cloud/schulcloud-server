@@ -4,9 +4,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, RoleName, User, UserDO } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { legacySchoolDoFactory, schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-import { LegacySchoolService } from '@src/modules/legacy-school';
-import { UserService } from '@src/modules/user';
+import { OAuthSSOError } from '@modules/oauth/error/oauth-sso.error';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
 import jwt from 'jsonwebtoken';
 import { RoleDto } from '../../../role/service/dto/role.dto';
 import {

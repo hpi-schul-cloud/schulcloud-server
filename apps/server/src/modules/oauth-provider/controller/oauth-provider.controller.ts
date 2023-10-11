@@ -1,20 +1,20 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
-import { OauthProviderLoginFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.login-flow.uc';
-import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
-import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
+import { Authenticate, CurrentUser } from '@modules/authentication/decorator/auth.decorator';
+import { OauthProviderLogoutFlowUc } from '@modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
+import { OauthProviderLoginFlowUc } from '@modules/oauth-provider/uc/oauth-provider.login-flow.uc';
+import { OauthProviderResponseMapper } from '@modules/oauth-provider/mapper/oauth-provider-response.mapper';
+import { OauthProviderConsentFlowUc } from '@modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
 import {
 	ProviderConsentResponse,
 	ProviderLoginResponse,
 	ProviderOauthClient,
 	ProviderRedirectResponse,
 } from '@shared/infra/oauth-provider/dto';
-import { ConsentResponse } from '@src/modules/oauth-provider/controller/dto/response/consent.response';
-import { ICurrentUser } from '@src/modules/authentication';
-import { OauthProviderClientCrudUc } from '@src/modules/oauth-provider/uc/oauth-provider.client-crud.uc';
-import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
+import { ConsentResponse } from '@modules/oauth-provider/controller/dto/response/consent.response';
+import { ICurrentUser } from '@modules/authentication';
+import { OauthProviderClientCrudUc } from '@modules/oauth-provider/uc/oauth-provider.client-crud.uc';
+import { RedirectResponse } from '@modules/oauth-provider/controller/dto/response/redirect.response';
 import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
 import { ApiTags } from '@nestjs/swagger';
 import { OauthProviderUc } from '../uc/oauth-provider.uc';

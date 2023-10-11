@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
+import { OAuthSSOError } from '@modules/oauth/error/oauth-sso.error';
 import jwt from 'jsonwebtoken';
 import {
 	ExternalUserDto,

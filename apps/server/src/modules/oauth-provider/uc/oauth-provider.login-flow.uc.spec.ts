@@ -12,10 +12,10 @@ import {
 	userDoFactory,
 	userFactory,
 } from '@shared/testing';
-import { AuthorizationService } from '@src/modules/authorization';
-import { PseudonymService } from '@src/modules/pseudonym';
-import { ExternalTool } from '@src/modules/tool/external-tool/domain';
-import { UserService } from '@src/modules/user';
+import { AuthorizationService } from '@modules/authorization';
+import { PseudonymService } from '@modules/pseudonym';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { UserService } from '@modules/user';
 import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '../controller/dto';
 import { OauthProviderLoginFlowService } from '../service/oauth-provider.login-flow.service';
 import { OauthProviderLoginFlowUc } from './oauth-provider.login-flow.uc';

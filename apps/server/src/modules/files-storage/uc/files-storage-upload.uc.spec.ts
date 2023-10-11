@@ -8,7 +8,7 @@ import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { AxiosHeadersKeyValue, axiosResponseFactory, fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { Action, AuthorizationService } from '@src/modules/authorization';
+import { Action, AuthorizationService } from '@modules/authorization';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Request } from 'express';
 import { of } from 'rxjs';

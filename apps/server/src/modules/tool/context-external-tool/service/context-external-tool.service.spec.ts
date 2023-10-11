@@ -7,7 +7,7 @@ import {
 	legacySchoolDoFactory,
 	schoolExternalToolFactory,
 } from '@shared/testing/factory/domainobject';
-import { AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationService } from '@modules/authorization';
 import { ToolContextType } from '../../common/enum';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ContextExternalTool, ContextRef } from '../domain';

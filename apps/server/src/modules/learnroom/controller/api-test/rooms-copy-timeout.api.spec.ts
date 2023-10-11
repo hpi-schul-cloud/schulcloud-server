@@ -4,7 +4,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@modules/authentication';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -13,14 +13,14 @@ import {
 	roleFactory,
 	userFactory,
 } from '@shared/testing';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { Request } from 'express';
 import request from 'supertest';
 
 Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 Configuration.set('INCOMING_REQUEST_TIMEOUT_COPY_API', 1);
 // eslint-disable-next-line import/first
-import { ServerTestModule } from '@src/modules/server/server.module';
+import { ServerTestModule } from '@modules/server/server.module';
 
 // This needs to be in a separate test file because of the above configuration.
 // When we find a way to mock the config, it should be moved alongside the other API tests.

@@ -7,12 +7,12 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountDto } from '@src/modules/account/services/dto';
-import { ICurrentUser } from '@src/modules/authentication';
-import { RoleService } from '@src/modules/role/service/role.service';
-import { UserService } from '@src/modules/user/service/user.service';
-import { UserDto } from '@src/modules/user/uc/dto/user.dto';
+import { AccountService } from '@modules/account/services/account.service';
+import { AccountDto } from '@modules/account/services/dto';
+import { ICurrentUser } from '@modules/authentication';
+import { RoleService } from '@modules/role/service/role.service';
+import { UserService } from '@modules/user/service/user.service';
+import { UserDto } from '@modules/user/uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
 
 describe('UserService', () => {

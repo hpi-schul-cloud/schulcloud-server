@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { BaseDO, LegacySchoolDo } from '@shared/domain';
 import { User } from '@shared/domain/entity';
-import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
-import { AuthorizationContext, Rule } from '@src/modules/authorization/types';
+import { AuthorizationHelper } from '@modules/authorization/authorization.helper';
+import { AuthorizationContext, Rule } from '@modules/authorization/types';
 import { AuthorizableObject } from '../domain-object';
 
 /**

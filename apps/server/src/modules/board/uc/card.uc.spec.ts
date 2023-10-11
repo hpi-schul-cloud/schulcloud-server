@@ -4,7 +4,7 @@ import { BoardDoAuthorizable, BoardRoles, ContentElementType, UserRoleEnum } fro
 import { setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationService } from '@modules/authorization';
 import { ObjectId } from 'bson';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { CardService } from '../service/card.service';

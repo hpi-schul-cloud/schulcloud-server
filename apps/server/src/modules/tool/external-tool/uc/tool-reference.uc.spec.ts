@@ -4,7 +4,7 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
 import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
-import { AuthorizationContextBuilder } from '@src/modules/authorization';
+import { AuthorizationContextBuilder } from '@modules/authorization';
 import { ToolReferenceUc } from './tool-reference.uc';
 import { ToolConfigurationStatus, ToolContextType } from '../../common/enum';
 import { CommonToolService } from '../../common/service';

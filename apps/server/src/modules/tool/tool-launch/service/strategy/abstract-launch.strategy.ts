@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Course, EntityId, LegacySchoolDo } from '@shared/domain';
-import { CourseService } from '@src/modules/learnroom/service';
-import { LegacySchoolService } from '@src/modules/legacy-school';
+import { CourseService } from '@modules/learnroom/service';
+import { LegacySchoolService } from '@modules/legacy-school';
 import { URLSearchParams } from 'url';
 import { CustomParameter, CustomParameterEntry } from '../../../common/domain';
 import {

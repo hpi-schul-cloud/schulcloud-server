@@ -22,7 +22,7 @@ import {
 	SubmissionItem,
 	SubmissionItemNode,
 } from '@shared/domain';
-import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity';
+import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { BoardNodeRepo } from './board-node.repo';
 
 type ParentData = {

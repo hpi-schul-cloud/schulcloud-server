@@ -14,10 +14,10 @@ import {
 	schoolFactory,
 	userFactory,
 } from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { FILES_STORAGE_S3_CONNECTION, FilesStorageTestModule } from '@src/modules/files-storage';
-import { FileRecordListResponse, FileRecordResponse } from '@src/modules/files-storage/controller/dto';
+import { ICurrentUser } from '@modules/authentication';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { FILES_STORAGE_S3_CONNECTION, FilesStorageTestModule } from '@modules/files-storage';
+import { FileRecordListResponse, FileRecordResponse } from '@modules/files-storage/controller/dto';
 import { Request } from 'express';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import request from 'supertest';

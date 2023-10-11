@@ -28,7 +28,7 @@ import {
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '@shared/testing';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { ObjectId } from 'bson';
 import { BoardDoCopyService } from './board-do-copy.service';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';

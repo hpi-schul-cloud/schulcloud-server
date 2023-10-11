@@ -1,7 +1,7 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ErrorUtils } from '@src/core/error/utils';
-import { API_VERSION_PATH, FilesStorageInternalActions } from '@src/modules/files-storage/files-storage.const';
+import { API_VERSION_PATH, FilesStorageInternalActions } from '@modules/files-storage/files-storage.const';
 
 interface AntivirusServiceOptions {
 	enabled: boolean;

@@ -7,8 +7,8 @@ import {
 	AuthorizableReferenceType,
 	AuthorizationContextBuilder,
 	AuthorizationService,
-} from '@src/modules/authorization';
-import { CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
+} from '@modules/authorization';
+import { CopyHelperService, CopyStatus } from '@modules/copy-helper';
 import { TaskCopyService } from '../service';
 import { TaskCopyParentParams } from '../types';
 

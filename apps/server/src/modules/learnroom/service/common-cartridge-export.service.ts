@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Course, EntityId, IComponentProperties, Task } from '@shared/domain';
-import { LessonService } from '@src/modules/lesson/service';
+import { LessonService } from '@modules/lesson/service';
 import { ComponentType } from '@src/shared/domain/entity/lesson.entity';
-import { TaskService } from '@src/modules/task/service';
+import { TaskService } from '@modules/task/service';
 import {
 	CommonCartridgeFileBuilder,
 	CommonCartridgeIntendedUseType,

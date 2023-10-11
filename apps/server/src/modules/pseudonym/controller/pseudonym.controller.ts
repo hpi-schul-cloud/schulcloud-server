@@ -7,8 +7,8 @@ import {
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Pseudonym } from '@shared/domain';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ICurrentUser } from '@src/modules/authentication';
+import { Authenticate, CurrentUser } from '@modules/authentication/decorator/auth.decorator';
+import { ICurrentUser } from '@modules/authentication';
 import { PseudonymMapper } from '../mapper/pseudonym.mapper';
 import { PseudonymUc } from '../uc';
 import { PseudonymResponse } from './dto';

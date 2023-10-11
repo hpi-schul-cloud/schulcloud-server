@@ -13,7 +13,7 @@ import {
 	SubmissionContainerElement,
 	SubmissionItem,
 } from '@shared/domain';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 
 @Injectable()
 export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {

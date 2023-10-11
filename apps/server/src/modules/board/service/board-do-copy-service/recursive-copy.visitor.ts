@@ -12,7 +12,7 @@ import {
 	SubmissionItem,
 } from '@shared/domain';
 import { FileRecordParentType } from '@shared/infra/rabbitmq';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { ObjectId } from 'bson';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
 

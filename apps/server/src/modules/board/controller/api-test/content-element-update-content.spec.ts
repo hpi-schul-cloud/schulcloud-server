@@ -22,7 +22,7 @@ import {
 	richTextElementNodeFactory,
 	submissionContainerElementNodeFactory,
 } from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server/server.module';
+import { ServerTestModule } from '@modules/server/server.module';
 
 describe(`content element update content (api)`, () => {
 	let app: INestApplication;

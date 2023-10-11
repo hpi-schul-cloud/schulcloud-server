@@ -8,12 +8,12 @@ import {
 	userFactory,
 } from '@shared/testing';
 
-import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
-import { Action } from '@src/modules/authorization/types';
-import { ContextExternalTool } from '@src/modules/tool/context-external-tool/domain';
-import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity';
-import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain';
-import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
+import { AuthorizationHelper } from '@modules/authorization/authorization.helper';
+import { Action } from '@modules/authorization/types';
+import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
+import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { Role, User } from '../entity';
 import { Permission } from '../interface';
 import { ContextExternalToolRule } from './context-external-tool.rule';

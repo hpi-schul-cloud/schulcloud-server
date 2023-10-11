@@ -14,7 +14,7 @@ import {
 	submissionItemNodeFactory,
 	userFactory,
 } from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server';
+import { ServerTestModule } from '@modules/server';
 import { SubmissionsResponse } from '../dto/submission-item/submissions.response';
 
 const baseRouteName = '/board-submissions';

@@ -13,8 +13,8 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { LegacySchoolModule } from '@src/modules/legacy-school';
-import { ToolModule } from '@src/modules/tool';
+import { LegacySchoolModule } from '@modules/legacy-school';
+import { ToolModule } from '@modules/tool';
 import { BoardModule } from '../board';
 import { AuthorizationHelper } from './authorization.helper';
 import { AuthorizationService } from './authorization.service';

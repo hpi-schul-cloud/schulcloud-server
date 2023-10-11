@@ -3,14 +3,14 @@ import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain';
 import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@shared/testing/factory';
-import { AuthorizationService } from '@src/modules/authorization';
-import { LegacySchoolService } from '@src/modules/legacy-school/service';
-import { LegacySchoolUc } from '@src/modules/legacy-school/uc';
+import { AuthorizationService } from '@modules/authorization';
+import { LegacySchoolService } from '@modules/legacy-school/service';
+import { LegacySchoolUc } from '@modules/legacy-school/uc';
 import {
 	SchoolMigrationService,
 	UserLoginMigrationRevertService,
 	UserLoginMigrationService,
-} from '@src/modules/user-login-migration';
+} from '@modules/user-login-migration';
 import { OauthMigrationDto } from './dto/oauth-migration.dto';
 
 describe('LegacySchoolUc', () => {

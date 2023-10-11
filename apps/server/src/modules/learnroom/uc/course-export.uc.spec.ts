@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { CommonCartridgeExportService } from '@src/modules/learnroom/service/common-cartridge-export.service';
-import { AuthorizationService } from '@src/modules';
+import { CommonCartridgeExportService } from '@modules/learnroom/service/common-cartridge-export.service';
+import { AuthorizationService } from '@modules';
 import { CourseExportUc } from './course-export.uc';
 import { CommonCartridgeVersion } from '../common-cartridge';
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
-import { AuthorizationContext, Rule } from '@src/modules/authorization/types';
+import { AuthorizationHelper } from '@modules/authorization/authorization.helper';
+import { AuthorizationContext, Rule } from '@modules/authorization/types';
 import { UserLoginMigrationDO } from '../domainobject';
 import { User } from '../entity';
 

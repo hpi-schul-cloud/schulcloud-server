@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { Action } from '@src/modules';
-import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
+import { Action } from '@modules';
+import { AuthorizationHelper } from '@modules/authorization/authorization.helper';
 import { ObjectId } from 'bson';
 import { BoardDoAuthorizable, BoardRoles, UserRoleEnum } from '../domainobject';
 import { Permission } from '../interface';

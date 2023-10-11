@@ -19,11 +19,11 @@ import {
 } from '@shared/domain';
 import { BoardRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { ColumnBoardCopyService } from '@src/modules/board/service/column-board-copy.service';
-import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
-import { getResolvedValues } from '@src/modules/files-storage/helper';
-import { LessonCopyService } from '@src/modules/lesson/service';
-import { TaskCopyService } from '@src/modules/task/service';
+import { ColumnBoardCopyService } from '@modules/board/service/column-board-copy.service';
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { getResolvedValues } from '@modules/files-storage/helper';
+import { LessonCopyService } from '@modules/lesson/service';
+import { TaskCopyService } from '@modules/task/service';
 import { sortBy } from 'lodash';
 
 type BoardCopyParams = {
