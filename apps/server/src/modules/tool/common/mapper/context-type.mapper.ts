@@ -1,4 +1,4 @@
-import { AuthorizableReferenceType } from '@src/modules/authorization/domain/type';
+import { AuthorizableReferenceType } from '@src/modules/authorization/domain/';
 import { ToolContextType } from '../enum';
 
 const typeMapping: Record<ToolContextType, AuthorizableReferenceType> = {

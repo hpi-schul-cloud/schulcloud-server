@@ -21,7 +21,7 @@ import { ICurrentUser } from '@src/modules/authentication';
 import { Action, AuthorizationContextBuilder } from '@src/modules/authorization';
 import { AuthorizationReferenceService, AuthorizableReferenceType } from '@src/modules/authorization/domain';
 import { LegacySchoolService } from '@src/modules/legacy-school';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
+import { CourseService } from '@src/modules/learnroom';
 import { UserService } from '@src/modules/user';
 import {
 	BBBBaseMeetingConfig,
