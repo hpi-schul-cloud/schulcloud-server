@@ -11,8 +11,8 @@ import {
 import { Permission, LegacySchoolDo } from '@shared/domain';
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { LegacySchoolService } from '@src/modules/legacy-school';
-import { CourseRepo } from '@shared/repo';
 import { ForbiddenException } from '@nestjs/common';
+import { CourseService } from '@src/modules/learnroom';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ToolPermissionHelper } from './tool-permission-helper';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
@@ -22,7 +22,7 @@ describe('ToolPermissionHelper', () => {
 	let helper: ToolPermissionHelper;
 
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let courseRepo: DeepMocked<CourseRepo>;
+	let courseService: DeepMocked<CourseService>;
 	let schoolService: DeepMocked<LegacySchoolService>;
 
 	beforeAll(async () => {
@@ -35,8 +35,8 @@ describe('ToolPermissionHelper', () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: CourseRepo,
-					useValue: createMock<CourseRepo>(),
+					provide: CourseService,
+					useValue: createMock<CourseService>(),
 				},
 				{
 					provide: LegacySchoolService,
@@ -47,7 +47,7 @@ describe('ToolPermissionHelper', () => {
 
 		helper = module.get(ToolPermissionHelper);
 		authorizationService = module.get(AuthorizationService);
-		courseRepo = module.get(CourseRepo);
+		courseService = module.get(CourseService);
 		schoolService = module.get(LegacySchoolService);
 	});
 
@@ -67,7 +67,7 @@ describe('ToolPermissionHelper', () => {
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
 				const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);
 
-				courseRepo.findById.mockResolvedValueOnce(course);
+				courseService.findById.mockResolvedValueOnce(course);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				authorizationService.checkPermission.mockReturnValueOnce().mockReturnValueOnce();
 
@@ -105,7 +105,7 @@ describe('ToolPermissionHelper', () => {
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
 				const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);
 
-				courseRepo.findById.mockResolvedValueOnce(course);
+				courseService.findById.mockResolvedValueOnce(course);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 				return {
@@ -133,7 +133,7 @@ describe('ToolPermissionHelper', () => {
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
 				const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);
 
-				courseRepo.findById.mockResolvedValueOnce(course);
+				courseService.findById.mockResolvedValueOnce(course);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				authorizationService.checkPermission.mockImplementationOnce(() => {
 					throw new ForbiddenException();
