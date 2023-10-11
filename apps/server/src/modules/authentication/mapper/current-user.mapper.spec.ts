@@ -2,7 +2,7 @@ import { ValidationError } from '@shared/common';
 import { Permission, RoleName } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { roleFactory, schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { ICurrentUser } from '../interface';
+import { ICurrentUser, OauthCurrentUser } from '../interface';
 import { JwtPayload } from '../interface/jwt-payload';
 import { CurrentUserMapper } from './current-user.mapper';
 
@@ -56,12 +56,12 @@ describe('CurrentUserMapper', () => {
 		});
 	});
 
-	describe('userDoToICurrentUser', () => {
-		const userId = 'mockUserId';
+	describe('OauthCurrentUser', () => {
+		const userIdMock = 'mockUserId';
 		describe('when userDO has no ID', () => {
 			it('should throw error', () => {
 				const user: UserDO = userDoFactory.build({ createdAt: new Date(), updatedAt: new Date() });
-				expect(() => CurrentUserMapper.userDoToICurrentUser(accountId, user, undefined, 'idToken')).toThrow(
+				expect(() => CurrentUserMapper.mapToOauthCurrentUser(accountId, user, undefined, 'idToken')).toThrow(
 					ValidationError
 				);
 			});
@@ -69,26 +69,36 @@ describe('CurrentUserMapper', () => {
 
 		describe('when userDO is valid', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId({ id: userId, createdAt: new Date(), updatedAt: new Date() });
+				const user: UserDO = userDoFactory.buildWithId({
+					id: userIdMock,
+					createdAt: new Date(),
+					updatedAt: new Date(),
+				});
 				const idToken = 'idToken';
 
 				return {
 					user,
+					userId: user.id as string,
 					idToken,
 				};
 			};
 
-			it('should return valid ICurrentUser instance', () => {
-				const { user, idToken } = setup();
+			it('should return valid oauth current user instance', () => {
+				const { user, userId, idToken } = setup();
 
-				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user, undefined, idToken);
+				const currentUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(
+					accountId,
+					user,
+					undefined,
+					idToken
+				);
 
-				expect(currentUser).toMatchObject({
+				expect(currentUser).toMatchObject<OauthCurrentUser>({
 					accountId,
 					systemId: undefined,
 					roles: [],
 					schoolId: user.schoolId,
-					userId: user.id,
+					userId,
 					externalIdToken: idToken,
 				});
 			});
@@ -96,28 +106,38 @@ describe('CurrentUserMapper', () => {
 
 		describe('when userDO is valid and a systemId is provided', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId({ id: userId, createdAt: new Date(), updatedAt: new Date() });
+				const user: UserDO = userDoFactory.buildWithId({
+					id: userIdMock,
+					createdAt: new Date(),
+					updatedAt: new Date(),
+				});
 				const systemId = 'mockSystemId';
 				const idToken = 'idToken';
 
 				return {
 					user,
+					userId: user.id as string,
 					idToken,
 					systemId,
 				};
 			};
 
 			it('should return valid ICurrentUser instance with systemId', () => {
-				const { user, systemId, idToken } = setup();
+				const { user, userId, systemId, idToken } = setup();
 
-				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user, systemId, idToken);
+				const currentUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(
+					accountId,
+					user,
+					systemId,
+					idToken
+				);
 
-				expect(currentUser).toMatchObject({
+				expect(currentUser).toMatchObject<OauthCurrentUser>({
 					accountId,
 					systemId,
 					roles: [],
 					schoolId: user.schoolId,
-					userId: user.id,
+					userId,
 					externalIdToken: idToken,
 				});
 			});
@@ -133,7 +153,7 @@ describe('CurrentUserMapper', () => {
 						},
 					])
 					.buildWithId({
-						id: userId,
+						id: userIdMock,
 						createdAt: new Date(),
 						updatedAt: new Date(),
 					});
@@ -146,7 +166,7 @@ describe('CurrentUserMapper', () => {
 			it('should return valid ICurrentUser instance without systemId', () => {
 				const { user } = setup();
 
-				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user, undefined, 'idToken');
+				const currentUser = CurrentUserMapper.mapToOauthCurrentUser(accountId, user, undefined, 'idToken');
 
 				expect(currentUser).toMatchObject({
 					accountId,

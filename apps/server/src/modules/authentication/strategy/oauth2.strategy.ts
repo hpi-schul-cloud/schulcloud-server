@@ -37,7 +37,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
 			throw new UnauthorizedException('no account found');
 		}
 
-		const currentUser: ICurrentUser = CurrentUserMapper.userDoToICurrentUser(
+		const currentUser: ICurrentUser = CurrentUserMapper.mapToOauthCurrentUser(
 			account.id,
 			user,
 			systemId,

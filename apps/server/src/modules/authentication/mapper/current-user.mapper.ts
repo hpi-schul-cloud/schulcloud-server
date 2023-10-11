@@ -2,7 +2,7 @@ import { ValidationError } from '@shared/common';
 import { Role, User } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { ICurrentUser } from '../interface';
+import { ICurrentUser, OauthCurrentUser } from '../interface';
 import { JwtPayload } from '../interface/jwt-payload';
 
 export class CurrentUserMapper {
@@ -16,12 +16,12 @@ export class CurrentUserMapper {
 		};
 	}
 
-	static userDoToICurrentUser(
+	static mapToOauthCurrentUser(
 		accountId: string,
 		user: UserDO,
 		systemId?: string,
 		externalIdToken?: string
-	): ICurrentUser {
+	): OauthCurrentUser {
 		if (!user.id) {
 			throw new ValidationError('user has no ID');
 		}

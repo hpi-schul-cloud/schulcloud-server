@@ -3,7 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ForbiddenOperationError, ValidationError } from '@shared/common';
 import { CurrentUser } from '../decorator/auth.decorator';
-import type { ICurrentUser } from '../interface';
+import type { ICurrentUser, OauthCurrentUser } from '../interface';
 import { LoginDto } from '../uc/dto';
 import { LoginUc } from '../uc/login.uc';
 import {
@@ -30,7 +30,7 @@ export class LoginController {
 	async loginLdap(@CurrentUser() user: ICurrentUser, @Body() _: LdapAuthorizationBodyParams): Promise<LoginResponse> {
 		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
 
-		const mapped: LoginResponse = LoginResponseMapper.mapToLoginResponse(loginDto, user.externalIdToken);
+		const mapped: LoginResponse = LoginResponseMapper.mapToLoginResponse(loginDto);
 
 		return mapped;
 	}
@@ -46,7 +46,7 @@ export class LoginController {
 	async loginLocal(@CurrentUser() user: ICurrentUser, @Body() _: LocalAuthorizationBodyParams): Promise<LoginResponse> {
 		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
 
-		const mapped: LoginResponse = LoginResponseMapper.mapToLoginResponse(loginDto, user.externalIdToken);
+		const mapped: LoginResponse = LoginResponseMapper.mapToLoginResponse(loginDto);
 
 		return mapped;
 	}
@@ -59,7 +59,7 @@ export class LoginController {
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Invalid user credentials.' })
 	async loginOauth2(
-		@CurrentUser() user: ICurrentUser,
+		@CurrentUser() user: OauthCurrentUser,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		@Body() _: Oauth2AuthorizationBodyParams
 	): Promise<LoginResponse> {
