@@ -290,7 +290,7 @@ describe('Login Controller (api)', () => {
 					})
 					.expect(HttpStatus.OK);
 
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
 				const decodedToken = jwt.decode(response.body.accessToken);
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				expect(response.body.accessToken).toBeDefined();

@@ -1,7 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICurrentUser } from '../interface';
-import { CreateJwtPayload } from '../interface/jwt-payload';
 import { AuthenticationService } from '../services/authentication.service';
 import { LoginDto } from './dto';
 import { LoginUc } from './login.uc';
