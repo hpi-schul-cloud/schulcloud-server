@@ -9,7 +9,7 @@ import {
 	EntityId,
 } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization/domain/service/authorization.service';
+import { AuthorizationService } from '@src/modules/authorization/domain';
 import { Action } from '@src/modules/authorization/type/action.enum';
 import { CardService, ColumnBoardService, ColumnService } from '../service';
 import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';

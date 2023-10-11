@@ -1,4 +1,3 @@
-export * from '../types';
 export * from './authorization.service';
 export * from './authorization.helper';
 export * from './rule-manager';
