@@ -7,6 +7,7 @@ import {
 	ColumnNode,
 	ExternalToolElementNodeEntity,
 	FileElementNode,
+	LinkElementNode,
 	RichTextElementNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
@@ -19,6 +20,7 @@ import {
 	contextExternalToolEntityFactory,
 	externalToolElementFactory,
 	fileElementFactory,
+	linkElementFactory,
 	richTextElementFactory,
 	setupEntities,
 	submissionContainerElementFactory,
@@ -132,6 +134,22 @@ describe(RecursiveSaveVisitor.name, () => {
 				type: BoardNodeType.FILE_ELEMENT,
 				caption: fileElement.caption,
 				alternativeText: fileElement.alternativeText,
+			};
+			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
+		});
+	});
+
+	describe('when visiting a link element composite', () => {
+		it('should create or update the node', () => {
+			const linkElement = linkElementFactory.build();
+			jest.spyOn(visitor, 'createOrUpdateBoardNode');
+
+			visitor.visitLinkElement(linkElement);
+
+			const expectedNode: Partial<LinkElementNode> = {
+				id: linkElement.id,
+				type: BoardNodeType.LINK_ELEMENT,
+				url: linkElement.url,
 			};
 			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
 		});

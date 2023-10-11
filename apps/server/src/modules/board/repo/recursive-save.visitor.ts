@@ -22,6 +22,8 @@ import {
 	SubmissionItem,
 	SubmissionItemNode,
 } from '@shared/domain';
+import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
+import { LinkElementNode } from '@shared/domain/entity/boardnode/link-element-node.entity';
 import { ContextExternalToolEntity } from '@src/modules/tool/context-external-tool/entity';
 import { BoardNodeRepo } from './board-node.repo';
 
@@ -108,6 +110,22 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 		this.visitChildren(fileElement, boardNode);
 	}
 
+	visitLinkElement(linkElement: LinkElement): void {
+		const parentData = this.parentsMap.get(linkElement.id);
+
+		const boardNode = new LinkElementNode({
+			id: linkElement.id,
+			url: linkElement.url,
+			title: linkElement.title,
+			imageUrl: linkElement.imageUrl,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+		});
+
+		this.createOrUpdateBoardNode(boardNode);
+		this.visitChildren(linkElement, boardNode);
+	}
+
 	visitRichTextElement(richTextElement: RichTextElement): void {
 		const parentData = this.parentsMap.get(richTextElement.id);
 
@@ -130,11 +148,8 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			id: submissionContainerElement.id,
 			parent: parentData?.boardNode,
 			position: parentData?.position,
+			dueDate: submissionContainerElement.dueDate,
 		});
-
-		if (submissionContainerElement.dueDate) {
-			boardNode.dueDate = submissionContainerElement.dueDate;
-		}
 
 		this.createOrUpdateBoardNode(boardNode);
 		this.visitChildren(submissionContainerElement, boardNode);
