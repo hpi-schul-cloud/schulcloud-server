@@ -189,8 +189,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="101"
-                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:101</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="126"
+                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:126</a></div>
                 </td>
             </tr>
 
@@ -298,8 +298,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="86"
-                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:86</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="111"
+                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:111</a></div>
                 </td>
             </tr>
 
@@ -395,8 +395,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="45"
-                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:45</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="52"
+                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:52</a></div>
                 </td>
             </tr>
 
@@ -499,14 +499,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@ApiOperation({summary: &#x27;Update a single content element.&#x27;})<br />@ApiExtraModels(FileElementContentBody, RichTextElementContentBody, SubmissionContainerElementContentBody, ExternalToolElementContentBody)<br />@ApiResponse({status: 204})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@HttpCode(204)<br />@Patch(&#x27;:contentElementId/content&#x27;)<br /></code>
+                    <code>@ApiOperation({summary: &#x27;Update a single content element.&#x27;})<br />@ApiExtraModels(FileElementContentBody, RichTextElementContentBody, SubmissionContainerElementContentBody, ExternalToolElementContentBody, LinkElementContentBody)<br />@ApiResponse({status: 201, schema: undefined})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@HttpCode(201)<br />@Patch(&#x27;:contentElementId/content&#x27;)<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="71"
-                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:71</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="90"
+                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:90</a></div>
                 </td>
             </tr>
 
@@ -568,7 +568,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#AnyContentElementResponse" target="_self" >Promise&lt;AnyContentElementResponse&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -594,24 +594,31 @@
 	Post,
 	Put,
 } from &#x27;@nestjs/common&#x27;;
-import { ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from &#x27;@nestjs/swagger&#x27;;
 import { ApiValidationError } from &#x27;@shared/common&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { CardUc } from &#x27;../uc&#x27;;
 import { ElementUc } from &#x27;../uc/element.uc&#x27;;
 import {
+	AnyContentElementResponse,
 	ContentElementUrlParams,
 	CreateSubmissionItemBodyParams,
 	ExternalToolElementContentBody,
+	ExternalToolElementResponse,
 	FileElementContentBody,
+	FileElementResponse,
+	LinkElementContentBody,
+	LinkElementResponse,
 	MoveContentElementBody,
 	RichTextElementContentBody,
+	RichTextElementResponse,
 	SubmissionContainerElementContentBody,
+	SubmissionContainerElementResponse,
 	SubmissionItemResponse,
 	UpdateElementContentBodyParams,
 } from &#x27;./dto&#x27;;
-import { SubmissionItemResponseMapper } from &#x27;./mapper&#x27;;
+import { ContentElementResponseFactory, SubmissionItemResponseMapper } from &#x27;./mapper&#x27;;
 
 @ApiTags(&#x27;Board Element&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
@@ -644,20 +651,38 @@ export class ElementController {
 		FileElementContentBody,
 		RichTextElementContentBody,
 		SubmissionContainerElementContentBody,
-		ExternalToolElementContentBody
+		ExternalToolElementContentBody,
+		LinkElementContentBody
 	)
-	@ApiResponse({ status: 204 })
+	@ApiResponse({
+		status: 201,
+		schema: {
+			oneOf: [
+				{ $ref: getSchemaPath(ExternalToolElementResponse) },
+				{ $ref: getSchemaPath(FileElementResponse) },
+				{ $ref: getSchemaPath(LinkElementResponse) },
+				{ $ref: getSchemaPath(RichTextElementResponse) },
+				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
+			],
+		},
+	})
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
-	@HttpCode(204)
+	@HttpCode(201)
 	@Patch(&#x27;:contentElementId/content&#x27;)
 	async updateElement(
 		@Param() urlParams: ContentElementUrlParams,
 		@Body() bodyParams: UpdateElementContentBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise&lt;void&gt; {
-		await this.elementUc.updateElementContent(currentUser.userId, urlParams.contentElementId, bodyParams.data.content);
+	): Promise&lt;AnyContentElementResponse&gt; {
+		const element &#x3D; await this.elementUc.updateElementContent(
+			currentUser.userId,
+			urlParams.contentElementId,
+			bodyParams.data.content
+		);
+		const response &#x3D; ContentElementResponseFactory.mapToResponse(element);
+		return response;
 	}
 
 	@ApiOperation({ summary: &#x27;Delete a single content element.&#x27; })

@@ -538,8 +538,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="21"
-                            class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:21</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="20"
+                            class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:20</a></div>
                 </td>
             </tr>
 
@@ -870,16 +870,16 @@ export class CardService {
 	) {}
 
 	async findById(cardId: EntityId): Promise&lt;Card&gt; {
-		const card &#x3D; await this.boardDoRepo.findByClassAndId(Card, cardId);
-		return card;
+		return this.boardDoRepo.findByClassAndId(Card, cardId);
 	}
 
 	async findByIds(cardIds: EntityId[]): Promise&lt;Card[]&gt; {
 		const cards &#x3D; await this.boardDoRepo.findByIds(cardIds);
-		if (cards.every((card) &#x3D;&gt; card instanceof Card)) {
-			return cards as Card[];
+		if (cards.some((card) &#x3D;&gt; !(card instanceof Card))) {
+			throw new NotFoundException(&#x27;some ids do not belong to a card&#x27;);
 		}
-		throw new NotFoundException(&#x27;some ids do not belong to a card&#x27;);
+
+		return cards as Card[];
 	}
 
 	async create(parent: Column, requiredEmptyElements?: ContentElementType[]): Promise&lt;Card&gt; {

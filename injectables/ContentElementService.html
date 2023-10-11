@@ -122,12 +122,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(boardDoRepo: <a href="../injectables/BoardDoRepo.html" target="_self">BoardDoRepo</a>, boardDoService: <a href="../injectables/BoardDoService.html" target="_self">BoardDoService</a>, contentElementFactory: <a href="../injectables/ContentElementFactory.html" target="_self">ContentElementFactory</a>)</code>
+<code>constructor(boardDoRepo: <a href="../injectables/BoardDoRepo.html" target="_self">BoardDoRepo</a>, boardDoService: <a href="../injectables/BoardDoService.html" target="_self">BoardDoService</a>, contentElementFactory: <a href="../injectables/ContentElementFactory.html" target="_self">ContentElementFactory</a>, openGraphProxyService: <a href="../injectables/OpenGraphProxyService.html" target="_self">OpenGraphProxyService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:17</a></div>
                             </td>
                         </tr>
 
@@ -180,6 +180,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>openGraphProxyService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/OpenGraphProxyService.html" target="_self" >OpenGraphProxyService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -216,8 +228,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="33"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:33</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="35"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:35</a></div>
                 </td>
             </tr>
 
@@ -299,8 +311,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="40"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:40</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="42"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:42</a></div>
                 </td>
             </tr>
 
@@ -370,8 +382,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="23"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:23</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="25"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:25</a></div>
                 </td>
             </tr>
 
@@ -441,8 +453,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="44"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:44</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="46"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:46</a></div>
                 </td>
             </tr>
 
@@ -536,8 +548,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="48"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:48</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="50"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:50</a></div>
                 </td>
             </tr>
 
@@ -587,7 +599,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#AnyContentElementDo" target="_self" >Promise&lt;AnyContentElementDo&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -616,13 +628,15 @@ import { AnyElementContentBody } from &#x27;../controller/dto&#x27;;
 import { BoardDoRepo } from &#x27;../repo&#x27;;
 import { BoardDoService } from &#x27;./board-do.service&#x27;;
 import { ContentElementUpdateVisitor } from &#x27;./content-element-update.visitor&#x27;;
+import { OpenGraphProxyService } from &#x27;./open-graph-proxy.service&#x27;;
 
 @Injectable()
 export class ContentElementService {
 	constructor(
 		private readonly boardDoRepo: BoardDoRepo,
 		private readonly boardDoService: BoardDoService,
-		private readonly contentElementFactory: ContentElementFactory
+		private readonly contentElementFactory: ContentElementFactory,
+		private readonly openGraphProxyService: OpenGraphProxyService
 	) {}
 
 	async findById(elementId: EntityId): Promise&lt;AnyContentElementDo&gt; {
@@ -650,13 +664,15 @@ export class ContentElementService {
 		await this.boardDoService.move(element, targetCard, targetPosition);
 	}
 
-	async update(element: AnyContentElementDo, content: AnyElementContentBody): Promise&lt;void&gt; {
-		const updater &#x3D; new ContentElementUpdateVisitor(content);
-		element.accept(updater);
+	async update(element: AnyContentElementDo, content: AnyElementContentBody): Promise&lt;AnyContentElementDo&gt; {
+		const updater &#x3D; new ContentElementUpdateVisitor(content, this.openGraphProxyService);
+		await element.acceptAsync(updater);
 
 		const parent &#x3D; await this.boardDoRepo.findParentOfId(element.id);
 
 		await this.boardDoRepo.save(element, parent);
+
+		return element;
 	}
 }
 </code></pre>

@@ -147,7 +147,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/update-element-content.body.params.ts:42</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="56" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/update-element-content.body.params.ts:56</a></div>
                         </td>
                     </tr>
 
@@ -184,7 +184,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/update-element-content.body.params.ts:38</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="52" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/update-element-content.body.params.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -235,6 +235,20 @@ export class FileElementContentBody extends ElementContentBody {
 	@ValidateNested()
 	@ApiProperty()
 	content!: FileContentBody;
+}
+export class LinkContentBody {
+	@IsString()
+	@ApiProperty({})
+	url!: string;
+}
+
+export class LinkElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: ContentElementType.LINK })
+	type!: ContentElementType.LINK;
+
+	@ValidateNested()
+	@ApiProperty({})
+	content!: LinkContentBody;
 }
 
 export class RichTextContentBody {
@@ -294,6 +308,7 @@ export class ExternalToolElementContentBody extends ElementContentBody {
 
 export type AnyElementContentBody &#x3D;
 	| FileContentBody
+	| LinkContentBody
 	| RichTextContentBody
 	| SubmissionContainerContentBody
 	| ExternalToolContentBody;
@@ -305,6 +320,7 @@ export class UpdateElementContentBodyParams {
 			property: &#x27;type&#x27;,
 			subTypes: [
 				{ value: FileElementContentBody, name: ContentElementType.FILE },
+				{ value: LinkElementContentBody, name: ContentElementType.LINK },
 				{ value: RichTextElementContentBody, name: ContentElementType.RICH_TEXT },
 				{ value: SubmissionContainerElementContentBody, name: ContentElementType.SUBMISSION_CONTAINER },
 				{ value: ExternalToolElementContentBody, name: ContentElementType.EXTERNAL_TOOL },
@@ -315,6 +331,7 @@ export class UpdateElementContentBodyParams {
 	@ApiProperty({
 		oneOf: [
 			{ $ref: getSchemaPath(FileElementContentBody) },
+			{ $ref: getSchemaPath(LinkElementContentBody) },
 			{ $ref: getSchemaPath(RichTextElementContentBody) },
 			{ $ref: getSchemaPath(SubmissionContainerElementContentBody) },
 			{ $ref: getSchemaPath(ExternalToolElementContentBody) },
@@ -322,6 +339,7 @@ export class UpdateElementContentBodyParams {
 	})
 	data!:
 		| FileElementContentBody
+		| LinkElementContentBody
 		| RichTextElementContentBody
 		| SubmissionContainerElementContentBody
 		| ExternalToolElementContentBody;

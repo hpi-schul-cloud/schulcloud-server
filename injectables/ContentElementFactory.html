@@ -97,6 +97,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
+                                <a href="#buildLink" >buildLink</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#buildRichText" >buildRichText</a>
                             </li>
                             <li>
@@ -141,8 +145,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="12"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:12</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="13"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:13</a></div>
                 </td>
             </tr>
 
@@ -212,8 +216,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="77"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:77</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="93"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:93</a></div>
                 </td>
             </tr>
 
@@ -251,8 +255,47 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="39"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:39</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="43"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:43</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildLink"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>buildLink</b></span>
+                        <a href="#buildLink"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildLink()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="56"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:56</a></div>
                 </td>
             </tr>
 
@@ -290,8 +333,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="52"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:52</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="68"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:68</a></div>
                 </td>
             </tr>
 
@@ -329,8 +372,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="65"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:65</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="81"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:81</a></div>
                 </td>
             </tr>
 
@@ -357,6 +400,7 @@ import { InputFormat } from &#x27;@shared/domain/types&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
 import { ExternalToolElement } from &#x27;./external-tool-element.do&#x27;;
 import { FileElement } from &#x27;./file-element.do&#x27;;
+import { LinkElement } from &#x27;./link-element.do&#x27;;
 import { RichTextElement } from &#x27;./rich-text-element.do&#x27;;
 import { SubmissionContainerElement } from &#x27;./submission-container-element.do&#x27;;
 import { AnyContentElementDo, ContentElementType } from &#x27;./types&#x27;;
@@ -369,6 +413,9 @@ export class ContentElementFactory {
 		switch (type) {
 			case ContentElementType.FILE:
 				element &#x3D; this.buildFile();
+				break;
+			case ContentElementType.LINK:
+				element &#x3D; this.buildLink();
 				break;
 			case ContentElementType.RICH_TEXT:
 				element &#x3D; this.buildRichText();
@@ -396,6 +443,18 @@ export class ContentElementFactory {
 			caption: &#x27;&#x27;,
 			alternativeText: &#x27;&#x27;,
 			children: [],
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
+
+		return element;
+	}
+
+	private buildLink() {
+		const element &#x3D; new LinkElement({
+			id: new ObjectId().toHexString(),
+			url: &#x27;&#x27;,
+			title: &#x27;&#x27;,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		});

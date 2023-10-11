@@ -234,8 +234,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="75"
-                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:75</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="77"
+                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:77</a></div>
                 </td>
             </tr>
 
@@ -341,8 +341,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="37"
-                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:37</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:39</a></div>
                 </td>
             </tr>
 
@@ -499,7 +499,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                        <b>Returns : </b>    <code>unknown</code>
 
                     </div>
                     <div class="io-description">
@@ -545,10 +545,12 @@ export class ElementUc {
 	}
 
 	async updateElementContent(userId: EntityId, elementId: EntityId, content: AnyElementContentBody) {
-		const element &#x3D; await this.elementService.findById(elementId);
+		let element &#x3D; await this.elementService.findById(elementId);
 
 		await this.checkPermission(userId, element, Action.write);
-		await this.elementService.update(element, content);
+
+		element &#x3D; await this.elementService.update(element, content);
+		return element;
 	}
 
 	async createSubmissionItem(

@@ -28,7 +28,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content class">
+               <div class="content injectable">
                    <div class="content-data">
 
 
@@ -38,12 +38,8 @@
 
 
 
-
-
-
-
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item">Injectables</li>
   <li class="breadcrumb-item" >ContentElementUpdateVisitor</li>
 </ol>
 
@@ -73,13 +69,6 @@
 
 
 
-
-            <p class="comment">
-                <h3>Implements</h3>
-            </p>
-            <p class="comment">
-                            <code><a href="../interfaces/BoardCompositeVisitor.html" target="_self" >BoardCompositeVisitor</a></code>
-            </p>
 
 
             <section data-compodoc="block-index">
@@ -113,31 +102,43 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#throwNotHandled" >throwNotHandled</a>
+                                <a href="#rejectNotHandled" >rejectNotHandled</a>
                             </li>
                             <li>
-                                <a href="#visitCard" >visitCard</a>
+                                    <span class="modifier">Async</span>
+                                <a href="#visitCardAsync" >visitCardAsync</a>
                             </li>
                             <li>
-                                <a href="#visitColumn" >visitColumn</a>
+                                    <span class="modifier">Async</span>
+                                <a href="#visitColumnAsync" >visitColumnAsync</a>
                             </li>
                             <li>
-                                <a href="#visitColumnBoard" >visitColumnBoard</a>
+                                    <span class="modifier">Async</span>
+                                <a href="#visitColumnBoardAsync" >visitColumnBoardAsync</a>
                             </li>
                             <li>
-                                <a href="#visitExternalToolElement" >visitExternalToolElement</a>
+                                    <span class="modifier">Async</span>
+                                <a href="#visitExternalToolElementAsync" >visitExternalToolElementAsync</a>
                             </li>
                             <li>
-                                <a href="#visitFileElement" >visitFileElement</a>
+                                    <span class="modifier">Async</span>
+                                <a href="#visitFileElementAsync" >visitFileElementAsync</a>
                             </li>
                             <li>
-                                <a href="#visitRichTextElement" >visitRichTextElement</a>
+                                    <span class="modifier">Async</span>
+                                <a href="#visitLinkElementAsync" >visitLinkElementAsync</a>
                             </li>
                             <li>
-                                <a href="#visitSubmissionContainerElement" >visitSubmissionContainerElement</a>
+                                    <span class="modifier">Async</span>
+                                <a href="#visitRichTextElementAsync" >visitRichTextElementAsync</a>
                             </li>
                             <li>
-                                <a href="#visitSubmissionItem" >visitSubmissionItem</a>
+                                    <span class="modifier">Async</span>
+                                <a href="#visitSubmissionContainerElementAsync" >visitSubmissionContainerElementAsync</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#visitSubmissionItemAsync" >visitSubmissionItemAsync</a>
                             </li>
                         </ul>
                     </td>
@@ -157,12 +158,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(content: <a href="../undefineds/AnyElementContentBody.html" target="_self">AnyElementContentBody</a>)</code>
+<code>constructor(content: <a href="../undefineds/AnyElementContentBody.html" target="_self">AnyElementContentBody</a>, openGraphProxyService: <a href="../injectables/OpenGraphProxyService.html" target="_self">OpenGraphProxyService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:24</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:29</a></div>
                             </td>
                         </tr>
 
@@ -191,6 +192,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>openGraphProxyService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/OpenGraphProxyService.html" target="_self" >OpenGraphProxyService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -198,41 +211,6 @@
                 </tr>
             </tbody>
         </table>
-</section>
-
-            <section data-compodoc="block-properties">
-    
-    <h3 id="inputs">
-        Properties
-    </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="content"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Readonly</span>
-                        <span ><b>content</b></span>
-                        <a href="#content"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#AnyElementContentBody" target="_self" >AnyElementContentBody</a></code>
-
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:24</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
 </section>
 
             <section data-compodoc="block-methods">
@@ -244,26 +222,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="throwNotHandled"></a>
+                    <a name="rejectNotHandled"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
-                        <span ><b>throwNotHandled</b></span>
-                        <a href="#throwNotHandled"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>rejectNotHandled</b></span>
+                        <a href="#rejectNotHandled"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>throwNotHandled(component: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>)</code>
+                    <code>rejectNotHandled(component: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="82"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:82</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="103"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:103</a></div>
                 </td>
             </tr>
 
@@ -301,7 +279,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -315,24 +293,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="visitCard"></a>
+                    <a name="visitCardAsync"></a>
                     <span class="name">
-                        <span ><b>visitCard</b></span>
-                        <a href="#visitCard"><span class="icon ion-ios-link"></span></a>
+                        <span class="modifier">Async</span>
+                        <span ><b>visitCardAsync</b></span>
+                        <a href="#visitCardAsync"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>visitCard(card: <a href="../classes/Card.html" target="_self">Card</a>)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>visitCardAsync(card: <a href="../classes/Card.html" target="_self">Card</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="38"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:38</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="43"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:43</a></div>
                 </td>
             </tr>
 
@@ -370,7 +350,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -384,24 +364,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="visitColumn"></a>
+                    <a name="visitColumnAsync"></a>
                     <span class="name">
-                        <span ><b>visitColumn</b></span>
-                        <a href="#visitColumn"><span class="icon ion-ios-link"></span></a>
+                        <span class="modifier">Async</span>
+                        <span ><b>visitColumnAsync</b></span>
+                        <a href="#visitColumnAsync"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>visitColumn(column: <a href="../classes/Column.html" target="_self">Column</a>)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>visitColumnAsync(column: <a href="../classes/Column.html" target="_self">Column</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="34"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:34</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:39</a></div>
                 </td>
             </tr>
 
@@ -439,7 +421,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -453,24 +435,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="visitColumnBoard"></a>
+                    <a name="visitColumnBoardAsync"></a>
                     <span class="name">
-                        <span ><b>visitColumnBoard</b></span>
-                        <a href="#visitColumnBoard"><span class="icon ion-ios-link"></span></a>
+                        <span class="modifier">Async</span>
+                        <span ><b>visitColumnBoardAsync</b></span>
+                        <a href="#visitColumnBoardAsync"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>visitColumnBoard(columnBoard: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>visitColumnBoardAsync(columnBoard: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="30"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:30</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="35"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:35</a></div>
                 </td>
             </tr>
 
@@ -508,7 +492,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -522,24 +506,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="visitExternalToolElement"></a>
+                    <a name="visitExternalToolElementAsync"></a>
                     <span class="name">
-                        <span ><b>visitExternalToolElement</b></span>
-                        <a href="#visitExternalToolElement"><span class="icon ion-ios-link"></span></a>
+                        <span class="modifier">Async</span>
+                        <span ><b>visitExternalToolElementAsync</b></span>
+                        <a href="#visitExternalToolElementAsync"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>visitExternalToolElement(externalToolElement: <a href="../classes/ExternalToolElement.html" target="_self">ExternalToolElement</a>)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>visitExternalToolElementAsync(externalToolElement: <a href="../classes/ExternalToolElement.html" target="_self">ExternalToolElement</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="73"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:73</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="94"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:94</a></div>
                 </td>
             </tr>
 
@@ -577,7 +563,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -591,24 +577,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="visitFileElement"></a>
+                    <a name="visitFileElementAsync"></a>
                     <span class="name">
-                        <span ><b>visitFileElement</b></span>
-                        <a href="#visitFileElement"><span class="icon ion-ios-link"></span></a>
+                        <span class="modifier">Async</span>
+                        <span ><b>visitFileElementAsync</b></span>
+                        <a href="#visitFileElementAsync"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>visitFileElement(fileElement: <a href="../classes/FileElement.html" target="_self">FileElement</a>)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>visitFileElementAsync(fileElement: <a href="../classes/FileElement.html" target="_self">FileElement</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="42"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:42</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="47"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:47</a></div>
                 </td>
             </tr>
 
@@ -646,7 +634,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -660,24 +648,97 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="visitRichTextElement"></a>
+                    <a name="visitLinkElementAsync"></a>
                     <span class="name">
-                        <span ><b>visitRichTextElement</b></span>
-                        <a href="#visitRichTextElement"><span class="icon ion-ios-link"></span></a>
+                        <span class="modifier">Async</span>
+                        <span ><b>visitLinkElementAsync</b></span>
+                        <a href="#visitLinkElementAsync"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>visitRichTextElement(richTextElement: <a href="../classes/RichTextElement.html" target="_self">RichTextElement</a>)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>visitLinkElementAsync(linkElement: <a href="../classes/LinkElement.html" target="_self">LinkElement</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="51"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:51</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="56"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:56</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>linkElement</td>
+                                    <td>
+                                                <code><a href="../classes/LinkElement.html" target="_self" >LinkElement</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="visitRichTextElementAsync"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>visitRichTextElementAsync</b></span>
+                        <a href="#visitRichTextElementAsync"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>visitRichTextElementAsync(richTextElement: <a href="../classes/RichTextElement.html" target="_self">RichTextElement</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="71"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:71</a></div>
                 </td>
             </tr>
 
@@ -715,7 +776,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -729,24 +790,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="visitSubmissionContainerElement"></a>
+                    <a name="visitSubmissionContainerElementAsync"></a>
                     <span class="name">
-                        <span ><b>visitSubmissionContainerElement</b></span>
-                        <a href="#visitSubmissionContainerElement"><span class="icon ion-ios-link"></span></a>
+                        <span class="modifier">Async</span>
+                        <span ><b>visitSubmissionContainerElementAsync</b></span>
+                        <a href="#visitSubmissionContainerElementAsync"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>visitSubmissionContainerElement(submissionContainerElement: <a href="../classes/SubmissionContainerElement.html" target="_self">SubmissionContainerElement</a>)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>visitSubmissionContainerElementAsync(submissionContainerElement: <a href="../classes/SubmissionContainerElement.html" target="_self">SubmissionContainerElement</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="60"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:60</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="80"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:80</a></div>
                 </td>
             </tr>
 
@@ -784,7 +847,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -798,24 +861,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="visitSubmissionItem"></a>
+                    <a name="visitSubmissionItemAsync"></a>
                     <span class="name">
-                        <span ><b>visitSubmissionItem</b></span>
-                        <a href="#visitSubmissionItem"><span class="icon ion-ios-link"></span></a>
+                        <span class="modifier">Async</span>
+                        <span ><b>visitSubmissionItemAsync</b></span>
+                        <a href="#visitSubmissionItemAsync"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>visitSubmissionItem(submission: <a href="../classes/SubmissionItem.html" target="_self">SubmissionItem</a>)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>visitSubmissionItemAsync(submission: <a href="../classes/SubmissionItem.html" target="_self">SubmissionItem</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="69"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:69</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="90"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:90</a></div>
                 </td>
             </tr>
 
@@ -853,7 +918,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -864,19 +929,50 @@
         </tbody>
     </table>
 </section>
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="content"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>content</b></span>
+                        <a href="#content"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#AnyElementContentBody" target="_self" >AnyElementContentBody</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:29</a></div>
+                        </td>
+                    </tr>
 
 
-
-
+        </tbody>
+    </table>
+</section>
 
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { sanitizeRichText } from &#x27;@shared/controller&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { sanitizeRichText } from &#x27;@shared/controller&#x27;;
 import {
 	AnyBoardDo,
-	BoardCompositeVisitor,
+	BoardCompositeVisitorAsync,
 	Card,
 	Column,
 	ColumnBoard,
@@ -887,80 +983,105 @@ import {
 	SubmissionContainerElement,
 	SubmissionItem,
 } from &#x27;@shared/domain&#x27;;
+import { LinkElement } from &#x27;@shared/domain/domainobject/board/link-element.do&#x27;;
 import {
 	AnyElementContentBody,
 	ExternalToolContentBody,
 	FileContentBody,
+	LinkContentBody,
 	RichTextContentBody,
 	SubmissionContainerContentBody,
 } from &#x27;../controller/dto&#x27;;
+import { OpenGraphProxyService } from &#x27;./open-graph-proxy.service&#x27;;
 
-export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
+@Injectable()
+export class ContentElementUpdateVisitor implements BoardCompositeVisitorAsync {
 	private readonly content: AnyElementContentBody;
 
-	constructor(content: AnyElementContentBody) {
+	constructor(content: AnyElementContentBody, private readonly openGraphProxyService: OpenGraphProxyService) {
 		this.content &#x3D; content;
 	}
 
-	visitColumnBoard(columnBoard: ColumnBoard): void {
-		this.throwNotHandled(columnBoard);
+	async visitColumnBoardAsync(columnBoard: ColumnBoard): Promise&lt;void&gt; {
+		return this.rejectNotHandled(columnBoard);
 	}
 
-	visitColumn(column: Column): void {
-		this.throwNotHandled(column);
+	async visitColumnAsync(column: Column): Promise&lt;void&gt; {
+		return this.rejectNotHandled(column);
 	}
 
-	visitCard(card: Card): void {
-		this.throwNotHandled(card);
+	async visitCardAsync(card: Card): Promise&lt;void&gt; {
+		return this.rejectNotHandled(card);
 	}
 
-	visitFileElement(fileElement: FileElement): void {
+	async visitFileElementAsync(fileElement: FileElement): Promise&lt;void&gt; {
 		if (this.content instanceof FileContentBody) {
 			fileElement.caption &#x3D; sanitizeRichText(this.content.caption, InputFormat.PLAIN_TEXT);
 			fileElement.alternativeText &#x3D; sanitizeRichText(this.content.alternativeText, InputFormat.PLAIN_TEXT);
-		} else {
-			this.throwNotHandled(fileElement);
+			return Promise.resolve();
 		}
+		return this.rejectNotHandled(fileElement);
 	}
 
-	visitRichTextElement(richTextElement: RichTextElement): void {
+	async visitLinkElementAsync(linkElement: LinkElement): Promise&lt;void&gt; {
+		if (this.content instanceof LinkContentBody) {
+			const urlWithProtocol &#x3D; /:\/\//.test(this.content.url) ? this.content.url : &#x60;https://${this.content.url}&#x60;;
+			linkElement.url &#x3D; new URL(urlWithProtocol).toString();
+			const openGraphData &#x3D; await this.openGraphProxyService.fetchOpenGraphData(linkElement.url);
+			linkElement.title &#x3D; openGraphData.title;
+			linkElement.description &#x3D; openGraphData.description;
+			if (openGraphData.image) {
+				linkElement.imageUrl &#x3D; openGraphData.image.url;
+			}
+			return Promise.resolve();
+		}
+		return this.rejectNotHandled(linkElement);
+	}
+
+	async visitRichTextElementAsync(richTextElement: RichTextElement): Promise&lt;void&gt; {
 		if (this.content instanceof RichTextContentBody) {
 			richTextElement.text &#x3D; sanitizeRichText(this.content.text, this.content.inputFormat);
 			richTextElement.inputFormat &#x3D; this.content.inputFormat;
-		} else {
-			this.throwNotHandled(richTextElement);
+			return Promise.resolve();
 		}
+		return this.rejectNotHandled(richTextElement);
 	}
 
-	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void {
+	async visitSubmissionContainerElementAsync(submissionContainerElement: SubmissionContainerElement): Promise&lt;void&gt; {
 		if (this.content instanceof SubmissionContainerContentBody) {
-			if (this.content.dueDate &#x3D;&#x3D;&#x3D; undefined) return;
-			submissionContainerElement.dueDate &#x3D; this.content.dueDate;
-		} else {
-			this.throwNotHandled(submissionContainerElement);
+			if (this.content.dueDate !&#x3D;&#x3D; undefined) {
+				submissionContainerElement.dueDate &#x3D; this.content.dueDate;
+			}
+			return Promise.resolve();
 		}
+		return this.rejectNotHandled(submissionContainerElement);
 	}
 
-	visitSubmissionItem(submission: SubmissionItem): void {
-		this.throwNotHandled(submission);
+	async visitSubmissionItemAsync(submission: SubmissionItem): Promise&lt;void&gt; {
+		return this.rejectNotHandled(submission);
 	}
 
-	visitExternalToolElement(externalToolElement: ExternalToolElement): void {
+	async visitExternalToolElementAsync(externalToolElement: ExternalToolElement): Promise&lt;void&gt; {
 		if (this.content instanceof ExternalToolContentBody &amp;&amp; this.content.contextExternalToolId !&#x3D;&#x3D; undefined) {
 			// Updates should not remove an existing reference to a tool, to prevent orphan tool instances
 			externalToolElement.contextExternalToolId &#x3D; this.content.contextExternalToolId;
-		} else {
-			this.throwNotHandled(externalToolElement);
+			return Promise.resolve();
 		}
+		return this.rejectNotHandled(externalToolElement);
 	}
 
-	private throwNotHandled(component: AnyBoardDo) {
-		throw new Error(&#x60;Cannot update element of type: &#x27;${component.constructor.name}&#x27;&#x60;);
+	private rejectNotHandled(component: AnyBoardDo): Promise&lt;void&gt; {
+		return Promise.reject(new Error(&#x60;Cannot update element of type: &#x27;${component.constructor.name}&#x27;&#x60;));
 	}
 }
 </code></pre>
     </div>
+
 </div>
+
+
+
+
 
 
 
@@ -995,7 +1116,7 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
             var COMPODOC_CURRENT_PAGE_URL = 'ContentElementUpdateVisitor.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>

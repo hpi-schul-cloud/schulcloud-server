@@ -150,6 +150,7 @@
                     <td class="col-md-4">
                         <i>Default value : </i><code>[
 		FileElementResponseMapper.getInstance(),
+		LinkElementResponseMapper.getInstance(),
 		RichTextElementResponseMapper.getInstance(),
 		SubmissionContainerElementResponseMapper.getInstance(),
 		ExternalToolElementResponseMapper.getInstance(),
@@ -158,7 +159,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/board/controller/mapper/content-element-response.factory.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/board/controller/mapper/content-element-response.factory.ts:12</a></div>
                         </td>
                     </tr>
 
@@ -194,8 +195,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="18"
-                            class="link-to-prism">apps/server/src/modules/board/controller/mapper/content-element-response.factory.ts:18</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="20"
+                            class="link-to-prism">apps/server/src/modules/board/controller/mapper/content-element-response.factory.ts:20</a></div>
                 </td>
             </tr>
 
@@ -259,12 +260,14 @@ import { AnyContentElementResponse } from &#x27;../dto&#x27;;
 import { BaseResponseMapper } from &#x27;./base-mapper.interface&#x27;;
 import { ExternalToolElementResponseMapper } from &#x27;./external-tool-element-response.mapper&#x27;;
 import { FileElementResponseMapper } from &#x27;./file-element-response.mapper&#x27;;
+import { LinkElementResponseMapper } from &#x27;./link-element-response.mapper&#x27;;
 import { RichTextElementResponseMapper } from &#x27;./rich-text-element-response.mapper&#x27;;
 import { SubmissionContainerElementResponseMapper } from &#x27;./submission-container-element-response.mapper&#x27;;
 
 export class ContentElementResponseFactory {
 	private static mappers: BaseResponseMapper[] &#x3D; [
 		FileElementResponseMapper.getInstance(),
+		LinkElementResponseMapper.getInstance(),
 		RichTextElementResponseMapper.getInstance(),
 		SubmissionContainerElementResponseMapper.getInstance(),
 		ExternalToolElementResponseMapper.getInstance(),

@@ -457,6 +457,12 @@
                             <a href="#lessonFactory" title="apps/server/src/shared/testing/factory/lesson.factory.ts" ><b>lessonFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../lesson.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#linkElementFactory" title="apps/server/src/shared/testing/factory/domainobject/board/link-element.do.factory.ts" ><b>linkElementFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../link-element.do.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#linkElementNodeFactory" title="apps/server/src/shared/testing/factory/boardnode/link-element-node.factory.ts" ><b>linkElementNodeFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../link-element-node.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#locationMapping" title="apps/server/src/modules/tool/external-tool/mapper/external-tool-request.mapper.ts" ><b>locationMapping</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool-request.mapper.ts)</a>
                         </li>
                         <li>
@@ -1397,6 +1403,7 @@
 	ColumnNode,
 	ClassEntity,
 	FileElementNode,
+	LinkElementNode,
 	RichTextElementNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
@@ -6161,10 +6168,11 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                     <td class="col-md-4">
                         <i>Default value : </i><code>(element: AnyBoardDo): element is AnyContentElementDo &#x3D;&gt; {
 	const result &#x3D;
+		element instanceof ExternalToolElement ||
 		element instanceof FileElement ||
+		element instanceof LinkElement ||
 		element instanceof RichTextElement ||
-		element instanceof SubmissionContainerElement ||
-		element instanceof ExternalToolElement;
+		element instanceof SubmissionContainerElement;
 
 	return result;
 }</code>
@@ -6484,6 +6492,70 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 			contents,
 			hidden,
 			materials: [],
+		};
+	}
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/domainobject/board/link-element.do.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="linkElementFactory"></a>
+                    <span class="name">
+                        <span ><b>linkElementFactory</b></span>
+                        <a href="#linkElementFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;LinkElement, LinkElementProps&gt;(LinkElement, ({ sequence }) &#x3D;&gt; {
+	return {
+		id: new ObjectId().toHexString(),
+		url: &#x60;https://www.example.com/link/${sequence}&#x60;,
+		title: &#x27;Website opengraph title&#x27;,
+		children: [],
+		createdAt: new Date(),
+		updatedAt: new Date(),
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/boardnode/link-element-node.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="linkElementNodeFactory"></a>
+                    <span class="name">
+                        <span ><b>linkElementNodeFactory</b></span>
+                        <a href="#linkElementNodeFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;LinkElementNode, LinkElementNodeProps&gt;(
+	LinkElementNode,
+	({ sequence }) &#x3D;&gt; {
+		const url &#x3D; &#x60;https://www.example.com/link/${sequence}&#x60;;
+		return {
+			url,
+			title: &#x60;The example page ${sequence}&#x60;,
 		};
 	}
 )</code>
