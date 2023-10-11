@@ -3,7 +3,7 @@ import { Permission, RoleName } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { roleFactory, schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { ICurrentUser, OauthCurrentUser } from '../interface';
-import { JwtPayload } from '../interface/jwt-payload';
+import { CreateJwtPayload, JwtPayload } from '../interface/jwt-payload';
 import { CurrentUserMapper } from './current-user.mapper';
 
 describe('CurrentUserMapper', () => {
@@ -207,6 +207,7 @@ describe('CurrentUserMapper', () => {
 				});
 			});
 		});
+
 		describe('when JWT is provided without optional claims', () => {
 			it('should return current user', () => {
 				const jwtPayload: JwtPayload = {
@@ -228,6 +229,30 @@ describe('CurrentUserMapper', () => {
 					schoolId: jwtPayload.schoolId,
 					userId: jwtPayload.userId,
 				});
+			});
+		});
+	});
+
+	describe('mapCurrentUserToCreateJwtPayload', () => {
+		it('should map current user to create jwt payload', () => {
+			const currentUser: ICurrentUser = {
+				accountId: 'dummyAccountId',
+				systemId: 'dummySystemId',
+				roles: ['mockRoleId'],
+				schoolId: 'dummySchoolId',
+				userId: 'dummyUserId',
+				impersonated: true,
+			};
+
+			const createJwtPayload: CreateJwtPayload = CurrentUserMapper.mapCurrentUserToCreateJwtPayload(currentUser);
+
+			expect(createJwtPayload).toMatchObject<CreateJwtPayload>({
+				accountId: currentUser.accountId,
+				systemId: currentUser.systemId,
+				roles: currentUser.roles,
+				schoolId: currentUser.schoolId,
+				userId: currentUser.userId,
+				support: currentUser.impersonated,
 			});
 		});
 	});

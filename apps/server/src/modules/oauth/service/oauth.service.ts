@@ -172,7 +172,7 @@ export class OAuthService {
 		const system: SystemDto = await this.systemService.findById(systemId);
 
 		let redirect: string;
-		if (system.oauthConfig?.provider === 'iserv') {
+		if (system.oauthConfig?.provider === 'iserv' && system.oauthConfig?.logoutEndpoint) {
 			const iservLogoutUrl: URL = new URL(system.oauthConfig.logoutEndpoint);
 			iservLogoutUrl.searchParams.append('id_token_hint', idToken);
 			iservLogoutUrl.searchParams.append('post_logout_redirect_uri', postLoginRedirect || dashboardUrl.toString());

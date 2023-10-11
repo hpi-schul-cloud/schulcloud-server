@@ -3,6 +3,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, RoleName, SchoolEntity, SystemEntity, User } from '@shared/domain';
 import { accountFactory, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
+import { SSOErrorCode } from '@src/modules/oauth/loggable';
 import { OauthTokenResponse } from '@src/modules/oauth/service/dto';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import axios from 'axios';
@@ -10,8 +11,7 @@ import MockAdapter from 'axios-mock-adapter';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
-import { SSOErrorCode } from '@src/modules/oauth/loggable';
-import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams, LoginResponse } from '../dto';
+import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams, OauthLoginResponse } from '../dto';
 
 const ldapAccountUserName = 'ldapAccountUserName';
 const mockUserLdapDN = 'mockUserLdapDN';
@@ -194,6 +194,7 @@ describe('Login Controller (api)', () => {
 				expect(decodedToken).toHaveProperty('accountId');
 				expect(decodedToken).toHaveProperty('schoolId');
 				expect(decodedToken).toHaveProperty('roles');
+				expect(decodedToken).not.toHaveProperty('externalIdToken');
 			});
 		});
 
@@ -258,7 +259,7 @@ describe('Login Controller (api)', () => {
 				};
 			};
 
-			it('should return jwt', async () => {
+			it('should return oauth login response', async () => {
 				const { system, idToken } = await setup();
 
 				const response: Response = await request(app.getHttpServer())
@@ -271,10 +272,33 @@ describe('Login Controller (api)', () => {
 					.expect(HttpStatus.OK);
 
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				expect(response.body).toEqual<LoginResponse>({
+				expect(response.body).toEqual<OauthLoginResponse>({
 					accessToken: expect.any(String),
 					externalIdToken: idToken,
 				});
+			});
+
+			it('should return a valid jwt as access token', async () => {
+				const { system } = await setup();
+
+				const response: Response = await request(app.getHttpServer())
+					.post(`${basePath}/oauth2`)
+					.send({
+						redirectUri: 'redirectUri',
+						code: 'code',
+						systemId: system.id,
+					})
+					.expect(HttpStatus.OK);
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				const decodedToken = jwt.decode(response.body.accessToken);
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				expect(response.body.accessToken).toBeDefined();
+				expect(decodedToken).toHaveProperty('userId');
+				expect(decodedToken).toHaveProperty('accountId');
+				expect(decodedToken).toHaveProperty('schoolId');
+				expect(decodedToken).toHaveProperty('roles');
+				expect(decodedToken).not.toHaveProperty('externalIdToken');
 			});
 		});
 

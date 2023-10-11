@@ -5,8 +5,7 @@ import { AxiosResponse } from 'axios';
 import JwksRsa from 'jwks-rsa';
 import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
-import { OAuthSSOError } from '../loggable/oauth-sso.error';
-import { OauthTokenRequestFailedLoggableException } from '../loggable/oauth-token-request-failed.loggable-exception';
+import { OAuthSSOError } from '../loggable';
 import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
 
 @Injectable()
@@ -43,7 +42,6 @@ export class OauthAdapterService {
 		try {
 			responseToken = await lastValueFrom(observable);
 		} catch (error) {
-			this.logger.info(new OauthTokenRequestFailedLoggableException());
 			throw new OAuthSSOError('Requesting token failed.', 'sso_auth_code_step');
 		}
 

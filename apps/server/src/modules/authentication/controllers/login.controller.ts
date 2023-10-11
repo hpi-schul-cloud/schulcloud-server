@@ -11,6 +11,7 @@ import {
 	LocalAuthorizationBodyParams,
 	LoginResponse,
 	Oauth2AuthorizationBodyParams,
+	OauthLoginResponse,
 } from './dto';
 import { LoginResponseMapper } from './mapper/login-response.mapper';
 
@@ -62,10 +63,10 @@ export class LoginController {
 		@CurrentUser() user: OauthCurrentUser,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		@Body() _: Oauth2AuthorizationBodyParams
-	): Promise<LoginResponse> {
+	): Promise<OauthLoginResponse> {
 		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
 
-		const mapped: LoginResponse = LoginResponseMapper.mapToLoginResponse(loginDto, user.externalIdToken);
+		const mapped: OauthLoginResponse = LoginResponseMapper.mapToOauthLoginResponse(loginDto, user.externalIdToken);
 
 		return mapped;
 	}

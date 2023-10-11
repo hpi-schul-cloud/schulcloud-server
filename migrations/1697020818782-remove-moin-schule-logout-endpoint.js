@@ -66,7 +66,7 @@ module.exports = {
 			const { authEndpoint } = system.oauthConfig;
 			const logoutEndpoint = authEndpoint.replace(/\/auth$/, '/logout');
 
-			await Systems.findOneAndUpdate(
+			const result = await Systems.findOneAndUpdate(
 				{ alias: 'SANIS' },
 				{
 					$set: {
@@ -76,9 +76,11 @@ module.exports = {
 			)
 				.lean()
 				.exec();
-		}
 
-		alert(`Added logoutEndpoint to oauthConfig of sanis/moin.schule system`);
+			if (result) {
+				alert(`Added logoutEndpoint to oauthConfig of sanis/moin.schule system`);
+			}
+		}
 
 		await close();
 	},

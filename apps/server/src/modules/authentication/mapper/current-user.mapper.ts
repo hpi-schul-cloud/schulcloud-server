@@ -3,7 +3,7 @@ import { Role, User } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { ICurrentUser, OauthCurrentUser } from '../interface';
-import { JwtPayload } from '../interface/jwt-payload';
+import { CreateJwtPayload, JwtPayload } from '../interface/jwt-payload';
 
 export class CurrentUserMapper {
 	static userToICurrentUser(accountId: string, user: User, systemId?: string): ICurrentUser {
@@ -33,6 +33,17 @@ export class CurrentUserMapper {
 			schoolId: user.schoolId,
 			userId: user.id,
 			externalIdToken,
+		};
+	}
+
+	static mapCurrentUserToCreateJwtPayload(currentUser: ICurrentUser): CreateJwtPayload {
+		return {
+			accountId: currentUser.accountId,
+			userId: currentUser.userId,
+			schoolId: currentUser.schoolId,
+			roles: currentUser.roles,
+			systemId: currentUser.systemId,
+			support: currentUser.impersonated,
 		};
 	}
 
