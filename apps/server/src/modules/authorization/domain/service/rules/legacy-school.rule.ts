@@ -1,4 +1,4 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { BaseDO, LegacySchoolDo } from '@shared/domain';
 import { User } from '@shared/domain/entity';
 import { AuthorizableObject } from '@shared/domain/domain-object';
@@ -10,9 +10,7 @@ import { AuthorizationHelper } from '../authorization.helper';
  */
 @Injectable()
 export class LegacySchoolRule implements Rule {
-	constructor(
-		@Inject(forwardRef(() => AuthorizationHelper)) private readonly authorizationHelper: AuthorizationHelper
-	) {}
+	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
 	public isApplicable(user: User, object: AuthorizableObject | BaseDO): boolean {
 		const isMatched = object instanceof LegacySchoolDo;

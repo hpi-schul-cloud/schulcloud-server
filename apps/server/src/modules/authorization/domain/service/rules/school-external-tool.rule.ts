@@ -1,4 +1,4 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain';
 import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
 import { User } from '@shared/domain/entity';
@@ -7,9 +7,7 @@ import { AuthorizationHelper } from '../authorization.helper';
 
 @Injectable()
 export class SchoolExternalToolRule implements Rule {
-	constructor(
-		@Inject(forwardRef(() => AuthorizationHelper)) private readonly authorizationHelper: AuthorizationHelper
-	) {}
+	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
 	public isApplicable(user: User, entity: SchoolExternalToolEntity | SchoolExternalTool): boolean {
 		const isMatched: boolean = entity instanceof SchoolExternalToolEntity || entity instanceof SchoolExternalTool;
