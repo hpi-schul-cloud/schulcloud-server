@@ -47,7 +47,6 @@ export class ContentElementService {
 
 	async update(element: AnyContentElementDo, content: AnyElementContentBody): Promise<void> {
 		const updater = new ContentElementUpdateVisitor(content);
-
 		element.accept(updater);
 
 		const parent = await this.boardDoRepo.findParentOfId(element.id);

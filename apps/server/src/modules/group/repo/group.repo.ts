@@ -1,6 +1,7 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { type UserDO } from '@shared/domain';
 import { Group, GroupProps } from '../domain';
 import { GroupEntity, GroupEntityProps, GroupEntityTypes } from '../entity';
 import { GroupDomainMapper } from './group-domain.mapper';
@@ -40,6 +41,20 @@ export class GroupRepo {
 		const domainObject: Group = new Group(props);
 
 		return domainObject;
+	}
+
+	public async findByUser(user: UserDO): Promise<Group[]> {
+		const entities: GroupEntity[] = await this.em.find(GroupEntity, {
+			users: { user: new ObjectId(user.id) },
+		});
+
+		const domainObjects = entities.map((entity) => {
+			const props: GroupProps = GroupDomainMapper.mapEntityToDomainObjectProperties(entity);
+
+			return new Group(props);
+		});
+
+		return domainObjects;
 	}
 
 	public async findClassesForSchool(schoolId: EntityId): Promise<Group[]> {

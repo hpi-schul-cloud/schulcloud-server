@@ -2,7 +2,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { groupFactory } from '@shared/testing';
+import { groupFactory, userDoFactory } from '@shared/testing';
+import { UserDO } from '@shared/domain';
 import { Group } from '../domain';
 import { GroupRepo } from '../repo';
 import { GroupService } from './group.service';
@@ -116,6 +117,50 @@ describe('GroupService', () => {
 				const result: Group | null = await service.tryFindById(group.id);
 
 				expect(result).toBeNull();
+			});
+		});
+	});
+
+	describe('findByUser', () => {
+		describe('when groups with the user exists', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.buildWithId();
+				const groups: Group[] = groupFactory.buildList(2);
+
+				groupRepo.findByUser.mockResolvedValue(groups);
+
+				return {
+					user,
+					groups,
+				};
+			};
+
+			it('should return the groups', async () => {
+				const { user, groups } = setup();
+
+				const result: Group[] = await service.findByUser(user);
+
+				expect(result).toEqual(groups);
+			});
+		});
+
+		describe('when no groups with the user exists', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.buildWithId();
+
+				groupRepo.findByUser.mockResolvedValue([]);
+
+				return {
+					user,
+				};
+			};
+
+			it('should return empty array', async () => {
+				const { user } = setup();
+
+				const result: Group[] = await service.findByUser(user);
+
+				expect(result).toEqual([]);
 			});
 		});
 	});
