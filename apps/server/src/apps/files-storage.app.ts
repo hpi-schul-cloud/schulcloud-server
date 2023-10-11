@@ -8,9 +8,9 @@ import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
+import { API_VERSION_PATH, FilesStorageApiModule } from '@modules/files-storage';
 import { SwaggerDocumentOptions } from '@nestjs/swagger';
 import { LegacyLogger } from '@src/core/logger';
-import { API_VERSION_PATH, FilesStorageApiModule } from '@src/modules/files-storage';
 import { enableOpenApiDocs } from '@src/shared/controller/swagger';
 
 async function bootstrap() {
