@@ -14,7 +14,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { FilesStorageClientAdapterService } from '@src/modules';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { SubmissionStatusListResponse } from '@src/modules/task/controller/dto/submission.response';
