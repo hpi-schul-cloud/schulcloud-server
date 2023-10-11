@@ -17,7 +17,9 @@ import { ReferenceLoader, AuthorizationReferenceService, AuthorizationHelper } f
 import { AuthorizationModule } from './authorization.module';
 
 /**
- * Should only be used inside of the authorization module
+ * This module is part of an intermediate state. In the future it should be replaced by an AuthorizationApiModule.
+ * For now it is used where the authorization itself needs to load data from the database.
+ * Avoid using this module and load the needed data in your use cases and then use the normal AuthorizationModule!
  */
 @Module({
 	// TODO: remove forwardRef to TooModule N21-1055
