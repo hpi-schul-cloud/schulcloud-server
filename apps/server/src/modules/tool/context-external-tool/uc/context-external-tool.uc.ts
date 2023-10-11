@@ -99,7 +99,6 @@ export class ContextExternalToolUc {
 		userId: EntityId,
 		tools: ContextExternalTool[]
 	): Promise<ContextExternalTool[]> {
-		// authorizationService.getUserWithPermissions hould be part of the public method at place where ressources are loaded and pass the authorizable user to it.
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);
 
