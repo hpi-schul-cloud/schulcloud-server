@@ -4,10 +4,11 @@ const { alert, error } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
 
-const System = mongoose.model(
+const Systems = mongoose.model(
 	'system2023101111140',
 	new mongoose.Schema(
 		{
+			alias: { type: String },
 			oauthConfig: {
 				type: {
 					clientId: { type: String, required: true },
@@ -36,10 +37,8 @@ module.exports = {
 	up: async function up() {
 		await connect();
 
-		await System.findOneAndUpdate(
-			{
-				alias: 'SANIS',
-			},
+		const result = await Systems.findOneAndUpdate(
+			{ alias: 'SANIS' },
 			{
 				$unset: {
 					'oauthConfig.logoutEndpoint': 1,
@@ -48,19 +47,26 @@ module.exports = {
 		)
 			.lean()
 			.exec();
+
+		if (result) {
+			alert(`Removed logoutEndpoint from oauthConfig of sanis/moin.schule system`);
+		} else {
+			alert('No matching document found with alias "SANIS" and logoutEndpoint');
+		}
+
 		await close();
 	},
 
 	down: async function down() {
 		await connect();
 
-		const system = await System.findOne({ alias: 'SANIS' }).lean().exec();
+		const system = await Systems.findOne({ alias: 'SANIS' }).lean().exec();
 
 		if (system) {
 			const { authEndpoint } = system.oauthConfig;
 			const logoutEndpoint = authEndpoint.replace('/auth', '/logout');
 
-			await System.findOneAndUpdate(
+			await Systems.findOneAndUpdate(
 				{ alias: 'SANIS' },
 				{
 					$set: {
@@ -71,6 +77,8 @@ module.exports = {
 				.lean()
 				.exec();
 		}
+
+		alert(`Added logoutEndpoint to oauthConfig of sanis/moin.schule system`);
 
 		await close();
 	},
