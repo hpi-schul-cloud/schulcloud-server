@@ -62,7 +62,7 @@ export class OauthConfig {
 	@Property()
 	provider: string;
 
-	@Property()
+	@Property({ nullable: true })
 	logoutEndpoint?: string;
 
 	@Property()
