@@ -81,7 +81,6 @@ export class ReferenceLoader {
 		const repoLoader: IRepoLoader = this.resolveRepo(objectName);
 
 		let object: AuthorizableObject | BaseDO;
-		// populate need to be removed
 		if (repoLoader.populate) {
 			object = await repoLoader.repo.findById(objectId, true);
 		} else {
