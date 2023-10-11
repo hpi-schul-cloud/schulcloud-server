@@ -7,7 +7,7 @@ import { legacySchoolDoFactory, schoolFactory, setupEntities, userDoFactory, use
 import { LegacySchoolService } from '@src/modules/legacy-school';
 import { UserService } from '@src/modules/user';
 import jwt from 'jsonwebtoken';
-import { OAuthSSOError } from '../../../oauth/loggable/oauth-sso.error';
+import { OAuthSSOError } from '@src/modules/oauth/loggable';
 import { RoleDto } from '../../../role/service/dto/role.dto';
 import {
 	ExternalSchoolDto,

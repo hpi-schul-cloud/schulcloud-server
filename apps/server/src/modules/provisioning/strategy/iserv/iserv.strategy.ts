@@ -4,7 +4,7 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { LegacySchoolService } from '@src/modules/legacy-school';
 import { UserService } from '@src/modules/user';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { OAuthSSOError } from '../../../oauth/loggable/oauth-sso.error';
+import { OAuthSSOError } from '@src/modules/oauth/loggable';
 import {
 	ExternalSchoolDto,
 	ExternalUserDto,

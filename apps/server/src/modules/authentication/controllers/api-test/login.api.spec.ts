@@ -10,7 +10,7 @@ import MockAdapter from 'axios-mock-adapter';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
-import { SSOErrorCode } from '../../../oauth/loggable/sso-error-code.enum';
+import { SSOErrorCode } from '@src/modules/oauth/loggable';
 import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams, LoginResponse } from '../dto';
 
 const ldapAccountUserName = 'ldapAccountUserName';
