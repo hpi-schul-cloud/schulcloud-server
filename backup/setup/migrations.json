@@ -306,5 +306,16 @@
 			"$date": "2023-09-01T13:14:13.453Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "18e2f7a6cb3dc4a9d5c6c3d4"
+		},
+		"state": "up",
+		"name": "removes-logout-endpoint-from-moin-schule",
+		"createdAt": {
+			"$date": "2023-10-11T10:24:39.152Z"
+		},
+		"__v": 0
 	}
 ]
