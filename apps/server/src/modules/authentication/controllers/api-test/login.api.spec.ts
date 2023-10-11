@@ -3,7 +3,6 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, RoleName, SchoolEntity, SystemEntity, User } from '@shared/domain';
 import { accountFactory, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
-import { SSOErrorCode } from '@src/modules/oauth/error/sso-error-code.enum';
 import { OauthTokenResponse } from '@src/modules/oauth/service/dto';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import axios from 'axios';
@@ -11,6 +10,7 @@ import MockAdapter from 'axios-mock-adapter';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
+import { SSOErrorCode } from '../../../oauth/loggable/sso-error-code.enum';
 import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams, LoginResponse } from '../dto';
 
 const ldapAccountUserName = 'ldapAccountUserName';
