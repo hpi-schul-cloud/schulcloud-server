@@ -10,7 +10,7 @@ import { AuthorizationService } from './authorization.service';
 import { ForbiddenLoggableException } from '../error';
 import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
-import { Rule } from '../../type';
+import { Rule } from '../type';
 
 class TestRule implements Rule {
 	constructor(private returnValueOfhasPermission: boolean) {}

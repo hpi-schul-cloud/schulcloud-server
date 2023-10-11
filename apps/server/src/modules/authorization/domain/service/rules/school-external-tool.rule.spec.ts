@@ -10,7 +10,7 @@ import {
 import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain';
 import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool/entity';
 import { Role, User, Permission } from '@shared/domain';
-import { Action } from '../../../type';
+import { Action } from '../../type';
 import { AuthorizationHelper } from '../authorization.helper';
 import { SchoolExternalToolRule } from './school-external-tool.rule';
 

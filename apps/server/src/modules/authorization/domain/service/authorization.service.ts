@@ -5,7 +5,7 @@ import { UserRepo } from '@shared/repo';
 import { AuthorizationHelper } from './authorization.helper';
 import { ForbiddenLoggableException } from '../error';
 import { RuleManager } from './rule-manager';
-import { AuthorizationContext } from '../../type';
+import { AuthorizationContext } from '../type';
 
 @Injectable()
 export class AuthorizationService {

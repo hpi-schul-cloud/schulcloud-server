@@ -14,7 +14,7 @@ import { SchoolExternalToolEntity } from '@src/modules/tool/school-external-tool
 import { Role, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { ContextExternalToolRule } from './context-external-tool.rule';
-import { Action } from '../../../type';
+import { Action } from '../../type';
 import { AuthorizationHelper } from '../authorization.helper';
 
 describe('ContextExternalToolRule', () => {
