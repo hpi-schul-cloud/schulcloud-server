@@ -1,6 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { courseFactory, setupEntities, userFactory } from '@shared/testing';
+import { AuthorizationContextBuilder } from '../../authorization-context.builder';
 import {
 	BoardDoRule,
 	ContextExternalToolRule,
@@ -13,10 +15,8 @@ import {
 	TaskRule,
 	TeamRule,
 	UserRule,
-} from '@shared/domain/rules';
-import { UserLoginMigrationRule } from '@shared/domain/rules/user-login-migration.rule';
-import { courseFactory, setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationContextBuilder } from './authorization-context.builder';
+	UserLoginMigrationRule,
+} from './rules';
 import { RuleManager } from './rule-manager';
 
 describe('RuleManager', () => {

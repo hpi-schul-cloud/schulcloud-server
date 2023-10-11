@@ -4,7 +4,7 @@ import { AuthorizableObject } from '@shared/domain/domain-object';
 import { UserRepo } from '@shared/repo';
 import { AuthorizationHelper } from './authorization.helper';
 import { ForbiddenLoggableException } from '../../errors/forbidden.loggable-exception';
-import { RuleManager } from '../../rule-manager';
+import { RuleManager } from './rule-manager';
 import { AuthorizationContext } from '../../types';
 
 @Injectable()

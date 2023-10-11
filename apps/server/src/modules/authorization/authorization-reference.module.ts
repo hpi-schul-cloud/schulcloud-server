@@ -13,9 +13,7 @@ import {
 import { ToolModule } from '@src/modules/tool';
 import { LoggerModule } from '@src/core/logger';
 import { BoardModule } from '@src/modules/board';
-import { AuthorizationHelper } from './domain/service';
-import { ReferenceLoader } from './domain/service/reference.loader';
-import { AuthorizationReferenceService } from './domain';
+import { ReferenceLoader, AuthorizationReferenceService, AuthorizationHelper } from './domain/service';
 import { AuthorizationModule } from './authorization.module';
 
 /**

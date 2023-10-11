@@ -1,21 +1,21 @@
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { BaseDO, User } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object'; // fix import when it is avaible
+import type { AuthorizationContext, Rule } from '../../types';
 import {
 	BoardDoRule,
 	ContextExternalToolRule,
 	CourseGroupRule,
 	CourseRule,
+	LegacySchoolRule,
 	LessonRule,
 	SchoolExternalToolRule,
 	SubmissionRule,
 	TaskRule,
 	TeamRule,
-	UserRule,
 	UserLoginMigrationRule,
-	LegacySchoolRule,
-} from '@shared/domain/rules';
-import { AuthorizationContext, Rule } from './types';
+	UserRule,
+} from './rules';
 
 @Injectable()
 export class RuleManager {

@@ -4,13 +4,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
 import { setupEntities, userFactory } from '@shared/testing';
 import { UserRepo } from '@shared/repo';
-import { AuthorizationContextBuilder } from './authorization-context.builder';
+import { AuthorizationContextBuilder } from '../../authorization-context.builder';
 import { AuthorizationHelper } from './authorization.helper';
 import { AuthorizationService } from './authorization.service';
-import { ForbiddenLoggableException } from './errors/forbidden.loggable-exception';
-import { ReferenceLoader } from './domain/service/reference.loader';
+import { ForbiddenLoggableException } from '../../errors/forbidden.loggable-exception';
+import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
-import { Rule } from './types';
+import { Rule } from '../../types';
 
 class TestRule implements Rule {
 	constructor(private returnValueOfhasPermission: boolean) {}
