@@ -64,7 +64,7 @@ module.exports = {
 
 		if (system) {
 			const { authEndpoint } = system.oauthConfig;
-			const logoutEndpoint = authEndpoint.replace('/auth', '/logout');
+			const logoutEndpoint = authEndpoint.replace(/\/auth$/, '/logout');
 
 			await Systems.findOneAndUpdate(
 				{ alias: 'SANIS' },
