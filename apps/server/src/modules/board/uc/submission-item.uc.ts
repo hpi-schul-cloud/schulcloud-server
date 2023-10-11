@@ -10,7 +10,7 @@ import {
 } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
-import { Action } from '@src/modules/authorization/types/action.enum';
+import { Action } from '@src/modules/authorization/type/action.enum';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 
 @Injectable()

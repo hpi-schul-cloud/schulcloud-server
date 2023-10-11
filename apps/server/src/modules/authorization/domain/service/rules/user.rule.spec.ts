@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Role, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { Action } from '../../../types';
+import { Action } from '../../../type';
 import { AuthorizationHelper } from '../authorization.helper';
 import { UserRule } from './user.rule';
 

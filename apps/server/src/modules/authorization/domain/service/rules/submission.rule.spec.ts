@@ -9,7 +9,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { Action } from '../../../types';
+import { Action } from '../../../type';
 import { AuthorizationHelper } from '../authorization.helper';
 import { SubmissionRule } from './submission.rule';
 import { TaskRule } from './task.rule';

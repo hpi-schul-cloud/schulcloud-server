@@ -4,7 +4,7 @@ import { Permission } from '@shared/domain/interface';
 import { courseFactory, courseGroupFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
-import { Action } from '../../../types';
+import { Action } from '../../../type';
 import { AuthorizationHelper } from '../authorization.helper';
 
 describe('CourseGroupRule', () => {

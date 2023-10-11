@@ -3,7 +3,7 @@ import { Course, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { courseFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { CourseRule } from './course.rule';
-import { Action } from '../../../types';
+import { Action } from '../../../type';
 import { AuthorizationHelper } from '../authorization.helper';
 
 describe('CourseRule', () => {

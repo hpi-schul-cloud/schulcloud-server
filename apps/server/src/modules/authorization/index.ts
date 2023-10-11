@@ -1,7 +1,10 @@
 export { AuthorizationModule } from './authorization.module';
-export { AuthorizationService } from './domain/service/authorization.service';
-export { AuthorizationHelper } from './domain/service/authorization.helper';
-export { AuthorizationContextBuilder } from './authorization-context.builder';
+export {
+	AuthorizationService,
+	AuthorizationHelper,
+	AuthorizationContextBuilder,
+	ForbiddenLoggableException,
+} from './domain';
 export {
 	Rule,
 	AuthorizationContext,
@@ -9,5 +12,6 @@ export {
 	Action,
 	AuthorizationLoaderService,
 	AuthorizationLoaderServiceGeneric,
-} from './types';
+} from './type';
+// Should not used anymore
 export { FeathersAuthorizationService } from './feathers';

@@ -1,5 +1,5 @@
 import { Permission } from '@shared/domain';
-import { AuthorizationContext, Action } from './types';
+import { AuthorizationContext, Action } from '../../type';
 
 export class AuthorizationContextBuilder {
 	private static build(requiredPermissions: Permission[], action: Action): AuthorizationContext {

@@ -6,8 +6,8 @@ import { ObjectId } from 'bson';
 import { AuthorizableReferenceType } from '../types';
 import { AuthorizationService } from './authorization.service';
 import { ReferenceLoader } from './reference.loader';
-import { AuthorizationContextBuilder } from '../../authorization-context.builder';
-import { ForbiddenLoggableException } from '../../errors';
+import { AuthorizationContextBuilder } from '../mapper/authorization-context.builder';
+import { ForbiddenLoggableException } from '../error';
 import { AuthorizationReferenceService } from './authorization-reference.service';
 
 describe('AuthorizationReferenceService', () => {

@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { courseFactory, setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationContextBuilder } from '../../authorization-context.builder';
+import { AuthorizationContextBuilder } from '../mapper/authorization-context.builder';
 import {
 	BoardDoRule,
 	ContextExternalToolRule,

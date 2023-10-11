@@ -15,7 +15,7 @@ import {
 	User,
 } from '@shared/domain';
 import { AuthorizationService } from '@src/modules/authorization/domain/service/authorization.service';
-import { Action } from '@src/modules/authorization/types/action.enum';
+import { Action } from '@src/modules/authorization/type/action.enum';
 import {
 	ColumnBoardMetaData,
 	LessonMetaData,

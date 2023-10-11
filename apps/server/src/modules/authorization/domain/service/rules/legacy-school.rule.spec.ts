@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { roleFactory, legacySchoolDoFactory, setupEntities, userFactory } from '@shared/testing';
 import { ObjectID } from 'bson';
-import { Action } from '../../../types';
+import { Action } from '../../../type';
 import { AuthorizationHelper } from '../authorization.helper';
 import { LegacySchoolRule } from './legacy-school.rule';
 
