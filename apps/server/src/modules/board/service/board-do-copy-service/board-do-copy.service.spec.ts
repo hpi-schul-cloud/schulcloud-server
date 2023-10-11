@@ -11,8 +11,10 @@ import {
 	isColumnBoard,
 	isExternalToolElement,
 	isFileElement,
+	isLinkElement,
 	isRichTextElement,
 	isSubmissionContainerElement,
+	LinkElement,
 	RichTextElement,
 	SubmissionContainerElement,
 } from '@shared/domain';
@@ -23,6 +25,7 @@ import {
 	columnFactory,
 	externalToolElementFactory,
 	fileElementFactory,
+	linkElementFactory,
 	richTextElementFactory,
 	setupEntities,
 	submissionContainerElementFactory,
@@ -704,6 +707,55 @@ describe('recursive board copy visitor', () => {
 			const result = await service.copy({ original, fileCopyService });
 
 			expect(result.type).toEqual(CopyElementType.EXTERNAL_TOOL_ELEMENT);
+		});
+	});
+
+	describe('when copying a link element', () => {
+		const setup = () => {
+			const original = linkElementFactory.build();
+
+			return { original, ...setupfileCopyService() };
+		};
+
+		const getLinkElementFromStatus = (status: CopyStatus): LinkElement => {
+			const copy = status.copyEntity;
+
+			expect(isLinkElement(copy)).toEqual(true);
+
+			return copy as LinkElement;
+		};
+
+		it('should return a link element as copy', async () => {
+			const { original, fileCopyService } = setup();
+
+			const result = await service.copy({ original, fileCopyService });
+
+			expect(isLinkElement(result.copyEntity)).toEqual(true);
+		});
+
+		it('should create new id', async () => {
+			const { original, fileCopyService } = setup();
+
+			const result = await service.copy({ original, fileCopyService });
+			const copy = getLinkElementFromStatus(result);
+
+			expect(copy.id).not.toEqual(original.id);
+		});
+
+		it('should show status successful', async () => {
+			const { original, fileCopyService } = setup();
+
+			const result = await service.copy({ original, fileCopyService });
+
+			expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
+		});
+
+		it('should be of type LinkElement', async () => {
+			const { original, fileCopyService } = setup();
+
+			const result = await service.copy({ original, fileCopyService });
+
+			expect(result.type).toEqual(CopyElementType.LINK_ELEMENT);
 		});
 	});
 });

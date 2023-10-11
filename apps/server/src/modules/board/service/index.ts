@@ -4,4 +4,5 @@ export * from './card.service';
 export * from './column-board.service';
 export * from './column.service';
 export * from './content-element.service';
+export * from './open-graph-proxy.service';
 export * from './submission-item.service';
