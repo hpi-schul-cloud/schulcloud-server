@@ -131,7 +131,7 @@ describe('AuthorizationReferenceService', () => {
 				return { context, userId: user.id, entityId: entity.id, entityName };
 			};
 
-			it('should reject with ForbiddenLoggableException', async () => {
+			it('should reject with throwed error', async () => {
 				const { context, userId, entityId, entityName } = setup();
 
 				await expect(service.hasPermissionByReferences(userId, entityName, entityId, context)).rejects.toThrow(
