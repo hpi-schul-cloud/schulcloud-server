@@ -424,6 +424,8 @@ describe('FeathersRosterService', () => {
 					students: [studentUser, studentUser2],
 					teachers: [teacherUser],
 					substitutionTeachers: [substitutionTeacherUser],
+					classes: [],
+					groups: [],
 				});
 
 				courseService.findById.mockResolvedValue(courseA);
