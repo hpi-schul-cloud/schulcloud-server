@@ -16,8 +16,8 @@ function getAccessToken() {
 	const response = http.post(
 		'https://dev.loadtest-01.dbildungscloud.dev/api/v3/authentication/local',
 		JSON.stringify({
-			username: 'superhero@schul-cloud.org',
-			password: 'Schulcloud1!',
+			username: '<user name for load test>',
+			password: '<password for load test>',
 		}),
 		{
 			headers: {
