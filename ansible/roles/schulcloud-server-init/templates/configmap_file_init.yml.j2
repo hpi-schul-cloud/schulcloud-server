@@ -27,7 +27,7 @@ data:
     fi
     mongosh --quiet --eval <<EOF
                     use namespace
-                    db.keda.insertOne({"yay" : 1})
+                    db.keda.insertOne({"activated" : new ISODate()})
                     EOF
     curl --retry 360 --retry-connrefused --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/database/seed?with-indexes=true'
 
