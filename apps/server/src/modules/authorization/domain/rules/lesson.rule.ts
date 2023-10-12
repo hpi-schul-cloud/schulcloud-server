@@ -1,4 +1,4 @@
-import { Injectable, NotImplementedException,  } from '@nestjs/common';
+import { Injectable, NotImplementedException } from '@nestjs/common';
 import { Course, CourseGroup, LessonEntity, User } from '@shared/domain/entity';
 import { Action, AuthorizationContext, Rule } from '../type';
 import { AuthorizationHelper } from '../service/authorization.helper';
