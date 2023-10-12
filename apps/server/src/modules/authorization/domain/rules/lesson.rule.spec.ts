@@ -87,20 +87,20 @@ describe('LessonRule', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const course = courseFactory.build({ teachers: [user] });
-				const lessonEntity = lessonFactory.build({ course });
+				const lesson = lessonFactory.build({ course });
 				const context = getContext();
 
 				return {
 					user,
-					lessonEntity,
+					lesson,
 					context,
 				};
 			};
 
 			it('should reject with NotImplementedException', () => {
-				const { user, lessonEntity, context } = setup();
+				const { user, lesson, context } = setup();
 
-				expect(() => rule.hasPermission(user, lessonEntity, context)).toThrowError(NotImplementedException);
+				expect(() => rule.hasPermission(user, lesson, context)).toThrowError(NotImplementedException);
 			});
 		});
 	});

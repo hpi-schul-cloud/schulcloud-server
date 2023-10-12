@@ -9,13 +9,14 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { Action } from '../type';
+import { Action, AuthorizationContext } from '../type';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { SubmissionRule } from './submission.rule';
 import { TaskRule } from './task.rule';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
 import { CourseGroupRule } from './course-group.rule';
+import { NotImplementedException } from '@nestjs/common';
 
 const buildUserWithPermission = (permission) => {
 	const role = roleFactory.buildWithId({ permissions: [permission] });
@@ -80,6 +81,38 @@ describe('SubmissionRule', () => {
 	});
 
 	describe('hasPermission', () => {
+		describe('Given user request not implemented action', () => {
+			const getContext = (): AuthorizationContext => {
+				const context: AuthorizationContext = {
+					requiredPermissions: [],
+					// @ts-expect-error Testcase
+					action: 'not_implemented',
+				};
+
+				return context;
+			};
+
+			describe('when valid data exists', () => {
+				const setup = () => {
+					const user = userFactory.build();
+					const submission = submissionFactory.build({ student: user });
+					const context = getContext();
+
+					return {
+						user,
+						submission,
+						context,
+					};
+				};
+
+				it('should reject with NotImplementedException', () => {
+					const { user, submission, context } = setup();
+
+					expect(() => submissionRule.hasPermission(user, submission, context)).toThrowError(NotImplementedException);
+				});
+			});
+		});
+
 		describe('when user roles do not contain required permissions', () => {
 			const setup = () => {
 				const permission = 'a' as Permission;
