@@ -337,15 +337,19 @@ describe('UserService', () => {
 				const user: UserDO = userDoFactory.build({ id: undefined });
 				const userId: EntityId = user.id as EntityId;
 
+				userRepo.deleteUser.mockResolvedValue(0);
+
 				return {
 					userId,
 				};
 			};
 
-			it('should throw an error', async () => {
+			it('should return 0', async () => {
 				const { userId } = setup();
 
-				await expect(service.deleteUser(userId)).rejects.toThrowError(InternalServerErrorException);
+				const result = await service.deleteUser(userId);
+
+				expect(result).toEqual(0);
 			});
 		});
 
