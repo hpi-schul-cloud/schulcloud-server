@@ -27,7 +27,9 @@ data:
     fi
     mongosh $DATABASE__URL --quiet --eval <<EOF
     use namespace
-    db.keda.insertOne({"activated" : new ISODate()})
+    // 48h
+    dateDiffInMs = 2 * 24 * 60 * 60 * 1000
+    db.keda.insertOne({"activatedUntil" : new Date(new ISODate().getTime() + dateDiffInMs)})
     EOF
     curl --retry 360 --retry-connrefused --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/database/seed?with-indexes=true'
 
