@@ -1,8 +1,10 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType } from '@shared/domain';
+import { BoardExternalReferenceType, SubmissionItemNode } from '@shared/domain';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	cardNodeFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
@@ -10,8 +12,6 @@ import {
 	courseFactory,
 	submissionContainerElementNodeFactory,
 	userFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server';
 import { SubmissionItemResponse } from '../dto';
@@ -37,7 +37,7 @@ describe('submission create (api)', () => {
 		await app.close();
 	});
 
-	describe('with valid teacher user', () => {
+	describe('when user is a valid teacher', () => {
 		const setup = async () => {
 			await cleanupCollections(em);
 
@@ -62,6 +62,40 @@ describe('submission create (api)', () => {
 
 			return { loggedInClient, teacherUser, columnBoardNode, columnNode, cardNode, submissionContainerNode };
 		};
+		it('should return status 403', async () => {
+			const { loggedInClient, submissionContainerNode } = await setup();
+
+			const response = await loggedInClient.post(`${submissionContainerNode.id}/submissions`, { completed: false });
+
+			expect(response.status).toEqual(403);
+		});
+	});
+
+	describe('when user is a student who is part of course', () => {
+		const setup = async () => {
+			await cleanupCollections(em);
+
+			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+			const course = courseFactory.build({ students: [studentUser] });
+			await em.persistAndFlush([studentAccount, studentUser, course]);
+
+			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+				context: { id: course.id, type: BoardExternalReferenceType.Course },
+			});
+
+			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+
+			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+
+			const submissionContainerNode = submissionContainerElementNodeFactory.buildWithId({ parent: cardNode });
+
+			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode]);
+			em.clear();
+
+			const loggedInClient = await testApiClient.login(studentAccount);
+
+			return { loggedInClient, studentUser, columnBoardNode, columnNode, cardNode, submissionContainerNode };
+		};
 		it('should return status 201', async () => {
 			const { loggedInClient, submissionContainerNode } = await setup();
 
@@ -71,16 +105,34 @@ describe('submission create (api)', () => {
 		});
 
 		it('should return created submission', async () => {
-			const { loggedInClient, teacherUser, submissionContainerNode } = await setup();
+			const { loggedInClient, studentUser, submissionContainerNode } = await setup();
 
-			const response = await loggedInClient.post(`${submissionContainerNode.id}/submissions`, { completed: false });
+			const response = await loggedInClient.post(`${submissionContainerNode.id}/submissions`, { completed: true });
 
 			const result = response.body as SubmissionItemResponse;
-			expect(result.completed).toBe(false);
+			expect(result.completed).toBe(true);
 			expect(result.id).toBeDefined();
 			expect(result.timestamps.createdAt).toBeDefined();
 			expect(result.timestamps.lastUpdatedAt).toBeDefined();
-			expect(result.userId).toBe(teacherUser.id);
+			expect(result.userId).toBe(studentUser.id);
+		});
+
+		it('should actually create the submission item', async () => {
+			const { loggedInClient, submissionContainerNode } = await setup();
+			const response = await loggedInClient.post(`${submissionContainerNode.id}/submissions`, { completed: true });
+
+			const submissionItemResponse = response.body as SubmissionItemResponse;
+
+			const result = await em.findOneOrFail(SubmissionItemNode, submissionItemResponse.id);
+			expect(result.id).toEqual(submissionItemResponse.id);
+			expect(result.completed).toEqual(true);
+		});
+
+		it('should fail without params completed', async () => {
+			const { loggedInClient, submissionContainerNode } = await setup();
+
+			const response = await loggedInClient.post(`${submissionContainerNode.id}/submissions`, {});
+			expect(response.status).toBe(400);
 		});
 
 		it('should fail when user wants to create more than one submission-item', async () => {
@@ -94,12 +146,12 @@ describe('submission create (api)', () => {
 		});
 	});
 
-	describe('with valid student user', () => {
+	describe('when user is an student who is not part of course', () => {
 		const setup = async () => {
 			await cleanupCollections(em);
 
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-			const course = courseFactory.build({ students: [studentUser] });
+			const course = courseFactory.build({ students: [] });
 			await em.persistAndFlush([studentAccount, studentUser, course]);
 
 			const columnBoardNode = columnBoardNodeFactory.buildWithId({
@@ -129,7 +181,7 @@ describe('submission create (api)', () => {
 		});
 	});
 
-	describe('with invalid user', () => {
+	describe('when with invalid user', () => {
 		const setup = async () => {
 			await cleanupCollections(em);
 

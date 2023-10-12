@@ -7,20 +7,28 @@ import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { CustomParameter, CustomParameterEntry } from '../domain';
 import { CustomParameterScope, CustomParameterType } from '../enum';
 
-const typeCheckers: { [key in CustomParameterType]: (val: string) => boolean } = {
-	[CustomParameterType.STRING]: () => true,
-	[CustomParameterType.NUMBER]: (val: string) => !isNaN(Number(val)),
-	[CustomParameterType.BOOLEAN]: (val: string) => val === 'true' || val === 'false',
-	[CustomParameterType.AUTO_CONTEXTID]: () => true,
-	[CustomParameterType.AUTO_CONTEXTNAME]: () => true,
-	[CustomParameterType.AUTO_SCHOOLID]: () => true,
-	[CustomParameterType.AUTO_SCHOOLNUMBER]: () => true,
-};
-
 export type ValidatableTool = SchoolExternalTool | ContextExternalTool;
 
 @Injectable()
 export class CommonToolValidationService {
+	private static typeCheckers: { [key in CustomParameterType]: (val: string) => boolean } = {
+		[CustomParameterType.STRING]: () => true,
+		[CustomParameterType.NUMBER]: (val: string | undefined) => !isNaN(Number(val)),
+		[CustomParameterType.BOOLEAN]: (val: string | undefined) => val === 'true' || val === 'false',
+		[CustomParameterType.AUTO_CONTEXTID]: () => false,
+		[CustomParameterType.AUTO_CONTEXTNAME]: () => false,
+		[CustomParameterType.AUTO_SCHOOLID]: () => false,
+		[CustomParameterType.AUTO_SCHOOLNUMBER]: () => false,
+	};
+
+	public isValueValidForType(type: CustomParameterType, val: string): boolean {
+		const rule = CommonToolValidationService.typeCheckers[type];
+
+		const isValid: boolean = rule(val);
+
+		return isValid;
+	}
+
 	public checkForDuplicateParameters(validatableTool: ValidatableTool): void {
 		const caseInsensitiveNames: string[] = validatableTool.parameters.map(({ name }: CustomParameterEntry) =>
 			name.toLowerCase()
@@ -34,7 +42,7 @@ export class CommonToolValidationService {
 		}
 	}
 
-	public checkCustomParameterEntries(loadedExternalTool: ExternalTool, validatableTool: ValidatableTool) {
+	public checkCustomParameterEntries(loadedExternalTool: ExternalTool, validatableTool: ValidatableTool): void {
 		if (loadedExternalTool.parameters) {
 			for (const param of loadedExternalTool.parameters) {
 				this.checkScopeAndValidateParameter(validatableTool, param);
@@ -71,7 +79,7 @@ export class CommonToolValidationService {
 	}
 
 	private checkParameterType(foundEntry: CustomParameterEntry, param: CustomParameter): void {
-		if (foundEntry.value !== undefined && !typeCheckers[param.type](foundEntry.value)) {
+		if (foundEntry.value !== undefined && !this.isValueValidForType(param.type, foundEntry.value)) {
 			throw new ValidationError(
 				`tool_param_type_mismatch: The value of parameter with name ${foundEntry.name} should be of type ${param.type}.`
 			);

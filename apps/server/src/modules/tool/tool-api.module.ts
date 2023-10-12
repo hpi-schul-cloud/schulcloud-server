@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { LtiToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '@src/modules/authorization';
-import { SchoolModule } from '@src/modules/school';
+import { LegacySchoolModule } from '@src/modules/legacy-school';
 import { UserModule } from '@src/modules/user';
 import { ToolContextController } from './context-external-tool/controller';
 import { ContextExternalToolUc } from './context-external-tool/uc';
@@ -16,9 +16,19 @@ import { ToolConfigModule } from './tool-config.module';
 import { ToolLaunchController } from './tool-launch/controller/tool-launch.controller';
 import { ToolLaunchUc } from './tool-launch/uc';
 import { ToolModule } from './tool.module';
+import { ExternalToolConfigurationService } from './external-tool/service';
+import { CommonToolModule } from './common';
 
 @Module({
-	imports: [ToolModule, UserModule, AuthorizationModule, LoggerModule, SchoolModule, ToolConfigModule],
+	imports: [
+		ToolModule,
+		CommonToolModule,
+		UserModule,
+		AuthorizationModule,
+		LoggerModule,
+		LegacySchoolModule,
+		ToolConfigModule,
+	],
 	controllers: [
 		ToolLaunchController,
 		ToolConfigurationController,
@@ -30,6 +40,7 @@ import { ToolModule } from './tool.module';
 		LtiToolRepo,
 		ExternalToolUc,
 		ExternalToolConfigurationUc,
+		ExternalToolConfigurationService,
 		ExternalToolRequestMapper,
 		ExternalToolResponseMapper,
 		SchoolExternalToolUc,

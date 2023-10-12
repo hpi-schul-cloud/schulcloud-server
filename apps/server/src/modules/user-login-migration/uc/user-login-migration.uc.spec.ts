@@ -1,17 +1,24 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Page, SchoolDO, System, UserLoginMigrationDO } from '@shared/domain';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { Page, Permission, LegacySchoolDo, SystemEntity, User, UserLoginMigrationDO } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { schoolDOFactory, systemFactory, userLoginMigrationDOFactory } from '@shared/testing';
+import {
+	legacySchoolDoFactory,
+	setupEntities,
+	systemFactory,
+	userFactory,
+	userLoginMigrationDOFactory,
+} from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
+import { Action, AuthorizationService } from '@src/modules/authorization';
 import { OAuthTokenDto } from '@src/modules/oauth';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
-import { SchoolService } from '@src/modules/school';
-import { AuthorizationService } from '@src/modules/authorization';
+import { LegacySchoolService } from '@src/modules/legacy-school';
 import { Oauth2MigrationParams } from '../controller/dto/oauth2-migration.params';
 import { OAuthMigrationError, SchoolMigrationError, UserLoginMigrationError } from '../error';
 import { PageTypes } from '../interface/page-types.enum';
@@ -29,9 +36,12 @@ describe('UserLoginMigrationUc', () => {
 	let schoolMigrationService: DeepMocked<SchoolMigrationService>;
 	let userMigrationService: DeepMocked<UserMigrationService>;
 	let authenticationService: DeepMocked<AuthenticationService>;
+	let authorizationService: DeepMocked<AuthorizationService>;
 	let logger: DeepMocked<LegacyLogger>;
 
 	beforeAll(async () => {
+		await setupEntities();
+
 		module = await Test.createTestingModule({
 			providers: [
 				UserLoginMigrationUc,
@@ -64,8 +74,8 @@ describe('UserLoginMigrationUc', () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 				{
 					provide: LegacyLogger,
@@ -82,6 +92,7 @@ describe('UserLoginMigrationUc', () => {
 		schoolMigrationService = module.get(SchoolMigrationService);
 		userMigrationService = module.get(UserMigrationService);
 		authenticationService = module.get(AuthenticationService);
+		authorizationService = module.get(AuthorizationService);
 		logger = module.get(LegacyLogger);
 	});
 
@@ -189,6 +200,98 @@ describe('UserLoginMigrationUc', () => {
 		});
 	});
 
+	describe('findUserLoginMigrationBySchool', () => {
+		describe('when searching for an existing user login migration', () => {
+			const setup = () => {
+				const schoolId = 'schoolId';
+
+				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					schoolId,
+					targetSystemId: 'targetSystemId',
+					startedAt: new Date(),
+				});
+				const user: User = userFactory.buildWithId();
+
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(migration);
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+
+				return { user, schoolId, migration };
+			};
+
+			it('should should check the users permission', async () => {
+				const { user, migration, schoolId } = setup();
+
+				await uc.findUserLoginMigrationBySchool(user.id, schoolId);
+
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, migration, {
+					requiredPermissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
+					action: Action.read,
+				});
+			});
+
+			it('should return the user login migration', async () => {
+				const { user, migration, schoolId } = setup();
+
+				const result: UserLoginMigrationDO = await uc.findUserLoginMigrationBySchool(user.id, schoolId);
+
+				expect(result).toEqual(migration);
+			});
+		});
+
+		describe('when a user login migration does not exist', () => {
+			const setup = () => {
+				const schoolId = 'schoolId';
+
+				const user: User = userFactory.buildWithId();
+
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(null);
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+
+				return { user, schoolId };
+			};
+
+			it('should return throw not found exception', async () => {
+				const { user, schoolId } = setup();
+
+				const func = () => uc.findUserLoginMigrationBySchool(user.id, schoolId);
+
+				await expect(func).rejects.toThrow(NotFoundLoggableException);
+			});
+		});
+
+		describe('when the authorization fails', () => {
+			const setup = () => {
+				const schoolId = 'schoolId';
+
+				const user: User = userFactory.buildWithId();
+
+				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					schoolId,
+					targetSystemId: 'targetSystemId',
+					startedAt: new Date(),
+				});
+
+				const error = new Error('Authorization failed');
+
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(migration);
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				authorizationService.checkPermission.mockImplementation(() => {
+					throw error;
+				});
+
+				return { user, schoolId, error };
+			};
+
+			it('should throw an error', async () => {
+				const { user, schoolId, error } = setup();
+
+				const func = () => uc.findUserLoginMigrationBySchool(user.id, schoolId);
+
+				await expect(func).rejects.toThrow(error);
+			});
+		});
+	});
+
 	describe('migrate', () => {
 		describe('when user migrates the from one to another system', () => {
 			const setupMigration = () => {
@@ -197,11 +300,11 @@ describe('UserLoginMigrationUc', () => {
 				query.systemId = 'systemId';
 				query.redirectUri = 'redirectUri';
 
-				const sourceSystem: System = systemFactory
+				const sourceSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
-				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					systems: [sourceSystem.id],
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'oldSchoolExternalId',
@@ -312,11 +415,11 @@ describe('UserLoginMigrationUc', () => {
 				query.systemId = 'systemId';
 				query.redirectUri = 'redirectUri';
 
-				const sourceSystem: System = systemFactory
+				const sourceSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
-				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					systems: [sourceSystem.id],
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'oldSchoolExternalId',
@@ -376,11 +479,11 @@ describe('UserLoginMigrationUc', () => {
 				query.systemId = 'systemId';
 				query.redirectUri = 'redirectUri';
 
-				const sourceSystem: System = systemFactory
+				const sourceSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
-				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					systems: [sourceSystem.id],
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'oldSchoolExternalId',
@@ -512,11 +615,11 @@ describe('UserLoginMigrationUc', () => {
 				query.systemId = 'systemId';
 				query.redirectUri = 'redirectUri';
 
-				const sourceSystem: System = systemFactory
+				const sourceSystem: SystemEntity = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
-				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+				const schoolDO: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
 					systems: [sourceSystem.id],
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'oldSchoolExternalId',

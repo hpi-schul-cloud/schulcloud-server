@@ -120,7 +120,7 @@ describe(ColumnBoardService.name, () => {
 
 				await service.getBoardObjectTitlesById(ids);
 
-				expect(boardDoRepo.getTitleById).toHaveBeenCalledWith(ids);
+				expect(boardDoRepo.getTitlesByIds).toHaveBeenCalledWith(ids);
 			});
 		});
 	});

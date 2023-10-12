@@ -1,13 +1,13 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
-import { Counted, EntityId, IAccount, IAccountUpdate } from '@shared/domain';
-import { IdentityManagementService, IdentityManagementOauthService } from '@shared/infra/identity-management';
+import { IdentityManagementOauthService, IdentityManagementService } from '@shared/infra/identity-management';
+import { Counted, EntityId, IdmAccount, IdmAccountUpdate } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { AccountIdmToDtoMapper } from '../mapper';
+import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountDto, AccountSaveDto } from './dto';
-import { AccountLookupService } from './account-lookup.service';
 
 @Injectable()
 export class AccountServiceIdm extends AbstractAccountService {
@@ -27,13 +27,15 @@ export class AccountServiceIdm extends AbstractAccountService {
 		return account;
 	}
 
+	// TODO: this needs a better solution. probably needs followup meeting to come up with something
 	async findMultipleByUserId(userIds: EntityId[]): Promise<AccountDto[]> {
-		const results = new Array<IAccount>();
+		const results = new Array<IdmAccount>();
 		for (const userId of userIds) {
 			try {
 				// eslint-disable-next-line no-await-in-loop
-				results.push(await this.identityManager.findAccountByFctIntId(userId));
+				results.push(await this.identityManager.findAccountByDbcUserId(userId));
 			} catch {
+				// TODO: dont simply forget errors. maybe use a filter instead?
 				// ignore entry
 			}
 		}
@@ -43,16 +45,17 @@ export class AccountServiceIdm extends AbstractAccountService {
 
 	async findByUserId(userId: EntityId): Promise<AccountDto | null> {
 		try {
-			const result = await this.identityManager.findAccountByFctIntId(userId);
+			const result = await this.identityManager.findAccountByDbcUserId(userId);
 			return this.accountIdmToDtoMapper.mapToDto(result);
 		} catch {
+			// TODO: dont simply forget errors
 			return null;
 		}
 	}
 
 	async findByUserIdOrFail(userId: EntityId): Promise<AccountDto> {
 		try {
-			const result = await this.identityManager.findAccountByFctIntId(userId);
+			const result = await this.identityManager.findAccountByDbcUserId(userId);
 			return this.accountIdmToDtoMapper.mapToDto(result);
 		} catch {
 			throw new EntityNotFoundError(`Account with userId ${userId} not found`);
@@ -87,14 +90,16 @@ export class AccountServiceIdm extends AbstractAccountService {
 
 	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
 		let accountId: string;
-		const idmAccount: IAccountUpdate = {
+		const idmAccount: IdmAccountUpdate = {
 			username: accountDto.username,
-			attRefTechnicalId: accountDto.idmReferenceId,
-			attRefFunctionalIntId: accountDto.userId,
-			attRefFunctionalExtId: accountDto.systemId,
+			attDbcAccountId: accountDto.idmReferenceId,
+			attDbcUserId: accountDto.userId,
+			attDbcSystemId: accountDto.systemId,
 		};
+		// TODO: probably do some method extraction here
 		if (accountDto.id) {
 			let idmId: string | undefined;
+			// TODO: extract into a method that hides the trycatch
 			try {
 				idmId = await this.getIdmAccountId(accountDto.id);
 			} catch {
@@ -114,7 +119,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
-	private async updateAccount(idmAccountId: string, idmAccount: IAccountUpdate, password?: string): Promise<string> {
+	private async updateAccount(idmAccountId: string, idmAccount: IdmAccountUpdate, password?: string): Promise<string> {
 		const updatedAccountId = await this.identityManager.updateAccount(idmAccountId, idmAccount);
 		if (password) {
 			await this.identityManager.updateAccountPassword(idmAccountId, password);
@@ -122,7 +127,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		return updatedAccountId;
 	}
 
-	private async createAccount(idmAccount: IAccountUpdate, password?: string): Promise<string> {
+	private async createAccount(idmAccount: IdmAccountUpdate, password?: string): Promise<string> {
 		const accountId = await this.identityManager.createAccount(idmAccount, password);
 		return accountId;
 	}
@@ -152,7 +157,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 	}
 
 	async deleteByUserId(userId: EntityId): Promise<void> {
-		const idmAccount = await this.identityManager.findAccountByFctIntId(userId);
+		const idmAccount = await this.identityManager.findAccountByDbcUserId(userId);
 		await this.identityManager.deleteAccountById(idmAccount.id);
 	}
 

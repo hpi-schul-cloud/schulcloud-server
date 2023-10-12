@@ -2,20 +2,14 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { ObjectId } from '@mikro-orm/mongodb';
-import {
-	BadRequestException,
-	InternalServerErrorException,
-	NotFoundException,
-	UnprocessableEntityException,
-} from '@nestjs/common';
+import { BadRequestException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName, SchoolDO, UserDO, UserLoginMigrationDO } from '@shared/domain';
-import { UserLoginMigrationRepo } from '@shared/repo';
-import { schoolDOFactory, setupEntities, userDoFactory } from '@shared/testing';
+import { LegacySchoolDo, RoleName, UserDO } from '@shared/domain';
+import { legacySchoolDoFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto, AccountSaveDto } from '@src/modules/account/services/dto';
-import { SchoolService } from '@src/modules/school';
+import { LegacySchoolService } from '@src/modules/legacy-school';
 import { SystemService } from '@src/modules/system';
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
@@ -30,11 +24,10 @@ describe('UserMigrationService', () => {
 	let configBefore: IConfig;
 	let logger: LegacyLogger;
 
-	let schoolService: DeepMocked<SchoolService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 	let systemService: DeepMocked<SystemService>;
 	let userService: DeepMocked<UserService>;
 	let accountService: DeepMocked<AccountService>;
-	let userLoginMigrationRepo: DeepMocked<UserLoginMigrationRepo>;
 
 	const hostUri = 'http://this.de';
 	const apiUrl = 'http://mock.de';
@@ -50,8 +43,8 @@ describe('UserMigrationService', () => {
 			providers: [
 				UserMigrationService,
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 				{
 					provide: SystemService,
@@ -69,20 +62,15 @@ describe('UserMigrationService', () => {
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
 				},
-				{
-					provide: UserLoginMigrationRepo,
-					useValue: createMock<UserLoginMigrationRepo>(),
-				},
 			],
 		}).compile();
 
 		service = module.get(UserMigrationService);
-		schoolService = module.get(SchoolService);
+		schoolService = module.get(LegacySchoolService);
 		systemService = module.get(SystemService);
 		userService = module.get(UserService);
 		accountService = module.get(AccountService);
 		logger = module.get(LegacyLogger);
-		userLoginMigrationRepo = module.get(UserLoginMigrationRepo);
 
 		await setupEntities();
 	});
@@ -101,30 +89,9 @@ describe('UserMigrationService', () => {
 		describe('when finding the migration systems', () => {
 			const setup = () => {
 				const officialSchoolNumber = '3';
-				const school: SchoolDO = schoolDOFactory.buildWithId({ name: 'schoolName', officialSchoolNumber });
-
-				const iservSystem: SystemDto = new SystemDto({
-					id: 'iservId',
-					type: '',
-					alias: 'Schulserver',
-				});
-				const sanisSystem: SystemDto = new SystemDto({
-					id: 'sanisId',
-					type: '',
-					alias: 'SANIS',
-				});
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ name: 'schoolName', officialSchoolNumber });
 
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
-				systemService.findByType.mockResolvedValue([iservSystem, sanisSystem]);
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(
-					new UserLoginMigrationDO({
-						id: 'userLoginMigrationId',
-						schoolId: school.id as string,
-						targetSystemId: 'targetSystemId',
-						startedAt: new Date(),
-						mandatorySince: new Date(),
-					})
-				);
 
 				return {
 					officialSchoolNumber,
@@ -136,9 +103,7 @@ describe('UserMigrationService', () => {
 
 				const result: string = await service.getMigrationConsentPageRedirect(officialSchoolNumber, 'iservId');
 
-				expect(result).toEqual(
-					'http://this.de/migration?sourceSystem=iservId&targetSystem=sanisId&origin=iservId&mandatory=true'
-				);
+				expect(result).toEqual('http://this.de/migration?origin=iservId');
 			});
 		});
 
@@ -160,31 +125,6 @@ describe('UserMigrationService', () => {
 				const promise: Promise<string> = service.getMigrationConsentPageRedirect(officialSchoolNumber, 'systemId');
 
 				await expect(promise).rejects.toThrow(NotFoundException);
-			});
-		});
-
-		describe('when the migration systems have invalid data', () => {
-			const setup = () => {
-				const officialSchoolNumber = '3';
-
-				schoolService.getSchoolBySchoolNumber.mockResolvedValue(schoolDOFactory.buildWithId({ officialSchoolNumber }));
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
-				systemService.findByType.mockResolvedValue([]);
-
-				return {
-					officialSchoolNumber,
-				};
-			};
-
-			it('should throw InternalServerErrorException', async () => {
-				const { officialSchoolNumber } = setup();
-
-				const promise: Promise<string> = service.getMigrationConsentPageRedirect(
-					officialSchoolNumber,
-					'unknownSystemId'
-				);
-
-				await expect(promise).rejects.toThrow(InternalServerErrorException);
 			});
 		});
 	});

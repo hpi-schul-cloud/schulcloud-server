@@ -1,20 +1,20 @@
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { LtiToolDO, Pseudonym, UserDO } from '@shared/domain';
-import { v4 as uuidv4 } from 'uuid';
-import { IToolFeatures, ToolFeatures } from '@src/modules/tool/tool-config';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { IFindOptions, LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain';
 import { ExternalTool } from '@src/modules/tool/external-tool/domain';
+import { v4 as uuidv4 } from 'uuid';
+import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 
 @Injectable()
 export class PseudonymService {
 	constructor(
-		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
 		private readonly pseudonymRepo: PseudonymsRepo,
 		private readonly externalToolPseudonymRepo: ExternalToolPseudonymRepo
 	) {}
 
-	public async findByUserAndTool(user: UserDO, tool: ExternalTool | LtiToolDO): Promise<Pseudonym> {
+	public async findByUserAndToolOrThrow(user: UserDO, tool: ExternalTool | LtiToolDO): Promise<Pseudonym> {
 		if (!user.id || !tool.id) {
 			throw new InternalServerErrorException('User or tool id is missing');
 		}
@@ -110,10 +110,30 @@ export class PseudonymService {
 	}
 
 	private getRepository(tool: ExternalTool | LtiToolDO): PseudonymsRepo | ExternalToolPseudonymRepo {
-		if (this.toolFeatures.ctlToolsTabEnabled && tool instanceof ExternalTool) {
+		if (tool instanceof ExternalTool) {
 			return this.externalToolPseudonymRepo;
 		}
 
 		return this.pseudonymRepo;
+	}
+
+	async findPseudonymByPseudonym(pseudonym: string): Promise<Pseudonym | null> {
+		const result: Pseudonym | null = await this.externalToolPseudonymRepo.findPseudonymByPseudonym(pseudonym);
+
+		return result;
+	}
+
+	async findPseudonym(query: PseudonymSearchQuery, options: IFindOptions<Pseudonym>): Promise<Page<Pseudonym>> {
+		const result: Page<Pseudonym> = await this.externalToolPseudonymRepo.findPseudonym(query, options);
+
+		return result;
+	}
+
+	getIframeSubject(pseudonym: string): string {
+		const iFrameSubject = `<iframe src="${
+			Configuration.get('HOST') as string
+		}/oauth2/username/${pseudonym}" title="username" style="height: 26px; width: 180px; border: none;"></iframe>`;
+
+		return iFrameSubject;
 	}
 }

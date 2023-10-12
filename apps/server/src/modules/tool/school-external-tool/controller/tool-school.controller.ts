@@ -8,8 +8,9 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
+	ApiOperation,
 } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, Param, Post, Query, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, Put, HttpCode, HttpStatus } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { LegacyLogger } from '@src/core/logger';
@@ -29,7 +30,7 @@ import { SchoolExternalTool } from '../domain';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
-@Controller('tools/school')
+@Controller('tools/school-external-tools')
 export class ToolSchoolController {
 	constructor(
 		private readonly schoolExternalToolUc: SchoolExternalToolUc,
@@ -42,6 +43,7 @@ export class ToolSchoolController {
 	@ApiFoundResponse({ description: 'SchoolExternalTools has been found.', type: ExternalToolSearchListResponse })
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
+	@ApiOperation({ summary: 'Returns a list of SchoolExternalTools for a given school' })
 	async getSchoolExternalTools(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() schoolExternalToolParams: SchoolExternalToolSearchParams
@@ -56,6 +58,7 @@ export class ToolSchoolController {
 	@Get(':schoolExternalToolId')
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
+	@ApiOperation({ summary: 'Returns a SchoolExternalTool for the given id' })
 	async getSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams
@@ -73,6 +76,7 @@ export class ToolSchoolController {
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
 	@ApiBadRequestResponse({ type: ValidationError, description: 'Request data has invalid format.' })
+	@ApiOperation({ summary: 'Updates a SchoolExternalTool' })
 	async updateSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams,
@@ -93,6 +97,8 @@ export class ToolSchoolController {
 	@Delete(':schoolExternalToolId')
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
+	@ApiOperation({ summary: 'Deletes a SchoolExternalTool' })
+	@HttpCode(HttpStatus.NO_CONTENT)
 	async deleteSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams
@@ -112,6 +118,7 @@ export class ToolSchoolController {
 	@ApiUnprocessableEntityResponse()
 	@ApiUnauthorizedResponse()
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
+	@ApiOperation({ summary: 'Creates a SchoolExternalTool' })
 	async createSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: SchoolExternalToolPostParams

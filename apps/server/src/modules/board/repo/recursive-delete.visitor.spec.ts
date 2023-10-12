@@ -1,11 +1,13 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import {
 	columnBoardFactory,
 	columnFactory,
+	externalToolElementFactory,
 	fileElementFactory,
+	linkElementFactory,
 	setupEntities,
 	submissionContainerElementFactory,
 	submissionItemFactory,
@@ -144,6 +146,26 @@ describe(RecursiveDeleteVisitor.name, () => {
 		});
 	});
 
+	describe('visitLinkElementAsync', () => {
+		const setup = () => {
+			const childLinkElement = linkElementFactory.build();
+			const linkElement = linkElementFactory.build({
+				children: [childLinkElement],
+			});
+
+			return { linkElement, childLinkElement };
+		};
+
+		it('should call entity remove', async () => {
+			const { linkElement, childLinkElement } = setup();
+
+			await service.visitLinkElementAsync(linkElement);
+
+			expect(em.remove).toHaveBeenCalledWith(em.getReference(linkElement.constructor, linkElement.id));
+			expect(em.remove).toHaveBeenCalledWith(em.getReference(childLinkElement.constructor, childLinkElement.id));
+		});
+	});
+
 	describe('visitSubmissionContainerElementAsync', () => {
 		const setup = () => {
 			const childSubmissionContainerElement = submissionContainerElementFactory.build();
@@ -185,6 +207,28 @@ describe(RecursiveDeleteVisitor.name, () => {
 
 			expect(em.remove).toHaveBeenCalledWith(em.getReference(submissionItem.constructor, submissionItem.id));
 			expect(em.remove).toHaveBeenCalledWith(em.getReference(childSubmissionItem.constructor, childSubmissionItem.id));
+		});
+	});
+
+	describe('visitExternalToolElementAsync', () => {
+		const setup = () => {
+			const childExternalToolElement = externalToolElementFactory.build();
+			const externalToolElement = externalToolElementFactory.build({
+				children: [childExternalToolElement],
+			});
+
+			return { externalToolElement, childExternalToolElement };
+		};
+
+		it('should call entity remove', async () => {
+			const { externalToolElement, childExternalToolElement } = setup();
+
+			await service.visitExternalToolElementAsync(externalToolElement);
+
+			expect(em.remove).toHaveBeenCalledWith(em.getReference(externalToolElement.constructor, externalToolElement.id));
+			expect(em.remove).toHaveBeenCalledWith(
+				em.getReference(childExternalToolElement.constructor, childExternalToolElement.id)
+			);
 		});
 	});
 });

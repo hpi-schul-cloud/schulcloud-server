@@ -1,14 +1,14 @@
 import { Entity, ManyToOne } from '@mikro-orm/core';
-import { Lesson } from '../lesson.entity';
+import { LessonEntity } from '../lesson.entity';
 import { BoardElement, BoardElementType } from './boardelement.entity';
 
 @Entity({ discriminatorValue: BoardElementType.Lesson })
 export class LessonBoardElement extends BoardElement {
-	constructor(props: { target: Lesson }) {
+	constructor(props: { target: LessonEntity }) {
 		super(props);
 		this.boardElementType = BoardElementType.Lesson;
 	}
 
-	@ManyToOne('Lesson')
-	target!: Lesson;
+	@ManyToOne('LessonEntity')
+	target!: LessonEntity;
 }

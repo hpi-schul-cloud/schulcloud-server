@@ -97,9 +97,9 @@ export class GlobalErrorFilter<T extends IError | undefined> implements Exceptio
 		return new ErrorResponse(type, title, msg, code);
 	}
 
-	private createErrorResponseForUnknownError(error?: unknown): ErrorResponse {
-		const unknownError = new InternalServerErrorException(error);
-		const response = this.createErrorResponseForNestHttpException(unknownError);
+	private createErrorResponseForUnknownError(): ErrorResponse {
+		const error = new InternalServerErrorException();
+		const response = this.createErrorResponseForNestHttpException(error);
 
 		return response;
 	}

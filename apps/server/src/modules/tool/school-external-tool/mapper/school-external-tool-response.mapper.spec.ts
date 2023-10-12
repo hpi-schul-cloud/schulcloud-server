@@ -11,20 +11,7 @@ describe('SchoolExternalToolResponseMapper', () => {
 		mapper = new SchoolExternalToolResponseMapper();
 	});
 
-	describe('mapToSearchListResponse is called', () => {
-		const setup = () => {
-			const do1: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-			const do2: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-
-			const dos: SchoolExternalTool[] = [do1, do2];
-
-			return {
-				dos,
-				do1,
-				do2,
-			};
-		};
-
+	describe('mapToSearchListResponse', () => {
 		it('should return a schoolExternalToolResponse', () => {
 			const response: SchoolExternalToolSearchListResponse = mapper.mapToSearchListResponse([]);
 
@@ -32,9 +19,22 @@ describe('SchoolExternalToolResponseMapper', () => {
 		});
 
 		describe('when parameter are given', () => {
+			const setup = () => {
+				const do1: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+				const do2: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+				do2.status = undefined;
+
+				const dos: SchoolExternalTool[] = [do1, do2];
+
+				return {
+					dos,
+					do1,
+					do2,
+				};
+			};
+
 			it('should map domain objects correctly', () => {
 				const { dos, do1, do2 } = setup();
-				do2.status = undefined;
 
 				const response: SchoolExternalToolSearchListResponse = mapper.mapToSearchListResponse(dos);
 
@@ -74,11 +74,23 @@ describe('SchoolExternalToolResponseMapper', () => {
 		});
 
 		describe('when optional parameter are missing', () => {
-			it('should set defaults', () => {
-				const { dos, do1 } = setup();
+			const setup = () => {
+				const do1: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 				do1.id = undefined;
 				do1.name = undefined;
 				do1.status = undefined;
+
+				const do2: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+
+				const dos: SchoolExternalTool[] = [do1, do2];
+
+				return {
+					dos,
+				};
+			};
+
+			it('should set defaults', () => {
+				const { dos } = setup();
 
 				const response: SchoolExternalToolSearchListResponse = mapper.mapToSearchListResponse(dos);
 

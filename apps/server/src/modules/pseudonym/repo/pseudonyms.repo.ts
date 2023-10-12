@@ -1,7 +1,7 @@
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId, Pseudonym } from '@shared/domain';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { IPseudonymEntityProps, PseudonymEntity } from '../entity';
+import { PseudonymEntity, PseudonymEntityProps } from '../entity';
 
 @Injectable()
 export class PseudonymsRepo {
@@ -46,7 +46,7 @@ export class PseudonymsRepo {
 			.getUnitOfWork()
 			.getById<PseudonymEntity>(PseudonymEntity.name, domainObject.id);
 
-		const entityProps: IPseudonymEntityProps = this.mapDomainObjectToEntityProperties(domainObject);
+		const entityProps: PseudonymEntityProps = this.mapDomainObjectToEntityProperties(domainObject);
 		let entity: PseudonymEntity = new PseudonymEntity(entityProps);
 
 		if (existing) {
@@ -79,8 +79,9 @@ export class PseudonymsRepo {
 		});
 	}
 
-	protected mapDomainObjectToEntityProperties(entityDO: Pseudonym): IPseudonymEntityProps {
+	protected mapDomainObjectToEntityProperties(entityDO: Pseudonym): PseudonymEntityProps {
 		return {
+			id: entityDO.id,
 			pseudonym: entityDO.pseudonym,
 			toolId: new ObjectId(entityDO.toolId),
 			userId: new ObjectId(entityDO.userId),

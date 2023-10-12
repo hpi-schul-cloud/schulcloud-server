@@ -10,7 +10,7 @@ export interface IStorageProviderProperties {
 }
 
 @Entity({ tableName: 'storageproviders' })
-export class StorageProvider extends BaseEntityWithTimestamps {
+export class StorageProviderEntity extends BaseEntityWithTimestamps {
 	@Property()
 	endpointUrl: string;
 

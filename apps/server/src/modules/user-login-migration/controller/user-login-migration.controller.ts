@@ -1,9 +1,11 @@
-import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import {
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
+	ApiNoContentResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
+	ApiOperation,
 	ApiTags,
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
@@ -19,6 +21,7 @@ import {
 } from '../error';
 import { UserLoginMigrationMapper } from '../mapper';
 import {
+	CloseUserLoginMigrationUc,
 	RestartUserLoginMigrationUc,
 	StartUserLoginMigrationUc,
 	ToggleUserLoginMigrationUc,
@@ -31,6 +34,7 @@ import {
 	UserLoginMigrationSearchParams,
 } from './dto';
 import { Oauth2MigrationParams } from './dto/oauth2-migration.params';
+import { SchoolIdParams } from './dto/request/school-id.params';
 import { UserLoginMigrationMandatoryParams } from './dto/request/user-login-migration-mandatory.params';
 
 @ApiTags('UserLoginMigration')
@@ -41,13 +45,18 @@ export class UserLoginMigrationController {
 		private readonly userLoginMigrationUc: UserLoginMigrationUc,
 		private readonly startUserLoginMigrationUc: StartUserLoginMigrationUc,
 		private readonly restartUserLoginMigrationUc: RestartUserLoginMigrationUc,
-		private readonly toggleUserLoginMigrationUc: ToggleUserLoginMigrationUc
+		private readonly toggleUserLoginMigrationUc: ToggleUserLoginMigrationUc,
+		private readonly closeUserLoginMigrationUc: CloseUserLoginMigrationUc
 	) {}
 
 	@Get()
 	@ApiForbiddenResponse()
+	@ApiOperation({
+		summary: 'Get UserLoginMigrations',
+		description: 'Currently there can only be one migration for a user. Therefore only one migration is returned.',
+	})
 	@ApiOkResponse({ description: 'UserLoginMigrations has been found.', type: UserLoginMigrationSearchListResponse })
-	@ApiInternalServerErrorResponse({ description: 'Cannot find Sanis system information.' })
+	@ApiInternalServerErrorResponse({ description: 'Cannot find target system information.' })
 	async getMigrations(
 		@CurrentUser() user: ICurrentUser,
 		@Query() params: UserLoginMigrationSearchParams
@@ -70,6 +79,25 @@ export class UserLoginMigrationController {
 			undefined,
 			undefined
 		);
+
+		return response;
+	}
+
+	@Get('schools/:schoolId')
+	@ApiForbiddenResponse()
+	@ApiOkResponse({ description: 'UserLoginMigrations has been found', type: UserLoginMigrationResponse })
+	@ApiNotFoundResponse({ description: 'Cannot find UserLoginMigration' })
+	async findUserLoginMigrationBySchool(
+		@CurrentUser() user: ICurrentUser,
+		@Param() params: SchoolIdParams
+	): Promise<UserLoginMigrationResponse> {
+		const userLoginMigration: UserLoginMigrationDO = await this.userLoginMigrationUc.findUserLoginMigrationBySchool(
+			user.userId,
+			params.schoolId
+		);
+
+		const response: UserLoginMigrationResponse =
+			UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(userLoginMigration);
 
 		return response;
 	}
@@ -151,6 +179,37 @@ export class UserLoginMigrationController {
 			UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(migrationDto);
 
 		return migrationResponse;
+	}
+
+	@Post('close')
+	@ApiUnprocessableEntityResponse({
+		description: 'User login migration is already closed and cannot be modified. Restart is possible.',
+		type: UserLoginMigrationAlreadyClosedLoggableException,
+	})
+	@ApiUnprocessableEntityResponse({
+		description: 'User login migration is already closed and cannot be modified. It cannot be restarted.',
+		type: UserLoginMigrationGracePeriodExpiredLoggableException,
+	})
+	@ApiNotFoundResponse({
+		description: 'User login migration does not exist',
+		type: UserLoginMigrationNotFoundLoggableException,
+	})
+	@ApiOkResponse({ description: 'User login migration closed', type: UserLoginMigrationResponse })
+	@ApiUnauthorizedResponse()
+	@ApiForbiddenResponse()
+	@ApiNoContentResponse({ description: 'User login migration was reverted' })
+	async closeMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse | undefined> {
+		const userLoginMigration: UserLoginMigrationDO | undefined = await this.closeUserLoginMigrationUc.closeMigration(
+			currentUser.userId,
+			currentUser.schoolId
+		);
+
+		if (userLoginMigration) {
+			const migrationResponse: UserLoginMigrationResponse =
+				UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(userLoginMigration);
+			return migrationResponse;
+		}
+		return undefined;
 	}
 
 	@Post('migrate-to-oauth2')

@@ -57,10 +57,10 @@ describe('AntivirusService', () => {
 				return { requestToken, expectedParams };
 			};
 
-			it('should send given data to queue', () => {
+			it('should send given data to queue', async () => {
 				const { requestToken, expectedParams } = setup();
 
-				service.send(requestToken);
+				await service.send(requestToken);
 
 				expect(amqpConnection.publish).toHaveBeenCalledWith(...expectedParams);
 			});
@@ -70,17 +70,15 @@ describe('AntivirusService', () => {
 			const setup = () => {
 				const requestToken = uuid();
 
-				amqpConnection.publish.mockImplementationOnce(() => {
-					throw new Error('fail');
-				});
+				amqpConnection.publish.mockRejectedValueOnce(new Error('fail'));
 
 				return { requestToken };
 			};
 
-			it('should throw with InternalServerErrorException by error', () => {
+			it('should throw with InternalServerErrorException by error', async () => {
 				const { requestToken } = setup();
 
-				expect(() => service.send(requestToken)).toThrow(InternalServerErrorException);
+				await expect(() => service.send(requestToken)).rejects.toThrowError(InternalServerErrorException);
 			});
 		});
 	});

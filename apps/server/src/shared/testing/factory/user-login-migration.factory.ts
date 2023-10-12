@@ -1,10 +1,10 @@
-import { IUserLoginMigration, UserLoginMigration } from '../../domain/entity/user-login-migration.entity';
+import { IUserLoginMigration, UserLoginMigrationEntity } from '../../domain/entity/user-login-migration.entity';
 import { BaseFactory } from './base.factory';
 import { schoolFactory } from './school.factory';
 import { systemFactory } from './system.factory';
 
-export const userLoginMigrationFactory = BaseFactory.define<UserLoginMigration, IUserLoginMigration>(
-	UserLoginMigration,
+export const userLoginMigrationFactory = BaseFactory.define<UserLoginMigrationEntity, IUserLoginMigration>(
+	UserLoginMigrationEntity,
 	() => {
 		return {
 			school: schoolFactory.buildWithId(),

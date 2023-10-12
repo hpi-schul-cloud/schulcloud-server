@@ -23,6 +23,92 @@ describe('CommonToolValidationService', () => {
 		service = module.get(CommonToolValidationService);
 	});
 
+	describe('isValueValidForType', () => {
+		describe('when parameter type is string', () => {
+			it('should return true', () => {
+				const result: boolean = service.isValueValidForType(CustomParameterType.STRING, 'test');
+
+				expect(result).toEqual(true);
+			});
+		});
+
+		describe('when parameter type is boolean', () => {
+			describe('when value is true', () => {
+				it('should return true', () => {
+					const result: boolean = service.isValueValidForType(CustomParameterType.BOOLEAN, 'true');
+
+					expect(result).toEqual(true);
+				});
+			});
+
+			describe('when value is false', () => {
+				it('should return true', () => {
+					const result: boolean = service.isValueValidForType(CustomParameterType.BOOLEAN, 'false');
+
+					expect(result).toEqual(true);
+				});
+			});
+
+			describe('when value is not true or false', () => {
+				it('should return false', () => {
+					const result: boolean = service.isValueValidForType(CustomParameterType.BOOLEAN, 'other');
+
+					expect(result).toEqual(false);
+				});
+			});
+		});
+
+		describe('when parameter type is number', () => {
+			describe('when value is a number', () => {
+				it('should return true', () => {
+					const result: boolean = service.isValueValidForType(CustomParameterType.NUMBER, '1234');
+
+					expect(result).toEqual(true);
+				});
+			});
+
+			describe('when value is not a number', () => {
+				it('should return false', () => {
+					const result: boolean = service.isValueValidForType(CustomParameterType.NUMBER, 'NaN');
+
+					expect(result).toEqual(false);
+				});
+			});
+		});
+
+		describe('when defining a value for parameter of type auto_contextId', () => {
+			it('should return false', () => {
+				const result: boolean = service.isValueValidForType(CustomParameterType.AUTO_CONTEXTID, 'test');
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when defining a value for parameter of type auto_contextId', () => {
+			it('should return false', () => {
+				const result: boolean = service.isValueValidForType(CustomParameterType.AUTO_CONTEXTNAME, 'test');
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when defining a value for parameter of type auto_contextId', () => {
+			it('should return false', () => {
+				const result: boolean = service.isValueValidForType(CustomParameterType.AUTO_SCHOOLID, 'test');
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when defining a value for parameter of type auto_contextId', () => {
+			it('should return false', () => {
+				const result: boolean = service.isValueValidForType(CustomParameterType.AUTO_SCHOOLNUMBER, 'test');
+
+				expect(result).toEqual(false);
+			});
+		});
+	});
+
 	describe('checkForDuplicateParameters', () => {
 		describe('when given parameters has a case sensitive duplicate', () => {
 			const setup = () => {
@@ -503,126 +589,6 @@ describe('CommonToolValidationService', () => {
 
 					expect(func).toThrowError('tool_param_type_mismatch');
 				});
-			});
-		});
-
-		describe('when checking parameter type auto_contextId', () => {
-			const setup = () => {
-				const correctTypeParam: CustomParameter = customParameterFactory.build({
-					name: 'correctType',
-					scope: CustomParameterScope.SCHOOL,
-					type: CustomParameterType.AUTO_CONTEXTID,
-				});
-
-				const { externalTool, schoolExternalTool } = createTools(
-					{ parameters: [correctTypeParam] },
-					{
-						parameters: [{ name: correctTypeParam.name, value: 'irgendeineId123' }],
-					}
-				);
-
-				return {
-					externalTool,
-					schoolExternalTool,
-				};
-			};
-
-			it('should return without error', () => {
-				const { externalTool, schoolExternalTool } = setup();
-
-				const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
-
-				expect(func).not.toThrowError('tool_param_type_mismatch');
-			});
-		});
-
-		describe('when checking parameter type auto_contextName', () => {
-			const setup = () => {
-				const correctTypeParam: CustomParameter = customParameterFactory.build({
-					name: 'correctType',
-					scope: CustomParameterScope.SCHOOL,
-					type: CustomParameterType.AUTO_CONTEXTNAME,
-				});
-
-				const { externalTool, schoolExternalTool } = createTools(
-					{ parameters: [correctTypeParam] },
-					{
-						parameters: [{ name: correctTypeParam.name, value: 'irgendeineId123' }],
-					}
-				);
-
-				return {
-					externalTool,
-					schoolExternalTool,
-				};
-			};
-
-			it('should return without error', () => {
-				const { externalTool, schoolExternalTool } = setup();
-
-				const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
-
-				expect(func).not.toThrowError('tool_param_type_mismatch');
-			});
-		});
-
-		describe('when checking parameter type auto_schoolId', () => {
-			const setup = () => {
-				const correctTypeParam: CustomParameter = customParameterFactory.build({
-					name: 'correctType',
-					scope: CustomParameterScope.SCHOOL,
-					type: CustomParameterType.AUTO_SCHOOLID,
-				});
-
-				const { externalTool, schoolExternalTool } = createTools(
-					{ parameters: [correctTypeParam] },
-					{
-						parameters: [{ name: correctTypeParam.name, value: 'irgendeineId123' }],
-					}
-				);
-
-				return {
-					externalTool,
-					schoolExternalTool,
-				};
-			};
-
-			it('should return without error', () => {
-				const { externalTool, schoolExternalTool } = setup();
-
-				const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
-
-				expect(func).not.toThrowError('tool_param_type_mismatch');
-			});
-		});
-
-		describe('when checking parameter type auto_schoolnumber', () => {
-			const setup = () => {
-				const correctTypeParam: CustomParameter = customParameterFactory.build({
-					name: 'correctType',
-					scope: CustomParameterScope.SCHOOL,
-					type: CustomParameterType.AUTO_SCHOOLNUMBER,
-				});
-
-				const { externalTool, schoolExternalTool } = createTools(
-					{ parameters: [correctTypeParam] },
-					{
-						parameters: [{ name: correctTypeParam.name, value: 'irgendeineId123' }],
-					}
-				);
-
-				return {
-					externalTool,
-					schoolExternalTool,
-				};
-			};
-
-			it('should return without error', () => {
-				const { externalTool, schoolExternalTool } = setup();
-
-				const func = () => service.checkCustomParameterEntries(externalTool, schoolExternalTool);
-
-				expect(func).not.toThrowError('tool_param_type_mismatch');
 			});
 		});
 

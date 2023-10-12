@@ -49,7 +49,7 @@ describe('SchoolExternalToolService', () => {
 		};
 	};
 
-	describe('findSchoolExternalTools is called', () => {
+	describe('findSchoolExternalTools', () => {
 		describe('when called with query', () => {
 			it('should call repo with query', async () => {
 				const { schoolExternalTool } = setup();
@@ -70,7 +70,7 @@ describe('SchoolExternalToolService', () => {
 		});
 	});
 
-	describe('enrichDataFromExternalTool is called', () => {
+	describe('enrichDataFromExternalTool', () => {
 		it('should call the externalToolService', async () => {
 			const { schoolExternalTool } = setup();
 			schoolExternalToolRepo.find.mockResolvedValue([schoolExternalTool]);
@@ -124,7 +124,7 @@ describe('SchoolExternalToolService', () => {
 		});
 	});
 
-	describe('deleteSchoolExternalToolById is called', () => {
+	describe('deleteSchoolExternalToolById', () => {
 		describe('when schoolExternalToolId is given', () => {
 			it('should call the schoolExternalToolRepo', async () => {
 				const { schoolExternalToolId } = setup();
@@ -136,7 +136,7 @@ describe('SchoolExternalToolService', () => {
 		});
 	});
 
-	describe('getSchoolExternalToolById is called', () => {
+	describe('getSchoolExternalToolById', () => {
 		describe('when schoolExternalToolId is given', () => {
 			it('should call schoolExternalToolRepo.findById', async () => {
 				const { schoolExternalToolId } = setup();
@@ -148,7 +148,7 @@ describe('SchoolExternalToolService', () => {
 		});
 	});
 
-	describe('saveSchoolExternalTool is called', () => {
+	describe('saveSchoolExternalTool', () => {
 		describe('when schoolExternalTool is given', () => {
 			it('should call schoolExternalToolRepo.save', async () => {
 				const { schoolExternalTool } = setup();

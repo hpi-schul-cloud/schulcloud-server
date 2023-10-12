@@ -2,31 +2,37 @@ import { Injectable } from '@nestjs/common';
 import { EntityId, IFindOptions, Page, Permission, User } from '@shared/domain';
 import { AuthorizationService } from '@src/modules/authorization';
 import { ExternalToolSearchQuery } from '../../common/interface';
-import { ExternalToolService, ExternalToolValidationService } from '../service';
+import { ExternalTool, ExternalToolConfig } from '../domain';
+import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
-import { ExternalToolConfig, ExternalTool } from '../domain';
 
 @Injectable()
 export class ExternalToolUc {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly toolValidationService: ExternalToolValidationService
+		private readonly toolValidationService: ExternalToolValidationService,
+		private readonly externalToolLogoService: ExternalToolLogoService
 	) {}
 
 	async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
-		const externalTool = new ExternalTool({ ...externalToolCreate });
-
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+
+		const externalTool = new ExternalTool({ ...externalToolCreate });
+		externalTool.logo = await this.externalToolLogoService.fetchLogo(externalTool);
+
 		await this.toolValidationService.validateCreate(externalTool);
 
-		const tool: Promise<ExternalTool> = this.externalToolService.createExternalTool(externalTool);
+		const tool: ExternalTool = await this.externalToolService.createExternalTool(externalTool);
 
 		return tool;
 	}
 
 	async updateExternalTool(userId: EntityId, toolId: string, externalTool: ExternalToolUpdate): Promise<ExternalTool> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+
+		externalTool.logo = await this.externalToolLogoService.fetchLogo(externalTool);
+
 		await this.toolValidationService.validateUpdate(toolId, externalTool);
 
 		const loaded: ExternalTool = await this.externalToolService.findExternalToolById(toolId);
@@ -38,7 +44,8 @@ export class ExternalToolUc {
 			version: loaded.version,
 		});
 
-		const saved = await this.externalToolService.updateExternalTool(toUpdate, loaded);
+		const saved: ExternalTool = await this.externalToolService.updateExternalTool(toUpdate, loaded);
+
 		return saved;
 	}
 

@@ -4,6 +4,7 @@ import { ConsoleWriterModule } from '@shared/infra/console';
 import { CourseRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { FilesStorageClientModule } from '../files-storage-client';
+import { UserModule } from '../user';
 import { BoardDoRepo, BoardNodeRepo } from './repo';
 import { RecursiveDeleteVisitor } from './repo/recursive-delete.vistor';
 import {
@@ -13,12 +14,16 @@ import {
 	ColumnBoardService,
 	ColumnService,
 	ContentElementService,
+	OpenGraphProxyService,
+	SubmissionItemService,
 } from './service';
-import { SubmissionItemService } from './service/submission-item.service';
+import { BoardDoCopyService, SchoolSpecificFileCopyServiceFactory } from './service/board-do-copy-service';
+import { ColumnBoardCopyService } from './service/column-board-copy.service';
 
 @Module({
-	imports: [ConsoleWriterModule, FilesStorageClientModule, LoggerModule],
+	imports: [ConsoleWriterModule, FilesStorageClientModule, LoggerModule, UserModule],
 	providers: [
+		BoardDoAuthorizableService,
 		BoardDoRepo,
 		BoardDoService,
 		BoardNodeRepo,
@@ -26,19 +31,23 @@ import { SubmissionItemService } from './service/submission-item.service';
 		ColumnBoardService,
 		ColumnService,
 		ContentElementService,
-		SubmissionItemService,
-		RecursiveDeleteVisitor,
 		ContentElementFactory,
-		BoardDoAuthorizableService,
 		CourseRepo, // TODO: import learnroom module instead. This is currently not possible due to dependency cycle with authorisation service
+		RecursiveDeleteVisitor,
+		SubmissionItemService,
+		BoardDoCopyService,
+		ColumnBoardCopyService,
+		SchoolSpecificFileCopyServiceFactory,
+		OpenGraphProxyService,
 	],
 	exports: [
+		BoardDoAuthorizableService,
+		CardService,
 		ColumnBoardService,
 		ColumnService,
-		CardService,
 		ContentElementService,
-		BoardDoAuthorizableService,
 		SubmissionItemService,
+		ColumnBoardCopyService,
 	],
 })
 export class BoardModule {}

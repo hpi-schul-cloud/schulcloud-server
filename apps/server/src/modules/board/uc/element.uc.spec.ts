@@ -98,7 +98,7 @@ describe(ElementUc.name, () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const fileElement = fileElementFactory.build();
-				const content = { caption: 'this has been updated' };
+				const content = { caption: 'this has been updated', alternativeText: 'this altText has been updated' };
 
 				const elementSpy = elementService.findById.mockResolvedValue(fileElement);
 
@@ -137,7 +137,7 @@ describe(ElementUc.name, () => {
 			it('should throw', async () => {
 				const { fileElement, user } = setup();
 
-				await expect(uc.createSubmissionItem(user.id, fileElement.id)).rejects.toThrowError(
+				await expect(uc.createSubmissionItem(user.id, fileElement.id, true)).rejects.toThrowError(
 					'Cannot create submission-item for non submission-container-element'
 				);
 			});
@@ -158,7 +158,7 @@ describe(ElementUc.name, () => {
 			it('should throw', async () => {
 				const { submissionContainer, user } = setup();
 
-				await expect(uc.createSubmissionItem(user.id, submissionContainer.id)).rejects.toThrowError(
+				await expect(uc.createSubmissionItem(user.id, submissionContainer.id, true)).rejects.toThrowError(
 					'Children of submission-container-element must be of type submission-item'
 				);
 			});
@@ -179,7 +179,7 @@ describe(ElementUc.name, () => {
 			it('should throw', async () => {
 				const { submissionContainer, user } = setup();
 
-				await expect(uc.createSubmissionItem(user.id, submissionContainer.id)).rejects.toThrowError(
+				await expect(uc.createSubmissionItem(user.id, submissionContainer.id, true)).rejects.toThrowError(
 					'User is not allowed to have multiple submission-items per submission-container-element'
 				);
 			});
