@@ -100,8 +100,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="13"
-                            class="link-to-prism">apps/server/src/shared/infra/antivirus/antivirus.module.ts:13</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="8"
+                            class="link-to-prism">apps/server/src/shared/infra/antivirus/antivirus.module.ts:8</a></div>
                 </td>
             </tr>
 
@@ -154,15 +154,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module, DynamicModule } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DynamicModule, Module } from &#x27;@nestjs/common&#x27;;
+import NodeClam from &#x27;clamscan&#x27;;
 import { AntivirusService } from &#x27;./antivirus.service&#x27;;
-
-interface AntivirusModuleOptions {
-	enabled: boolean;
-	filesServiceBaseUrl: string;
-	exchange: string;
-	routingKey: string;
-}
+import { AntivirusModuleOptions } from &#x27;./interfaces&#x27;;
 
 @Module({})
 export class AntivirusModule {
@@ -180,7 +175,24 @@ export class AntivirusModule {
 						routingKey: options.routingKey,
 					},
 				},
+				{
+					provide: NodeClam,
+					useFactory: () &#x3D;&gt; {
+						const isLocalhost &#x3D; options.hostname &#x3D;&#x3D;&#x3D; &#x27;localhost&#x27;;
+
+						return new NodeClam().init({
+							debugMode: isLocalhost,
+							clamdscan: {
+								host: options.hostname,
+								port: options.port,
+								bypassTest: isLocalhost,
+								localFallback: false,
+							},
+						});
+					},
+				},
 			],
+
 			exports: [AntivirusService],
 		};
 	}

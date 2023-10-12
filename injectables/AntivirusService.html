@@ -85,6 +85,11 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#checkStream" >checkStream</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Private</span>
                                 <a href="#getUrl" >getUrl</a>
                             </li>
@@ -111,12 +116,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(amqpConnection: AmqpConnection, options: <a href="../interfaces/AntivirusServiceOptions.html" target="_self">AntivirusServiceOptions</a>)</code>
+<code>constructor(amqpConnection: AmqpConnection, options: <a href="../interfaces/AntivirusServiceOptions.html" target="_self">AntivirusServiceOptions</a>, clamConnection: NodeClam)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/shared/infra/antivirus/antivirus.service.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/shared/infra/antivirus/antivirus.service.ts:10</a></div>
                             </td>
                         </tr>
 
@@ -157,6 +162,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>clamConnection</td>
+                                                  
+                                                        <td>
+                                                                    <code>NodeClam</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -171,6 +188,78 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkStream"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>checkStream</b></span>
+                        <a href="#checkStream"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkStream(stream: Readable)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="17"
+                            class="link-to-prism">apps/server/src/shared/infra/antivirus/antivirus.service.ts:17</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>stream</td>
+                                    <td>
+                                            <code>Readable</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>unknown</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -193,8 +282,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="38"
-                            class="link-to-prism">apps/server/src/shared/infra/antivirus/antivirus.service.ts:38</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="62"
+                            class="link-to-prism">apps/server/src/shared/infra/antivirus/antivirus.service.ts:62</a></div>
                 </td>
             </tr>
 
@@ -277,8 +366,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="20"
-                            class="link-to-prism">apps/server/src/shared/infra/antivirus/antivirus.service.ts:20</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="44"
+                            class="link-to-prism">apps/server/src/shared/infra/antivirus/antivirus.service.ts:44</a></div>
                 </td>
             </tr>
 
@@ -336,20 +425,44 @@
 import { Inject, Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { ErrorUtils } from &#x27;@src/core/error/utils&#x27;;
 import { API_VERSION_PATH, FilesStorageInternalActions } from &#x27;@src/modules/files-storage/files-storage.const&#x27;;
-
-interface AntivirusServiceOptions {
-	enabled: boolean;
-	filesServiceBaseUrl: string;
-	exchange: string;
-	routingKey: string;
-}
+import NodeClam from &#x27;clamscan&#x27;;
+import { Readable } from &#x27;stream&#x27;;
+import { AntivirusServiceOptions, ScanResult } from &#x27;./interfaces&#x27;;
 
 @Injectable()
 export class AntivirusService {
 	constructor(
 		private readonly amqpConnection: AmqpConnection,
-		@Inject(&#x27;ANTIVIRUS_SERVICE_OPTIONS&#x27;) private readonly options: AntivirusServiceOptions
+		@Inject(&#x27;ANTIVIRUS_SERVICE_OPTIONS&#x27;) private readonly options: AntivirusServiceOptions,
+		private readonly clamConnection: NodeClam
 	) {}
+
+	public async checkStream(stream: Readable) {
+		const scanResult: ScanResult &#x3D; {
+			virus_detected: undefined,
+			virus_signature: undefined,
+			error: undefined,
+		};
+		try {
+			const { isInfected, viruses } &#x3D; await this.clamConnection.scanStream(stream);
+			if (isInfected &#x3D;&#x3D;&#x3D; true) {
+				scanResult.virus_detected &#x3D; true;
+				scanResult.virus_signature &#x3D; viruses.join(&#x27;,&#x27;);
+			} else if (isInfected &#x3D;&#x3D;&#x3D; null) {
+				scanResult.virus_detected &#x3D; undefined;
+				scanResult.error &#x3D; &#x27;&#x27;;
+			} else {
+				scanResult.virus_detected &#x3D; false;
+			}
+		} catch (err) {
+			throw new InternalServerErrorException(
+				null,
+				ErrorUtils.createHttpExceptionOptions(err, &#x27;AntivirusService:checkStream&#x27;)
+			);
+		}
+
+		return scanResult;
+	}
 
 	public async send(requestToken: string | undefined): Promise&lt;void&gt; {
 		try {

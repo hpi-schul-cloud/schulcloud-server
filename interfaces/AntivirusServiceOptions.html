@@ -71,7 +71,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/infra/antivirus/antivirus.service.ts</code>
+            <code>apps/server/src/shared/infra/antivirus/interfaces/antivirus.ts</code>
         </p>
 
 
@@ -261,49 +261,26 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AmqpConnection } from &#x27;@golevelup/nestjs-rabbitmq&#x27;;
-import { Inject, Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
-import { ErrorUtils } from &#x27;@src/core/error/utils&#x27;;
-import { API_VERSION_PATH, FilesStorageInternalActions } from &#x27;@src/modules/files-storage/files-storage.const&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export interface AntivirusModuleOptions {
+	enabled: boolean;
+	filesServiceBaseUrl: string;
+	exchange: string;
+	routingKey: string;
+	hostname: string;
+	port: number;
+}
 
-interface AntivirusServiceOptions {
+export interface AntivirusServiceOptions {
 	enabled: boolean;
 	filesServiceBaseUrl: string;
 	exchange: string;
 	routingKey: string;
 }
 
-@Injectable()
-export class AntivirusService {
-	constructor(
-		private readonly amqpConnection: AmqpConnection,
-		@Inject(&#x27;ANTIVIRUS_SERVICE_OPTIONS&#x27;) private readonly options: AntivirusServiceOptions
-	) {}
-
-	public async send(requestToken: string | undefined): Promise&lt;void&gt; {
-		try {
-			if (this.options.enabled &amp;&amp; requestToken) {
-				const downloadUri &#x3D; this.getUrl(FilesStorageInternalActions.downloadBySecurityToken, requestToken);
-				const callbackUri &#x3D; this.getUrl(FilesStorageInternalActions.updateSecurityStatus, requestToken);
-
-				await this.amqpConnection.publish(
-					this.options.exchange,
-					this.options.routingKey,
-					{ download_uri: downloadUri, callback_uri: callbackUri },
-					{ persistent: true }
-				);
-			}
-		} catch (err) {
-			throw new InternalServerErrorException(null, ErrorUtils.createHttpExceptionOptions(err, &#x27;AntivirusService:send&#x27;));
-		}
-	}
-
-	private getUrl(path: string, token: string): string {
-		const newPath &#x3D; path.replace(&#x27;:token&#x27;, encodeURIComponent(token));
-		const url &#x3D; new URL(&#x60;${API_VERSION_PATH}${newPath}&#x60;, this.options.filesServiceBaseUrl);
-
-		return url.href;
-	}
+export interface ScanResult {
+	virus_detected?: boolean;
+	virus_signature?: string;
+	error?: string;
 }
 </code></pre>
     </div>

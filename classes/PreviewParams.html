@@ -162,7 +162,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="125" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.params.ts:125</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="126" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.params.ts:126</a></div>
                         </td>
                     </tr>
 
@@ -201,7 +201,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="112" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.params.ts:112</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="113" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.params.ts:113</a></div>
                         </td>
                     </tr>
 
@@ -240,7 +240,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="117" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.params.ts:117</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="118" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.params.ts:118</a></div>
                         </td>
                     </tr>
 
@@ -262,6 +262,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
 import { StringToBoolean } from &#x27;@shared/controller&#x27;;
 import { EntityId } from &#x27;@shared/domain&#x27;;
+import { ScanResult } from &#x27;@shared/infra/antivirus&#x27;;
 import { Allow, IsBoolean, IsEnum, IsMongoId, IsNotEmpty, IsOptional, IsString, ValidateNested } from &#x27;class-validator&#x27;;
 import { FileRecordParentType } from &#x27;../../entity&#x27;;
 import { PreviewOutputMimeTypes, PreviewWidth } from &#x27;../../interface&#x27;;
@@ -312,7 +313,7 @@ export class DownloadFileParams {
 	fileName!: string;
 }
 
-export class ScanResultParams {
+export class ScanResultParams implements ScanResult {
 	@ApiProperty()
 	@Allow()
 	virus_detected?: boolean;
