@@ -31,6 +31,20 @@ export class FileElementContentBody extends ElementContentBody {
 	@ApiProperty()
 	content!: FileContentBody;
 }
+export class LinkContentBody {
+	@IsString()
+	@ApiProperty({})
+	url!: string;
+}
+
+export class LinkElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: ContentElementType.LINK })
+	type!: ContentElementType.LINK;
+
+	@ValidateNested()
+	@ApiProperty({})
+	content!: LinkContentBody;
+}
 
 export class RichTextContentBody {
 	@IsString()
@@ -89,6 +103,7 @@ export class ExternalToolElementContentBody extends ElementContentBody {
 
 export type AnyElementContentBody =
 	| FileContentBody
+	| LinkContentBody
 	| RichTextContentBody
 	| SubmissionContainerContentBody
 	| ExternalToolContentBody;
@@ -100,6 +115,7 @@ export class UpdateElementContentBodyParams {
 			property: 'type',
 			subTypes: [
 				{ value: FileElementContentBody, name: ContentElementType.FILE },
+				{ value: LinkElementContentBody, name: ContentElementType.LINK },
 				{ value: RichTextElementContentBody, name: ContentElementType.RICH_TEXT },
 				{ value: SubmissionContainerElementContentBody, name: ContentElementType.SUBMISSION_CONTAINER },
 				{ value: ExternalToolElementContentBody, name: ContentElementType.EXTERNAL_TOOL },
@@ -110,6 +126,7 @@ export class UpdateElementContentBodyParams {
 	@ApiProperty({
 		oneOf: [
 			{ $ref: getSchemaPath(FileElementContentBody) },
+			{ $ref: getSchemaPath(LinkElementContentBody) },
 			{ $ref: getSchemaPath(RichTextElementContentBody) },
 			{ $ref: getSchemaPath(SubmissionContainerElementContentBody) },
 			{ $ref: getSchemaPath(ExternalToolElementContentBody) },
@@ -117,6 +134,7 @@ export class UpdateElementContentBodyParams {
 	})
 	data!:
 		| FileElementContentBody
+		| LinkElementContentBody
 		| RichTextElementContentBody
 		| SubmissionContainerElementContentBody
 		| ExternalToolElementContentBody;

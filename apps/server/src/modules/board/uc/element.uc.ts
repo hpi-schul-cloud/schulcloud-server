@@ -28,10 +28,12 @@ export class ElementUc {
 	}
 
 	async updateElementContent(userId: EntityId, elementId: EntityId, content: AnyElementContentBody) {
-		const element = await this.elementService.findById(elementId);
+		let element = await this.elementService.findById(elementId);
 
 		await this.checkPermission(userId, element, Action.write);
-		await this.elementService.update(element, content);
+
+		element = await this.elementService.update(element, content);
+		return element;
 	}
 
 	async createSubmissionItem(
