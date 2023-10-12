@@ -10,13 +10,13 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
+import { NotImplementedException } from '@nestjs/common';
 import { Action, AuthorizationContext } from '../type';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
 import { AuthorizationContextBuilder } from '../mapper';
-import { NotImplementedException } from '@nestjs/common';
 
 describe('LessonRule', () => {
 	let rule: LessonRule;
