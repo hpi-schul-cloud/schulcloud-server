@@ -25,7 +25,8 @@ export class LessonRule implements Rule {
 
 		if (action === Action.read) {
 			hasLessonPermission = this.lessonReadPermission(user, entity);
-		} else if (action === Action.write) {
+		}
+		if (action === Action.write) {
 			hasLessonPermission = this.lessonWritePermission(user, entity);
 		}
 
@@ -59,7 +60,8 @@ export class LessonRule implements Rule {
 
 		if (entity.courseGroup) {
 			result = this.courseGroupPermission(user, entity.courseGroup, action);
-		} else if (entity.course) {
+		}
+		if (entity.course) {
 			result = this.coursePermission(user, entity.course, action); // ask course for student = read || teacher, sub-teacher = write
 		}
 

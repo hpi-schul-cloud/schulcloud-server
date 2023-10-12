@@ -29,7 +29,8 @@ export class SubmissionRule implements Rule {
 
 		if (action === Action.write) {
 			hasAccessToSubmission = this.hasWriteAccess(user, submission);
-		} else if (action === Action.read) {
+		}
+		if (action === Action.read) {
 			hasAccessToSubmission = this.hasReadAccess(user, submission);
 		}
 
