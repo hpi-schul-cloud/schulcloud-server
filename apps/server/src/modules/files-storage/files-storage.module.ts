@@ -23,6 +23,8 @@ const imports = [
 		filesServiceBaseUrl: Configuration.get('FILES_STORAGE__SERVICE_BASE_URL') as string,
 		exchange: Configuration.get('ANTIVIRUS_EXCHANGE') as string,
 		routingKey: Configuration.get('ANTIVIRUS_ROUTING_KEY') as string,
+		hostname: Configuration.get('CLAMAV__SERVICE_HOSTNAME') as string,
+		port: Configuration.get('CLAMAV__SERVICE_PORT') as number,
 	}),
 	S3ClientModule.register([s3Config]),
 ];
