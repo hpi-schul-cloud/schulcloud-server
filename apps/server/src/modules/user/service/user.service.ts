@@ -11,7 +11,7 @@ import { ICurrentUser } from '@src/modules/authentication';
 import { CurrentUserMapper } from '@src/modules/authentication/mapper';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { RoleService } from '@src/modules/role/service/role.service';
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { IUserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
@@ -109,7 +109,6 @@ export class UserService {
 	}
 
 	async deleteUser(userId: EntityId): Promise<number> {
-
 		const deletedUserNumber: Promise<number> = this.userRepo.deleteUser(userId);
 
 		return deletedUserNumber;
