@@ -11,7 +11,7 @@ const {
 	restrictToUsersOwnClasses,
 } = require('../../../../src/services/user-group/hooks/classes');
 
-describe.only('class hooks', () => {
+describe('class hooks', () => {
 	describe('sorting method', () => {
 		const defaultQuery = { year: 1, gradeLevel: 1, name: 1 };
 
@@ -68,6 +68,7 @@ describe.only('class hooks', () => {
 			configBefore = Configuration.toObject({});
 			app = await appPromise();
 			Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', 'false');
+			Configuration.set('FEATURE_GROUPS_IN_COURSE_ENABLED', 'false');
 			server = await app.listen(0);
 			nestServices = await setupNestServices(app);
 		});
