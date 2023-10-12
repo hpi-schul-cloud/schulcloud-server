@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { BoardDoAuthorizable, BoardRoles } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
-import { Action, AuthorizationContext, Rule } from '../../type';
-import { AuthorizationHelper } from '../authorization.helper';
+import { Action, AuthorizationContext, Rule } from '../type';
+import { AuthorizationHelper } from '../service/authorization.helper';
 
 @Injectable()
 export class BoardDoRule implements Rule {

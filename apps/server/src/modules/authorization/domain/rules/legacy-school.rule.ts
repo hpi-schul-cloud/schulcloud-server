@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { BaseDO, LegacySchoolDo } from '@shared/domain';
 import { User } from '@shared/domain/entity';
 import { AuthorizableObject } from '@shared/domain/domain-object';
-import { AuthorizationContext, Rule } from '../../type';
-import { AuthorizationHelper } from '../authorization.helper';
+import { AuthorizationContext, Rule } from '../type';
+import { AuthorizationHelper } from '../service/authorization.helper';
 
 /**
  * @deprecated because it uses the deprecated LegacySchoolDo.

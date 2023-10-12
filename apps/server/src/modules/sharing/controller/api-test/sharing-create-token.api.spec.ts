@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import request from 'supertest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
@@ -116,9 +116,8 @@ describe(`share token creation (api)`, () => {
 		});
 
 		it('should return status 404 when parent id is not found', async () => {
-			// validation of parentId should be failed on mongoId
 			const response = await api.post({
-				parentId: '000011112222333344445555',
+				parentId: new ObjectId().toHexString(),
 				parentType: ShareTokenParentType.Course,
 			});
 

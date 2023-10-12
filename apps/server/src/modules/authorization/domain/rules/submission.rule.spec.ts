@@ -9,8 +9,8 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { Action } from '../../type';
-import { AuthorizationHelper } from '../authorization.helper';
+import { Action } from '../type';
+import { AuthorizationHelper } from '../service/authorization.helper';
 import { SubmissionRule } from './submission.rule';
 import { TaskRule } from './task.rule';
 import { CourseRule } from './course.rule';

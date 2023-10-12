@@ -4,8 +4,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { schoolFactory, setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
-import { Action, AuthorizationContext } from '../../type';
-import { AuthorizationHelper } from '../authorization.helper';
+import { Action, AuthorizationContext } from '../type';
+import { AuthorizationHelper } from '../service/authorization.helper';
 import { UserLoginMigrationRule } from './user-login-migration.rule';
 
 describe('UserLoginMigrationRule', () => {

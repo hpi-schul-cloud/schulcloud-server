@@ -16,7 +16,7 @@ import {
 	TeamRule,
 	UserRule,
 	UserLoginMigrationRule,
-} from './rules';
+} from '../rules';
 import { RuleManager } from './rule-manager';
 
 describe('RuleManager', () => {

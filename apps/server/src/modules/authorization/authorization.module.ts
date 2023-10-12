@@ -15,7 +15,7 @@ import {
 	UserRule,
 	UserLoginMigrationRule,
 	LegacySchoolRule,
-} from './domain/service/rules';
+} from './domain/rules';
 import { AuthorizationHelper, AuthorizationService, RuleManager } from './domain';
 import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 

@@ -15,7 +15,7 @@ import {
 	TeamRule,
 	UserLoginMigrationRule,
 	UserRule,
-} from './rules';
+} from '../rules';
 
 @Injectable()
 export class RuleManager {

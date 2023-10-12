@@ -3,8 +3,8 @@ import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { BoardDoAuthorizable, BoardRoles, UserRoleEnum } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
-import { Action } from '../../type';
-import { AuthorizationHelper } from '../authorization.helper';
+import { Action } from '../type';
+import { AuthorizationHelper } from '../service/authorization.helper';
 import { BoardDoRule } from './board-do.rule';
 
 describe(BoardDoRule.name, () => {
