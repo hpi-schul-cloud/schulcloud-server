@@ -13,10 +13,7 @@ export interface TldrawConfig {
 	TLDRAW_PING_TIMEOUT: number;
 }
 
-const tldrawConnectionString: string =
-	(Configuration.get('NODE_ENV') as NodeEnvType) === NodeEnvType.TEST
-		? (Configuration.get('TLDRAW_DB_URL') as string)
-		: (Configuration.get('TLDRAW_DB_TEST_URL') as string);
+const tldrawConnectionString: string = Configuration.get('TLDRAW_DB_URL') as string;
 
 const tldrawConfig = {
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,

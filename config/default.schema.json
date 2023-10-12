@@ -1353,11 +1353,6 @@
 			"default": "mongodb://127.0.0.1:27017/tldraw",
 			"description": "DB connection url"
 		},
-		"TLDRAW_DB_TEST_URL": {
-			"type": "string",
-			"default": "mongodb://127.0.0.1:27017/tldraw-test",
-			"description": "DB connection url for testing"
-		},
 		"FEATURE_TLDRAW_ENABLED": {
 			"type": "boolean",
 			"default": true,
