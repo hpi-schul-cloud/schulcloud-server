@@ -1,11 +1,23 @@
 import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
-import { AnyContentElementResponse } from '../element';
-import { RichTextElementResponse } from '../element/rich-text-element.response';
+import {
+	AnyContentElementResponse,
+	ExternalToolElementResponse,
+	FileElementResponse,
+	LinkElementResponse,
+	RichTextElementResponse,
+	SubmissionContainerElementResponse,
+} from '../element';
 import { TimestampsResponse } from '../timestamps.response';
 import { VisibilitySettingsResponse } from './visibility-settings.response';
 
-@ApiExtraModels(RichTextElementResponse)
+@ApiExtraModels(
+	ExternalToolElementResponse,
+	FileElementResponse,
+	LinkElementResponse,
+	RichTextElementResponse,
+	SubmissionContainerElementResponse
+)
 export class CardResponse {
 	constructor({ id, title, height, elements, visibilitySettings, timestamps }: CardResponse) {
 		this.id = id;
@@ -31,7 +43,13 @@ export class CardResponse {
 	@ApiProperty({
 		type: 'array',
 		items: {
-			oneOf: [{ $ref: getSchemaPath(RichTextElementResponse) }],
+			oneOf: [
+				{ $ref: getSchemaPath(ExternalToolElementResponse) },
+				{ $ref: getSchemaPath(FileElementResponse) },
+				{ $ref: getSchemaPath(LinkElementResponse) },
+				{ $ref: getSchemaPath(RichTextElementResponse) },
+				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
+			],
 		},
 	})
 	elements: AnyContentElementResponse[];

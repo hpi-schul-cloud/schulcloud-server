@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { AccountUc } from '../uc/account.uc';
 import {
 	AccountByIdBodyParams,
@@ -33,6 +33,8 @@ export class AccountController {
 		@Query() query: AccountSearchQueryParams
 	): Promise<AccountSearchListResponse> {
 		return this.accountUc.searchAccounts(currentUser, query);
+
+		// TODO: mapping from domain to api dto should be a responsability of the controller (also every other function here)
 	}
 
 	@Get(':id')

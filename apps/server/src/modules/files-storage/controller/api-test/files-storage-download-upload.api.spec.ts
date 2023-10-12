@@ -4,7 +4,7 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { EntityId, Permission } from '@shared/domain';
-import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { AntivirusService } from '@shared/infra/antivirus';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
@@ -12,11 +12,18 @@ import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { FILES_STORAGE_S3_CONNECTION, FilesStorageTestModule } from '@src/modules/files-storage';
 import { FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { Request } from 'express';
+import FileType from 'file-type-cjs/file-type-cjs-index';
 import request from 'supertest';
 import { FileRecord } from '../../entity';
 import { ErrorType } from '../../error';
 import { TestHelper } from '../../helper/test-helper';
 import { availableParentTypes } from './mocks';
+
+jest.mock('file-type-cjs/file-type-cjs-index', () => {
+	return {
+		fileTypeStream: jest.fn(),
+	};
+});
 
 class API {
 	app: INestApplication;
@@ -136,6 +143,8 @@ describe('files-storage controller (API)', () => {
 		em.clear();
 		validId = school.id;
 		currentUser = mapUserToCurrentUser(user);
+
+		jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
 	});
 
 	describe('upload action', () => {

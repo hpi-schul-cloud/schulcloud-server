@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
-import { EntityId, System, SystemTypeEnum } from '@shared/domain';
+import { EntityId, SystemEntity, SystemTypeEnum } from '@shared/domain';
 import { IdentityManagementOauthService } from '@shared/infra/identity-management/identity-management-oauth.service';
 import { SystemRepo } from '@shared/repo';
 import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
@@ -17,13 +17,13 @@ export class SystemService {
 		let system = await this.systemRepo.findById(id);
 		[system] = await this.generateBrokerSystems([system]);
 		if (!system) {
-			throw new EntityNotFoundError(System.name, { id });
+			throw new EntityNotFoundError(SystemEntity.name, { id });
 		}
 		return SystemMapper.mapFromEntityToDto(system);
 	}
 
 	async findByType(type?: SystemTypeEnum): Promise<SystemDto[]> {
-		let systems: System[];
+		let systems: SystemEntity[];
 		if (type && type === SystemTypeEnum.OAUTH) {
 			const oauthSystems = await this.systemRepo.findByFilter(SystemTypeEnum.OAUTH);
 			const oidcSystems = await this.systemRepo.findByFilter(SystemTypeEnum.OIDC);
@@ -38,7 +38,7 @@ export class SystemService {
 	}
 
 	async save(systemDto: SystemDto): Promise<SystemDto> {
-		let system: System;
+		let system: SystemEntity;
 		if (systemDto.id) {
 			system = await this.systemRepo.findById(systemDto.id);
 			system.type = systemDto.type;
@@ -49,7 +49,7 @@ export class SystemService {
 			system.provisioningUrl = systemDto.provisioningUrl;
 			system.url = systemDto.url;
 		} else {
-			system = new System({
+			system = new SystemEntity({
 				type: systemDto.type,
 				alias: systemDto.alias,
 				displayName: systemDto.displayName,
@@ -63,15 +63,15 @@ export class SystemService {
 		return SystemMapper.mapFromEntityToDto(system);
 	}
 
-	private async generateBrokerSystems(systems: System[]): Promise<[] | System[]> {
+	private async generateBrokerSystems(systems: SystemEntity[]): Promise<[] | SystemEntity[]> {
 		if (!(await this.idmOauthService.isOauthConfigAvailable())) {
 			return systems.filter((system) => !(system.oidcConfig && !system.oauthConfig));
 		}
 		const brokerConfig = await this.idmOauthService.getOauthConfig();
-		let generatedSystem: System;
+		let generatedSystem: SystemEntity;
 		return systems.map((system) => {
 			if (system.oidcConfig && !system.oauthConfig) {
-				generatedSystem = new System({
+				generatedSystem = new SystemEntity({
 					type: SystemTypeEnum.OAUTH,
 					alias: system.alias,
 					displayName: system.displayName ? system.displayName : system.alias,

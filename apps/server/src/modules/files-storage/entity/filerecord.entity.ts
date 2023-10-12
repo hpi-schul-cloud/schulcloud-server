@@ -1,7 +1,7 @@
 import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
-import { BaseEntityWithTimestamps, type EntityId } from '@shared/domain';
+import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
 import { v4 as uuid } from 'uuid';
 import { ErrorType } from '../error';
 import { PreviewInputMimeTypes } from '../interface/preview-input-mime-types.enum';
@@ -33,13 +33,13 @@ export enum PreviewStatus {
 	PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE = 'preview_not_possible_wrong_mime_type',
 }
 
-export interface IFileSecurityCheckProperties {
+export interface IFileRecordSecurityCheckProperties {
 	status?: ScanStatus;
 	reason?: string;
 	requestToken?: string;
 }
 @Embeddable()
-export class FileSecurityCheck {
+export class FileRecordSecurityCheck {
 	@Enum()
 	status: ScanStatus = ScanStatus.PENDING;
 
@@ -55,7 +55,7 @@ export class FileSecurityCheck {
 	@Property()
 	updatedAt = new Date();
 
-	constructor(props: IFileSecurityCheckProperties) {
+	constructor(props: IFileRecordSecurityCheckProperties) {
 		if (props.status !== undefined) {
 			this.status = props.status;
 		}
@@ -111,8 +111,8 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	@Property()
 	mimeType: string; // TODO mime-type enum?
 
-	@Embedded(() => FileSecurityCheck, { object: true, nullable: false })
-	securityCheck: FileSecurityCheck;
+	@Embedded(() => FileRecordSecurityCheck, { object: true, nullable: false })
+	securityCheck: FileRecordSecurityCheck;
 
 	@Index()
 	@Enum()
@@ -161,7 +161,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		if (props.isCopyFrom) {
 			this._isCopyFrom = new ObjectId(props.isCopyFrom);
 		}
-		this.securityCheck = new FileSecurityCheck({});
+		this.securityCheck = new FileRecordSecurityCheck({});
 		this.deletedSince = props.deletedSince;
 	}
 
@@ -254,6 +254,12 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return isVerified;
 	}
 
+	public isPreviewPossible(): boolean {
+		const isPreviewPossible = Object.values<string>(PreviewInputMimeTypes).includes(this.mimeType);
+
+		return isPreviewPossible;
+	}
+
 	public getParentInfo(): IParentInfo {
 		const { parentId, parentType, schoolId } = this;
 
@@ -269,7 +275,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 			return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED;
 		}
 
-		if (!Object.values<string>(PreviewInputMimeTypes).includes(this.mimeType)) {
+		if (!this.isPreviewPossible()) {
 			return PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE;
 		}
 

@@ -66,7 +66,7 @@ export class SanisResponseMapper {
 	}
 
 	mapToExternalGroupDtos(source: SanisResponse): ExternalGroupDto[] | undefined {
-		const groups: SanisGruppenResponse[] | undefined = source.personenkontexte[0].gruppen;
+		const groups: SanisGruppenResponse[] | undefined = source.personenkontexte[0]?.gruppen;
 
 		if (!groups) {
 			return undefined;
@@ -81,26 +81,27 @@ export class SanisResponseMapper {
 				}
 
 				const sanisGroupUsers: SanisSonstigeGruppenzugehoerigeResponse[] = [
-					...(group.sonstige_gruppenzugehoerige ?? []),
 					{
 						ktid: source.personenkontexte[0].id,
 						rollen: group.gruppenzugehoerigkeit.rollen,
 					},
-				].sort((a, b) => a.ktid.localeCompare(b.ktid));
+				].filter((sanisGroupUser) => sanisGroupUser.ktid && sanisGroupUser.rollen);
 
 				const gruppenzugehoerigkeiten: ExternalGroupUserDto[] = sanisGroupUsers
 					.map((relation): ExternalGroupUserDto | null => this.mapToExternalGroupUser(relation))
 					.filter((user): user is ExternalGroupUserDto => user !== null);
 
-				return {
+				const externalOrganizationId = source.personenkontexte[0].organisation?.id;
+
+				return new ExternalGroupDto({
 					name: group.gruppe.bezeichnung,
 					type: groupType,
-					externalOrganizationId: group.gruppe.orgid,
+					externalOrganizationId,
 					from: group.gruppe.laufzeit?.von,
 					until: group.gruppe.laufzeit?.bis,
 					externalId: group.gruppe.id,
 					users: gruppenzugehoerigkeiten,
-				};
+				});
 			})
 			.filter((group): group is ExternalGroupDto => group !== null);
 

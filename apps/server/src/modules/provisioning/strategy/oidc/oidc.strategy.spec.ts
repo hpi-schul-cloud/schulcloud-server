@@ -1,11 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { UserDO } from '@shared/domain/domainobject/user.do';
+import { LegacySchoolDo, RoleName, UserDO } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { schoolDOFactory, userDoFactory } from '@shared/testing';
+import { legacySchoolDoFactory, userDoFactory } from '@shared/testing';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { externalGroupDtoFactory } from '@shared/testing/factory/external-group-dto.factory';
 import {
@@ -85,7 +83,7 @@ describe('OidcStrategy', () => {
 					schoolId: 'schoolId',
 					externalId: externalUserId,
 				});
-				const school: SchoolDO = schoolDOFactory.build({
+				const school: LegacySchoolDo = legacySchoolDoFactory.build({
 					id: schoolId,
 					name: 'schoolName',
 					externalId: externalSchoolId,
@@ -100,7 +98,7 @@ describe('OidcStrategy', () => {
 				};
 			};
 
-			it('should call the OidcProvisioningService.provisionExternalSchool', async () => {
+			it('should provision school', async () => {
 				const { oauthData } = setup();
 
 				await strategy.apply(oauthData);
@@ -137,7 +135,7 @@ describe('OidcStrategy', () => {
 					schoolId: 'schoolId',
 					externalId: externalUserId,
 				});
-				const school: SchoolDO = schoolDOFactory.build({
+				const school: LegacySchoolDo = legacySchoolDoFactory.build({
 					id: schoolId,
 					name: 'schoolName',
 					externalId: externalSchoolId,
@@ -152,7 +150,7 @@ describe('OidcStrategy', () => {
 				};
 			};
 
-			it('should call the OidcProvisioningService.provisionExternalUser', async () => {
+			it('should provision external user', async () => {
 				const { oauthData, schoolId } = setup();
 
 				await strategy.apply(oauthData);
@@ -200,7 +198,19 @@ describe('OidcStrategy', () => {
 				};
 			};
 
-			it('should call the OidcProvisioningService.provisionExternalGroup for each group', async () => {
+			it('should remove external groups and affiliation', async () => {
+				const { oauthData } = setup();
+
+				await strategy.apply(oauthData);
+
+				expect(oidcProvisioningService.removeExternalGroupsAndAffiliation).toHaveBeenCalledWith(
+					oauthData.externalUser.externalId,
+					oauthData.externalGroups,
+					oauthData.system.systemId
+				);
+			});
+
+			it('should provision every external group', async () => {
 				const { oauthData } = setup();
 
 				await strategy.apply(oauthData);
@@ -243,7 +253,15 @@ describe('OidcStrategy', () => {
 				};
 			};
 
-			it('should not call the OidcProvisioningService.provisionExternalGroup', async () => {
+			it('should not remove external groups and affiliation', async () => {
+				const { oauthData } = setup();
+
+				await strategy.apply(oauthData);
+
+				expect(oidcProvisioningService.removeExternalGroupsAndAffiliation).not.toHaveBeenCalled();
+			});
+
+			it('should not provision groups', async () => {
 				const { oauthData } = setup();
 
 				await strategy.apply(oauthData);

@@ -4,7 +4,7 @@ import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
 import { SchoolExternalToolRule } from './school-external-tool.rule';
-import { SchoolRule } from './school.rule';
+import { LegacySchoolRule } from './legacy-school.rule';
 import { SubmissionRule } from './submission.rule';
 import { TaskRule } from './task.rule';
 import { TeamRule } from './team.rule';
@@ -16,7 +16,7 @@ export * from './course-group.rule';
 export * from './course.rule';
 export * from './lesson.rule';
 export * from './school-external-tool.rule';
-export * from './school.rule';
+export * from './legacy-school.rule';
 export * from './submission.rule';
 export * from './task.rule';
 export * from './team.rule';
@@ -27,7 +27,7 @@ export const ALL_RULES = [
 	LessonRule,
 	CourseRule,
 	CourseGroupRule,
-	SchoolRule,
+	LegacySchoolRule,
 	SubmissionRule,
 	TaskRule,
 	TeamRule,

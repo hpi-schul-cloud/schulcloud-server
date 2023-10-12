@@ -1,5 +1,13 @@
 import { ForbiddenException, forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { AnyBoardDo, EntityId, SubmissionContainerElement, SubmissionItem, UserRoleEnum } from '@shared/domain';
+import {
+	AnyBoardDo,
+	EntityId,
+	isSubmissionContainerElement,
+	isSubmissionItem,
+	SubmissionItem,
+	UserBoardRoles,
+	UserRoleEnum,
+} from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Action } from '@src/modules/authorization/types/action.enum';
@@ -18,25 +26,30 @@ export class SubmissionItemUc {
 		this.logger.setContext(SubmissionItemUc.name);
 	}
 
-	async findSubmissionItems(userId: EntityId, submissionContainerId: EntityId): Promise<SubmissionItem[]> {
-		const submissionContainer = await this.getSubmissionContainer(submissionContainerId);
-		await this.checkPermission(userId, submissionContainer, Action.read);
+	async findSubmissionItems(
+		userId: EntityId,
+		submissionContainerId: EntityId
+	): Promise<{ submissionItems: SubmissionItem[]; users: UserBoardRoles[] }> {
+		const submissionContainerElement = await this.elementService.findById(submissionContainerId);
 
-		let submissionItems = submissionContainer.children as SubmissionItem[];
-
-		if (!submissionItems.every((child) => child instanceof SubmissionItem)) {
-			throw new HttpException(
-				'Children of submission-container-element must be of type submission-item',
-				HttpStatus.UNPROCESSABLE_ENTITY
-			);
+		if (!isSubmissionContainerElement(submissionContainerElement)) {
+			throw new HttpException('Id is not submission container', HttpStatus.UNPROCESSABLE_ENTITY);
 		}
 
-		const isAuthorizedStudent = await this.isAuthorizedStudent(userId, submissionContainer);
+		await this.checkPermission(userId, submissionContainerElement, Action.read);
+
+		let submissionItems = submissionContainerElement.children.filter(isSubmissionItem);
+
+		const boardAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(submissionContainerElement);
+		let users = boardAuthorizable.users.filter((user) => user.userRoleEnum === UserRoleEnum.STUDENT);
+
+		const isAuthorizedStudent = await this.isAuthorizedStudent(userId, submissionContainerElement);
 		if (isAuthorizedStudent) {
 			submissionItems = submissionItems.filter((item) => item.userId === userId);
+			users = [];
 		}
 
-		return submissionItems;
+		return { submissionItems, users };
 	}
 
 	async updateSubmissionItem(
@@ -70,18 +83,6 @@ export class SubmissionItemUc {
 		}
 
 		return false;
-	}
-
-	private async getSubmissionContainer(submissionContainerId: EntityId): Promise<SubmissionContainerElement> {
-		const submissionContainer = (await this.elementService.findById(
-			submissionContainerId
-		)) as SubmissionContainerElement;
-
-		if (!(submissionContainer instanceof SubmissionContainerElement)) {
-			throw new HttpException('Id does not belong to a submission container', HttpStatus.UNPROCESSABLE_ENTITY);
-		}
-
-		return submissionContainer;
 	}
 
 	private async checkPermission(

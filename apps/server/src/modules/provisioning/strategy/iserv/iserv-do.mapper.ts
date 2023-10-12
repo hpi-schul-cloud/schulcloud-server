@@ -1,10 +1,8 @@
-import { RoleName } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { UserDO } from '@shared/domain/domainobject/user.do';
+import { LegacySchoolDo, RoleName, UserDO } from '@shared/domain';
 import { ExternalSchoolDto, ExternalUserDto } from '../../dto';
 
 export class IservMapper {
-	static mapToExternalSchoolDto(schoolDO: SchoolDO): ExternalSchoolDto {
+	static mapToExternalSchoolDto(schoolDO: LegacySchoolDo): ExternalSchoolDto {
 		return new ExternalSchoolDto({
 			name: schoolDO.name,
 			externalId: schoolDO.externalId || '',

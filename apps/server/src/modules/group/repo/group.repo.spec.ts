@@ -1,10 +1,18 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalSource } from '@shared/domain';
+import { ExternalSource, SchoolEntity, UserDO, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, groupEntityFactory, groupFactory } from '@shared/testing';
+import {
+	cleanupCollections,
+	groupEntityFactory,
+	groupFactory,
+	roleFactory,
+	schoolFactory,
+	userDoFactory,
+	userFactory,
+} from '@shared/testing';
 import { Group, GroupProps, GroupTypes, GroupUser } from '../domain';
-import { GroupEntity } from '../entity';
+import { GroupEntity, GroupEntityTypes } from '../entity';
 import { GroupRepo } from './group.repo';
 
 describe('GroupRepo', () => {
@@ -78,6 +86,126 @@ describe('GroupRepo', () => {
 				const result: Group | null = await repo.findById(new ObjectId().toHexString());
 
 				expect(result).toBeNull();
+			});
+		});
+	});
+
+	describe('findByUser', () => {
+		describe('when the user has groups', () => {
+			const setup = async () => {
+				const userEntity: User = userFactory.buildWithId();
+				const user: UserDO = userDoFactory.build({ id: userEntity.id });
+				const groups: GroupEntity[] = groupEntityFactory.buildListWithId(3, {
+					users: [{ user: userEntity, role: roleFactory.buildWithId() }],
+				});
+
+				const otherGroups: GroupEntity[] = groupEntityFactory.buildListWithId(2);
+
+				await em.persistAndFlush([userEntity, ...groups, ...otherGroups]);
+				em.clear();
+
+				return {
+					user,
+					groups,
+				};
+			};
+
+			it('should return the groups', async () => {
+				const { user, groups } = await setup();
+
+				const result: Group[] = await repo.findByUser(user);
+
+				expect(result.map((group) => group.id).sort((a, b) => a.localeCompare(b))).toEqual(
+					groups.map((group) => group.id).sort((a, b) => a.localeCompare(b))
+				);
+			});
+		});
+
+		describe('when the user has no groups exists', () => {
+			const setup = async () => {
+				const userEntity: User = userFactory.buildWithId();
+				const user: UserDO = userDoFactory.build({ id: userEntity.id });
+
+				const otherGroups: GroupEntity[] = groupEntityFactory.buildListWithId(2);
+
+				await em.persistAndFlush([userEntity, ...otherGroups]);
+				em.clear();
+
+				return {
+					user,
+				};
+			};
+
+			it('should return an empty array', async () => {
+				const { user } = await setup();
+
+				const result: Group[] = await repo.findByUser(user);
+
+				expect(result).toHaveLength(0);
+			});
+		});
+	});
+
+	describe('findClassesForSchool', () => {
+		describe('when groups of type class for the school exist', () => {
+			const setup = async () => {
+				const school: SchoolEntity = schoolFactory.buildWithId();
+				const groups: GroupEntity[] = groupEntityFactory.buildListWithId(3, {
+					type: GroupEntityTypes.CLASS,
+					organization: school,
+				});
+
+				const otherSchool: SchoolEntity = schoolFactory.buildWithId();
+				const otherGroups: GroupEntity[] = groupEntityFactory.buildListWithId(2, {
+					type: GroupEntityTypes.CLASS,
+					organization: otherSchool,
+				});
+
+				await em.persistAndFlush([school, ...groups, otherSchool, ...otherGroups]);
+				em.clear();
+
+				return {
+					school,
+					otherSchool,
+					groups,
+				};
+			};
+
+			it('should return the group', async () => {
+				const { school, groups } = await setup();
+
+				const result: Group[] = await repo.findClassesForSchool(school.id);
+
+				expect(result).toHaveLength(groups.length);
+			});
+
+			it('should not return groups from another school', async () => {
+				const { school, otherSchool } = await setup();
+
+				const result: Group[] = await repo.findClassesForSchool(school.id);
+
+				expect(result.map((group) => group.organizationId)).not.toContain(otherSchool.id);
+			});
+		});
+
+		describe('when no group exists', () => {
+			const setup = async () => {
+				const school: SchoolEntity = schoolFactory.buildWithId();
+
+				await em.persistAndFlush(school);
+				em.clear();
+
+				return {
+					school,
+				};
+			};
+
+			it('should return an empty array', async () => {
+				const { school } = await setup();
+
+				const result: Group[] = await repo.findClassesForSchool(school.id);
+
+				expect(result).toHaveLength(0);
 			});
 		});
 	});
