@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Course, CourseGroup, LessonEntity, User } from '@shared/domain/entity';
 import { Action, AuthorizationContext, Rule } from '../type';
 import { AuthorizationHelper } from '../service/authorization.helper';
@@ -25,9 +25,10 @@ export class LessonRule implements Rule {
 
 		if (action === Action.read) {
 			hasLessonPermission = this.lessonReadPermission(user, entity);
-		}
-		if (action === Action.write) {
+		} else if (action === Action.write) {
 			hasLessonPermission = this.lessonWritePermission(user, entity);
+		} else {
+			throw new InternalServerErrorException('Action is not supported.');
 		}
 
 		const hasUserPermission = this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
@@ -60,9 +61,10 @@ export class LessonRule implements Rule {
 
 		if (entity.courseGroup) {
 			result = this.courseGroupPermission(user, entity.courseGroup, action);
-		}
-		if (entity.course) {
+		} else if (entity.course) {
 			result = this.coursePermission(user, entity.course, action); // ask course for student = read || teacher, sub-teacher = write
+		} else {
+			// yes.. what should stay her? -> without else it is a code smell
 		}
 
 		return result;

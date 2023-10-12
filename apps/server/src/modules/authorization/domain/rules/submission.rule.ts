@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Submission, User } from '@shared/domain/entity';
 import { Action, AuthorizationContext, Rule } from '../type';
 import { AuthorizationHelper } from '../service/authorization.helper';
@@ -29,9 +29,10 @@ export class SubmissionRule implements Rule {
 
 		if (action === Action.write) {
 			hasAccessToSubmission = this.hasWriteAccess(user, submission);
-		}
-		if (action === Action.read) {
+		} else if (action === Action.read) {
 			hasAccessToSubmission = this.hasReadAccess(user, submission);
+		} else {
+			throw new InternalServerErrorException('Action is not supported.');
 		}
 
 		return hasAccessToSubmission;
