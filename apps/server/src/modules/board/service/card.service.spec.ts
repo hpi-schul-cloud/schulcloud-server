@@ -88,7 +88,8 @@ describe(CardService.name, () => {
 			};
 
 			it('should call the card repository', async () => {
-				const { cardIds } = setup();
+				const { cards, cardIds } = setup();
+				boardDoRepo.findByIds.mockResolvedValueOnce(cards);
 
 				await service.findByIds(cardIds);
 
