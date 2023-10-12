@@ -10,18 +10,20 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
-import { Action } from '../type';
+import { Action, AuthorizationContext } from '../type';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
+import { AuthorizationContextBuilder } from '../mapper';
+import { NotImplementedException } from '@nestjs/common';
 
 describe('LessonRule', () => {
-	let service: LessonRule;
+	let rule: LessonRule;
 	let authorizationHelper: AuthorizationHelper;
 	let courseRule: DeepPartial<CourseRule>;
 	let courseGroupRule: DeepPartial<CourseGroupRule>;
-	let user: User;
+	let globalUser: User;
 	let entity: LessonEntity;
 	const permissionA = 'a' as Permission;
 	const permissionB = 'b' as Permission;
@@ -34,7 +36,7 @@ describe('LessonRule', () => {
 			providers: [AuthorizationHelper, LessonRule, CourseRule, CourseGroupRule],
 		}).compile();
 
-		service = await module.get(LessonRule);
+		rule = await module.get(LessonRule);
 		authorizationHelper = await module.get(AuthorizationHelper);
 		courseRule = await module.get(CourseRule);
 		courseGroupRule = await module.get(CourseGroupRule);
@@ -42,58 +44,117 @@ describe('LessonRule', () => {
 
 	beforeEach(() => {
 		const role = roleFactory.build({ permissions: [permissionA, permissionB] });
-		user = userFactory.build({ roles: [role] });
+		globalUser = userFactory.build({ roles: [role] });
 	});
 
 	it('should call hasAllPermissions on AuthorizationHelper', () => {
 		entity = lessonFactory.build();
 		const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
-		service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
-		expect(spy).toBeCalledWith(user, []);
+		rule.hasPermission(globalUser, entity, { action: Action.read, requiredPermissions: [] });
+		expect(spy).toBeCalledWith(globalUser, []);
 	});
 
 	it('should call courseRule.hasPermission', () => {
-		const course = courseFactory.build({ teachers: [user] });
+		const course = courseFactory.build({ teachers: [globalUser] });
 		entity = lessonFactory.build({ course });
 		const spy = jest.spyOn(courseRule, 'hasPermission');
-		service.hasPermission(user, entity, { action: Action.write, requiredPermissions: [permissionA] });
-		expect(spy).toBeCalledWith(user, entity.course, { action: Action.write, requiredPermissions: [] });
+		rule.hasPermission(globalUser, entity, { action: Action.write, requiredPermissions: [permissionA] });
+		expect(spy).toBeCalledWith(globalUser, entity.course, { action: Action.write, requiredPermissions: [] });
 	});
 
 	it('should call courseGroupRule.hasPermission', () => {
-		const course = courseFactory.build({ teachers: [user] });
+		const course = courseFactory.build({ teachers: [globalUser] });
 		const courseGroup = courseGroupFactory.build({ course });
 		entity = lessonFactory.build({ course: undefined, courseGroup });
 
 		const spy = jest.spyOn(courseGroupRule, 'hasPermission');
-		service.hasPermission(user, entity, { action: Action.write, requiredPermissions: [permissionA] });
-		expect(spy).toBeCalledWith(user, entity.courseGroup, { action: Action.write, requiredPermissions: [] });
+		rule.hasPermission(globalUser, entity, { action: Action.write, requiredPermissions: [permissionA] });
+		expect(spy).toBeCalledWith(globalUser, entity.courseGroup, { action: Action.write, requiredPermissions: [] });
+	});
+
+	describe('Given user request not implemented action', () => {
+		const getContext = (): AuthorizationContext => {
+			const context: AuthorizationContext = {
+				requiredPermissions: [],
+				// @ts-expect-error Testcase
+				action: 'not_implemented',
+			};
+
+			return context;
+		};
+
+		describe('when valid data exists', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const course = courseFactory.build({ teachers: [user] });
+				const lessonEntity = lessonFactory.build({ course });
+				const context = getContext();
+
+				return {
+					user,
+					lessonEntity,
+					context,
+				};
+			};
+
+			it('should reject with NotImplementedException', () => {
+				const { user, lessonEntity, context } = setup();
+
+				expect(() => rule.hasPermission(user, lessonEntity, context)).toThrowError(NotImplementedException);
+			});
+		});
+	});
+
+	describe('Given user request Action.write', () => {
+		const getWriteContext = () => AuthorizationContextBuilder.write([]);
+
+		describe('when lesson has no course or coursegroup', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const lessonEntity = lessonFactory.build({ course: undefined });
+				const context = getWriteContext();
+
+				return {
+					user,
+					lessonEntity,
+					context,
+				};
+			};
+
+			it('should return false', () => {
+				const { user, lessonEntity, context } = setup();
+
+				const result = rule.hasPermission(user, lessonEntity, context);
+
+				expect(result).toBe(false);
+			});
+		});
 	});
 
 	describe('User [TEACHER]', () => {
 		it('should return "true" if user in scope', () => {
-			const course = courseFactory.build({ teachers: [user] });
+			const course = courseFactory.build({ teachers: [globalUser] });
 			entity = lessonFactory.build({ course });
-			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionA] });
+			const res = rule.hasPermission(globalUser, entity, { action: Action.read, requiredPermissions: [permissionA] });
 			expect(res).toBe(true);
 		});
 
 		it('should return "true" if user has access to hidden entity', () => {
-			const course = courseFactory.build({ teachers: [user] });
+			const course = courseFactory.build({ teachers: [globalUser] });
 			entity = lessonFactory.build({ course, hidden: true });
-			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionA] });
+			const res = rule.hasPermission(globalUser, entity, { action: Action.read, requiredPermissions: [permissionA] });
 			expect(res).toBe(true);
 		});
 
 		it('should return "false" if user has not permission', () => {
 			entity = lessonFactory.build();
-			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
+			const res = rule.hasPermission(globalUser, entity, { action: Action.read, requiredPermissions: [permissionC] });
 			expect(res).toBe(false);
 		});
 
 		it('should return "false" if user has not access to entity', () => {
 			entity = lessonFactory.build();
-			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
+			const res = rule.hasPermission(globalUser, entity, { action: Action.read, requiredPermissions: [permissionC] });
 			expect(res).toBe(false);
 		});
 	});
@@ -107,14 +168,14 @@ describe('LessonRule', () => {
 		it('should return "false" if user has access to entity', () => {
 			const course = courseFactory.build({ students: [student] });
 			entity = lessonFactory.build({ course });
-			const res = service.hasPermission(student, entity, { action: Action.read, requiredPermissions: [permissionA] });
+			const res = rule.hasPermission(student, entity, { action: Action.read, requiredPermissions: [permissionA] });
 			expect(res).toBe(true);
 		});
 
 		it('should return "false" if user has not access to hidden entity', () => {
 			const course = courseFactory.build({ students: [student] });
 			entity = lessonFactory.build({ course, hidden: true });
-			const res = service.hasPermission(student, entity, { action: Action.read, requiredPermissions: [permissionA] });
+			const res = rule.hasPermission(student, entity, { action: Action.read, requiredPermissions: [permissionA] });
 			expect(res).toBe(false);
 		});
 	});
