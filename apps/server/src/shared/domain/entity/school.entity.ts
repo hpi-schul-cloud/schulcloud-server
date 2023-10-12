@@ -77,7 +77,7 @@ export class SchoolEntity extends BaseEntity {
 	@Property({ nullable: true })
 	officialSchoolNumber?: string;
 
-	@ManyToMany(() => SystemEntity, undefined, { fieldName: 'systems' })
+	@ManyToMany(() => SystemEntity)
 	systems = new Collection<SystemEntity>(this);
 
 	@Embedded(() => SchoolRoles, { object: true, nullable: true, prefix: false })
