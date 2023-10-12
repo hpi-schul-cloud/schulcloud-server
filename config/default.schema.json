@@ -1074,6 +1074,11 @@
 			"default": false,
 			"description": "Enable submissions in column board."
 		},
+		"FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable link elements in column board."
+		},
 		"COLUMN_BOARD_HELP_LINK": {
 			"type": "string",
 			"default": "https://docs.dbildungscloud.de/pages/viewpage.action?pageId=270827606",
