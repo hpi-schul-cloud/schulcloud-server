@@ -21,17 +21,19 @@ export class AntivirusModule {
 				},
 				{
 					provide: NodeClam,
+					useFactory: () => {
+						const isLocalhost = options.hostname === 'localhost';
 
-					useFactory: () =>
-						new NodeClam().init({
-							debugMode: true,
+						return new NodeClam().init({
+							debugMode: isLocalhost,
 							clamdscan: {
 								host: options.hostname,
 								port: options.port,
-								bypassTest: options.hostname === 'localhost',
+								bypassTest: isLocalhost,
 								localFallback: false,
 							},
-						}),
+						});
+					},
 				},
 			],
 
