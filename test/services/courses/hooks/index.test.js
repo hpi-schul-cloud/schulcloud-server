@@ -6,7 +6,7 @@ const {
 	restrictChangesToArchivedCourse,
 	addWholeClassToCourse,
 } = require('../../../../src/services/user-group/hooks/courses');
-const { setupNestServices } = require('../../../utils/setup.nest.services');
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 const oneHour = 600000;
 const twoDays = 172800000;
@@ -15,15 +15,18 @@ describe('course hooks', () => {
 	let app;
 	let server;
 	let nestServices;
+	let nestGroupService;
 
 	before(async () => {
 		app = await appPromise();
-		nestServices = await setupNestServices(app);
 		server = app.listen(0);
+		nestServices = setupNestServices(app);
+		nestGroupService = app.service('nest-group-service');
 	});
 
-	after(() => {
+	after(async () => {
 		server.close();
+		await closeNestServices(nestServices);
 	});
 
 	describe('restrict changes to archived course', () => {
@@ -108,14 +111,17 @@ describe('course hooks', () => {
 
 				return { teacher, student, class1, class2, group1 };
 			};
+
 			it('should add classmembers and groupmembers to course hook', async () => {
 				const { class1, class2, group1 } = await setup();
+
 				const result = addWholeClassToCourse({
 					app,
 					method: 'update',
 					id: '123',
 					data: { groupIds: [group1._id], classIds: [class1._id, class2._id] },
 				});
+
 				expect(result).to.not.equal(undefined);
 				expect(result.teacherIds).to.have.length(1);
 				expect(result.userIds).to.have.length(3);
@@ -135,12 +141,14 @@ describe('course hooks', () => {
 
 			it('should add classmembers and groupmembers to course hook', async () => {
 				const { class1, class2 } = await setup();
+
 				const result = addWholeClassToCourse({
 					app,
 					method: 'update',
 					id: '123',
 					data: { groupIds: undefined, classIds: [class1._id, class2._id] },
 				});
+
 				expect(result).to.not.equal(undefined);
 				expect(result.teacherIds).to.have.length(1);
 				expect(result.userIds).to.have.length(0);
@@ -162,14 +170,17 @@ describe('course hooks', () => {
 
 				return { teacher, student, class1, group1 };
 			};
+
 			it('should add classmembers and groupmembers to course hook', async () => {
 				const { class1, group1 } = await setup();
+
 				const result = addWholeClassToCourse({
 					app,
 					method: 'update',
 					id: '123',
 					data: { groupIds: [group1._id], classIds: [class1._id] },
 				});
+
 				expect(result.teacherIds).to.not.equal(undefined);
 				expect(result.teacherIds).to.have.length(1);
 				expect(result.userIds).to.have.length(0);
