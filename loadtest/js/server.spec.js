@@ -3,12 +3,16 @@ import { check } from 'k6';
 import { randomString } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 
 export const options = {
-	vus: 1000,
-	duration: '2m',
+	noConnectionReuse: false,
+	stages: [
+		{ duration: '2m', target: 25 },
+		{ duration: '3m', target: 50 },
+		{ duration: '10m', target: 100 },
+		{ duration: '5m', target: 50 },
+	],
 };
 
 function getAccessToken() {
-	console.info('getting access token...');
 	const response = http.post(
 		'https://dev.loadtest-01.dbildungscloud.dev/api/v3/authentication/local',
 		JSON.stringify({
@@ -21,9 +25,8 @@ function getAccessToken() {
 			},
 		}
 	);
-	// console.info(response);
-	const result = response.json();
-	return result;
+
+	return response.json();
 }
 
 export function setup() {
@@ -44,9 +47,11 @@ export default function (data) {
 			timeout: '10s',
 		}
 	);
-	// console.info(response);
+
 	check(response, {
-		'response status 200': (res) => res.status === 200,
+		'response status in 200s': (res) => res.status >= 200 && res.status <= 299,
+		'response status in 400s': (res) => res.status >= 400 && res.status <= 499,
+		'response status in 500s': (res) => res.status >= 500 && res.status <= 599,
 	});
 
 	if (response.status === 401) {
