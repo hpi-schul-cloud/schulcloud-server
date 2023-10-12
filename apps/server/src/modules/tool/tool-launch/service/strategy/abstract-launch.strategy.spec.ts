@@ -2,8 +2,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, EntityId, LegacySchoolDo } from '@shared/domain';
+import { Card, Course, EntityId, LegacySchoolDo } from '@shared/domain';
 import {
+	cardFactory,
 	contextExternalToolFactory,
 	courseFactory,
 	customParameterFactory,
@@ -12,6 +13,7 @@ import {
 	schoolExternalToolFactory,
 	setupEntities,
 } from '@shared/testing';
+import { CardService } from '@src/modules/board';
 import { CourseService } from '@src/modules/learnroom/service';
 import { LegacySchoolService } from '@src/modules/legacy-school';
 import { CustomParameterEntry } from '../../../common/domain';
@@ -75,6 +77,7 @@ describe('AbstractLaunchStrategy', () => {
 
 	let schoolService: DeepMocked<LegacySchoolService>;
 	let courseService: DeepMocked<CourseService>;
+	let cardService: DeepMocked<CardService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -90,12 +93,17 @@ describe('AbstractLaunchStrategy', () => {
 					provide: CourseService,
 					useValue: createMock<CourseService>(),
 				},
+				{
+					provide: CardService,
+					useValue: createMock<CardService>(),
+				},
 			],
 		}).compile();
 
 		launchStrategy = module.get(TestLaunchStrategy);
 		schoolService = module.get(LegacySchoolService);
 		courseService = module.get(CourseService);
+		cardService = module.get(CardService);
 	});
 
 	afterAll(async () => {
@@ -133,18 +141,6 @@ describe('AbstractLaunchStrategy', () => {
 					name: 'autoSchoolIdParam',
 					type: CustomParameterType.AUTO_SCHOOLID,
 				});
-				const autoCourseIdCustomParameter = customParameterFactory.build({
-					scope: CustomParameterScope.GLOBAL,
-					location: CustomParameterLocation.BODY,
-					name: 'autoCourseIdParam',
-					type: CustomParameterType.AUTO_CONTEXTID,
-				});
-				const autoCourseNameCustomParameter = customParameterFactory.build({
-					scope: CustomParameterScope.GLOBAL,
-					location: CustomParameterLocation.BODY,
-					name: 'autoCourseNameParam',
-					type: CustomParameterType.AUTO_CONTEXTNAME,
-				});
 				const autoSchoolNumberCustomParameter = customParameterFactory.build({
 					scope: CustomParameterScope.GLOBAL,
 					location: CustomParameterLocation.BODY,
@@ -158,8 +154,6 @@ describe('AbstractLaunchStrategy', () => {
 						schoolCustomParameter,
 						contextCustomParameter,
 						autoSchoolIdCustomParameter,
-						autoCourseIdCustomParameter,
-						autoCourseNameCustomParameter,
 						autoSchoolNumberCustomParameter,
 					],
 				});
@@ -191,15 +185,7 @@ describe('AbstractLaunchStrategy', () => {
 					schoolId
 				);
 
-				const course: Course = courseFactory.buildWithId(
-					{
-						name: 'testName',
-					},
-					contextExternalTool.contextRef.id
-				);
-
 				schoolService.getSchoolById.mockResolvedValue(school);
-				courseService.findById.mockResolvedValue(course);
 
 				const sortFn = (a: PropertyData, b: PropertyData) => {
 					if (a.name < b.name) {
@@ -215,15 +201,12 @@ describe('AbstractLaunchStrategy', () => {
 					globalCustomParameter,
 					schoolCustomParameter,
 					autoSchoolIdCustomParameter,
-					autoCourseIdCustomParameter,
-					autoCourseNameCustomParameter,
 					autoSchoolNumberCustomParameter,
 					schoolParameterEntry,
 					contextParameterEntry,
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
-					course,
 					school,
 					sortFn,
 				};
@@ -235,14 +218,11 @@ describe('AbstractLaunchStrategy', () => {
 					schoolCustomParameter,
 					contextParameterEntry,
 					autoSchoolIdCustomParameter,
-					autoCourseIdCustomParameter,
-					autoCourseNameCustomParameter,
 					autoSchoolNumberCustomParameter,
 					schoolParameterEntry,
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
-					course,
 					school,
 					sortFn,
 				} = setup();
@@ -280,16 +260,6 @@ describe('AbstractLaunchStrategy', () => {
 							location: PropertyLocation.BODY,
 						},
 						{
-							name: autoCourseIdCustomParameter.name,
-							value: course.id,
-							location: PropertyLocation.BODY,
-						},
-						{
-							name: autoCourseNameCustomParameter.name,
-							value: course.name,
-							location: PropertyLocation.BODY,
-						},
-						{
 							name: autoSchoolNumberCustomParameter.name,
 							value: school.officialSchoolNumber as string,
 							location: PropertyLocation.BODY,
@@ -300,6 +270,195 @@ describe('AbstractLaunchStrategy', () => {
 							location: concreteConfigParameter.location,
 						},
 					].sort(sortFn),
+				});
+			});
+		});
+
+		describe('when launching with context name parameter for the context "course"', () => {
+			const setup = () => {
+				const autoCourseNameCustomParameter = customParameterFactory.build({
+					scope: CustomParameterScope.GLOBAL,
+					location: CustomParameterLocation.BODY,
+					name: 'autoCourseNameParam',
+					type: CustomParameterType.AUTO_CONTEXTNAME,
+				});
+
+				const externalTool: ExternalTool = externalToolFactory.build({
+					parameters: [autoCourseNameCustomParameter],
+				});
+
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+					contextRef: {
+						type: ToolContextType.COURSE,
+					},
+				});
+
+				const course: Course = courseFactory.buildWithId(
+					{
+						name: 'testName',
+					},
+					contextExternalTool.contextRef.id
+				);
+
+				courseService.findById.mockResolvedValue(course);
+
+				return {
+					autoCourseNameCustomParameter,
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+					course,
+				};
+			};
+
+			it('should return ToolLaunchData with the card title as parameter value', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool, autoCourseNameCustomParameter, course } =
+					setup();
+
+				const result: ToolLaunchData = await launchStrategy.createLaunchData('userId', {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+				});
+
+				expect(result).toEqual<ToolLaunchData>({
+					baseUrl: externalTool.config.baseUrl,
+					type: ToolLaunchDataType.BASIC,
+					openNewTab: false,
+					properties: [
+						{
+							name: autoCourseNameCustomParameter.name,
+							value: course.name,
+							location: PropertyLocation.BODY,
+						},
+						{
+							name: concreteConfigParameter.name,
+							value: concreteConfigParameter.value,
+							location: concreteConfigParameter.location,
+						},
+					],
+				});
+			});
+		});
+
+		describe('when launching with context id parameter', () => {
+			const setup = () => {
+				const autoContextIdCustomParameter = customParameterFactory.build({
+					scope: CustomParameterScope.GLOBAL,
+					location: CustomParameterLocation.BODY,
+					name: 'autoContextIdParam',
+					type: CustomParameterType.AUTO_CONTEXTID,
+				});
+
+				const externalTool: ExternalTool = externalToolFactory.build({
+					parameters: [autoContextIdCustomParameter],
+				});
+
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
+
+				return {
+					autoContextIdCustomParameter,
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+				};
+			};
+
+			it('should return ToolLaunchData with the context id as parameter value', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool, autoContextIdCustomParameter } = setup();
+
+				const result: ToolLaunchData = await launchStrategy.createLaunchData('userId', {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+				});
+
+				expect(result).toEqual<ToolLaunchData>({
+					baseUrl: externalTool.config.baseUrl,
+					type: ToolLaunchDataType.BASIC,
+					openNewTab: false,
+					properties: [
+						{
+							name: autoContextIdCustomParameter.name,
+							value: contextExternalTool.contextRef.id,
+							location: PropertyLocation.BODY,
+						},
+						{
+							name: concreteConfigParameter.name,
+							value: concreteConfigParameter.value,
+							location: concreteConfigParameter.location,
+						},
+					],
+				});
+			});
+		});
+
+		describe('when launching with context name parameter for the context "board card"', () => {
+			const setup = () => {
+				const autoCardNameCustomParameter = customParameterFactory.build({
+					scope: CustomParameterScope.GLOBAL,
+					location: CustomParameterLocation.BODY,
+					name: 'autoCardNameParam',
+					type: CustomParameterType.AUTO_CONTEXTNAME,
+				});
+
+				const externalTool: ExternalTool = externalToolFactory.build({
+					parameters: [autoCardNameCustomParameter],
+				});
+
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+					contextRef: {
+						type: ToolContextType.BOARD_CARD,
+					},
+				});
+
+				const card: Card = cardFactory.build({
+					id: contextExternalTool.contextRef.id,
+					title: 'Card Tile 123',
+				});
+
+				cardService.findById.mockResolvedValue(card);
+
+				return {
+					autoCardNameCustomParameter,
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+					card,
+				};
+			};
+
+			it('should return ToolLaunchData with the card title as parameter value', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool, autoCardNameCustomParameter, card } = setup();
+
+				const result: ToolLaunchData = await launchStrategy.createLaunchData('userId', {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+				});
+
+				expect(result).toEqual<ToolLaunchData>({
+					baseUrl: externalTool.config.baseUrl,
+					type: ToolLaunchDataType.BASIC,
+					openNewTab: false,
+					properties: [
+						{
+							name: autoCardNameCustomParameter.name,
+							value: card.title,
+							location: PropertyLocation.BODY,
+						},
+						{
+							name: concreteConfigParameter.name,
+							value: concreteConfigParameter.value,
+							location: concreteConfigParameter.location,
+						},
+					],
 				});
 			});
 		});

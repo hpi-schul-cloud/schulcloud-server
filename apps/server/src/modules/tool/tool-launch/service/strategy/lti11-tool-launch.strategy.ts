@@ -1,6 +1,7 @@
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId, LtiPrivacyPermission, Pseudonym, RoleName, UserDO } from '@shared/domain';
 import { RoleReference } from '@shared/domain/domainobject';
+import { CardService } from '@src/modules/board';
 import { CourseService } from '@src/modules/learnroom/service';
 import { LegacySchoolService } from '@src/modules/legacy-school';
 import { PseudonymService } from '@src/modules/pseudonym/service';
@@ -9,7 +10,7 @@ import { Authorization } from 'oauth-1.0a';
 import { LtiRole } from '../../../common/enum';
 import { ExternalTool } from '../../../external-tool/domain';
 import { LtiRoleMapper } from '../../mapper';
-import { LaunchRequestMethod, PropertyData, PropertyLocation, AuthenticationValues } from '../../types';
+import { AuthenticationValues, LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
@@ -21,9 +22,10 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		private readonly pseudonymService: PseudonymService,
 		private readonly lti11EncryptionService: Lti11EncryptionService,
 		schoolService: LegacySchoolService,
-		courseService: CourseService
+		courseService: CourseService,
+		cardService: CardService
 	) {
-		super(schoolService, courseService);
+		super(schoolService, courseService, cardService);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars

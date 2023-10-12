@@ -127,13 +127,45 @@ describe('ContextExternalToolRepo', () => {
 	});
 
 	describe('save', () => {
-		describe('when context is known', () => {
+		describe('when context is course', () => {
 			function setup() {
 				const domainObject: ContextExternalTool = contextExternalToolFactory.build({
 					displayName: 'displayName',
 					contextRef: {
 						id: new ObjectId().toHexString(),
 						type: ToolContextType.COURSE,
+					},
+					parameters: [new CustomParameterEntry({ name: 'param', value: 'value' })],
+					schoolToolRef: {
+						schoolToolId: new ObjectId().toHexString(),
+						schoolId: undefined,
+					},
+					toolVersion: 1,
+				});
+
+				return {
+					domainObject,
+				};
+			}
+
+			it('should save a ContextExternalToolDO', async () => {
+				const { domainObject } = setup();
+				const { id, ...expected } = domainObject;
+
+				const result: ContextExternalTool = await repo.save(domainObject);
+
+				expect(result).toMatchObject(expected);
+				expect(result.id).toBeDefined();
+			});
+		});
+
+		describe('when context is board card', () => {
+			function setup() {
+				const domainObject: ContextExternalTool = contextExternalToolFactory.build({
+					displayName: 'displayName',
+					contextRef: {
+						id: new ObjectId().toHexString(),
+						type: ToolContextType.BOARD_CARD,
 					},
 					parameters: [new CustomParameterEntry({ name: 'param', value: 'value' })],
 					schoolToolRef: {

@@ -9,12 +9,13 @@ import {
 	userDoFactory,
 } from '@shared/testing';
 import { pseudonymFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
-import { PseudonymService } from '@src/modules/pseudonym/service';
+import { CardService } from '@src/modules/board';
+import { CourseService } from '@src/modules/learnroom/service';
 import { LegacySchoolService } from '@src/modules/legacy-school';
+import { PseudonymService } from '@src/modules/pseudonym/service';
 import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
 import { Authorization } from 'oauth-1.0a';
-import { CourseService } from '@src/modules/learnroom/service';
 import { LtiMessageType, LtiPrivacyPermission, LtiRole, ToolContextType } from '../../../common/enum';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { ExternalTool } from '../../../external-tool/domain';
@@ -55,6 +56,10 @@ describe('Lti11ToolLaunchStrategy', () => {
 				{
 					provide: CourseService,
 					useValue: createMock<CourseService>(),
+				},
+				{
+					provide: CardService,
+					useValue: createMock<CardService>(),
 				},
 			],
 		}).compile();

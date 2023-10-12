@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Course, EntityId, LegacySchoolDo } from '@shared/domain';
+import { Card, Course, EntityId, LegacySchoolDo } from '@shared/domain';
+import { CardService } from '@src/modules/board';
 import { CourseService } from '@src/modules/learnroom/service';
 import { LegacySchoolService } from '@src/modules/legacy-school';
 import { URLSearchParams } from 'url';
@@ -21,7 +22,11 @@ import { IToolLaunchStrategy } from './tool-launch-strategy.interface';
 
 @Injectable()
 export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
-	constructor(private readonly schoolService: LegacySchoolService, private readonly courseService: CourseService) {}
+	constructor(
+		private readonly schoolService: LegacySchoolService,
+		private readonly courseService: CourseService,
+		private readonly cardService: CardService
+	) {}
 
 	public async createLaunchData(userId: EntityId, data: IToolLaunchParams): Promise<ToolLaunchData> {
 		const launchData: ToolLaunchData = this.buildToolLaunchDataFromExternalTool(data.externalTool);
@@ -215,15 +220,23 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 				return contextExternalTool.contextRef.id;
 			}
 			case CustomParameterType.AUTO_CONTEXTNAME: {
-				if (contextExternalTool.contextRef.type === ToolContextType.COURSE) {
-					const course: Course = await this.courseService.findById(contextExternalTool.contextRef.id);
+				switch (contextExternalTool.contextRef.type) {
+					case ToolContextType.COURSE: {
+						const course: Course = await this.courseService.findById(contextExternalTool.contextRef.id);
 
-					return course.name;
+						return course.name;
+					}
+					case ToolContextType.BOARD_CARD: {
+						const boardCard: Card = await this.cardService.findById(contextExternalTool.contextRef.id);
+
+						return boardCard.title;
+					}
+					default: {
+						throw new ParameterTypeNotImplementedLoggableException(
+							`${customParameter.type}/${contextExternalTool.contextRef.type as string}`
+						);
+					}
 				}
-
-				throw new ParameterTypeNotImplementedLoggableException(
-					`${customParameter.type}/${contextExternalTool.contextRef.type as string}`
-				);
 			}
 			case CustomParameterType.AUTO_SCHOOLNUMBER: {
 				const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);

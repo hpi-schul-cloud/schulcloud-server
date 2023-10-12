@@ -115,6 +115,8 @@ export class ContextExternalToolRepo extends BaseDORepo<
 		switch (type) {
 			case ToolContextType.COURSE:
 				return ContextExternalToolType.COURSE;
+			case ToolContextType.BOARD_CARD:
+				return ContextExternalToolType.BOARD_CARD;
 			default:
 				throw new Error('Unknown ToolContextType');
 		}
@@ -124,6 +126,8 @@ export class ContextExternalToolRepo extends BaseDORepo<
 		switch (type) {
 			case ContextExternalToolType.COURSE:
 				return ToolContextType.COURSE;
+			case ContextExternalToolType.BOARD_CARD:
+				return ToolContextType.BOARD_CARD;
 			default:
 				throw new Error('Unknown ContextExternalToolType');
 		}
