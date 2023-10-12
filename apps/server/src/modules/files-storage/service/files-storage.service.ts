@@ -8,11 +8,11 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Counted, EntityId } from '@shared/domain';
-import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { AntivirusService } from '@shared/infra/antivirus';
 import { S3ClientAdapter } from '@shared/infra/s3-client';
 import { LegacyLogger } from '@src/core/logger';
 import FileType from 'file-type-cjs/file-type-cjs-index';
-import { Readable } from 'stream';
+import { PassThrough, Readable } from 'stream';
 import {
 	CopyFileResponse,
 	CopyFilesOfParentParams,
@@ -104,7 +104,8 @@ export class FilesStorageService {
 
 	private async detectMimeType(file: FileDto): Promise<{ mimeType: string; stream: Readable }> {
 		if (this.isStreamMimeTypeDetectionPossible(file.mimeType)) {
-			const { stream, mime: detectedMimeType } = await this.detectMimeTypeByStream(file.data);
+			const source = file.data.pipe(new PassThrough());
+			const { stream, mime: detectedMimeType } = await this.detectMimeTypeByStream(source);
 
 			const mimeType = detectedMimeType ?? file.mimeType;
 
@@ -151,18 +152,32 @@ export class FilesStorageService {
 		file: FileDto
 	): Promise<void> {
 		const filePath = createPath(params.schoolId, fileRecord.id);
+		const useStreamToAntivirus = this.configService.get<boolean>('USE_STREAM_TO_ANTIVIRUS');
 
 		try {
 			const fileSizePromise = this.countFileSize(file);
 
-			await this.storageClient.create(filePath, file);
+			if (useStreamToAntivirus && fileRecord.isPreviewPossible()) {
+				const streamToAntivirus = file.data.pipe(new PassThrough());
+
+				const [, antivirusClientResponse] = await Promise.all([
+					this.storageClient.create(filePath, file),
+					this.antivirusService.checkStream(streamToAntivirus),
+				]);
+				const { status, reason } = FileRecordMapper.mapScanResultParamsToDto(antivirusClientResponse);
+				fileRecord.updateSecurityCheckStatus(status, reason);
+			} else {
+				await this.storageClient.create(filePath, file);
+			}
 
 			// The actual file size is set here because it is known only after the whole file is streamed.
 			fileRecord.size = await fileSizePromise;
 			this.throwErrorIfFileIsTooBig(fileRecord.size);
 			await this.fileRecordRepo.save(fileRecord);
 
-			await this.sendToAntivirus(fileRecord);
+			if (!useStreamToAntivirus || !fileRecord.isPreviewPossible()) {
+				await this.sendToAntivirus(fileRecord);
+			}
 		} catch (error) {
 			await this.storageClient.delete([filePath]);
 			await this.fileRecordRepo.delete(fileRecord);
